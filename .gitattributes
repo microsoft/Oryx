@@ -1,0 +1,19 @@
+* text=auto
+
+# Make sure c# files have crlf
+*.cs text eol=crlf
+*.sln text eol=crlf
+*.csproj text eol=crlf
+
+# Make sure linux conf files have lf
+*.conf text eol=lf
+
+# Make sure yaml files have lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Make sure JSON files have lf
+*.json text eol=lf
+
+# Make sure bash scripts have lf
+*.sh text eol=lf
