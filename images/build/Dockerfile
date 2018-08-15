@@ -27,10 +27,6 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
  && mv /usr/local/n/versions/node /opt/nodejs \
- && ln -s 8.11.3 /opt/nodejs/lts \
- && ln -s /opt/nodejs/lts/bin/node /usr/local/bin/node \
- && ln -s /opt/nodejs/lts/bin/npm /usr/local/bin/npm \
- && ln -s /opt/nodejs/lts/bin/npx /usr/local/bin/npx \
  && rm -rf /usr/local/n ~/n
 RUN set -ex \
  && for ver in `ls /opt/nodejs`; do \
@@ -57,9 +53,31 @@ RUN set -ex \
  && mkdir -p /opt/yarn \
  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
  && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && ln -s /opt/yarn/$YARN_VERSION/bin/yarn /usr/local/bin/yarn \
- && ln -s /opt/yarn/$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+RUN set -ex \
+ && ln -s 4.5.0 /opt/nodejs/4.5 \
+ && ln -s 4.5 /opt/nodejs/4 \
+ && ln -s 6.11.0 /opt/nodejs/6.11 \
+ && ln -s 6.11 /opt/nodejs/6 \
+ && ln -s 8.11.3 /opt/nodejs/lts \
+ && ln -s 8.11.3 /opt/nodejs/8.11 \
+ && ln -s 8.11 /opt/nodejs/8 \
+ && ln -s 9.4.0 /opt/nodejs/9.4 \
+ && ln -s 9.4 /opt/nodejs/9 \
+ && ln -s 10.1.0 /opt/nodejs/latest \
+ && ln -s 10.1.0 /opt/nodejs/10.1 \
+ && ln -s 10.1 /opt/nodejs/10
+RUN set -ex \
+ && ln -s 5.6.0 /opt/npm/latest
+RUN set -ex \
+ && ln -s 1.9.4 /opt/yarn/stable \
+ && ln -s 1.9.4 /opt/yarn/latest \
+ && ln -s 1.9.4 /opt/yarn/1.9 \
+ && ln -s 1.9 /opt/yarn/1
+RUN set -ex \
+ && cd /usr/local/bin \
+ && cp -s /opt/nodejs/lts/bin/* . \
+ && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg .
 
 # Install Python prerequisites
 RUN apt-get update \
@@ -70,76 +88,66 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 
-# Build Python 2.7
-FROM buildpack-deps:stable AS python2.7-build
+# Build Python 2.7.15
+FROM buildpack-deps:stable AS python2.7.15-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=2.7.15
 ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
 ENV PIP_VERSION=18.0
-COPY python-download.sh /
-RUN /python-download.sh
-COPY python2-build.sh /
-RUN /python2-build.sh
-COPY python-install.sh /
-RUN /python-install.sh
-RUN ln -s $PYTHON_VERSION /opt/python/2.7
+COPY python-build.sh /
+RUN /python-build.sh
 
-# Build Python 3.5
-FROM buildpack-deps:stable AS python3.5-build
+# Build Python 3.5.6
+FROM buildpack-deps:stable AS python3.5.6-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.5.6
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
 ENV PIP_VERSION=18.0
-COPY python-download.sh /
-RUN /python-download.sh
-COPY python3-build.sh /
-RUN /python3-build.sh
-COPY python-install.sh /
-RUN /python-install.sh
-RUN ln -s $PYTHON_VERSION /opt/python/3.5
+COPY python-build.sh /
+RUN /python-build.sh
 
-# Build Python 3.6
-FROM buildpack-deps:stable AS python3.6-build
+# Build Python 3.6.6
+FROM buildpack-deps:stable AS python3.6.6-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.6.6
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.0
-COPY python-download.sh /
-RUN /python-download.sh
-COPY python3-build.sh /
-RUN /python3-build.sh
-COPY python-install.sh /
-RUN /python-install.sh
-RUN ln -s $PYTHON_VERSION /opt/python/3.6
+COPY python-build.sh /
+RUN /python-build.sh
 
-# Build Python 3.7
-FROM buildpack-deps:stable AS python3.7-build
+# Build Python 3.7.0
+FROM buildpack-deps:stable AS python3.7.0-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.7.0
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.0
-COPY python-download.sh /
-RUN /python-download.sh
-COPY python3-build.sh /
-RUN /python3-build.sh
-COPY python-install.sh /
-RUN /python-install.sh
-RUN ln -s $PYTHON_VERSION /opt/python/3.7
+COPY python-build.sh /
+RUN /python-build.sh
 
 # Install Python
 FROM main AS python
-COPY --from=python2.7-build /opt /opt
-COPY --from=python3.5-build /opt /opt
-COPY --from=python3.6-build /opt /opt
-COPY --from=python3.7-build /opt /opt
-RUN echo /opt/python/2.7/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.5/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.6/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.7/lib >> /etc/ld.so.conf.d/python.conf \
+COPY --from=python2.7.15-build /opt /opt
+COPY --from=python3.5.6-build /opt /opt
+COPY --from=python3.6.6-build /opt /opt
+COPY --from=python3.7.0-build /opt /opt
+RUN set -ex \
+ && echo /opt/python/2.7.15/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/3.5.6/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/3.6.6/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/3.7.0/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-RUN ln -s /opt/python/2.7/bin/python2 /usr/local/bin/python2 \
- && ln -s python2 /usr/local/bin/python
-RUN ln -s /opt/python/3.7/bin/python3 /usr/local/bin/python3
+RUN set -ex \
+ && ln -s 2.7.15 /opt/python/2.7 \
+ && ln -s 2.7 /opt/python/2 \
+ && ln -s 3.5.6 /opt/python/3.5 \
+ && ln -s 3.6.6 /opt/python/3.6 \
+ && ln -s 3.7.0 /opt/python/latest \
+ && ln -s 3.7.0 /opt/python/3.7 \
+ && ln -s 3.7 /opt/python/3
+RUN set -ex \
+ && cd /usr/local/bin \
+ && cp -sn /opt/python/2/bin/* . \
+ && cp -sn /opt/python/3/bin/* .
 
 FROM python AS final
 COPY entrypoint.sh /
