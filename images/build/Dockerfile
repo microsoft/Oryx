@@ -150,6 +150,7 @@ RUN set -ex \
  && cp -sn /opt/python/3/bin/* .
 
 FROM python AS final
-COPY entrypoint.sh /
-ENTRYPOINT [ "/entrypoint.sh" ]
+COPY benv /usr/local/bin
+RUN chmod +x /usr/local/bin/benv
+ENTRYPOINT [ "benv" ]
 CMD [ "bash" ]

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+while true; do
+  if [[ $1 = *"="* ]]; then
+    eval export "$1"
+    shift
+  else
+    break
+  fi
+done
+
 if [ -n "$NODE" ]; then
   if [ ! -d "/opt/nodejs/$NODE" ]; then
     echo >&2 error: node version \'$NODE\' was not found
@@ -63,4 +72,7 @@ while read name value; do
 done < <(env | grep ^PYTHON_)
 IFS=$' \t\n'
 
+if [ $# -eq 0 ]; then
+  set -- env
+fi
 exec "$@"
