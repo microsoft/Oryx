@@ -6,6 +6,7 @@ fi
 
 versions() {
   cd "$1"
+  IFS=$' \t\n'
   for version in $(ls); do
     LINK=$(readlink "$version")
     if [ -z "$LINK" ]; then
