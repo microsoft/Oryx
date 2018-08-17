@@ -9,6 +9,66 @@ RUN apt-get update \
         jq \
  && rm -rf /var/lib/apt/lists/*
 
+# Install .NET Core
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        libc6 \
+        libcurl3 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        # libicu52 \ # doesn't exist, but may be needed for .NET Core 1.x
+        libicu57 \
+        liblttng-ust0 \
+        # libssl1.0.0 \ # doesn't exist, but may be needed for .NET Core 1.x
+        libssl1.0.2 \
+        libstdc++6 \
+        libunwind8 \
+        libuuid1 \
+        zlib1g \
+ && rm -rf /var/lib/apt/lists/*
+RUN set -ex \
+ && DOTNET_DIR=/opt/dotnet \
+ && mkdir -p $DOTNET_DIR \
+ # Install .NET Core Runtime 1.0.12
+ && DOTNET_VER=1.0.12 \
+ && DOTNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VER/dotnet-debian-x64.$DOTNET_VER.tar.gz \
+ && curl -SL $DOTNET_URL | tar -xzf - -C $DOTNET_DIR \
+ # Install .NET Core Runtime 1.1.9
+ && DOTNET_VER=1.1.9 \
+ && DOTNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VER/dotnet-debian-x64.$DOTNET_VER.tar.gz \
+ && curl -SL $DOTNET_URL | tar -xzf - -C $DOTNET_DIR \
+ # Install .NET Core Runtime 2.0.9
+ && DOTNET_VER=2.0.9 \
+ && DOTNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VER/dotnet-runtime-$DOTNET_VER-linux-x64.tar.gz \
+ && DOTNET_SHA=2b49b24ef712fbfc056e0fda95ff18037b4ec938ca8bb41f4c336b6a50870e922f5093684ac92c4bb8e1155b03c36d132d7f90817793f31c9ade5267fff6629a \
+ && curl -SL $DOTNET_URL --output dotnet.tar.gz \
+ && echo "$DOTNET_SHA dotnet.tar.gz" | sha512sum -c - \
+ && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
+ && rm dotnet.tar.gz \
+ # Install ASP .NET Core Runtime 2.1.2 (includes .NET Core Runtime 2.1.2)
+ && ASPNET_VER=2.1.2 \
+ && ASPNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNET_VER/aspnetcore-runtime-$ASPNET_VER-linux-x64.tar.gz \
+ && ASPNET_SHA=294a6c256ce7954c05c3dee85d4114e320c7b94b2ae2e854a268b2bb4383a967e1063ee0df0da0f09511b3dc9c215aa735899f5c6db4f11bd58da3cb9cc8b6da \
+ && curl -SL $ASPNET_URL --output aspnet.tar.gz \
+ && echo "$ASPNET_SHA aspnet.tar.gz" | sha512sum -c - \
+ && tar -xzf aspnet.tar.gz -C $DOTNET_DIR \
+ && rm aspnet.tar.gz \
+ # Install .NET Core SDK 2.1.400
+ && DOTNET_SDK_VER=2.1.400 \
+ && DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz \
+ && DOTNET_SDK_SHA=9c850fe9d1ac335376fb3ed1f07472d281a9c4ac8ed02cf752ce36c3488d6746c09d6e2101184f3c8de357aae86b567196f4d071b6c55505a250ce6db53ab532 \
+ && curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz \
+ && echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c - \
+ && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
+ && rm dotnet.tar.gz \
+ && ln -s $DOTNET_DIR/dotnet /usr/bin/dotnet
+ENV DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+    NUGET_XMLDOC_MODE=skip \
+    ASPNETCORE_URLS=http://+:80
+RUN dotnet help
+
 # Install Node.js, NPM, Yarn
 RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
@@ -68,7 +128,13 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.1 /opt/nodejs/10
 RUN set -ex \
- && ln -s 5.6.0 /opt/npm/latest
+ && ln -s 2.15.9 /opt/npm/2.15 \
+ && ln -s 2.15 /opt/npm/2 \
+ && ln -s 3.10.10 /opt/npm/3.10 \
+ && ln -s 3.10 /opt/npm/3 \
+ && ln -s 5.6.0 /opt/npm/latest \
+ && ln -s 5.6.0 /opt/npm/5.6 \
+ && ln -s 5.6 /opt/npm/5
 RUN set -ex \
  && ln -s 1.9.4 /opt/yarn/stable \
  && ln -s 1.9.4 /opt/yarn/latest \
