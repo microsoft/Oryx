@@ -216,7 +216,7 @@ RUN set -ex \
  && cp -sn /opt/python/3/bin/* .
 
 FROM python AS final
-COPY benv /usr/local/bin
+COPY benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
 ENTRYPOINT [ "benv" ]
 CMD [ "bash" ]
