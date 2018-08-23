@@ -3,7 +3,20 @@ set -ex
 
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz -O /python.tar.xz
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
-gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY
+
+## Try 5 times at most else it's fine to fail the build
+for (( i=0; i<5; i++ )); do
+
+    gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys $GPG_KEY || \
+    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys $GPG_KEY || \
+    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys $GPG_KEY  || \
+    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY;
+    
+    ##if we get sucess during execution we will break the loop
+    if [ $? -eq 0 ]; then break; fi    
+     
+done;
+    
 gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
