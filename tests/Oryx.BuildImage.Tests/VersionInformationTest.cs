@@ -7,7 +7,7 @@ using Oryx.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Tests
+namespace Oryx.BuildImage.Tests
 {
     public class VersionInformationTest
     {
@@ -28,7 +28,7 @@ namespace Oryx.Tests
 
             // Act
             var result = _dockerCli.Run(
-                "oryx:latest",
+                "oryxdevms/build:latest",
                 commandToExecuteOnRun: "dotnet",
                 commandArguments: new[] { "--version" });
 
@@ -67,7 +67,7 @@ namespace Oryx.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryx:latest",
+                "oryxdevms/build:latest",
                 new EnvironmentVariable("node", versionSentToDockerRun),
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
@@ -93,7 +93,7 @@ namespace Oryx.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryx:latest",
+                "oryxdevms/build:latest",
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python",
                 commandArguments: new[] { "--version" });
@@ -119,7 +119,7 @@ namespace Oryx.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryx:latest",
+                "oryxdevms/build:latest",
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python2",
                 commandArguments: new[] { "--version" });
@@ -150,7 +150,7 @@ namespace Oryx.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryx:latest",
+                "oryxdevms/build:latest",
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python3",
                 commandArguments: new[] { "--version" });

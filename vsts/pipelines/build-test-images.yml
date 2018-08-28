@@ -1,0 +1,54 @@
+resources:
+- repo: self
+queue:
+  name: OryxLinux
+variables:
+  DockerRepository: 'oryxdevms'
+  DockerRepositoryFolder: 'build'
+steps:
+- script: ./build/build-solution.sh
+  displayName: 'Build Oryx.sln'
+
+- script: ./build/test-buildimages.sh
+  displayName: 'Build and test build images'
+
+- script: ./build/test-runtimeimages.sh
+  displayName: 'Build and test runtime images'
+
+- task: Docker@0
+  displayName: 'Push build images'
+  inputs:
+    containerregistrytype: 'Container Registry'
+
+    dockerRegistryConnection: oryx
+
+    action: 'Push images'
+
+    imageNamesPath: 'artifacts/build-images.txt'
+
+    includeLatestTag: false
+
+- task: Docker@0
+  displayName: 'Push runtime images'
+  inputs:
+    containerregistrytype: 'Container Registry'
+
+    dockerRegistryConnection: oryx
+
+    action: 'Push images'
+
+    imageNamesPath: 'artifacts/runtime-images.txt'
+
+    includeLatestTag: false
+
+- task: ArchiveFiles@2
+  displayName: 'Archive docker files and scripts for Oryx build and runtime images'
+  inputs:
+    rootFolderOrFile: images
+
+    archiveFile: '$(Build.ArtifactStagingDirectory)/dockerFiles$(Build.BuildId).zip'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
+

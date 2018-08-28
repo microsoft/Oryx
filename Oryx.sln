@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Tests", "tests\Oryx.Tests\Oryx.Tests.csproj", "{5A7EAD12-3F49-498E-9878-F9EB5439795B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7515BF2B-C485-43A0-AB2F-DC761B6AB151}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{4697D28B-277F-409C-870E-F1EDA3E30FD4}"
@@ -24,16 +22,44 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGeneratorCli", "src\BuildScriptGeneratorCli\BuildScriptGeneratorCli.csproj", "{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.BuildImage.Tests", "tests\Oryx.BuildImage.Tests\Oryx.BuildImage.Tests.csproj", "{D6446227-8F24-4EDC-B170-0A732C071D03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{0FEBE7DD-10C0-4650-89E4-69DDB0930C56}"
+	ProjectSection(SolutionItems) = preProject
+		build\__variables.sh = build\__variables.sh
+		build\build-buildimages.sh = build\build-buildimages.sh
+		build\build-runtimeimages.sh = build\build-runtimeimages.sh
+		build\test-buildimages.sh = build\test-buildimages.sh
+		build\test-runtimeimages.sh = build\test-runtimeimages.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{45542CEB-0A3B-42DF-95AE-D13A673D3183}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		build.sh = build.sh
+		CodeMaid.config = CodeMaid.config
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Tests.Infrastructure", "tests\Oryx.Tests.Infrastructure\Oryx.Tests.Infrastructure.csproj", "{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.RuntimeImage.Tests", "tests\Oryx.RuntimeImage.Tests\Oryx.RuntimeImage.Tests.csproj", "{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsts", "vsts", "{D7D9E386-B13E-45FA-8AE6-8FC20CB84974}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D}"
+	ProjectSection(SolutionItems) = preProject
+		vsts\pipelines\build-test-images.yml = vsts\pipelines\build-test-images.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5A7EAD12-3F49-498E-9878-F9EB5439795B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A7EAD12-3F49-498E-9878-F9EB5439795B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A7EAD12-3F49-498E-9878-F9EB5439795B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A7EAD12-3F49-498E-9878-F9EB5439795B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0B158C0-8023-4A95-BAEC-E64218FCCC32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0B158C0-8023-4A95-BAEC-E64218FCCC32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0B158C0-8023-4A95-BAEC-E64218FCCC32}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -46,16 +72,32 @@ Global
 		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5A7EAD12-3F49-498E-9878-F9EB5439795B} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 		{33D6DAAC-19A1-43DC-A586-A5F18EE98718} = {4697D28B-277F-409C-870E-F1EDA3E30FD4}
 		{F0B158C0-8023-4A95-BAEC-E64218FCCC32} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 		{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{D6446227-8F24-4EDC-B170-0A732C071D03} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{D7D9E386-B13E-45FA-8AE6-8FC20CB84974} = {45542CEB-0A3B-42DF-95AE-D13A673D3183}
+		{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D} = {D7D9E386-B13E-45FA-8AE6-8FC20CB84974}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}

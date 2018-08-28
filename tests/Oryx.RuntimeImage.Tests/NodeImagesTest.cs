@@ -7,14 +7,14 @@ using Oryx.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Tests
+namespace Oryx.RuntimeImage.Tests
 {
-    public class RuntimeNodeImagesTest
+    public class NodeImagesTest
     {
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
 
-        public RuntimeNodeImagesTest(ITestOutputHelper output)
+        public NodeImagesTest(ITestOutputHelper output)
         {
             _output = output;
             _dockerCli = new DockerCli();
@@ -48,7 +48,7 @@ namespace Oryx.Tests
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(
-                "node-" + nodeVersion + ":latest",
+                "oryxdevms/node-" + nodeVersion + ":latest",
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
 
