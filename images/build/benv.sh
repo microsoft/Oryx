@@ -1,152 +1,152 @@
 #!/bin/bash
-if [ -n "$BENV_DEBUG" ]; then
-  unset BENV_DEBUG
-  set -x
-fi
 
-versions() {
-  cd "$1"
-  IFS=$' \t\n'
-  for version in $(ls); do
-    LINK=$(readlink "$version")
-    if [ -z "$LINK" ]; then
-      echo "  "$version
+# Translate environment variables into script arguments by
+# reading well known names from the current environment and
+# prepending each one found to the current script's arguments.
+# Since arguments are prepended, the order in which they are
+# added is backwards so that the final ordering is correct.
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep '^python_')
+[ -n "$python" ] && set -- "python=$python" "$@"
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep '^npm_')
+[ -n "$npm" ] && set -- "npm=$npm" "$@"
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep '^node_')
+[ -n "$node" ] && set -- "node=$node" "$@"
+unset benvvar # Remove all traces of this part of the script
+
+benv-versions() {
+  local IFS=$' \r\n'
+  local version
+  for version in $(ls "$1"); do
+    local link=$(readlink "$1/$version" || echo -n)
+    if [ -z "$link" ]; then
+      echo "  $version"
     else
-      echo "  "$version -\> $LINK
+      echo "  $version -> $link"
     fi
   done
 }
 
-# Read inline environment
-while true; do
-  if [[ $1 = *"="* ]]; then
-    eval export "$1"
-    shift
-  else
-    break
+benv-resolve() {
+  local name=$(echo $1 | sed 's/=.*$//')
+  local value=$(echo $1 | sed 's/^.*=//')
+
+  # Resolve node versions
+  if [ "$name" == "node" -o "${name::5}" == "node_" ] && [ "${value::1}" != "/" ]; then
+    if [ ! -d "/opt/nodejs/$value" ]; then
+      echo >&2 benv: node version \'$value\' not found\; choose one of:
+      benv-versions >&2 /opt/nodejs
+      return 1
+    fi
+    local DIR="/opt/nodejs/$value/bin"
+    if [ "$name" == "node" ]; then
+      export PATH="$DIR:$PATH"
+      export node="$DIR/node"
+      export npm="$DIR/npm"
+      if [ -e "$DIR/npx" ]; then
+        export npx="$DIR/npx"
+      fi
+    else
+      eval export node_${name:5}=\"$DIR/node\"
+      eval export npm_${name:5}=\"$DIR/npm\"
+      if [ -e "$DIR/npx" ]; then
+        eval export npx_${name:5}=\"$DIR/npx\"
+      fi
+    fi
+    return 0
   fi
+
+  # Resolve npm versions
+  if [ "$name" == "npm" -o "${name::4}" == "npm_" ] && [ "${value::1}" != "/" ]; then
+    if [ ! -d "/opt/npm/$value" ]; then
+      echo >&2 benv: npm version \'$value\' not found\; choose one of:
+      benv-versions >&2 /opt/npm
+      return 1
+    fi
+    local DIR="/opt/npm/$value"
+    if [ "$name" == "npm" ]; then
+      export PATH="$DIR:$PATH"
+      export npm="$DIR/npm"
+      if [ -e "$DIR/npx" ]; then
+        export npx="$DIR/npx"
+      fi
+    else
+      eval export npm_${name:4}=\"$DIR/npm\"
+      if [ -e "$DIR/npx" ]; then
+        eval export npx_${name:4}=\"$DIR/npx\"
+      fi
+    fi
+    return 0
+  fi
+
+  # Resolve python versions
+  if [ "$name" == "python" -o "${name::7}" == "python_" ] && [ "${value::1}" != "/" ]; then
+    if [ ! -d "/opt/python/$value" ]; then
+      echo >&2 benv: python version \'$value\' not found\; choose one of:
+      benv-versions >&2 /opt/python
+      return 1
+    fi
+    local DIR="/opt/python/$value/bin"
+    if [ "$name" == "python" ]; then
+      export PATH="$DIR:$PATH"
+      if [ -e "$DIR/python2" ]; then
+        export python="$DIR/python2"
+      elif [ -e "$DIR/python3" ]; then
+        export python="$DIR/python3"
+      fi
+      export pip="$DIR/pip"
+      if [ -e "$DIR/virtualenv" ]; then
+        export virtualenv="$DIR/virtualenv"
+      fi
+    else
+      if [ -e "$DIR/python2" ]; then
+        eval export python_${name:7}=$DIR/python2
+      elif [ -e "$DIR/python3" ]; then
+        eval export python_${name:7}=$DIR/python3
+      fi
+      eval export pip_${name:7}="$DIR/pip"
+      if [ -e "$DIR/virtualenv" ]; then
+        eval export virtualenv_${name:7}=$DIR/virtualenv
+      fi
+    fi
+    return 0
+  fi
+
+  # Export other names without resolution
+  eval export $name\=\'${value//\'/\'\\\'\'}\'
+}
+
+# Iterate through arguments of the format "name=value"
+# and resolve each one, or exit if there is a failure.
+while [[ $1 = *"="* ]]; do
+  benv-resolve "$1" || if [ "$0" != "$BASH_SOURCE" ]; then
+    # Remove all traces of this script prior to returning
+    unset -f benv-resolve benv-versions;
+    return 1;
+  else
+    exit 1;
+  fi
+  shift
 done
 
-# Save npm versions
-_npm="$npm"
-IFS='='
-while read name value; do
-  eval _$name="$value"
-done < <(env | grep ^npm_)
-IFS=$' \t\n'
-
-# Resolve node versions
-if [ -n "$node" -a "${node::1}" != "/" ]; then
-  if [ ! -d "/opt/nodejs/$node" ]; then
-    echo >&2 benv: node version \'$node\' not found\; choose one of:
-    versions /opt/nodejs >&2
-    exit 1
+if [ "$0" != "$BASH_SOURCE" ]; then
+  # Remove all traces of this script prior to returning
+  unset -f benv-resolve benv-versions
+  if [ $# -gt 0 ]; then
+    source "$@"
   fi
-  DIR=/opt/nodejs/$node/bin
-  export PATH=$DIR:$PATH
-  export node=$DIR/node
-  export npm=$DIR/npm
-  if [ -e "$DIR/npx" ]; then
-    export npx=$DIR/npx
+else
+  if [ $# -eq 0 ]; then
+    if [ $$ -eq 1 ]; then
+      set -- bash
+    else
+      set -- env
+    fi
   fi
+  exec "$@"
 fi
-IFS='='
-while read name value; do
-  name=${name:5}
-  if [ "${value::1}" == "/" ]; then
-    continue
-  fi
-  if [ ! -d "/opt/nodejs/$value" ]; then
-    echo >&2 benv: node version \'$value\' not found\; choose one of:
-    versions /opt/nodejs >&2
-    exit 1
-  fi
-  DIR=/opt/nodejs/$value/bin
-  eval export node_$name=$DIR/node
-  eval export npm_$name=$DIR/npm
-  if [ -e "$DIR/npx" ]; then
-    eval export npx_$name=$DIR/npx
-  fi
-done < <(env | grep ^node_)
-IFS=$' \t\n'
-
-# Resolve npm versions
-if [ -n "$_npm" -a "${_npm::1}" != "/" ]; then
-  if [ ! -d "/opt/npm/$_npm" ]; then
-    echo >&2 benv: npm version \'$_npm\' not found\; choose one of:
-    versions /opt/npm >&2
-    exit 1
-  fi
-  DIR=/opt/npm/$_npm
-  export PATH=$DIR:$PATH
-  export npm=$DIR/npm
-  if [ -e "$DIR/npx" ]; then
-    export npx=$DIR/npx
-  fi
-fi
-IFS='='
-while read name value; do
-  name=${name:5}
-  if [ "${value::1}" == "/" ]; then
-    continue
-  fi
-  if [ ! -d "/opt/npm/$value" ]; then
-    echo >&2 benv: npm version \'$value\' not found\; choose one of:
-    versions /opt/npm >&2
-    exit 1
-  fi
-  DIR=/opt/npm/$value
-  eval export npm_$name=$DIR/npm
-  if [ -e "$DIR/npx" ]; then
-    eval export npx_$name=$DIR/npx
-  fi
-done < <(set | grep ^_npm_)
-IFS=$' \t\n'
-
-# Resolve python versions
-if [ -n "$python" -a "${python::1}" != "/" ]; then
-  if [ ! -d "/opt/python/$python" ]; then
-    echo >&2 benv: python version \'$python\' not found\; choose one of:
-    versions /opt/python >&2
-    exit 1
-  fi
-  DIR=/opt/python/$python/bin
-  export PATH=$DIR:$PATH
-  export pip=$DIR/pip
-  if [ -e "$DIR/python2" ]; then
-    export python=$DIR/python2
-  elif [ -e "$DIR/python3" ]; then
-    export python=$DIR/python3
-  fi
-  if [ -e "$DIR/virtualenv" ]; then
-    export virtualenv=$DIR/virtualenv
-  fi
-fi
-IFS='='
-while read name value; do
-  name=${name:7}
-  if [ "${value::1}" == "/" ]; then
-    continue
-  fi
-  if [ ! -d "/opt/python/$value" ]; then
-    echo >&2 benv: python version \'$value\' not found\; choose one of:
-    versions /opt/python >&2
-    exit 1
-  fi
-  DIR=/opt/python/$value/bin
-  eval export pip_$name=$DIR/pip
-  if [ -e "$DIR/python2" ]; then
-    eval export python_$name=$DIR/python2
-  elif [ -e "$DIR/python3" ]; then
-    eval export python_$name=$DIR/python3
-  fi
-  if [ -e "$DIR/virtualenv" ]; then
-    eval export virtualenv_$name=$DIR/virtualenv
-  fi
-done < <(env | grep ^python_)
-IFS=$' \t\n'
-
-if [ $# -eq 0 ]; then
-  set -- env
-fi
-exec "$@"

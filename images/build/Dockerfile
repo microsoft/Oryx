@@ -223,4 +223,3 @@ FROM python AS final
 COPY benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
 ENTRYPOINT [ "benv" ]
-CMD [ "bash" ]
