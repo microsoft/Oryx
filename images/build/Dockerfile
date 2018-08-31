@@ -83,7 +83,7 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 8.2.1 \
  && ~/n/bin/n -d 8.8.1 \
  && ~/n/bin/n -d 8.9.4 \
- && ~/n/bin/n -d 8.11.3 \
+ && ~/n/bin/n -d 8.11.2 \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
  && mv /usr/local/n/versions/node /opt/nodejs \
@@ -119,8 +119,8 @@ RUN set -ex \
  && ln -s 4.5 /opt/nodejs/4 \
  && ln -s 6.11.0 /opt/nodejs/6.11 \
  && ln -s 6.11 /opt/nodejs/6 \
- && ln -s 8.11.3 /opt/nodejs/lts \
- && ln -s 8.11.3 /opt/nodejs/8.11 \
+ && ln -s 8.11.2 /opt/nodejs/lts \
+ && ln -s 8.11.2 /opt/nodejs/8.11 \
  && ln -s 8.11 /opt/nodejs/8 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
