@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Build\TestAssembliesKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\build\TestAssembliesKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <AssemblyName>Microsoft.Oryx.BuildScriptGeneratorTest</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGeneratorTest</RootNamespace>
