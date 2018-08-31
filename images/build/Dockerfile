@@ -161,6 +161,7 @@ ENV PYTHON_VERSION=2.7.15
 ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
 ENV PIP_VERSION=18.0
 COPY python-build.sh /
+RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 # Build Python 3.5.6
@@ -170,6 +171,7 @@ ENV PYTHON_VERSION=3.5.6
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
 ENV PIP_VERSION=18.0
 COPY python-build.sh /
+RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 # Build Python 3.6.6
@@ -179,6 +181,7 @@ ENV PYTHON_VERSION=3.6.6
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.0
 COPY python-build.sh /
+RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 # Build Python 3.7.0
@@ -188,6 +191,7 @@ ENV PYTHON_VERSION=3.7.0
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.0
 COPY python-build.sh /
+RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 # Install Python
