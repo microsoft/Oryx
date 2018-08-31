@@ -13,12 +13,18 @@ then
     tags="$tags -t $DOCKER_BUILD_IMAGES_REPO:$BUILD_NUMBER"
 fi
 
-echo
-echo "Building build image(s)..."
-echo
-
 cd $BUILD_IMAGES_SRC_DIR
-docker build $tags .
+
+if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
+then
+	echo
+	echo "Building build image(s) with NO cache..."
+	docker build --no-cache $tags .
+else
+	echo
+	echo "Building build image(s)..."
+	docker build $tags .
+fi
 
 # Write the list of images that were built to artifacts folder
 echo
