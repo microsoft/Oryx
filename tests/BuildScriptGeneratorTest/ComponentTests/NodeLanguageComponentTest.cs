@@ -108,7 +108,7 @@ namespace BuildScriptGeneratorTest
             // Assert
             // Simple check that at least "npm install" is there
             Assert.Contains("npm install", buildScriptContent);
-            Assert.Contains($"/opt/nodejs/6.11.0", buildScriptContent);
+            Assert.Contains($"benv node=6.11.0", buildScriptContent);
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace BuildScriptGeneratorTest
             // Assert
             // Simple check that at least "npm install" is there
             Assert.Contains("npm install", buildScriptContent);
-            Assert.Contains($"/opt/npm/5.4.2", buildScriptContent);
+            Assert.Contains($"benv npm=5.4.2", buildScriptContent);
         }
 
         public string BuildScriptFromPackageJson(string packageJsonContent)
