@@ -29,7 +29,7 @@ fi
 # Write the list of images that were built to artifacts folder
 echo
 echo "Writing the list of build images built to artifacts folder..."
-mkdir -p "$ARTIFACTS_DIR"
+mkdir -p "$ARTIFACTS_DIR/images"
 
 # Write image list to artifacts file
 echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE

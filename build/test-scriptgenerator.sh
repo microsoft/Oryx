@@ -2,21 +2,10 @@
 set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-declare -r buildBuildImagesScript="$REPO_DIR/build/build-buildimages.sh"
-declare -r testProjectName="Oryx.BuildImage.Tests"
+declare -r testProjectName="BuildScriptGeneratorTest"
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-
-if [ "$1" = "skipBuildingImages" ]
-then
-    echo
-    echo "Skipping building build images as argument '$1' was passed..."
-else
-    echo
-    echo "Invoking script '$buildBuildImagesScript'..."
-    $buildBuildImagesScript "$@"
-fi
 
 echo
 echo "Building and running tests..."

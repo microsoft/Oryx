@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>Microsoft.Oryx.BuildScriptGenerator</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGenerator</RootNamespace>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <StartupObject />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>

@@ -39,7 +39,7 @@ then
 fi
 
 # Write the list of images that were built to artifacts folder
-mkdir -p "$ARTIFACTS_DIR"
+mkdir -p "$ARTIFACTS_DIR/images"
 
 clearedOutput=false
 for dockerFile in $dockerFiles; do
