@@ -52,7 +52,17 @@ for dockerFile in $dockerFiles; do
     echo
     
     cd $dockerFileDir
-    docker build -t $runtimeImageTagName .
+
+    if [ -n "$BUILD_RUNTIMEIMAGES_USING_NOCACHE" ]
+    then
+        echo "Building image '$runtimeImageTagName' with NO cache..."
+        echo
+        docker build --no-cache -t $runtimeImageTagName .
+    else
+        echo "Building image '$runtimeImageTagName'..."
+        echo
+        docker build -t $runtimeImageTagName .
+    fi
 
     if [ $clearedOutput = "false" ]
     then
