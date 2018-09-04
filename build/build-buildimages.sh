@@ -33,7 +33,11 @@ mkdir -p "$ARTIFACTS_DIR"
 
 # Write image list to artifacts file
 echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
-echo "$DOCKER_BUILD_IMAGES_REPO:$BUILD_NUMBER" >> $BUILD_IMAGES_ARTIFACTS_FILE
+
+if [ -n "$BUILD_NUMBER" ]
+then
+	echo "$DOCKER_BUILD_IMAGES_REPO:$BUILD_NUMBER" >> $BUILD_IMAGES_ARTIFACTS_FILE
+fi
 
 echo
 echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
