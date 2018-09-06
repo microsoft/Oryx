@@ -28,7 +28,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 commandToExecuteOnRun: "dotnet",
                 commandArguments: new[] { "--version" });
 
@@ -67,7 +67,7 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 new EnvironmentVariable("node", versionSentToDockerRun),
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
@@ -93,7 +93,7 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python",
                 commandArguments: new[] { "--version" });
@@ -119,7 +119,7 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python2",
                 commandArguments: new[] { "--version" });
@@ -150,7 +150,7 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python3",
                 commandArguments: new[] { "--version" });

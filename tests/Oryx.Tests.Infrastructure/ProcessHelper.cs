@@ -56,14 +56,6 @@ namespace Oryx.Tests.Infrastructure
                         "Output from standard output and error:" + outputBuilder.ToString());
                 }
 
-                if (process.ExitCode != 0)
-                {
-                    throw new InvalidOperationException(
-                        $"The process exited with a non-zero exit code '{process.ExitCode}'. " +
-                        Environment.NewLine +
-                        $"Error output: {outputBuilder.ToString()}");
-                }
-
                 return (exitCode: process.ExitCode, output: outputBuilder.ToString());
             }
 
