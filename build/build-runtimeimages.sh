@@ -46,6 +46,13 @@ for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
     runtimeImageTagName="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
+
+    tags=$runtimeImageTagName
+
+    if [ -n "$BUILD_NUMBER" ]
+    then
+        tags="$tags -t $runtimeImageTagName:$BUILD_NUMBER"
+    fi
     
     echo
     echo "Building image '$runtimeImageTagName' for docker file located at '$dockerFile'..."
@@ -57,11 +64,11 @@ for dockerFile in $dockerFiles; do
     then
         echo "Building image '$runtimeImageTagName' with NO cache..."
         echo
-        docker build --no-cache -t $runtimeImageTagName .
+        docker build --no-cache -t $tags .
     else
         echo "Building image '$runtimeImageTagName'..."
         echo
-        docker build -t $runtimeImageTagName .
+        docker build -t $tags .
     fi
 
     if [ $clearedOutput = "false" ]
@@ -74,7 +81,11 @@ for dockerFile in $dockerFiles; do
     # add new content
     echo
     echo "Updating artifacts file with the built runtime image information..."
-    echo "$runtimeImageTagName" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "$runtimeImageTagName:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+    if [ -n "$BUILD_NUMBER" ]
+    then
+    	echo "$runtimeImageTagName:$BUILD_NUMBER" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+    fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
 done
