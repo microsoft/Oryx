@@ -20,6 +20,12 @@ steps:
     scriptPath: ./build/test-buildimages.sh
     args: skipBuildingImages
 
+- task: ShellScript@2
+  displayName: 'Remove containers created by tests'
+  inputs:
+    scriptPath: ./vsts/scripts/removeContainers.sh
+    condition: always()
+
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
   inputs:

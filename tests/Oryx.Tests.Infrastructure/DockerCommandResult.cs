@@ -59,5 +59,14 @@ namespace Oryx.Tests.Infrastructure
             sb.AppendLine($"Exception: {Exception?.Message}");
             return sb.ToString();
         }
+
+        public override string ToString()
+        {
+            return $"ExitCode: {ExitCode}" +
+                Environment.NewLine +
+                $"Exception: {Exception}" +
+                Environment.NewLine +
+                $"Output: {Output}";
+        }
     }
 }

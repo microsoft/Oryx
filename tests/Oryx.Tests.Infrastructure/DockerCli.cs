@@ -83,5 +83,49 @@ namespace Oryx.Tests.Infrastructure
                 return args;
             }
         }
+
+        public DockerCommandResult RemoveContainer(string containerName, bool forceRemove)
+        {
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
+            }
+
+            var fileName = "docker";
+            var arguments = PrepareArguments();
+
+            var output = string.Empty;
+            int exitCode = -1;
+            Exception exception = null;
+            try
+            {
+                (exitCode, output) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments);
+            }
+            catch (InvalidOperationException invalidOperationException)
+            {
+                exception = invalidOperationException;
+            }
+
+            return new DockerCommandResult(
+                exitCode,
+                exception,
+                output,
+                $"{fileName} {string.Join(" ", arguments)}");
+
+            IEnumerable<string> PrepareArguments()
+            {
+                var args = new List<string>();
+                args.Add("rm");
+
+                if (forceRemove)
+                {
+                    args.Add("--force");
+                }
+
+                args.Add("--volumes");
+                args.Add(containerName);
+                return args;
+            }
+        }
     }
 }
