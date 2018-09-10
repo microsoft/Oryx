@@ -1,5 +1,7 @@
 queue:
   name: OryxLinux
+trigger:
+  - master
 steps:
 - checkout: self
   clean: true
