@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var isNodeSource = IsUsedIn(sourceRepo);
             if (isNodeSource)
             {
-                buildScriptBuilder = new NodeScriptBuilder(sourceRepo, new NodeEnvironmentVariableSettings());
+                buildScriptBuilder = new NodeScriptBuilder(sourceRepo, new NodeEnvironmentVariableSettings(), new NodeVersionProvider());
             }
             else
             {

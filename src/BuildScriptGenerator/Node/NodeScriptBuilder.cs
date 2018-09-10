@@ -35,11 +35,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return _packageJson;
         }
 
-        public NodeScriptBuilder(ISourceRepo sourceRepo, INodeSettings nodeSettings)
+        public NodeScriptBuilder(ISourceRepo sourceRepo, INodeSettings nodeSettings, INodeVersionProvider nodeVersionProvider)
         {
             _sourceRepo = sourceRepo;
             _nodeSettings = nodeSettings;
-            _versionProvider = new NodeVersionProvider();
+            _versionProvider = nodeVersionProvider;
         }
 
         public string GenerateShScript()

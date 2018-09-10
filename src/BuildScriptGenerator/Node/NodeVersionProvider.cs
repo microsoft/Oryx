@@ -3,48 +3,17 @@
 // --------------------------------------------------------------------------------------------
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    using System.Collections.Generic;
+    using System.IO;
     using SemVer;
 
     internal class NodeVersionProvider : INodeVersionProvider
     {
-        private string[] _supportedNodeVersions;
-        private string[] _supportedNpmVersions;
+        private const string NodeJsVersionsDir = "/opt/nodejs/";
+        private const string NpmJsVersionsDir = "/opt/npm/";
 
-        // TODO: dynamically get these values from the image, so we don't have
-        // to duplicate this info in multiple places
-        private static string[] SupportedNodeVersions = new string[]
-        {
-            "4.4.7",
-            "4.5.0",
-            "6.2.2",
-            "6.6.0",
-            "6.9.3",
-            "6.10.3",
-            "6.11.0",
-            "8.0.0",
-            "8.1.0",
-            "8.2.1",
-            "8.8.1",
-            "8.9.4",
-            "8.12.2",
-            "9.4.0",
-            "10.1.0",
-        };
-
-        // TODO: dynamically get these values from /opt/npm/ from our build image.
-        private static string[] SupportedNpmVersions = new string[]
-        {
-            "2.15.8",
-            "2.15.9",
-            "3.10.10",
-            "3.10.3",
-            "3.9.5",
-            "5.0.0",
-            "5.0.3",
-            "5.3.0",
-            "5.4.2",
-            "5.6.0",
-        };
+        private IEnumerable<string> _supportedNodeVersions;
+        private IEnumerable<string> _supportedNpmVersions;
 
         public NodeVersionProvider(string[] supportedNodeVersions, string[] supportedNpmVersions)
         {
@@ -52,12 +21,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _supportedNpmVersions = supportedNpmVersions;
         }
 
-        public NodeVersionProvider() : this(SupportedNodeVersions, SupportedNpmVersions)
+        public NodeVersionProvider()
         {
+            _supportedNodeVersions = GetSupportedNodeVersionsFromImage();
+            _supportedNpmVersions = GetSupportedNpmVersionsFromImage();
         }
 
         /// <summary>
-        /// <see cref="INodeVersionProvider.GetSupportedNodeVersion(string)(string)"/>
+        /// <see cref="INodeVersionProvider.GetSupportedNodeVersion(string)"/>
         /// </summary>
         public string GetSupportedNodeVersion(string versionRange)
         {
@@ -88,6 +59,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 return null;
             }
+        }
+
+        private IEnumerable<string> GetSupportedNodeVersionsFromImage()
+        {
+            const string versionsDir = NodeJsVersionsDir;
+            var versions = GetVersionsFromDirectory(versionsDir);
+
+            return versions;
+        }
+
+        private IEnumerable<string> GetSupportedNpmVersionsFromImage()
+        {
+            const string versionsDir = NpmJsVersionsDir;
+            List<string> versions = GetVersionsFromDirectory(versionsDir);
+
+            return versions;
+        }
+
+        private static List<string> GetVersionsFromDirectory(string versionsDir)
+        {
+            var listOptions = new EnumerationOptions()
+            {
+                RecurseSubdirectories = false,
+                IgnoreInaccessible = false,
+            };
+            var versions = new List<string>();
+
+            var nodeJsVersionDirs = System.IO.Directory.EnumerateDirectories(versionsDir, "*.*.*", listOptions);
+            foreach (var vDir in nodeJsVersionDirs)
+            {
+                var versionNumber = vDir.Substring(versionsDir.Length);
+                versions.Add(vDir);
+            }
+
+            return versions;
         }
     }
 }
