@@ -56,6 +56,14 @@ namespace Oryx.Tests.Infrastructure
                         "Output from standard output and error:" + outputBuilder.ToString());
                 }
 
+                // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
+                // When standard output has been redirected to asynchronous event handlers, it is possible that output
+                // processing will not have completed when this method returns. To ensure that asynchronous
+                // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
+                // receiving a true from this overload
+
+                process.WaitForExit();
+
                 return (exitCode: process.ExitCode, output: outputBuilder.ToString());
             }
 
