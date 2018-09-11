@@ -5,30 +5,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.SourceRepo
 {
     using System;
     using System.IO;
+    using Microsoft.Extensions.Options;
 
     public class LocalSourceRepo : ISourceRepo
     {
-        public string RootPath { get; private set; }
+        private readonly BuildScriptGeneratorOptions _options;
 
-        public LocalSourceRepo(string _sourcePath)
+        public LocalSourceRepo(IOptions<BuildScriptGeneratorOptions> buildScriptGeneratorOptions)
         {
-            if (string.IsNullOrEmpty(_sourcePath) || !Directory.Exists(_sourcePath))
+            _options = buildScriptGeneratorOptions.Value;
+
+            if (string.IsNullOrEmpty(_options.SourcePath) || !Directory.Exists(_options.SourcePath))
             {
-                throw new ArgumentException($"{nameof(_sourcePath)} must be a valid directory in the file system.");
+                throw new ArgumentException(
+                    $"'{nameof(_options.SourcePath)}' must be a valid directory in the file system.");
             }
-            RootPath = _sourcePath;
+            RootPath = _options.SourcePath;
         }
 
-        public bool FileExists(params string[] pathToFile)
+        public string RootPath { get; }
+
+        public bool FileExists(params string[] relativePathToFile)
         {
-            var filePathInRepo = Path.Combine(pathToFile);
+            var filePathInRepo = Path.Combine(relativePathToFile);
             var path = Path.Combine(RootPath, filePathInRepo);
             return File.Exists(path);
         }
 
-        public string ReadFile(string path)
+        public string ReadFile(string relativePath)
         {
-            var filePath = Path.Combine(RootPath, path);
+            var filePath = Path.Combine(RootPath, relativePath);
             return File.ReadAllText(filePath);
         }
     }

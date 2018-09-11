@@ -5,10 +5,14 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal interface INodeVersionProvider
+    public class NodeScriptGeneratorOptions
     {
-        IEnumerable<string> SupportedNodeVersions { get; }
+        public string NodeJsDefaultVersion { get; set; }
 
-        IEnumerable<string> SupportedNpmVersions { get; }
+        public string NpmDefaultVersion { get; set; }
+
+        public IEnumerable<string> SupportedNodeVersions { get; set; }
+
+        public IEnumerable<string> SupportedNpmVersions { get; set; }
     }
 }

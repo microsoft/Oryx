@@ -1,12 +1,13 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-namespace BuildScriptGeneratorTest.UnitTests
+namespace BuildScriptGenerator.Tests.UnitTests
 {
+    using Microsoft.Extensions.Options;
     using Microsoft.Oryx.BuildScriptGenerator.Node;
     using Xunit;
 
-    public class NodeVersionProviderTests
+    public class NodeVersionResolverTest
     {
         [Fact]
         public void SimpleSupportedNodeVersionSpecified()
@@ -14,10 +15,10 @@ namespace BuildScriptGeneratorTest.UnitTests
             // Arrange
             const string version = "1.2.3";
             var supportedVersions = new[] { version };
-            var nodeVersionProvider = new NodeVersionProvider(supportedVersions, null);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedVersions, supportedNpmVersions: null);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNodeVersion(version);
+            var returnedVersion = nodeVersionResolver.GetSupportedNodeVersion(version);
 
             // Assert;
             Assert.Equal(version, returnedVersion);
@@ -29,10 +30,10 @@ namespace BuildScriptGeneratorTest.UnitTests
             // Arrange
             const string supportedVersion = "1.2.3";
             var supportedVersions = new[] { supportedVersion };
-            var nodeVersionProvider = new NodeVersionProvider(supportedVersions, null);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedVersions, supportedNpmVersions: null);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNodeVersion("1.2.4");
+            var returnedVersion = nodeVersionResolver.GetSupportedNodeVersion("1.2.4");
 
             // Assert;
             Assert.Null(returnedVersion);
@@ -43,10 +44,10 @@ namespace BuildScriptGeneratorTest.UnitTests
         {
             // Arrange
             var supportedVersions = new[] { "1.2.3", "1.2.4" };
-            var nodeVersionProvider = new NodeVersionProvider(supportedVersions, null);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedVersions, supportedNpmVersions: null);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNodeVersion(">=1.2.3");
+            var returnedVersion = nodeVersionResolver.GetSupportedNodeVersion(">=1.2.3");
 
             // Assert;
             Assert.Equal("1.2.4", returnedVersion);
@@ -57,10 +58,10 @@ namespace BuildScriptGeneratorTest.UnitTests
         {
             // Arrange
             var supportedVersions = new[] { "1.2.3", "1.2.4" };
-            var nodeVersionProvider = new NodeVersionProvider(supportedVersions, null);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedVersions, supportedNpmVersions: null);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNodeVersion("=1.2.3");
+            var returnedVersion = nodeVersionResolver.GetSupportedNodeVersion("=1.2.3");
 
             // Assert;
             Assert.Equal("1.2.3", returnedVersion);
@@ -72,10 +73,10 @@ namespace BuildScriptGeneratorTest.UnitTests
             // Arrange
             const string version = "1.2.3";
             var supportedVersions = new[] { version };
-            var nodeVersionProvider = new NodeVersionProvider(null, supportedVersions);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedNodeVersions: null, supportedVersions);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNpmVersion(version);
+            var returnedVersion = nodeVersionResolver.GetSupportedNpmVersion(version);
 
             // Assert;
             Assert.Equal(version, returnedVersion);
@@ -87,10 +88,10 @@ namespace BuildScriptGeneratorTest.UnitTests
             // Arrange
             const string supportedVersion = "1.2.3";
             var supportedVersions = new[] { supportedVersion };
-            var nodeVersionProvider = new NodeVersionProvider(null, supportedVersions);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedNodeVersions: null, supportedVersions);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNpmVersion("1.2.4");
+            var returnedVersion = nodeVersionResolver.GetSupportedNpmVersion("1.2.4");
 
             // Assert;
             Assert.Null(returnedVersion);
@@ -101,10 +102,10 @@ namespace BuildScriptGeneratorTest.UnitTests
         {
             // Arrange
             var supportedVersions = new[] { "1.2.3", "1.2.4" };
-            var nodeVersionProvider = new NodeVersionProvider(null, supportedVersions);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedNodeVersions: null, supportedVersions);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNpmVersion(">=1.2.3");
+            var returnedVersion = nodeVersionResolver.GetSupportedNpmVersion(">=1.2.3");
 
             // Assert;
             Assert.Equal("1.2.4", returnedVersion);
@@ -115,13 +116,24 @@ namespace BuildScriptGeneratorTest.UnitTests
         {
             // Arrange
             var supportedVersions = new[] { "1.2.3", "1.2.4" };
-            var nodeVersionProvider = new NodeVersionProvider(null, supportedVersions);
+            var nodeVersionResolver = CreateNodeVersionResolver(supportedNodeVersions: null, supportedVersions);
 
             // Act
-            var returnedVersion = nodeVersionProvider.GetSupportedNpmVersion("=1.2.3");
+            var returnedVersion = nodeVersionResolver.GetSupportedNpmVersion("=1.2.3");
 
             // Assert;
             Assert.Equal("1.2.3", returnedVersion);
+        }
+
+        private INodeVersionResolver CreateNodeVersionResolver(
+            string[] supportedNodeVersions,
+            string[] supportedNpmVersions)
+        {
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            nodeScriptGeneratorOptions.SupportedNodeVersions = supportedNodeVersions;
+            nodeScriptGeneratorOptions.SupportedNpmVersions = supportedNpmVersions;
+
+            return new NodeVersionResolver(Options.Create(nodeScriptGeneratorOptions));
         }
     }
 }

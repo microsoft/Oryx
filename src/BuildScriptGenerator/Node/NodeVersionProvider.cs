@@ -5,59 +5,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     using System.Collections.Generic;
     using System.IO;
-    using SemVer;
+    using System.Linq;
 
     internal class NodeVersionProvider : INodeVersionProvider
     {
-        private const string NodeJsVersionsDir = "/opt/nodejs/";
-        private const string NpmJsVersionsDir = "/opt/npm/";
-
         private IEnumerable<string> _supportedNodeVersions;
         private IEnumerable<string> _supportedNpmVersions;
 
-        public NodeVersionProvider(string[] supportedNodeVersions, string[] supportedNpmVersions)
-        {
-            _supportedNodeVersions = supportedNodeVersions;
-            _supportedNpmVersions = supportedNpmVersions;
-        }
+        internal const string NodeJsVersionsDir = "/opt/nodejs/";
+        internal const string NpmJsVersionsDir = "/opt/npm/";
 
-        public NodeVersionProvider()
+        public IEnumerable<string> SupportedNodeVersions
         {
-            _supportedNodeVersions = GetSupportedNodeVersionsFromImage();
-            _supportedNpmVersions = GetSupportedNpmVersionsFromImage();
-        }
-
-        /// <summary>
-        /// <see cref="INodeVersionProvider.GetSupportedNodeVersion(string)"/>
-        /// </summary>
-        public string GetSupportedNodeVersion(string versionRange)
-        {
-            try
+            get
             {
-                var range = new Range(versionRange);
-                var satisfying = range.MaxSatisfying(_supportedNodeVersions);
-                return satisfying;
-            }
-            catch
-            {
-                return null;
+                if (_supportedNodeVersions == null)
+                {
+                    _supportedNodeVersions = GetSupportedNodeVersionsFromImage();
+                }
+                return _supportedNodeVersions;
             }
         }
 
-        /// <summary>
-        /// <see cref="INodeVersionProvider.GetSupportedNpmVersion(string)"/>
-        /// </summary>
-        public string GetSupportedNpmVersion(string versionRange)
+        public IEnumerable<string> SupportedNpmVersions
         {
-            try
+            get
             {
-                var range = new Range(versionRange);
-                var satisfying = range.MaxSatisfying(_supportedNpmVersions);
-                return satisfying;
-            }
-            catch
-            {
-                return null;
+                if (_supportedNpmVersions == null)
+                {
+                    _supportedNpmVersions = GetSupportedNpmVersionsFromImage();
+                }
+                return _supportedNpmVersions;
             }
         }
 
@@ -65,15 +43,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             const string versionsDir = NodeJsVersionsDir;
             var versions = GetVersionsFromDirectory(versionsDir);
-
             return versions;
         }
 
         private IEnumerable<string> GetSupportedNpmVersionsFromImage()
         {
             const string versionsDir = NpmJsVersionsDir;
-            List<string> versions = GetVersionsFromDirectory(versionsDir);
-
+            var versions = GetVersionsFromDirectory(versionsDir);
             return versions;
         }
 
@@ -86,11 +62,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
             var versions = new List<string>();
 
-            var nodeJsVersionDirs = System.IO.Directory.EnumerateDirectories(versionsDir, "*.*.*", listOptions);
-            foreach (var vDir in nodeJsVersionDirs)
+            // Since the directories contain folders (or links) like 'lts' and 'latest', try getting
+            // proper version using wildcards.
+            var versionDirectories = Directory.EnumerateDirectories(versionsDir, "*.*.*", listOptions)
+                .Select(versionDir => new DirectoryInfo(versionDir));
+            foreach (var versionDir in versionDirectories)
             {
-                var versionNumber = vDir.Substring(versionsDir.Length);
-                versions.Add(vDir);
+                versions.Add(versionDir.Name);
             }
 
             return versions;

@@ -5,19 +5,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     using System;
 
-    /// <summary>
+    //TODO: CHECK IF WE WANT TO USE https://www.nuget.org/packages/Microsoft.Extensions.CommandLineUtils/ 
+    
+        /// <summary>
     /// Runtime options that can be passed to the command line application.
     /// </summary>
-    internal class Options
+    internal class CommandLineArgs
     {
         private const string LanguageOptionName = "language";
+
         public string SourceCodeFolder { get; private set; }
 
         public string TargetScriptPath { get; private set; }
 
         public string Language { get; private set; }
 
-        internal Options(string[] args)
+        internal CommandLineArgs(string[] args)
         {
             if (args.Length < 2)
             {

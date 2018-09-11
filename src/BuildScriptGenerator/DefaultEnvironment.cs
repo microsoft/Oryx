@@ -1,16 +1,15 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public interface IBuildScriptBuilder
+    internal class DefaultEnvironment : IEnvironment
     {
-        /// <summary>
-        /// Generates an SH script that builds the source code in a path.
-        /// </summary>
-        /// <returns>
-        /// The build script.
-        /// </returns>
-        string GenerateShScript();
+        public string GetEnvironmentVariable(string name)
+        {
+            return Environment.GetEnvironmentVariable(name);
+        }
     }
 }

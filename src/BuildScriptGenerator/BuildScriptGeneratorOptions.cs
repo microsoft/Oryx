@@ -1,14 +1,14 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-using System.Collections.Generic;
-
-namespace Microsoft.Oryx.BuildScriptGenerator.Node
+namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal interface INodeVersionProvider
+    public class BuildScriptGeneratorOptions
     {
-        IEnumerable<string> SupportedNodeVersions { get; }
+        public string SourcePath { get; set; }
 
-        IEnumerable<string> SupportedNpmVersions { get; }
+        public string Language { get; set; }
+
+        public string TargetScriptPath { get; set; }
     }
 }

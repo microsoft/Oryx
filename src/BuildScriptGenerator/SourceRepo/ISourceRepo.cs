@@ -16,15 +16,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.SourceRepo
         /// <summary>
         /// Check whether a file exists in the source repo.
         /// </summary>
-        /// <param name="pathToFile">The path to the file inside the source repo.</param>
+        /// <param name="relativePathToFile">The path to the file inside the source repo.</param>
         /// <returns>true if the file exists, false otherwise.</returns>
-        bool FileExists(params string[] pathToFile);
+        bool FileExists(params string[] relativePathToFile);
 
         /// <summary>
         /// Reads a file from the source repo.
         /// </summary>
-        /// <param name="path">Path to the file inside the repo.</param>
+        /// <param name="relativePath">Path to the file inside the repo.</param>
         /// <returns>The content of the file.</returns>
-        string ReadFile(string path);
+        string ReadFile(string relativePath);
     }
 }
