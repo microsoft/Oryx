@@ -32,7 +32,7 @@ namespace Oryx.Tests.Infrastructure
         {
             get
             {
-                if (ExitCode != 0 && Exception != null)
+                if (ExitCode != 0 || Exception != null)
                 {
                     return false;
                 }
