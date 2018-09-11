@@ -9,6 +9,7 @@ namespace BuildScriptGenerator.Tests
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Microsoft.Oryx.BuildScriptGenerator;
+    using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
     using Microsoft.Oryx.BuildScriptGenerator.Node;
     using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
     using Xunit;
@@ -16,7 +17,7 @@ namespace BuildScriptGenerator.Tests
     /// <summary>
     /// Component tests for NodeJs support.
     /// </summary>
-    public class NodeScripGeneratorTest
+    public class NodeScriptGeneratorTest
     {
         private const string SimplePackageJson = @"{
           ""name"": ""mynodeapp"",
@@ -57,6 +58,35 @@ namespace BuildScriptGenerator.Tests
           ""author"": ""Dev"",
           ""license"": ""ISC"",
           ""engines"" : { ""npm"" : ""5.4.2"" }
+        }";
+
+        private const string UnsupportedNodeJSVersion = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""description"": ""test app"",
+          ""main"": ""server.js"",
+          ""scripts"": {
+            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
+
+            ""start"": ""node server.js""
+          },
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""engines"" : { ""node"" : ""20.20.20"" }
+        }";
+
+        private const string UnsupportedNpmVersion = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""description"": ""test app"",
+          ""main"": ""server.js"",
+          ""scripts"": {
+            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
+            ""start"": ""node server.js""
+          },
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""engines"" : { ""npm"" : ""20.20.20"" }
         }";
 
         private const string MalformedPackageJson = @"{
@@ -143,6 +173,38 @@ namespace BuildScriptGenerator.Tests
             // Simple check that at least "npm install" is there
             Assert.Contains("npm install", generatedScriptContent);
             Assert.Contains($"benv npm=5.4.2", generatedScriptContent);
+        }
+
+        [Fact]
+        public void ShouldNotGenerateScript_ForUnsupportedNodeVersion()
+
+        {
+            // Arrange
+            var repo = GetSourceRepo(UnsupportedNodeJSVersion);
+            var scriptGenerator = GetScriptGenerator(repo);
+
+            // Act
+            var exception = Assert.Throws<UnsupportedNodeVersionException>(() => scriptGenerator.GenerateShScript());
+
+            // Assert
+            // Simple check that the message contains the unsupported version.
+            Assert.Contains("20.20.20", exception.Message);
+        }
+
+        [Fact]
+        public void ShouldNotGenerateScript_ForUnsupportedNpmVersion()
+
+        {
+            // Arrange
+            var repo = GetSourceRepo(UnsupportedNpmVersion);
+            var scriptGenerator = GetScriptGenerator(repo);
+
+            // Act
+            var exception = Assert.Throws<UnsupportedNpmVersionException>(() => scriptGenerator.GenerateShScript());
+
+            // Assert
+            // Simple check that the message contains the unsupported version.
+            Assert.Contains("20.20.20", exception.Message);
         }
 
         [Fact]

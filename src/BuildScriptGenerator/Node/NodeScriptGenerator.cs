@@ -5,6 +5,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     using System.Linq;
     using System.Text;
+    using BuildScriptGenerator.Exceptions;
     using BuildScriptGenerator.SourceRepo;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -22,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private const string PackageFileName = "package.json";
         private static readonly string[] TypicalNodeDetectionFiles = new[] { "server.js", "app.js" };
         private static readonly string[] LanguageNames = new[] { "node", "nodejs" };
+
         private static readonly string[] IisStartupFiles = new[]
         {
             "default.htm",
@@ -167,6 +169,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (!string.IsNullOrWhiteSpace(nodeVersionRange))
             {
                 nodeVersion = _versionResolver.GetSupportedNodeVersion(nodeVersionRange);
+                if (string.IsNullOrWhiteSpace(nodeVersion))
+                {
+                    throw new UnsupportedNodeVersionException(nodeVersionRange);
+                }
             }
             return nodeVersion;
         }
@@ -183,6 +189,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
                 npmVersion = _versionResolver.GetSupportedNpmVersion(npmVersionRange);
+                if (string.IsNullOrWhiteSpace(npmVersion))
+                {
+                    throw new UnsupportedNpmVersionException(npmVersionRange);
+                }
             }
             return npmVersion;
         }

@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------
 using System;
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.BuildScriptGenerator.Exceptions
 {
     /// <summary>
     /// Exception to identify user errors, as opposed to system ones.
     /// </summary>
-    internal class InvalidUsageException : Exception
+    public class InvalidUsageException : Exception
     {
         public InvalidUsageException(string message) : base(message)
         { }

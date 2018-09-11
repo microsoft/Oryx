@@ -10,6 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.Oryx.BuildScriptGenerator;
+    using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
     internal class Program
     {
@@ -60,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             finally
             {
-                // In general it is a good practice to dispose services before this program is 
+                // In general it is a good practice to dispose services before this program is
                 // exiting, but there's one more reason we would need to do this i.e that the Console
                 // logger doesn't write to the console immediately. This is because it runs on a separate
                 // thread where it queues up messages and writes the console when the queue reaches a certain

@@ -4,6 +4,7 @@
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     using System;
+    using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
     //TODO: CHECK IF WE WANT TO USE https://www.nuget.org/packages/Microsoft.Extensions.CommandLineUtils/ 
     
