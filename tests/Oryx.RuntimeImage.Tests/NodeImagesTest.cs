@@ -21,34 +21,28 @@ namespace Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("4.4.7")]
-        [InlineData("4.5.0")]
-        [InlineData("4.8.3")]
-        [InlineData("4.8.4")]
-        [InlineData("6.2.2")]
-        [InlineData("6.6.0")]
-        [InlineData("6.9.3")]
-        [InlineData("6.10.3")]
-        [InlineData("6.11.0")]
-        [InlineData("6.11.1")]
-        [InlineData("6.11.5")]
-        [InlineData("8.0.0")]
-        [InlineData("8.1.2")]
-        [InlineData("8.1.3")]
-        [InlineData("8.1.4")]
-        [InlineData("8.2.1")]
-        [InlineData("8.8.0")]
-        [InlineData("8.8.1")]
-        [InlineData("8.9.4")]
-        [InlineData("8.11.2")]
-        [InlineData("9.4.0")]
-        [InlineData("10.1.0")]
-        public void NodeVersionMatchesImageName(string nodeVersion)
+        [InlineData("4.4", "4.4.7")]
+        [InlineData("4.5", "4.5.0")]
+        [InlineData("4.8", "4.8.7")]
+        [InlineData("6.2", "6.2.2")]
+        [InlineData("6.6", "6.6.0")]
+        [InlineData("6.9", "6.9.5")]
+        [InlineData("6.10", "6.10.3")]
+        [InlineData("6.11", "6.11.5")]
+        [InlineData("8.0", "8.0.0")]
+        [InlineData("8.1", "8.1.4")]
+        [InlineData("8.2", "8.2.1")]
+        [InlineData("8.8", "8.8.1")]
+        [InlineData("8.9", "8.9.4")]
+        [InlineData("8.11", "8.11.4")]
+        [InlineData("9.4", "9.4.0")]
+        [InlineData("10.1", "10.1.0")]
+        public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(
-                "oryxdevms/node-" + nodeVersion + ":latest",
+                "oryxdevms/node-" + nodeTag + ":latest",
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
 
