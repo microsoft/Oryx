@@ -1,7 +1,14 @@
 queue:
   name: OryxLinux
+
 trigger:
-  - master
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - images/runtime
+
 steps:
 - checkout: self
   clean: true
