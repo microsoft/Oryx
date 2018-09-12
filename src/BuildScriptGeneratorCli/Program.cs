@@ -4,7 +4,9 @@
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
     using System.IO;
+    using McMaster.Extensions.CommandLineUtils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -14,14 +16,30 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
     internal class Program
     {
-        private static int Main(string[] args)
+        [Argument(0, Description = "The path to the source code directory.")]
+        [Required]
+        public string SourceCodeFolder { get; private set; }
+
+        [Argument(1, Description = "The path to the build script to be generated.")]
+        [Required]
+        public string TargetScriptPath { get; private set; }
+
+        [Option(
+            CommandOptionType.SingleValue,
+            Description = "The programming language being used in the provided source code directory.",
+            ShortName = "l",
+            LongName = "language")]
+        public string Language { get; private set; }
+
+        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+
+        private int OnExecute()
         {
             IServiceProvider serviceProvider = null;
             ILogger logger = null;
             try
             {
-                var commandLineArgs = new CommandLineArgs(args);
-                serviceProvider = GetServiceProvider(commandLineArgs);
+                serviceProvider = GetServiceProvider();
                 var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
                 logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
@@ -46,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var targetScriptPath = Path.GetFullPath(options.TargetScriptPath);
                 File.WriteAllText(targetScriptPath, scriptContent);
 
-                Console.WriteLine($"Script was generated successfully at '{commandLineArgs.TargetScriptPath}'.");
+                Console.WriteLine($"Script was generated successfully at '{this.TargetScriptPath}'.");
             }
             catch (InvalidUsageException ex)
             {
@@ -75,7 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return 0;
         }
 
-        private static IServiceProvider GetServiceProvider(CommandLineArgs commandLineArgs)
+        private IServiceProvider GetServiceProvider()
         {
             var configuration = GetConfiguration();
 
@@ -92,9 +110,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             services.Configure<BuildScriptGeneratorOptions>(options =>
             {
-                options.SourcePath = Path.GetFullPath(commandLineArgs.SourceCodeFolder);
-                options.Language = commandLineArgs.Language;
-                options.TargetScriptPath = commandLineArgs.TargetScriptPath;
+                options.SourcePath = Path.GetFullPath(this.SourceCodeFolder);
+                options.Language = this.Language;
+                options.TargetScriptPath = this.TargetScriptPath;
             });
 
             return services.BuildServiceProvider();
@@ -108,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile(path: "appsettings.json", optional: true)
                 .AddEnvironmentVariables();
 
             return configurationBuilder.Build();

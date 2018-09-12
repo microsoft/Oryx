@@ -31,7 +31,7 @@ namespace Oryx.BuildImage.Tests
             // Assert
             RunAsserts(() =>
             {
-                Assert.Contains("Usage:", result.Output);
+                Assert.Contains("field is required.", result.Output);
             },
             result.GetDebugInfo());
         }
