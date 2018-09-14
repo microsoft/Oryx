@@ -4,26 +4,19 @@
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
     using System.IO;
     using McMaster.Extensions.CommandLineUtils;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.Oryx.BuildScriptGenerator;
     using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+    using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 
+    [Command(Description = "Generates build scripts for multiple languages.")]
+    [Subcommand("languages", typeof(LanguagesCommand))]
     internal class Program
     {
-        [Argument(0, Description = "The path to the source code directory.")]
-        [Required]
-        public string SourceCodeFolder { get; private set; }
-
-        [Argument(1, Description = "The path to the build script to be generated.")]
-        [Required]
-        public string TargetScriptPath { get; private set; }
-
         [Option(
             CommandOptionType.SingleValue,
             Description = "The programming language being used in the provided source code directory.",
@@ -31,50 +24,65 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             LongName = "language")]
         public string Language { get; private set; }
 
+        [Argument(0, Description = "The path to the source code directory.")]
+        public string SourceCodeFolder { get; private set; }
+
+        [Argument(1, Description = "The path to the build script to be generated.")]
+        public string TargetScriptPath { get; private set; }
+
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
-        private int OnExecute()
+        private int OnExecute(CommandLineApplication app, IConsole console)
         {
+            if (string.IsNullOrEmpty(SourceCodeFolder) || string.IsNullOrEmpty(TargetScriptPath))
+            {
+                app.ShowHelp();
+                return 1;
+            }
+
             IServiceProvider serviceProvider = null;
             ILogger logger = null;
             try
             {
-                serviceProvider = GetServiceProvider();
+                serviceProvider = new ServiceProviderBuilder()
+                    .WithScriptGenerationOptions(this)
+                    .Build();
+
                 var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
                 logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
                 if (!Directory.Exists(options.SourcePath))
                 {
-                    Console.WriteLine($"Couldn't find directory '{options.SourcePath}'.");
+                    console.WriteLine($"Couldn't find directory '{options.SourcePath}'.");
                     return 1;
                 }
 
                 var scriptGeneratorProvider = serviceProvider.GetRequiredService<IScriptGeneratorProvider>();
-
-                var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator();
+                var sourceRepo = serviceProvider.GetRequiredService<ISourceRepo>();
+                var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator(sourceRepo, Language);
                 if (scriptGenerator == null)
                 {
-                    Console.WriteLine(
+                    console.WriteLine(
                         "Could not find a script generator which can generate a script for " +
                         $"the code in '{options.SourcePath}'.");
                     return 1;
                 }
 
-                var scriptContent = scriptGenerator.GenerateShScript();
+                var scriptContent = scriptGenerator.GenerateBashScript(sourceRepo);
                 var targetScriptPath = Path.GetFullPath(options.TargetScriptPath);
                 File.WriteAllText(targetScriptPath, scriptContent);
 
-                Console.WriteLine($"Script was generated successfully at '{this.TargetScriptPath}'.");
+                console.WriteLine($"Script was generated successfully at '{this.TargetScriptPath}'.");
             }
             catch (InvalidUsageException ex)
             {
-                Console.WriteLine(ex.Message);
+                console.WriteLine(ex.Message);
                 return 1;
             }
             catch (Exception ex)
             {
                 logger?.LogError($"An error occurred while running this tool:" + Environment.NewLine + ex.ToString());
-                Console.WriteLine("Oops... An unexpected error has occurred.");
+                console.WriteLine("Oops... An unexpected error has occurred.");
                 return 1;
             }
             finally
@@ -93,43 +101,32 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return 0;
         }
 
-        private IServiceProvider GetServiceProvider()
+        [Command("languages", Description = "Show the list of supported languages.")]
+        private class LanguagesCommand
         {
-            var configuration = GetConfiguration();
-
-            IServiceCollection services = new ServiceCollection();
-            services
-                .AddBuildScriptGeneratorServices()
-                .AddLogging(loggingBuilder =>
-                {
-                    loggingBuilder
-                    .AddConfiguration(configuration.GetSection("Logging"))
-                    .AddConsole()
-                    .AddDebug();
-                });
-
-            services.Configure<BuildScriptGeneratorOptions>(options =>
+            private int OnExecute(CommandLineApplication app, IConsole console)
             {
-                options.SourcePath = Path.GetFullPath(this.SourceCodeFolder);
-                options.Language = this.Language;
-                options.TargetScriptPath = this.TargetScriptPath;
-            });
+                var serviceProvider = new ServiceProviderBuilder()
+                    .Build();
+                var scriptGeneratorProvider = serviceProvider.GetRequiredService<IScriptGeneratorProvider>();
+                foreach (var language in scriptGeneratorProvider.GetScriptGenerators())
+                {
+                    if (!string.IsNullOrWhiteSpace(language.LanguageName))
+                    {
+                        if (language.LanguageVersions != null)
+                        {
+                            var versions = string.Join(", ", language.LanguageVersions);
+                            console.WriteLine($"{language.LanguageName}: {versions}");
+                        }
+                        else
+                        {
+                            console.WriteLine($"{language.LanguageName}");
+                        }
+                    }
+                }
 
-            return services.BuildServiceProvider();
-        }
-
-        private static IConfiguration GetConfiguration()
-        {
-            // The order of 'Add' is important here.
-            // The values provided at commandline override any values provided in environment variables
-            // and values provided in environment variables override any values provided in appsettings.json.
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(path: "appsettings.json", optional: true)
-                .AddEnvironmentVariables();
-
-            return configurationBuilder.Build();
+                return 0;
+            }
         }
     }
 }

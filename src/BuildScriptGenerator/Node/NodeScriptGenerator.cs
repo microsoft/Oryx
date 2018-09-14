@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Text;
     using BuildScriptGenerator.Exceptions;
     using BuildScriptGenerator.SourceRepo;
@@ -13,16 +13,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
     internal class NodeScriptGenerator : IScriptGenerator
     {
-        private INodeVersionResolver _versionResolver;
-        private readonly ILogger<NodeScriptGenerator> _logger;
-        private ISourceRepo _sourceRepo;
-        private readonly BuildScriptGeneratorOptions _buildScriptGeneratorOptions;
-        private readonly NodeScriptGeneratorOptions _options;
-        private dynamic _packageJson;
-
+        private const string NodeJsName = "nodejs";
         private const string PackageFileName = "package.json";
-        private static readonly string[] TypicalNodeDetectionFiles = new[] { "server.js", "app.js" };
-        private static readonly string[] LanguageNames = new[] { "node", "nodejs" };
 
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -36,31 +28,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             "index.php"
         };
 
+        private static readonly string[] TypicalNodeDetectionFiles = new[] { "server.js", "app.js" };
+        private readonly ILogger<NodeScriptGenerator> _logger;
+        private readonly NodeScriptGeneratorOptions _options;
+        private INodeVersionResolver _versionResolver;
+
         public NodeScriptGenerator(
-            ISourceRepo sourceRepo,
-            IOptions<BuildScriptGeneratorOptions> buildScriptGeneratorOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionResolver nodeVersionResolver,
             ILogger<NodeScriptGenerator> logger)
         {
-            _sourceRepo = sourceRepo;
-            _buildScriptGeneratorOptions = buildScriptGeneratorOptions.Value;
             _options = nodeScriptGeneratorOptions.Value;
             _versionResolver = nodeVersionResolver;
             _logger = logger;
         }
 
-        public bool CanGenerateShScript()
+        public string LanguageName => NodeJsName;
+
+        public IEnumerable<string> LanguageVersions => _options.SupportedNodeVersions;
+
+        public bool CanGenerateScript(ISourceRepo sourceRepo, string language)
         {
-            if (!IsSupportedLanguage())
+            var unsupportedProvidedLanguage = !string.IsNullOrWhiteSpace(language) &&
+                string.Compare(NodeJsName, language, ignoreCase: true) != 0;
+
+            if (unsupportedProvidedLanguage)
             {
-                _logger.LogDebug(
-                    $"Does not support the language with name '{_buildScriptGeneratorOptions.Language}'." +
-                    $"Supported language names are: {string.Join(", ", LanguageNames)}");
+                _logger.LogInformation(
+                    $"Does not support the language with name '{language}'." +
+                    $"Supported language name is '{LanguageName}'.");
                 return false;
             }
 
-            if (_sourceRepo.FileExists(PackageFileName))
+            if (sourceRepo.FileExists(PackageFileName))
             {
                 return true;
             }
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var mightBeNode = false;
             foreach (var typicalNodeFile in TypicalNodeDetectionFiles)
             {
-                if (_sourceRepo.FileExists(typicalNodeFile))
+                if (sourceRepo.FileExists(typicalNodeFile))
                 {
                     mightBeNode = true;
                     break;
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 // If so, then it is not a node.js web site otherwise it is
                 foreach (var iisStartupFile in IisStartupFiles)
                 {
-                    if (_sourceRepo.FileExists(iisStartupFile))
+                    if (sourceRepo.FileExists(iisStartupFile))
                     {
                         return false;
                     }
@@ -93,12 +93,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return false;
         }
 
-        public string GenerateShScript()
+        public string GenerateBashScript(ISourceRepo sourceRepo)
         {
             var scriptBuilder = new StringBuilder();
 
-            var nodeVersion = DetectNodeVersion();
-            var npmVersion = DetectNpmVersion();
+            var packageJson = GetPackageJsonObject(sourceRepo);
+            var nodeVersion = DetectNodeVersion(packageJson);
+            var npmVersion = DetectNpmVersion(packageJson);
 
             scriptBuilder.AppendLine("#!/bin/bash");
 
@@ -114,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             scriptBuilder.AppendLine();
 
             scriptBuilder.AppendLine("# Install npm packages");
-            scriptBuilder.AppendLine($"cd \"{_sourceRepo.RootPath}\"");
+            scriptBuilder.AppendLine($"cd \"{sourceRepo.RootPath}\"");
             var installCommand = "eval npm install --production";
             scriptBuilder.AppendLine($"echo \"Running {installCommand}\"");
             scriptBuilder.AppendLine(installCommand);
@@ -122,44 +123,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return scriptBuilder.ToString();
         }
 
-        private bool IsSupportedLanguage()
+        private string DetectNodeVersion(dynamic packageJson)
         {
-            if (string.IsNullOrEmpty(_buildScriptGeneratorOptions.Language))
-            {
-                return true;
-            }
-            else
-            {
-                var isSupportedLanguage = LanguageNames.Any(
-                    lang => string.Compare(lang, _buildScriptGeneratorOptions.Language, ignoreCase: true) == 0);
-                return isSupportedLanguage;
-            }
-        }
-
-        private dynamic GetPackageJsonObject()
-        {
-            if (_packageJson == null)
-            {
-                try
-                {
-                    var jsonContent = _sourceRepo.ReadFile("package.json");
-                    _packageJson = JsonConvert.DeserializeObject(jsonContent);
-                }
-                catch
-                {
-                    // we just ignore errors, so we leave malformed package.json
-                    // files for node.js to handle, not us. This prevents us from
-                    // erroring out when node itself might be able to tolerate some errors
-                    // in the package.json file.
-                }
-            }
-
-            return _packageJson;
-        }
-
-        private string DetectNodeVersion()
-        {
-            var packageJson = GetPackageJsonObject();
             var nodeVersionRange = packageJson?.engines?.node?.Value as string;
             if (nodeVersionRange == null)
             {
@@ -177,9 +142,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return nodeVersion;
         }
 
-        private string DetectNpmVersion()
+        private string DetectNpmVersion(dynamic packageJson)
         {
-            var packageJson = GetPackageJsonObject();
             string npmVersionRange = packageJson?.engines?.npm?.Value;
             if (npmVersionRange == null)
             {
@@ -195,6 +159,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
             return npmVersion;
+        }
+
+        private dynamic GetPackageJsonObject(ISourceRepo sourceRepo)
+        {
+            dynamic packageJson = null;
+            try
+            {
+                var jsonContent = sourceRepo.ReadFile("package.json");
+                packageJson = JsonConvert.DeserializeObject(jsonContent);
+            }
+            catch
+            {
+                // we just ignore errors, so we leave malformed package.json
+                // files for node.js to handle, not us. This prevents us from
+                // erroring out when node itself might be able to tolerate some errors
+                // in the package.json file.
+            }
+
+            return packageJson;
         }
     }
 }

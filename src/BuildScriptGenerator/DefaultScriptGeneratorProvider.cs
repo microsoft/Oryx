@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 using System.Collections.Generic;
+using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -17,16 +18,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _scriptGenerators = scriptGenerators;
         }
 
-        public IScriptGenerator GetScriptGenerator()
+        public IScriptGenerator GetScriptGenerator(ISourceRepo sourceRepo, string providedLanguage)
         {
             foreach (var scriptGenerator in _scriptGenerators)
             {
-                if (scriptGenerator.CanGenerateShScript())
+                if (scriptGenerator.CanGenerateScript(sourceRepo, providedLanguage))
                 {
                     return scriptGenerator;
                 }
             }
             return null;
+        }
+
+        public IEnumerable<IScriptGenerator> GetScriptGenerators()
+        {
+            return _scriptGenerators;
         }
     }
 }

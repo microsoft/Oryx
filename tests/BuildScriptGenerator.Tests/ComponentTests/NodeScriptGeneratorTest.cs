@@ -118,13 +118,13 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateShScript();
+            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateShScript();
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -139,13 +139,13 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo, defaultNodeVersion: "8.2.1");
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateShScript();
+            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateShScript();
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -161,13 +161,13 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo, defaultNpmVersion: "5.4.2");
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateShScript();
+            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateShScript();
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -184,7 +184,7 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo);
 
             // Act
-            var exception = Assert.Throws<UnsupportedNodeVersionException>(() => scriptGenerator.GenerateShScript());
+            var exception = Assert.Throws<UnsupportedNodeVersionException>(() => scriptGenerator.GenerateBashScript(repo));
 
             // Assert
             // Simple check that the message contains the unsupported version.
@@ -200,7 +200,7 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo);
 
             // Act
-            var exception = Assert.Throws<UnsupportedNpmVersionException>(() => scriptGenerator.GenerateShScript());
+            var exception = Assert.Throws<UnsupportedNpmVersionException>(() => scriptGenerator.GenerateBashScript(repo));
 
             // Assert
             // Simple check that the message contains the unsupported version.
@@ -215,13 +215,13 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateShScript();
+            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateShScript();
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -236,13 +236,13 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateShScript();
+            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateShScript();
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -259,13 +259,13 @@ namespace BuildScriptGenerator.Tests
             var scriptGenerator = GetScriptGenerator(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateShScript();
+            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateShScript();
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -291,8 +291,6 @@ namespace BuildScriptGenerator.Tests
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
 
             var scriptGenerator = new NodeScriptGenerator(
-                sourceRepo,
-                Options.Create(new BuildScriptGeneratorOptions()),
                 nodeScriptGeneratorOptions,
                 new NodeVersionResolver(nodeScriptGeneratorOptions),
                 NullLogger<NodeScriptGenerator>.Instance);

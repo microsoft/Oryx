@@ -31,7 +31,28 @@ namespace Oryx.BuildImage.Tests
             // Assert
             RunAsserts(() =>
             {
-                Assert.Contains("field is required.", result.Output);
+                // Help text must be shown
+                Assert.Contains("Generates build scripts for multiple languages.", result.Output);
+            },
+            result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void DisplayedLanguagesIncludeNode()
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(
+                imageId: BuildImageTestSettings.BuildImageName,
+                environmentVariables: null,
+                volumes: null,
+                command: "/opt/buildscriptgen/GenerateBuildScript",
+                commandArguments: new[] { "languages" });
+
+            // Assert
+            RunAsserts(() =>
+            {
+                // Help text must be shown
+                Assert.Contains("nodejs:", result.Output);
             },
             result.GetDebugInfo());
         }
