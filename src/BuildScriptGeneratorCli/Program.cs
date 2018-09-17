@@ -4,6 +4,8 @@
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics;
     using System.IO;
     using McMaster.Extensions.CommandLineUtils;
     using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +33,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string TargetScriptPath { get; private set; }
 
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+
+        private static void Exec(string cmd)
+        {
+            var escapedArgs = cmd.Replace("\"", "\\\"");
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"{escapedArgs}\""
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+        }
 
         private int OnExecute(CommandLineApplication app, IConsole console)
         {
@@ -70,7 +93,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 var scriptContent = scriptGenerator.GenerateBashScript(sourceRepo);
                 var targetScriptPath = Path.GetFullPath(options.TargetScriptPath);
+
                 File.WriteAllText(targetScriptPath, scriptContent);
+
+                Exec(cmd: "chmod +x " + targetScriptPath);
 
                 console.WriteLine($"Script was generated successfully at '{this.TargetScriptPath}'.");
             }
