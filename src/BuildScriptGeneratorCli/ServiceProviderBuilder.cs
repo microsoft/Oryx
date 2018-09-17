@@ -5,6 +5,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     using System;
     using System.IO;
+    using System.Reflection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -38,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             _serviceCollection.Configure<BuildScriptGeneratorOptions>(options =>
             {
                 options.SourcePath = Path.GetFullPath(program.SourceCodeFolder);
-                options.TargetScriptPath = program.TargetScriptPath;
+                options.TargetScriptPath = Path.GetFullPath(program.TargetScriptPath);
             });
             return this;
         }
@@ -50,12 +51,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private static IConfiguration GetConfiguration()
         {
+            var executingAssemblyFileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
+            var basePath = executingAssemblyFileInfo.Directory.FullName;
+
             // The order of 'Add' is important here.
             // The values provided at commandline override any values provided in environment variables
             // and values provided in environment variables override any values provided in appsettings.json.
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(basePath)
                 .AddJsonFile(path: "appsettings.json", optional: true)
                 .AddEnvironmentVariables();
 

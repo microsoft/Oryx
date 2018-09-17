@@ -92,13 +92,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 var scriptContent = scriptGenerator.GenerateBashScript(sourceRepo);
-                var targetScriptPath = Path.GetFullPath(options.TargetScriptPath);
 
-                File.WriteAllText(targetScriptPath, scriptContent);
+                File.WriteAllText(options.TargetScriptPath, scriptContent);
 
-                Exec(cmd: "chmod +x " + targetScriptPath);
+                Exec(cmd: "chmod +x " + options.TargetScriptPath);
 
-                console.WriteLine($"Script was generated successfully at '{this.TargetScriptPath}'.");
+                console.WriteLine($"Script was generated successfully at '{options.TargetScriptPath}'.");
             }
             catch (InvalidUsageException ex)
             {
