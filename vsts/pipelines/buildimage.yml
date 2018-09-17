@@ -11,69 +11,9 @@ trigger:
     - src/
 
 steps:
-- checkout: self
-  clean: true
+- script: |
+    echo "##vso[task.setvariable variable=BuildAndTestBuildImages]true"
+    echo "##vso[task.setvariable variable=PushBuildImages]true"
+  displayName: 'Set variables'
 
-- task: ShellScript@2
-  displayName: 'Build Oryx.sln'
-  inputs:
-    scriptPath: ./build/build-solution.sh
-
-- task: ShellScript@2
-  displayName: 'Build build image'
-  inputs:
-    scriptPath: ./build/build-buildimages.sh
-
-- task: ShellScript@2
-  displayName: 'Test build image'
-  inputs:
-    scriptPath: ./build/test-buildimages.sh
-    args: skipBuildingImages
-
-- task: ShellScript@2
-  displayName: 'Remove containers created by tests'
-  inputs:
-    scriptPath: ./vsts/scripts/removeContainers.sh
-    condition: always()
-
-- task: CopyFiles@2
-  displayName: 'Copy source projects output to artifacts folder'
-  inputs:
-    sourceFolder: $(Build.SourcesDirectory)
-    contents: 'src/**/bin/**/*.*'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    cleanTargetFolder: true
-    overWrite: true
-    flattenFolders: true
-
-- task: CopyFiles@2
-  displayName: 'Copy artifacts from source repo to agent artifacts folder'
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
-    contents: '**/*.*'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    overWrite: true
-
-- task: PublishTestResults@2
-  inputs:
-    testRunner: 'xUnit'
-    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
-    mergeTestResults: true
-
-- task: Docker@0
-  displayName: 'Push Build image'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
-    includeLatestTag: false
-
-- task: ArchiveFiles@2
-  displayName: 'Archive docker files and scripts for Oryx build and runtime images'
-  inputs:
-    rootFolderOrFile: images
-    archiveFile: '$(Build.ArtifactStagingDirectory)/images/dockerFiles.zip'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
+- template: _buildTemplate.yml

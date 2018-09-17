@@ -1,0 +1,109 @@
+steps:
+- script: |
+    if [ "$(BuildAndTestBuildImages)" != "true" ] && [ "$(BuildAndTestRuntimeImages)" != "true" ]
+    then
+      echo "Invalid configuration."
+      echo "Variable 'BuildAndTestBuildImages' or 'BuildAndTestRuntimeImages' needs to be 'true' to run this build."
+      exit 1
+    fi
+    echo "##vso[task.setvariable variable=IsValidPipeline]true"
+  displayName: 'Validate pipeline run'
+
+- checkout: self
+  clean: true
+
+- task: ShellScript@2
+  displayName: 'Build Oryx.sln'
+  inputs:
+    scriptPath: ./build/build-solution.sh
+
+- task: ShellScript@2
+  displayName: 'Build build images'
+  inputs:
+    scriptPath: ./build/build-buildimages.sh
+  condition: eq(variables['BuildAndTestBuildImages'], 'true')
+
+- task: ShellScript@2
+  displayName: 'Build runtime images'
+  inputs:
+    scriptPath: ./build/build-runtimeimages.sh
+  condition: eq(variables['BuildAndTestRuntimeImages'], 'true')
+
+- task: ShellScript@2
+  displayName: 'Test script generator'
+  inputs:
+    scriptPath: ./build/test-scriptgenerator.sh
+  condition: eq(variables['BuildAndTestBuildImages'], 'true')
+
+- task: ShellScript@2
+  displayName: 'Test build images'
+  inputs:
+    scriptPath: ./build/test-buildimages.sh
+    args: skipBuildingImages
+  condition: eq(variables['BuildAndTestBuildImages'], 'true')
+
+- task: ShellScript@2
+  displayName: 'Test runtime images'
+  inputs:
+    scriptPath: ./build/test-runtimeimages.sh
+    args: skipBuildingImages
+  condition: eq(variables['BuildAndTestRuntimeImages'], 'true')
+
+- task: ShellScript@2
+  displayName: 'Remove containers created by tests'
+  inputs:
+    scriptPath: ./vsts/scripts/removeContainers.sh
+  condition: eq(variables['IsValidPipeline'], 'true')
+
+- task: CopyFiles@2
+  displayName: 'Copy source projects output to artifacts folder'
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)
+    contents: 'src/**/bin/**/*.*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    cleanTargetFolder: true
+    overWrite: true
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'Copy artifacts from source repo to agent artifacts folder'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
+    contents: '**/*.*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    overWrite: true
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'xUnit'
+    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
+    mergeTestResults: true
+
+- task: Docker@0
+  displayName: 'Push Build image'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: oryx
+    action: 'Push images'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
+    includeLatestTag: false
+  condition: and(eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
+
+- task: Docker@0
+  displayName: 'Push runtime images'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: oryx
+    action: 'Push images'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
+    includeLatestTag: false
+  condition: and(eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+
+- task: ArchiveFiles@2
+  displayName: 'Archive docker files and scripts for Oryx build and runtime images'
+  inputs:
+    rootFolderOrFile: images
+    archiveFile: '$(Build.ArtifactStagingDirectory)/images/dockerFiles.zip'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
