@@ -47,7 +47,7 @@ for dockerFile in $dockerFiles; do
     getTagName $dockerFileDir
     runtimeImageTagName="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
 
-    tags=$runtimeImageTagName
+    tags=$runtimeImageTagName:latest
 
     if [ -n "$BUILD_NUMBER" ]
     then
