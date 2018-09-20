@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Oryx.Tests.Infrastructure
+namespace Microsoft.Oryx.Common.Utilities
 {
     public static class ProcessHelper
     {

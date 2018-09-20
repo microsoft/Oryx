@@ -222,6 +222,7 @@ RUN set -ex \
 FROM main as buildscriptbuilder
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
+COPY src/Oryx.Common.Utilities /usr/oryx/src/Oryx.Common.Utilities
 COPY build/FinalPublicKey.snk usr/oryx/build/
 WORKDIR /usr/oryx/src
 RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli

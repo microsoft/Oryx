@@ -11,4 +11,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj" />
+  </ItemGroup>
 </Project>
