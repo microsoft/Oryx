@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -14,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             services.AddSingleton<IScriptGeneratorProvider, DefaultScriptGeneratorProvider>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();
-            services.AddSingleton<ISourceRepo, LocalSourceRepo>();
+            services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
 
             return services;
         }

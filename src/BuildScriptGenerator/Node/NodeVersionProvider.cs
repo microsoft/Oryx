@@ -1,19 +1,24 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.Extensions.Options;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-
     internal class NodeVersionProvider : INodeVersionProvider
     {
         private IEnumerable<string> _supportedNodeVersions;
         private IEnumerable<string> _supportedNpmVersions;
+        private readonly NodeScriptGeneratorOptions _options;
 
-        internal const string NodeJsVersionsDir = "/opt/nodejs/";
-        internal const string NpmJsVersionsDir = "/opt/npm/";
+        public NodeVersionProvider(IOptions<NodeScriptGeneratorOptions> options)
+        {
+            _options = options.Value;
+        }
 
         public IEnumerable<string> SupportedNodeVersions
         {
@@ -21,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNodeVersions == null)
                 {
-                    _supportedNodeVersions = GetSupportedNodeVersionsFromImage();
+                    _supportedNodeVersions = GetVersionsFromDirectory(_options.InstalledNodeVersionsDir);
                 }
                 return _supportedNodeVersions;
             }
@@ -33,45 +38,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNpmVersions == null)
                 {
-                    _supportedNpmVersions = GetSupportedNpmVersionsFromImage();
+                    _supportedNpmVersions = GetVersionsFromDirectory(_options.InstalledNpmVersionsDir);
                 }
                 return _supportedNpmVersions;
             }
         }
 
-        private IEnumerable<string> GetSupportedNodeVersionsFromImage()
-        {
-            const string versionsDir = NodeJsVersionsDir;
-            var versions = GetVersionsFromDirectory(versionsDir);
-            return versions;
-        }
-
-        private IEnumerable<string> GetSupportedNpmVersionsFromImage()
-        {
-            const string versionsDir = NpmJsVersionsDir;
-            var versions = GetVersionsFromDirectory(versionsDir);
-            return versions;
-        }
-
-        private static List<string> GetVersionsFromDirectory(string versionsDir)
+        private static IEnumerable<string> GetVersionsFromDirectory(string versionsDir)
         {
             var listOptions = new EnumerationOptions()
             {
                 RecurseSubdirectories = false,
                 IgnoreInaccessible = false,
             };
-            var versions = new List<string>();
 
-            // Since the directories contain folders (or links) like 'lts' and 'latest', try getting
-            // proper version using wildcards.
-            var versionDirectories = Directory.EnumerateDirectories(versionsDir, "*.*.*", listOptions)
+            var versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
                 .Select(versionDir => new DirectoryInfo(versionDir));
+
+            var versions = new List<SemVer.Version>();
             foreach (var versionDir in versionDirectories)
             {
-                versions.Add(versionDir.Name);
+                try
+                {
+                    var version = new SemVer.Version(versionDir.Name);
+                    versions.Add(version);
+                }
+                catch (ArgumentException)
+                {
+                    // ignore non semantic version based versions like 'latest' or 'lts'
+                }
             }
+            versions.Sort();
 
-            return versions;
+            return versions.Select(v => v.ToString());
         }
     }
 }

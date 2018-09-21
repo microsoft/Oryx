@@ -1,18 +1,17 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-using Microsoft.Extensions.Options;
 using SemVer;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeVersionResolver : INodeVersionResolver
     {
-        private readonly NodeScriptGeneratorOptions _options;
+        private readonly INodeVersionProvider _nodeVersionProvider;
 
-        public NodeVersionResolver(IOptions<NodeScriptGeneratorOptions> _nodeScriptGeneratorOptions)
+        public NodeVersionResolver(INodeVersionProvider nodeVersionProvider)
         {
-            _options = _nodeScriptGeneratorOptions.Value;
+            _nodeVersionProvider = nodeVersionProvider;
         }
 
         /// <summary>
@@ -23,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             try
             {
                 var range = new Range(versionRange);
-                var satisfying = range.MaxSatisfying(_options.SupportedNodeVersions);
+                var satisfying = range.MaxSatisfying(_nodeVersionProvider.SupportedNodeVersions);
                 return satisfying;
             }
             catch
@@ -40,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             try
             {
                 var range = new Range(versionRange);
-                var satisfying = range.MaxSatisfying(_options.SupportedNpmVersions);
+                var satisfying = range.MaxSatisfying(_nodeVersionProvider.SupportedNpmVersions);
                 return satisfying;
             }
             catch

@@ -1,20 +1,62 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Newtonsoft.Json;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    using System.Collections.Generic;
-    using System.Text;
-    using BuildScriptGenerator.Exceptions;
-    using BuildScriptGenerator.SourceRepo;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
-
     internal class NodeScriptGenerator : IScriptGenerator
     {
         private const string NodeJsName = "nodejs";
-        private const string PackageFileName = "package.json";
+        private const string PackageJsonFileName = "package.json";
+
+        // NOTE: C# multiline strings are handled verbatim, so if you place a tab to the text here,
+        // a tab would be present in the generated output too.
+        private const string ScriptTemplate =
+            @"#!/bin/bash
+#set -ex
+
+SOURCE_DIR=$1
+OUTPUT_DIR=$2
+CURRENT_DIR=$(pwd)
+
+if [ ! $# -eq 2 ]; then
+    echo ""Usage: $0 <source-dir> <output-dir>""
+    exit 1
+fi
+
+if [ ! -d ""$SOURCE_DIR"" ]; then
+    echo ""Source directory '$SOURCE_DIR' does not exist.""
+    exit 1
+fi
+
+if [ -z ""$OUTPUT_DIR"" ]; then
+    echo ""Output directory is required.""
+    exit 1
+fi
+
+source /usr/local/bin/benv {0}
+
+echo Installing npm packages ...
+cd ""$SOURCE_DIR""
+echo
+echo ""Running '{1}' ...""
+echo
+{1}
+
+echo
+echo ""Copying output from '$SOURCE_DIR' to '$OUTPUT_DIR' ...""
+cp -r . ""$OUTPUT_DIR""
+
+cd ""$CURRENT_DIR""
+
+echo
+echo Done.
+";
 
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -29,38 +71,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         };
 
         private static readonly string[] TypicalNodeDetectionFiles = new[] { "server.js", "app.js" };
-        private readonly ILogger<NodeScriptGenerator> _logger;
-        private readonly NodeScriptGeneratorOptions _options;
+        private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
+        private readonly INodeVersionProvider _nodeVersionProvider;
         private INodeVersionResolver _versionResolver;
+        private readonly ILogger<NodeScriptGenerator> _logger;
 
         public NodeScriptGenerator(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
+            INodeVersionProvider nodeVersionProvider,
             INodeVersionResolver nodeVersionResolver,
             ILogger<NodeScriptGenerator> logger)
         {
-            _options = nodeScriptGeneratorOptions.Value;
+            _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
+            _nodeVersionProvider = nodeVersionProvider;
             _versionResolver = nodeVersionResolver;
             _logger = logger;
         }
 
-        public string LanguageName => NodeJsName;
+        public string SupportedLanguageName => NodeJsName;
 
-        public IEnumerable<string> LanguageVersions => _options.SupportedNodeVersions;
+        public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
 
-        public bool CanGenerateScript(ISourceRepo sourceRepo, string language)
+        public bool CanGenerateScript(ScriptGeneratorContext context)
         {
-            var unsupportedProvidedLanguage = !string.IsNullOrWhiteSpace(language) &&
-                string.Compare(NodeJsName, language, ignoreCase: true) != 0;
-
-            if (unsupportedProvidedLanguage)
-            {
-                _logger.LogInformation(
-                    $"Does not support the language with name '{language}'." +
-                    $"Supported language name is '{LanguageName}'.");
-                return false;
-            }
-
-            if (sourceRepo.FileExists(PackageFileName))
+            if (context.SourceRepo.FileExists(PackageJsonFileName))
             {
                 return true;
             }
@@ -69,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var mightBeNode = false;
             foreach (var typicalNodeFile in TypicalNodeDetectionFiles)
             {
-                if (sourceRepo.FileExists(typicalNodeFile))
+                if (context.SourceRepo.FileExists(typicalNodeFile))
                 {
                     mightBeNode = true;
                     break;
@@ -82,7 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 // If so, then it is not a node.js web site otherwise it is
                 foreach (var iisStartupFile in IisStartupFiles)
                 {
-                    if (sourceRepo.FileExists(iisStartupFile))
+                    if (context.SourceRepo.FileExists(iisStartupFile))
                     {
                         return false;
                     }
@@ -93,34 +127,47 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return false;
         }
 
-        public string GenerateBashScript(ISourceRepo sourceRepo)
+        public string GenerateBashScript(ScriptGeneratorContext context)
         {
-            var scriptBuilder = new StringBuilder();
+            (var nodeVersion, var npmVersion) = DetectVersionInformation(context);
 
-            var packageJson = GetPackageJsonObject(sourceRepo);
-            var nodeVersion = DetectNodeVersion(packageJson);
-            var npmVersion = DetectNpmVersion(packageJson);
-
-            scriptBuilder.AppendLine("#!/bin/bash");
-
-            scriptBuilder.Append("source /usr/local/bin/benv ");
+            string benvArgs = string.Empty;
             if (!string.IsNullOrEmpty(nodeVersion))
             {
-                scriptBuilder.Append($"node={nodeVersion} ");
+                benvArgs += $"node={nodeVersion} ";
             }
+
             if (!string.IsNullOrEmpty(npmVersion))
             {
-                scriptBuilder.Append($"npm={npmVersion} ");
+                benvArgs += $"npm={npmVersion} ";
             }
-            scriptBuilder.AppendLine();
 
-            scriptBuilder.AppendLine("# Install npm packages");
-            scriptBuilder.AppendLine($"cd \"{sourceRepo.RootPath}\"");
             var installCommand = "eval npm install --production";
-            scriptBuilder.AppendLine($"echo \"Running {installCommand}\"");
-            scriptBuilder.AppendLine(installCommand);
 
-            return scriptBuilder.ToString();
+            // C# multiline string literals always seem to be represented as CRLF, so replace that line
+            // ending with LF
+            var scriptTemplateWithLF = ScriptTemplate.Replace("\r\n", "\n");
+            var script = string.Format(scriptTemplateWithLF, benvArgs, installCommand);
+            return script;
+        }
+
+        private (string nodeVersion, string npmVersion) DetectVersionInformation(ScriptGeneratorContext context)
+        {
+            string nodeVersion;
+            string npmVersion;
+            var packageJson = GetPackageJsonObject(context.SourceRepo);
+            if (string.IsNullOrEmpty(context.LanguageVersion))
+            {
+                nodeVersion = DetectNodeVersion(packageJson);
+            }
+            else
+            {
+                nodeVersion = context.LanguageVersion;
+            }
+
+            npmVersion = DetectNpmVersion(packageJson);
+
+            return (nodeVersion, npmVersion);
         }
 
         private string DetectNodeVersion(dynamic packageJson)
@@ -128,7 +175,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var nodeVersionRange = packageJson?.engines?.node?.Value as string;
             if (nodeVersionRange == null)
             {
-                nodeVersionRange = _options.NodeJsDefaultVersion;
+                nodeVersionRange = _nodeScriptGeneratorOptions.NodeJsDefaultVersion;
             }
             string nodeVersion = null;
             if (!string.IsNullOrWhiteSpace(nodeVersionRange))
@@ -147,7 +194,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string npmVersionRange = packageJson?.engines?.npm?.Value;
             if (npmVersionRange == null)
             {
-                npmVersionRange = _options.NpmDefaultVersion;
+                npmVersionRange = _nodeScriptGeneratorOptions.NpmDefaultVersion;
             }
             string npmVersion = null;
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
@@ -166,7 +213,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile("package.json");
+                var jsonContent = sourceRepo.ReadFile(PackageJsonFileName);
                 packageJson = JsonConvert.DeserializeObject(jsonContent);
             }
             catch

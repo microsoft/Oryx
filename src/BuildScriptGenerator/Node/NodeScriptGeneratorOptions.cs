@@ -11,8 +11,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string NpmDefaultVersion { get; set; }
 
-        public IEnumerable<string> SupportedNodeVersions { get; set; }
+        public string InstalledNodeVersionsDir { get; set; }
 
-        public IEnumerable<string> SupportedNpmVersions { get; set; }
+        public string InstalledNpmVersionsDir { get; set; }
     }
 }

@@ -1,12 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-namespace BuildScriptGenerator.Tests.UnitTests
-{
-    using Microsoft.Extensions.Options;
-    using Microsoft.Oryx.BuildScriptGenerator.Node;
-    using Xunit;
+using System.Collections.Generic;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Xunit;
 
+namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
+{
     public class NodeVersionResolverTest
     {
         [Fact]
@@ -129,11 +129,24 @@ namespace BuildScriptGenerator.Tests.UnitTests
             string[] supportedNodeVersions,
             string[] supportedNpmVersions)
         {
-            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
-            nodeScriptGeneratorOptions.SupportedNodeVersions = supportedNodeVersions;
-            nodeScriptGeneratorOptions.SupportedNpmVersions = supportedNpmVersions;
+            var nodeVersionProvider = new TestNodeVersionProvider(
+                supportedNodeVersions: supportedNodeVersions,
+                supportedNpmVersions: supportedNpmVersions);
 
-            return new NodeVersionResolver(Options.Create(nodeScriptGeneratorOptions));
+            return new NodeVersionResolver(nodeVersionProvider);
+        }
+
+        private class TestNodeVersionProvider : INodeVersionProvider
+        {
+            public TestNodeVersionProvider(string[] supportedNodeVersions, string[] supportedNpmVersions)
+            {
+                SupportedNodeVersions = supportedNodeVersions;
+                SupportedNpmVersions = supportedNpmVersions;
+            }
+
+            public IEnumerable<string> SupportedNodeVersions { get; }
+
+            public IEnumerable<string> SupportedNpmVersions { get; }
         }
     }
 }

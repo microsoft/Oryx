@@ -1,41 +1,31 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-namespace Microsoft.Oryx.BuildScriptGenerator.SourceRepo
-{
-    using System;
-    using System.IO;
-    using Microsoft.Extensions.Options;
+using System.IO;
 
+namespace Microsoft.Oryx.BuildScriptGenerator
+{
     public class LocalSourceRepo : ISourceRepo
     {
-        private readonly BuildScriptGeneratorOptions _options;
-
-        public LocalSourceRepo(IOptions<BuildScriptGeneratorOptions> buildScriptGeneratorOptions)
+        public LocalSourceRepo(string sourceDirectory)
         {
-            _options = buildScriptGeneratorOptions.Value;
-
-            if (string.IsNullOrEmpty(_options.SourcePath) || !Directory.Exists(_options.SourcePath))
-            {
-                throw new ArgumentException(
-                    $"'{nameof(_options.SourcePath)}' must be a valid directory in the file system.");
-            }
-            RootPath = _options.SourcePath;
+            RootPath = sourceDirectory;
         }
 
         public string RootPath { get; }
 
-        public bool FileExists(params string[] relativePathToFile)
+        public bool FileExists(params string[] paths)
         {
-            var filePathInRepo = Path.Combine(relativePathToFile);
+            var filePathInRepo = Path.Combine(paths);
             var path = Path.Combine(RootPath, filePathInRepo);
             return File.Exists(path);
         }
 
-        public string ReadFile(string relativePath)
+        public string ReadFile(params string[] paths)
         {
-            var filePath = Path.Combine(RootPath, relativePath);
-            return File.ReadAllText(filePath);
+            var filePathInRepo = Path.Combine(paths);
+            var path = Path.Combine(RootPath, filePathInRepo);
+            return File.ReadAllText(path);
         }
     }
 }

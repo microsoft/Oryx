@@ -11,23 +11,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NpmDefaultVersion = "NPM_DEFAULT_VERSION";
 
         private readonly IEnvironment _environment;
-        private readonly INodeVersionProvider _nodeVersionProvider;
 
-        public NodeScriptGeneratorOptionsSetup(IEnvironment environment, INodeVersionProvider nodeVersionProvider)
+        public NodeScriptGeneratorOptionsSetup(IEnvironment environment)
         {
             _environment = environment;
-            _nodeVersionProvider = nodeVersionProvider;
         }
 
         public void Configure(NodeScriptGeneratorOptions options)
         {
             options.NodeJsDefaultVersion = _environment.GetEnvironmentVariable(NodeJsDefaultVersion);
-
             options.NpmDefaultVersion = _environment.GetEnvironmentVariable(NpmDefaultVersion);
-
-            options.SupportedNodeVersions = _nodeVersionProvider.SupportedNodeVersions;
-
-            options.SupportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
+            options.InstalledNodeVersionsDir = "/opt/nodejs/";
+            options.InstalledNpmVersionsDir = "/opt/npm/";
         }
     }
 }

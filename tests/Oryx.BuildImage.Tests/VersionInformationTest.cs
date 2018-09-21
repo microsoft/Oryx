@@ -43,6 +43,29 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided()
+        {
+            // Arrange
+            var expectedOutput = "v8.11.2";
+
+            // Arrange & Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                commandToExecuteOnRun: "node",
+                commandArguments: new[] { "--version" });
+
+            // Assert
+            var actualOutput = result.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
         [Theory]
         [InlineData("4", "v4.5.0")]
         [InlineData("4.5", "v4.5.0")]

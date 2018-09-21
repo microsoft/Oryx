@@ -1,131 +1,58 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Oryx.BuildScriptGenerator;
+
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.Diagnostics;
-    using System.IO;
-    using McMaster.Extensions.CommandLineUtils;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Microsoft.Oryx.BuildScriptGenerator;
-    using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-    using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
-
     [Command(Description = "Generates build scripts for multiple languages.")]
     [Subcommand("languages", typeof(LanguagesCommand))]
-    internal class Program
+    internal partial class Program
     {
+        [Argument(0, Description = "The path to the source code directory.")]
+        public string SourceCodeFolder { get; set; }
+
+        [Argument(1, Description = "The path to output folder.")]
+        public string OutputFolder { get; set; }
+
+        [Option(
+            CommandOptionType.SingleValue,
+            Description = "The path to a temporary folder used by this tool.",
+            ShortName = "i")]
+        public string IntermediateFolder { get; set; }
+
         [Option(
             CommandOptionType.SingleValue,
             Description = "The programming language being used in the provided source code directory.",
-            ShortName = "l",
-            LongName = "language")]
-        public string Language { get; private set; }
+            ShortName = "l")]
+        public string LanguageName { get; set; }
 
-        [Argument(0, Description = "The path to the source code directory.")]
-        public string SourceCodeFolder { get; private set; }
+        [Option(
+            CommandOptionType.SingleValue,
+            Description = "The version of programming language being used in the provided source code directory.",
+            ShortName = "lv")]
+        public string LanguageVersion { get; set; }
 
-        [Argument(1, Description = "The path to the build script to be generated.")]
-        public string TargetScriptPath { get; private set; }
+        [Option(
+            CommandOptionType.NoValue,
+            Description = "Generates only a script and does not do a build.",
+            ShortName = "so")]
+        public bool ScriptOnly { get; set; }
 
-        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+        [Option(
+            CommandOptionType.SingleValue,
+            Description = "The path to the script that needs to be generated.",
+            ShortName = "sp")]
+        public string ScriptPath { get; set; }
 
-        private static void Exec(string cmd)
-        {
-            var escapedArgs = cmd.Replace("\"", "\\\"");
+        internal static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{escapedArgs}\""
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private int OnExecute(CommandLineApplication app, IConsole console)
-        {
-            if (string.IsNullOrEmpty(SourceCodeFolder) || string.IsNullOrEmpty(TargetScriptPath))
-            {
-                app.ShowHelp();
-                return 1;
-            }
-
-            IServiceProvider serviceProvider = null;
-            ILogger logger = null;
-            try
-            {
-                serviceProvider = new ServiceProviderBuilder()
-                    .WithScriptGenerationOptions(this)
-                    .Build();
-
-                var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-                logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-
-                if (!Directory.Exists(options.SourcePath))
-                {
-                    console.WriteLine($"Couldn't find directory '{options.SourcePath}'.");
-                    return 1;
-                }
-
-                var scriptGeneratorProvider = serviceProvider.GetRequiredService<IScriptGeneratorProvider>();
-                var sourceRepo = serviceProvider.GetRequiredService<ISourceRepo>();
-                var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator(sourceRepo, Language);
-                if (scriptGenerator == null)
-                {
-                    console.WriteLine(
-                        "Could not find a script generator which can generate a script for " +
-                        $"the code in '{options.SourcePath}'.");
-                    return 1;
-                }
-
-                var scriptContent = scriptGenerator.GenerateBashScript(sourceRepo);
-
-                File.WriteAllText(options.TargetScriptPath, scriptContent);
-
-                Exec(cmd: "chmod +x " + options.TargetScriptPath);
-
-                console.WriteLine($"Script was generated successfully at '{options.TargetScriptPath}'.");
-            }
-            catch (InvalidUsageException ex)
-            {
-                console.WriteLine(ex.Message);
-                return 1;
-            }
-            catch (Exception ex)
-            {
-                logger?.LogError($"An error occurred while running this tool:" + Environment.NewLine + ex.ToString());
-                console.WriteLine("Oops... An unexpected error has occurred.");
-                return 1;
-            }
-            finally
-            {
-                // In general it is a good practice to dispose services before this program is
-                // exiting, but there's one more reason we would need to do this i.e that the Console
-                // logger doesn't write to the console immediately. This is because it runs on a separate
-                // thread where it queues up messages and writes the console when the queue reaches a certain
-                // threshold.
-                if (serviceProvider is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-            }
-
-            return 0;
-        }
-
+        //TODO; write unit tests for this
         [Command("languages", Description = "Show the list of supported languages.")]
         private class LanguagesCommand
         {
@@ -133,19 +60,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 var serviceProvider = new ServiceProviderBuilder()
                     .Build();
-                var scriptGeneratorProvider = serviceProvider.GetRequiredService<IScriptGeneratorProvider>();
-                foreach (var language in scriptGeneratorProvider.GetScriptGenerators())
+
+                var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<IScriptGenerator>>();
+                scriptGenerators = scriptGenerators
+                    .OrderBy(sg => sg.SupportedLanguageName, StringComparer.OrdinalIgnoreCase);
+
+                foreach (var scriptGenerator in scriptGenerators)
                 {
-                    if (!string.IsNullOrWhiteSpace(language.LanguageName))
+                    if (!string.IsNullOrWhiteSpace(scriptGenerator.SupportedLanguageName))
                     {
-                        if (language.LanguageVersions != null)
+                        if (scriptGenerator.SupportedLanguageVersions != null)
                         {
-                            var versions = string.Join(", ", language.LanguageVersions);
-                            console.WriteLine($"{language.LanguageName}: {versions}");
+                            var versions = string.Join(", ", scriptGenerator.SupportedLanguageVersions);
+                            console.WriteLine($"{scriptGenerator.SupportedLanguageName}: {versions}");
                         }
                         else
                         {
-                            console.WriteLine($"{language.LanguageName}");
+                            console.WriteLine($"{scriptGenerator.SupportedLanguageName}");
                         }
                     }
                 }

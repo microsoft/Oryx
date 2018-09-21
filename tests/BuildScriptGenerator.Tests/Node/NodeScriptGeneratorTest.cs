@@ -1,25 +1,22 @@
 // --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Xunit;
 
-namespace BuildScriptGenerator.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using Microsoft.Extensions.Logging.Abstractions;
-    using Microsoft.Extensions.Options;
-    using Microsoft.Oryx.BuildScriptGenerator;
-    using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-    using Microsoft.Oryx.BuildScriptGenerator.Node;
-    using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
-    using Xunit;
-
     /// <summary>
     /// Component tests for NodeJs support.
     /// </summary>
     public class NodeScriptGeneratorTest
     {
-        private const string SimplePackageJson = @"{
+        private const string PackageJsonWithNoVersions = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
           ""description"": ""test app"",
@@ -32,7 +29,7 @@ namespace BuildScriptGenerator.Tests
           ""license"": ""ISC""
         }";
 
-        private const string SimplePackageJsonWithNodeVersion = @"{
+        private const string PackageJsonWithNodeVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
           ""description"": ""test app"",
@@ -46,7 +43,7 @@ namespace BuildScriptGenerator.Tests
           ""engines"" : { ""node"" : ""6.11.0"" }
         }";
 
-        private const string SimplePackageJsonWithNpmVersion = @"{
+        private const string PackageJsonWithNpmVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
           ""description"": ""test app"",
@@ -60,7 +57,7 @@ namespace BuildScriptGenerator.Tests
           ""engines"" : { ""npm"" : ""5.4.2"" }
         }";
 
-        private const string UnsupportedNodeJSVersion = @"{
+        private const string PakageJsonWithUnsupportedNodeVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
           ""description"": ""test app"",
@@ -75,7 +72,7 @@ namespace BuildScriptGenerator.Tests
           ""engines"" : { ""node"" : ""20.20.20"" }
         }";
 
-        private const string UnsupportedNpmVersion = @"{
+        private const string PakageJsonWithUnsupportedNpmVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
           ""description"": ""test app"",
@@ -110,21 +107,24 @@ namespace BuildScriptGenerator.Tests
                 res.end();
             }).listen(8888);";
 
+        //TODO: add tests for node detection files
+
         [Fact]
-        public void SimplePackageJsonShouldHaveNpmInstall()
+        public void GeneratedScript_ForPackageJsonWithNoVersions_MustHaveNpmInstall()
         {
             // Arrange
-            var repo = GetSourceRepo(SimplePackageJson);
-            var scriptGenerator = GetScriptGenerator(repo);
+            var scriptGenerator = GetScriptGenerator();
+            var repo = GetSourceRepo(PackageJsonWithNoVersions);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -132,20 +132,21 @@ namespace BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void SimplePackageJsonShouldSetDefaultNodeVersionToBenv()
+        public void GeneratedScript_ForPackageJsonWithNoVersions_MustUseDefaultNodeVersion()
         {
             // Arrange
-            var repo = GetSourceRepo(SimplePackageJson);
-            var scriptGenerator = GetScriptGenerator(repo, defaultNodeVersion: "8.2.1");
+            var scriptGenerator = GetScriptGenerator(defaultNodeVersion: "8.2.1");
+            var repo = GetSourceRepo(PackageJsonWithNoVersions);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -154,20 +155,21 @@ namespace BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void SimplePackageJsonShouldSetDefaultNpmVersionToBenv()
+        public void GeneratedScript_ForPackageJsonWithNoVersions_MustUseDefaultNpmVersion()
         {
             // Arrange
-            var repo = GetSourceRepo(SimplePackageJson);
-            var scriptGenerator = GetScriptGenerator(repo, defaultNpmVersion: "5.4.2");
+            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "5.4.2");
+            var repo = GetSourceRepo(PackageJsonWithNoVersions);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -176,15 +178,69 @@ namespace BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void GeneratedScript_ForPackageJsonWithNoVersions_MustUseUserSuppliedLanguageVersion()
+        {
+            // Arrange
+            var scriptGenerator = GetScriptGenerator();
+            var repo = GetSourceRepo(PackageJsonWithNoVersions);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+
+            // Act-1
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert-1
+            Assert.True(canGenerateScript);
+
+            // Act-2
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
+
+            // Assert-2
+            // Simple check that at least "npm install" is there
+            Assert.Contains("npm install", generatedScriptContent);
+            Assert.Contains($"benv node=8.2.1", generatedScriptContent);
+        }
+
+        [Fact(Skip = "TODO: figure out expected behavior")]
+        public void GeneratedScript_MustUseSuppliedNodeVersion_IgnoringNodeVersion_InPackageJson()
+        {
+        }
+
+        [Fact]
+        public void GeneratedScript_ForPackageJsonWithNoVersions_MustUseDefaultNpmAndNodeVersions()
+        {
+            // Arrange
+            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "5.4.2", defaultNodeVersion: "8.2.1");
+            var repo = GetSourceRepo(PackageJsonWithNoVersions);
+            var context = CreateScriptGeneratorContext(repo);
+
+            // Act-1
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert-1
+            Assert.True(canGenerateScript);
+
+            // Act-2
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
+
+            // Assert-2
+            // Simple check that at least "npm install" is there
+            Assert.Contains("npm install", generatedScriptContent);
+            Assert.Contains($"benv node=8.2.1 npm=5.4.2", generatedScriptContent);
+        }
+
+        [Fact]
         public void ShouldNotGenerateScript_ForUnsupportedNodeVersion()
 
         {
             // Arrange
-            var repo = GetSourceRepo(UnsupportedNodeJSVersion);
-            var scriptGenerator = GetScriptGenerator(repo);
+            var scriptGenerator = GetScriptGenerator();
+            var repo = GetSourceRepo(PakageJsonWithUnsupportedNodeVersion);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act
-            var exception = Assert.Throws<UnsupportedNodeVersionException>(() => scriptGenerator.GenerateBashScript(repo));
+            var exception = Assert.Throws<UnsupportedNodeVersionException>(
+                () => scriptGenerator.GenerateBashScript(context));
 
             // Assert
             // Simple check that the message contains the unsupported version.
@@ -193,14 +249,15 @@ namespace BuildScriptGenerator.Tests
 
         [Fact]
         public void ShouldNotGenerateScript_ForUnsupportedNpmVersion()
-
         {
             // Arrange
-            var repo = GetSourceRepo(UnsupportedNpmVersion);
-            var scriptGenerator = GetScriptGenerator(repo);
+            var scriptGenerator = GetScriptGenerator();
+            var repo = GetSourceRepo(PakageJsonWithUnsupportedNpmVersion);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act
-            var exception = Assert.Throws<UnsupportedNpmVersionException>(() => scriptGenerator.GenerateBashScript(repo));
+            var exception = Assert.Throws<UnsupportedNpmVersionException>(
+                () => scriptGenerator.GenerateBashScript(context));
 
             // Assert
             // Simple check that the message contains the unsupported version.
@@ -211,17 +268,18 @@ namespace BuildScriptGenerator.Tests
         public void MalformedPackageJsonShouldHaveNpmInstall()
         {
             // Arrange
+            var scriptGenerator = GetScriptGenerator();
             var repo = GetSourceRepo(MalformedPackageJson);
-            var scriptGenerator = GetScriptGenerator(repo);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -229,20 +287,21 @@ namespace BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void SimplePackageJsonWithNodeVersionShouldSetNodeVersionToBenv()
+        public void GeneratedScript_ForPackageJsonWithNodeVersion_MustUseThatVersion()
         {
             // Arrange
-            var repo = GetSourceRepo(SimplePackageJsonWithNodeVersion);
-            var scriptGenerator = GetScriptGenerator(repo);
+            var scriptGenerator = GetScriptGenerator();
+            var repo = GetSourceRepo(PackageJsonWithNodeVersion);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -251,21 +310,22 @@ namespace BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void SimplePackageJsonWithNpmVersionShouldSetNpmVersionToBenv()
+        public void GeneratedScript_ForPackageJsonWithNpmVersion_MustUseThatVersion()
         {
             // Arrange & Act
             // Arrange
-            var repo = GetSourceRepo(SimplePackageJsonWithNpmVersion);
-            var scriptGenerator = GetScriptGenerator(repo);
+            var scriptGenerator = GetScriptGenerator();
+            var repo = GetSourceRepo(PackageJsonWithNpmVersion);
+            var context = CreateScriptGeneratorContext(repo);
 
             // Act-1
-            var canGenerateScript = scriptGenerator.CanGenerateScript(repo);
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
 
             // Assert-1
             Assert.True(canGenerateScript);
 
             // Act-2
-            var generatedScriptContent = scriptGenerator.GenerateBashScript(repo);
+            var generatedScriptContent = scriptGenerator.GenerateBashScript(context);
 
             // Assert-2
             // Simple check that at least "npm install" is there
@@ -273,10 +333,7 @@ namespace BuildScriptGenerator.Tests
             Assert.Contains($"benv npm=5.4.2", generatedScriptContent);
         }
 
-        private IScriptGenerator GetScriptGenerator(
-            ISourceRepo sourceRepo,
-            string defaultNodeVersion = null,
-            string defaultNpmVersion = null)
+        private IScriptGenerator GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)
         {
             var environment = new TestEnvironemnt();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
@@ -287,12 +344,13 @@ namespace BuildScriptGenerator.Tests
                 supportedNpmVersions: new[] { "5.4.2" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
-            var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment, nodeVersionProvider);
+            var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
 
             var scriptGenerator = new NodeScriptGenerator(
                 nodeScriptGeneratorOptions,
-                new NodeVersionResolver(nodeScriptGeneratorOptions),
+                nodeVersionProvider,
+                new NodeVersionResolver(nodeVersionProvider),
                 NullLogger<NodeScriptGenerator>.Instance);
             return scriptGenerator;
         }
@@ -303,6 +361,19 @@ namespace BuildScriptGenerator.Tests
             repo.AddFile(packageJsonContent, "package.json");
             repo.AddFile(SimpleServerJs, "server.js");
             return repo;
+        }
+
+        private static ScriptGeneratorContext CreateScriptGeneratorContext(
+            ISourceRepo sourceRepo,
+            string languageName = null,
+            string languageVersion = null)
+        {
+            return new ScriptGeneratorContext
+            {
+                LanguageName = languageName,
+                LanguageVersion = languageVersion,
+                SourceRepo = sourceRepo
+            };
         }
 
         private class CachedSourceRepo : ISourceRepo
@@ -317,14 +388,15 @@ namespace BuildScriptGenerator.Tests
 
             public string RootPath => string.Empty;
 
-            public bool FileExists(params string[] pathToFile)
+            public bool FileExists(params string[] paths)
             {
-                var path = Path.Combine(pathToFile);
+                var path = Path.Combine(paths);
                 return pathToContent.ContainsKey(path);
             }
 
-            public string ReadFile(string path)
+            public string ReadFile(params string[] paths)
             {
+                var path = Path.Combine(paths);
                 return pathToContent[path];
             }
         }
