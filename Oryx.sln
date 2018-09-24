@@ -51,6 +51,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsts", "vsts", "{D7D9E386-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D}"
 	ProjectSection(SolutionItems) = preProject
+		vsts\pipelines\_buildTemplate.yml = vsts\pipelines\_buildTemplate.yml
 		vsts\pipelines\buildimage.yml = vsts\pipelines\buildimage.yml
 		vsts\pipelines\runtime.yml = vsts\pipelines\runtime.yml
 		vsts\pipelines\validation.yml = vsts\pipelines\validation.yml
@@ -58,9 +59,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Tests", "tests\BuildScriptGenerator.Tests\BuildScriptGenerator.Tests.csproj", "{8D7BC3E8-37BE-4E59-8694-1364E314285A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildScriptGeneratorCli.Tests", "tests\BuildScriptGeneratorCli.Tests\BuildScriptGeneratorCli.Tests.csproj", "{16C061C3-3F6E-43C2-A9CC-3E905322E443}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGeneratorCli.Tests", "tests\BuildScriptGeneratorCli.Tests\BuildScriptGeneratorCli.Tests.csproj", "{16C061C3-3F6E-43C2-A9CC-3E905322E443}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Common.Utilities", "src\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj", "{8E76A7A1-1382-4232-BBDE-F0A3808105E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885C6A7-0C9A-406C-89E9-D06A3A03C52D}"
+	ProjectSection(SolutionItems) = preProject
+		vsts\scripts\dockerCleanup.sh = vsts\scripts\dockerCleanup.sh
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +122,7 @@ Global
 		{8D7BC3E8-37BE-4E59-8694-1364E314285A} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 		{16C061C3-3F6E-43C2-A9CC-3E905322E443} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 		{8E76A7A1-1382-4232-BBDE-F0A3808105E2} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{4885C6A7-0C9A-406C-89E9-D06A3A03C52D} = {D7D9E386-B13E-45FA-8AE6-8FC20CB84974}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}

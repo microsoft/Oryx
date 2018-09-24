@@ -49,12 +49,6 @@ steps:
     args: skipBuildingImages
   condition: eq(variables['BuildAndTestRuntimeImages'], 'true')
 
-- task: ShellScript@2
-  displayName: 'Remove containers created by tests'
-  inputs:
-    scriptPath: ./vsts/scripts/removeContainers.sh
-  condition: eq(variables['IsValidPipeline'], 'true')
-
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
   inputs:
@@ -98,6 +92,12 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
     includeLatestTag: false
   condition: and(eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Clean up docker artifacts'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerCleanup.sh
+  condition: eq(variables['IsValidPipeline'], 'true')
 
 - task: ArchiveFiles@2
   displayName: 'Archive docker files and scripts for Oryx build and runtime images'
