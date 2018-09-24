@@ -93,3 +93,7 @@ done
 echo
 echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
 cat $RUNTIME_IMAGES_ARTIFACTS_FILE
+
+echo
+echo "Cleanup: Running 'docker system prune' ..."
+docker system prune -f

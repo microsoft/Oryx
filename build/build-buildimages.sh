@@ -7,6 +7,30 @@ declare -r GIT_COMMIT=$(git rev-parse HEAD)
 # Load all variables
 source $REPO_DIR/build/__variables.sh
 
+cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
+
+function BuildAndTagStage(){
+	local stageName="$1"
+	local stageTagName="oryxdevms/$1"
+
+	echo
+	echo
+	echo "Building stage '$stageName' with tag '$stageTagName' ..."
+	docker build --target $stageName -t $stageTagName -f "$BUILD_IMAGES_DOCKERFILE" .
+}
+
+# Tag stages to avoid creating dangling images.
+# NOTE:
+# These images are not written to artifacts file because they are not expected
+# to be pushed. This is just a workaround to prevent having dangling images so that
+# when a cleanup operation is being done on a build agent, a valuable dangling image
+# is not removed.
+BuildAndTagStage python2.7.15-build
+BuildAndTagStage python3.5.6-build
+BuildAndTagStage python3.6.6-build
+BuildAndTagStage python3.7.0-build
+BuildAndTagStage buildscriptbuilder
+
 tags="-t $DOCKER_BUILD_IMAGES_REPO:latest"
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
@@ -14,8 +38,6 @@ if [ -n "$BUILD_NUMBER" ]
 then
     tags="$tags -t $DOCKER_BUILD_IMAGES_REPO:$BUILD_NUMBER"
 fi
-
-cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
 then
@@ -44,3 +66,7 @@ fi
 echo
 echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
 cat $BUILD_IMAGES_ARTIFACTS_FILE
+
+echo
+echo "Cleanup: Running 'docker system prune' ..."
+docker system prune -f
