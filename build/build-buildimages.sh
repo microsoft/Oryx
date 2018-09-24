@@ -8,7 +8,7 @@ declare -r GIT_COMMIT=$(git rev-parse HEAD)
 source $REPO_DIR/build/__variables.sh
 
 tags="-t $DOCKER_BUILD_IMAGES_REPO:latest"
-args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 if [ -n "$BUILD_NUMBER" ]
 then
@@ -21,11 +21,11 @@ if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
 then
 	echo
 	echo "Building build image(s) with NO cache..."
-	docker build --no-cache $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --no-cache $tags $labels . -f "$BUILD_IMAGES_DOCKERFILE"
 else
 	echo
 	echo "Building build image(s)..."
-	docker build $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build $tags $labels . -f "$BUILD_IMAGES_DOCKERFILE"
 fi
 
 # Write the list of images that were built to artifacts folder

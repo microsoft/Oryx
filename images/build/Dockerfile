@@ -228,11 +228,7 @@ WORKDIR /usr/oryx/src
 RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli
 
 FROM python AS final
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
-LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
-LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
 ENTRYPOINT [ "benv" ]
