@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -50,31 +49,50 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return scriptGenerator;
                 }
             }
+
             return null;
         }
 
         private bool IsSupportedLanguage(ScriptGeneratorContext context, IScriptGenerator scriptGenerator)
         {
-            if (!string.IsNullOrEmpty(context.LanguageName))
+            if (string.IsNullOrEmpty(context.LanguageName))
             {
-                return string.Equals(
-                    context.LanguageName,
-                    scriptGenerator.SupportedLanguageName,
-                    StringComparison.OrdinalIgnoreCase);
+                return true;
             }
-            return true;
+
+            return string.Equals(
+                context.LanguageName,
+                scriptGenerator.SupportedLanguageName,
+                StringComparison.OrdinalIgnoreCase);
         }
 
-        //TODO: Check if we need to do the check only for major and minor version etc.
         private bool IsSupportedLanguageVersion(ScriptGeneratorContext context, IScriptGenerator scriptGenerator)
         {
-            if (!string.IsNullOrEmpty(context.LanguageVersion))
+            if (string.IsNullOrEmpty(context.LanguageVersion))
             {
-                return scriptGenerator.SupportedLanguageVersions.Contains(
-                        context.LanguageVersion,
-                        StringComparer.OrdinalIgnoreCase);
+                return true;
             }
-            return true;
+
+            return IsSupportedLanguageVersion(context.LanguageVersion, scriptGenerator.SupportedLanguageVersions);
+        }
+
+        private bool IsSupportedLanguageVersion(string providedVersion, IEnumerable<string> supportedVersions)
+        {
+            try
+            {
+                var provided = new SemVer.Range(providedVersion);
+                var maxiSatisfyingVersion = provided.MaxSatisfying(supportedVersions);
+                if (string.IsNullOrEmpty(maxiSatisfyingVersion))
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                //TODO:log here
+                return false;
+            }
         }
     }
 }

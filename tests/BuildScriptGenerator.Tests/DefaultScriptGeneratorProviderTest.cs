@@ -75,12 +75,12 @@ namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
         public void GetScriptGenerator_ReturnsNull_ForSupportedLanguage_ButUnsupportedVersion()
         {
             // Arrange
-            var scriptGenerator = new TestScriptGenerator("lang1", new[] { "1.0" });
+            var scriptGenerator = new TestScriptGenerator("lang1", new[] { "1.0.0" });
             var provider = CreateDefaultScriptGeneratorProvider(new[] { scriptGenerator });
             var context = CreateScriptGeneratorContext(
                 new TestSourceRepo(),
                 languageName: "lang1",
-                languageVersion: "2.0");
+                languageVersion: "2.0.0");
 
             // Act
             var actual = provider.GetScriptGenerator(context);
@@ -109,13 +109,13 @@ namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
         public void GetScriptGenerator_ReturnsFirstScriptGenerator_WhichSupportsLanguageAndVersion()
         {
             // Arrange
-            var scriptGenerator1 = new TestScriptGenerator("lang1", new[] { "1.0" });
-            var expected = new TestScriptGenerator("lang1", new[] { "2.0" });
+            var scriptGenerator1 = new TestScriptGenerator("lang1", new[] { "1.0.0" });
+            var expected = new TestScriptGenerator("lang1", new[] { "2.0.0" });
             var provider = CreateDefaultScriptGeneratorProvider(new[] { scriptGenerator1, expected });
             var context = CreateScriptGeneratorContext(
                 new TestSourceRepo(),
                 languageName: "lang1",
-                languageVersion: "2.0");
+                languageVersion: "2.0.0");
 
             // Act
             var actual = provider.GetScriptGenerator(context);
@@ -169,6 +169,64 @@ namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
             Assert.Same(expected, scriptGenerator);
         }
 
+        [Fact]
+        public void GetScriptGenerator_ReturnsScriptGenerator_IfOnlyMajorAndMinorVersionsAreProvided()
+        {
+            // Arrange
+            var expected = new TestScriptGenerator("lang1", new[] { "1.2.3" });
+            var provider = CreateDefaultScriptGeneratorProvider(new[] { expected });
+            var context = CreateScriptGeneratorContext(
+                new TestSourceRepo(),
+                languageName: "lang1",
+                languageVersion: "1.2");
+
+            // Act
+            var actual = provider.GetScriptGenerator(context);
+
+            // Assert
+            Assert.Same(expected, actual);
+        }
+
+        [Fact]
+        public void GetScriptGenerator_ReturnsScriptGenerator_IfMajorMinorAndPatchVersionsAreProvided()
+        {
+            // Arrange
+            var expected = new TestScriptGenerator("lang1", new[] { "1.2.3" });
+            var provider = CreateDefaultScriptGeneratorProvider(new[] { expected });
+            var context = CreateScriptGeneratorContext(
+                new TestSourceRepo(),
+                languageName: "lang1",
+                languageVersion: "1.2.3");
+
+            // Act
+            var actual = provider.GetScriptGenerator(context);
+
+            // Assert
+            Assert.Same(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("1.2.3", "1.2.2")]
+        [InlineData("1.3.2", "1.2.2")]
+        [InlineData("1.3", "1.2.2")]
+        [InlineData("2.2.2", "1.2.2")]
+        public void GetScriptGenerator_ReturnsNull_IfLanguageVersionIsNotSupported(
+            string providedLanguageVersion,
+            string supportedVersions)
+        {
+            // Arrange
+            var supportedLanguageVersions = supportedVersions.Split(',');
+            var provider = CreateDefaultScriptGeneratorProvider(
+                new[] { new TestScriptGenerator("lang1", supportedLanguageVersions, canGenerateScript: false) });
+            var context = CreateScriptGeneratorContext(new TestSourceRepo(), "lang1", providedLanguageVersion);
+
+            // Act
+            var scriptGenerator = provider.GetScriptGenerator(context);
+
+            // Assert
+            Assert.Null(scriptGenerator);
+        }
+
         private DefaultScriptGeneratorProvider CreateDefaultScriptGeneratorProvider(
             IEnumerable<IScriptGenerator> scriptGenerators)
         {
@@ -216,7 +274,7 @@ namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
                 {
                     return _canGenerateScript.Value;
                 }
-                
+
                 return true;
             }
 
