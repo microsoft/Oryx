@@ -10,6 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddBuildScriptGeneratorServices(this IServiceCollection services)
         {
             services.AddNodeScriptGeneratorServices();
+            services.AddPythonScriptGeneratorServices();
 
             services.AddSingleton<IScriptGeneratorProvider, DefaultScriptGeneratorProvider>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();

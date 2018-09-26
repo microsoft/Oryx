@@ -55,7 +55,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     TempDirectory = options.TempDirectory,
                     GenerateScriptOnly = options.ScriptOnly,
                 };
-
+                logger.LogInformation("Language name: " + options.LanguageName + "\nLanguage version: " + options.LanguageVersion);
+                
                 // Get script generator
                 var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator(scriptGeneratorContext);
                 if (scriptGenerator == null)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class NodeVersionResolverTest
     {
