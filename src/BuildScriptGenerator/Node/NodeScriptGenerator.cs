@@ -22,7 +22,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
 SOURCE_DIR=$1
 OUTPUT_DIR=$2
-CURRENT_DIR=$(pwd)
 
 if [ ! $# -eq 2 ]; then
     echo ""Usage: $0 <source-dir> <output-dir>""
@@ -51,8 +50,6 @@ echo
 echo
 echo ""Copying output from '$SOURCE_DIR' to '$OUTPUT_DIR' ...""
 cp -r . ""$OUTPUT_DIR""
-
-cd ""$CURRENT_DIR""
 
 echo
 echo Done.

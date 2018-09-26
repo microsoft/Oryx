@@ -9,7 +9,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// The path to the directory containing source code.
         /// </summary>
         public string SourceCodeFolder { get; set; }
-        
+
         /// <summary>
         /// The path to the directory which will act as an intermediate directory for building the source code before
         /// the output is finally put into <see cref="OutputFolder"/>.
@@ -17,20 +17,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string IntermediateFolder { get; set; }
 
         /// <summary>
+        /// Gets or sets the flag which indicates if an intermediate folder should be used to first copy the source
+        /// folder content and work on it.
+        /// </summary>
+        public bool DoNotUseIntermediateFolder { get; set; }
+
+        /// <summary>
         /// The path to the directory containing the final output of building the source code.
         /// </summary>
         public string OutputFolder { get; set; }
-
-        /// <summary>
-        /// The path to the file which is going to have the generated script. Can be <c>null</c>. If <c>null</c>, the
-        /// script is created in a temporary folder.
-        /// </summary>
-        public string ScriptPath { get; set; }
-
-        /// <summary>
-        /// Flag which indicates that a build should not happen and only a script needs to be generated.
-        /// </summary>
-        public bool ScriptOnly { get; set; }
 
         /// <summary>
         /// The name of the language that the code in <see cref="SourceCodeFolder"/> has.

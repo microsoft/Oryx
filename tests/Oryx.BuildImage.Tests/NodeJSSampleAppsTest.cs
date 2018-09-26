@@ -11,7 +11,6 @@ namespace Oryx.BuildImage.Tests
 {
     public class NodeJSSampleAppsTest
     {
-        private const string BuildScriptGeneratorPath = "/opt/buildscriptgen/GenerateBuildScript";
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
         private readonly string _hostSamplesDir;
@@ -43,7 +42,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"{BuildScriptGeneratorPath} {appDir} {appOutputDir} && " +
+                    $"oryx build {appDir} {appOutputDir} && " +
                     $"ls {appOutputDir}" +
                     "\""
                 });
@@ -76,7 +75,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"{BuildScriptGeneratorPath} {appDir} {appOutputDir} -l nodejs -lv 8.2.1 && " +
+                    $"oryx build {appDir} {appOutputDir} -l nodejs --language-version 8.2.1 && " +
                     $"ls {appOutputDir}" +
                     "\""
                 });
@@ -92,7 +91,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
+        public void CanBuild_UsingScriptGeneratedBy_ScriptCommand()
         {
             // Arrange
             var volume = DockerVolume.Create(_hostSamplesDir);
@@ -110,7 +109,8 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"{BuildScriptGeneratorPath} {appDir} --script-only --script-path {generatedScript} && " +
+                    $"oryx script {appDir} >> {generatedScript} && " +
+                    $"chmod +x {generatedScript} && " +
                     $"{generatedScript} {appDir} {appOutputDir} && " +
                     $"ls {appOutputDir}" +
                     "\""
@@ -127,7 +127,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption_AndWhenExplicitLanguageAndVersion_AreProvided()
+        public void CanBuild_UsingScriptGeneratedBy_ScriptCommand_AndWhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
             var volume = DockerVolume.Create(_hostSamplesDir);
@@ -145,7 +145,8 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"{BuildScriptGeneratorPath} {appDir} -l nodejs -lv 8.2.1 --script-only --script-path {generatedScript} && " +
+                    $"oryx script {appDir} -l nodejs --language-version 8.2.1 >> {generatedScript} && " +
+                    $"chmod +x {generatedScript} && " +
                     $"{generatedScript} {appDir} {appOutputDir} && " +
                     $"ls {appOutputDir}" +
                     "\""
@@ -180,7 +181,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"{BuildScriptGeneratorPath} {appDir} {appOutputDir} -i {intermediateDir} && " +
+                    $"oryx build {appDir} {appOutputDir} -i {intermediateDir} && " +
                     $"ls {appOutputDir}" +
                     "\""
                 });

@@ -229,6 +229,7 @@ RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGe
 
 FROM python AS final
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
+RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
 ENTRYPOINT [ "benv" ]

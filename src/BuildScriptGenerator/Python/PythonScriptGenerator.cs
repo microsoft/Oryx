@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             @"#!/bin/bash
 SOURCE_DIR=$1
 OUTPUT_DIR=$2
-CURRENT_DIR=$(pwd)
 
 source /usr/local/bin/benv {0}
 
@@ -57,7 +56,6 @@ source $ANTENV/bin/activate
 pip install -r requirements.txt
 
 echo ""pip install finished""
-cd ""$CURRENT_DIR""
 ";
 
         public PythonScriptGenerator(

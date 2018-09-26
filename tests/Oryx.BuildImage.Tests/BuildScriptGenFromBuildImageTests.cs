@@ -26,7 +26,7 @@ namespace Oryx.BuildImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(
                 imageId: BuildImageTestSettings.BuildImageName,
-                commandToExecuteOnRun: "/opt/buildscriptgen/GenerateBuildScript");
+                commandToExecuteOnRun: "oryx");
 
             // Assert
             RunAsserts(() =>
@@ -45,7 +45,7 @@ namespace Oryx.BuildImage.Tests
                 imageId: BuildImageTestSettings.BuildImageName,
                 environmentVariables: null,
                 volumes: null,
-                command: "/opt/buildscriptgen/GenerateBuildScript",
+                command: "oryx",
                 commandArguments: new[] { "languages" });
 
             // Assert

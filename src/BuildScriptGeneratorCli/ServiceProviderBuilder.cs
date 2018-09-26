@@ -34,34 +34,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 });
         }
 
-        public ServiceProviderBuilder WithScriptGenerationOptions(Program program)
+        public ServiceProviderBuilder ConfigureScriptGenerationOptions(Action<BuildScriptGeneratorOptions> configure)
         {
             _serviceCollection.Configure<BuildScriptGeneratorOptions>(options =>
             {
-                options.SourceCodeFolder = Path.GetFullPath(program.SourceCodeFolder);
-                options.ScriptPath = program.ScriptPath;
-                options.ScriptOnly = program.ScriptOnly;
-                options.LanguageName = program.LanguageName;
-                options.LanguageVersion = program.LanguageVersion;
-
-                if (!string.IsNullOrEmpty(program.OutputFolder))
-                {
-                    options.OutputFolder = Path.GetFullPath(program.OutputFolder);
-                }
-
-                if (!string.IsNullOrEmpty(program.IntermediateFolder))
-                {
-                    options.IntermediateFolder = Path.GetFullPath(program.IntermediateFolder);
-                }
-
-                // Create one unique subdirectory per session (or run of this tool)
-                // Example structure:
-                // /tmp/BuildScriptGenerator/guid1
-                // /tmp/BuildScriptGenerator/guid2
-                options.TempDirectory = Path.Combine(
-                    Path.GetTempPath(),
-                    nameof(BuildScriptGenerator),
-                    Guid.NewGuid().ToString("N"));
+                configure(options);
             });
             return this;
         }

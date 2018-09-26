@@ -1,7 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly BuildScriptGeneratorOptions _options;
         private readonly ILogger<DefaultSourceRepoProvider> _logger;
+        private bool _copiedToIntermediateDirectory = false;
 
         public DefaultSourceRepoProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -23,9 +23,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public ISourceRepo GetSourceRepo()
         {
+            if (_options.DoNotUseIntermediateFolder)
+            {
+                return new LocalSourceRepo(_options.SourceCodeFolder);
+            }
+
             var intermediateDir = EnsureIntermediateDirectory();
 
-            CopyDirectories(_options.SourceCodeFolder, intermediateDir.FullName, recursive: true);
+            if (!_copiedToIntermediateDirectory)
+            {
+                CopyDirectories(_options.SourceCodeFolder, intermediateDir.FullName, recursive: true);
+                _copiedToIntermediateDirectory = true;
+            }
 
             return new LocalSourceRepo(intermediateDir.FullName);
         }

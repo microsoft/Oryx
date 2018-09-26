@@ -12,7 +12,6 @@ namespace Oryx.BuildImage.Tests
 {
     public class PythonSampleAppsTest
     {
-        private const string BuildScriptGeneratorPath = "/opt/buildscriptgen/GenerateBuildScript";
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
         private readonly string _hostSamplesDir;
@@ -44,7 +43,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"{BuildScriptGeneratorPath} {appDir} {appOutputDir} -l python -lv 3.6.6 && " +
+                    $"oryx build {appDir} {appOutputDir} -l python --language-version 3.6.6 && " +
                     $"ls {appOutputDir}" +
                     "\""
                 });
