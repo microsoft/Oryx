@@ -1,6 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
 using System;
 using System.IO;
 using System.Reflection;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -28,9 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 .AddLogging(loggingBuilder =>
                 {
                     loggingBuilder
-                    .AddConfiguration(configuration.GetSection("Logging"))
-                    .AddConsole()
-                    .AddDebug();
+                    .SetMinimumLevel(LogLevel.Trace)
+                    .AddFile();
                 });
         }
 

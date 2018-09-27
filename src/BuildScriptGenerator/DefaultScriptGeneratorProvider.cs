@@ -31,21 +31,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     _logger.LogDebug(
                         $"Script generator '{scriptGenerator.GetType()}' does not " +
-                        $"support language '{context.LanguageName}'");
+                        $"support language '{context.LanguageName}'.");
                     continue;
                 }
 
                 if (!IsSupportedLanguageVersion(context, scriptGenerator))
                 {
                     _logger.LogDebug(
-                        $"Script generator '{scriptGenerator.GetType()}' supports language {context.LanguageName}, " +
-                        $"but does not support version '{context.LanguageName}'. " +
+                        $"Script generator '{scriptGenerator.GetType()}' supports language '{context.LanguageName}', " +
+                        $"but does not support version '{context.LanguageVersion}'. " +
                         $"Supported versions are: {string.Join(", ", scriptGenerator.SupportedLanguageVersions)}");
                     continue;
                 }
 
                 if (scriptGenerator.CanGenerateScript(context))
                 {
+                    _logger.LogDebug(
+                        $"Script generator '{scriptGenerator.GetType()}' will be used to generate the script.");
+
                     return scriptGenerator;
                 }
             }
@@ -88,11 +91,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                //TODO:log here
-                return false;
+                _logger.LogDebug(ex, "An error occurred while trying to find supported language version.");
             }
+
+            return false;
         }
     }
 }

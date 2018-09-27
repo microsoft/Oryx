@@ -82,6 +82,8 @@ echo ""pip install finished""
             {
                 return true;
             }
+
+            _logger.LogDebug($"Cannot generate script as source folder does not have file '{RequirementsFileName}'.");
             return false;
         }
 

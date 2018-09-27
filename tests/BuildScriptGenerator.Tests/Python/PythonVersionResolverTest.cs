@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Xunit;
 
@@ -72,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             var pythonVersionProvider = new TestPythonVersionProvider(supportedVersions);
 
-            return new PythonVersionResolver(pythonVersionProvider);
+            return new PythonVersionResolver(pythonVersionProvider, NullLogger<PythonVersionResolver>.Instance);
         }
 
         private class TestPythonVersionProvider : IPythonVersionProvider

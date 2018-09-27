@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -14,7 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             BuildScriptGeneratorOptions options,
             string sourceCodeFolder,
             string languageName,
-            string languageVersion)
+            string languageVersion,
+            string logFile,
+            string logLevel)
         {
             ConfigureBuildScriptGeneratorOptions(
                 options,
@@ -23,7 +26,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 intermediateFolder: null,
                 doNotUseIntermediateFolder: false,
                 languageName,
-                languageVersion);
+                languageVersion,
+                logFile,
+                logLevel);
         }
 
         public static void ConfigureBuildScriptGeneratorOptions(
@@ -33,7 +38,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string intermediateFolder,
             bool doNotUseIntermediateFolder,
             string languageName,
-            string languageVersion)
+            string languageVersion,
+            string logFile,
+            string logLevel)
         {
             if (options == null)
             {
@@ -64,6 +71,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             options.DoNotUseIntermediateFolder = doNotUseIntermediateFolder;
+
+            if (!string.IsNullOrEmpty(logFile))
+            {
+                options.LogFile = Path.GetFullPath(logFile);
+            }
+
+            if (string.IsNullOrEmpty(logLevel))
+            {
+                options.MinimumLogLevel = LogLevel.Warning;
+            }
+            else
+            {
+                options.MinimumLogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), logLevel, ignoreCase: true);
+            }
         }
     }
 }

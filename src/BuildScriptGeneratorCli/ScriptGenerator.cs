@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private readonly IConsole _console;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<ScriptGenerator> _logger;
 
         public ScriptGenerator(
             IConsole console,
@@ -24,13 +25,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             _console = console;
             _serviceProvider = serviceProvider;
+            _logger = _serviceProvider.GetRequiredService<ILogger<ScriptGenerator>>();
         }
 
         public bool TryGenerateScript(out string generatedScript)
         {
             generatedScript = null;
-
-            var logger = _serviceProvider.GetRequiredService<ILogger<Program>>();
 
             try
             {
@@ -51,8 +51,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     OutputFolder = options.OutputFolder,
                     TempDirectory = options.TempDirectory,
                 };
-                logger.LogInformation(
-                    "Language name: " + options.LanguageName + "\nLanguage version: " + options.LanguageVersion);
 
                 // Get script generator
                 var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator(scriptGeneratorContext);
@@ -75,13 +73,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (Exception ex)
             {
-                logger.LogError($"An error occurred while running this tool:" + Environment.NewLine + ex.ToString());
+                _logger.LogError($"An error occurred while running this tool:" + Environment.NewLine + ex.ToString());
                 _console.WriteLine("Oops... An unexpected error has occurred.");
                 return false;
             }
         }
 
-        private static void EnsureTempDirectory(BuildScriptGeneratorOptions options)
+        private void EnsureTempDirectory(BuildScriptGeneratorOptions options)
         {
             if (string.IsNullOrEmpty(options.TempDirectory))
             {
@@ -90,6 +88,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             Directory.CreateDirectory(options.TempDirectory);
+
+            _logger.LogDebug($"Created root temp directory for script generator at '{options.TempDirectory}'.");
         }
     }
 }

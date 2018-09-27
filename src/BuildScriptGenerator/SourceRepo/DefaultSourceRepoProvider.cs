@@ -32,6 +32,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (!_copiedToIntermediateDirectory)
             {
+                _logger.LogDebug(
+                    $"Copying content from '{_options.SourceCodeFolder}' to '{intermediateDir.FullName}' ...");
+
                 CopyDirectories(_options.SourceCodeFolder, intermediateDir.FullName, recursive: true);
                 _copiedToIntermediateDirectory = true;
             }
@@ -50,6 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 intermediateDir = _options.IntermediateFolder;
             }
+
+            _logger.LogDebug($"Creating intermediate folder at '{intermediateDir}' ...");
+
             return Directory.CreateDirectory(intermediateDir);
         }
 

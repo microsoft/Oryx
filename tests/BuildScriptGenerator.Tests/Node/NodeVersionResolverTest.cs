@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Xunit;
 
@@ -133,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 supportedNodeVersions: supportedNodeVersions,
                 supportedNpmVersions: supportedNpmVersions);
 
-            return new NodeVersionResolver(nodeVersionProvider);
+            return new NodeVersionResolver(nodeVersionProvider, NullLogger<NodeVersionResolver>.Instance);
         }
 
         private class TestNodeVersionProvider : INodeVersionProvider

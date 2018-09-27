@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Xunit;
@@ -22,47 +23,22 @@ namespace BuildScriptGeneratorCli.Tests
                 options,
                 sourceCodeFolder: ".",
                 "nodeJs",
-                "3.2.1");
+                "3.2.1",
+                "logFile.txt",
+                "trace");
 
             // Assert
             Assert.StartsWith(
                 Path.Combine(Path.GetTempPath(), nameof(Microsoft.Oryx.BuildScriptGenerator)),
                 options.TempDirectory);
             Assert.Equal(Directory.GetCurrentDirectory(), options.SourceCodeFolder);
+            Assert.Equal(Path.Combine(Directory.GetCurrentDirectory(), "logFile.txt"), options.LogFile);
             Assert.Equal("nodeJs", options.LanguageName);
             Assert.Equal("3.2.1", options.LanguageVersion);
+            Assert.Equal(LogLevel.Trace, options.MinimumLogLevel);
             Assert.Null(options.IntermediateFolder);
             Assert.Null(options.OutputFolder);
             Assert.False(options.DoNotUseIntermediateFolder);
-        }
-
-        [Fact]
-        public void ConfiguresOptions2()
-        {
-            // Arrange
-            var options = new BuildScriptGeneratorOptions();
-            var folder = Directory.GetCurrentDirectory();
-
-            // Act
-            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options,
-                sourceCodeFolder: folder,
-                outputFolder: folder,
-                intermediateFolder: folder,
-                doNotUseIntermediateFolder: true,
-                "nodeJs",
-                "3.2.1");
-
-            // Assert
-            Assert.Equal(folder, options.SourceCodeFolder);
-            Assert.Equal(folder, options.OutputFolder);
-            Assert.Equal(folder, options.IntermediateFolder);
-            Assert.Equal("nodeJs", options.LanguageName);
-            Assert.Equal("3.2.1", options.LanguageVersion);
-            Assert.StartsWith(
-                Path.Combine(Path.GetTempPath(), nameof(Microsoft.Oryx.BuildScriptGenerator)),
-                options.TempDirectory);
-            Assert.True(options.DoNotUseIntermediateFolder);
         }
 
         [Fact]
@@ -70,23 +46,25 @@ namespace BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var options = new BuildScriptGeneratorOptions();
-            var currentDir = ".";
-            var expected = Directory.GetCurrentDirectory();
+            var currentDir = Directory.GetCurrentDirectory();
 
             // Act
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                sourceCodeFolder: currentDir,
+                sourceCodeFolder: ".",
                 outputFolder: currentDir,
                 intermediateFolder: currentDir,
                 doNotUseIntermediateFolder: true,
                 "nodeJs",
-                "3.2.1");
+                "3.2.1",
+                "logFile.txt",
+                "trace");
 
             // Assert
-            Assert.Equal(expected, options.SourceCodeFolder);
-            Assert.Equal(expected, options.OutputFolder);
-            Assert.Equal(expected, options.IntermediateFolder);
+            Assert.Equal(currentDir, options.SourceCodeFolder);
+            Assert.Equal(currentDir, options.OutputFolder);
+            Assert.Equal(currentDir, options.IntermediateFolder);
+            Assert.Equal(Path.Combine(currentDir, "logFile.txt"), options.LogFile);
         }
 
         [Theory]
@@ -98,6 +76,7 @@ namespace BuildScriptGeneratorCli.Tests
             var options = new BuildScriptGeneratorOptions();
             var providedPath = Path.Combine(paths);
             var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), providedPath);
+            var logFile = Path.Combine(providedPath, "logFile.txt");
 
             // Act
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
@@ -107,12 +86,15 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateFolder: providedPath,
                 doNotUseIntermediateFolder: true,
                 "nodeJs",
-                "3.2.1");
+                "3.2.1",
+                logFile,
+                "trace");
 
             // Assert
             Assert.Equal(absolutePath, options.SourceCodeFolder);
             Assert.Equal(absolutePath, options.OutputFolder);
             Assert.Equal(absolutePath, options.IntermediateFolder);
+            Assert.Equal(Path.Combine(absolutePath, "logFile.txt"), options.LogFile);
         }
 
         [Fact]
@@ -121,6 +103,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Arrange
             var options = new BuildScriptGeneratorOptions();
             var absolutePath = Path.GetTempPath();
+            var logFile = Path.Combine(Path.GetTempPath(), "logFile.txt");
 
             // Act
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
@@ -130,12 +113,43 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateFolder: absolutePath,
                 doNotUseIntermediateFolder: true,
                 "nodeJs",
-                "3.2.1");
+                "3.2.1",
+                logFile,
+                "trace");
 
             // Assert
             Assert.Equal(absolutePath, options.SourceCodeFolder);
             Assert.Equal(absolutePath, options.OutputFolder);
             Assert.Equal(absolutePath, options.IntermediateFolder);
+            Assert.Equal(logFile, options.LogFile);
+        }
+
+        [Theory]
+        [InlineData("trace", LogLevel.Trace)]
+        [InlineData("debug", LogLevel.Debug)]
+        [InlineData("information", LogLevel.Information)]
+        [InlineData("warning", LogLevel.Warning)]
+        [InlineData("error", LogLevel.Error)]
+        [InlineData("critical", LogLevel.Critical)]
+        public void ConfiguresOptions_ForAllAllowedLoggingLevels(string logLevel, LogLevel expected)
+        {
+            // Arrange
+            var options = new BuildScriptGeneratorOptions();
+
+            // Act
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
+                options,
+                sourceCodeFolder: ".",
+                outputFolder: ".",
+                intermediateFolder: ".",
+                doNotUseIntermediateFolder: false,
+                "nodeJs",
+                "3.2.1",
+                Path.Combine(Path.GetTempPath(), "logFile.txt"),
+                logLevel);
+
+            // Assert
+            Assert.Equal(expected, options.MinimumLogLevel);
         }
     }
 }

@@ -50,7 +50,9 @@ namespace BuildScriptGeneratorCli.Tests
         public ConsoleColor ForegroundColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public ConsoleColor BackgroundColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+#pragma warning disable 0067
         public event ConsoleCancelEventHandler CancelKeyPress;
+#pragma warning restore 0067
 
         public void ResetColor()
         {
