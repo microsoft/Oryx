@@ -6,7 +6,6 @@ steps:
       echo "Variable 'BuildAndTestBuildImages' or 'BuildAndTestRuntimeImages' needs to be 'true' to run this build."
       exit 1
     fi
-    echo "##vso[task.setvariable variable=IsValidPipeline]true"
   displayName: 'Validate pipeline run'
 
 - checkout: self
@@ -16,38 +15,39 @@ steps:
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/build-solution.sh
+  condition: succeeded()
 
 - task: ShellScript@2
   displayName: 'Build build images'
   inputs:
     scriptPath: ./build/build-buildimages.sh
-  condition: eq(variables['BuildAndTestBuildImages'], 'true')
+  condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build runtime images'
   inputs:
     scriptPath: ./build/build-runtimeimages.sh
-  condition: eq(variables['BuildAndTestRuntimeImages'], 'true')
+  condition: and(succeeded(), eq(variables['BuildAndTestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test script generator'
   inputs:
     scriptPath: ./build/test-scriptgenerator.sh
-  condition: eq(variables['BuildAndTestBuildImages'], 'true')
+  condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
     scriptPath: ./build/test-buildimages.sh
     args: skipBuildingImages
-  condition: eq(variables['BuildAndTestBuildImages'], 'true')
+  condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test runtime images'
   inputs:
     scriptPath: ./build/test-runtimeimages.sh
     args: skipBuildingImages
-  condition: eq(variables['BuildAndTestRuntimeImages'], 'true')
+  condition: and(succeeded(), eq(variables['BuildAndTestRuntimeImages'], 'true'))
 
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
@@ -81,7 +81,7 @@ steps:
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
     includeLatestTag: false
-  condition: and(eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
 
 - task: Docker@0
   displayName: 'Push runtime images'
@@ -91,13 +91,13 @@ steps:
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
     includeLatestTag: false
-  condition: and(eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Clean up docker artifacts'
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
-  condition: eq(variables['IsValidPipeline'], 'true')
+  condition: or(eq(variables['BuildAndTestBuildImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
 
 - task: ArchiveFiles@2
   displayName: 'Archive docker files and scripts for Oryx build and runtime images'
