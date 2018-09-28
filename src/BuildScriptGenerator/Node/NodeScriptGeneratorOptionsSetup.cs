@@ -7,8 +7,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeScriptGeneratorOptionsSetup : IConfigureOptions<NodeScriptGeneratorOptions>
     {
-        internal const string NodeJsDefaultVersion = "NODE_DEFAULT_VERSION";
-        internal const string NpmDefaultVersion = "NPM_DEFAULT_VERSION";
+        internal const string NodeJsDefaultVersion = "ORYX_NODE_DEFAULT_VERSION";
+        internal const string NpmDefaultVersion = "ORYX_NPM_DEFAULT_VERSION";
 
         private readonly IEnvironment _environment;
 
