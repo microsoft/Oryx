@@ -20,7 +20,7 @@ namespace Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
-        [Fact]
+        [Fact (Skip = "bug#693187")]
         public void DotnetAlias_UsesLatestVersion()
         {
             // Arrange
