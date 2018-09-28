@@ -69,4 +69,4 @@ cat $BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "Cleanup: Running 'docker system prune' ..."
-docker system prune -f
+#docker system prune -f

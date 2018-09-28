@@ -33,7 +33,7 @@ docker images
 echo
 echo "Running 'docker system prune' ..."
 echo
-docker system prune -f
+#docker system prune -f
 
 echo
 echo "Updated list of docker images:"
