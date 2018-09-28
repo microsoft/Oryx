@@ -1,4 +1,4 @@
-FROM buildpack-deps:stable AS main
+FROM buildpack-deps:jessie-curl AS main
 
 # Configure locale (required for Python)
 ENV LANG C.UTF-8
@@ -6,7 +6,9 @@ ENV LANG C.UTF-8
 # Install basic build tools
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+        git \
         jq \
+        make \
  && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core
@@ -17,11 +19,9 @@ RUN apt-get update \
         libcurl3 \
         libgcc1 \
         libgssapi-krb5-2 \
-        # libicu52 \ # doesn't exist, but may be needed for .NET Core 1.x
-        libicu57 \
+        libicu52 \
         liblttng-ust0 \
-        # libssl1.0.0 \ # doesn't exist, but may be needed for .NET Core 1.x
-        libssl1.0.2 \
+        libssl1.0.0 \
         libstdc++6 \
         libunwind8 \
         libuuid1 \
@@ -145,17 +145,15 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* . \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg .
 
-# Install Python prerequisites
+# Install Python build prerequisites
+FROM buildpack-deps:jessie AS python-build-prereqs
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-        tk-dev \
-        uuid-dev \
- && rm -rf /var/lib/apt/lists/*
-# https://github.com/docker-library/python/issues/147
-ENV PYTHONIOENCODING UTF-8
+      tk-dev \
+      uuid-dev
 
 # Build Python 2.7.15
-FROM buildpack-deps:stable AS python2.7.15-build
+FROM python-build-prereqs AS python2.7.15-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=2.7.15
 ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
@@ -165,7 +163,7 @@ RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 # Build Python 3.5.6
-FROM buildpack-deps:stable AS python3.5.6-build
+FROM python-build-prereqs AS python3.5.6-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.5.6
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
@@ -175,7 +173,7 @@ RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 # Build Python 3.6.6
-FROM buildpack-deps:stable AS python3.6.6-build
+FROM python-build-prereqs AS python3.6.6-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.6.6
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
@@ -184,8 +182,18 @@ COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
+# Build OpenSSL 1.1.1 (needed for Python 3.7.0)
+FROM buildpack-deps:jessie AS openssl1.1.1-build
+WORKDIR /usr/src/openssl
+COPY images/build/openssl-build.sh /
+RUN chmod +x /openssl-build.sh
+RUN /openssl-build.sh
+
 # Build Python 3.7.0
-FROM buildpack-deps:stable AS python3.7.0-build
+FROM python-build-prereqs AS python3.7.0-build
+COPY --from=openssl1.1.1-build /usr/local/include /usr/local/include
+COPY --from=openssl1.1.1-build /usr/local/lib /usr/local/lib
+RUN ldconfig
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.7.0
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
@@ -196,6 +204,16 @@ RUN /python-build.sh
 
 # Install Python
 FROM main AS python
+COPY --from=openssl1.1.1-build /usr/local/lib /usr/local/lib
+RUN ldconfig
+# It's not clear whether these are needed at runtime...
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        tk-dev \
+        uuid-dev \
+ && rm -rf /var/lib/apt/lists/*
+# https://github.com/docker-library/python/issues/147
+ENV PYTHONIOENCODING UTF-8
 COPY --from=python2.7.15-build /opt /opt
 COPY --from=python3.5.6-build /opt /opt
 COPY --from=python3.6.6-build /opt /opt
