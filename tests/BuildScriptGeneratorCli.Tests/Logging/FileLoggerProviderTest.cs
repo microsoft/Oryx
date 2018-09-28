@@ -102,45 +102,121 @@ namespace BuildScriptGeneratorCli.Tests
             // Assert
             var fileLogger = Assert.IsType<FileLogger>(logger);
             Assert.Equal("category1", fileLogger.CategoryName);
-            Assert.Equal(logFile, fileLogger.LogFile);
+            Assert.Empty(fileLogger.Messages);
             Assert.Equal(LogLevel.Critical, fileLogger.MinimumLogLevel);
         }
 
         [Fact]
-        public void Dispose_CallsDiposesOn_AllCreatedFileLoggers()
+        public void FlushesLogMessages_OnDispose()
         {
-            // Arrange & Act
+            // Arrange
+            var expected = "an error message";
             var logFile = Path.Combine(_rooDirPath, Guid.NewGuid().ToString());
-            var provider = CreateFileLoggerProvider(logFile, LogLevel.Warning);
-            var logger1 = provider.CreateLogger("category1");
-            var logger2 = provider.CreateLogger("category1");
+            var provider = CreateFileLoggerProvider(logFile, thresholdLimit: 5, LogLevel.Warning);
+            var logger = provider.CreateLogger("category1");
 
             // Act-1
-            logger1.LogError("logger1 message");
-            logger2.LogError("logger2 message");
+            logger.LogError(expected);
 
             // Assert-1
+            var fileLogger = Assert.IsType<FileLogger>(logger);
+            var message = Assert.Single(fileLogger.Messages);
+            Assert.Contains(expected, message);
             Assert.False(File.Exists(logFile));
 
             // Act-2
             provider.Dispose();
 
             // Assert-2
+            Assert.Empty(fileLogger.Messages);
+            Assert.True(File.Exists(logFile));
+            var fileContent = File.ReadAllText(logFile);
+            Assert.Contains(expected, fileContent);
+        }
+
+        [Fact]
+        public void FlushesMessages_WhenThresholdIsMet()
+        {
+            // Arrange
+            var logFile = Path.Combine(_rooDirPath, Guid.NewGuid().ToString());
+            var provider = CreateFileLoggerProvider(logFile, thresholdLimit: 2, LogLevel.Warning);
+            var logger = provider.CreateLogger("category1");
+
+            // Act
+            logger.LogError("message1");
+            logger.LogError("message2");
+
+            // Assert
+            var fileLogger = Assert.IsType<FileLogger>(logger);
+            Assert.Empty(fileLogger.Messages);
             Assert.True(File.Exists(logFile));
             var lines = File.ReadAllLines(logFile);
             Assert.Equal(2, lines.Length);
-            Assert.Contains("logger1 message", lines[0]);
-            Assert.Contains("logger2 message", lines[1]);
+            Assert.Contains("message1", lines[0]);
+            Assert.Contains("message2", lines[1]);
+        }
+
+        [Fact]
+        public void AppendsLogs_IfFileAlreadyExists()
+        {
+            // Arrange
+            var logFile = Path.Combine(_rooDirPath, Guid.NewGuid().ToString());
+            var provider = CreateFileLoggerProvider(logFile, thresholdLimit: 2, LogLevel.Warning);
+            var logger = provider.CreateLogger("category1");
+
+            // Act
+            logger.LogError("message1");
+            logger.LogError("message2");
+
+            // The following should append text to the earlier one
+            logger.LogError("message3");
+            logger.LogError("message4");
+
+            // Assert-2
+            var fileLogger = Assert.IsType<FileLogger>(logger);
+            Assert.Empty(fileLogger.Messages);
+            Assert.True(File.Exists(logFile));
+            var lines = File.ReadAllLines(logFile);
+            Assert.Contains("message1", lines[0]);
+            Assert.Contains("message2", lines[1]);
+            Assert.Contains("message3", lines[2]);
+            Assert.Contains("message4", lines[3]);
+        }
+
+        [Fact]
+        public void DoesNotCreateLogFile_WhenThereAreNoMessagesToWrite()
+        {
+            // Arrange
+            var logFile = Path.Combine(_rooDirPath, Guid.NewGuid().ToString());
+            var provider = CreateFileLoggerProvider(logFile, LogLevel.Warning);
+            var logger = provider.CreateLogger("category1");
+
+            // Act
+            provider.Dispose();
+
+            // Assert
+            Assert.False(File.Exists(logFile));
         }
 
         private FileLoggerProvider CreateFileLoggerProvider(string logFile, LogLevel minimumLogLevel)
+        {
+            return CreateFileLoggerProvider(
+                logFile,
+                FileLoggerProvider.DefaultMessageThresholdLimit,
+                minimumLogLevel);
+        }
+
+        private FileLoggerProvider CreateFileLoggerProvider(
+            string logFile,
+            int thresholdLimit,
+            LogLevel minimumLogLevel)
         {
             var options = new BuildScriptGeneratorOptions
             {
                 LogFile = logFile,
                 MinimumLogLevel = minimumLogLevel
             };
-            return new FileLoggerProvider(Options.Create(options));
+            return new FileLoggerProvider(Options.Create(options), thresholdLimit);
         }
 
         public class FileLoggerProviderTestFixutre : IDisposable
@@ -172,8 +248,6 @@ namespace BuildScriptGeneratorCli.Tests
 
         private class TestFileLoggerProvider : FileLoggerProvider
         {
-            private readonly bool _throwOnDispose;
-
             public TestFileLoggerProvider(IOptions<BuildScriptGeneratorOptions> options)
                 : base(options)
             {
