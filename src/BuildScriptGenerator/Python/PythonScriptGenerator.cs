@@ -44,7 +44,9 @@ echo ""Python Virtual Environment: $ANTENV""
 echo ""Python Version: $python""
 
 cd ""$SOURCE_DIR""
-    
+
+mkdir -p ""$OUTPUT_DIR""
+
 cp -rf . ""$OUTPUT_DIR""
 
 cd ""$OUTPUT_DIR""
