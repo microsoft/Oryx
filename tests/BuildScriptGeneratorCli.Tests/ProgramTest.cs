@@ -22,7 +22,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Contains("Usage:", testConsole.Output);
+            Assert.Contains("Usage:", testConsole.StdOutput);
         }
     }
 }

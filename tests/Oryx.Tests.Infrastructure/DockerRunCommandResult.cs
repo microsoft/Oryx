@@ -16,9 +16,10 @@ namespace Oryx.Tests.Infrastructure
             int exitCode,
             Exception exception,
             string output,
+            string error,
             List<DockerVolume> volumes,
             string executedRunCommand)
-            : base(exitCode, exception, output, executedRunCommand)
+            : base(exitCode, exception, output, error, executedRunCommand)
         {
             ContainerName = containerName;
             Volumes = volumes;
@@ -44,7 +45,8 @@ namespace Oryx.Tests.Infrastructure
             sb.AppendLine("----------------------");
             sb.AppendLine($"Executed command: {ExecutedCommand}");
             sb.AppendLine($"Exit code: {ExitCode}");
-            sb.AppendLine($"Output: {Output}");
+            sb.AppendLine($"StdOutput: {Output}");
+            sb.AppendLine($"StdError: {Error}");
             sb.AppendLine($"Exception: {Exception?.Message}");
             sb.AppendLine();
             sb.AppendLine("Use the following commands to investigate the failed container:");

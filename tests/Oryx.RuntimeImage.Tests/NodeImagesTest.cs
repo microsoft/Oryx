@@ -47,7 +47,7 @@ namespace Oryx.RuntimeImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.ReplaceNewLine();
+            var actualOutput = result.Output.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {

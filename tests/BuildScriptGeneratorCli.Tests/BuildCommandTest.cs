@@ -28,7 +28,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.NotEqual(0, exitCode);
-            Assert.Contains("Usage:", testConsole.Output);
+            Assert.Contains("Usage:", testConsole.StdOutput);
         }
 
         [Fact]
@@ -47,9 +47,9 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.NotEqual(0, exitCode);
-            var output = testConsole.Output;
-            Assert.DoesNotContain("Usage:", output);
-            Assert.Contains("Could not find the source code folder", output);
+            var error = testConsole.StdError;
+            Assert.DoesNotContain("Usage:", error);
+            Assert.Contains("Could not find the source code folder", error);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.NotEqual(0, exitCode);
-            var output = testConsole.Output;
+            var output = testConsole.StdOutput;
             Assert.Contains("Usage:", output);
         }
 
@@ -92,7 +92,8 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.True(isValid);
-            Assert.Empty(testConsole.Output);
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
         }
 
         [Fact]
@@ -117,7 +118,8 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Empty(testConsole.Output);
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
         }
 
         private class CustomBuildCommand : BuildCommand

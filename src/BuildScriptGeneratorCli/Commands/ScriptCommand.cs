@@ -9,7 +9,7 @@ using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("script", Description = "Generates script to standard output.")]
+    [Command("script", Description = "Generate script to standard output.")]
     internal class ScriptCommand : BaseCommand
     {
         [Argument(0, Description = "The path to the source code directory.")]
@@ -22,19 +22,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string LanguageName { get; set; }
 
         [Option(
-            "--language-version",
+            "--language-version <LANGUAGE_VERSION>",
             CommandOptionType.SingleValue,
             Description = "The version of programming language being used in the provided source code directory.")]
         public string LanguageVersion { get; set; }
 
         [Option(
-            "--log-file",
+            "--log-file <LOG_FILE>",
             CommandOptionType.SingleValue,
             Description = "The file to which logs have to be written to.")]
         public string LogFile { get; set; }
 
         [Option(
-            "--log-level",
+            "--log-level <LOG_LEVEL>",
             CommandOptionType.SingleValue,
             Description = "The minimum log level at which logs should be written. " +
             "Allowed levels: Trace, Debug, Information, Warning, Error, Critical. " +
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!Directory.Exists(options.SourceCodeFolder))
             {
-                console.WriteLine($"Error: Could not find the source code folder '{options.SourceCodeFolder}'.");
+                console.Error.WriteLine($"Error: Could not find the source code folder '{options.SourceCodeFolder}'.");
                 return false;
             }
             

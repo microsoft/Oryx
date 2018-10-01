@@ -31,8 +31,9 @@ namespace Oryx.BuildImage.Tests
             // Assert
             RunAsserts(() =>
             {
+                Assert.True(result.IsSuccess);
                 // Help text must be shown
-                Assert.Contains("Generates build scripts for multiple languages.", result.Output);
+                Assert.Contains("Generates scripts and builds source code for multiple languages.", result.Output);
             },
             result.GetDebugInfo());
         }
@@ -51,6 +52,7 @@ namespace Oryx.BuildImage.Tests
             // Assert
             RunAsserts(() =>
             {
+                Assert.True(result.IsSuccess);
                 // Help text must be shown
                 Assert.Contains("nodejs:", result.Output);
             },

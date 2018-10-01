@@ -13,11 +13,13 @@ namespace Oryx.Tests.Infrastructure
             int exitCode,
             Exception exception,
             string output,
+            string error,
             string executedCommand)
         {
             ExitCode = exitCode;
             Exception = exception;
             Output = output;
+            Error = error;
 
             ExecutedCommand = executedCommand;
         }
@@ -27,6 +29,8 @@ namespace Oryx.Tests.Infrastructure
         public Exception Exception { get; }
 
         public string Output { get; }
+
+        public string Error { get; }
 
         public bool IsSuccess
         {
@@ -42,11 +46,6 @@ namespace Oryx.Tests.Infrastructure
 
         protected string ExecutedCommand { get; }
 
-        public string ReplaceNewLine(string replacingString = "")
-        {
-            return Output.Replace(Environment.NewLine, replacingString).Replace("\0", replacingString).Replace("\r", replacingString);
-        }
-
         public virtual string GetDebugInfo()
         {
             var sb = new StringBuilder();
@@ -55,7 +54,8 @@ namespace Oryx.Tests.Infrastructure
             sb.AppendLine("----------------------");
             sb.AppendLine($"Executed command: {ExecutedCommand}");
             sb.AppendLine($"Exit code: {ExitCode}");
-            sb.AppendLine($"Output: {Output}");
+            sb.AppendLine($"StdOutput: {Output}");
+            sb.AppendLine($"StdError: {Error}");
             sb.AppendLine($"Exception: {Exception?.Message}");
             return sb.ToString();
         }
@@ -66,7 +66,9 @@ namespace Oryx.Tests.Infrastructure
                 Environment.NewLine +
                 $"Exception: {Exception}" +
                 Environment.NewLine +
-                $"Output: {Output}";
+                $"StdOutput: {Output}" +
+                Environment.NewLine +
+                $"StdError: {Error}";
         }
     }
 }

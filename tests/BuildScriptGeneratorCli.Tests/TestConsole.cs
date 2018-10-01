@@ -10,34 +10,54 @@ namespace BuildScriptGeneratorCli.Tests
 {
     internal class TestConsole : IConsole
     {
-        private readonly StringBuilder _stringBuilder;
-        private readonly StringWriter _stringWriter;
-        private string _output;
-        private bool outputCalled;
+        private readonly StringBuilder _stdOutStringBuilder;
+        private readonly StringWriter _stdOutStringWriter;
+        private readonly StringBuilder _stdErrStringBuilder;
+        private readonly StringWriter _stdErrStringWriter;
+        private string _stdOutput;
+        private string _stdError;
+        private bool _stdOutputCalled;
+        private bool _stdErrorCalled;
 
         public TestConsole()
         {
-            _stringBuilder = new StringBuilder();
-            _stringWriter = new StringWriter(_stringBuilder);
+            _stdOutStringBuilder = new StringBuilder();
+            _stdOutStringWriter = new StringWriter(_stdOutStringBuilder);
+            _stdErrStringBuilder = new StringBuilder();
+            _stdErrStringWriter = new StringWriter(_stdErrStringBuilder);
         }
 
-        public string Output
+        public string StdOutput
         {
             get
             {
-                if (!outputCalled)
+                if (!_stdOutputCalled)
                 {
-                    _stringWriter.Flush();
-                    _output = _stringBuilder.ToString();
-                    outputCalled = true;
+                    _stdOutStringWriter.Flush();
+                    _stdOutput = _stdOutStringBuilder.ToString();
+                    _stdOutputCalled = true;
                 }
-                return _output;
+                return _stdOutput;
             }
         }
 
-        public TextWriter Out => _stringWriter;
+        public string StdError
+        {
+            get
+            {
+                if (!_stdErrorCalled)
+                {
+                    _stdErrStringWriter.Flush();
+                    _stdError = _stdErrStringBuilder.ToString();
+                    _stdErrorCalled = true;
+                }
+                return _stdError;
+            }
+        }
 
-        public TextWriter Error => _stringWriter;
+        public TextWriter Out => _stdOutStringWriter;
+
+        public TextWriter Error => _stdErrStringWriter;
 
         public TextReader In => throw new NotImplementedException();
 

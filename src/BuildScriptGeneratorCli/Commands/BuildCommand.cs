@@ -6,13 +6,14 @@ using System;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("build", Description = "Generates script and builds the code present in the source code directory.")]
+    [Command("build", Description = "Generate script and build the code present in the source code directory.")]
     internal class BuildCommand : BaseCommand
     {
         [Argument(0, Description = "The path to the source code directory.")]
@@ -41,19 +42,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string LanguageName { get; set; }
 
         [Option(
-            "--language-version",
+            "--language-version <LANGUAGE_VERSION>",
             CommandOptionType.SingleValue,
             Description = "The version of programming language being used in the provided source code directory.")]
         public string LanguageVersion { get; set; }
 
         [Option(
-            "--log-file",
+            "--log-file <LOG_FILE>",
             CommandOptionType.SingleValue,
             Description = "The file to which logs have to be written to.")]
         public string LogFile { get; set; }
 
         [Option(
-            "--log-level",
+            "--log-level <LOG_LEVEL>",
             CommandOptionType.SingleValue,
             Description = "The minimum log level at which logs should be written. " +
             "Allowed levels: Trace, Debug, Information, Warning, Error, Critical. " +
@@ -62,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
+            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
             var sourceRepo = sourceRepoProvider.GetSourceRepo();
             var scriptGenerator = new ScriptGenerator(console, serviceProvider);
@@ -76,35 +78,33 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Write the content to the script.
             File.WriteAllText(scriptPath, scriptContent);
-            console.WriteLine($"Script was generated successfully at '{scriptPath}'.");
+            logger.LogDebug($"Script was generated successfully at '{scriptPath}'.");
 
             // Set execute permission on the generated script.
-            (var exitCode, var output) = ProcessHelper.RunProcessAndCaptureOutput(
+            (var exitCode, var output, var error) = ProcessHelper.RunProcessAndCaptureOutput(
                 "chmod",
                 arguments: new[] { "+x", scriptPath });
             if (exitCode != 0)
             {
-                console.WriteLine(
+                console.Error.WriteLine(
                     $"Error: Could not set execute permission on the generated script '{scriptPath}'." +
                     Environment.NewLine +
-                    $"Output: {output}");
+                    $"Output: {output}" +
+                    Environment.NewLine +
+                    $"Error: {error}");
                 return 1;
             }
 
             // Run the generated script
-            console.WriteLine();
-            console.WriteLine($"Running the script '{scriptPath}' ...");
-            (exitCode, output) = ProcessHelper.RunProcessAndCaptureOutput(
+            logger.LogDebug($"Running the script '{scriptPath}' ...");
+            exitCode = ProcessHelper.RunProcess(
                 scriptPath,
                 arguments: new[]
                 {
                     sourceRepo.RootPath,
                     options.OutputFolder
                 },
-                waitForExitInSeconds: (int)TimeSpan.FromMinutes(10).TotalSeconds);
-            console.WriteLine();
-            console.WriteLine(output);
-
+                waitForExitInSeconds: (int)TimeSpan.FromMinutes(30).TotalSeconds);
             return exitCode;
         }
 
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!Directory.Exists(options.SourceCodeFolder))
             {
-                console.WriteLine($"Error: Could not find the source code folder '{options.SourceCodeFolder}'.");
+                console.Error.WriteLine($"Error: Could not find the source code folder '{options.SourceCodeFolder}'.");
                 return false;
             }
 

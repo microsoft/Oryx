@@ -44,11 +44,12 @@ namespace Oryx.Tests.Infrastructure
             var arguments = PrepareArguments();
 
             var output = string.Empty;
+            var error = string.Empty;
             int exitCode = -1;
             Exception exception = null;
             try
             {
-                (exitCode, output) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments, _waitTimeInSeconds);
+                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments, _waitTimeInSeconds);
             }
             catch (InvalidOperationException invalidOperationException)
             {
@@ -60,6 +61,7 @@ namespace Oryx.Tests.Infrastructure
                 exitCode,
                 exception,
                 output,
+                error,
                 volumes,
                 $"{fileName} {string.Join(" ", arguments)}");
 
@@ -128,11 +130,12 @@ namespace Oryx.Tests.Infrastructure
             var arguments = PrepareArguments();
 
             var output = string.Empty;
+            var error = string.Empty;
             int exitCode = -1;
             Exception exception = null;
             try
             {
-                (exitCode, output) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments);
+                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments);
             }
             catch (InvalidOperationException invalidOperationException)
             {
@@ -143,6 +146,7 @@ namespace Oryx.Tests.Infrastructure
                 exitCode,
                 exception,
                 output,
+                error,
                 $"{fileName} {string.Join(" ", arguments)}");
 
             IEnumerable<string> PrepareArguments()

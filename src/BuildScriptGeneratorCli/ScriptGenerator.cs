@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator(scriptGeneratorContext);
                 if (scriptGenerator == null)
                 {
-                    _console.WriteLine(
+                    _console.Error.WriteLine(
                         "Error: Could not find a script generator which can generate a script for " +
                         $"the code in '{options.SourceCodeFolder}'.");
                     return false;
@@ -68,13 +68,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (InvalidUsageException ex)
             {
-                _console.WriteLine(ex.Message);
+                _console.Error.WriteLine(ex.Message);
                 return false;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while running this tool:" + Environment.NewLine + ex.ToString());
-                _console.WriteLine("Oops... An unexpected error has occurred.");
+                _console.Error.WriteLine("Oops... An unexpected error has occurred.");
                 return false;
             }
         }

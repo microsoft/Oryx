@@ -11,20 +11,70 @@ namespace Microsoft.Oryx.Common.Utilities
 {
     public static class ProcessHelper
     {
-        public static (int exitCode, string output) RunProcessAndCaptureOutput(
+        public static int RunProcess(
+            string fileName,
+            IEnumerable<string> arguments,
+            int waitForExitInSeconds = 10)
+        {
+            return RunProcess(
+                fileName,
+                arguments,
+                standardOutputHandler: null,
+                standardErrorHandler: null,
+                waitForExitInSeconds);
+        }
+
+        public static (int exitCode, string output, string error) RunProcessAndCaptureOutput(
             string fileName,
             IEnumerable<string> arguments,
             int waitForExitInSeconds = 10)
         {
             var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+
+            var exitCode = RunProcess(
+                fileName,
+                arguments,
+                // Preserve the output structure and use AppendLine as these handlers
+                // are called for each line that is written to the output.
+                standardOutputHandler: (sender, args) =>
+                {
+                    outputBuilder.AppendLine(args.Data);
+                },
+                standardErrorHandler: (sender, args) =>
+                {
+                    errorBuilder.AppendLine(args.Data);
+                },
+                waitForExitInSeconds);
+
+            return (exitCode, output: outputBuilder.ToString(), error: errorBuilder.ToString());
+        }
+
+        public static int RunProcess(
+            string fileName,
+            IEnumerable<string> arguments,
+            DataReceivedEventHandler standardOutputHandler,
+            DataReceivedEventHandler standardErrorHandler,
+            int waitForExitInSeconds = 10)
+        {
+            var redirectOutput = standardOutputHandler != null;
+            var redirectError = standardErrorHandler != null;
 
             var process = new Process();
             process.StartInfo.FileName = fileName;
             process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.OutputDataReceived += DataReceivedHandler;
-            process.ErrorDataReceived += DataReceivedHandler;
+
+            if (redirectOutput)
+            {
+                process.StartInfo.RedirectStandardOutput = true;
+                process.OutputDataReceived += standardOutputHandler;
+            }
+
+            if (redirectError)
+            {
+                process.StartInfo.RedirectStandardError = true;
+                process.ErrorDataReceived += standardErrorHandler;
+            }
 
             foreach (var argument in arguments)
             {
@@ -39,40 +89,39 @@ namespace Microsoft.Oryx.Common.Utilities
                     throw new InvalidOperationException(
                         "Process failed to start. The command used to run the process was:" +
                         Environment.NewLine +
-                        $"{fileName} {string.Join(" ", arguments)}" +
-                        Environment.NewLine +
-                        "Output from standard output and error:" + outputBuilder.ToString());
+                        $"{fileName} {string.Join(" ", arguments)}");
                 }
 
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
+                if (redirectOutput)
+                {
+                    process.BeginOutputReadLine();
+                }
+
+                if (redirectError)
+                {
+                    process.BeginErrorReadLine();
+                }
 
                 var hasExited = process.WaitForExit((int)TimeSpan.FromSeconds(waitForExitInSeconds).TotalMilliseconds);
                 if (!hasExited)
                 {
                     throw new InvalidOperationException(
-                        $"The process with id '{process.Id}' didn't exit within the allocated time." +
-                        Environment.NewLine +
-                        "Output from standard output and error:" + outputBuilder.ToString());
+                        $"The process with id '{process.Id}' didn't exit within the allocated time.");
                 }
 
-                // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
-                // When standard output has been redirected to asynchronous event handlers, it is possible that output
-                // processing will not have completed when this method returns. To ensure that asynchronous
-                // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
-                // receiving a true from this overload
+                if (redirectOutput || redirectError)
+                {
+                    // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
+                    // When standard output has been redirected to asynchronous event handlers, it is possible that output
+                    // processing will not have completed when this method returns. To ensure that asynchronous
+                    // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
+                    // receiving a true from this overload
+                    process.WaitForExit();
+                }
 
-                process.WaitForExit();
-
-                return (exitCode: process.ExitCode, output: outputBuilder.ToString());
-            }
-
-            void DataReceivedHandler(object sender, DataReceivedEventArgs e)
-            {
-                // Preserve the output structure and use AppendLine as this handler
-                // is called for each line that is written to the output.
-                outputBuilder.AppendLine(e.Data);
+                return process.ExitCode;
             }
         }
+
     }
 }
