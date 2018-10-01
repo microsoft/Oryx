@@ -44,7 +44,7 @@ namespace Oryx.Tests.Infrastructure
 
         public string ReplaceNewLine(string replacingString = "")
         {
-            return Output.Replace(Environment.NewLine, replacingString);
+            return Output.Replace(Environment.NewLine, replacingString).Replace("\0", replacingString).Replace("\r", replacingString);
         }
 
         public virtual string GetDebugInfo()
