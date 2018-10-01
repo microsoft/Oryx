@@ -59,6 +59,74 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void GeneratesScriptAndBuildWithDefaultVersion()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var appOutputDir = "/flask-app-output";
+
+            // Act
+            var result = _dockerCli.Run(
+                "oryxdevms/build:latest",
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    $"oryx build {appDir} {appOutputDir} && " +
+                    $"ls {appOutputDir}" +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("antenv", result.Output);
+                    Assert.Contains("Python Version: /opt/python/3.7.0/bin/python3", result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var generatedScript = "/build.sh";
+
+            // Act
+            var result = _dockerCli.Run(
+                "oryxdevms/build:latest",
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    $"oryx script {appDir} -l python --language-version 3.6.6 >> {generatedScript} && " +
+                    $"cat {generatedScript}" +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("antenv", result.Output);
+                    Assert.Contains("pip install -r requirements.txt", result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

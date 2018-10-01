@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerrator.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class DefaultScriptGeneratorProviderTest
     {
