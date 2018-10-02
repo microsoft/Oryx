@@ -70,18 +70,15 @@ echo Done.
         private static readonly string[] TypicalNodeDetectionFiles = new[] { "server.js", "app.js" };
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
-        private INodeVersionResolver _versionResolver;
         private readonly ILogger<NodeScriptGenerator> _logger;
 
         public NodeScriptGenerator(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
-            INodeVersionResolver nodeVersionResolver,
             ILogger<NodeScriptGenerator> logger)
         {
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
-            _versionResolver = nodeVersionResolver;
             _logger = logger;
         }
 
@@ -177,7 +174,9 @@ echo Done.
             string nodeVersion = null;
             if (!string.IsNullOrWhiteSpace(nodeVersionRange))
             {
-                nodeVersion = _versionResolver.GetSupportedNodeVersion(nodeVersionRange);
+                nodeVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                    nodeVersionRange,
+                    _nodeVersionProvider.SupportedNodeVersions);
                 if (string.IsNullOrWhiteSpace(nodeVersion))
                 {
                     throw new UnsupportedNodeVersionException(nodeVersionRange);
@@ -196,7 +195,9 @@ echo Done.
             string npmVersion = null;
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
-                npmVersion = _versionResolver.GetSupportedNpmVersion(npmVersionRange);
+                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                    npmVersionRange,
+                    _nodeVersionProvider.SupportedNpmVersions);
                 if (string.IsNullOrWhiteSpace(npmVersion))
                 {
                     throw new UnsupportedNpmVersionException(npmVersionRange);

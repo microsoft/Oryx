@@ -21,7 +21,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
-        private IPythonVersionResolver _versionResolver;
         private readonly ILogger<PythonScriptGenerator> _logger;
 
         private const string ScriptTemplate =
@@ -65,17 +64,15 @@ pip install -r requirements.txt
 echo ""pip install finished""
 ";
 
-        private const string DefaultPythonVersion = "3.7.0"; 
+        private const string DefaultPythonVersion = "3.7.0";
 
         public PythonScriptGenerator(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
-            IPythonVersionResolver pythonVersionResolver,
             ILogger<PythonScriptGenerator> logger)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
-            _versionResolver = pythonVersionResolver;
             _logger = logger;
         }
 
@@ -154,7 +151,9 @@ echo ""pip install finished""
             }
             if (!string.IsNullOrWhiteSpace(pythonVersionRange))
             {
-                pythonVersion = _versionResolver.GetSupportedPythonVersion(pythonVersionRange);
+                pythonVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                    pythonVersionRange,
+                    _pythonVersionProvider.SupportedPythonVersions);
                 if (string.IsNullOrWhiteSpace(pythonVersion))
                 {
                     throw new UnsupportedPythonVersionException(pythonVersionRange);

@@ -16,7 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ServiceDescriptor.Singleton<IScriptGenerator, NodeScriptGenerator>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());
-            services.AddSingleton<INodeVersionResolver, NodeVersionResolver>();
             services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
             return services;
         }

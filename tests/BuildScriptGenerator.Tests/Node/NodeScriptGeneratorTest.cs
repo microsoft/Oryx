@@ -350,7 +350,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var scriptGenerator = new NodeScriptGenerator(
                 nodeScriptGeneratorOptions,
                 nodeVersionProvider,
-                new NodeVersionResolver(nodeVersionProvider, NullLogger<NodeVersionResolver>.Instance),
                 NullLogger<NodeScriptGenerator>.Instance);
             return scriptGenerator;
         }

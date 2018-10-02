@@ -76,27 +76,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return true;
             }
 
-            return IsSupportedLanguageVersion(context.LanguageVersion, scriptGenerator.SupportedLanguageVersions);
-        }
-
-        private bool IsSupportedLanguageVersion(string providedVersion, IEnumerable<string> supportedVersions)
-        {
-            try
+            var version = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                context.LanguageVersion,
+                scriptGenerator.SupportedLanguageVersions);
+            if (string.IsNullOrEmpty(version))
             {
-                var provided = new SemVer.Range(providedVersion);
-                var maxiSatisfyingVersion = provided.MaxSatisfying(supportedVersions);
-                if (string.IsNullOrEmpty(maxiSatisfyingVersion))
-                {
-                    return false;
-                }
-                return true;
+                return false;
             }
-            catch (Exception ex)
-            {
-                _logger.LogDebug(ex, "An error occurred while trying to find supported language version.");
-            }
-
-            return false;
+            return true;
         }
     }
 }
