@@ -1,0 +1,10 @@
+# This script to be copied and used from runtime images release definition; not to be run locally.
+
+while read sourceImage; do
+  echo "$sourceImage"
+  docker pull "$sourceImage"
+  newtag=$(echo "$sourceImage" | sed -r 's/oryxdevms/oryxprod/')
+  echo "$newtag"
+  docker tag "$sourceImage" "$newtag"
+  docker push "$newtag"
+done <"$(System.DefaultWorkingDirectory)/_Oryx-Runtime/drop/images/runtime-images.txt"
