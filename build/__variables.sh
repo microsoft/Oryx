@@ -22,3 +22,5 @@ declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.t
 
 declare -r DOCKER_BUILD_IMAGES_REPO="oryxdevms/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO="oryxdevms"
+
+declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"
