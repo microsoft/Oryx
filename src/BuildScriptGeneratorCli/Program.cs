@@ -7,9 +7,7 @@ using McMaster.Extensions.CommandLineUtils;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("oryx", Description = "Generates scripts and builds source code for multiple languages.")]
-    [Subcommand("script", typeof(ScriptCommand))]
     [Subcommand("build", typeof(BuildCommand))]
-    [Subcommand("languages", typeof(LanguagesCommand))]
     internal class Program
     {
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);

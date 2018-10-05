@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,53 +14,63 @@ using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("build", Description = "Generate script and build the code present in the source code directory.")]
+    [Command("build", Description = "Generates and runs build scripts.")]
     internal class BuildCommand : BaseCommand
     {
-        [Argument(0, Description = "The path to the source code directory.")]
-        public string SourceCodeFolder { get; set; }
+        [Argument(0, Description = "The source directory.")]
+        public string SourceDir { get; set; }
 
-        [Argument(1, Description = "The path to output folder.")]
-        public string OutputFolder { get; set; }
+        [Argument(1, Description = "The destination directory.")]
+        public string DestinationDir { get; set; }
 
         [Option(
+            "-i|--intermediate-dir <dir>",
             CommandOptionType.SingleValue,
-            Description = "The path to a temporary folder used by this tool.",
-            ShortName = "i")]
-        public string IntermediateFolder { get; set; }
+            Description = "The path to a temporary directory to be used by this tool.")]
+        public string IntermediateDir { get; set; }
 
         [Option(
-            "--no-intermediate-folder",
+            "--inline",
             CommandOptionType.NoValue,
-            Description = "Do not use intermediate folder to copy source folder's content." +
-            " By default an intermediate folder is used.")]
-        public bool DoNotUseIntermediateFolder { get; set; }
+            Description = "Perform builds directly in the source directory.")]
+        public bool Inline { get; set; }
 
         [Option(
+            "-l|--language <name>",
             CommandOptionType.SingleValue,
-            Description = "The programming language being used in the provided source code directory.",
-            ShortName = "l")]
-        public string LanguageName { get; set; }
+            Description = "The name of the programming language being used in the provided source directory.")]
+        public string Language { get; set; }
 
         [Option(
-            "--language-version <LANGUAGE_VERSION>",
+            "--language-version <version>",
             CommandOptionType.SingleValue,
-            Description = "The version of programming language being used in the provided source code directory.")]
+            Description = "The version of programming language being used in the provided source directory.")]
         public string LanguageVersion { get; set; }
 
         [Option(
-            "--log-file <LOG_FILE>",
+            "--log-file <file>",
             CommandOptionType.SingleValue,
             Description = "The file to which logs have to be written to.")]
         public string LogFile { get; set; }
 
         [Option(
-            "--log-level <LOG_LEVEL>",
+            "--log-level <level>",
             CommandOptionType.SingleValue,
             Description = "The minimum log level at which logs should be written. " +
             "Allowed levels: Trace, Debug, Information, Warning, Error, Critical. " +
             "Default level is Warning.")]
-        public string LogLevel { get; set; }
+        public string MinimumLogLevel { get; set; }
+
+        [Option(
+            "--script-only",
+            CommandOptionType.NoValue,
+            Description = "Generate script to standard output.")]
+        public bool ScriptOnly { get; set; }
+
+        [Option(
+            CommandOptionType.NoValue,
+            Description = "Replace any existing content in the destination directory.")]
+        public bool Force { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -72,9 +83,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return 1;
             }
 
-            // Get the path where the generated script should be written into.
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            var scriptPath = Path.Combine(options.TempDirectory, "build.sh");
+
+            if (options.ScriptOnly)
+            {
+                // write script content to standard output stream
+                console.WriteLine(scriptContent);
+                return 0;
+            }
+
+            // Get the path where the generated script should be written into.
+            var scriptPath = Path.Combine(options.TempDir, "build.sh");
 
             // Write the content to the script.
             File.WriteAllText(scriptPath, scriptContent);
@@ -102,7 +121,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 arguments: new[]
                 {
                     sourceRepo.RootPath,
-                    options.OutputFolder
+                    options.DestinationDir
                 },
                 waitForExitInSeconds: (int)TimeSpan.FromMinutes(30).TotalSeconds);
             return exitCode;
@@ -110,7 +129,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool ShowHelp()
         {
-            if (string.IsNullOrEmpty(SourceCodeFolder) || string.IsNullOrEmpty(OutputFolder))
+            if (string.IsNullOrEmpty(SourceDir) || string.IsNullOrEmpty(DestinationDir))
             {
                 return true;
             }
@@ -119,10 +138,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(BuildScriptGeneratorOptions options, IConsole console)
         {
-            if (!Directory.Exists(options.SourceCodeFolder))
+            if (!Directory.Exists(options.SourceDir))
             {
-                console.Error.WriteLine($"Error: Could not find the source code folder '{options.SourceCodeFolder}'.");
+                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
                 return false;
+            }
+
+            if (Directory.Exists(options.DestinationDir))
+            {
+                var directoryContent = Directory.EnumerateFileSystemEntries(
+                    options.DestinationDir,
+                    "*",
+                    SearchOption.AllDirectories);
+
+                if (directoryContent.Any() && !options.Force)
+                {
+                    console.Error.WriteLine(
+                        "Destination directory is not empty. " +
+                        "Use '--force' option to replace the destination directory content.");
+                    return false;
+                }
             }
 
             return true;
@@ -130,16 +165,47 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override void ConfigureBuildScriptGeneratorOptoins(BuildScriptGeneratorOptions options)
         {
-            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options,
-                sourceCodeFolder: SourceCodeFolder,
-                outputFolder: OutputFolder,
-                intermediateFolder: IntermediateFolder,
-                DoNotUseIntermediateFolder,
-                LanguageName,
-                LanguageVersion,
-                LogFile,
-                LogLevel);
+            options.SourceDir = Path.GetFullPath(SourceDir);
+            options.Language = Language;
+            options.LanguageVersion = LanguageVersion;
+
+            // Create one unique subdirectory per session (or run of this tool)
+            // Example structure:
+            // /tmp/BuildScriptGenerator/guid1
+            // /tmp/BuildScriptGenerator/guid2
+            options.TempDir = Path.Combine(
+                Path.GetTempPath(),
+                nameof(BuildScriptGenerator),
+                Guid.NewGuid().ToString("N"));
+
+            if (!string.IsNullOrEmpty(DestinationDir))
+            {
+                options.DestinationDir = Path.GetFullPath(DestinationDir);
+            }
+
+            if (!string.IsNullOrEmpty(IntermediateDir))
+            {
+                options.IntermediateDir = Path.GetFullPath(IntermediateDir);
+            }
+
+            options.Inline = Inline;
+
+            if (!string.IsNullOrEmpty(LogFile))
+            {
+                options.LogFile = Path.GetFullPath(LogFile);
+            }
+
+            if (string.IsNullOrEmpty(MinimumLogLevel))
+            {
+                options.MinimumLogLevel = LogLevel.Warning;
+            }
+            else
+            {
+                options.MinimumLogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), MinimumLogLevel, ignoreCase: true);
+            }
+
+            options.ScriptOnly = ScriptOnly;
+            options.Force = Force;
         }
     }
 }

@@ -100,6 +100,7 @@ namespace Oryx.BuildImage.Tests
             var volume = DockerVolume.Create(_hostSamplesDir);
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var generatedScript = "/build.sh";
+            var appOutputDir = "/flask-app-output";
 
             // Act
             var result = _dockerCli.Run(
@@ -111,7 +112,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"oryx script {appDir} -l python --language-version 3.6.6 >> {generatedScript} && " +
+                    $"oryx build {appDir} {appOutputDir} -l python --language-version 3.6.6 --script-only >> {generatedScript} && " +
                     $"cat {generatedScript}" +
                     "\""
                 });

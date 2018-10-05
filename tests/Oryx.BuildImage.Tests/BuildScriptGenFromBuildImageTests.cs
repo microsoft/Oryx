@@ -38,27 +38,6 @@ namespace Oryx.BuildImage.Tests
             result.GetDebugInfo());
         }
 
-        [Fact]
-        public void DisplayedLanguagesIncludeNode()
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(
-                imageId: BuildImageTestSettings.BuildImageName,
-                environmentVariables: null,
-                volumes: null,
-                command: "oryx",
-                commandArguments: new[] { "languages" });
-
-            // Assert
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                // Help text must be shown
-                Assert.Contains("nodejs:", result.Output);
-            },
-            result.GetDebugInfo());
-        }
-
         private void RunAsserts(Action action, string message)
         {
             try

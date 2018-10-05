@@ -31,14 +31,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     _logger.LogDebug(
                         $"Script generator '{scriptGenerator.GetType()}' does not " +
-                        $"support language '{context.LanguageName}'.");
+                        $"support language '{context.Language}'.");
                     continue;
                 }
 
                 if (!IsSupportedLanguageVersion(context, scriptGenerator))
                 {
                     _logger.LogDebug(
-                        $"Script generator '{scriptGenerator.GetType()}' supports language '{context.LanguageName}', " +
+                        $"Script generator '{scriptGenerator.GetType()}' supports language '{context.Language}', " +
                         $"but does not support version '{context.LanguageVersion}'. " +
                         $"Supported versions are: {string.Join(", ", scriptGenerator.SupportedLanguageVersions)}");
                     continue;
@@ -58,13 +58,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private bool IsSupportedLanguage(ScriptGeneratorContext context, IScriptGenerator scriptGenerator)
         {
-            if (string.IsNullOrEmpty(context.LanguageName))
+            if (string.IsNullOrEmpty(context.Language))
             {
                 return true;
             }
 
             return string.Equals(
-                context.LanguageName,
+                context.Language,
                 scriptGenerator.SupportedLanguageName,
                 StringComparison.OrdinalIgnoreCase);
         }

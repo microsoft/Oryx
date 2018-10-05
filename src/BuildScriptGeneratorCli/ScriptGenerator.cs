@@ -46,10 +46,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var scriptGeneratorContext = new ScriptGeneratorContext
                 {
                     SourceRepo = sourceRepo,
-                    LanguageName = options.LanguageName,
+                    Language = options.Language,
                     LanguageVersion = options.LanguageVersion,
-                    OutputFolder = options.OutputFolder,
-                    TempDirectory = options.TempDirectory,
+                    DestinationDir = options.DestinationDir,
+                    TempDir = options.TempDir,
                 };
 
                 // Get script generator
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     _console.Error.WriteLine(
                         "Error: Could not find a script generator which can generate a script for " +
-                        $"the code in '{options.SourceCodeFolder}'.");
+                        $"the code in '{options.SourceDir}'.");
                     return false;
                 }
 
@@ -81,15 +81,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private void EnsureTempDirectory(BuildScriptGeneratorOptions options)
         {
-            if (string.IsNullOrEmpty(options.TempDirectory))
+            if (string.IsNullOrEmpty(options.TempDir))
             {
                 throw new InvalidOperationException(
-                    $"'{nameof(BuildScriptGeneratorOptions.TempDirectory)}' cannot be null or empty.");
+                    $"'{nameof(BuildScriptGeneratorOptions.TempDir)}' cannot be null or empty.");
             }
 
-            Directory.CreateDirectory(options.TempDirectory);
+            Directory.CreateDirectory(options.TempDir);
 
-            _logger.LogDebug($"Created root temp directory for script generator at '{options.TempDirectory}'.");
+            _logger.LogDebug($"Created root temp directory for script generator at '{options.TempDir}'.");
         }
     }
 }

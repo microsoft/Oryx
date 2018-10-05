@@ -47,9 +47,19 @@ echo ""Running '{1}' ...""
 echo
 {1}
 
+if [ -d ""$OUTPUT_DIR"" ]
+then
+    echo
+    echo Output directory already exists. Deleting it ...
+    rm -rf ""$OUTPUT_DIR""
+fi
+
+echo
+echo Creating output directory ...
+mkdir -p ""$OUTPUT_DIR""
+
 echo
 echo ""Copying output from '$SOURCE_DIR' to '$OUTPUT_DIR' ...""
-mkdir -p ""$OUTPUT_DIR""
 cp -r . ""$OUTPUT_DIR""
 
 echo

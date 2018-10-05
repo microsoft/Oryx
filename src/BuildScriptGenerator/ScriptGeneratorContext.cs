@@ -8,14 +8,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public ISourceRepo SourceRepo { get; set; }
 
-        public string LanguageName { get; set; }
+        public string Language { get; set; }
 
         public string LanguageVersion { get; set; }
 
-        public string OutputFolder { get; set; }
+        public string DestinationDir { get; set; }
 
-        public bool GenerateScriptOnly { get; set; }
-
-        public string TempDirectory { get; set; }
+        public string TempDir { get; set; }
     }
 }

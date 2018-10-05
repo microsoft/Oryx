@@ -23,9 +23,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public ISourceRepo GetSourceRepo()
         {
-            if (_options.DoNotUseIntermediateFolder)
+            if (_options.Inline)
             {
-                return new LocalSourceRepo(_options.SourceCodeFolder);
+                return new LocalSourceRepo(_options.SourceDir);
             }
 
             var intermediateDir = EnsureIntermediateDirectory();
@@ -33,9 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (!_copiedToIntermediateDirectory)
             {
                 _logger.LogDebug(
-                    $"Copying content from '{_options.SourceCodeFolder}' to '{intermediateDir.FullName}' ...");
+                    $"Copying content from '{_options.SourceDir}' to '{intermediateDir.FullName}' ...");
 
-                CopyDirectories(_options.SourceCodeFolder, intermediateDir.FullName, recursive: true);
+                CopyDirectories(_options.SourceDir, intermediateDir.FullName, recursive: true);
                 _copiedToIntermediateDirectory = true;
             }
 
@@ -45,16 +45,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private DirectoryInfo EnsureIntermediateDirectory()
         {
             string intermediateDir;
-            if (string.IsNullOrEmpty(_options.IntermediateFolder))
+            if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
-                intermediateDir = Path.Combine(_options.TempDirectory, "IntermediateFolder");
+                intermediateDir = Path.Combine(_options.TempDir, "IntermediateDir");
             }
             else
             {
-                intermediateDir = _options.IntermediateFolder;
+                intermediateDir = _options.IntermediateDir;
             }
 
-            _logger.LogDebug($"Creating intermediate folder at '{intermediateDir}' ...");
+            if (!Directory.Exists(intermediateDir))
+            {
+                _logger.LogDebug($"Creating intermediate directory at '{intermediateDir}' ...");
+            }
 
             return Directory.CreateDirectory(intermediateDir);
         }

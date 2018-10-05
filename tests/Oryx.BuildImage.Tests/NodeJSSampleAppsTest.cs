@@ -109,7 +109,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"oryx script {appDir} >> {generatedScript} && " +
+                    $"oryx build {appDir} {appOutputDir} --script-only >> {generatedScript} && " +
                     $"chmod +x {generatedScript} && " +
                     $"{generatedScript} {appDir} {appOutputDir} && " +
                     $"ls {appOutputDir}" +
@@ -145,7 +145,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     "-c",
                     "\"" +
-                    $"oryx script {appDir} -l nodejs --language-version 8.2.1 >> {generatedScript} && " +
+                    $"oryx build {appDir} {appOutputDir} -l nodejs --language-version 8.2.1 --script-only >> {generatedScript} && " +
                     $"chmod +x {generatedScript} && " +
                     $"{generatedScript} {appDir} {appOutputDir} && " +
                     $"ls {appOutputDir}" +
@@ -163,7 +163,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateFolder()
+        public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
             var volume = DockerVolume.Create(_hostSamplesDir);

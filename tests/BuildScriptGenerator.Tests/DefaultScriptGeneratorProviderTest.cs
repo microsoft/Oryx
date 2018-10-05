@@ -241,7 +241,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             return new ScriptGeneratorContext
             {
-                LanguageName = languageName,
+                Language = languageName,
                 LanguageVersion = languageVersion,
                 SourceRepo = sourceRepo
             };

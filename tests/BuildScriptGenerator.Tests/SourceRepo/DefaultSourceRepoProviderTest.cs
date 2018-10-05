@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void IntermediateFolder_IsNotUsed_WhenOptedTo()
+        public void IntermediateDir_IsNotUsed_WhenOptedTo()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -30,9 +30,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                DoNotUseIntermediateFolder = true,
-                SourceCodeFolder = appDir,
-                TempDirectory = tempDir
+                Inline = true,
+                SourceDir = appDir,
+                TempDir = tempDir
             };
             var provider = GetSourceRepoProvider(options);
 
@@ -41,11 +41,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.Equal(appDir, sourceRepo.RootPath);
-            Assert.False(Directory.Exists(Path.Combine(tempDir, "IntermediateFolder")));
+            Assert.False(Directory.Exists(Path.Combine(tempDir, "IntermediateDir")));
         }
 
         [Fact]
-        public void IntermediateFolder_IsNotUsed_WhenOptedTo_AndIntermediateFolderOptionIsProvided()
+        public void IntermediateDir_IsNotUsed_WhenOptedTo_AndIntermediateDirOptionIsProvided()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -56,10 +56,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                DoNotUseIntermediateFolder = true,
-                IntermediateFolder = intermediateDir,
-                SourceCodeFolder = appDir,
-                TempDirectory = tempDir
+                Inline = true,
+                IntermediateDir = intermediateDir,
+                SourceDir = appDir,
+                TempDir = tempDir
             };
             var provider = GetSourceRepoProvider(options);
 
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void ByDefault_CopiesSourceFolderContent_ToTempDirectoryIntermediateFolder()
+        public void ByDefault_CopiesSourceDirContent_ToTempDirectoryIntermediateDir()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -82,8 +82,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                SourceCodeFolder = appDir,
-                TempDirectory = tempDir,
+                SourceDir = appDir,
+                TempDir = tempDir,
             };
             var provider = GetSourceRepoProvider(options);
 
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var file1Path = Path.Combine(srcDirPath.FullName, "file1.txt");
             File.WriteAllText(file1Path, "file1.txt content");
 
-            var expected = Path.Combine(tempDir, "IntermediateFolder");
+            var expected = Path.Combine(tempDir, "IntermediateDir");
             var expectedFile = Path.Combine(expected, srcDirName, "file1.txt");
 
             // Act
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void CopiesSourceFolderContent_ToCustom_IntermediateFolder()
+        public void CopiesSourceDirContent_ToCustom_IntermediateDir()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -116,9 +116,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                SourceCodeFolder = appDir,
-                TempDirectory = tempDir,
-                IntermediateFolder = intermediateDir
+                SourceDir = appDir,
+                TempDir = tempDir,
+                IntermediateDir = intermediateDir
             };
             var provider = GetSourceRepoProvider(options);
 
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void CopiesSourceFolderContent_Recursively()
+        public void CopiesSourceDirContent_Recursively()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -150,8 +150,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                SourceCodeFolder = appDir,
-                TempDirectory = tempDir,
+                SourceDir = appDir,
+                TempDir = tempDir,
             };
             var provider = GetSourceRepoProvider(options);
 
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             File.WriteAllText(file1Path, "file1.txt content");
             File.WriteAllText(file2Path, "file2.txt content");
 
-            var expected = Path.Combine(tempDir, "IntermediateFolder");
+            var expected = Path.Combine(tempDir, "IntermediateDir");
             var expectedFile = Path.Combine(expected, srcDirName, "subDir1", "file2.txt");
 
             // Act

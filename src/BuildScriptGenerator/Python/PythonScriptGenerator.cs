@@ -44,6 +44,15 @@ echo ""Python Version: $python""
 
 cd ""$SOURCE_DIR""
 
+if [ -d ""$OUTPUT_DIR"" ]
+then
+    echo
+    echo Output directory already exists. Deleting it ...
+    rm -rf ""$OUTPUT_DIR""
+fi
+
+echo
+echo Creating output directory ...
 mkdir -p ""$OUTPUT_DIR""
 
 cp -rf . ""$OUTPUT_DIR""
@@ -86,11 +95,11 @@ echo ""pip install finished""
         {
             if (!context.SourceRepo.FileExists(RequirementsFileName))
             {
-                _logger.LogDebug($"Cannot generate script as source folder does not have file '{RequirementsFileName}'.");
+                _logger.LogDebug($"Cannot generate script as source directory does not have file '{RequirementsFileName}'.");
                 return false;
             }
-            var sourceFolder = context.SourceRepo.RootPath;
-            var pythonFiles = Directory.GetFileSystemEntries(sourceFolder, PythonFileExtension);
+            var sourceDir = context.SourceRepo.RootPath;
+            var pythonFiles = Directory.GetFileSystemEntries(sourceDir, PythonFileExtension);
             if (pythonFiles.Length > 0)
             {
                 return true;
