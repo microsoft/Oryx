@@ -49,6 +49,7 @@ echo
 
 echo
 echo ""Copying output from '$SOURCE_DIR' to '$OUTPUT_DIR' ...""
+mkdir -p ""$OUTPUT_DIR""
 cp -r . ""$OUTPUT_DIR""
 
 echo
