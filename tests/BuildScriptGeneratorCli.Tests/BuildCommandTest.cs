@@ -3,8 +3,13 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
@@ -12,11 +17,11 @@ using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    public class BuildCommandTest : IClassFixture<BuildCommandTest.TestFixutre>
+    public class BuildCommandTest : IClassFixture<BuildCommandTest.TestFixture>
     {
         private static string _rootDirPath;
 
-        public BuildCommandTest(TestFixutre testFixutre)
+        public BuildCommandTest(TestFixture testFixutre)
         {
             _rootDirPath = testFixutre.RootDirPath;
         }
@@ -351,6 +356,112 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.MinimumLogLevel);
         }
 
+        // We want to test that only build output is visible on standard output stream when a build happens
+        // successfully. But for this we cannot rely on the built-in generators as their content could change
+        // making this test unreliable. So we use a test generator which always outputs content that we know for
+        // sure wouldn't change. Since we cannot update product code with test generator we cannot run this test in
+        // a docker container. So we run this test on a Linux OS only as build sets execute permission flag and
+        // as well as executes a bash script.
+        [EnableOnPlatform("LINUX")]
+        public void OnSuccess_Execute_WritesOnlyBuildOutput_ToStandardOutput()
+        {
+            // Arrange
+            var serviceProvider = CreateServiceProvider(new TestScriptGenerator(), scriptOnly: false);
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+            var buildCommand = new BuildCommand();
+            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+            // Act
+            var exitCode = buildCommand.Execute(
+                serviceProvider,
+                testConsole,
+                stdOutHandler: (sender, args) =>
+                {
+                    outputBuilder.AppendLine(args.Data);
+                },
+                stdErrHandler: (sender, args) =>
+                {
+                    errorBuilder.AppendLine(args.Data);
+                });
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.Equal(string.Empty, testConsole.StdOutput);
+            Assert.Equal(string.Empty, testConsole.StdError);
+            Assert.Equal("Hello World", outputBuilder.ToString().Replace(Environment.NewLine, string.Empty));
+            Assert.Equal(string.Empty, errorBuilder.ToString().Replace(Environment.NewLine, string.Empty));
+        }
+
+        [Fact]
+        public void ScriptOnly_OnSuccess_Execute_WritesOnlyScriptContent_ToStandardOutput()
+        {
+            // Arrange
+            const string scriptContent = "script content only";
+            var serviceProvider = CreateServiceProvider(
+                new TestScriptGenerator(scriptContent),
+                scriptOnly: true);
+            var buildCommand = new BuildCommand();
+            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+            // Act
+            var exitCode = buildCommand.Execute(serviceProvider, testConsole);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.Equal(scriptContent, testConsole.StdOutput);
+            Assert.Equal(string.Empty, testConsole.StdError);
+        }
+
+        [Fact]
+        public void ScripOnly_OnSuccess_GeneratesScript_ReplacingCRLF_WithLF()
+        {
+            // Arrange
+            const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
+            var expected = scriptContentWithCRLF.Replace("\r\n", "\n");
+            var serviceProvider = CreateServiceProvider(
+                new TestScriptGenerator(scriptContentWithCRLF),
+                scriptOnly: true);
+            var buildCommand = new BuildCommand();
+            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+            // Act
+            var exitCode = buildCommand.Execute(serviceProvider, testConsole);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.Equal(expected, testConsole.StdOutput);
+            Assert.Equal(string.Empty, testConsole.StdError);
+        }
+
+        private IServiceProvider CreateServiceProvider(TestScriptGenerator generator, bool scriptOnly)
+        {
+            var sourceCodeFolder = Path.Combine(_rootDirPath, "src");
+            Directory.CreateDirectory(sourceCodeFolder);
+            var tempDir = Path.Combine(_rootDirPath, "temp");
+            Directory.CreateDirectory(tempDir);
+            var outputFolder = Path.Combine(_rootDirPath, "output");
+            Directory.CreateDirectory(outputFolder);
+            var servicesBuilder = new ServiceProviderBuilder()
+                .ConfigureServices(services =>
+                {
+                    // Add 'test' script generator here as we can control what the script output is rather
+                    // than depending on in-built script generators whose script could change overtime causing
+                    // this test to be difficult to manage.
+                    services.RemoveAll<IScriptGenerator>();
+                    services.TryAddEnumerable(
+                        ServiceDescriptor.Singleton<IScriptGenerator>(generator));
+                })
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = sourceCodeFolder;
+                    o.DestinationDir = outputFolder;
+                    o.TempDir = tempDir;
+                    o.ScriptOnly = scriptOnly;
+                });
+            return servicesBuilder.Build();
+        }
+
         private class CustomBuildCommand : BuildCommand
         {
             internal override int Execute(IServiceProvider serviceProvider, IConsole console)
@@ -360,9 +471,9 @@ namespace BuildScriptGeneratorCli.Tests
             }
         }
 
-        public class TestFixutre : IDisposable
+        public class TestFixture : IDisposable
         {
-            public TestFixutre()
+            public TestFixture()
             {
                 RootDirPath = Path.Combine(
                     Path.GetTempPath(),
@@ -385,6 +496,55 @@ namespace BuildScriptGeneratorCli.Tests
                     {
                         // Do not throw in dispose
                     }
+                }
+            }
+        }
+
+        private class TestScriptGenerator : IScriptGenerator
+        {
+            private readonly string _scriptContent;
+
+            public TestScriptGenerator()
+                : this(scriptContent: null)
+            {
+            }
+
+            public TestScriptGenerator(string scriptContent)
+            {
+                _scriptContent = scriptContent;
+            }
+
+            public string SupportedLanguageName => "test";
+
+            public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
+
+            public bool CanGenerateScript(ScriptGeneratorContext scriptGeneratorContext)
+            {
+                return true;
+            }
+
+            public string GenerateBashScript(ScriptGeneratorContext scriptGeneratorContext)
+            {
+                if (!string.IsNullOrEmpty(_scriptContent))
+                {
+                    return _scriptContent;
+                }
+
+                return "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
+            }
+        }
+
+        public class EnableOnPlatformAttribute : FactAttribute
+        {
+            private readonly OSPlatform _platform;
+
+            public EnableOnPlatformAttribute(string platform)
+            {
+                _platform = OSPlatform.Create(platform);
+
+                if (!RuntimeInformation.IsOSPlatform(_platform))
+                {
+                    Skip = $"This test can only run on platform '{_platform}'.";
                 }
             }
         }

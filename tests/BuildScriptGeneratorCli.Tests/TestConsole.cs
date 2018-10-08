@@ -20,11 +20,18 @@ namespace BuildScriptGeneratorCli.Tests
         private bool _stdErrorCalled;
 
         public TestConsole()
+            : this(newLineCharacter: null)
+        {
+        }
+
+        public TestConsole(string newLineCharacter)
         {
             _stdOutStringBuilder = new StringBuilder();
             _stdOutStringWriter = new StringWriter(_stdOutStringBuilder);
+            _stdOutStringWriter.NewLine = newLineCharacter;
             _stdErrStringBuilder = new StringBuilder();
             _stdErrStringWriter = new StringWriter(_stdErrStringBuilder);
+            _stdErrStringWriter.NewLine = newLineCharacter;
         }
 
         public string StdOutput

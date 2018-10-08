@@ -149,10 +149,7 @@ echo Done.
 
             var installCommand = "eval npm install --production";
 
-            // C# multiline string literals always seem to be represented as CRLF, so replace that line
-            // ending with LF
-            var scriptTemplateWithLF = ScriptTemplate.Replace("\r\n", "\n");
-            var script = string.Format(scriptTemplateWithLF, benvArgs, installCommand);
+            var script = string.Format(ScriptTemplate, benvArgs, installCommand);
             return script;
         }
 

@@ -132,8 +132,7 @@ echo ""pip install finished""
             var antenvCommand = "3.6.6".Equals(context.LanguageVersion)
                 ? "export ANTENV=\"antenv3.6\""
                 : "export ANTENV=\"antenv\"";
-            var scriptWithLF = ScriptTemplate.Replace("\r\n", "\n");
-            return string.Format(scriptWithLF, benvArgs, antenvCommand);
+            return string.Format(ScriptTemplate, benvArgs, antenvCommand);
         }
 
         private string DetectPythonVersion(ScriptGeneratorContext context)

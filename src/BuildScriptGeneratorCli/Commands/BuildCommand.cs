@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
@@ -74,6 +75,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
+            // By default we do not want to direct the standard output and error and let users of this tool to do it
+            // themselves.
+            return Execute(serviceProvider, console, stdOutHandler: null, stdErrHandler: null);
+        }
+
+        // To enable unit testing
+        internal int Execute(
+            IServiceProvider serviceProvider,
+            IConsole console,
+            DataReceivedEventHandler stdOutHandler,
+            DataReceivedEventHandler stdErrHandler)
+        {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
             var sourceRepo = sourceRepoProvider.GetSourceRepo();
@@ -83,11 +96,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return 1;
             }
 
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+            // Replace any CRLF with LF
+            scriptContent = scriptContent.Replace("\r\n", "\n");
 
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             if (options.ScriptOnly)
             {
-                // write script content to standard output stream
+                // Write script content to standard output stream
                 console.WriteLine(scriptContent);
                 return 0;
             }
@@ -123,6 +138,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     sourceRepo.RootPath,
                     options.DestinationDir
                 },
+                standardOutputHandler: stdOutHandler,
+                standardErrorHandler: stdErrHandler,
                 waitForExitInSeconds: (int)TimeSpan.FromMinutes(30).TotalSeconds);
             return exitCode;
         }

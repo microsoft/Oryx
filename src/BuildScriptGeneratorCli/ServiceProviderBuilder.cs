@@ -35,6 +35,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 });
         }
 
+        public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)
+        {
+            configure(_serviceCollection);
+            return this;
+        }
+
         public ServiceProviderBuilder ConfigureScriptGenerationOptions(Action<BuildScriptGeneratorOptions> configure)
         {
             _serviceCollection.Configure<BuildScriptGeneratorOptions>(options =>
