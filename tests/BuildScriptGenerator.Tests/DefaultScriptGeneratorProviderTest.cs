@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void GetScriptGenerator_ReturnsNull_WhenNoLanguageIsProvided_AndCannotGenerateScript()
+        public void GetScriptGenerator_ReturnsNull_WhenNoLanguageIsProvided_AndCanGenerateScript_IsFalse()
         {
             // Arrange
             var provider = CreateDefaultScriptGeneratorProvider(
@@ -95,7 +95,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = new TestScriptGenerator("lang1", new[] { "1.0" });
             var scriptGenerator2 = new TestScriptGenerator("lang1", new[] { "2.0" });
             var provider = CreateDefaultScriptGeneratorProvider(new[] { expected, scriptGenerator2 });
-            var context = CreateScriptGeneratorContext(new TestSourceRepo(), languageName: "lang1");
+            var context = CreateScriptGeneratorContext(
+                new TestSourceRepo(),
+                languageName: "lang1",
+                languageVersion: null);
 
             // Act
             var actual = provider.GetScriptGenerator(context);
@@ -123,8 +126,61 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Same(expected, actual);
         }
 
+        [Theory]
+        [InlineData("1")]
+        [InlineData("1.2")]
+        public void GetScriptGenerator_ReturnsScriptGenerator_WhichSatisfiesMaxVersion_IgnoringRegistrationOrder(
+            string providedVersion)
+        {
+            // Arrange
+            var scriptGenerator1 = new TestScriptGenerator("lang2", new[] { "1.2.4" });
+            var scriptGenerator2 = new TestScriptGenerator("lang1", new[] { "1.2.3" });
+            var scriptGenerator3 = new TestScriptGenerator("lang3", new[] { "1.2.4" });
+            var expected = new TestScriptGenerator("lang1", new[] { "1.2.4" });
+            var provider = CreateDefaultScriptGeneratorProvider(
+                new[] { scriptGenerator1, scriptGenerator2, scriptGenerator3, expected });
+            var context = CreateScriptGeneratorContext(
+                new TestSourceRepo(),
+                languageName: "lang1",
+                languageVersion: providedVersion);
+
+            // Act
+            var actual = provider.GetScriptGenerator(context);
+
+            // Assert
+            Assert.Same(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("1", new[] { "1.0.0", "1.3.0" }, new[] { "1.3.0", "2.1.0" })]
+        [InlineData("1.2", new[] { "1.0.0", "1.2.2" }, new[] { "1.2.2", "1.3.0" })]
+        [InlineData("1.3.4", new[] { "1.0.0", "1.2.2", "1.3.4" }, new[] { "1.2.2", "1.3.0", "1.3.4" })]
+        public void GetScriptGenerator_ThrowsException_WhenMultipleGeneratorsSupportSameVersion(
+            string inputVersion,
+            string[] generator1Versions,
+            string[] generator2Versions)
+        {
+            // Arrange
+            var scriptGenerator1 = new TestScriptGenerator("lang1", generator1Versions);
+            var scriptGenerator2 = new TestScriptGenerator("lang1", generator2Versions);
+            var provider = CreateDefaultScriptGeneratorProvider(
+                new[] { scriptGenerator1, scriptGenerator2 });
+            var context = CreateScriptGeneratorContext(
+                new TestSourceRepo(),
+                languageName: "lang1",
+                languageVersion: inputVersion);
+
+            // Act
+            var exception = Assert.Throws<InvalidOperationException>(() => provider.GetScriptGenerator(context));
+
+            // Assert
+            Assert.Contains(
+                $"Cannot have multiple script generators supporting the same version",
+                exception.Message);
+        }
+
         [Fact]
-        public void GetScriptGenerator_ReturnsNull_IfScriptGeneratorCannotGenerateSript()
+        public void GetScriptGenerator_ReturnsNull_IfCanGenerateSript_IsFalse()
         {
             // Arrange
             var provider = CreateDefaultScriptGeneratorProvider(
@@ -139,7 +195,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void GetScriptGenerator_ReturnsScriptGenerator_IfScriptGeneratorCanGenerateSript()
+        public void GetScriptGenerator_ReturnsScriptGenerator_IfCanGenerateSript_IsTrue()
         {
             // Arrange
             var expected = new TestScriptGenerator("lang1", new[] { "1.0" }, canGenerateScript: true);
@@ -178,6 +234,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new TestSourceRepo(),
                 languageName: "lang1",
                 languageVersion: "1.2");
+
+            // Act
+            var actual = provider.GetScriptGenerator(context);
+
+            // Assert
+            Assert.Same(expected, actual);
+        }
+
+        [Fact]
+        public void GetScriptGenerator_ReturnsScriptGenerator_IfOnlyMajorVersionIsProvided()
+        {
+            // Arrange
+            var expected = new TestScriptGenerator("lang1", new[] { "1.2.3" });
+            var provider = CreateDefaultScriptGeneratorProvider(new[] { expected });
+            var context = CreateScriptGeneratorContext(
+                new TestSourceRepo(),
+                languageName: "lang1",
+                languageVersion: "1");
 
             // Act
             var actual = provider.GetScriptGenerator(context);

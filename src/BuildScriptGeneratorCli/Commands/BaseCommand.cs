@@ -24,8 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 serviceProvider = GetServiceProvider();
-                var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-                if (!IsValidInput(options, console))
+                if (!IsValidInput(serviceProvider, console))
                 {
                     return 1;
                 }
@@ -57,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return false;
         }
 
-        internal virtual bool IsValidInput(BuildScriptGeneratorOptions options, IConsole console)
+        internal virtual bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             return true;
         }

@@ -89,18 +89,22 @@ namespace BuildScriptGeneratorCli.Tests
         public void IsValidInput_IsTrue_EvenIfDestinationDirDoesNotExist()
         {
             // Arrange
-            var options = new BuildScriptGeneratorOptions
-            {
-                SourceDir = _rootDirPath,
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    // temp is always available
+                    o.SourceDir = Path.GetTempPath();
 
-                // New directory which does not exist yet
-                DestinationDir = Path.Combine(_rootDirPath, Guid.NewGuid().ToString())
-            };
+                    // New folder which does not exist yet
+                    o.DestinationDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                })
+                .Build();
             var testConsole = new TestConsole();
-            var program = new BuildCommand();
+            var buildCommand = new BuildCommand();
+
 
             // Act
-            var isValid = program.IsValidInput(options, testConsole);
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
 
             // Assert
             Assert.True(isValid);
@@ -114,18 +118,20 @@ namespace BuildScriptGeneratorCli.Tests
             // Arrange
             var sourceDir = Directory.CreateDirectory(Path.Combine(_rootDirPath, Guid.NewGuid().ToString()));
             var destinationDir = Directory.CreateDirectory(Path.Combine(_rootDirPath, Guid.NewGuid().ToString()));
-            var options = new BuildScriptGeneratorOptions
-            {
-                SourceDir = sourceDir.FullName,
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = sourceDir.FullName;
 
-                // New directory which is empty
-                DestinationDir = destinationDir.FullName
-            };
+                    // New folder which does not exist yet
+                    o.DestinationDir = destinationDir.FullName;
+                })
+                .Build();
             var testConsole = new TestConsole();
-            var program = new BuildCommand();
+            var buildCommand = new BuildCommand();
 
             // Act
-            var isValid = program.IsValidInput(options, testConsole);
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
 
             // Assert
             Assert.True(isValid);
@@ -165,18 +171,19 @@ namespace BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Directory.CreateDirectory(Path.Combine(_rootDirPath, Guid.NewGuid().ToString()));
-
-            var options = new BuildScriptGeneratorOptions
-            {
-                SourceDir = sourceDir.FullName,
-                DestinationDir = destinationDir,
-                Force = false,
-            };
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = sourceDir.FullName;
+                    o.DestinationDir = destinationDir;
+                    o.Force = false;
+                })
+                .Build();
             var testConsole = new TestConsole();
-            var program = new BuildCommand();
+            var buildCommand = new BuildCommand();
 
             // Act
-            var isValid = program.IsValidInput(options, testConsole);
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
 
             // Assert
             Assert.False(isValid);
@@ -190,18 +197,19 @@ namespace BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Directory.CreateDirectory(Path.Combine(_rootDirPath, Guid.NewGuid().ToString()));
-
-            var options = new BuildScriptGeneratorOptions
-            {
-                SourceDir = sourceDir.FullName,
-                DestinationDir = destinationDir,
-                Force = true,
-            };
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = sourceDir.FullName;
+                    o.DestinationDir = destinationDir;
+                    o.Force = true;
+                })
+                .Build();
             var testConsole = new TestConsole();
-            var program = new BuildCommand();
+            var buildCommand = new BuildCommand();
 
             // Act
-            var isValid = program.IsValidInput(options, testConsole);
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
 
             // Assert
             Assert.True(isValid);
