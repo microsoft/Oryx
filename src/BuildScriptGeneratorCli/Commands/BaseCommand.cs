@@ -4,14 +4,14 @@
 
 using System;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal abstract class BaseCommand
     {
+        private IServiceProvider _serviceProvider = null;
+
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
             if (ShowHelp())
@@ -20,28 +20,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return 1;
             }
 
-            IServiceProvider serviceProvider = null;
+            console.CancelKeyPress += Console_CancelKeyPress;
+
             try
             {
-                serviceProvider = GetServiceProvider();
-                if (!IsValidInput(serviceProvider, console))
+                _serviceProvider = GetServiceProvider();
+                if (!IsValidInput(_serviceProvider, console))
                 {
                     return 1;
                 }
 
-                return Execute(serviceProvider, console);
+                return Execute(_serviceProvider, console);
             }
             finally
             {
-                // In general it is a good practice to dispose services before this program is
-                // exiting, but there's one more reason we would need to do this i.e that the Console
-                // logger doesn't write to the console immediately. This is because it runs on a separate
-                // thread where it queues up messages and writes the console when the queue reaches a certain
-                // threshold.
-                if (serviceProvider is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
+                DisposeServiceProvider();
             }
         }
 
@@ -69,6 +62,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     ConfigureBuildScriptGeneratorOptoins(o);
                 });
             return serviceProviderBuilder.Build();
+        }
+
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            DisposeServiceProvider();
+        }
+
+        private void DisposeServiceProvider()
+        {
+            // In general it is a good practice to dispose services before this program is
+            // exiting, but there's one more reason we would need to do this i.e that the Console
+            // logger doesn't write to the console immediately. This is because it runs on a separate
+            // thread where it queues up messages and writes the console when the queue reaches a certain
+            // threshold.
+            if (_serviceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }
