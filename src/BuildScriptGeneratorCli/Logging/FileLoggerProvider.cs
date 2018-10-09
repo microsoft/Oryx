@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -14,10 +13,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Logging
 {
     internal class FileLoggerProvider : ILoggerProvider
     {
-        public const int DefaultMessageThresholdLimit = 5;
+        public const int DefaultMessageThresholdLimit = 2;
 
         private readonly BuildScriptGeneratorOptions _options;
-        private readonly List<ILogger> _loggers;
         private readonly ObservableList<string> _messages;
 
         public FileLoggerProvider(IOptions<BuildScriptGeneratorOptions> options)
@@ -29,8 +27,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Logging
         internal FileLoggerProvider(IOptions<BuildScriptGeneratorOptions> options, int messageThresholdLimit)
         {
             _options = options.Value;
-            _loggers = new List<ILogger>();
-
             _messages = new ObservableList<string>(messageThresholdLimit);
             _messages.MessageThresholdLimitReached += MessageThresholdLimitReached;
         }
@@ -42,9 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Logging
                 return NullLogger<FileLogger>.Instance;
             }
 
-            var logger = new FileLogger(categoryName, _messages, _options.MinimumLogLevel);
-            _loggers.Add(logger);
-            return logger;
+            return new FileLogger(categoryName, _messages, _options.MinimumLogLevel);
         }
 
         // This gets called when the DI container is disposed

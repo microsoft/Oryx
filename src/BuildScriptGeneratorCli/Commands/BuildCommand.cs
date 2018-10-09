@@ -218,7 +218,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             options.Inline = Inline;
 
-            if (!string.IsNullOrEmpty(LogFile))
+            // We want to enable logging always, so provide a default log file
+            // if not explicitly supplied.
+            if (string.IsNullOrEmpty(LogFile))
+            {
+                options.LogFile = Path.Combine(options.TempDir, "log.txt");
+            }
+            else
             {
                 options.LogFile = Path.GetFullPath(LogFile);
             }

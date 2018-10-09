@@ -71,11 +71,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private void DisposeServiceProvider()
         {
-            // In general it is a good practice to dispose services before this program is
-            // exiting, but there's one more reason we would need to do this i.e that the Console
-            // logger doesn't write to the console immediately. This is because it runs on a separate
-            // thread where it queues up messages and writes the console when the queue reaches a certain
-            // threshold.
+            // In general it is a good practice to dispose services before this program is exiting, but there's
+            // one more reason we would need to do this i.e that the File logger doesn't write to a file
+            // immediately. This is because it queues up messages until a certain threshold is reached and then
+            // flushes them.
             if (_serviceProvider is IDisposable disposable)
             {
                 disposable.Dispose();
