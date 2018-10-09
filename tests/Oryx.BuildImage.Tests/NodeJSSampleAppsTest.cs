@@ -137,7 +137,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void BuildFails_WhenDestinationDirectoryIsNotEmpty_AndForceOption_IsFalse()
+        public void BuildFails_WhenDestinationDirectoryIsNotEmpty_AndForceOption_IsNotUsed()
         {
             // Arrange
             var volume = DockerVolume.Create(_hostSamplesDir);
@@ -173,7 +173,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     Assert.False(result.IsSuccess);
                     Assert.Contains(
-                        "Destination directory is not empty. Use '--force' option to replace the destination directory content.",
+                        "Destination directory is not empty. Use '-f' or '--force' option to replace the destination directory content.",
                         result.Error);
                 },
                 result.GetDebugInfo());
