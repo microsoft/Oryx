@@ -107,8 +107,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 res.end();
             }).listen(8888);";
 
-        //TODO: add tests for node detection files
-
         [Fact]
         public void GeneratedScript_ForPackageJsonWithNoVersions_MustHaveNpmInstall()
         {
@@ -312,7 +310,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [Fact]
         public void GeneratedScript_ForPackageJsonWithNpmVersion_MustUseThatVersion()
         {
-            // Arrange & Act
             // Arrange
             var scriptGenerator = GetScriptGenerator();
             var repo = GetSourceRepo(PackageJsonWithNpmVersion);
@@ -331,6 +328,151 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Simple check that at least "npm install" is there
             Assert.Contains("npm install", generatedScriptContent);
             Assert.Contains($"benv npm=5.4.2", generatedScriptContent);
+        }
+
+        [Fact]
+        public void CanGenerateScript_ReturnsTrue_IfPackageJsonIsPresent()
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "package.json");
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.True(canGenerateScript);
+        }
+
+        [Fact]
+        public void CanGenerateScript_ReturnsTrue_IfAppJsIsPresent()
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "app.js");
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.True(canGenerateScript);
+        }
+
+        [Fact]
+        public void CanGenerateScript_ReturnsTrue_IfServerJsIsPresent()
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "server.js");
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.True(canGenerateScript);
+        }
+
+        [Fact]
+        public void CanGenerateScript_ReturnsFalse_IfPackageJsonNotPresentInRootFolder()
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "subDir", "package.json");
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.False(canGenerateScript);
+        }
+
+        [Fact]
+        public void CanGenerateScript_ReturnsFalse_IfAppJsNotPresentInRootFolder()
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "subDir", "app.js");
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.False(canGenerateScript);
+        }
+
+        [Fact]
+        public void CanGenerateScript_ReturnsFalse_IfServerJsNotPresentInRootFolder()
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "subDir", "server.js");
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.False(canGenerateScript);
+        }
+
+        [Theory]
+        [InlineData("default.htm")]
+        [InlineData("default.html")]
+        [InlineData("default.asp")]
+        [InlineData("index.htm")]
+        [InlineData("index.html")]
+        [InlineData("iisstart.htm")]
+        [InlineData("default.aspx")]
+        [InlineData("index.php")]
+        public void CanGenerateScript_ReturnsFalse_IfIISStartupFileIsPresent(string iisStartupFileName)
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", iisStartupFileName);
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.False(canGenerateScript);
+        }
+
+        [Theory]
+        [InlineData("default.htm")]
+        [InlineData("default.html")]
+        [InlineData("default.asp")]
+        [InlineData("index.htm")]
+        [InlineData("index.html")]
+        [InlineData("iisstart.htm")]
+        [InlineData("default.aspx")]
+        [InlineData("index.php")]
+        public void CanGenerateScript_ReturnsFalse_IfServerJs_AndIISStartupFileIsPresent(string iisStartupFileName)
+        {
+            // Arrange
+            var sourceRepo = new CachedSourceRepo();
+            sourceRepo.AddFile("", "server.js");
+            sourceRepo.AddFile("", iisStartupFileName);
+            var context = CreateScriptGeneratorContext(sourceRepo);
+            var scriptGenerator = GetScriptGenerator();
+
+            // Act
+            var canGenerateScript = scriptGenerator.CanGenerateScript(context);
+
+            // Assert
+            Assert.False(canGenerateScript);
         }
 
         private IScriptGenerator GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)
@@ -379,9 +521,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             private Dictionary<string, string> pathToContent = new Dictionary<string, string>();
 
-            public void AddFile(string content, params string[] path)
+            public void AddFile(string content, params string[] paths)
             {
-                var filePath = Path.Combine(path);
+                var filePath = Path.Combine(paths);
                 pathToContent[filePath] = content;
             }
 
