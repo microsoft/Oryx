@@ -117,7 +117,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Set execute permission on the generated script.
             (var exitCode, var output, var error) = ProcessHelper.RunProcessAndCaptureOutput(
                 "chmod",
-                arguments: new[] { "+x", scriptPath });
+                arguments: new[] { "+x", scriptPath },
+                // Do not provide wait time as the caller can do this themselves.
+                waitForExitInSeconds: null);
             if (exitCode != 0)
             {
                 console.Error.WriteLine(
@@ -140,7 +142,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 },
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
-                waitForExitInSeconds: (int)TimeSpan.FromMinutes(30).TotalSeconds);
+                // Do not provide wait time as the caller can do this themselves.
+                waitForExitInSeconds: null);
             return exitCode;
         }
 

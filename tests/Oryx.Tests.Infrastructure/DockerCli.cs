@@ -49,7 +49,10 @@ namespace Oryx.Tests.Infrastructure
             Exception exception = null;
             try
             {
-                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments, _waitTimeInSeconds);
+                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(
+                    fileName,
+                    arguments,
+                    _waitTimeInSeconds);
             }
             catch (InvalidOperationException invalidOperationException)
             {
@@ -135,7 +138,10 @@ namespace Oryx.Tests.Infrastructure
             Exception exception = null;
             try
             {
-                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(fileName, arguments);
+                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(
+                    fileName,
+                    arguments,
+                    _waitTimeInSeconds);
             }
             catch (InvalidOperationException invalidOperationException)
             {

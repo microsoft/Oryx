@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.Common.Utilities
         public static int RunProcess(
             string fileName,
             IEnumerable<string> arguments,
-            int waitForExitInSeconds = 10)
+            int? waitForExitInSeconds)
         {
             return RunProcess(
                 fileName,
@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Common.Utilities
         public static (int exitCode, string output, string error) RunProcessAndCaptureOutput(
             string fileName,
             IEnumerable<string> arguments,
-            int waitForExitInSeconds = 10)
+            int? waitForExitInSeconds)
         {
             var outputBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Common.Utilities
             IEnumerable<string> arguments,
             DataReceivedEventHandler standardOutputHandler,
             DataReceivedEventHandler standardErrorHandler,
-            int waitForExitInSeconds = 10)
+            int? waitForExitInSeconds)
         {
             var redirectOutput = standardOutputHandler != null;
             var redirectError = standardErrorHandler != null;
@@ -102,20 +102,28 @@ namespace Microsoft.Oryx.Common.Utilities
                     process.BeginErrorReadLine();
                 }
 
-                var hasExited = process.WaitForExit((int)TimeSpan.FromSeconds(waitForExitInSeconds).TotalMilliseconds);
-                if (!hasExited)
+                if (waitForExitInSeconds.HasValue)
                 {
-                    throw new InvalidOperationException(
-                        $"The process with id '{process.Id}' didn't exit within the allocated time.");
-                }
+                    var hasExited = process.WaitForExit(
+                        (int)TimeSpan.FromSeconds(waitForExitInSeconds.Value).TotalMilliseconds);
+                    if (!hasExited)
+                    {
+                        throw new InvalidOperationException(
+                            $"The process with id '{process.Id}' didn't exit within the allocated time.");
+                    }
 
-                if (redirectOutput || redirectError)
+                    if (redirectOutput || redirectError)
+                    {
+                        // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
+                        // When standard output has been redirected to asynchronous event handlers, it is possible that output
+                        // processing will not have completed when this method returns. To ensure that asynchronous
+                        // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
+                        // receiving a true from this overload
+                        process.WaitForExit();
+                    }
+                }
+                else
                 {
-                    // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
-                    // When standard output has been redirected to asynchronous event handlers, it is possible that output
-                    // processing will not have completed when this method returns. To ensure that asynchronous
-                    // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
-                    // receiving a true from this overload
                     process.WaitForExit();
                 }
 
