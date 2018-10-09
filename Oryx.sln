@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{33D6DAAC
 	ProjectSection(SolutionItems) = preProject
 		images\build\benv.sh = images\build\benv.sh
 		images\build\Dockerfile = images\build\Dockerfile
+		images\build\openssl-build.sh = images\build\openssl-build.sh
 		images\build\python-build.sh = images\build\python-build.sh
 	EndProjectSection
 EndProject
@@ -66,6 +67,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885C6A7-0C9A-406C-89E9-D06A3A03C52D}"
 	ProjectSection(SolutionItems) = preProject
 		vsts\scripts\dockerCleanup.sh = vsts\scripts\dockerCleanup.sh
+		vsts\scripts\release-runtimeimages.sh = vsts\scripts\release-runtimeimages.sh
 	EndProjectSection
 EndProject
 Global
