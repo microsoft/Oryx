@@ -9,6 +9,8 @@ source $REPO_DIR/build/__variables.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
+args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+
 function BuildAndTagStage(){
 	local stageName="$1"
 	local stageTagName="oryxdevms/$1"
@@ -16,7 +18,7 @@ function BuildAndTagStage(){
 	echo
 	echo
 	echo "Building stage '$stageName' with tag '$stageTagName' ..."
-	docker build --target $stageName -t $stageTagName -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --target $stageName -t $stageTagName $args -f "$BUILD_IMAGES_DOCKERFILE" .
 }
 
 # Tag stages to avoid creating dangling images.
@@ -34,7 +36,6 @@ BuildAndTagStage python3.7.0-build
 BuildAndTagStage buildscriptbuilder
 
 tags="-t $DOCKER_BUILD_IMAGES_REPO:latest"
-labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 if [ -n "$BUILD_NUMBER" ]
 then
@@ -45,11 +46,11 @@ if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
 then
 	echo
 	echo "Building build image(s) with NO cache..."
-	docker build --no-cache $tags $labels . -f "$BUILD_IMAGES_DOCKERFILE"
+	docker build --no-cache $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
 else
 	echo
 	echo "Building build image(s)..."
-	docker build $tags $labels . -f "$BUILD_IMAGES_DOCKERFILE"
+	docker build $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
 fi
 
 # Write the list of images that were built to artifacts folder

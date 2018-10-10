@@ -238,17 +238,26 @@ RUN set -ex \
  && cp -sn /opt/python/3/bin/* .
 
 FROM main as buildscriptbuilder
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
 COPY src/Oryx.Common.Utilities /usr/oryx/src/Oryx.Common.Utilities
 COPY build/FinalPublicKey.snk usr/oryx/build/
+COPY src/CommonFiles /usr/oryx/src/CommonFiles
 WORKDIR /usr/oryx/src
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli
 
 FROM python AS final
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
 WORKDIR /
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
+LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
+LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
 ENTRYPOINT [ "benv" ]

@@ -70,6 +70,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885
 		vsts\scripts\release-runtimeimages.sh = vsts\scripts\release-runtimeimages.sh
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles", "{7475604B-12AC-4765-9259-505BF742FDEF}"
+	ProjectSection(SolutionItems) = preProject
+		src\CommonFiles\AssemblyVersion.proj = src\CommonFiles\AssemblyVersion.proj
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +130,7 @@ Global
 		{16C061C3-3F6E-43C2-A9CC-3E905322E443} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 		{8E76A7A1-1382-4232-BBDE-F0A3808105E2} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 		{4885C6A7-0C9A-406C-89E9-D06A3A03C52D} = {D7D9E386-B13E-45FA-8AE6-8FC20CB84974}
+		{7475604B-12AC-4765-9259-505BF742FDEF} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}

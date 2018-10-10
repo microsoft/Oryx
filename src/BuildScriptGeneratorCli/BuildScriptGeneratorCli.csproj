@@ -10,8 +10,11 @@
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>true</DelaySign>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyVersion>0.2</AssemblyVersion>
   </PropertyGroup>
 
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
+  
   <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
