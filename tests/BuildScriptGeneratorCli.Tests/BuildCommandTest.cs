@@ -176,67 +176,6 @@ namespace BuildScriptGeneratorCli.Tests
             }
         }
 
-        [Theory]
-        [MemberData(nameof(IsSubDirectoryTrueData))]
-        public void IsSubDirectory_IsTrue(string dir1, string dir2)
-        {
-            // Arrange
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isSubDirectory = buildCommand.IsSubDirectory(dir1, dir2);
-
-            // Assert
-            Assert.True(isSubDirectory);
-        }
-
-        public static TheoryData<string, string> IsSubDirectoryFalseData
-        {
-            get
-            {
-                var data = new TheoryData<string, string>
-                {
-                    {
-                        // case-sensitive
-                        Path.Combine("c:", "Foo"),
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo"),
-                        Path.Combine("c:", "foo", "bar")
-                    },
-                    {
-                        Path.Combine("a", "b", "c"),
-                        Path.Combine("a", "b", "cd")
-                    },
-                    {
-                        Path.DirectorySeparatorChar.ToString(),
-                        Path.Combine(Path.DirectorySeparatorChar.ToString(), "foo")
-                    },
-                    {
-                        Path.GetFullPath(Path.Combine("a", "b", "c", "..", "..")),
-                        Path.GetFullPath(Path.Combine("a", "b"))
-                    },
-                };
-
-                return data;
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(IsSubDirectoryFalseData))]
-        public void IsSubDirectory_IsFalse(string dir1, string dir2)
-        {
-            // Arrange
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isSubDirectory = buildCommand.IsSubDirectory(dir1, dir2);
-
-            // Assert
-            Assert.False(isSubDirectory);
-        }
-
         public static TheoryData<string> DestinationDirectoryPathData
         {
             get
@@ -260,31 +199,6 @@ namespace BuildScriptGeneratorCli.Tests
 
                 return data;
             }
-        }
-
-        [Theory]
-        [MemberData(nameof(DestinationDirectoryPathData))]
-        public void IsValidInput_IsFalse_IfDestinationDirIsNotEmpty_AndForceOption_IsFalse(
-            string destinationDir)
-        {
-            // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = CreateNewDir();
-                    o.DestinationDir = destinationDir;
-                    o.Force = false;
-                })
-                .Build();
-            var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
-
-            // Assert
-            Assert.False(isValid);
-            Assert.Contains("Destination directory is not empty.", testConsole.StdError);
         }
 
         [Theory]
@@ -634,69 +548,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.False(isValid);
             Assert.Contains(
                 "Cannot use language version without specifying language name also.",
-                testConsole.StdError);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("subdir1")]
-        [InlineData("subdir1", "subdir2")]
-        public void IsValid_IsFalse_IfDestinationDir_IsSubDirectory_OfSourceDir(params string[] paths)
-        {
-            // Arrange
-            var sourceDir = CreateNewDir();
-            var subPaths = Path.Combine(paths);
-            var destinationDir = Path.Combine(sourceDir, subPaths);
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = sourceDir;
-                    o.DestinationDir = destinationDir;
-                })
-                .Build();
-            var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
-
-            // Assert
-            Assert.False(isValid);
-            Assert.Contains(
-                $"Destination directory '{destinationDir}' cannot be a " +
-                $"sub-directory of source directory '{sourceDir}'.",
-                testConsole.StdError);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("subdir1")]
-        [InlineData("subdir1", "subdir2")]
-        public void IsValid_IsFalse_IfIntermediateDir_IsSubDirectory_OfSourceDir(params string[] paths)
-        {
-            // Arrange
-            var sourceDir = CreateNewDir();
-            var subPaths = Path.Combine(paths);
-            var intermediateDir = Path.Combine(sourceDir, subPaths);
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = sourceDir;
-                    o.IntermediateDir = intermediateDir;
-                    o.DestinationDir = CreateNewDir();
-                })
-                .Build();
-            var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
-
-            // Assert
-            Assert.False(isValid);
-            Assert.Contains(
-                $"Intermediate directory '{intermediateDir}' cannot be a " +
-                $"sub-directory of source directory '{sourceDir}'.",
                 testConsole.StdError);
         }
 

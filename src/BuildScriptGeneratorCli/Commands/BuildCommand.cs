@@ -138,7 +138,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 arguments: new[]
                 {
                     sourceRepo.RootPath,
-                    options.DestinationDir
+                    options.DestinationDir,
+                    options.TempDir,
+                    options.Force.ToString()
                 },
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
@@ -177,41 +179,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
             {
                 console.Error.WriteLine("Cannot use language version without specifying language name also.");
-                return false;
-            }
-
-            if (Directory.Exists(options.DestinationDir))
-            {
-                var directoryContent = Directory.EnumerateFileSystemEntries(
-                    options.DestinationDir,
-                    "*",
-                    SearchOption.AllDirectories);
-
-                if (directoryContent.Any() && !options.Force)
-                {
-                    console.Error.WriteLine(
-                        "Destination directory is not empty. " +
-                        "Use '-f' or '--force' option to replace the destination directory content.");
-                    return false;
-                }
-            }
-
-            // Destination directory cannot be a sub-directory of the source directory
-            if (IsSubDirectory(options.DestinationDir, options.SourceDir))
-            {
-                console.Error.WriteLine(
-                    $"Destination directory '{options.DestinationDir}' cannot be a " +
-                    $"sub-directory of source directory '{options.SourceDir}'.");
-                return false;
-            }
-
-            // Intermediate directory cannot be a sub-directory of the source directory
-            if (!string.IsNullOrEmpty(options.IntermediateDir) &&
-                IsSubDirectory(options.IntermediateDir, options.SourceDir))
-            {
-                console.Error.WriteLine(
-                    $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
-                    $"sub-directory of source directory '{options.SourceDir}'.");
                 return false;
             }
 
@@ -267,36 +234,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             options.ScriptOnly = ScriptOnly;
             options.Force = Force;
-        }
-
-        /// <summary>
-        /// Checks if <paramref name="dir1"/> is a sub-directory of <paramref name="dir2"/>.
-        /// </summary>
-        /// <param name="dir1"></param>
-        /// <param name="dir2"></param>
-        /// <returns></returns>
-        internal bool IsSubDirectory(string dir1, string dir2)
-        {
-            var dir1Segments = dir1.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-            var dir2Segments = dir2.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-
-            if (dir1Segments.Length < dir2Segments.Length)
-            {
-                return false;
-            }
-
-            // If dir1 is really a subset of dir2, then we should expect all
-            // segments of dir2 appearing in dir1 and in exact order.
-            for (var i = 0; i < dir2Segments.Length; i++)
-            {
-                // we want case-sensitive search
-                if (dir1Segments[i] != dir2Segments[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

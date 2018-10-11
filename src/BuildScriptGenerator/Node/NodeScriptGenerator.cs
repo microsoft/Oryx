@@ -23,10 +23,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 SOURCE_DIR=$1
 OUTPUT_DIR=$2
 
-if [ ! $# -eq 2 ]; then
-    echo ""Usage: $0 <source-dir> <output-dir>""
-    exit 1
-fi
+#if [ ! $# -eq 2 ]; then
+#    echo ""Usage: $0 <source-dir> <output-dir>""
+#    exit 1
+#fi
 
 if [ ! -d ""$SOURCE_DIR"" ]; then
     echo ""Source directory '$SOURCE_DIR' does not exist.""

@@ -25,8 +25,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private const string ScriptTemplate =
             @"#!/bin/bash
+set -e
+
 SOURCE_DIR=$1
-OUTPUT_DIR=$2
+DESTINATION_DIR=$2
+TEMP_ROOT_DIR=$3
+FORCE=$4
+
+if [ ! -d ""$SOURCE_DIR"" ]; then
+    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
+    exit 1
+fi
+
+if [ ! -d ""$TEMP_ROOT_DIR"" ]; then
+    echo ""Temp root directory '$TEMP_ROOT_DIR' does not exist."" 1>&2
+    exit 1
+fi
 
 source /usr/local/bin/benv {0}
 
@@ -35,29 +49,12 @@ echo Python deployment.
 #1. Install any dependencies
 {1}
 
-echo ""$SOURCE_DIR""
-echo ""$OUTPUT_DIR""
-
-echo ""Found requirements.txt""
+echo ""Source directory: $SOURCE_DIR""
+echo ""Destination directory: $DESTINATION_DIR""
 echo ""Python Virtual Environment: $ANTENV""
 echo ""Python Version: $python""
 
 cd ""$SOURCE_DIR""
-
-if [ -d ""$OUTPUT_DIR"" ]
-then
-    echo
-    echo Output directory already exists. Deleting it ...
-    rm -rf ""$OUTPUT_DIR""
-fi
-
-echo
-echo Creating output directory ...
-mkdir -p ""$OUTPUT_DIR""
-
-cp -rf . ""$OUTPUT_DIR""
-
-cd ""$OUTPUT_DIR""
 
 #2a. Setup virtual Environment
 echo ""Create virtual environment""
@@ -70,7 +67,37 @@ source $ANTENV/bin/activate
 #2c. Install dependencies
 pip install -r requirements.txt
 
+echo
 echo ""pip install finished""
+
+# Check if source and destination directories are the same
+if [[ ""$SOURCE_DIR"" -ef ""$DESTINATION_DIR"" ]]
+then
+    echo Done.
+    exit 0
+fi
+
+# Copy content to output directory
+if [ -d ""$DESTINATION_DIR"" ]
+then
+    if [ ""$FORCE"" != ""True"" ]
+    then
+        echo ""Destination directory is not empty. Use the '-f' or '--force' option to replace the content."" 1>&2
+        exit 1
+    fi
+
+    echo
+    echo Destination directory already exists. Deleting it ...
+    rm -rf ""$DESTINATION_DIR""
+fi
+
+appTempDir=""$TEMP_ROOT_DIR/output""
+cp -rf ""$SOURCE_DIR"" ""$appTempDir""
+mkdir -p ""$DESTINATION_DIR""
+cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
+
+echo
+echo Done.
 ";
 
         private const string DefaultPythonVersion = "3.7.0";

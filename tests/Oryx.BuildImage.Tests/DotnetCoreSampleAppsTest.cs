@@ -34,7 +34,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "dotnet",
                 commandArguments:
@@ -61,7 +61,7 @@ namespace Oryx.BuildImage.Tests
 
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/build:latest",
+                BuildImageTestSettings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "dotnet",
                 commandArguments:
