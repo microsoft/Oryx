@@ -237,12 +237,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext(repo);
 
             // Act
-            var exception = Assert.Throws<UnsupportedNodeVersionException>(
+            var exception = Assert.Throws<UnsupportedVersionException>(
                 () => scriptGenerator.GenerateBashScript(context));
 
             // Assert
-            // Simple check that the message contains the unsupported version.
-            Assert.Contains("20.20.20", exception.Message);
+            Assert.Contains(
+                $"The target Node.js version '20.20.20' is not supported. " +
+                $"Supported versions are: {string.Join(", ", scriptGenerator.SupportedLanguageVersions)}",
+                exception.Message);
         }
 
         [Fact]
@@ -254,12 +256,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext(repo);
 
             // Act
-            var exception = Assert.Throws<UnsupportedNpmVersionException>(
+            var exception = Assert.Throws<UnsupportedVersionException>(
                 () => scriptGenerator.GenerateBashScript(context));
 
             // Assert
-            // Simple check that the message contains the unsupported version.
-            Assert.Contains("20.20.20", exception.Message);
+            Assert.Contains(
+                "The target npm version '20.20.20' is not supported. Supported versions are: ",
+                exception.Message);
         }
 
         [Fact]

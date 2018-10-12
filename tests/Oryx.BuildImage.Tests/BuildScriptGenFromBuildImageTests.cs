@@ -33,7 +33,7 @@ namespace Oryx.BuildImage.Tests
             {
                 Assert.True(result.IsSuccess);
                 // Help text must be shown
-                Assert.Contains("Generates scripts and builds source code for multiple languages.", result.Output);
+                Assert.Contains("Generates and runs build scripts for multiple languages.", result.Output);
             },
             result.GetDebugInfo());
         }

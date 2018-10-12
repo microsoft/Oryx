@@ -15,7 +15,7 @@ using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("build", Description = "Generates and runs build scripts.")]
+    [Command("build", Description = "Generate and run build scripts.")]
     internal class BuildCommand : BaseCommand
     {
         [Argument(0, Description = "The source directory.")]
@@ -53,14 +53,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             CommandOptionType.SingleValue,
             Description = "The file to which logs have to be written to.")]
         public string LogFile { get; set; }
-
-        [Option(
-            "--log-level <level>",
-            CommandOptionType.SingleValue,
-            Description = "The minimum log level at which logs should be written. " +
-            "Allowed levels: Trace, Debug, Information, Warning, Error, Critical. " +
-            "Default level is Warning.")]
-        public string MinimumLogLevel { get; set; }
 
         [Option(
             "--script-only",
@@ -107,8 +99,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return 0;
             }
 
+            var tempDirectoryProvider = serviceProvider.GetRequiredService<ITempDirectoryProvider>();
+
             // Get the path where the generated script should be written into.
-            var scriptPath = Path.Combine(options.TempDir, "build.sh");
+            var scriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "build.sh");
 
             // Write the content to the script.
             File.WriteAllText(scriptPath, scriptContent);
@@ -139,7 +133,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     sourceRepo.RootPath,
                     options.DestinationDir,
-                    options.TempDir,
+                    tempDirectoryProvider.GetTempDirectory(),
                     options.Force.ToString()
                 },
                 standardOutputHandler: stdOutHandler,
@@ -191,15 +185,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             options.Language = Language;
             options.LanguageVersion = LanguageVersion;
 
-            // Create one unique subdirectory per session (or run of this tool)
-            // Example structure:
-            // /tmp/BuildScriptGenerator/guid1
-            // /tmp/BuildScriptGenerator/guid2
-            options.TempDir = Path.Combine(
-                Path.GetTempPath(),
-                nameof(BuildScriptGenerator),
-                Guid.NewGuid().ToString("N"));
-
             if (!string.IsNullOrEmpty(DestinationDir))
             {
                 options.DestinationDir = Path.GetFullPath(DestinationDir);
@@ -214,24 +199,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // We want to enable logging always, so provide a default log file
             // if not explicitly supplied.
-            if (string.IsNullOrEmpty(LogFile))
-            {
-                options.LogFile = Path.Combine(options.TempDir, "log.txt");
-            }
-            else
+            if (!string.IsNullOrEmpty(LogFile))
             {
                 options.LogFile = Path.GetFullPath(LogFile);
             }
 
-            if (string.IsNullOrEmpty(MinimumLogLevel))
-            {
-                options.MinimumLogLevel = LogLevel.Warning;
-            }
-            else
-            {
-                options.MinimumLogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), MinimumLogLevel, ignoreCase: true);
-            }
-
+            options.MinimumLogLevel = LogLevel.Trace;
             options.ScriptOnly = ScriptOnly;
             options.Force = Force;
         }

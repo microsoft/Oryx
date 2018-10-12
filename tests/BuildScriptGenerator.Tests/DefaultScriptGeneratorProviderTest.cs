@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -59,19 +60,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void GetScriptGenerator_ReturnsNull_ForUnsupportedLanguage()
         {
             // Arrange
+            var languageName = "unsuppotedLanguage";
             var provider = CreateDefaultScriptGeneratorProvider(
                 new[] { new TestScriptGenerator("lang1", new[] { "1.0" }) });
-            var context = CreateScriptGeneratorContext(new TestSourceRepo(), languageName: "unsuppotedLanguage");
+            var context = CreateScriptGeneratorContext(new TestSourceRepo(), languageName: languageName);
 
-            // Act
-            var scriptGenerator = provider.GetScriptGenerator(context);
-
-            // Assert
-            Assert.Null(scriptGenerator);
+            // Act & Assert
+            var exception = Assert.Throws<UnsupportedLanguageException>(() => provider.GetScriptGenerator(context));
+            Assert.Equal(
+                $"The supplied language '{languageName}' is not supported. Supported languages are: lang1",
+                exception.Message);
         }
 
         [Fact]
-        public void GetScriptGenerator_ReturnsNull_ForSupportedLanguage_ButUnsupportedVersion()
+        public void GetScriptGenerator_ThrowsException_ForSupportedLanguage_ButUnsupportedVersion()
         {
             // Arrange
             var scriptGenerator = new TestScriptGenerator("lang1", new[] { "1.0.0" });
@@ -81,11 +83,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 languageName: "lang1",
                 languageVersion: "2.0.0");
 
-            // Act
-            var actual = provider.GetScriptGenerator(context);
-
-            // Assert
-            Assert.Null(actual);
+            // Act & Assert
+            Assert.Throws<UnsupportedVersionException>(() => provider.GetScriptGenerator(context));
         }
 
         [Fact]
@@ -283,7 +282,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("1.3.2", "1.2.2")]
         [InlineData("1.3", "1.2.2")]
         [InlineData("2.2.2", "1.2.2")]
-        public void GetScriptGenerator_ReturnsNull_IfLanguageVersionIsNotSupported(
+        public void GetScriptGenerator_ThrowsException_IfLanguageVersionIsNotSupported(
             string providedLanguageVersion,
             string supportedVersions)
         {
@@ -294,10 +293,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext(new TestSourceRepo(), "lang1", providedLanguageVersion);
 
             // Act
-            var scriptGenerator = provider.GetScriptGenerator(context);
+            var exception = Assert.Throws<UnsupportedVersionException>(
+                () => provider.GetScriptGenerator(context));
 
             // Assert
-            Assert.Null(scriptGenerator);
+
+            Assert.Equal(
+                $"The supplied language version '{providedLanguageVersion}' is not supported. " +
+                $"Supported versions are: {supportedVersions}",
+                exception.Message);
         }
 
         private DefaultScriptGeneratorProvider CreateDefaultScriptGeneratorProvider(

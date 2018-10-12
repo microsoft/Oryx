@@ -32,9 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 Inline = true,
                 SourceDir = appDir,
-                TempDir = tempDir
             };
-            var provider = GetSourceRepoProvider(options);
+            var provider = GetSourceRepoProvider(options, tempDir);
 
             // Act
             var sourceRepo = provider.GetSourceRepo();
@@ -59,9 +58,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 Inline = true,
                 IntermediateDir = intermediateDir,
                 SourceDir = appDir,
-                TempDir = tempDir
             };
-            var provider = GetSourceRepoProvider(options);
+            var provider = GetSourceRepoProvider(options, tempDir);
 
             // Act
             var sourceRepo = provider.GetSourceRepo();
@@ -83,9 +81,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var options = new BuildScriptGeneratorOptions
             {
                 SourceDir = appDir,
-                TempDir = tempDir,
             };
-            var provider = GetSourceRepoProvider(options);
+            var provider = GetSourceRepoProvider(options, tempDir);
 
             // Create content in app's directory
             var srcDirName = Guid.NewGuid().ToString();
@@ -117,10 +114,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var options = new BuildScriptGeneratorOptions
             {
                 SourceDir = appDir,
-                TempDir = tempDir,
                 IntermediateDir = intermediateDir
             };
-            var provider = GetSourceRepoProvider(options);
+            var provider = GetSourceRepoProvider(options, tempDir);
 
             // Create content in app's directory
             var srcDirName = Guid.NewGuid().ToString();
@@ -150,10 +146,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                SourceDir = appDir,
-                TempDir = tempDir,
+                SourceDir = appDir
             };
-            var provider = GetSourceRepoProvider(options);
+            var provider = GetSourceRepoProvider(options, tempDir);
 
             // Create content in app's directory
             var srcDirName = Guid.NewGuid().ToString();
@@ -175,11 +170,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.True(File.Exists(expectedFile));
         }
 
-        private ISourceRepoProvider GetSourceRepoProvider(BuildScriptGeneratorOptions options)
+        private ISourceRepoProvider GetSourceRepoProvider(BuildScriptGeneratorOptions options, string tempDir)
         {
             return new DefaultSourceRepoProvider(
+                new TestTempDirectoryProvider(tempDir),
                 Options.Create(options),
                 NullLogger<DefaultSourceRepoProvider>.Instance);
+        }
+
+        private class TestTempDirectoryProvider : ITempDirectoryProvider
+        {
+            private readonly string _tempDir;
+
+            public TestTempDirectoryProvider(string tempDir)
+            {
+                _tempDir = tempDir;
+            }
+
+            public string GetTempDirectory()
+            {
+                Directory.CreateDirectory(_tempDir);
+                return _tempDir;
+            }
         }
 
         public class TestFixture : IDisposable

@@ -79,12 +79,12 @@ namespace Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.Error.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    //Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }
@@ -168,12 +168,12 @@ namespace Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.Error.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    //Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }
@@ -194,12 +194,12 @@ namespace Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.Error.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    //Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }

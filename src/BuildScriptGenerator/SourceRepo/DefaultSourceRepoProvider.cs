@@ -9,14 +9,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultSourceRepoProvider : ISourceRepoProvider
     {
+        private readonly ITempDirectoryProvider _tempDirectoryProvider;
         private readonly BuildScriptGeneratorOptions _options;
         private readonly ILogger<DefaultSourceRepoProvider> _logger;
         private bool _copiedToIntermediateDirectory = false;
 
         public DefaultSourceRepoProvider(
+            ITempDirectoryProvider tempDirectoryProvider,
             IOptions<BuildScriptGeneratorOptions> options,
             ILogger<DefaultSourceRepoProvider> logger)
         {
+            _tempDirectoryProvider = tempDirectoryProvider;
             _options = options.Value;
             _logger = logger;
         }
@@ -47,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string intermediateDir;
             if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
-                intermediateDir = Path.Combine(_options.TempDir, "IntermediateDir");
+                intermediateDir = Path.Combine(_tempDirectoryProvider.GetTempDirectory(), "IntermediateDir");
             }
             else
             {

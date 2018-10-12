@@ -24,5 +24,24 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(0, exitCode);
             Assert.Contains("Usage:", testConsole.StdOutput);
         }
+
+        [Fact]
+        public void OnExecute_ShowsVersion_WhenVersionOptionIsUsed()
+        {
+            // Arrange
+            var program = new Program
+            {
+                Version = true
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = program.OnExecute(new CommandLineApplication(testConsole), testConsole);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.Contains("Version:", testConsole.StdOutput);
+            Assert.Contains("Commit:", testConsole.StdOutput);
+        }
     }
 }

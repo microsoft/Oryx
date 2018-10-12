@@ -248,26 +248,6 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void ConfiguresOptions_WithScriptGeneratorRootDirectory_InTemp()
-        {
-            // Arrange
-            var options = new BuildScriptGeneratorOptions();
-            var buildCommand = new BuildCommand
-            {
-                SourceDir = CreateNewDir(),
-                DestinationDir = CreateNewDir(),
-            };
-
-            // Act
-            buildCommand.ConfigureBuildScriptGeneratorOptoins(options);
-
-            // Assert
-            Assert.StartsWith(
-                Path.Combine(Path.GetTempPath(), nameof(Microsoft.Oryx.BuildScriptGenerator)),
-                options.TempDir);
-        }
-
-        [Fact]
         public void ResolvesToCurrentDirectoryAbsolutePaths_WhenDotNotationIsUsed()
         {
             // Arrange
@@ -393,32 +373,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.DestinationDir);
             Assert.Equal(expected, options.IntermediateDir);
             Assert.Equal(Path.Combine(expected, "logFile.txt"), options.LogFile);
-        }
-
-        [Theory]
-        [InlineData("trace", LogLevel.Trace)]
-        [InlineData("debug", LogLevel.Debug)]
-        [InlineData("information", LogLevel.Information)]
-        [InlineData("warning", LogLevel.Warning)]
-        [InlineData("error", LogLevel.Error)]
-        [InlineData("critical", LogLevel.Critical)]
-        public void ConfiguresOptions_ForAllAllowedLoggingLevels(string logLevel, LogLevel expected)
-        {
-            // Arrange
-            var options = new BuildScriptGeneratorOptions();
-            var buildCommand = new BuildCommand
-            {
-                SourceDir = "app",
-                DestinationDir = "app-output",
-                LogFile = Path.Combine(Path.GetTempPath(), "logFile.txt"),
-                MinimumLogLevel = logLevel,
-            };
-
-            // Act
-            buildCommand.ConfigureBuildScriptGeneratorOptoins(options);
-
-            // Assert
-            Assert.Equal(expected, options.MinimumLogLevel);
         }
 
         // We want to test that only build output is visible on standard output stream when a build happens
@@ -565,8 +519,6 @@ namespace BuildScriptGeneratorCli.Tests
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
             Directory.CreateDirectory(sourceCodeFolder);
-            var tempDir = Path.Combine(_testDirPath, "temp");
-            Directory.CreateDirectory(tempDir);
             var outputFolder = Path.Combine(_testDirPath, "output");
             Directory.CreateDirectory(outputFolder);
             var servicesBuilder = new ServiceProviderBuilder()
@@ -578,12 +530,13 @@ namespace BuildScriptGeneratorCli.Tests
                     services.RemoveAll<IScriptGenerator>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IScriptGenerator>(generator));
+                    services.AddSingleton<ITempDirectoryProvider>(
+                        new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
                 })
                 .ConfigureScriptGenerationOptions(o =>
                 {
                     o.SourceDir = sourceCodeFolder;
                     o.DestinationDir = outputFolder;
-                    o.TempDir = tempDir;
                     o.ScriptOnly = scriptOnly;
                 });
             return servicesBuilder.Build();
@@ -595,6 +548,22 @@ namespace BuildScriptGeneratorCli.Tests
             {
                 return 0;
                 //return base.Execute(serviceProvider, console);
+            }
+        }
+
+        private class TestTempDirectoryProvider : ITempDirectoryProvider
+        {
+            private readonly string _tempDir;
+
+            public TestTempDirectoryProvider(string tempDir)
+            {
+                _tempDir = tempDir;
+            }
+
+            public string GetTempDirectory()
+            {
+                Directory.CreateDirectory(_tempDir);
+                return _tempDir;
             }
         }
 

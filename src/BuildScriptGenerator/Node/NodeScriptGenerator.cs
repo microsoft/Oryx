@@ -103,6 +103,10 @@ echo Done.
             {
                 return true;
             }
+            else
+            {
+                _logger.LogDebug($"Could not find file '{PackageJsonFileName}' in the source directory.");
+            }
 
             // Copying the logic currently running in Kudu:
             var mightBeNode = false;
@@ -127,6 +131,12 @@ echo Done.
                     }
                 }
                 return true;
+            }
+            else
+            {
+                _logger.LogDebug(
+                    $"Could not find following typical node files in the source directory: " +
+                    string.Join(", ", TypicalNodeDetectionFiles));
             }
 
             return false;
@@ -187,7 +197,11 @@ echo Done.
                     _nodeVersionProvider.SupportedNodeVersions);
                 if (string.IsNullOrWhiteSpace(nodeVersion))
                 {
-                    throw new UnsupportedNodeVersionException(nodeVersionRange);
+                    var message = $"The target Node.js version '{nodeVersionRange}' is not supported. " +
+                        $"Supported versions are: {string.Join(", ", SupportedLanguageVersions)}";
+
+                    _logger.LogError(message);
+                    throw new UnsupportedVersionException(message);
                 }
             }
             return nodeVersion;
@@ -203,12 +217,17 @@ echo Done.
             string npmVersion = null;
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
+                var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
                 npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                     npmVersionRange,
-                    _nodeVersionProvider.SupportedNpmVersions);
+                    supportedNpmVersions);
                 if (string.IsNullOrWhiteSpace(npmVersion))
                 {
-                    throw new UnsupportedNpmVersionException(npmVersionRange);
+                    var message = $"The target npm version '{npmVersionRange}' is not supported. " +
+                        $"Supported versions are: {string.Join(", ", supportedNpmVersions)}";
+
+                    _logger.LogError(message);
+                    throw new UnsupportedVersionException(message);
                 }
             }
             return npmVersion;

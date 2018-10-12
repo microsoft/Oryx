@@ -18,7 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private const string RuntimeFileName = "runtime.txt";
         private const string PythonFileExtension = "*.py";
 
-
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly ILogger<PythonScriptGenerator> _logger;
@@ -122,14 +121,21 @@ echo Done.
         {
             if (!context.SourceRepo.FileExists(RequirementsFileName))
             {
-                _logger.LogDebug($"Cannot generate script as source directory does not have file '{RequirementsFileName}'.");
+                _logger.LogDebug(
+                    $"Cannot generate script as source directory does not have file '{RequirementsFileName}'.");
                 return false;
             }
+
             var sourceDir = context.SourceRepo.RootPath;
             var pythonFiles = Directory.GetFileSystemEntries(sourceDir, PythonFileExtension);
             if (pythonFiles.Length > 0)
             {
                 return true;
+            }
+            else
+            {
+                _logger.LogDebug(
+                    $"Could not find any files with file extension '{PythonFileExtension}' in source directory.");
             }
 
             // Most Python sites will have at least a .py file in the root, but
@@ -140,12 +146,25 @@ echo Done.
                 try
                 {
                     var text = context.SourceRepo.ReadFile(RuntimeFileName);
-                    return text.IndexOf("python", StringComparison.OrdinalIgnoreCase) >= 0;
+                    var hasPythonVersion = text.IndexOf("python", StringComparison.OrdinalIgnoreCase) >= 0;
+                    if (!hasPythonVersion)
+                    {
+                        _logger.LogDebug(
+                            $"Cound not find any text of the form 'python=' in the file '{RuntimeFileName}'.");
+                        return false;
+                    }
+                    return true;
                 }
-                catch (IOException)
+                catch (IOException ex)
                 {
+                    _logger.LogError(
+                        $"An error occurred while trying to read the file '{RuntimeFileName}'. Exception: {ex}");
                     return false;
                 }
+            }
+            else
+            {
+                _logger.LogDebug($"Could not find file '{RuntimeFileName}' in source directory.");
             }
 
             return false;
@@ -188,10 +207,14 @@ echo Done.
             {
                 pythonVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                     pythonVersionRange,
-                    _pythonVersionProvider.SupportedPythonVersions);
+                    SupportedLanguageVersions);
                 if (string.IsNullOrWhiteSpace(pythonVersion))
                 {
-                    throw new UnsupportedPythonVersionException(pythonVersionRange);
+                    var message = $"The target Python version '{pythonVersionRange}' is not supported. " +
+                        $"Supported versions are: {string.Join(", ", SupportedLanguageVersions)}";
+
+                    _logger.LogError(message);
+                    throw new UnsupportedVersionException(message);
                 }
             }
             return pythonVersion;

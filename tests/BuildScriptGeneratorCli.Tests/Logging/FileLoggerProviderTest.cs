@@ -22,74 +22,6 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void DoesNotCreateFileLogger_WhenLogFilePathIsNull()
-        {
-            // Arrange
-            var provider = CreateFileLoggerProvider(logFile: null, LogLevel.Critical);
-
-            // Act
-            var logger = provider.CreateLogger("category1");
-
-            // Assert
-            Assert.IsNotType<FileLogger>(logger);
-        }
-
-        [Fact]
-        public void DoesNotCreateFileLogger_WhenLogFilePathIsEmpty()
-        {
-            // Arrange
-            var provider = CreateFileLoggerProvider(logFile: string.Empty, LogLevel.Critical);
-
-            // Act
-            var logger = provider.CreateLogger("category1");
-
-            // Assert
-            Assert.IsNotType<FileLogger>(logger);
-        }
-
-        [Fact]
-        public void DoesNotFlushMessages_OnDispose_WhenLogFilePathIsNull()
-        {
-            // Arrange
-            var options = new BuildScriptGeneratorOptions
-            {
-                LogFile = null,
-                MinimumLogLevel = LogLevel.Critical
-            };
-            var provider = new TestFileLoggerProvider(Options.Create(options));
-            var logger = provider.CreateLogger("category1");
-            logger.LogError("message1");
-
-            // Act
-            provider.Dispose();
-
-            // Assert
-            var testLogger = Assert.IsType<TestLogger>(logger);
-            Assert.False(testLogger.IsDisposeCalled); ;
-        }
-
-        [Fact]
-        public void DoesNotFlushMessages_OnDispose_WhenLogFilePathIsEmpty()
-        {
-            // Arrange
-            var options = new BuildScriptGeneratorOptions
-            {
-                LogFile = string.Empty,
-                MinimumLogLevel = LogLevel.Critical
-            };
-            var provider = new TestFileLoggerProvider(Options.Create(options));
-            var logger = provider.CreateLogger("category1");
-            logger.LogError("message1");
-
-            // Act
-            provider.Dispose();
-
-            // Assert
-            var testLogger = Assert.IsType<TestLogger>(logger);
-            Assert.False(testLogger.IsDisposeCalled); ;
-        }
-
-        [Fact]
         public void CreatesFileLogger_WithExpectedDetails()
         {
             // Arrange
@@ -198,6 +130,35 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.False(File.Exists(logFile));
         }
 
+        [Fact]
+        public void WritesLogToDefaultLogFile_IfNoLogFileProvidedByUser()
+        {
+            // Arrange
+            var tempDirProvider = new TestTempDirectoryProvider(Path.Combine(_rooDirPath, Guid.NewGuid().ToString()));
+            var provider = CreateFileLoggerProvider(
+                logFile: null, // No explicit log file
+                thresholdLimit: 1,
+                LogLevel.Warning,
+                tempDirProvider);
+            var logger = provider.CreateLogger("category1");
+            var expectedLogFile = Path.Combine(
+                tempDirProvider.GetTempDirectory(),
+                FileLoggerProvider.DefaultLogFileName);
+
+            // Act
+            logger.LogError("message1");
+            logger.LogError("message2");
+
+            // Assert
+            var fileLogger = Assert.IsType<FileLogger>(logger);
+            Assert.Empty(fileLogger.Messages);
+            Assert.True(File.Exists(expectedLogFile));
+            var lines = File.ReadAllLines(expectedLogFile);
+            Assert.Equal(2, lines.Length);
+            Assert.Contains("message1", lines[0]);
+            Assert.Contains("message2", lines[1]);
+        }
+
         private FileLoggerProvider CreateFileLoggerProvider(string logFile, LogLevel minimumLogLevel)
         {
             return CreateFileLoggerProvider(
@@ -211,19 +172,54 @@ namespace BuildScriptGeneratorCli.Tests
             int thresholdLimit,
             LogLevel minimumLogLevel)
         {
+            return CreateFileLoggerProvider(
+                logFile,
+                thresholdLimit,
+                minimumLogLevel,
+                new TestTempDirectoryProvider(Path.Combine(Path.GetTempPath(), nameof(FileLoggerProviderTest))));
+        }
+
+        private FileLoggerProvider CreateFileLoggerProvider(
+            string logFile,
+            int thresholdLimit,
+            LogLevel minimumLogLevel,
+            ITempDirectoryProvider tempDirectoryProvider)
+        {
             var options = new BuildScriptGeneratorOptions
             {
                 LogFile = logFile,
                 MinimumLogLevel = minimumLogLevel
             };
-            return new FileLoggerProvider(Options.Create(options), thresholdLimit);
+            return new FileLoggerProvider(
+                tempDirectoryProvider,
+                Options.Create(options),
+                thresholdLimit);
+        }
+
+        private class TestTempDirectoryProvider : ITempDirectoryProvider
+        {
+            private readonly string _tempDir;
+
+            public TestTempDirectoryProvider(string tempDir)
+            {
+                _tempDir = tempDir;
+            }
+
+            public string GetTempDirectory()
+            {
+                Directory.CreateDirectory(_tempDir);
+                return _tempDir;
+            }
         }
 
         public class FileLoggerProviderTestFixutre : IDisposable
         {
             public FileLoggerProviderTestFixutre()
             {
-                RootDirPath = Path.Combine(Path.GetTempPath(), "BuildScriptGeneratorCliTests", nameof(FileLoggerProviderTest));
+                RootDirPath = Path.Combine(
+                    Path.GetTempPath(),
+                    "BuildScriptGeneratorCliTests",
+                    nameof(FileLoggerProviderTest));
 
                 Directory.CreateDirectory(RootDirPath);
             }
@@ -243,19 +239,6 @@ namespace BuildScriptGeneratorCli.Tests
                         // Do not throw in dispose
                     }
                 }
-            }
-        }
-
-        private class TestFileLoggerProvider : FileLoggerProvider
-        {
-            public TestFileLoggerProvider(IOptions<BuildScriptGeneratorOptions> options)
-                : base(options)
-            {
-            }
-
-            public override ILogger CreateLogger(string categoryName)
-            {
-                return new TestLogger();
             }
         }
 

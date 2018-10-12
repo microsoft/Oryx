@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -69,9 +70,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (!languageScriptGenerators.Any())
             {
-                _logger.LogError(
-                    $"Cound not find a script generator which supports the language '{context.Language}'.");
-                return null;
+                var languages = _allScriptGenerators.Select(sg => sg.SupportedLanguageName);
+                var message = $"The supplied language '{context.Language}' is not supported. " +
+                    $"Supported languages are: {string.Join(", ", languages)}";
+
+                _logger.LogError(message);
+                throw new UnsupportedLanguageException(message);
             }
 
             if (string.IsNullOrEmpty(context.LanguageVersion))
@@ -89,10 +93,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 allLanguageScriptGeneratorsVersions);
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                _logger.LogError(
-                    $"Found script generator(s) which support language '{context.Language}', but could " +
-                    $"not find one which supports the version '{context.LanguageVersion}'.");
-                return null;
+                var message = $"The supplied language version '{context.LanguageVersion}' is not supported. " +
+                    $"Supported versions are: {string.Join(", ", allLanguageScriptGeneratorsVersions)}";
+
+                _logger.LogError(message);
+                throw new UnsupportedVersionException(message);
             }
 
             var maxSatisfyingVersionGenerators = languageScriptGenerators.Where(
@@ -107,9 +112,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (maxSatisfyingVersionGenerators.Count() > 1)
             {
                 var names = string.Join(", ", maxSatisfyingVersionGenerators.Select(sg => sg.GetType().FullName));
-                throw new InvalidOperationException(
-                    $"Cannot have multiple script generators supporting the same version '{maxSatisfyingVersion}'." +
-                    $"Generators: {names}");
+                var message = $"Cannot have multiple script generators supporting the same " +
+                    $"version '{maxSatisfyingVersion}'. Generators: {names}";
+
+                _logger.LogError(message);
+                throw new InvalidOperationException(message);
             }
 
             return maxSatisfyingVersionGenerators;

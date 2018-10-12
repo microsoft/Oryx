@@ -19,8 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string LanguageVersion { get; set; }
 
-        public string TempDir { get; set; }
-
         public string LogFile { get; set; }
 
         public LogLevel MinimumLogLevel { get; set; }

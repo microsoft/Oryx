@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IScriptGeneratorProvider, DefaultScriptGeneratorProvider>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();
             services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
+            services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();
 
             return services;
         }

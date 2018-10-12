@@ -4,14 +4,12 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class ScriptGeneratorContext
+    public interface ITempDirectoryProvider
     {
-        public ISourceRepo SourceRepo { get; set; }
-
-        public string Language { get; set; }
-
-        public string LanguageVersion { get; set; }
-
-        public string DestinationDir { get; set; }
+        /// <summary>
+        /// Creates a temporary directory and returns the path to it.
+        /// </summary>
+        /// <returns>The full path to the created temporary directory.</returns>
+        string GetTempDirectory();
     }
 }
