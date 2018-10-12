@@ -1,20 +1,17 @@
 # Oryx
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+Builds dockers images which enable building applications of different languages in a 'build image' container 
+and produces output which can be run in a 'runtime image' container.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+## Getting Started
+Pre-requisites
+- Docker for Windows version `18.06.1-ce`. Note that this is the same version that is used in CI too. We want a  
+  consistent version across development and CI agents to avoid surprises.
+- Bash shell (example: Git Bash) to run build & tests scripts.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Build and Test
+Change your current working directory to the root of this repository and run these respective scripts:
+- Build build images: `build/build-buildimages.sh`
+- Build runtime images: `build/build-runtimeimages.sh`
+- Build and test build images: `build/test-buildimages.sh`
+- Build and test runtime images: `build/test-runtimeimages.sh`
+- Build and test build and runtime images and other tests: `build.sh`
