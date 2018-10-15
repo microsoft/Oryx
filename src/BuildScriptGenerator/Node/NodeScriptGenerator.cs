@@ -21,22 +21,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 #set -ex
 
 SOURCE_DIR=$1
-OUTPUT_DIR=$2
-
-#if [ ! $# -eq 2 ]; then
-#    echo ""Usage: $0 <source-dir> <output-dir>""
-#    exit 1
-#fi
+DESTINATION_DIR=$2
+TEMP_ROOT_DIR=$3
+FORCE=$4
 
 if [ ! -d ""$SOURCE_DIR"" ]; then
-    echo ""Source directory '$SOURCE_DIR' does not exist.""
+    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
     exit 1
 fi
 
-if [ -z ""$OUTPUT_DIR"" ]; then
-    echo ""Output directory is required.""
+if [ ! -d ""$TEMP_ROOT_DIR"" ]; then
+    echo ""Temp root directory '$TEMP_ROOT_DIR' does not exist."" 1>&2
     exit 1
 fi
+
+# Get full file paths to source and destination directories
+cd $SOURCE_DIR
+SOURCE_DIR=$(pwd -P)
+
+if [ -d ""$DESTINATION_DIR"" ]
+then
+    cd $DESTINATION_DIR
+    DESTINATION_DIR=$(pwd -P)
+fi
+
+if [ ! ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
+then
+    if [ -d ""$DESTINATION_DIR"" ]
+    then
+        if [ ! ""$FORCE"" == ""True"" ]
+        then
+            echo ""Destination directory is not empty. Use the '-f' or '--force' option to replace the content."" 1>&2
+            exit 1
+        fi
+    fi
+fi
+
+echo
+echo ""Source directory     : $SOURCE_DIR""
+echo ""Destination directory: $DESTINATION_DIR""
+echo
 
 source /usr/local/bin/benv {0}
 
@@ -47,20 +71,23 @@ echo ""Running '{1}' ...""
 echo
 {1}
 
-if [ -d ""$OUTPUT_DIR"" ]
+if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
 then
-    echo
-    echo Output directory already exists. Deleting it ...
-    rm -rf ""$OUTPUT_DIR""
+    echo Done.
+    exit 0
 fi
 
-echo
-echo Creating output directory ...
-mkdir -p ""$OUTPUT_DIR""
+if [ -d ""$DESTINATION_DIR"" ]
+then
+    echo
+    echo Destination directory already exists. Deleting it ...
+    rm -rf ""$DESTINATION_DIR""
+fi
 
-echo
-echo ""Copying output from '$SOURCE_DIR' to '$OUTPUT_DIR' ...""
-cp -r . ""$OUTPUT_DIR""
+appTempDir=""$TEMP_ROOT_DIR/output""
+cp -rf ""$SOURCE_DIR"" ""$appTempDir""
+mkdir -p ""$DESTINATION_DIR""
+cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
 
 echo
 echo Done.

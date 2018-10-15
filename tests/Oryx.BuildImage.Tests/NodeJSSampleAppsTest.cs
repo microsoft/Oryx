@@ -301,10 +301,12 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
             var appOutputDir = "/webfrontend-output";
             var generatedScript = "/build.sh";
+            var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} {appOutputDir} --script-only > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
-                .AddCommand($"{generatedScript} {appDir} {appOutputDir}")
+                .CreateDirectory(tempDir)
+                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -339,10 +341,12 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
             var appOutputDir = "/webfrontend-output";
             var generatedScript = "/build.sh";
+            var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} {appOutputDir} -l nodejs --language-version 8.2.1 --script-only > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
-                .AddCommand($"{generatedScript} {appDir} {appOutputDir}")
+                .CreateDirectory(tempDir)
+                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -405,6 +409,75 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var script = new BashScriptBuilder()
+                .AddBuildCommand($"{appDir} {appDir} --inline")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var appOutputDir = $"{appDir}/output";
+            var script = new BashScriptBuilder()
+                .AddBuildCommand($"{appDir} {appOutputDir} --inline")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try
@@ -416,18 +489,6 @@ namespace Oryx.BuildImage.Tests
                 _output.WriteLine(message);
                 throw;
             }
-        }
-
-        [Fact(Skip = "Todo")]
-        public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact(Skip = "Todo")]
-        public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
-        {
-            throw new NotImplementedException();
         }
     }
 }
