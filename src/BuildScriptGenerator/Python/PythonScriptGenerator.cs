@@ -41,6 +41,33 @@ if [ ! -d ""$TEMP_ROOT_DIR"" ]; then
     exit 1
 fi
 
+# Get full file paths to source and destination directories
+cd $SOURCE_DIR
+SOURCE_DIR=$(pwd -P)
+
+if [ -d ""$DESTINATION_DIR"" ]
+then
+    cd $DESTINATION_DIR
+    DESTINATION_DIR=$(pwd -P)
+fi
+
+if [ ! ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
+then
+    if [ -d ""$DESTINATION_DIR"" ]
+    then
+        if [ ! ""$FORCE"" == ""True"" ]
+        then
+            echo ""Destination directory is not empty. Use the '-f' or '--force' option to replace the content."" 1>&2
+            exit 1
+        fi
+    fi
+fi
+
+echo
+echo ""Source directory     : $SOURCE_DIR""
+echo ""Destination directory: $DESTINATION_DIR""
+echo
+
 source /usr/local/bin/benv {0}
 
 echo Python deployment.
@@ -48,8 +75,6 @@ echo Python deployment.
 #1. Install any dependencies
 {1}
 
-echo ""Source directory: $SOURCE_DIR""
-echo ""Destination directory: $DESTINATION_DIR""
 echo ""Python Virtual Environment: $ANTENV""
 echo ""Python Version: $python""
 
@@ -69,22 +94,14 @@ pip install -r requirements.txt
 echo
 echo ""pip install finished""
 
-# Check if source and destination directories are the same
-if [[ ""$SOURCE_DIR"" -ef ""$DESTINATION_DIR"" ]]
+if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
 then
     echo Done.
     exit 0
 fi
 
-# Copy content to output directory
 if [ -d ""$DESTINATION_DIR"" ]
 then
-    if [ ""$FORCE"" != ""True"" ]
-    then
-        echo ""Destination directory is not empty. Use the '-f' or '--force' option to replace the content."" 1>&2
-        exit 1
-    fi
-
     echo
     echo Destination directory already exists. Deleting it ...
     rm -rf ""$DESTINATION_DIR""
