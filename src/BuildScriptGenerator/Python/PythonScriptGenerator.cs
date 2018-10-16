@@ -28,17 +28,15 @@ set -e
 
 SOURCE_DIR=$1
 DESTINATION_DIR=$2
-TEMP_ROOT_DIR=$3
-FORCE=$4
 
 if [ ! -d ""$SOURCE_DIR"" ]; then
     echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
     exit 1
 fi
 
-if [ ! -d ""$TEMP_ROOT_DIR"" ]; then
-    echo ""Temp root directory '$TEMP_ROOT_DIR' does not exist."" 1>&2
-    exit 1
+if [ -z ""$DESTINATION_DIR"" ]
+then
+    DESTINATION_DIR=""$SOURCE_DIR""
 fi
 
 # Get full file paths to source and destination directories
@@ -49,18 +47,6 @@ if [ -d ""$DESTINATION_DIR"" ]
 then
     cd $DESTINATION_DIR
     DESTINATION_DIR=$(pwd -P)
-fi
-
-if [ ! ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
-then
-    if [ -d ""$DESTINATION_DIR"" ]
-    then
-        if [ ! ""$FORCE"" == ""True"" ]
-        then
-            echo ""Destination directory is not empty. Use the '-f' or '--force' option to replace the content."" 1>&2
-            exit 1
-        fi
-    fi
 fi
 
 echo
@@ -74,6 +60,11 @@ echo Python deployment.
 
 #1. Install any dependencies
 {1}
+
+echo
+echo ""Source directory: $SOURCE_DIR""
+echo ""Destination directory: $DESTINATION_DIR""
+echo
 
 echo ""Python Virtual Environment: $ANTENV""
 echo ""Python Version: $python""
@@ -107,10 +98,11 @@ then
     rm -rf ""$DESTINATION_DIR""
 fi
 
-appTempDir=""$TEMP_ROOT_DIR/output""
-cp -rf ""$SOURCE_DIR"" ""$appTempDir""
+appTempDir=`mktemp -d`
+cp -rf ""$SOURCE_DIR""/* ""$appTempDir""
 mkdir -p ""$DESTINATION_DIR""
 cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
+rm -rf ""$appTempDir""
 
 echo
 echo Done.

@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public ISourceRepo GetSourceRepo()
         {
-            if (_options.Inline)
+            if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
                 return new LocalSourceRepo(_options.SourceDir);
             }

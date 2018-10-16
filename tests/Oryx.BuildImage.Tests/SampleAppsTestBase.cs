@@ -12,8 +12,7 @@ namespace Oryx.BuildImage.Tests
         public abstract void GeneratesScript_AndBuilds();
         public abstract void Builds_AndCopiesContentToOutputDirectory_Recursively();
         public abstract void Build_CopiesOutput_ToNestedOutputDirectory();
-        public abstract void BuildFails_WhenDestinationDirectoryIsNotEmpty_AndForceOption_IsNotUsed();
-        public abstract void Build_ReplacesContentInDestinationDir_WhenForceOption_IsTrue();
+        public abstract void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty();
         public abstract void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode();
         public abstract void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided();
         public abstract void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption();

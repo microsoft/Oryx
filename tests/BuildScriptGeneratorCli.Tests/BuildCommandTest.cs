@@ -10,7 +10,6 @@ using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Xunit;
@@ -63,26 +62,6 @@ namespace BuildScriptGeneratorCli.Tests
             var error = testConsole.StdError;
             Assert.DoesNotContain("Usage:", error);
             Assert.Contains("Could not find the source directory", error);
-        }
-
-        [Fact]
-        public void OnExecute_ShowsHelp_AndExits_WhenDestinationDirIsNull()
-        {
-            // Arrange
-            var buildCommand = new BuildCommand
-            {
-                SourceDir = _testDirPath,
-                DestinationDir = null
-            };
-            var testConsole = new TestConsole();
-
-            // Act
-            var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
-
-            // Assert
-            Assert.NotEqual(0, exitCode);
-            var output = testConsole.StdOutput;
-            Assert.Contains("Usage:", output);
         }
 
         [Fact]
@@ -203,7 +182,7 @@ namespace BuildScriptGeneratorCli.Tests
 
         [Theory]
         [MemberData(nameof(DestinationDirectoryPathData))]
-        public void IsValidInput_IsTrue_IfDestinationDirIsNotEmpty_AndForceOption_IsTrue(
+        public void IsValidInput_IsTrue_IfDestinationDirIsNotEmpty(
             string destinationDir)
         {
             // Arrange
@@ -212,7 +191,6 @@ namespace BuildScriptGeneratorCli.Tests
                 {
                     o.SourceDir = CreateNewDir();
                     o.DestinationDir = destinationDir;
-                    o.Force = true;
                 })
                 .Build();
             var testConsole = new TestConsole();
@@ -451,32 +429,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(0, exitCode);
             Assert.Equal(expected, testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
-        }
-
-        [Fact]
-        public void IsValid_IsFalse_WhenInline_AndIntermediateDir_AreProvided()
-        {
-            // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = CreateNewDir();
-                    o.DestinationDir = CreateNewDir();
-                    o.IntermediateDir = CreateNewDir();
-                    o.Inline = true;
-                })
-                .Build();
-            var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
-
-            // Assert
-            Assert.False(isValid);
-            Assert.Contains(
-                "Cannot use 'inline' option when intermediate directory is specified.",
-                testConsole.StdError);
         }
 
         [Fact]

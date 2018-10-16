@@ -5,7 +5,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,20 +20,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
 
-        [Argument(1, Description = "The destination directory.")]
-        public string DestinationDir { get; set; }
-
         [Option(
             "-i|--intermediate-dir <dir>",
             CommandOptionType.SingleValue,
             Description = "The path to a temporary directory to be used by this tool.")]
         public string IntermediateDir { get; set; }
-
-        [Option(
-            "--inline",
-            CommandOptionType.NoValue,
-            Description = "Perform builds directly in the source directory.")]
-        public bool Inline { get; set; }
 
         [Option(
             "-l|--language <name>",
@@ -61,9 +51,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public bool ScriptOnly { get; set; }
 
         [Option(
-            CommandOptionType.NoValue,
-            Description = "Replace any existing content in the destination directory.")]
-        public bool Force { get; set; }
+            "-o|--output <dir>",
+            CommandOptionType.SingleValue,
+            Description = "The destination directory.")]
+        public string DestinationDir { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -132,9 +123,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 arguments: new[]
                 {
                     sourceRepo.RootPath,
-                    options.DestinationDir,
-                    tempDirectoryProvider.GetTempDirectory(),
-                    options.Force.ToString()
+                    options.DestinationDir ?? string.Empty
                 },
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
@@ -145,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool ShowHelp()
         {
-            if (string.IsNullOrEmpty(SourceDir) || string.IsNullOrEmpty(DestinationDir))
+            if (string.IsNullOrEmpty(SourceDir))
             {
                 return true;
             }
@@ -159,13 +148,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
-                return false;
-            }
-
-            if (options.Inline && !string.IsNullOrEmpty(options.IntermediateDir))
-            {
-                console.Error.WriteLine(
-                    "Cannot use 'inline' option when intermediate directory is specified.");
                 return false;
             }
 
@@ -195,8 +177,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 options.IntermediateDir = Path.GetFullPath(IntermediateDir);
             }
 
-            options.Inline = Inline;
-
             // We want to enable logging always, so provide a default log file
             // if not explicitly supplied.
             if (!string.IsNullOrEmpty(LogFile))
@@ -206,7 +186,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             options.MinimumLogLevel = LogLevel.Trace;
             options.ScriptOnly = ScriptOnly;
-            options.Force = Force;
         }
     }
 }

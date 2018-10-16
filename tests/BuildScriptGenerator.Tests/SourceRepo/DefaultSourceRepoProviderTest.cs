@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void IntermediateDir_IsNotUsed_WhenOptedTo()
+        public void IntermediateDir_IsNotUsed_ByDefault()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -30,7 +30,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                Inline = true,
                 SourceDir = appDir,
             };
             var provider = GetSourceRepoProvider(options, tempDir);
@@ -44,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void IntermediateDir_IsNotUsed_WhenOptedTo_AndIntermediateDirOptionIsProvided()
+        public void IntermediateDir_IsUsed_WhenOptedTo()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -55,7 +54,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                Inline = true,
                 IntermediateDir = intermediateDir,
                 SourceDir = appDir,
             };
@@ -65,44 +63,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var sourceRepo = provider.GetSourceRepo();
 
             // Assert
-            Assert.Equal(appDir, sourceRepo.RootPath);
-            Assert.False(Directory.Exists(intermediateDir));
+            Assert.Equal(intermediateDir, sourceRepo.RootPath);
+            Assert.True(Directory.Exists(intermediateDir));
         }
 
         [Fact]
-        public void ByDefault_CopiesSourceDirContent_ToTempDirectoryIntermediateDir()
-        {
-            // Arrange
-            var guid = Guid.NewGuid();
-            var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
-            var tempDir = Path.Combine(_tempDirRootPath, $"temp-{guid}");
-            Directory.CreateDirectory(appDir);
-            Directory.CreateDirectory(tempDir);
-            var options = new BuildScriptGeneratorOptions
-            {
-                SourceDir = appDir,
-            };
-            var provider = GetSourceRepoProvider(options, tempDir);
-
-            // Create content in app's directory
-            var srcDirName = Guid.NewGuid().ToString();
-            var srcDirPath = Directory.CreateDirectory(Path.Combine(appDir, srcDirName));
-            var file1Path = Path.Combine(srcDirPath.FullName, "file1.txt");
-            File.WriteAllText(file1Path, "file1.txt content");
-
-            var expected = Path.Combine(tempDir, "IntermediateDir");
-            var expectedFile = Path.Combine(expected, srcDirName, "file1.txt");
-
-            // Act
-            var sourceRepo = provider.GetSourceRepo();
-
-            // Assert
-            Assert.Equal(expected, sourceRepo.RootPath);
-            Assert.True(File.Exists(expectedFile));
-        }
-
-        [Fact]
-        public void CopiesSourceDirContent_ToCustom_IntermediateDir()
+        public void CopiesSourceDirContent_IntermediateDir()
         {
             // Arrange
             var guid = Guid.NewGuid();
@@ -142,11 +108,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var guid = Guid.NewGuid();
             var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
             var tempDir = Path.Combine(_tempDirRootPath, $"temp-{guid}");
+            var intermediateDir = Path.Combine(_tempDirRootPath, $"intermediate-{guid}");
             Directory.CreateDirectory(appDir);
             Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
-                SourceDir = appDir
+                SourceDir = appDir,
+                IntermediateDir = intermediateDir
             };
             var provider = GetSourceRepoProvider(options, tempDir);
 
@@ -159,14 +127,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             File.WriteAllText(file1Path, "file1.txt content");
             File.WriteAllText(file2Path, "file2.txt content");
 
-            var expected = Path.Combine(tempDir, "IntermediateDir");
-            var expectedFile = Path.Combine(expected, srcDirName, "subDir1", "file2.txt");
+            var expectedFile = Path.Combine(intermediateDir, srcDirName, "subDir1", "file2.txt");
 
             // Act
             var sourceRepo = provider.GetSourceRepo();
 
             // Assert
-            Assert.Equal(expected, sourceRepo.RootPath);
+            Assert.Equal(intermediateDir, sourceRepo.RootPath);
             Assert.True(File.Exists(expectedFile));
         }
 

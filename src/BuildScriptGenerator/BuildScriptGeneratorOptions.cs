@@ -11,8 +11,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string IntermediateDir { get; set; }
 
-        public bool Inline { get; set; }
-
         public string DestinationDir { get; set; }
 
         public string Language { get; set; }
@@ -24,7 +22,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public LogLevel MinimumLogLevel { get; set; }
 
         public bool ScriptOnly { get; set; }
-
-        public bool Force { get; set; }
     }
 }

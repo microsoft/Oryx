@@ -33,7 +33,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var appOutputDir = "/flask-app-output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
                 .ToString();
 
@@ -74,7 +74,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateDirectory($"{appDir}/{subDir}")
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
                 // Execute command
-                .AddBuildCommand($"{appDir} {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
                 // Check the output directory for the sub directory
                 .AddFileExistsCheck($"{appOutputDir}/{subDir}/file1.txt")
@@ -111,7 +111,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var nestedOutputDir = "/output/subdir1";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {nestedOutputDir}")
+                .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/antenv")
                 .ToString();
 
@@ -139,56 +139,13 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void BuildFails_WhenDestinationDirectoryIsNotEmpty_AndForceOption_IsNotUsed()
-        {
-            // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
-            var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
-                // Create files in output directory before build
-                .CreateDirectory(appOutputDir)
-                .CreateFile($"{appOutputDir}/hi.txt", "hi")
-                .CreateDirectory($"{appOutputDir}/foo")
-                .CreateFile($"{appOutputDir}/foo/hello.txt", "hello")
-                // Build with no force option
-                .AddBuildCommand($"{appDir} {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    "\"" +
-                    script +
-                    "\""
-                });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.False(result.IsSuccess);
-                    Assert.Contains(
-                        "Destination directory is not empty. Use the '-f' or '--force' option to replace the content.",
-                        result.Error);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
             var volume = DockerVolume.Create(_hostSamplesDir);
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {appDir} --inline")
+                .AddBuildCommand($"{appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/antenv")
                 .ToString();
 
@@ -223,7 +180,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var appOutputDir = $"{appDir}/output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {appOutputDir} --inline")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
                 .ToString();
 
@@ -251,7 +208,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Build_ReplacesContentInDestinationDir_WhenForceOption_IsTrue()
+        public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
             var volume = DockerVolume.Create(_hostSamplesDir);
@@ -263,8 +220,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateFile($"{appOutputDir}/hi.txt", "hi")
                 .CreateDirectory($"{appOutputDir}/blah")
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
-                // Using '-f' option here
-                .AddBuildCommand($"{appDir} {appOutputDir} -f")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
@@ -307,7 +263,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var appOutputDir = $"{appDir}/output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {appOutputDir} --inline -l python --language-version 3.6.6")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.6.6")
                 .AddDirectoryExistsCheck($"{appOutputDir}/antenv3.6")
                 .ToString();
 
@@ -345,7 +301,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {appOutputDir} -l python --language-version 3.6.6 --script-only >> {generatedScript}")
+                .AddBuildCommand($"{appDir} -l python --language-version 3.6.6 --script-only >> {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -384,7 +340,7 @@ namespace Oryx.BuildImage.Tests
             var appIntermediateDir = "/flask-app-int";
             var appOutputDir = "/flask-app-output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} {appOutputDir} -i {appIntermediateDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
                 .ToString();
 
