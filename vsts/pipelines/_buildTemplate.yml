@@ -58,6 +58,7 @@ steps:
     cleanTargetFolder: true
     overWrite: true
     flattenFolders: true
+  condition: true
 
 - task: CopyFiles@2
   displayName: 'Copy artifacts from source repo to agent artifacts folder'
@@ -66,12 +67,14 @@ steps:
     contents: '**/*.*'
     targetFolder: $(Build.ArtifactStagingDirectory)
     overWrite: true
+  condition: true
 
 - task: PublishTestResults@2
   inputs:
     testRunner: 'xUnit'
     testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
     mergeTestResults: true
+  condition: true
 
 - task: Docker@0
   displayName: 'Push Build image'
@@ -104,6 +107,8 @@ steps:
   inputs:
     rootFolderOrFile: images
     archiveFile: '$(Build.ArtifactStagingDirectory)/images/dockerFiles.zip'
+  condition: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
+  condition: true
