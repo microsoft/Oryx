@@ -34,7 +34,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -75,7 +75,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
                 // Execute command
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 // Check the output directory for the sub directory
                 .AddFileExistsCheck($"{appOutputDir}/{subDir}/file1.txt")
                 .ToString();
@@ -112,7 +112,7 @@ namespace Oryx.BuildImage.Tests
             var nestedOutputDir = "/output/subdir1";
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/antenv")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -146,7 +146,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/antenv")
+                .AddDirectoryExistsCheck($"{appDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -181,7 +181,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -221,7 +221,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateDirectory($"{appOutputDir}/blah")
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
                 .ToString();
@@ -264,7 +264,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.6.6")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv3.6")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -305,7 +305,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv3.6")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -341,7 +341,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new BashScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/antenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
 
             // Act
@@ -363,6 +363,43 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_AndBuilds_UsingCustomVirtualEnvironmentName()
+        {
+            // Arrange
+            var virtualEnvironmentName = "myenv";
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var appOutputDir = "/flask-app-output";
+            var script = new BashScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Python Version: /opt/python/3.7.0/bin/python3", result.Output);
                 },
                 result.GetDebugInfo());
         }

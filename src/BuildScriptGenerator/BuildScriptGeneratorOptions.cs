@@ -1,6 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -22,5 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public LogLevel MinimumLogLevel { get; set; }
 
         public bool ScriptOnly { get; set; }
+
+        public IDictionary<string, string> Properties { get; set; }
     }
 }

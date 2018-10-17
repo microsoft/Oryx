@@ -17,6 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private const string RequirementsFileName = "requirements.txt";
         private const string RuntimeFileName = "runtime.txt";
         private const string PythonFileExtension = "*.py";
+        private const string DefaultVirtualEnvironmentName = "pythonenv";
+        private const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
@@ -56,28 +58,24 @@ echo
 
 source /usr/local/bin/benv {0}
 
-echo Python deployment.
-
-#1. Install any dependencies
-{1}
-
 echo
 echo ""Source directory: $SOURCE_DIR""
 echo ""Destination directory: $DESTINATION_DIR""
 echo
 
-echo ""Python Virtual Environment: $ANTENV""
+VIRTUALENVIRONMENTNAME={1}
+echo ""Python Virtual Environment: $VIRTUALENVIRONMENTNAME""
 echo ""Python Version: $python""
 
 cd ""$SOURCE_DIR""
 
 #2a. Setup virtual Environment
 echo ""Create virtual environment""
-$python -m venv $ANTENV --copies
+$python -m venv $VIRTUALENVIRONMENTNAME --copies
 
 #2b. Activate virtual environment
 echo ""Activate virtual environment""
-source $ANTENV/bin/activate
+source $VIRTUALENVIRONMENTNAME/bin/activate
 
 #2c. Install dependencies
 pip install -r requirements.txt
@@ -184,10 +182,14 @@ echo Done.
             var pythonVersion = DetectPythonVersion(context);
 
             var benvArgs = string.IsNullOrEmpty(pythonVersion) ? string.Empty : $"python={pythonVersion} ";
-            var antenvCommand = "3.6.6".Equals(context.LanguageVersion)
-                ? "export ANTENV=\"antenv3.6\""
-                : "export ANTENV=\"antenv\"";
-            return string.Format(ScriptTemplate, benvArgs, antenvCommand);
+
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
+            {
+                virtualEnvName = DefaultVirtualEnvironmentName;
+            }
+
+            return string.Format(ScriptTemplate, benvArgs, virtualEnvName);
         }
 
         private string DetectPythonVersion(ScriptGeneratorContext context)

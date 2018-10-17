@@ -35,6 +35,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The file to which logs have to be written to.")]
         public string LogFile { get; set; }
 
+        [Option(
+            "-p|--property <key-value>",
+            CommandOptionType.MultipleValue,
+            Description = "Additional information used by this tool to generate and run build scripts.")]
+        public string[] Properties { get; set; }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var scriptGenerator = new ScriptGenerator(console, serviceProvider);
@@ -87,7 +93,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Language,
                 LanguageVersion,
                 LogFile,
-                scriptOnly: true);
+                scriptOnly: true,
+                Properties);
         }
     }
 }

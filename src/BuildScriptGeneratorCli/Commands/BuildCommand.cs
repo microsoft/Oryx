@@ -50,6 +50,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The destination directory.")]
         public string DestinationDir { get; set; }
 
+        [Option(
+            "-p|--property <key-value>",
+            CommandOptionType.MultipleValue,
+            Description = "Additional information used by this tool to generate and run build scripts.")]
+        public string[] Properties { get; set; }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             // By default we do not want to direct the standard output and error and let users of this tool to do it
@@ -155,7 +161,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Language,
                 LanguageVersion,
                 LogFile,
-                scriptOnly: false);
+                scriptOnly: false,
+                Properties);
         }
     }
 }

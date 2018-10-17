@@ -44,6 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     Language = options.Language,
                     LanguageVersion = options.LanguageVersion,
                     DestinationDir = options.DestinationDir,
+                    Properties = options.Properties,
                 };
 
                 // Get script generator

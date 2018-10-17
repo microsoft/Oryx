@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Xunit;
 
@@ -36,7 +37,8 @@ namespace BuildScriptGeneratorCli.Tests
                 language: null,
                 languageVersion: null,
                 logFile: "logFile.txt",
-                scriptOnly: false);
+                scriptOnly: false,
+                properties: null);
 
             // Assert
             Assert.Equal(currentDir, options.SourceDir);
@@ -65,7 +67,8 @@ namespace BuildScriptGeneratorCli.Tests
                 language: null,
                 languageVersion: null,
                 logFile: "logFile.txt",
-                scriptOnly: false);
+                scriptOnly: false,
+                properties: null);
 
             // Assert
             Assert.Equal(absolutePath, options.SourceDir);
@@ -91,7 +94,8 @@ namespace BuildScriptGeneratorCli.Tests
                 language: null,
                 languageVersion: null,
                 logFile: logFile,
-                scriptOnly: false);
+                scriptOnly: false,
+                properties: null);
 
             // Assert
             Assert.Equal(absolutePath, options.SourceDir);
@@ -117,7 +121,8 @@ namespace BuildScriptGeneratorCli.Tests
                 language: null,
                 languageVersion: null,
                 logFile: Path.Combine("..", "logFile.txt"),
-                scriptOnly: false);
+                scriptOnly: false,
+                properties: null);
 
             // Assert
             Assert.Equal(expected, options.SourceDir);
@@ -144,7 +149,8 @@ namespace BuildScriptGeneratorCli.Tests
                 language: null,
                 languageVersion: null,
                 logFile: Path.Combine(dir2, "..", "subDir2", "logFile.txt"),
-                scriptOnly: false);
+                scriptOnly: false,
+                properties: null);
 
             // Assert
             Assert.Equal(expected, options.SourceDir);
@@ -152,6 +158,107 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.IntermediateDir);
             Assert.Equal(Path.Combine(expected, "logFile.txt"), options.LogFile);
         }
+
+        [Theory]
+        [InlineData("showlog")]
+        [InlineData("showlog=")]
+        public void ProcessProperties_ReturnsProperty_WhenOnlyKeyIsPresent(string property)
+        {
+            // Arrange
+            var properties = new[] { property };
+
+            // Act
+            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
+
+            // Assert
+            Assert.Collection(
+                actual,
+                (kvp) => { Assert.Equal("showlog", kvp.Key); Assert.Equal(string.Empty, kvp.Value); });
+        }
+
+        [Theory]
+        [InlineData("=")]
+        [InlineData("==")]
+        [InlineData("=true")]
+        public void ProcessProperties_Throws_WhenKeyIsNotPresent(string property)
+        {
+            // Arrange
+            var properties = new[] { property };
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => BuildScriptGeneratorOptionsHelper.ProcessProperties(properties));
+
+            Assert.Equal($"Property key cannot start with '=' for property '{property}'.", exception.Message);
+        }
+
+        [Theory]
+        [InlineData("a=bcd", "a", "bcd")]
+        [InlineData("abc=d", "abc", "d")]
+        [InlineData("ab=cd", "ab", "cd")]
+        public void ProcessProperties_ReturnsProperty_WhenBothKeyAndValueArePresent(
+            string property,
+            string key,
+            string value)
+        {
+            // Arrange
+            var properties = new[] { property };
+
+            // Act
+            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
+
+            // Assert
+            Assert.Collection(
+                actual,
+                (kvp) => { Assert.Equal(key, kvp.Key); Assert.Equal(value, kvp.Value); });
+        }
+
+        [Theory]
+        [InlineData("a=b=c=d", "a", "b=c=d")]
+        [InlineData("a==", "a", "=")]
+        [InlineData("a==b", "a", "=b")]
+        public void ProcessProperties_ReturnsProperty_UsingFirstOccurrenceOfEqualToSymbol(
+            string property,
+            string key,
+            string value)
+        {
+            // Arrange
+            var properties = new[] { property };
+
+            // Act
+            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
+
+            // Assert
+            Assert.Collection(
+                actual,
+                (kvp) => { Assert.Equal(key, kvp.Key); Assert.Equal(value, kvp.Value); });
+        }
+
+        [Theory]
+        [InlineData("a=\"b c\"", "a", "b c")]
+        [InlineData("a=\"b \"", "a", "b ")]
+        [InlineData("a=\" b\"", "a", " b")]
+        [InlineData("a=\" b \"", "a", " b ")]
+        [InlineData("\"a b\"=d", "a b", "d")]
+        [InlineData("\"a \"=d", "a ", "d")]
+        [InlineData("\" a\"=d", " a", "d")]
+        public void ProcessProperties_ReturnsProperty_TrimmingTheQuotes(
+            string property,
+            string key,
+            string value)
+        {
+            // Arrange
+            var properties = new[] { property };
+
+            // Act
+            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
+
+            // Assert
+            Assert.Collection(
+                actual,
+                (kvp) => { Assert.Equal(key, kvp.Key); Assert.Equal(value, kvp.Value); });
+        }
+
 
         private string CreateNewDir()
         {
