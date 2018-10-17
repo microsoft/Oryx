@@ -259,7 +259,7 @@ namespace Oryx.BuildImage.Tests
             var generatedScript = "/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} --script-only > {generatedScript}")
+                .AddScriptCommand($"{appDir} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -299,7 +299,7 @@ namespace Oryx.BuildImage.Tests
             var generatedScript = "/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} -l nodejs --language-version 8.2.1 --script-only > {generatedScript}")
+                .AddScriptCommand($"{appDir} -l nodejs --language-version 8.2.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")

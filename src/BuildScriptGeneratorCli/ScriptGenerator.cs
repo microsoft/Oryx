@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -58,6 +57,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 generatedScript = scriptGenerator.GenerateBashScript(scriptGeneratorContext);
+
+                // Replace any CRLF with LF
+                generatedScript = generatedScript.Replace("\r\n", "\n");
 
                 return true;
             }

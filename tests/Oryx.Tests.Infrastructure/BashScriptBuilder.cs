@@ -38,6 +38,16 @@ namespace Oryx.Tests.Infrastructure
             return Append($"oryx build {argumentsString}");
         }
 
+        /// <summary>
+        /// Adds the 'oryx script' command with the supplied <paramref name="argumentsString"/>.
+        /// </summary>
+        /// <param name="argumentsString"></param>
+        /// <returns></returns>
+        public BashScriptBuilder AddScriptCommand(string argumentsString)
+        {
+            return Append($"oryx script {argumentsString}");
+        }
+
         public BashScriptBuilder CreateDirectory(string directory)
         {
             return Append($"mkdir -p \"{directory}\"");

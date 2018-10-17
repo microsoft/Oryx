@@ -45,12 +45,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string LogFile { get; set; }
 
         [Option(
-            "--script-only",
-            CommandOptionType.NoValue,
-            Description = "Generate script to standard output.")]
-        public bool ScriptOnly { get; set; }
-
-        [Option(
             "-o|--output <dir>",
             CommandOptionType.SingleValue,
             Description = "The destination directory.")]
@@ -70,33 +64,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
-            var sourceRepo = sourceRepoProvider.GetSourceRepo();
             var scriptGenerator = new ScriptGenerator(console, serviceProvider);
             if (!scriptGenerator.TryGenerateScript(out var scriptContent))
             {
                 return 1;
             }
 
-            // Replace any CRLF with LF
-            scriptContent = scriptContent.Replace("\r\n", "\n");
-
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            if (options.ScriptOnly)
-            {
-                // Write script content to standard output stream
-                console.WriteLine(scriptContent);
-                return 0;
-            }
-
-            var tempDirectoryProvider = serviceProvider.GetRequiredService<ITempDirectoryProvider>();
-
             // Get the path where the generated script should be written into.
+            var tempDirectoryProvider = serviceProvider.GetRequiredService<ITempDirectoryProvider>();
             var scriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "build.sh");
 
             // Write the content to the script.
             File.WriteAllText(scriptPath, scriptContent);
+            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
             logger.LogDebug($"Script was generated successfully at '{scriptPath}'.");
 
             // Set execute permission on the generated script.
@@ -117,6 +97,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             // Run the generated script
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+            var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
+            var sourceRepo = sourceRepoProvider.GetSourceRepo();
+
             logger.LogDebug($"Running the script '{scriptPath}' ...");
             exitCode = ProcessHelper.RunProcess(
                 scriptPath,
@@ -163,29 +147,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override void ConfigureBuildScriptGeneratorOptoins(BuildScriptGeneratorOptions options)
         {
-            options.SourceDir = Path.GetFullPath(SourceDir);
-            options.Language = Language;
-            options.LanguageVersion = LanguageVersion;
-
-            if (!string.IsNullOrEmpty(DestinationDir))
-            {
-                options.DestinationDir = Path.GetFullPath(DestinationDir);
-            }
-
-            if (!string.IsNullOrEmpty(IntermediateDir))
-            {
-                options.IntermediateDir = Path.GetFullPath(IntermediateDir);
-            }
-
-            // We want to enable logging always, so provide a default log file
-            // if not explicitly supplied.
-            if (!string.IsNullOrEmpty(LogFile))
-            {
-                options.LogFile = Path.GetFullPath(LogFile);
-            }
-
-            options.MinimumLogLevel = LogLevel.Trace;
-            options.ScriptOnly = ScriptOnly;
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
+                options,
+                SourceDir,
+                DestinationDir,
+                IntermediateDir,
+                Language,
+                LanguageVersion,
+                LogFile,
+                scriptOnly: false);
         }
     }
 }

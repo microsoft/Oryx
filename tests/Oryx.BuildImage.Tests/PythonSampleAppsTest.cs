@@ -301,7 +301,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} -l python --language-version 3.6.6 --script-only >> {generatedScript}")
+                .AddScriptCommand($"{appDir} -l python --language-version 3.6.6 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
