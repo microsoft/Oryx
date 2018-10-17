@@ -421,10 +421,11 @@ namespace BuildScriptGeneratorCli.Tests
             {
                 _platform = OSPlatform.Create(platform);
 
-                if (!RuntimeInformation.IsOSPlatform(_platform))
-                {
-                    Skip = $"This test can only run on platform '{_platform}'.";
-                }
+                //if (!RuntimeInformation.IsOSPlatform(_platform))
+                //{
+                //    Skip = $"This test can only run on platform '{_platform}'.";
+                //}
+                Skip = "Bug: https://devdiv.visualstudio.com/DevDiv/_workitems/edit/707839";
             }
         }
     }
