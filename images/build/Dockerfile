@@ -62,6 +62,14 @@ RUN set -ex \
  && echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c - \
  && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
  && rm dotnet.tar.gz \
+ # Install .NET Core SDK 2.2.100-preview2
+ && DOTNET_SDK_VER=2.2.100-preview2-009404 \
+ && DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz \
+ && DOTNET_SDK_SHA=05c4e4accea5cae674bfde24ac883ba7aa733686479621411a5d8fb9c030e0c053d5c0f2c4a4fb62bc8b0f651987ce0f33628ac8a26af1d5c7a4259b3cba7a21 \
+ && curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz \
+ && echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c - \
+ && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
+ && rm dotnet.tar.gz \
  && ln -s $DOTNET_DIR/dotnet /usr/bin/dotnet
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
