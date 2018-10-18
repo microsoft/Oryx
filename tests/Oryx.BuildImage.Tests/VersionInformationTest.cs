@@ -121,6 +121,7 @@ namespace Oryx.BuildImage.Tests
         [InlineData("6.11.0", "v6.11.0")]
         [InlineData("lts", "v8.11.2")]
         [InlineData("8", "v8.11.2")]
+        [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.2")]
         [InlineData("8.11.2", "v8.11.2")]
         [InlineData("9", "v9.4.0")]

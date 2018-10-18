@@ -79,7 +79,7 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 6.10.3 \
  && ~/n/bin/n -d 6.11.0 \
  && ~/n/bin/n -d 8.0.0 \
- && ~/n/bin/n -d 8.1.0 \
+ && ~/n/bin/n -d 8.1.4 \
  && ~/n/bin/n -d 8.2.1 \
  && ~/n/bin/n -d 8.8.1 \
  && ~/n/bin/n -d 8.9.4 \
