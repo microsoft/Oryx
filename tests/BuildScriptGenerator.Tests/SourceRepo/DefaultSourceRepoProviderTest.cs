@@ -39,7 +39,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.Equal(appDir, sourceRepo.RootPath);
-            Assert.False(Directory.Exists(Path.Combine(tempDir, "IntermediateDir")));
+        }
+
+        [Fact]
+        public void IntermediateDir_ContentsAreDeleted_IfItAlreadyExists()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
+            var tempDir = Path.Combine(_tempDirRootPath, $"temp-{guid}");
+            var intDir = Path.Combine(_tempDirRootPath, $"int-{guid}");
+            Directory.CreateDirectory(appDir);
+            Directory.CreateDirectory(tempDir);
+            Directory.CreateDirectory(intDir);
+            File.WriteAllText(Path.Combine(intDir, "file1.txt"), "file1.txt");
+            var subDir1 = Directory.CreateDirectory(Path.Combine(intDir, "subDir1"));
+            File.WriteAllText(Path.Combine(subDir1.FullName, "file1.txt"), "file1.txt");
+            var options = new BuildScriptGeneratorOptions
+            {
+                SourceDir = appDir,
+                IntermediateDir = intDir
+            };
+            var provider = GetSourceRepoProvider(options, tempDir);
+
+            // Act
+            var sourceRepo = provider.GetSourceRepo();
+
+            // Assert
+            Assert.Equal(intDir, sourceRepo.RootPath);
+            Assert.False(File.Exists(Path.Combine(intDir, "file1.txt")));
+            Assert.False(Directory.Exists(Path.Combine(intDir, "subDir1")));
         }
 
         [Fact]

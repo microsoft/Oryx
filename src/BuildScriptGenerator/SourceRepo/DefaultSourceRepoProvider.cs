@@ -28,41 +28,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
+                _logger.LogDebug("Intermediate directory was not provided, so using source directory for build.");
+
                 return new LocalSourceRepo(_options.SourceDir);
             }
 
-            var intermediateDir = EnsureIntermediateDirectory();
-
             if (!_copiedToIntermediateDirectory)
             {
-                _logger.LogDebug(
-                    $"Copying content from '{_options.SourceDir}' to '{intermediateDir.FullName}' ...");
+                PrepareIntermediateDirectory();
 
-                CopyDirectories(_options.SourceDir, intermediateDir.FullName, recursive: true);
+                _logger.LogDebug(
+                    $"Copying content from '{_options.SourceDir}' to '{_options.IntermediateDir}' ...");
+
+                CopyDirectories(_options.SourceDir, _options.IntermediateDir, recursive: true);
                 _copiedToIntermediateDirectory = true;
             }
 
-            return new LocalSourceRepo(intermediateDir.FullName);
+            return new LocalSourceRepo(_options.IntermediateDir);
         }
 
-        private DirectoryInfo EnsureIntermediateDirectory()
+        private void PrepareIntermediateDirectory()
         {
-            string intermediateDir;
-            if (string.IsNullOrEmpty(_options.IntermediateDir))
+            if (Directory.Exists(_options.IntermediateDir))
             {
-                intermediateDir = Path.Combine(_tempDirectoryProvider.GetTempDirectory(), "IntermediateDir");
+                _logger.LogWarning(
+                    $"Intermediate directory '{_options.IntermediateDir}' already exists. Deleting it's contents ...");
+
+                Directory.Delete(_options.IntermediateDir, recursive: true);
             }
             else
             {
-                intermediateDir = _options.IntermediateDir;
+                _logger.LogDebug($"Creating intermediate directory at '{_options.IntermediateDir}' ...");
             }
 
-            if (!Directory.Exists(intermediateDir))
-            {
-                _logger.LogDebug($"Creating intermediate directory at '{intermediateDir}' ...");
-            }
-
-            return Directory.CreateDirectory(intermediateDir);
+            Directory.CreateDirectory(_options.IntermediateDir);
         }
 
         private static void CopyDirectories(string sourceDirectory, string destinationDirectory, bool recursive)
