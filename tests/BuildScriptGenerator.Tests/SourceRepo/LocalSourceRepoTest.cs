@@ -68,10 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             public SourceRepoTestFixutre()
             {
-                RootDirPath = Path.Combine(
-                    Path.GetTempPath(),
-                    $"{nameof(BuildScriptGenerator)}Tests",
-                    nameof(LocalSourceRepoTest));
+                RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 
                 Directory.CreateDirectory(RootDirPath);
                 File.WriteAllText(Path.Combine(RootDirPath, "file1.txt"), "file content");

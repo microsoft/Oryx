@@ -6,17 +6,18 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    public class DefaultSourceRepoProviderTest : IClassFixture<DefaultSourceRepoProviderTest.TestFixture>
+    public class DefaultSourceRepoProviderTest : IClassFixture<TestTempDirTestFixure>
     {
         private readonly string _tempDirRootPath;
 
-        public DefaultSourceRepoProviderTest(TestFixture fixutre)
+        public DefaultSourceRepoProviderTest(TestTempDirTestFixure fixutre)
         {
-            _tempDirRootPath = fixutre.TempDirPath;
+            _tempDirRootPath = fixutre.RootDirPath;
         }
 
         [Fact]
@@ -187,36 +188,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 Directory.CreateDirectory(_tempDir);
                 return _tempDir;
-            }
-        }
-
-        public class TestFixture : IDisposable
-        {
-            public TestFixture()
-            {
-                TempDirPath = Path.Combine(
-                    Path.GetTempPath(),
-                    nameof(DefaultSourceRepoProviderTest),
-                    "Temp");
-
-                Directory.CreateDirectory(TempDirPath);
-            }
-
-            public string TempDirPath { get; }
-
-            public void Dispose()
-            {
-                if (Directory.Exists(TempDirPath))
-                {
-                    try
-                    {
-                        Directory.Delete(TempDirPath, recursive: true);
-                    }
-                    catch
-                    {
-                        // Do not throw in dispose
-                    }
-                }
             }
         }
     }

@@ -8,15 +8,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Logging;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    public class FileLoggerProviderTest : IClassFixture<FileLoggerProviderTest.FileLoggerProviderTestFixutre>
+    public class FileLoggerProviderTest : IClassFixture<TestTempDirTestFixure>
     {
         private readonly string _rooDirPath;
 
-        public FileLoggerProviderTest(FileLoggerProviderTestFixutre testFixture)
+        public FileLoggerProviderTest(TestTempDirTestFixure testFixture)
         {
             _rooDirPath = testFixture.RootDirPath;
         }
@@ -176,7 +177,7 @@ namespace BuildScriptGeneratorCli.Tests
                 logFile,
                 thresholdLimit,
                 minimumLogLevel,
-                new TestTempDirectoryProvider(Path.Combine(Path.GetTempPath(), nameof(FileLoggerProviderTest))));
+                new TestTempDirectoryProvider(Path.Combine(Path.GetTempPath(), "oryxtests", nameof(FileLoggerProviderTest))));
         }
 
         private FileLoggerProvider CreateFileLoggerProvider(
@@ -209,36 +210,6 @@ namespace BuildScriptGeneratorCli.Tests
             {
                 Directory.CreateDirectory(_tempDir);
                 return _tempDir;
-            }
-        }
-
-        public class FileLoggerProviderTestFixutre : IDisposable
-        {
-            public FileLoggerProviderTestFixutre()
-            {
-                RootDirPath = Path.Combine(
-                    Path.GetTempPath(),
-                    "BuildScriptGeneratorCliTests",
-                    nameof(FileLoggerProviderTest));
-
-                Directory.CreateDirectory(RootDirPath);
-            }
-
-            public string RootDirPath { get; }
-
-            public void Dispose()
-            {
-                if (Directory.Exists(RootDirPath))
-                {
-                    try
-                    {
-                        Directory.Delete(RootDirPath, recursive: true);
-                    }
-                    catch
-                    {
-                        // Do not throw in dispose
-                    }
-                }
             }
         }
 

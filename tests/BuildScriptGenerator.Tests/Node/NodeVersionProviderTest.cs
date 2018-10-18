@@ -65,10 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             public TestFixutre()
             {
-                RootDirPath = Path.Combine(
-                    Path.GetTempPath(),
-                    $"{nameof(BuildScriptGenerator)}Tests",
-                    nameof(NodeVersionProviderTest));
+                RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 
                 Directory.CreateDirectory(RootDirPath);
                 Directory.CreateDirectory(Path.Combine(RootDirPath, "1.0.0"));

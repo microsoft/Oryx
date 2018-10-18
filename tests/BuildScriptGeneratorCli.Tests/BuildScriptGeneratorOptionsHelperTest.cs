@@ -7,16 +7,17 @@ using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
     public class BuildScriptGeneratorOptionsHelperTest
-        : IClassFixture<BuildScriptGeneratorOptionsHelperTest.TestFixture>
+        : IClassFixture<TestTempDirTestFixure>
     {
         private static string _testDirPath;
 
-        public BuildScriptGeneratorOptionsHelperTest(TestFixture testFixutre)
+        public BuildScriptGeneratorOptionsHelperTest(TestTempDirTestFixure testFixutre)
         {
             _testDirPath = testFixutre.RootDirPath;
         }
@@ -268,35 +269,6 @@ namespace BuildScriptGeneratorCli.Tests
         private string CreatePathForNewDir()
         {
             return Path.Combine(_testDirPath, Guid.NewGuid().ToString());
-        }
-
-        public class TestFixture : IDisposable
-        {
-            public TestFixture()
-            {
-                RootDirPath = Path.Combine(
-                    Path.GetTempPath(),
-                    nameof(BuildScriptGeneratorOptionsHelperTest));
-
-                Directory.CreateDirectory(RootDirPath);
-            }
-
-            public string RootDirPath { get; }
-
-            public void Dispose()
-            {
-                if (Directory.Exists(RootDirPath))
-                {
-                    try
-                    {
-                        Directory.Delete(RootDirPath, recursive: true);
-                    }
-                    catch
-                    {
-                        // Do not throw in dispose
-                    }
-                }
-            }
         }
     }
 }

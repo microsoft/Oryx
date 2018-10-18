@@ -10,15 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    public class ScriptCommandTest : IClassFixture<ScriptCommandTest.TestFixture>
+    public class ScriptCommandTest : IClassFixture<TestTempDirTestFixure>
     {
         private static string _testDirPath;
 
-        public ScriptCommandTest(TestFixture testFixutre)
+        public ScriptCommandTest(TestTempDirTestFixure testFixutre)
         {
             _testDirPath = testFixutre.RootDirPath;
         }
@@ -100,35 +101,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(0, exitCode);
             Assert.Equal(expected, testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
-        }
-
-        public class TestFixture : IDisposable
-        {
-            public TestFixture()
-            {
-                RootDirPath = Path.Combine(
-                    Path.GetTempPath(),
-                    nameof(BuildCommandTest));
-
-                Directory.CreateDirectory(RootDirPath);
-            }
-
-            public string RootDirPath { get; }
-
-            public void Dispose()
-            {
-                if (Directory.Exists(RootDirPath))
-                {
-                    try
-                    {
-                        Directory.Delete(RootDirPath, recursive: true);
-                    }
-                    catch
-                    {
-                        // Do not throw in dispose
-                    }
-                }
-            }
         }
 
         private IServiceProvider CreateServiceProvider(TestScriptGenerator generator, bool scriptOnly)
