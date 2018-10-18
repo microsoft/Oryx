@@ -123,10 +123,20 @@ RUN set -ex \
  && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 RUN set -ex \
+ && ln -s 4.4.7 /opt/nodejs/4.4 \
  && ln -s 4.5.0 /opt/nodejs/4.5 \
  && ln -s 4.5 /opt/nodejs/4 \
+ && ln -s 6.2.2 /opt/nodejs/6.2 \
+ && ln -s 6.6.0 /opt/nodejs/6.6 \
+ && ln -s 6.9.3 /opt/nodejs/6.9 \
+ && ln -s 6.10.3 /opt/nodejs/6.10 \
  && ln -s 6.11.0 /opt/nodejs/6.11 \
  && ln -s 6.11 /opt/nodejs/6 \
+ && ln -s 8.0.0 /opt/nodejs/8.0 \
+ && ln -s 8.1.4 /opt/nodejs/8.1 \
+ && ln -s 8.2.1 /opt/nodejs/8.2 \
+ && ln -s 8.8.1 /opt/nodejs/8.8 \
+ && ln -s 8.9.4 /opt/nodejs/8.9 \
  && ln -s 8.11.2 /opt/nodejs/lts \
  && ln -s 8.11.2 /opt/nodejs/8.11 \
  && ln -s 8.11 /opt/nodejs/8 \
@@ -138,8 +148,12 @@ RUN set -ex \
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
+ && ln -s 3.9.5 /opt/npm/3.9 \
  && ln -s 3.10.10 /opt/npm/3.10 \
  && ln -s 3.10 /opt/npm/3 \
+ && ln -s 5.0.3 /opt/npm/5.0 \
+ && ln -s 5.3.0 /opt/npm/5.3 \
+ && ln -s 5.4.2 /opt/npm/5.4 \
  && ln -s 5.6.0 /opt/npm/latest \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5
