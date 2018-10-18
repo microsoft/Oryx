@@ -51,17 +51,10 @@ then
     DESTINATION_DIR=$(pwd -P)
 fi
 
-echo
 echo ""Source directory     : $SOURCE_DIR""
 echo ""Destination directory: $DESTINATION_DIR""
-echo
 
 source /usr/local/bin/benv {0}
-
-echo
-echo ""Source directory: $SOURCE_DIR""
-echo ""Destination directory: $DESTINATION_DIR""
-echo
 
 VIRTUALENVIRONMENTNAME={1}
 echo ""Python Virtual Environment: $VIRTUALENVIRONMENTNAME""
@@ -69,19 +62,19 @@ echo ""Python Version: $python""
 
 cd ""$SOURCE_DIR""
 
-#2a. Setup virtual Environment
-echo ""Create virtual environment""
+echo Creating virtual environment ...
 $python -m venv $VIRTUALENVIRONMENTNAME --copies
 
-#2b. Activate virtual environment
-echo ""Activate virtual environment""
+echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
-#2c. Install dependencies
-pip install -r requirements.txt
+echo Pip Version:
+$pip --version
+
+$pip install -r requirements.txt
 
 echo
-echo ""pip install finished""
+echo pip install finished.
 
 if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
 then
