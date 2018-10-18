@@ -257,6 +257,7 @@ WORKDIR /usr/oryx/src
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM python AS final
 ARG GIT_COMMIT=unspecified
