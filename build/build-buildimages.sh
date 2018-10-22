@@ -35,7 +35,7 @@ BuildAndTagStage openssl1.1.1-build
 BuildAndTagStage python3.7.0-build
 BuildAndTagStage buildscriptbuilder
 
-tags="-t $DOCKER_BUILD_IMAGES_REPO:latest"
+tags="$DOCKER_BUILD_IMAGES_REPO:latest"
 
 if [ -n "$BUILD_NUMBER" ]
 then
@@ -46,11 +46,19 @@ if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
 then
 	echo
 	echo "Building build image(s) with NO cache..."
-	docker build --no-cache $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --no-cache -t $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
 else
 	echo
 	echo "Building build image(s)..."
-	docker build $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build -t $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+fi
+
+# Retag build image with acr tags
+docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:latest"
+
+if [ -n "$BUILD_NUMBER" ]
+then
+    docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:$BUILD_NUMBER"
 fi
 
 # Write the list of images that were built to artifacts folder
@@ -60,15 +68,19 @@ mkdir -p "$ARTIFACTS_DIR/images"
 
 # Write image list to artifacts file
 echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
+echo "$ACR_BUILD_IMAGES_REPO:latest" > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 if [ -n "$BUILD_NUMBER" ]
 then
 	echo "$DOCKER_BUILD_IMAGES_REPO:$BUILD_NUMBER" >> $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$ACR_BUILD_IMAGES_REPO:$BUILD_NUMBER" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 fi
 
 echo
 echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
 cat $BUILD_IMAGES_ARTIFACTS_FILE
+echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
+cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"

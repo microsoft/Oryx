@@ -77,7 +77,7 @@ steps:
   condition: true
 
 - task: Docker@0
-  displayName: 'Push Build image'
+  displayName: 'Push Build image to DockerHub'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: oryx
@@ -86,13 +86,35 @@ steps:
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
 
+- task: Docker@1
+  displayName: 'Push Build image to ACR'
+  inputs:
+    azureSubscriptionEndpoint: OryxMCR
+    azureContainerRegistry: oryxdevmcr.azurecr.io
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
+    includeLatestTag: false
+  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
+
 - task: Docker@0
-  displayName: 'Push runtime images'
+  displayName: 'Push runtime images to DockerHub'
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: oryx
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
+    includeLatestTag: false
+  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+
+- task: Docker@1
+  displayName: 'Push runtime images to ACR'
+  inputs:
+    azureSubscriptionEndpoint: OryxMCR
+    azureContainerRegistry: oryxdevmcr.azurecr.io
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
 

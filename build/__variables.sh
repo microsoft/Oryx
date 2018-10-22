@@ -19,8 +19,12 @@ declare -r TESTS_SRC_DIR="$__REPO_DIR/tests"
 declare -r ARTIFACTS_DIR="$__REPO_DIR/artifacts"
 declare -r BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images.txt"
 declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.txt"
+declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
+declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr.txt"
 
 declare -r DOCKER_BUILD_IMAGES_REPO="oryxdevms/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO="oryxdevms"
+declare -r ACR_BUILD_IMAGES_REPO="oryxdevmcr.azurecr.io/internal/oryx/build-image"
+declare -r ACR_RUNTIME_IMAGES_REPO="oryxdevmcr.azurecr.io/internal/oryx/runtime"
 
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"

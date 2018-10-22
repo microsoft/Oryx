@@ -45,9 +45,13 @@ clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
+    echo $getTagName
+    echo $getTagName_result
     runtimeImageTagName="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
+    runtimeImageACRTagName="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
 
     tags=$runtimeImageTagName:latest
+    acrTag=$runtimeImageACRTagName:latest
 
     if [ -n "$BUILD_NUMBER" ]
     then
@@ -71,10 +75,20 @@ for dockerFile in $dockerFiles; do
         docker build -t $tags .
     fi
 
+    
+    # Retag build image with acr tags
+    docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:latest"
+
+    if [ -n "$BUILD_NUMBER" ]
+    then
+        docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:$BUILD_NUMBER"
+    fi
+
     if [ $clearedOutput = "false" ]
     then
         # clear existing contents of the file, if any
         > $RUNTIME_IMAGES_ARTIFACTS_FILE
+        > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
         clearedOutput=true
     fi
 
@@ -82,9 +96,11 @@ for dockerFile in $dockerFiles; do
     echo
     echo "Updating artifacts file with the built runtime image information..."
     echo "$runtimeImageTagName:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "$runtimeImageACRTagName:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     if [ -n "$BUILD_NUMBER" ]
     then
     	echo "$runtimeImageTagName:$BUILD_NUMBER" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$runtimeImageACRTagName:$BUILD_NUMBER" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
@@ -93,6 +109,8 @@ done
 echo
 echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
 cat $RUNTIME_IMAGES_ARTIFACTS_FILE
+echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
+cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
