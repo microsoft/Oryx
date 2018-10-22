@@ -73,20 +73,31 @@ steps:
     testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
     mergeTestResults: true
 
-- task: Docker@0
+- task: Docker@1
+  displayName: 'Docker Login'
+  inputs:
+    azureSubscriptionEndpoint: OryxMCR
+    azureContainerRegistry: oryxdevmcr.azurecr.io
+    command: login
+
+- task: Docker@1
   displayName: 'Push Build image'
   inputs:
-    azureSubscription: OryxMCR
-    azureContainerRegistry: '{"loginServer":"oryxdevmcr.azurecr.io", "id" : "/subscriptions/e13e3c2a-b6ed-4969-875a-28bec9f4513f/resourceGroups/oryxtrymcr/providers/Microsoft.ContainerRegistry/registries/oryxdevmcr"}'
+    azureSubscriptionEndpoint: OryxMCR
+    azureContainerRegistry: oryxdevmcr.azurecr.io
+    command: 'Push an image'
+    pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
 
-- task: Docker@0
+- task: Docker@1
   displayName: 'Push runtime images'
   inputs:
-    azureSubscription: OryxMCR
-    azureContainerRegistry: '{"loginServer":"oryxdevmcr.azurecr.io", "id" : "/subscriptions/e13e3c2a-b6ed-4969-875a-28bec9f4513f/resourceGroups/oryxtrymcr/providers/Microsoft.ContainerRegistry/registries/oryxdevmcr"}'
+    azureSubscriptionEndpoint: OryxMCR
+    azureContainerRegistry: oryxdevmcr.azurecr.io
+    command: 'Push an image'
+    pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
