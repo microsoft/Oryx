@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {0}{1}
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: {0}{1}
+  template:
+    metadata:
+      labels:
+        app: {0}{1}
+    spec:
+     containers:
+      - image: {2}
+        name: {0}
+#        command: [ "/bin/bash", "-c", "--" ]
+#        args: [ "while true; do sleep 30; done;" ]
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "cd /mnt/samples/SampleApps{1}/{3}/{0}_out && npm start" ]
+        volumeMounts:
+          - name: samples
+            mountPath: /mnt/samples
+        ports:
+          - containerPort: 80
+     volumes:
+      - name: samples
+        azureFile:
+          secretName: storage-secret
+          shareName: oryx
