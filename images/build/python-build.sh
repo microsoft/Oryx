@@ -52,7 +52,7 @@ LD_LIBRARY_PATH=/usr/src/python \
     --no-warn-script-location \
     pip==$PIP_VERSION
 
-if [ "${PYTHON_VERSION::1}" == "3" ]; then
+if [ "${PYTHON_VERSION::1}" == "2" ]; then
     LD_LIBRARY_PATH=$PYTHON_PATH/lib \
     $PYTHON_PATH/bin/pip install --no-cache-dir virtualenv
 fi

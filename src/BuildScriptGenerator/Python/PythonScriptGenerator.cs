@@ -57,13 +57,16 @@ echo ""Destination directory: $DESTINATION_DIR""
 source /usr/local/bin/benv {0}
 
 VIRTUALENVIRONMENTNAME={1}
+VIRTUALENVIRONMENTMODULE={2}
+VIRTUALENVCOPYPARAMETER={3}
+
 echo ""Python Virtual Environment: $VIRTUALENVIRONMENTNAME""
 echo ""Python Version: $python""
 
 cd ""$SOURCE_DIR""
 
 echo Creating virtual environment ...
-$python -m venv $VIRTUALENVIRONMENTNAME --copies
+$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVCOPYPARAMETER
 
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
@@ -182,7 +185,29 @@ echo Done.
                 virtualEnvName = DefaultVirtualEnvironmentName;
             }
 
-            return string.Format(ScriptTemplate, benvArgs, virtualEnvName);
+            string virtualEnvModule = "venv";
+            string virtualEnvCopyParam = string.Empty;
+
+            if (!string.IsNullOrEmpty(pythonVersion))
+            {
+                switch (pythonVersion.Substring(0, 1))
+                {
+                    case "2":
+                        virtualEnvModule = "virtualenv";
+                        break;
+                    case "3":
+                        virtualEnvModule = "venv";
+                        virtualEnvCopyParam = "--copies";
+                        break;
+                    default:
+                        string errorMessage = "Python version " + pythonVersion + " is not supported";
+                        _logger.LogError(errorMessage);
+                        throw new NotSupportedException(errorMessage);
+                }
+            }
+
+            var script = string.Format(ScriptTemplate, benvArgs, virtualEnvName, virtualEnvModule, virtualEnvCopyParam);
+            return script;
         }
 
         private string DetectPythonVersion(ScriptGeneratorContext context)

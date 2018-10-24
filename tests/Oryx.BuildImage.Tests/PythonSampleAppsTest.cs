@@ -332,6 +332,91 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void CanthrowException_ForInvalidPythonVersion()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var generatedScript = "/build.sh";
+            var appOutputDir = "/flask-app-output";
+            var tempDir = "/tmp/" + Guid.NewGuid();
+            var script = new BashScriptBuilder()
+                .AddScriptCommand($"{appDir} -l python --language-version 4.0.1 > {generatedScript}")
+                .SetExecutePermissionOnFile(generatedScript)
+                .CreateDirectory(tempDir)
+                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    string errorMessage = "The supplied language version '4.0.1' is not supported. Supported versions are: 2.7.15, 3.5.6, 3.6.6, 3.7.0";
+                    Assert.False(result.IsSuccess);
+                    Assert.Contains(errorMessage, result.Error);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("2.7.15")]
+        [InlineData("3.6.6")]
+        [InlineData("3.7.0")]
+        public void CanBuild_Python2and3Apps_ScriptOnlyOption(string langVersion)
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var generatedScript = "/build.sh";
+            var appOutputDir = "/flask-app-output";
+            var tempDir = "/tmp/" + Guid.NewGuid();
+            var script = new BashScriptBuilder()
+                .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
+                .SetExecutePermissionOnFile(generatedScript)
+                .CreateDirectory(tempDir)
+                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
