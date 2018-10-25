@@ -21,12 +21,11 @@ namespace Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.6.6")]
-        [InlineData("3.7.0")]
-        public void PythonVersionMatchesImageName(string pythonVersion)
+        [InlineData("3.6", "Python 3.6.6")]
+        [InlineData("3.7.0", "Python 3.7.0")]
+        public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
             // Arrange & Act
-            var expectedPythonVersion = "Python " + pythonVersion;
             var result = _dockerCli.Run(
                 "oryxdevms/python-" + pythonVersion + ":latest",
                 commandToExecuteOnRun: "python",
@@ -38,7 +37,7 @@ namespace Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedPythonVersion, actualOutput);
+                    Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }
