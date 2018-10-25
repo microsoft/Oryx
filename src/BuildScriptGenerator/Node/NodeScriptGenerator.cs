@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         // a tab would be present in the generated output too.
         private const string ScriptTemplate =
             @"#!/bin/bash
-#set -ex
+set -e
 
 SOURCE_DIR=$1
 DESTINATION_DIR=$2
