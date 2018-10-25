@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<IScriptGenerator>>();
+            var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<ILanguageScriptGenerator>>();
             scriptGenerators = scriptGenerators
                 .OrderBy(sg => sg.SupportedLanguageName, StringComparer.OrdinalIgnoreCase);
 

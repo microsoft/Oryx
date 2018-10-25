@@ -1,6 +1,9 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// --------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -22,14 +25,14 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = new ServiceProviderBuilder()
                 .ConfigureServices(services =>
                 {
-                    services.RemoveAll<IScriptGenerator>();
+                    services.RemoveAll<ILanguageScriptGenerator>();
                     services.TryAddEnumerable(new[]
                     {
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<string>("d", new[]{ "1.0.0" })),
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<int>("c", new[]{ "1.0.0" })),
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<decimal>("b", new[]{ "1.0.0" }))
                     });
                 })
@@ -59,14 +62,14 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = new ServiceProviderBuilder()
                 .ConfigureServices(services =>
                 {
-                    services.RemoveAll<IScriptGenerator>();
+                    services.RemoveAll<ILanguageScriptGenerator>();
                     services.TryAddEnumerable(new[]
                     {
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<string>("D", new[]{ "1.0.0" })),
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<int>("c", new[]{ "1.0.0" })),
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<decimal>("B", new[]{ "1.0.0" }))
                     });
                 })
@@ -96,10 +99,10 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = new ServiceProviderBuilder()
                 .ConfigureServices(services =>
                 {
-                    services.RemoveAll<IScriptGenerator>();
+                    services.RemoveAll<ILanguageScriptGenerator>();
                     services.TryAddEnumerable(new[]
                     {
-                        ServiceDescriptor.Singleton<IScriptGenerator>(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(
                             new TestScriptGenerator<string>(
                                 "lang1", 
                                 new[]{ "11.0.0", "8.11.2", "8.4.2", "6.5.3", "6.4.1" }))
@@ -122,7 +125,7 @@ namespace BuildScriptGeneratorCli.Tests
                 (line) => Assert.Empty(line));
         }
 
-        private class TestScriptGenerator<T> : IScriptGenerator
+        private class TestScriptGenerator<T> : ILanguageScriptGenerator
         {
             public TestScriptGenerator(string languageName, string[] languageVersions)
             {
@@ -134,12 +137,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             public IEnumerable<string> SupportedLanguageVersions { get; }
 
-            public bool CanGenerateScript(ScriptGeneratorContext scriptGeneratorContext)
-            {
-                throw new NotImplementedException();
-            }
-
-            public string GenerateBashScript(ScriptGeneratorContext scriptGeneratorContext)
+            public bool TryGenerateBashScript(ScriptGeneratorContext scriptGeneratorContext, out string script)
             {
                 throw new NotImplementedException();
             }

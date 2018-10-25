@@ -14,8 +14,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddPythonScriptGeneratorServices(this IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IScriptGenerator, PythonScriptGenerator>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
+                ServiceDescriptor.Singleton<ILanguageDetector, PythonLanguageDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<ILanguageScriptGenerator, PythonScriptGenerator>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
             return services;
         }

@@ -7,7 +7,7 @@ using SemVer;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public static class SemanticVersionResolver
+    internal static class SemanticVersionResolver
     {
         public static string GetMaxSatisfyingVersion(string providedVersion, IEnumerable<string> supportedVersions)
         {

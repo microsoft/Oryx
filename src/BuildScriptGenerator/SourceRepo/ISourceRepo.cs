@@ -1,6 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
@@ -26,5 +28,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="paths">Path to the file inside the repo.</param>
         /// <returns>The content of the file.</returns>
         string ReadFile(params string[] paths);
+
+        /// <summary>
+        /// Gets a list of paths to files based on the specified <paramref name="searchPattern"/>.
+        /// </summary>
+        /// <param name="searchPattern">The search pattern of the file name.</param>
+        /// <param name="searchSubDirectories"></param>
+        /// <returns>A collection of file paths.</returns>
+        IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories);
     }
 }

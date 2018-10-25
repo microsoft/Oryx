@@ -115,9 +115,15 @@ namespace BuildScriptGeneratorCli.Tests
                     // Add 'test' script generator here as we can control what the script output is rather
                     // than depending on in-built script generators whose script could change overtime causing
                     // this test to be difficult to manage.
-                    services.RemoveAll<IScriptGenerator>();
+
+                    services.RemoveAll<ILanguageDetector>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<IScriptGenerator>(generator));
+                        ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
+
+                    services.RemoveAll<ILanguageScriptGenerator>();
+                    services.TryAddEnumerable(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(generator));
+
                     services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
                 })
@@ -146,7 +152,7 @@ namespace BuildScriptGeneratorCli.Tests
             }
         }
 
-        private class TestScriptGenerator : IScriptGenerator
+        private class TestScriptGenerator : ILanguageScriptGenerator
         {
             private readonly string _scriptContent;
 
@@ -164,19 +170,29 @@ namespace BuildScriptGeneratorCli.Tests
 
             public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
 
-            public bool CanGenerateScript(ScriptGeneratorContext scriptGeneratorContext)
+            public bool TryGenerateBashScript(ScriptGeneratorContext scriptGeneratorContext, out string script)
             {
+                if (string.IsNullOrEmpty(_scriptContent))
+                {
+                    script = "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
+                }
+                else
+                {
+                    script = _scriptContent;
+                }
                 return true;
             }
+        }
 
-            public string GenerateBashScript(ScriptGeneratorContext scriptGeneratorContext)
+        private class TestLanguageDetector : ILanguageDetector
+        {
+            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
             {
-                if (!string.IsNullOrEmpty(_scriptContent))
+                return new LanguageDetectorResult
                 {
-                    return _scriptContent;
-                }
-
-                return "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
+                    Language = "test",
+                    LanguageVersion = "1.0.0"
+                };
             }
         }
     }

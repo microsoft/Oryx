@@ -3,13 +3,14 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonScriptGeneratorOptionsSetup : IConfigureOptions<PythonScriptGeneratorOptions>
     {
         internal const string PythonDefaultVersion = "ORYX_PYTHON_DEFAULT_VERSION";
+        internal const string PythonLtsVersion = "3.7.0";
+        internal const string InstalledPythonVersionsDir = "/opt/python/";
 
         private readonly IEnvironment _environment;
 
@@ -20,8 +21,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public void Configure(PythonScriptGeneratorOptions options)
         {
-            options.PythonDefaultVersion = _environment.GetEnvironmentVariable(PythonDefaultVersion);
-            options.InstalledPythonVersionsDir = "/opt/python/";
+            var defaultVersion = _environment.GetEnvironmentVariable(PythonDefaultVersion);
+            if (string.IsNullOrEmpty(defaultVersion))
+            {
+                defaultVersion = PythonLtsVersion;
+            }
+
+            options.PythonDefaultVersion = defaultVersion;
+            options.InstalledPythonVersionsDir = InstalledPythonVersionsDir;
         }
     }
 }

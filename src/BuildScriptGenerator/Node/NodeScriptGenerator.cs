@@ -1,15 +1,15 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal class NodeScriptGenerator : IScriptGenerator
+    internal class NodeScriptGenerator : ILanguageScriptGenerator
     {
         private const string NodeJsName = "nodejs";
         private const string PackageJsonFileName = "package.json";
@@ -80,19 +80,6 @@ echo
 echo Done.
 ";
 
-        private static readonly string[] IisStartupFiles = new[]
-        {
-            "default.htm",
-            "default.html",
-            "default.asp",
-            "index.htm",
-            "index.html",
-            "iisstart.htm",
-            "default.aspx",
-            "index.php"
-        };
-
-        private static readonly string[] TypicalNodeDetectionFiles = new[] { "server.js", "app.js" };
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodeScriptGenerator> _logger;
@@ -111,61 +98,13 @@ echo Done.
 
         public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
 
-        public bool CanGenerateScript(ScriptGeneratorContext context)
+        public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
         {
-            if (context.SourceRepo.FileExists(PackageJsonFileName))
-            {
-                return true;
-            }
-            else
-            {
-                _logger.LogDebug($"Could not find file '{PackageJsonFileName}' in the source directory.");
-            }
+            script = null;
 
-            // Copying the logic currently running in Kudu:
-            var mightBeNode = false;
-            foreach (var typicalNodeFile in TypicalNodeDetectionFiles)
-            {
-                if (context.SourceRepo.FileExists(typicalNodeFile))
-                {
-                    mightBeNode = true;
-                    break;
-                }
-            }
+            var benvArgs = $"node={context.LanguageVersion} ";
 
-            if (mightBeNode)
-            {
-                // Check if any of the known iis start pages exist
-                // If so, then it is not a node.js web site otherwise it is
-                foreach (var iisStartupFile in IisStartupFiles)
-                {
-                    if (context.SourceRepo.FileExists(iisStartupFile))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            else
-            {
-                _logger.LogDebug(
-                    $"Could not find following typical node files in the source directory: " +
-                    string.Join(", ", TypicalNodeDetectionFiles));
-            }
-
-            return false;
-        }
-
-        public string GenerateBashScript(ScriptGeneratorContext context)
-        {
-            (var nodeVersion, var npmVersion) = DetectVersionInformation(context);
-
-            string benvArgs = string.Empty;
-            if (!string.IsNullOrEmpty(nodeVersion))
-            {
-                benvArgs += $"node={nodeVersion} ";
-            }
-
+            var npmVersion = GetNpmVersion(context);
             if (!string.IsNullOrEmpty(npmVersion))
             {
                 benvArgs += $"npm={npmVersion} ";
@@ -173,61 +112,21 @@ echo Done.
 
             var installCommand = "eval npm install --production";
 
-            var script = string.Format(ScriptTemplate, benvArgs, installCommand);
-            return script;
+            script = string.Format(ScriptTemplate, benvArgs, installCommand);
+
+            return true;
         }
 
-        private (string nodeVersion, string npmVersion) DetectVersionInformation(ScriptGeneratorContext context)
+        private string GetNpmVersion(ScriptGeneratorContext context)
         {
-            string nodeVersion;
-            string npmVersion;
             var packageJson = GetPackageJsonObject(context.SourceRepo);
-            if (string.IsNullOrEmpty(context.LanguageVersion))
-            {
-                nodeVersion = DetectNodeVersion(packageJson);
-            }
-            else
-            {
-                nodeVersion = context.LanguageVersion;
-            }
 
-            npmVersion = DetectNpmVersion(packageJson);
-
-            return (nodeVersion, npmVersion);
-        }
-
-        private string DetectNodeVersion(dynamic packageJson)
-        {
-            var nodeVersionRange = packageJson?.engines?.node?.Value as string;
-            if (nodeVersionRange == null)
-            {
-                nodeVersionRange = _nodeScriptGeneratorOptions.NodeJsDefaultVersion;
-            }
-            string nodeVersion = null;
-            if (!string.IsNullOrWhiteSpace(nodeVersionRange))
-            {
-                nodeVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    nodeVersionRange,
-                    _nodeVersionProvider.SupportedNodeVersions);
-                if (string.IsNullOrWhiteSpace(nodeVersion))
-                {
-                    var message = $"The target Node.js version '{nodeVersionRange}' is not supported. " +
-                        $"Supported versions are: {string.Join(", ", SupportedLanguageVersions)}";
-
-                    _logger.LogError(message);
-                    throw new UnsupportedVersionException(message);
-                }
-            }
-            return nodeVersion;
-        }
-
-        private string DetectNpmVersion(dynamic packageJson)
-        {
-            string npmVersionRange = packageJson?.engines?.npm?.Value;
+            var npmVersionRange = packageJson?.engines?.npm?.Value;
             if (npmVersionRange == null)
             {
                 npmVersionRange = _nodeScriptGeneratorOptions.NpmDefaultVersion;
             }
+
             string npmVersion = null;
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
@@ -237,11 +136,7 @@ echo Done.
                     supportedNpmVersions);
                 if (string.IsNullOrWhiteSpace(npmVersion))
                 {
-                    var message = $"The target npm version '{npmVersionRange}' is not supported. " +
-                        $"Supported versions are: {string.Join(", ", supportedNpmVersions)}";
-
-                    _logger.LogError(message);
-                    throw new UnsupportedVersionException(message);
+                    return null;
                 }
             }
             return npmVersion;

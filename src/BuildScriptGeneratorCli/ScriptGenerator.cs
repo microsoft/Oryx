@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 var options = _serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-                var scriptGeneratorProvider = _serviceProvider.GetRequiredService<IScriptGeneratorProvider>();
+                var scriptGenerator = _serviceProvider.GetRequiredService<IScriptGenerator>();
                 var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
 
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
@@ -47,17 +47,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     Properties = options.Properties,
                 };
 
-                // Get script generator
-                var scriptGenerator = scriptGeneratorProvider.GetScriptGenerator(scriptGeneratorContext);
-                if (scriptGenerator == null)
+                // Try generating a script
+                if (!scriptGenerator.TryGenerateBashScript(scriptGeneratorContext, out generatedScript))
                 {
                     _console.Error.WriteLine(
                         "Error: Could not find a script generator which can generate a script for " +
                         $"the code in '{options.SourceDir}'.");
                     return false;
                 }
-
-                generatedScript = scriptGenerator.GenerateBashScript(scriptGeneratorContext);
 
                 // Replace any CRLF with LF
                 generatedScript = generatedScript.Replace("\r\n", "\n");

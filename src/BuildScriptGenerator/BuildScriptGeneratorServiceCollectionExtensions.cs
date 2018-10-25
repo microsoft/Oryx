@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddNodeScriptGeneratorServices();
             services.AddPythonScriptGeneratorServices();
 
-            services.AddSingleton<IScriptGeneratorProvider, DefaultScriptGeneratorProvider>();
+            services.AddSingleton<IScriptGenerator, DefaultScriptGenerator>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();
             services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
             services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();

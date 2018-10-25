@@ -438,9 +438,12 @@ namespace BuildScriptGeneratorCli.Tests
                     // Add 'test' script generator here as we can control what the script output is rather
                     // than depending on in-built script generators whose script could change overtime causing
                     // this test to be difficult to manage.
-                    services.RemoveAll<IScriptGenerator>();
+                    services.RemoveAll<ILanguageDetector>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<IScriptGenerator>(generator));
+                        ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
+                    services.RemoveAll<ILanguageScriptGenerator>();
+                    services.TryAddEnumerable(
+                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(generator));
                     services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
                 })
@@ -478,7 +481,7 @@ namespace BuildScriptGeneratorCli.Tests
             }
         }
 
-        private class TestScriptGenerator : IScriptGenerator
+        private class TestScriptGenerator : ILanguageScriptGenerator
         {
             private readonly string _scriptContent;
 
@@ -496,19 +499,30 @@ namespace BuildScriptGeneratorCli.Tests
 
             public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
 
-            public bool CanGenerateScript(ScriptGeneratorContext scriptGeneratorContext)
+            public bool TryGenerateBashScript(ScriptGeneratorContext scriptGeneratorContext, out string script)
             {
-                return true;
-            }
-
-            public string GenerateBashScript(ScriptGeneratorContext scriptGeneratorContext)
-            {
-                if (!string.IsNullOrEmpty(_scriptContent))
+                if (string.IsNullOrEmpty(_scriptContent))
                 {
-                    return _scriptContent;
+                    script = "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
+                }
+                else
+                {
+                    script = _scriptContent;
                 }
 
-                return "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
+                return true;
+            }
+        }
+
+        private class TestLanguageDetector : ILanguageDetector
+        {
+            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+            {
+                return new LanguageDetectorResult
+                {
+                    Language = "test",
+                    LanguageVersion = "1.0.0"
+                };
             }
         }
 
@@ -520,11 +534,10 @@ namespace BuildScriptGeneratorCli.Tests
             {
                 _platform = OSPlatform.Create(platform);
 
-                //if (!RuntimeInformation.IsOSPlatform(_platform))
-                //{
-                //    Skip = $"This test can only run on platform '{_platform}'.";
-                //}
-                Skip = "Bug: https://devdiv.visualstudio.com/DevDiv/_workitems/edit/707839";
+                if (!RuntimeInformation.IsOSPlatform(_platform))
+                {
+                    Skip = $"This test can only run on platform '{_platform}'.";
+                }
             }
         }
     }

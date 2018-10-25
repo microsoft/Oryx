@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class DefaulTempDirectoryProvider : ITempDirectoryProvider
+    internal class DefaulTempDirectoryProvider : ITempDirectoryProvider
     {
         private readonly string _path;
 

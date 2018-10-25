@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -62,6 +63,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert-2
             Assert.Equal(expected, content);
+        }
+
+        [Fact]
+        public void GetFilesWithExtension_ReturnsFilesAtRootDirectoryOnly_IfSubDirectorySearchIsFalse()
+        {
+            // Arrange
+            var expected = Path.Combine(_rootDirPath, "file1.txt");
+            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+
+            // Act
+            var files = sourceRepo.EnumerateFiles("*.txt", searchSubDirectories: false);
+
+            // Assert
+            Assert.NotNull(files);
+            var file = Assert.Single(files);
+            Assert.Equal(expected, file);
+        }
+
+        [Fact]
+        public void GetFilesWithExtension_ReturnsFilesAtAllDirectories_IfSubDirectorySearchIsTrue()
+        {
+            // Arrange
+            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+
+            // Act
+            var files = sourceRepo.EnumerateFiles("*.txt", searchSubDirectories: true);
+
+            // Assert
+            Assert.NotNull(files);
+            Assert.Equal(3, files.Count());
         }
 
         public class SourceRepoTestFixutre : IDisposable

@@ -9,6 +9,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         internal const string NodeJsDefaultVersion = "ORYX_NODE_DEFAULT_VERSION";
         internal const string NpmDefaultVersion = "ORYX_NPM_DEFAULT_VERSION";
+        internal const string NodeLtsVersion = "8.11.2";
+        internal const string InstalledNodeVersionsDir = "/opt/nodejs/";
+        internal const string InstalledNpmVersionsDir = "/opt/npm/";
 
         private readonly IEnvironment _environment;
 
@@ -19,10 +22,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public void Configure(NodeScriptGeneratorOptions options)
         {
-            options.NodeJsDefaultVersion = _environment.GetEnvironmentVariable(NodeJsDefaultVersion);
+            var defaultVersion = _environment.GetEnvironmentVariable(NodeJsDefaultVersion);
+            if (string.IsNullOrEmpty(defaultVersion))
+            {
+                defaultVersion = NodeLtsVersion;
+            }
+
+            options.NodeJsDefaultVersion = defaultVersion;
             options.NpmDefaultVersion = _environment.GetEnvironmentVariable(NpmDefaultVersion);
-            options.InstalledNodeVersionsDir = "/opt/nodejs/";
-            options.InstalledNpmVersionsDir = "/opt/npm/";
+            options.InstalledNodeVersionsDir = InstalledNodeVersionsDir;
+            options.InstalledNpmVersionsDir = InstalledNpmVersionsDir;
         }
     }
 }
