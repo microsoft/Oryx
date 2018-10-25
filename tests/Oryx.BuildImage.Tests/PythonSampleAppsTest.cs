@@ -489,6 +489,42 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var appOutputDir = "/flask-app-output";
+            var script = new BashScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.7.0")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/jinja2")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Python Version: /opt/python/3.7.0/bin/python3", result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

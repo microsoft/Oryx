@@ -66,10 +66,7 @@ $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVCOPYPARA
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
-echo Pip Version:
-$pip --version
-
-$pip install -r requirements.txt
+pip install -r requirements.txt
 
 echo
 echo pip install finished.
