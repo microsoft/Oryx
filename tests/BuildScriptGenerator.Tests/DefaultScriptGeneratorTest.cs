@@ -24,106 +24,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void TryGenerateScript_ReturnsTrue_IfNoLanguageIsProvided_AndCanDetectLanguage()
         {
             // Arrange
-            var detector = new TestLanguageDetector("test", "1.0.0");
-            var languageGenerator = new TestLanguageScriptGenerator(
-                "test",
-                new[] { "1.0.0" },
-                canGenerateScript: true,
-                scriptContent: "script-content");
-            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
-            var context = CreateScriptGeneratorContext(new TestSourceRepo());
-
-            // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
-
-            // Assert  
-            Assert.True(canGenerateScript);
-            Assert.Equal("script-content", generatedScript);
-        }
-
-        [Fact]
-        public void TryGenerateScript_Throws_IfNoLanguageIsProvided_AndCannotDetectLanguage()
-        {
-            // Arrange
-            var detector = new TestLanguageDetector();
-            var languageGenerator = new TestLanguageScriptGenerator("test", new[] { "1.0.0" });
-            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
-            var context = CreateScriptGeneratorContext(new TestSourceRepo());
-
-            // Act & Assert
-            var exception = Assert.Throws<InvalidOperationException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
-            Assert.Equal("Could not detect the language from source directory.", exception.Message);
-        }
-
-        [Fact]
-        public void TryGenerateScript_Throws_IfCanDetectLanguage_AndLanguageIsUnsupported()
-        {
-            // Arrange
-            var detector = new TestLanguageDetector("unsupported", "1.0.0");
-            var languageGenerator = new TestLanguageScriptGenerator(
-                "test",
-                new[] { "1.0.0" },
-                canGenerateScript: true,
-                scriptContent: "script-content");
-            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
-            var context = CreateScriptGeneratorContext(new TestSourceRepo());
-
-            // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
-            Assert.Equal(
-                "The supplied language 'unsupported' is not supported. Supported languages are: test",
-                exception.Message);
-        }
-
-        [Fact]
-        public void TryGenerateScript_Throws_IfCanDetectLanguage_AndLanguageVersionIsUnsupported()
-        {
-            // Arrange
-            var detector = new TestLanguageDetector("test", "2.0.0"); // Unsupported version
-            var languageGenerator = new TestLanguageScriptGenerator(
-                "test",
-                new[] { "1.0.0" },
-                canGenerateScript: true,
-                scriptContent: "script-content");
-            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
-            var context = CreateScriptGeneratorContext(new TestSourceRepo());
-
-            // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
-            Assert.Equal(
-                "The supplied language version '2.0.0' is not supported. Supported versions are: 1.0.0",
-                exception.Message);
-        }
-
-        [Fact]
-        public void TryGenerateScript_Throws_IsSuppliedLanguageIsUnsupported()
-        {
-            // Arrange
-            var detector = new TestLanguageDetector("test", "1.0.0");
-            var languageGenerator = new TestLanguageScriptGenerator(
-                "test",
-                new[] { "1.0.0" },
-                canGenerateScript: true,
-                scriptContent: "script-content");
-            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
-            var context = CreateScriptGeneratorContext(new TestSourceRepo(), languageName: "unsupported");
-
-            // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
-            Assert.Equal(
-                "The supplied language 'unsupported' is not supported. Supported languages are: test",
-                exception.Message);
-        }
-
-        [Fact]
-        public void TryGenerateScript_Throws_IsSuppliedLanguageVersionIsUnsupported()
-        {
-            // Arrange
-            var detector = new TestLanguageDetector("test", "1.0.0");
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
             var languageGenerator = new TestLanguageScriptGenerator(
                 "test",
                 new[] { "1.0.0" },
@@ -131,35 +34,210 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 scriptContent: "script-content");
             var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
             var context = CreateScriptGeneratorContext(
-                new TestSourceRepo(),
-                languageName: "test",
-                languageVersion: "2.0.0");
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
+
+            // Act
+            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+
+            // Assert
+            Assert.True(canGenerateScript);
+            Assert.Equal("script-content", generatedScript);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_ReturnsTrue_IfLanguageIsProvidedButNoVersion_AndCanDetectVersion()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var languageGenerator = new TestLanguageScriptGenerator(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content");
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext();
+            context.Language = "test";
+            context.LanguageVersion = null; // version not provided by user
+
+            // Act
+            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+
+            // Assert
+            Assert.Equal("1.0.0", context.LanguageVersion);
+            Assert.Equal("script-content", generatedScript);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_Throws_IfNoLanguageIsProvided_AndCannotDetectLanguage()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: null,
+                detectedLanguageVersion: null);
+            var languageGenerator = new TestLanguageScriptGenerator("test", new[] { "1.0.0" });
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => generator.TryGenerateBashScript(context, out var generatedScript));
+            Assert.Equal("Could not detect the language and/or version from source directory.", exception.Message);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_Throws_IfLanguageIsProvidedButNoVersion_AndCannotDetectVersion()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: null);
+            var languageGenerator = new TestLanguageScriptGenerator("test", new[] { "1.0.0" });
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: null);
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => generator.TryGenerateBashScript(context, out var generatedScript));
+            Assert.Equal("Could not detect the language and/or version from source directory.", exception.Message);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_Throws_IfCanDetectLanguage_AndLanguageIsUnsupported()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "unsupported", // unsupported language
+                detectedLanguageVersion: "1.0.0");
+            var languageGenerator = new TestLanguageScriptGenerator(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content");
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
+
+            // Act & Assert
+            var exception = Assert.Throws<UnsupportedLanguageException>(
+                () => generator.TryGenerateBashScript(context, out var generatedScript));
+            Assert.Equal(
+                "'unsupported' language is not supported. Supported languages are: test",
+                exception.Message);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_Throws_IfCanDetectLanguageVersion_AndLanguageVersionIsUnsupported()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "2.0.0"); // Unsupported version
+            var languageGenerator = new TestLanguageScriptGenerator(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content");
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(
                 () => generator.TryGenerateBashScript(context, out var generatedScript));
             Assert.Equal(
-                "The supplied language version '2.0.0' is not supported. Supported versions are: 1.0.0",
+                "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
                 exception.Message);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_Throws_IfSuppliedLanguageIsUnsupported()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var languageGenerator = new TestLanguageScriptGenerator(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content");
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "unsupported",
+                suppliedLanguageVersion: "1.0.0");
+
+            // Act & Assert
+            var exception = Assert.Throws<UnsupportedLanguageException>(
+                () => generator.TryGenerateBashScript(context, out var generatedScript));
+            Assert.Equal(
+                "'unsupported' language is not supported. Supported languages are: test",
+                exception.Message);
+            Assert.False(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_Throws_IfSuppliedLanguageVersionIsUnsupported()
+        {
+            // Arrange
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var languageGenerator = new TestLanguageScriptGenerator(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content");
+            var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: "2.0.0"); //unsupported version
+
+            // Act & Assert
+            var exception = Assert.Throws<UnsupportedVersionException>(
+                () => generator.TryGenerateBashScript(context, out var generatedScript));
+            Assert.Equal(
+                "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
+                exception.Message);
+            Assert.False(detector.DetectInvoked);
         }
 
         [Fact]
         public void TryGenerateScript_ReturnsFalse_IfGeneratorTryGenerateScript_IsFalse()
         {
             // Arrange
-            var detector = new TestLanguageDetector("test", "1.0.0");
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
             var languageGenerator = new TestLanguageScriptGenerator(
                 "test",
                 new[] { "1.0.0" },
                 canGenerateScript: false,
                 scriptContent: null);
             var generator = CreateDefaultScriptGenerator(detector, languageGenerator);
-            var context = CreateScriptGeneratorContext(new TestSourceRepo());
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
 
             // Act
             var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
 
             // Assert  
+            Assert.True(detector.DetectInvoked);
             Assert.False(canGenerateScript);
             Assert.Null(generatedScript);
         }
@@ -168,7 +246,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void UsesMaxSatisfyingVersion_WhenOnlyMajorVersion_OfLanguageIsSpecified()
         {
             // Arrange
-            var detector = new TestLanguageDetector("test", "1.0.0");
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
             var languageGenerator1 = new TestLanguageScriptGenerator(
                 "test",
                 new[] { "1.1.0" },
@@ -183,9 +263,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new[] { detector },
                 new[] { languageGenerator1, languageGenerator2 });
             var context = CreateScriptGeneratorContext(
-                new TestSourceRepo(),
-                languageName: "test",
-                languageVersion: "1");
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: "1");
 
             // Act
             var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
@@ -193,13 +272,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.True(canGenerateScript);
             Assert.Equal("1.5.5-content", generatedScript);
+            Assert.False(detector.DetectInvoked);
         }
 
         [Fact]
         public void UsesMaxSatisfyingVersion_WhenOnlyMajorAndMinorVersion_OfLanguageIsSpecified()
         {
             // Arrange
-            var detector = new TestLanguageDetector("test", "1.0.0");
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
             var languageGenerator1 = new TestLanguageScriptGenerator(
                 "test",
                 new[] { "1.1.0" },
@@ -214,9 +296,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new[] { detector },
                 new[] { languageGenerator1, languageGenerator2 });
             var context = CreateScriptGeneratorContext(
-                new TestSourceRepo(),
-                languageName: "test",
-                languageVersion: "1.1");
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: "1.1");
 
             // Act
             var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
@@ -224,13 +305,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.True(canGenerateScript);
             Assert.Equal("1.1.5-content", generatedScript);
+            Assert.False(detector.DetectInvoked);
         }
 
         [Fact]
         public void GeneratesScript_UsingTheFirstLanguageGenerator_WhichCanGenerateScript()
         {
             // Arrange
-            var detector = new TestLanguageDetector();
+            var detector = new TestLanguageDetector(
+                detectedLanguageName: null,
+                detectedLanguageVersion: null);
             var languageGenerator1 = new TestLanguageScriptGenerator(
                 "test",
                 new[] { "1.0.0" },
@@ -245,9 +329,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new[] { detector },
                 new[] { languageGenerator1, languageGenerator2 });
             var context = CreateScriptGeneratorContext(
-                new TestSourceRepo(),
-                languageName: "test",
-                languageVersion: "1.0.0");
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: "1.0.0");
 
             // Act
             var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
@@ -255,6 +338,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.True(canGenerateScript);
             Assert.Equal("script-content", generatedScript);
+            Assert.False(detector.DetectInvoked);
         }
 
         private string CreateNewDir()
@@ -283,15 +367,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(
-            ISourceRepo sourceRepo,
-            string languageName = null,
-            string languageVersion = null)
+            string suppliedLanguageName = null,
+            string suppliedLanguageVersion = null)
         {
             return new ScriptGeneratorContext
             {
-                Language = languageName,
-                LanguageVersion = languageVersion,
-                SourceRepo = sourceRepo
+                Language = suppliedLanguageName,
+                LanguageVersion = suppliedLanguageVersion,
+                SourceRepo = new TestSourceRepo(),
             };
         }
 
@@ -300,19 +383,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             private readonly string _languageName;
             private readonly string _languageVersion;
 
-            public TestLanguageDetector()
-                : this(languageName: null, languageVersion: null)
+            public TestLanguageDetector(string detectedLanguageName, string detectedLanguageVersion)
             {
+                _languageName = detectedLanguageName;
+                _languageVersion = detectedLanguageVersion;
             }
 
-            public TestLanguageDetector(string languageName, string languageVersion)
-            {
-                _languageName = languageName;
-                _languageVersion = languageVersion;
-            }
+            public bool DetectInvoked { get; private set; }
 
             public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
             {
+                DetectInvoked = true;
+
                 if (!string.IsNullOrEmpty(_languageName))
                 {
                     return new LanguageDetectorResult

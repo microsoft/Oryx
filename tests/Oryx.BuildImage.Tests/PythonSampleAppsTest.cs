@@ -366,7 +366,7 @@ namespace Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    string errorMessage = "The supplied language version '4.0.1' is not supported. Supported versions are: 2.7.15, 3.5.6, 3.6.6, 3.7.0";
+                    string errorMessage = "The 'python' version '4.0.1' is not supported. Supported versions are: 2.7.15, 3.5.6, 3.6.6, 3.7.0";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.Error);
                 },

@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (!languageScriptGenerators.Any())
             {
                 var languages = _allScriptGenerators.Select(sg => sg.SupportedLanguageName);
-                var message = $"The supplied language '{context.Language}' is not supported. " +
+                var message = $"'{context.Language}' language is not supported. " +
                     $"Supported languages are: {string.Join(", ", languages)}";
 
                 _logger.LogError(message);
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 allLanguageScriptGeneratorsVersions);
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var message = $"The supplied language version '{context.LanguageVersion}' is not supported. " +
+                var message = $"The '{context.Language}' version '{context.LanguageVersion}' is not supported. " +
                     $"Supported versions are: {string.Join(", ", allLanguageScriptGeneratorsVersions)}";
 
                 _logger.LogError(message);
@@ -120,18 +120,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var languageName = context.Language;
             var languageVersion = context.LanguageVersion;
 
-            // If 'language' wasn't explicitly provided, detect the source directory
-            if (string.IsNullOrEmpty(languageName))
+            // If 'language' or 'language version' wasn't explicitly provided, detect the source directory
+            if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
             {
                 _logger.LogDebug(
-                    "Language name was not provided. Detecting the source directory for language name and version ...");
+                    "Detecting the source directory for language and/or version ...");
 
                 (languageName, languageVersion) = DetectLanguageAndVersion(context.SourceRepo);
 
-                if (string.IsNullOrEmpty(languageName))
+                if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
                 {
                     throw new InvalidOperationException(
-                        "Could not detect the language from source directory.");
+                        "Could not detect the language and/or version from source directory.");
                 }
 
                 _logger.LogDebug(
