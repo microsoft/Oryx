@@ -226,7 +226,18 @@ RUN /python-build.sh
 
 # Install Python
 FROM main AS python
-COPY --from=openssl1.1.1-build /usr/local/lib /usr/local/lib
+COPY --from=openssl1.1.1-build /usr/local/lib/libssl.so.1.1 /usr/local/lib/
+COPY --from=openssl1.1.1-build /usr/local/lib/libcrypto.so.1.1 /usr/local/lib/
+COPY --from=openssl1.1.1-build /usr/local/lib/libssl.a /usr/local/lib/
+COPY --from=openssl1.1.1-build /usr/local/lib/engines-1.1/ /usr/local/lib/engines-1.1/
+
+# rbenv (for Ruby) requires libssl 1.0 for Ruby versions 2.4 and lower.
+# We then need both libssl 1.0 and libssl 1.1, which Python 3 requires, side by side. To achieve that
+# we suffix the library and package files with their version.
+COPY --from=openssl1.1.1-build /usr/local/lib/pkgconfig/libcrypto.pc /usr/local/lib/pkgconfig/libcrypto.1.1.pc
+COPY --from=openssl1.1.1-build /usr/local/lib/pkgconfig/libssl.pc /usr/local/lib/pkgconfig/libssl.1.1.pc
+COPY --from=openssl1.1.1-build /usr/local/lib/pkgconfig/openssl.pc /usr/local/lib/pkgconfig/openssl.1.1.pc
+
 RUN ldconfig
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -283,4 +294,5 @@ COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
+
 ENTRYPOINT [ "benv" ]
