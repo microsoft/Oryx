@@ -1,6 +1,7 @@
 FROM buildpack-deps:jessie-curl AS main
 
 # Configure locale (required for Python)
+# NOTE: Do NOT move it from here as it could have global implications
 ENV LANG C.UTF-8
 
 # Install basic build tools
@@ -12,6 +13,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core
+FROM main AS dotnet-install
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -27,33 +29,11 @@ RUN apt-get update \
         libuuid1 \
         zlib1g \
  && rm -rf /var/lib/apt/lists/*
+
+# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 RUN set -ex \
  && DOTNET_DIR=/opt/dotnet \
  && mkdir -p $DOTNET_DIR \
- # Install .NET Core Runtime 1.0.12
- && DOTNET_VER=1.0.12 \
- && DOTNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VER/dotnet-debian-x64.$DOTNET_VER.tar.gz \
- && curl -SL $DOTNET_URL | tar -xzf - -C $DOTNET_DIR \
- # Install .NET Core Runtime 1.1.9
- && DOTNET_VER=1.1.9 \
- && DOTNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VER/dotnet-debian-x64.$DOTNET_VER.tar.gz \
- && curl -SL $DOTNET_URL | tar -xzf - -C $DOTNET_DIR \
- # Install .NET Core Runtime 2.0.9
- && DOTNET_VER=2.0.9 \
- && DOTNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VER/dotnet-runtime-$DOTNET_VER-linux-x64.tar.gz \
- && DOTNET_SHA=2b49b24ef712fbfc056e0fda95ff18037b4ec938ca8bb41f4c336b6a50870e922f5093684ac92c4bb8e1155b03c36d132d7f90817793f31c9ade5267fff6629a \
- && curl -SL $DOTNET_URL --output dotnet.tar.gz \
- && echo "$DOTNET_SHA dotnet.tar.gz" | sha512sum -c - \
- && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
- && rm dotnet.tar.gz \
- # Install ASP .NET Core Runtime 2.1.2 (includes .NET Core Runtime 2.1.2)
- && ASPNET_VER=2.1.2 \
- && ASPNET_URL=https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNET_VER/aspnetcore-runtime-$ASPNET_VER-linux-x64.tar.gz \
- && ASPNET_SHA=294a6c256ce7954c05c3dee85d4114e320c7b94b2ae2e854a268b2bb4383a967e1063ee0df0da0f09511b3dc9c215aa735899f5c6db4f11bd58da3cb9cc8b6da \
- && curl -SL $ASPNET_URL --output aspnet.tar.gz \
- && echo "$ASPNET_SHA aspnet.tar.gz" | sha512sum -c - \
- && tar -xzf aspnet.tar.gz -C $DOTNET_DIR \
- && rm aspnet.tar.gz \
  # Install .NET Core SDK 2.1.400
  && DOTNET_SDK_VER=2.1.400 \
  && DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz \
@@ -71,13 +51,52 @@ RUN set -ex \
  && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
  && rm dotnet.tar.gz \
  && ln -s $DOTNET_DIR/dotnet /usr/bin/dotnet
+
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
-    NUGET_XMLDOC_MODE=skip \
-    ASPNETCORE_URLS=http://+:80
-RUN dotnet help
+	NUGET_XMLDOC_MODE=skip \
+    ASPNETCORE_URLS=http://+:80 \
+	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	NUGET_PACKAGES=/var/nuget
+
+# Trigger the population of the local package cache
+# We install the 1.x web templates just so we can create and restore 1.0 and 1.1 MVC apps here
+# See https://github.com/aspnet/Tooling/blob/master/missing-template.md
+# Note that after populating the cache we need to chmod 777 every directory underneath
+# so the Kudu user can access them; this can be removed if we run Kudu as root later.
+RUN mkdir /var/nuget \
+ && chmod a+rw /var/nuget \
+ && dotnet new -i "Microsoft.DotNet.Web.ProjectTemplates.1.x::1.0.0-*" \
+ && mkdir warmup \
+ && cd warmup \
+ && dotnet new mvc -f netcoreapp1.1 \
+ && dotnet restore \
+ && cd .. \
+ && rm -rf warmup \
+ && mkdir warmup \
+ && cd warmup \
+ && dotnet new mvc -f netcoreapp1.0 \
+ && dotnet restore \
+ && cd .. \
+ && rm -rf warmup \
+ && mkdir warmup \
+ && cd warmup \
+ && echo '{"sdk":{"version":"2.1.400"}}' > global.json \
+ && dotnet new mvc \
+ && dotnet restore \
+ && cd .. \
+ && rm -rf warmup \
+ && mkdir warmup \
+ && cd warmup \
+ && dotnet new mvc \
+ && dotnet restore \
+ && cd .. \
+ && rm -rf warmup \
+ && rm -rf /tmp/NuGetScratch \
+ && find /var/nuget -type d -exec chmod 777 {} \;
 
 # Install Node.js, NPM, Yarn
+FROM main AS node-install
 RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
@@ -122,6 +141,7 @@ RUN set -ex \
  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
  && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+
 RUN set -ex \
  && ln -s 4.4.7 /opt/nodejs/4.4 \
  && ln -s 4.5.0 /opt/nodejs/4.5 \
@@ -163,9 +183,9 @@ RUN set -ex \
  && ln -s 1.9.4 /opt/yarn/1.9 \
  && ln -s 1.9 /opt/yarn/1
 RUN set -ex \
- && cd /usr/local/bin \
- && cp -s /opt/nodejs/lts/bin/* . \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg .
+ && mkdir -p /links \
+ && cp -s /opt/nodejs/lts/bin/* /links \
+ && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
 # Install Python build prerequisites
 FROM buildpack-deps:jessie AS python-build-prereqs
@@ -224,7 +244,6 @@ COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
-# Install Python
 FROM main AS python
 COPY --from=openssl1.1.1-build /usr/local/lib/libssl.so.1.1 /usr/local/lib/
 COPY --from=openssl1.1.1-build /usr/local/lib/libcrypto.so.1.1 /usr/local/lib/
@@ -270,7 +289,7 @@ RUN set -ex \
  && cp -sn /opt/python/2/bin/* . \
  && cp -sn /opt/python/3/bin/* .
 
-FROM main as buildscriptbuilder
+FROM dotnet-install AS buildscriptbuilder
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
@@ -288,8 +307,23 @@ FROM python AS final
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 WORKDIR /
+
+# Copy .NET Core related content
+ENV NUGET_XMLDOC_MODE=skip \
+	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	NUGET_PACKAGES=/var/nuget
+COPY --from=dotnet-install /opt/dotnet /opt/dotnet
+COPY --from=dotnet-install /var/nuget /var/nuget
+RUN ln -s /opt/dotnet/dotnet /usr/local/bin/dotnet
+
+# Copy NodeJs, NPM and Yarn related content
+COPY --from=node-install /opt /opt
+COPY --from=node-install /links/ /usr/local/bin
+
+# Build script generator content
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
+
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}

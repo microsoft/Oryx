@@ -27,12 +27,15 @@ function BuildAndTagStage(){
 # to be pushed. This is just a workaround to prevent having dangling images so that
 # when a cleanup operation is being done on a build agent, a valuable dangling image
 # is not removed.
+BuildAndTagStage node-install
+BuildAndTagStage dotnet-install
 BuildAndTagStage python-build-prereqs
 BuildAndTagStage python2.7.15-build
 BuildAndTagStage python3.5.6-build
 BuildAndTagStage python3.6.6-build
 BuildAndTagStage openssl1.1.1-build
 BuildAndTagStage python3.7.0-build
+BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 
 tags="$DOCKER_BUILD_IMAGES_REPO:latest"
