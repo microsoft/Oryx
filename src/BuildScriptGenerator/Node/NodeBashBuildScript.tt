@@ -1,0 +1,66 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+#!/bin/bash
+set -e
+
+SOURCE_DIR=$1
+DESTINATION_DIR=$2
+
+if [ ! -d ""$SOURCE_DIR"" ]; then
+    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
+    exit 1
+fi
+
+if [ -z ""$DESTINATION_DIR"" ]
+then
+    DESTINATION_DIR=""$SOURCE_DIR""
+fi
+
+# Get full file paths to source and destination directories
+cd $SOURCE_DIR
+SOURCE_DIR=$(pwd -P)
+
+if [ -d ""$DESTINATION_DIR"" ]
+then
+    cd $DESTINATION_DIR
+    DESTINATION_DIR=$(pwd -P)
+fi
+
+echo
+echo ""Source directory     : $SOURCE_DIR""
+echo ""Destination directory: $DESTINATION_DIR""
+echo
+
+source /usr/local/bin/benv <#= BenvArgs #>
+
+echo Installing npm packages ...
+cd ""$SOURCE_DIR""
+echo
+echo ""Running '<#= NpmInstallCommand  #>' ...""
+echo
+<#= NpmInstallCommand #>
+
+if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
+then
+    echo Done.
+    exit 0
+fi
+
+if [ -d ""$DESTINATION_DIR"" ]
+then
+    echo
+    echo Destination directory already exists. Deleting it ...
+    rm -rf ""$DESTINATION_DIR""
+fi
+
+appTempDir=`mktemp -d`
+cp -rf ""$SOURCE_DIR""/* ""$appTempDir""
+mkdir -p ""$DESTINATION_DIR""
+cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
+rm -rf ""$appTempDir""
+
+echo
+echo Done.

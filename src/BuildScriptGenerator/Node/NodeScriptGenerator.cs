@@ -14,72 +14,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private const string NodeJsName = "nodejs";
         private const string PackageJsonFileName = "package.json";
 
-        // NOTE: C# multiline strings are handled verbatim, so if you place a tab to the text here,
-        // a tab would be present in the generated output too.
-        private const string ScriptTemplate =
-            @"#!/bin/bash
-set -e
-
-SOURCE_DIR=$1
-DESTINATION_DIR=$2
-
-if [ ! -d ""$SOURCE_DIR"" ]; then
-    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
-    exit 1
-fi
-
-if [ -z ""$DESTINATION_DIR"" ]
-then
-    DESTINATION_DIR=""$SOURCE_DIR""
-fi
-
-# Get full file paths to source and destination directories
-cd $SOURCE_DIR
-SOURCE_DIR=$(pwd -P)
-
-if [ -d ""$DESTINATION_DIR"" ]
-then
-    cd $DESTINATION_DIR
-    DESTINATION_DIR=$(pwd -P)
-fi
-
-echo
-echo ""Source directory     : $SOURCE_DIR""
-echo ""Destination directory: $DESTINATION_DIR""
-echo
-
-source /usr/local/bin/benv {0}
-
-echo Installing npm packages ...
-cd ""$SOURCE_DIR""
-echo
-echo ""Running '{1}' ...""
-echo
-{1}
-
-if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
-then
-    echo Done.
-    exit 0
-fi
-
-if [ -d ""$DESTINATION_DIR"" ]
-then
-    echo
-    echo Destination directory already exists. Deleting it ...
-    rm -rf ""$DESTINATION_DIR""
-fi
-
-appTempDir=`mktemp -d`
-cp -rf ""$SOURCE_DIR""/* ""$appTempDir""
-mkdir -p ""$DESTINATION_DIR""
-cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
-rm -rf ""$appTempDir""
-
-echo
-echo Done.
-";
-
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodeScriptGenerator> _logger;
@@ -112,7 +46,7 @@ echo Done.
 
             var installCommand = "eval npm install --production";
 
-            script = string.Format(ScriptTemplate, benvArgs, installCommand);
+            script = new NodeBashBuildScript(installCommand, benvArgs).TransformText();
 
             return true;
         }
