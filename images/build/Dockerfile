@@ -111,8 +111,10 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 8.8.1 \
  && ~/n/bin/n -d 8.9.4 \
  && ~/n/bin/n -d 8.11.2 \
+ && ~/n/bin/n -d 8.12.0 \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
+ && ~/n/bin/n -d 10.13.0 \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -ex \
@@ -157,14 +159,15 @@ RUN set -ex \
  && ln -s 8.2.1 /opt/nodejs/8.2 \
  && ln -s 8.8.1 /opt/nodejs/8.8 \
  && ln -s 8.9.4 /opt/nodejs/8.9 \
- && ln -s 8.11.2 /opt/nodejs/lts \
  && ln -s 8.11.2 /opt/nodejs/8.11 \
- && ln -s 8.11 /opt/nodejs/8 \
+ && ln -s 8.12.0 /opt/nodejs/8.12 \
+ && ln -s 8.12 /opt/nodejs/8 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
- && ln -s 10.1.0 /opt/nodejs/latest \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
- && ln -s 10.1 /opt/nodejs/10
+ && ln -s 10.13.0 /opt/nodejs/lts \
+ && ln -s 10.13.0 /opt/nodejs/10.13 \
+ && ln -s 10.13 /opt/nodejs/10
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -174,9 +177,11 @@ RUN set -ex \
  && ln -s 5.0.3 /opt/npm/5.0 \
  && ln -s 5.3.0 /opt/npm/5.3 \
  && ln -s 5.4.2 /opt/npm/5.4 \
- && ln -s 5.6.0 /opt/npm/latest \
  && ln -s 5.6.0 /opt/npm/5.6 \
- && ln -s 5.6 /opt/npm/5
+ && ln -s 5.6 /opt/npm/5 \
+ && ln -s 6.4.1 /opt/npm/latest \
+ && ln -s 6.4.1 /opt/npm/6.4 \
+ && ln -s 6.4 /opt/npm/6
 RUN set -ex \
  && ln -s 1.9.4 /opt/yarn/stable \
  && ln -s 1.9.4 /opt/yarn/latest \

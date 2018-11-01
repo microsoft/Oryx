@@ -42,6 +42,31 @@ namespace Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void Python2MatchesImageName()
+        {
+            string pythonVersion = "2.7";
+            string expectedOutput = "Python 2.7.15";
+
+            // Arrange & Act
+            var result = _dockerCli.Run(
+                "oryxdevms/python-" + pythonVersion + ":latest",
+                commandToExecuteOnRun: "python",
+                commandArguments: new[] { "--version" });
+
+            // Assert
+            var actualOutput = result.Error.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    //bugs.python.org >> issue18338 weird but true, earlier than python 3.4 
+                    // sends python --version output to STDERR
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

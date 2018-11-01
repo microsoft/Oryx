@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var pythonVersion = context.LanguageVersion;
             if (!string.IsNullOrEmpty(pythonVersion))
             {
-                switch (pythonVersion.Substring(0, 1))
+                switch (pythonVersion.Split('.')[0])
                 {
                     case "2":
                         virtualEnvModule = "virtualenv";
