@@ -8,6 +8,7 @@ trigger:
   paths:
     include:
     - images/runtime
+    - build/
 
 steps:
 - script: |
