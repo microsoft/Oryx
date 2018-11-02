@@ -24,7 +24,7 @@ declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-imag
 
 declare -r DOCKER_BUILD_IMAGES_REPO="oryxdevms/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO="oryxdevms"
-declare -r ACR_BUILD_IMAGES_REPO="oryxdevmcr.azurecr.io/internal/oryx/build-image"
-declare -r ACR_RUNTIME_IMAGES_REPO="oryxdevmcr.azurecr.io/internal/oryx/runtime"
+declare -r ACR_BUILD_IMAGES_REPO="oryxdevmcr.azurecr.io/public/oryx/build"
+declare -r ACR_RUNTIME_IMAGES_REPO="oryxdevmcr.azurecr.io/public/oryx"
 
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"
