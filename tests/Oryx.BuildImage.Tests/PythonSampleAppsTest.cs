@@ -373,13 +373,11 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData("2.7.15")]
-        [InlineData("3.6.6")]
-        [InlineData("3.7.0")]
-        public void CanBuild_Python2and3Apps_ScriptOnlyOption(string langVersion)
+        [Fact]
+        public void CanBuild_Python2_WithScriptOnlyOption()
         {
             // Arrange
+            var langVersion = "2.7.15";
             var volume = DockerVolume.Create(_hostSamplesDir);
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var generatedScript = "/build.sh";
@@ -390,7 +388,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python2.7/site-packages/jinja2")
                 .ToString();
 
             // Act
