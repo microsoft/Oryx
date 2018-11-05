@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+    #line 1 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class PythonBashBuildScript : PythonBashBuildScriptBase
     {
@@ -34,63 +34,63 @@ set -e
 SOURCE_DIR=$1
 DESTINATION_DIR=$2
 
-if [ ! -d """"$SOURCE_DIR"""" ]; then
-    echo """"Source directory '$SOURCE_DIR' does not exist."""" 1>&2
+if [ ! -d ""$SOURCE_DIR"" ]; then
+    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
     exit 1
 fi
 
-if [ -z """"$DESTINATION_DIR"""" ]
+if [ -z ""$DESTINATION_DIR"" ]
 then
-    DESTINATION_DIR=""""$SOURCE_DIR""""
+    DESTINATION_DIR=""$SOURCE_DIR""
 fi
 
 # Get full file paths to source and destination directories
 cd $SOURCE_DIR
 SOURCE_DIR=$(pwd -P)
 
-if [ -d """"$DESTINATION_DIR"""" ]
+if [ -d ""$DESTINATION_DIR"" ]
 then
     cd $DESTINATION_DIR
     DESTINATION_DIR=$(pwd -P)
 fi
 
-echo """"Source directory     : $SOURCE_DIR""""
-echo """"Destination directory: $DESTINATION_DIR""""
+echo ""Source directory     : $SOURCE_DIR""
+echo ""Destination directory: $DESTINATION_DIR""
 
 source /usr/local/bin/benv python=");
             
-            #line 35 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 35 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PythonVersion));
             
             #line default
             #line hidden
             this.Write("\r\n\r\nVIRTUALENVIRONMENTNAME=");
             
-            #line 37 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 37 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 38 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 38 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 39 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 39 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
             #line hidden
             this.Write(@"
 
-echo """"Python Virtual Environment: $VIRTUALENVIRONMENTNAME""""
-echo """"Python Version: $python""""
+echo ""Python Virtual Environment: $VIRTUALENVIRONMENTNAME""
+echo ""Python Version: $python""
 
-cd """"$SOURCE_DIR""""
+cd ""$SOURCE_DIR""
 
 echo Creating virtual environment ...
 $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
@@ -103,24 +103,36 @@ pip install -r requirements.txt
 echo
 echo pip install finished.
 
-if [ """"$SOURCE_DIR"""" == """"$DESTINATION_DIR"""" ]
+if [ -e ""$SOURCE_DIR/manage.py"" ]
 then
+	if grep -iq ""Django=="" ""$SOURCE_DIR/requirements.txt""
+	then
+		echo
+		echo Content in source directory is a Django app
+		echo Running 'collectstatic' ...
+		python manage.py collectstatic --noinput --clear
+	fi
+fi
+
+if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
+then
+	echo
     echo Done.
     exit 0
 fi
 
-if [ -d """"$DESTINATION_DIR"""" ]
+if [ -d ""$DESTINATION_DIR"" ]
 then
     echo
     echo Destination directory already exists. Deleting it ...
-    rm -rf """"$DESTINATION_DIR""""
+    rm -rf ""$DESTINATION_DIR""
 fi
 
 appTempDir=`mktemp -d`
-cp -rf """"$SOURCE_DIR""""/* """"$appTempDir""""
-mkdir -p """"$DESTINATION_DIR""""
-cp -rf """"$appTempDir""""/* """"$DESTINATION_DIR""""
-rm -rf """"$appTempDir""""
+cp -rf ""$SOURCE_DIR""/* ""$appTempDir""
+mkdir -p ""$DESTINATION_DIR""
+cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
+rm -rf ""$appTempDir""
 
 echo
 echo Done.");

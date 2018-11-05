@@ -525,6 +525,44 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void GeneratesScript_AndBuilds_DjangoApp()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/django-app";
+            var appOutputDir = "/django-app-output";
+            var script = new BashScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.7.0")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/django")
+                // These css files should be available since 'collectstatic' is run in the script
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.bootstrap.min.css")
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.bootstrap.min.css")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try
