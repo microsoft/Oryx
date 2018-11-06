@@ -33,11 +33,11 @@ function BuildAndTagStage(){
 BuildAndTagStage node-install
 BuildAndTagStage dotnet-install
 BuildAndTagStage python-build-prereqs
-BuildAndTagStage python2.7.15-build
-BuildAndTagStage python3.5.6-build
-BuildAndTagStage python3.6.6-build
+BuildAndTagStage python2.7-build
+BuildAndTagStage python3.5-build
+BuildAndTagStage python3.6-build
 BuildAndTagStage openssl1.1.1-build
-BuildAndTagStage python3.7.0-build
+BuildAndTagStage python3.7-build
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 

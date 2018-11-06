@@ -199,8 +199,8 @@ RUN apt-get update \
       tk-dev \
       uuid-dev
 
-# Build Python 2.7.15
-FROM python-build-prereqs AS python2.7.15-build
+# Build Python 2.7
+FROM python-build-prereqs AS python2.7-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=2.7.15
 ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
@@ -209,8 +209,8 @@ COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
-# Build Python 3.5.6
-FROM python-build-prereqs AS python3.5.6-build
+# Build Python 3.5
+FROM python-build-prereqs AS python3.5-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.5.6
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
@@ -219,30 +219,30 @@ COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
-# Build Python 3.6.6
-FROM python-build-prereqs AS python3.6.6-build
+# Build Python 3.6
+FROM python-build-prereqs AS python3.6-build
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=3.6.6
+ENV PYTHON_VERSION=3.6.7
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.1
 COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
-# Build OpenSSL 1.1.1 (needed for Python 3.7.0)
+# Build OpenSSL 1.1.1 (needed for Python 3.7)
 FROM buildpack-deps:jessie AS openssl1.1.1-build
 WORKDIR /usr/src/openssl
 COPY images/build/openssl-build.sh /
 RUN chmod +x /openssl-build.sh
 RUN /openssl-build.sh
 
-# Build Python 3.7.0
-FROM python-build-prereqs AS python3.7.0-build
+# Build Python 3.7
+FROM python-build-prereqs AS python3.7-build
 COPY --from=openssl1.1.1-build /usr/local/include /usr/local/include
 COPY --from=openssl1.1.1-build /usr/local/lib /usr/local/lib
 RUN ldconfig
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=3.7.0
+ENV PYTHON_VERSION=3.7.1
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.1
 COPY images/build/python-build.sh /
@@ -271,23 +271,23 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY --from=python2.7.15-build /opt /opt
-COPY --from=python3.5.6-build /opt /opt
-COPY --from=python3.6.6-build /opt /opt
-COPY --from=python3.7.0-build /opt /opt
+COPY --from=python2.7-build /opt /opt
+COPY --from=python3.5-build /opt /opt
+COPY --from=python3.6-build /opt /opt
+COPY --from=python3.7-build /opt /opt
 RUN set -ex \
  && echo /opt/python/2.7.15/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.5.6/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.6.6/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.7.0/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/3.6.7/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/3.7.1/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN set -ex \
  && ln -s 2.7.15 /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s 3.5.6 /opt/python/3.5 \
- && ln -s 3.6.6 /opt/python/3.6 \
- && ln -s 3.7.0 /opt/python/latest \
- && ln -s 3.7.0 /opt/python/3.7 \
+ && ln -s 3.6.7 /opt/python/3.6 \
+ && ln -s 3.7.1 /opt/python/latest \
+ && ln -s 3.7.1 /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
  && cd /usr/local/bin \

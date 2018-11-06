@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             optionsSetup.Configure(options);
 
             // Assert
-            Assert.Equal("3.7.0", options.PythonDefaultVersion);
+            Assert.Equal(Settings.Python37Version, options.PythonDefaultVersion);
         }
 
         [Fact]

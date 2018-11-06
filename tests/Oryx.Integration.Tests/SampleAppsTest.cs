@@ -92,7 +92,7 @@ namespace Oryx.Integration.Tests
 
         [Theory]
         [InlineData("webfrontend", "oryxdevms/node-8.1:latest", "nodejs", "8.1")]
-//        [InlineData("flask-app", "oryxdevms/python-3.7.0:latest", "python", "3.7")]
+//        [InlineData("flask-app", "oryxdevms/python-3.7:latest", "python", "3.7")]
         [InlineData("linxnodeexpress", "oryxdevms/node-4.4:latest", "nodejs", "4.4.7")]
         public void CanBuildAndRunSampleApp(string appName, string runtimeImage, string language, string languageVersion)
         {

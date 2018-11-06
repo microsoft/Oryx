@@ -11,6 +11,11 @@ namespace Oryx.BuildImage.Tests
 {
     public class VersionInformationTest
     {
+        private const string Python27VersionInfo = "Python " + Settings.Python27Version;
+        private const string Python35VersionInfo = "Python " + Settings.Python35Version;
+        private const string Python36VersionInfo = "Python " + Settings.Python36Version;
+        private const string Python37VersionInfo = "Python " + Settings.Python37Version;
+
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
 
@@ -28,7 +33,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 commandToExecuteOnRun: "dotnet",
                 commandArguments: new[] { "--version" });
 
@@ -51,7 +56,7 @@ namespace Oryx.BuildImage.Tests
 
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
 
@@ -70,11 +75,11 @@ namespace Oryx.BuildImage.Tests
         public void PythonAlias_UsesPython2_ByDefault_WhenNoExplicitVersionIsProvided()
         {
             // Arrange
-            var expectedOutput = "Python 2.7.15";
+            var expectedOutput = Python27VersionInfo;
 
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 commandToExecuteOnRun: "python",
                 commandArguments: new[] { "--version" });
 
@@ -93,11 +98,11 @@ namespace Oryx.BuildImage.Tests
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
             // Arrange
-            var expectedOutput = "Python 3.7.0";
+            var expectedOutput = $"Python {Settings.Python37Version}";
 
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 commandToExecuteOnRun: "python3",
                 commandArguments: new[] { "--version" });
 
@@ -139,7 +144,7 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 new EnvironmentVariable("node", versionSentToDockerRun),
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
@@ -156,16 +161,16 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("2", "Python 2.7.15")]
-        [InlineData("2.7", "Python 2.7.15")]
-        [InlineData("2.7.15", "Python 2.7.15")]
+        [InlineData("2", Python27VersionInfo)]
+        [InlineData("2.7", Python27VersionInfo)]
+        [InlineData(Settings.Python27Version, Python27VersionInfo)]
         public void PythonAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python",
                 commandArguments: new[] { "--version" });
@@ -182,16 +187,16 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("2", "Python 2.7.15")]
-        [InlineData("2.7", "Python 2.7.15")]
-        [InlineData("2.7.15", "Python 2.7.15")]
+        [InlineData("2", Python27VersionInfo)]
+        [InlineData("2.7", Python27VersionInfo)]
+        [InlineData(Settings.Python27Version, Python27VersionInfo)]
         public void Python2Alias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python2",
                 commandArguments: new[] { "--version" });
@@ -208,21 +213,21 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest", "Python 3.7.0")]
-        [InlineData("3", "Python 3.7.0")]
-        [InlineData("3.5", "Python 3.5.6")]
-        [InlineData("3.5.6", "Python 3.5.6")]
-        [InlineData("3.6", "Python 3.6.6")]
-        [InlineData("3.6.6", "Python 3.6.6")]
-        [InlineData("3.7", "Python 3.7.0")]
-        [InlineData("3.7.0", "Python 3.7.0")]
+        [InlineData("latest", Python37VersionInfo)]
+        [InlineData("3", Python37VersionInfo)]
+        [InlineData("3.5", Python35VersionInfo)]
+        [InlineData(Settings.Python35Version, Python35VersionInfo)]
+        [InlineData("3.6", Python36VersionInfo)]
+        [InlineData(Settings.Python36Version, Python36VersionInfo)]
+        [InlineData("3.7", Python37VersionInfo)]
+        [InlineData(Settings.Python37Version, Python37VersionInfo)]
         public void Python3Alias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 new EnvironmentVariable("python", versionSentToDockerRun),
                 commandToExecuteOnRun: "python3",
                 commandArguments: new[] { "--version" });

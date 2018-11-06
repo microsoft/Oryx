@@ -21,8 +21,8 @@ namespace Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.6", "Python 3.6.6")]
-        [InlineData("3.7.0", "Python 3.7.0")]
+        [InlineData("3.6", "Python " + Settings.Python36Version)]
+        [InlineData("3.7", "Python " + Settings.Python37Version)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
             // Arrange & Act
@@ -46,7 +46,7 @@ namespace Oryx.RuntimeImage.Tests
         public void Python2MatchesImageName()
         {
             string pythonVersion = "2.7";
-            string expectedOutput = "Python 2.7.15";
+            string expectedOutput = "Python " + Settings.Python27Version;
 
             // Arrange & Act
             var result = _dockerCli.Run(

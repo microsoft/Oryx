@@ -1,1 +1,1 @@
-FROM python:3.7.0-slim-stretch
+FROM python:3.7.1-slim-stretch

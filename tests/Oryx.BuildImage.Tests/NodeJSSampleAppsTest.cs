@@ -38,7 +38,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -80,7 +80,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -115,7 +115,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -157,7 +157,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -194,7 +194,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
                 new[]
@@ -228,7 +228,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -268,7 +268,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -308,7 +308,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -344,7 +344,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -378,7 +378,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -413,7 +413,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:

@@ -39,7 +39,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -56,7 +56,9 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("Python Version: /opt/python/3.7.0/bin/python3", result.Output);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{Settings.Python37Version}/bin/python3",
+                        result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -82,7 +84,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -117,7 +119,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -151,7 +153,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -186,7 +188,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -228,7 +230,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -256,7 +258,7 @@ namespace Oryx.BuildImage.Tests
             // api changes between these versions
 
             // Arrange
-            var langVersion = "3.7.0";
+            var langVersion = Settings.Python37Version;
             var volume = DockerVolume.Create(_hostSamplesDir);
             var appDir = $"{volume.ContainerDir}/python/python2-app";
             var generatedScript = "/build.sh";
@@ -271,7 +273,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -301,13 +303,13 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var appOutputDir = $"{appDir}/output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.6.6")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python36Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -324,7 +326,9 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("Python Version: /opt/python/3.6.6/bin/python3", result.Output);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{Settings.Python36Version}/bin/python3",
+                        result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -339,7 +343,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
-                .AddScriptCommand($"{appDir} -l python --language-version 3.6.6 > {generatedScript}")
+                .AddScriptCommand($"{appDir} -l python --language-version {Settings.Python36Version} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -348,7 +352,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -388,7 +392,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -404,7 +408,9 @@ namespace Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    string errorMessage = "The 'python' version '4.0.1' is not supported. Supported versions are: 2.7.15, 3.5.6, 3.6.6, 3.7.0";
+                    string errorMessage =
+                    "The 'python' version '4.0.1' is not supported. Supported versions are: " +
+                    $"{Settings.Python27Version}, {Settings.Python35Version}, {Settings.Python36Version}, {Settings.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.Error);
                 },
@@ -415,7 +421,7 @@ namespace Oryx.BuildImage.Tests
         public void CanBuild_Python2_WithScriptOnlyOption()
         {
             // Arrange
-            var langVersion = "2.7.15";
+            var langVersion = Settings.Python27Version;
             var volume = DockerVolume.Create(_hostSamplesDir);
             var appDir = $"{volume.ContainerDir}/python/python2-app";
             var generatedScript = "/build.sh";
@@ -431,7 +437,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -467,7 +473,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -503,7 +509,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -520,7 +526,9 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("Python Version: /opt/python/3.7.0/bin/python3", result.Output);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{Settings.Python37Version}/bin/python3",
+                        result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -533,13 +541,13 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var appOutputDir = "/flask-app-output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.7.0")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/jinja2")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -556,7 +564,9 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("Python Version: /opt/python/3.7.0/bin/python3", result.Output);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{Settings.Python37Version}/bin/python3",
+                        result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -569,7 +579,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = $"{volume.ContainerDir}/python/django-app";
             var appOutputDir = "/django-app-output";
             var script = new BashScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version 3.7.0")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/django")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.bootstrap.min.css")
@@ -578,7 +588,7 @@ namespace Oryx.BuildImage.Tests
 
             // Act
             var result = _dockerCli.Run(
-                BuildImageTestSettings.BuildImageName,
+                Settings.BuildImageName,
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:

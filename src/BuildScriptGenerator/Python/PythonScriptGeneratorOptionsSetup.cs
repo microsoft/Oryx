@@ -9,7 +9,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     internal class PythonScriptGeneratorOptionsSetup : IConfigureOptions<PythonScriptGeneratorOptions>
     {
         internal const string PythonDefaultVersion = "ORYX_PYTHON_DEFAULT_VERSION";
-        internal const string PythonLtsVersion = "3.7.0";
+        internal const string PythonLtsVersion = "3.7.1";
         internal const string InstalledPythonVersionsDir = "/opt/python/";
 
         private readonly IEnvironment _environment;
