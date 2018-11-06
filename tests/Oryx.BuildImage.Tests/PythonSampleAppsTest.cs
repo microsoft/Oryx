@@ -249,10 +249,48 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Todo")]
+        [Fact]
         public override void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
-            throw new NotImplementedException();
+            // Try building a Python 2.7 app with 3.7 version. This should fail as there are major
+            // api changes between these versions
+
+            // Arrange
+            var langVersion = "3.7.0";
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/python2-app";
+            var generatedScript = "/build.sh";
+            var appOutputDir = "/python2-app-output";
+            var tempDir = "/tmp/" + Guid.NewGuid();
+            var script = new BashScriptBuilder()
+                .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
+                .SetExecutePermissionOnFile(generatedScript)
+                .CreateDirectory(tempDir)
+                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                BuildImageTestSettings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.Contains("Missing parentheses in call to 'print'", result.Output);
+                },
+                result.GetDebugInfo());
         }
 
         [Fact]
@@ -379,16 +417,16 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var langVersion = "2.7.15";
             var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var appDir = $"{volume.ContainerDir}/python/python2-app";
             var generatedScript = "/build.sh";
-            var appOutputDir = "/flask-app-output";
+            var appOutputDir = "/python2-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new BashScriptBuilder()
                 .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python2.7/site-packages/jinja2")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python2.7/site-packages/flask")
                 .ToString();
 
             // Act
