@@ -2,14 +2,17 @@
 set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-declare -r GIT_COMMIT=$(git rev-parse HEAD)
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
-args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+# Avoid causing cache invalidation with the following check
+if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
+then
+	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+fi
 
 function BuildAndTagStage(){
 	local stageName="$1"
@@ -49,12 +52,13 @@ if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
 then
 	echo
 	echo "Building build image(s) with NO cache..."
-	docker build --no-cache -t $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+	noCache="--no-cache"
 else
 	echo
 	echo "Building build image(s)..."
-	docker build -t $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
 fi
+
+docker build $noCache -t $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
 
 # Retag build image with acr tags
 docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:latest"

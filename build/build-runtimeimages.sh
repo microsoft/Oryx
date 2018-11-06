@@ -31,6 +31,8 @@ function getTagName()
     return 0
 }
 
+labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+
 dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
 if [ -z "$dockerFiles" ]
 then
@@ -67,14 +69,12 @@ for dockerFile in $dockerFiles; do
     if [ -n "$BUILD_RUNTIMEIMAGES_USING_NOCACHE" ]
     then
         echo "Building image '$runtimeImageTagName' with NO cache..."
-        echo
-        docker build --no-cache -t $tags .
+        noCache="--no-cache"
     else
         echo "Building image '$runtimeImageTagName'..."
-        echo
-        docker build -t $tags .
     fi
-
+    echo
+    docker build $noCache -t $tags $labels .
     
     # Retag build image with acr tags
     docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:latest"

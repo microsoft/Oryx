@@ -295,22 +295,20 @@ RUN set -ex \
  && cp -sn /opt/python/3/bin/* .
 
 FROM dotnet-install AS buildscriptbuilder
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
 COPY src/Oryx.Common.Utilities /usr/oryx/src/Oryx.Common.Utilities
 COPY build/FinalPublicKey.snk usr/oryx/build/
 COPY src/CommonFiles /usr/oryx/src/CommonFiles
 WORKDIR /usr/oryx/src
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM python AS final
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
 WORKDIR /
 
 # Copy .NET Core related content
@@ -331,6 +329,8 @@ RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
 
