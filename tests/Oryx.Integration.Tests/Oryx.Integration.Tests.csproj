@@ -21,6 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="configurations\build-volume.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="configurations\build-volume-claim.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="configurations\build-image.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

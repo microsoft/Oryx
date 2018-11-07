@@ -7,6 +7,7 @@ declare -r buildSolutionScript="$REPO_DIR/build/build-solution.sh"
 declare -r testBuildImagesScript="$REPO_DIR/build/test-buildimages.sh"
 declare -r testRuntimeImagesScript="$REPO_DIR/build/test-runtimeimages.sh"
 declare -r testScriptGeneratorScript="$REPO_DIR/build/test-scriptgenerator.sh"
+declare -r testIntegrationScript="$REPO_DIR/build/test-integration.sh"
 
 # Build soulution to verify there are basic errors (like compilation)
 # before doing the expensive docker image builds
@@ -19,3 +20,5 @@ $testScriptGeneratorScript "$@"
 $testBuildImagesScript "$@"
 $testRuntimeImagesScript "$@"
 
+# Test on AKS
+$testIntegrationScript "$@"

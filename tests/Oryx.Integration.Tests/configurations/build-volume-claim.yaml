@@ -1,0 +1,11 @@
+﻿apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: build-volume-claim
+spec:
+  storageClassName: '' # No need for dynamic storage provisioning in our testing cluster
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

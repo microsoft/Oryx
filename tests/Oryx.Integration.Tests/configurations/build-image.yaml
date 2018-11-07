@@ -13,6 +13,5 @@ spec:
         mountPath: /mnt/samples
  volumes:
   - name: samples
-    azureFile:
-      secretName: storage-secret
-      shareName: oryx
+    persistentVolumeClaim:
+      claimName: {1}
