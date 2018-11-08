@@ -9,11 +9,13 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
+    [BuildProperty(VirtualEnvironmentNamePropertyKey, "Name of the virtual environment to create.")]
     internal class PythonScriptGenerator : ILanguageScriptGenerator
     {
+        internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
+
         private const string PythonName = "python";
         private const string DefaultVirtualEnvironmentName = "pythonenv";
-        private const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
