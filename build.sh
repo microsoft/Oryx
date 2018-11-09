@@ -8,6 +8,7 @@ declare -r testBuildImagesScript="$REPO_DIR/build/test-buildimages.sh"
 declare -r testRuntimeImagesScript="$REPO_DIR/build/test-runtimeimages.sh"
 declare -r testScriptGeneratorScript="$REPO_DIR/build/test-scriptgenerator.sh"
 declare -r testIntegrationScript="$REPO_DIR/build/test-integration.sh"
+declare -r testNodeStartupCommandGenerator="$REPO_DIR/build/test-nodestartupgenerator.sh"
 
 # Build soulution to verify there are basic errors (like compilation)
 # before doing the expensive docker image builds
@@ -22,3 +23,6 @@ $testRuntimeImagesScript "$@"
 
 # Test on AKS
 $testIntegrationScript "$@"
+
+# Test the Node.JS startup script generator
+$testNodeStartupCommandGenerator "$@"
