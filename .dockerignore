@@ -2,3 +2,5 @@
 **/obj/*
 **/.vs/
 **/.git/
+tests/
+vsts/

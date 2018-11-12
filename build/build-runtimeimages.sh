@@ -64,7 +64,7 @@ for dockerFile in $dockerFiles; do
     echo "Building image '$runtimeImageTagName' for docker file located at '$dockerFile'..."
     echo
     
-    cd $dockerFileDir
+    cd $REPO_DIR
 
     if [ -n "$BUILD_RUNTIMEIMAGES_USING_NOCACHE" ]
     then
@@ -74,7 +74,7 @@ for dockerFile in $dockerFiles; do
         echo "Building image '$runtimeImageTagName'..."
     fi
     echo
-    docker build $noCache -t $tags $labels .
+    docker build $noCache -f $dockerFile -t $tags $labels .
     
     # Retag build image with acr tags
     docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:latest"
