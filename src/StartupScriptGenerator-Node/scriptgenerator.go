@@ -9,13 +9,14 @@ import (
 )
 
 type NodeStartupScriptGenerator struct {
-	SourcePath string
-	DefaultAppJsFilePath string
-	CustomStartCommand string
-	RemoteDebugging bool
+	SourcePath                      string
+	DefaultAppJsFilePath            string
+	CustomStartCommand              string
+	RemoteDebugging                 bool
 	RemoteDebuggingBreakBeforeStart bool
-	RemoteDebuggingIp string
-	RemoteDebuggingPort string
+	RemoteDebuggingIp               string
+	RemoteDebuggingPort             string
+	UseLegacyDebugger               bool //used for node versions < 7.7
 }
 
 type packageJson struct {
@@ -40,12 +41,12 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointCommand() string {
 // Gets the startup script from package.json if defined. Returns empty string if not found.
 func getPackageJsonStartCommand(appPath string) string {
 	packageJsonPath := filepath.Join(appPath, "package.json")
-	if _,err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
+	if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
 		packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
 		if err == nil {
 			packageObj := &packageJson{
-				Scripts: &packageJsonScripts{  
-					Start: "", 
+				Scripts: &packageJsonScripts{
+					Start: "",
 				},
 			}
 			err := json.Unmarshal(packageJsonBytes, &packageObj)
@@ -58,11 +59,11 @@ func getPackageJsonStartCommand(appPath string) string {
 }
 
 // Try to find the main file for the app
-func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand() string{
+func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand() string {
 	startupFileCommand := ""
 	filesToSearch := []string{"bin/www", "server.js", "app.js", "index.js", "hostingstart.js"}
- 	for _, file := range filesToSearch {
-		fullPath := filepath.Join(gen.SourcePath, file)		
+	for _, file := range filesToSearch {
+		fullPath := filepath.Join(gen.SourcePath, file)
 		if _, err := os.Stat(fullPath); !os.IsNotExist(err) {
 			startupFileCommand = gen.getStartupCommandFromJsFile(fullPath)
 			break
@@ -81,13 +82,19 @@ func (gen *NodeStartupScriptGenerator) getDefaultAppStartCommand() string {
 }
 
 func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePath string) string {
-	var commandBuilder strings.Builder	
+	var commandBuilder strings.Builder
 	if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
-		commandBuilder.WriteString("node --inspect")
+
+		if gen.UseLegacyDebugger {
+			commandBuilder.WriteString("node --debug")
+		} else {
+			commandBuilder.WriteString("node --inspect")
+		}
+
 		if gen.RemoteDebuggingBreakBeforeStart {
-			// TODO earlier versions of node
 			commandBuilder.WriteString("-brk")
 		}
+
 		if gen.RemoteDebuggingIp != "" {
 			commandBuilder.WriteString("=" + gen.RemoteDebuggingIp)
 			if gen.RemoteDebuggingPort != "" {

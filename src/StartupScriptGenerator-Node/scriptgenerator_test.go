@@ -4,17 +4,16 @@ import (
 	"fmt"
 )
 
-func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simple() {
-	gen := &NodeStartupScriptGenerator {
-	}
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCommand() {
+	gen := &NodeStartupScriptGenerator{}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
 	fmt.Println(command)
 	// Output:
 	// node a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServer() {
-	gen := &NodeStartupScriptGenerator {
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
+	gen := &NodeStartupScriptGenerator{
 		CustomStartCommand: "pm2 start --no-daemon",
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
@@ -23,9 +22,9 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServer(
 	// pm2 start --no-daemon a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debugging() {
-	gen := &NodeStartupScriptGenerator {
-		RemoteDebugging: true,
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingFlagShouldBeIncluded() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
 		RemoteDebuggingBreakBeforeStart: false,
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
@@ -34,9 +33,9 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debugging() {
 	// node --inspect a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrk() {
-	gen := &NodeStartupScriptGenerator {
-		RemoteDebugging: true,
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkFlagShouldBeIncluded() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
 		RemoteDebuggingBreakBeforeStart: true,
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
@@ -45,9 +44,9 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrk(
 	// node --inspect-brk a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingWithHost() {
-	gen := &NodeStartupScriptGenerator {
-		RemoteDebugging: true,
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingWithHostButNoPort() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:   true,
 		RemoteDebuggingIp: "0.1.2.3",
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
@@ -57,9 +56,9 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingWith
 }
 
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingWithHostAndPort() {
-	gen := &NodeStartupScriptGenerator {
-		RemoteDebugging: true,
-		RemoteDebuggingIp: "0.1.2.3",
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:     true,
+		RemoteDebuggingIp:   "0.1.2.3",
 		RemoteDebuggingPort: "1234",
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
@@ -68,11 +67,11 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingWith
 	// node --inspect=0.1.2.3:1234 a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkWithHost() {
-	gen := &NodeStartupScriptGenerator {
-		RemoteDebugging: true,
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkWithHostButNoPort() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
 		RemoteDebuggingBreakBeforeStart: true,
-		RemoteDebuggingIp: "0.1.2.3",
+		RemoteDebuggingIp:               "0.1.2.3",
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
 	fmt.Println(command)
@@ -81,14 +80,65 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkW
 }
 
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkWithHostAndPort() {
-	gen := &NodeStartupScriptGenerator {
-		RemoteDebugging: true,
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
 		RemoteDebuggingBreakBeforeStart: true,
-		RemoteDebuggingIp: "0.1.2.3",
-		RemoteDebuggingPort: "1234",
+		RemoteDebuggingIp:               "0.1.2.3",
+		RemoteDebuggingPort:             "1234",
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
 	fmt.Println(command)
 	// Output:
 	// node --inspect-brk=0.1.2.3:1234 a/b/c.js
+}
+
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingLegacyNodeVersion() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
+		RemoteDebuggingBreakBeforeStart: false,
+		UseLegacyDebugger:               true,
+	}
+	command := gen.getStartupCommandFromJsFile("a/b/c.js")
+	fmt.Println(command)
+	// Output:
+	// node --debug a/b/c.js
+}
+
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkLegacyNodeVersion() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
+		RemoteDebuggingBreakBeforeStart: true,
+		UseLegacyDebugger:               true,
+	}
+	command := gen.getStartupCommandFromJsFile("a/b/c.js")
+	fmt.Println(command)
+	// Output:
+	// node --debug-brk a/b/c.js
+}
+
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkWithHostLegacyNodeVersion() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
+		RemoteDebuggingBreakBeforeStart: true,
+		RemoteDebuggingIp:               "0.1.2.3",
+		UseLegacyDebugger:               true,
+	}
+	command := gen.getStartupCommandFromJsFile("a/b/c.js")
+	fmt.Println(command)
+	// Output:
+	// node --debug-brk=0.1.2.3 a/b/c.js
+}
+
+func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_debuggingbrkWithHostAndPortLegacyNodeVersion() {
+	gen := &NodeStartupScriptGenerator{
+		RemoteDebugging:                 true,
+		RemoteDebuggingBreakBeforeStart: true,
+		RemoteDebuggingIp:               "0.1.2.3",
+		RemoteDebuggingPort:             "1234",
+		UseLegacyDebugger:               true,
+	}
+	command := gen.getStartupCommandFromJsFile("a/b/c.js")
+	fmt.Println(command)
+	// Output:
+	// node --debug-brk=0.1.2.3:1234 a/b/c.js
 }
