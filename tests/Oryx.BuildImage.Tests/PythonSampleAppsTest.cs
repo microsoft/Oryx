@@ -582,8 +582,8 @@ namespace Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/django")
                 // These css files should be available since 'collectstatic' is run in the script
-                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.bootstrap.min.css")
-                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.bootstrap.min.css")
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
                 .ToString();
 
             // Act
