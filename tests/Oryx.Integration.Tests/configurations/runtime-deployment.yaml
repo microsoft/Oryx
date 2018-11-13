@@ -23,7 +23,7 @@ spec:
 #        command: [ "/bin/bash", "-c", "--" ]
 #        args: [ "while true; do sleep 30; done;" ]
         command: [ "/bin/bash", "-c", "--" ]
-        args: [ "cd /mnt/samples/SampleApps{1}/{3}/{0}_out && npm start" ]
+        args: [ "cd /mnt/samples/{5}/{3}/{0}_out && npm start" ]
         volumeMounts:
           - name: samples
             mountPath: /mnt/samples
@@ -33,4 +33,4 @@ spec:
       - name: samples
         azureFile:
           secretName: storage-secret
-          shareName: oryx
+          shareName: {4}

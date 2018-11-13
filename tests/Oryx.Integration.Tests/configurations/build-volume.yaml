@@ -1,7 +1,7 @@
 ﻿apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: samples
+  name: {0}
 spec:
   capacity:
     storage: 1Gi
@@ -12,4 +12,4 @@ spec:
     - mfsymlinks
   azureFile:
     secretName: storage-secret
-    shareName: {0}
+    shareName: {1}

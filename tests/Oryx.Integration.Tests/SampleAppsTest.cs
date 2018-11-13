@@ -4,6 +4,7 @@
 
 using k8s;
 using k8s.Models;
+using Microsoft.Rest;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.File;
 using System;
@@ -21,14 +22,25 @@ namespace Oryx.Integration.Tests
     {
         private readonly ITestOutputHelper _output;
 
-        private static readonly string NAMESPACE = "default";
         private static readonly string STORAGE_KEY_VAR = "STORAGEACCOUNTKEY";
         private static readonly string BUILD_NUMBER_VAR = "BUILD_BUILDNUMBER";
         private static readonly string KUBECONFIG_VAR = "KUBECONFIG";
-        private static readonly string SHARE_NAME = "oryx";
-        private static readonly int MAX_RESTARTS = 4;
+
+        private static readonly string NAMESPACE = "default";
+        private static readonly string BUILD_POD_NAME = "builder";
+        private static readonly string VOLUME_NAME = "samples";
+        private static readonly string STORAGE_ACCOUNT_NAME = "oryxautomation";
+        private static readonly string STORAGE_SHARE_NAME = "oryx";
+
+        private static readonly string CFG_BUILD_IMG = "build-image.yaml";
+        private static readonly string CFG_BUILD_VOL = "build-volume.yaml";
+        private static readonly string CFG_BUILD_VOL_CLAIM = "build-volume-claim.yaml";
+        private static readonly string CFG_RT_DEPLOYMENT = "runtime-deployment.yaml";
+        private static readonly string CFG_RT_SVC = "runtime-service.yaml";
 
         private SampleAppsFixture fixture;
+
+        private static HttpClient httpClient = new HttpClient();
 
         public SampleAppsTests(ITestOutputHelper output, SampleAppsTests.SampleAppsFixture fixture)
         {
@@ -36,8 +48,9 @@ namespace Oryx.Integration.Tests
             this.fixture = fixture;
         }
 
-        public class SampleAppsFixture : IDisposable
+        public class SampleAppsFixture
         {
+            private CloudFileShare fileShare;
             private V1PersistentVolume storage;
             private V1PersistentVolumeClaim storageClaim;
 
@@ -47,64 +60,57 @@ namespace Oryx.Integration.Tests
 
                 var storageKey = Environment.GetEnvironmentVariable(STORAGE_KEY_VAR);
                 Console.WriteLine("Using storage key \"{0}...\" from environment variable \"{1}\"", storageKey.Substring(0, 4), STORAGE_KEY_VAR);
-      
-                FolderName = "SampleApps" + BuildNumber;
 
-                UploadToFileshare(storageKey, SHARE_NAME, FolderName);
+                FolderName = "SampleApps-" + BuildNumber;
 
-                string kubeConfig = Environment.GetEnvironmentVariable(KUBECONFIG_VAR);
+                fileShare = CloudStorageAccount.Parse($"DefaultEndpointsProtocol=https;AccountName={STORAGE_ACCOUNT_NAME};AccountKey={storageKey};EndpointSuffix=core.windows.net")
+                    .CreateCloudFileClient()
+                    .GetShareReference(STORAGE_SHARE_NAME);
+
+                UploadToFileShare(fileShare, FolderName);
+
                 KubernetesClientConfiguration config;
+                string kubeConfig = Environment.GetEnvironmentVariable(KUBECONFIG_VAR);
                 if (string.IsNullOrEmpty(kubeConfig))
                 {
                     config = KubernetesClientConfiguration.BuildConfigFromConfigFile();
                 }
                 else
                 {
-                    MemoryStream stream = new MemoryStream();
-                    StreamWriter writer = new StreamWriter(stream);
-                    writer.Write(kubeConfig);
-                    writer.Flush();
-       
-                    config = KubernetesClientConfiguration.BuildConfigFromConfigFile(stream);
+                    using (var stream = new MemoryStream())
+                    {
+                        using (var writer = new StreamWriter(stream))
+                        {
+                            writer.Write(kubeConfig);
+                            writer.Flush();
+                        }
+                        config = KubernetesClientConfiguration.BuildConfigFromConfigFile(stream);
+                    }
                 }
                 Client = new Kubernetes(config);
-                
-                // Create a PV for our Azure File share and a corresponding claim
-                // If these fail, make sure that they don't already exist in the cluster: `kubectl delete pvc --all; kubectl delete pv --all`
-                storage = Client.CreatePersistentVolume(LoadYamlConfig<V1PersistentVolume>("build-volume.yaml", SHARE_NAME));
-                storageClaim = Client.CreateNamespacedPersistentVolumeClaim(LoadYamlConfig<V1PersistentVolumeClaim>("build-volume-claim.yaml"), NAMESPACE);
-                Console.WriteLine("Created PersistentVolume and correspoinding PersistentVolumeClaim");
 
-                // Create the build pod
-                V1Pod podSpec = LoadYamlConfig<V1Pod>("build-image.yaml", "azure-build-image" + BuildNumber, storageClaim.Metadata.Name);
-                BuildPod = Client.CreateNamespacedPod(podSpec, NAMESPACE);
-                Console.WriteLine("Created build pod");
-                // Wait for the pod to start
-                while ("Pending".Equals(BuildPod.Status.Phase))
+                try
                 {
-                    Console.WriteLine("Waiting 10s for build pod to start");
-                    Thread.Sleep(10000);
-                    BuildPod = Client.ReadNamespacedPodStatus(BuildPod.Metadata.Name, NAMESPACE);
+                    BuildPod = Client.ReadNamespacedPod(BUILD_POD_NAME, NAMESPACE);
+                    Assert.True(k8sHelpers.IsPodRunning(BuildPod));
                 }
-            }
+                catch (HttpOperationException exc)
+                {
+                    if (exc.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Create a PV for our Azure File share and a corresponding claim if they don't already exist
+                        // If these fail, make sure that they don't already exist in the cluster: `kubectl delete -n default pvc,pv --all`
+                        storage = Client.CreatePersistentVolume(LoadYamlConfig<V1PersistentVolume>(CFG_BUILD_VOL, VOLUME_NAME, STORAGE_SHARE_NAME));
+                        storageClaim = Client.CreateNamespacedPersistentVolumeClaim(LoadYamlConfig<V1PersistentVolumeClaim>(CFG_BUILD_VOL_CLAIM), NAMESPACE);
+                        Console.WriteLine("Created PersistentVolume and correspoinding PersistentVolumeClaim");
 
-            public void Dispose()
-            {
-                if (BuildPod != null)
-                {
-                    Client.DeleteNamespacedPod(new V1DeleteOptions(), BuildPod.Metadata.Name, NAMESPACE);
-                    Console.WriteLine("Deleted build pod");
+                        // Create the build pod
+                        V1Pod podSpec = LoadYamlConfig<V1Pod>(CFG_BUILD_IMG, BUILD_POD_NAME, VOLUME_NAME, storageClaim.Metadata.Name);
+                        BuildPod = k8sHelpers.CreatePodAndWait(Client, podSpec, NAMESPACE, k8sHelpers.IsPodRunning).Result;
+                    }
+                    else throw exc;
                 }
-                if (storageClaim != null)
-                {
-                    Client.DeleteNamespacedPersistentVolumeClaim(new V1DeleteOptions(), storageClaim.Metadata.Name, NAMESPACE);
-                    Console.WriteLine("Deleted build PersistentVolumeClaim");
-                }
-                if (storage != null)
-                {
-                    Client.DeletePersistentVolume(new V1DeleteOptions(), storage.Metadata.Name);
-                    Console.WriteLine("Deleted build PersistentVolume");
-                }
+                Console.WriteLine("Build pod is running");
             }
 
             public V1Pod BuildPod { get; }
@@ -115,7 +121,7 @@ namespace Oryx.Integration.Tests
 
             public IKubernetes Client { get; }
 
-            private static void UploadFolder(string path, CloudFileDirectory sampleAppsFolder)
+            private async static void UploadFolderAsync(string path, CloudFileDirectory sampleAppsFolder)
             {
                 string[] files;
                 string[] directories;
@@ -126,174 +132,134 @@ namespace Oryx.Integration.Tests
                     //Create a reference to the filename that you will be uploading
                     CloudFile cloudFile = sampleAppsFolder.GetFileReference(new FileInfo(file).Name);
 
-                    Stream fileStream = File.OpenRead(file);
-                    cloudFile.UploadFromStreamAsync(fileStream).Wait();
-                    fileStream.Dispose();
+                    using (Stream fileStream = File.OpenRead(file))
+                    {
+                        await cloudFile.UploadFromStreamAsync(fileStream);
+                    }
                 }
 
                 directories = Directory.GetDirectories(path);
                 foreach (string directory in directories)
                 {
                     var subFolder = sampleAppsFolder.GetDirectoryReference(new DirectoryInfo(directory).Name);
-                    subFolder.CreateIfNotExistsAsync().Wait();
-                    UploadFolder(directory, subFolder);
+                    await subFolder.CreateIfNotExistsAsync();
+                    UploadFolderAsync(directory, subFolder);
                 }
             }
 
-            private static void UploadToFileshare(string storageKey, string shareName, string folderName)
+            private async static void UploadToFileShare(CloudFileShare fileShare, string folderName)
             {
-                CloudFileShare fileShare = CloudStorageAccount.Parse(
-                        $"DefaultEndpointsProtocol=https;AccountName=oryxautomation;AccountKey={storageKey};EndpointSuffix=core.windows.net")
-                    .CreateCloudFileClient()
-                    .GetShareReference(shareName);
-
                 var rootDir = fileShare.GetRootDirectoryReference();
                 var sampleAppsFolder = rootDir.GetDirectoryReference(folderName);
-                sampleAppsFolder.CreateIfNotExistsAsync().Wait();
+                await sampleAppsFolder.CreateIfNotExistsAsync();
 
                 var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-                UploadFolder(hostSamplesDir, sampleAppsFolder);
+                UploadFolderAsync(hostSamplesDir, sampleAppsFolder);
             }
         }
 
         [Theory]
-        [InlineData("webfrontend", "oryxdevms/node-8.1:latest", "nodejs", "8.1")]
-//        [InlineData("flask-app", "oryxdevms/python-3.7:latest", "python", "3.7")]
         [InlineData("linxnodeexpress", "oryxdevms/node-4.4:latest", "nodejs", "4.4.7")]
-        public void CanBuildAndRunSampleApp(string appName, string runtimeImage, string language, string languageVersion)
+        [InlineData("webfrontend", "oryxdevms/node-8.1:latest", "nodejs", "8.1")]
+        //[InlineData("flask-app", "oryxdevms/python-3.7.0:latest", "python", "3.7")]
+        public async Task CanBuildAndRunSampleApp(string appName, string runtimeImage, string language, string languageVersion)
         {
-            V1Deployment runtimeDeploymentSpec = null;
-            V1Service runtimeServiceSpec = null;
+            V1Deployment runtimeDeployment = null;
+            V1Service runtimeService = null;
 
             try
             {
-                Assert.Equal("Running", fixture.BuildPod.Status.Phase);
-                Console.WriteLine("Build pod is running");
                 var appFolder = string.Format("/mnt/samples/{0}/{1}/{2}", fixture.FolderName, language, appName);
                 
                 // execute build command on a pod with build image
                 var command = new[]
                 {
-                    "oryx",
-                    "build",
-                    appFolder,
-                    "-o",
-                    appFolder + "_out",
-                    "-l",
-                    language,
-                    "--language-version",
-                    languageVersion
+                    "oryx", "build", appFolder,
+                    "-o", appFolder + "_out",
+                    "-l", language,
+                    "--language-version", languageVersion
                 };
                 
                 Console.WriteLine("Running command in build pod: `{0}`", string.Join(' ', command));
-                ExecInPodAsync(fixture.Client, fixture.BuildPod, command).GetAwaiter().GetResult();
-                // Wait for build to finish. Todo: figure out when exactly build process completes
-                Console.WriteLine("Waiting 15s for build to finish");
-                Thread.Sleep(15000);
+                string buildOutput = await k8sHelpers.ExecInPodAsync(fixture.Client, fixture.BuildPod, NAMESPACE, command);
+                Console.WriteLine("> " + buildOutput.Replace("\n", "\n> ") + Environment.NewLine);
 
-                // create a deployment with runtime image and run the compiled app
-                runtimeDeploymentSpec = LoadYamlConfig<V1Deployment>("runtime-deployment.yaml", appName, fixture.BuildNumber, runtimeImage, language);
-                var runtimeDeployment = fixture.Client.CreateNamespacedDeployment(runtimeDeploymentSpec, NAMESPACE);
-                Console.WriteLine("Waiting 10s for runtime deployment");
-                Thread.Sleep(10000);
-                // find the pod that was created for deployment
-                string podPrefix = appName + fixture.BuildNumber;
-                V1PodList podList = fixture.Client.ListNamespacedPod(NAMESPACE);
-                V1Pod runtimePod = null; 
-                foreach (V1Pod curPod in podList.Items)
+                // Create a deployment with runtime image and run the compiled app
+                var runtimeDeploymentSpec = LoadYamlConfig<V1Deployment>(CFG_RT_DEPLOYMENT, appName, fixture.BuildNumber, runtimeImage, language, STORAGE_SHARE_NAME, fixture.FolderName);
+                runtimeDeployment = await k8sHelpers.CreateDeploymentAndWait(fixture.Client, runtimeDeploymentSpec, NAMESPACE, dep =>
                 {
-                    if (curPod.Metadata.Name.StartsWith(podPrefix))
-                    {
-                        runtimePod = curPod;
-                        break;
-                    }            
-                }
-
-                // Wait till pod is running and container created and started
-                while ("Pending".Equals(runtimePod.Status.Phase) || runtimePod.Status.ContainerStatuses.Count == 0 ||
-                    !runtimePod.Status.ContainerStatuses.First().Ready && runtimePod.Status.ContainerStatuses.First().RestartCount < MAX_RESTARTS)
-                {
-                    Console.WriteLine("Waiting 10s for runtime pod to start");
-                    Thread.Sleep(10000);
-                    runtimePod = fixture.Client.ReadNamespacedPodStatus(runtimePod.Metadata.Name, NAMESPACE);
-                }
-                string message = "";
-                if (runtimePod.Status.ContainerStatuses.First().State.Waiting != null)
-                {
-                    message += runtimePod.Status.ContainerStatuses.First().State.Waiting.Message;
-                }
-                Assert.True(runtimePod.Status.ContainerStatuses.First().Ready, "Runtime container failed to start: " + message);
-
+                    string minAvailabilityStatus = dep.Status.Conditions.Where(cond => string.Equals(cond.Type, "Available")).First()?.Status;
+                    Console.WriteLine("Deployment's minAvailabilityStatus = {0}", minAvailabilityStatus);
+                    return string.Equals(minAvailabilityStatus, "True");
+                });
+                
                 // Create load balancer for the deployed app
-                runtimeServiceSpec = LoadYamlConfig<V1Service>("runtime-service.yaml", appName + fixture.BuildNumber);
+                var runtimeServiceSpec = LoadYamlConfig<V1Service>(CFG_RT_SVC, appName + fixture.BuildNumber);
 
-                var runtimeService = fixture.Client.CreateNamespacedService(runtimeServiceSpec, NAMESPACE);
-                while (runtimeService.Status.LoadBalancer.Ingress == null || runtimeService.Status.LoadBalancer.Ingress.Count == 0)
-                {
-                    Console.WriteLine("Waiting 10s for load balancer service to start");
-                    Thread.Sleep(10000);
-                    runtimeService = fixture.Client.ReadNamespacedServiceStatus(runtimeServiceSpec.Metadata.Name, NAMESPACE);
-                }
+                runtimeService = await k8sHelpers.CreateServiceAndWait(fixture.Client, runtimeServiceSpec, NAMESPACE,
+                    svc => svc.Status.LoadBalancer.Ingress != null && svc.Status.LoadBalancer.Ingress.Count > 0);
+                Console.WriteLine("Load balancer started");
 
                 // Ping the app to verify its availability
                 var appIp = runtimeService.Status.LoadBalancer.Ingress.First().Ip;
                 _output.WriteLine(string.Format("Your app {0} is available at {1}", appName, runtimeService.Status.LoadBalancer.Ingress.First().Ip));
-                var response = CheckAddress("http://" + appIp);
+
+                var response = await GetUrlAsync("http://" + appIp);
                 Assert.True(response.IsSuccessStatusCode);
-                _output.WriteLine(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
-            }
-            catch (Exception ex)
-            {
-                _output.WriteLine(ex.Message);
-                throw ex;
+                _output.WriteLine(await response.Content.ReadAsStringAsync());
             }
             finally 
             {
                 if (fixture.Client != null)
                 {
-                    if (runtimeDeploymentSpec != null)
+                    if (runtimeDeployment != null)
                     {
-                        var status = fixture.Client.DeleteNamespacedDeployment(new V1DeleteOptions(),
-                            runtimeDeploymentSpec.Metadata.Name, NAMESPACE);
+                        fixture.Client.DeleteNamespacedDeployment(new V1DeleteOptions(), runtimeDeployment.Metadata.Name, NAMESPACE);
                     }
-                    if (runtimeServiceSpec != null)
+                    if (runtimeService != null)
                     {
-                        fixture.Client.DeleteNamespacedService(new V1DeleteOptions(), runtimeServiceSpec.Metadata.Name,
-                            NAMESPACE);
+                        fixture.Client.DeleteNamespacedService(new V1DeleteOptions(), runtimeService.Metadata.Name, NAMESPACE);
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Executes an HTTP GET request to the given URL, with a random-interval retry mechanism.
+        /// </summary>
+        /// <param name="url">URL to GET</param>
+        /// <param name="retries">Maximum number of request attempts</param>
+        /// <returns>HTTP response</returns>
+        private async static Task<HttpResponseMessage> GetUrlAsync(string url, int retries = 4)
+        {
+            Random rand = new Random();
+            HttpRequestException lastExc = null;
+            while (retries > 0)
+            {
+                try
+                {
+                    return await httpClient.GetAsync(url);
+                }
+                catch (HttpRequestException exc)
+                {
+                    lastExc = exc;
+                    --retries;
+
+                    int interval = rand.Next(1000, 3000);
+                    Console.WriteLine("GET failed: {0}", exc.Message);
+                    Console.WriteLine("Retrying in {0}ms ({1} retries left)...", interval, retries);
+                    await Task.Delay(interval);
+                }
+            }
+            throw lastExc;
         }
 
         private static T LoadYamlConfig<T>(string configName, params object[] formatArgs)
         {
             string yaml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "configurations", configName));
             if (formatArgs.Length > 0)
-            {
                 yaml = string.Format(yaml, formatArgs);
-            }
             return Yaml.LoadFromString<T>(yaml);
-        }
-
-        private static async Task ExecInPodAsync(IKubernetes client, V1Pod pod, string[] commands)
-        {
-            var webSocket = await client.WebSocketNamespacedPodExecAsync(pod.Metadata.Name, NAMESPACE, commands, pod.Spec.Containers[0].Name);
-
-            var demux = new StreamDemuxer(webSocket);
-            demux.Start();
-
-            var buff = new byte[4096];
-            var stream = demux.GetStream(1, 1);
-            var read = stream.Read(buff, 0, 4096);
-            var str = System.Text.Encoding.Default.GetString(buff);
-            
-            Console.WriteLine(str);
-        }
-
-        public static HttpResponseMessage CheckAddress(string url)
-        {
-            var client = new HttpClient {Timeout = TimeSpan.FromSeconds(600)};
-            return client.GetAsync(url).Result;
         }
     }
 }

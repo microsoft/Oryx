@@ -9,9 +9,9 @@ spec:
     command: [ "/bin/bash", "-c", "--" ]
     args: [ "while true; do sleep 30; done;" ]
     volumeMounts:
-      - name: samples
+      - name: {1}
         mountPath: /mnt/samples
  volumes:
-  - name: samples
+  - name: {1}
     persistentVolumeClaim:
-      claimName: {1}
+      claimName: {2}
