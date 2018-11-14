@@ -57,7 +57,7 @@ namespace Oryx.Integration.Tests
             public SampleAppsFixture()
             {
                 BuildNumber = Environment.GetEnvironmentVariable(BUILD_NUMBER_VAR) ?? Guid.NewGuid().ToString();
-                BuildNumber = BuildNumber.Replace(".", string.Empty); // Dots are invalid in Kubernetes service names
+                BuildNumber = BuildNumber.Replace('.', '_'); // Dots are invalid in Kubernetes service names
 
                 var storageKey = Environment.GetEnvironmentVariable(STORAGE_KEY_VAR);
                 Console.WriteLine("Using storage key \"{0}...\" from environment variable \"{1}\"", storageKey.Substring(0, 4), STORAGE_KEY_VAR);
