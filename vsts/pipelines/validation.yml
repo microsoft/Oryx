@@ -11,5 +11,3 @@ steps:
   displayName: 'Set variables'
     
 - template: _buildTemplate.yml
-
-
