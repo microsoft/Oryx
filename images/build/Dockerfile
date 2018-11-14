@@ -10,6 +10,12 @@ RUN apt-get update \
         git \
         jq \
         make \
+        # The tools in this package are used when installing packages for Python
+        build-essential \
+        # Required for Microsoft SQL Server
+        unixodbc-dev \
+        # Required for PostgreSQL
+        libpq-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core

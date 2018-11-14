@@ -49,8 +49,8 @@ $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENT
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
-# Use pip from container's python installation rather than the older pip version in the virtual environment
-$pip install -r requirements.txt --prefix ""$SOURCE_DIR/$VIRTUALENVIRONMENTNAME""
+pip install --upgrade pip
+pip install -r requirements.txt
 
 echo
 echo pip install finished.

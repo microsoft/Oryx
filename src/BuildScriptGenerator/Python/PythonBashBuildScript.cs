@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+    #line 1 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class PythonBashBuildScript : PythonBashBuildScriptBase
     {
@@ -59,28 +59,28 @@ echo ""Destination directory: $DESTINATION_DIR""
 
 source /usr/local/bin/benv python=");
             
-            #line 35 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 35 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PythonVersion));
             
             #line default
             #line hidden
             this.Write("\r\n\r\nVIRTUALENVIRONMENTNAME=");
             
-            #line 37 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 37 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 38 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 38 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 39 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 39 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
@@ -98,8 +98,8 @@ $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENT
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
-# Use pip from container's python installation rather than the older pip version in the virtual environment
-$pip install -r requirements.txt --prefix """"$SOURCE_DIR/$VIRTUALENVIRONMENTNAME""""
+pip install --upgrade pip
+pip install -r requirements.txt
 
 echo
 echo pip install finished.
