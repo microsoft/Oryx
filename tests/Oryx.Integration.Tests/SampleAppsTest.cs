@@ -57,6 +57,7 @@ namespace Oryx.Integration.Tests
             public SampleAppsFixture()
             {
                 BuildNumber = Environment.GetEnvironmentVariable(BUILD_NUMBER_VAR) ?? Guid.NewGuid().ToString();
+                BuildNumber = BuildNumber.Replace(".", string.Empty); // Dots are invalid in Kubernetes service names
 
                 var storageKey = Environment.GetEnvironmentVariable(STORAGE_KEY_VAR);
                 Console.WriteLine("Using storage key \"{0}...\" from environment variable \"{1}\"", storageKey.Substring(0, 4), STORAGE_KEY_VAR);
@@ -77,13 +78,9 @@ namespace Oryx.Integration.Tests
                 }
                 else
                 {
-                    using (var stream = new MemoryStream())
+                    byte[] configByteArray = System.Text.Encoding.UTF8.GetBytes(kubeConfig);
+                    using (var stream = new MemoryStream(configByteArray))
                     {
-                        using (var writer = new StreamWriter(stream))
-                        {
-                            writer.Write(kubeConfig);
-                            writer.Flush();
-                        }
                         config = KubernetesClientConfiguration.BuildConfigFromConfigFile(stream);
                     }
                 }
@@ -233,22 +230,30 @@ namespace Oryx.Integration.Tests
         private async static Task<HttpResponseMessage> GetUrlAsync(string url, int retries = 4)
         {
             Random rand = new Random();
-            HttpRequestException lastExc = null;
+            Exception lastExc = null;
             while (retries > 0)
             {
                 try
                 {
                     return await httpClient.GetAsync(url);
                 }
-                catch (HttpRequestException exc)
+                catch (Exception exc)
                 {
-                    lastExc = exc;
-                    --retries;
+                    if (exc is HttpRequestException || exc is OperationCanceledException)
+                    {
+                        lastExc = exc;
+                        --retries;
 
-                    int interval = rand.Next(1000, 3000);
-                    Console.WriteLine("GET failed: {0}", exc.Message);
-                    Console.WriteLine("Retrying in {0}ms ({1} retries left)...", interval, retries);
-                    await Task.Delay(interval);
+                        int interval = rand.Next(1000, 3000);
+                        Console.WriteLine("GET failed: {0}", exc.Message);
+                        Console.WriteLine("Retrying in {0}ms ({1} retries left)...", interval, retries);
+                        await Task.Delay(interval);
+                    }
+                    else
+                    {
+                        Console.WriteLine("GET failed with unrecoverable error: {0}", exc.Message);
+                        throw exc;
+                    }
                 }
             }
             throw lastExc;
