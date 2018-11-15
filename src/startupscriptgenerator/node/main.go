@@ -2,9 +2,10 @@ package main
 
 import "flag"
 import "os"
-import "path/filepath"
+
 import "strings"
 import "strconv"
+import "startupscriptgenerator/common"
 
 func main() {
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
@@ -16,34 +17,13 @@ func main() {
 	remoteDebugPort := flag.String("debugPort", "", "The port the debugger will listen to.")
 	flag.Parse()
 
-	fullAppPath, err := filepath.Abs(*appPathPtr)
-	if err != nil {
-		println(err)
-		return
-	}
-
-	if _, err := os.Stat(fullAppPath); os.IsNotExist(err) {
-		panic("Path '" + fullAppPath + "' does not exist.")
-	}
-
-	// Validate the default app file.
-	if *defaultAppFilePathPtr != "" {
-		fullPath, err := filepath.Abs(*defaultAppFilePathPtr)
-		if err != nil {
-			panic(err)
-		}
-		*defaultAppFilePathPtr = fullPath
-
-		if _, err := os.Stat(*defaultAppFilePathPtr); os.IsNotExist(err) {
-			panic("Couldn't find file '" + *defaultAppFilePathPtr + "'")
-		}
-	}
-
+	fullAppPath := fsvalidation.GetValidatedFullPath(*appPathPtr)
+	defaultAppFullPAth := fsvalidation.GetValidatedFullPath(*defaultAppFilePathPtr)
 	useLegacyDebugger := isLegacyDebuggerNeeded()
 
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,
-		DefaultAppJsFilePath:            *defaultAppFilePathPtr,
+		DefaultAppJsFilePath:            defaultAppFullPAth,
 		CustomStartCommand:              *customStartCommandPtr,
 		RemoteDebugging:                 *remoteDebugEnabledPtr,
 		RemoteDebuggingBreakBeforeStart: *remoteDebugBrkEnabledPtr,

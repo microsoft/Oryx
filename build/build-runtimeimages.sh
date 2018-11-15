@@ -31,6 +31,9 @@ function getTagName()
     return 0
 }
 
+# Node images are created from a template
+$REPO_DIR/images/runtime/node/generateDockerfiles.sh
+
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
