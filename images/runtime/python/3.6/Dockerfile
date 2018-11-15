@@ -1,6 +1,5 @@
 FROM python:3.6.7-slim-stretch
 
 ADD /images/runtime/python/scripts /tmp/scripts
-RUN chmod a+x /tmp/scripts/installDrivers.sh
-RUN /tmp/scripts/installDrivers.sh
+RUN /tmp/scripts/installDependencies.sh
 RUN rm -rf /tmp/scripts
