@@ -9,6 +9,8 @@ trigger:
     include:
     - images/runtime
     - build/
+    - src/startupscriptgenerator
+    - vsts/
 
 steps:
 - script: |
