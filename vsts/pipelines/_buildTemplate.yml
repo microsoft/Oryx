@@ -17,6 +17,9 @@ steps:
     scriptPath: ./build/build-solution.sh
   condition: succeeded()
 
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+
 - task: ShellScript@2
   displayName: 'Build build images'
   inputs:
