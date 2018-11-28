@@ -609,6 +609,47 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void Build_ExecutesPreAndPostBuildScripts()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(_hostSamplesDir);
+            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var appOutputDir = "/flask-app-output";
+            var script = new BashScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    "\"" +
+                    script +
+                    "\""
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        "Executing the pre-build script from a standalone script!",
+                        result.Output);
+                    Assert.Contains(
+                        "Executing the post-build script from a standalone script!",
+                        result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

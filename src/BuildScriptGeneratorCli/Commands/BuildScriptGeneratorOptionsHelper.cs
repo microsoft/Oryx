@@ -59,33 +59,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var propertyList = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var property in properties)
             {
-                string key = null;
-                string value = null;
+                if (NameAndValuePairParser.TryParse(property, out var key, out var value))
+                {
+                    key = key.Trim('"');
+                    value = value.Trim('"');
 
-                // We only care about the first instance of '=' even if there are multiple
-                // (for example, the value itself could have that symbol in it)
-                var equalToSymbolIndex = property.IndexOf('=');
-                if (equalToSymbolIndex < 0)
-                {
-                    // Example: -p showlog (in this case the user might not want to give a value)
-                    key = property;
-                    value = string.Empty;
-                }
-                else if (equalToSymbolIndex == 0)
-                {
-                    throw new InvalidUsageException($"Property key cannot start with '=' for property '{property}'.");
+                    propertyList[key] = value;
                 }
                 else
                 {
-                    // -p showlog=true
-                    key = property.Substring(0, equalToSymbolIndex);
-                    value = property.Substring(equalToSymbolIndex + 1);
+                    throw new InvalidUsageException($"Property key cannot start with '=' for property '{property}'.");
                 }
-
-                key = key.Trim('"');
-                value = value.Trim('"');
-
-                propertyList[key] = value;
             }
             return propertyList;
         }

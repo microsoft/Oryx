@@ -30,6 +30,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         string ReadFile(params string[] paths);
 
         /// <summary>
+        /// Reads all lines in a file from the source repo.
+        /// </summary>
+        /// <param name="paths">Path to the file inside the repo.</param>
+        /// <returns>A list of lines from the file.</returns>
+        string[] ReadAllLines(params string[] paths);
+
+        /// <summary>
         /// Gets a list of paths to files based on the specified <paramref name="searchPattern"/>.
         /// </summary>
         /// <param name="searchPattern">The search pattern of the file name.</param>

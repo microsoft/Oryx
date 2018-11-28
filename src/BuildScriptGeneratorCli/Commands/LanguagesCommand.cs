@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.WriteLine();
             }
 
-            return 0;
+            return Constants.ExitSuccess;
         }
 
         private IEnumerable<string> SortVersions(IEnumerable<string> versions)

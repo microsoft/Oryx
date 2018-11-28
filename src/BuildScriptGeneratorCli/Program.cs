@@ -29,12 +29,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var commit = GetCommit();
                 console.WriteLine($"Version: {version}, Commit: {commit}");
 
-                return 0;
+                return Constants.ExitSuccess;
             }
 
             app.ShowHelp();
 
-            return 0;
+            return Constants.ExitSuccess;
         }
 
         private string GetVersion()

@@ -161,23 +161,6 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Theory]
-        [InlineData("showlog")]
-        [InlineData("showlog=")]
-        public void ProcessProperties_ReturnsProperty_WhenOnlyKeyIsPresent(string property)
-        {
-            // Arrange
-            var properties = new[] { property };
-
-            // Act
-            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
-
-            // Assert
-            Assert.Collection(
-                actual,
-                (kvp) => { Assert.Equal("showlog", kvp.Key); Assert.Equal(string.Empty, kvp.Value); });
-        }
-
-        [Theory]
         [InlineData("=")]
         [InlineData("==")]
         [InlineData("=true")]
@@ -191,48 +174,6 @@ namespace BuildScriptGeneratorCli.Tests
                 () => BuildScriptGeneratorOptionsHelper.ProcessProperties(properties));
 
             Assert.Equal($"Property key cannot start with '=' for property '{property}'.", exception.Message);
-        }
-
-        [Theory]
-        [InlineData("a=bcd", "a", "bcd")]
-        [InlineData("abc=d", "abc", "d")]
-        [InlineData("ab=cd", "ab", "cd")]
-        public void ProcessProperties_ReturnsProperty_WhenBothKeyAndValueArePresent(
-            string property,
-            string key,
-            string value)
-        {
-            // Arrange
-            var properties = new[] { property };
-
-            // Act
-            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
-
-            // Assert
-            Assert.Collection(
-                actual,
-                (kvp) => { Assert.Equal(key, kvp.Key); Assert.Equal(value, kvp.Value); });
-        }
-
-        [Theory]
-        [InlineData("a=b=c=d", "a", "b=c=d")]
-        [InlineData("a==", "a", "=")]
-        [InlineData("a==b", "a", "=b")]
-        public void ProcessProperties_ReturnsProperty_UsingFirstOccurrenceOfEqualToSymbol(
-            string property,
-            string key,
-            string value)
-        {
-            // Arrange
-            var properties = new[] { property };
-
-            // Act
-            var actual = BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
-
-            // Assert
-            Assert.Collection(
-                actual,
-                (kvp) => { Assert.Equal(key, kvp.Key); Assert.Equal(value, kvp.Value); });
         }
 
         [Theory]
@@ -259,7 +200,6 @@ namespace BuildScriptGeneratorCli.Tests
                 actual,
                 (kvp) => { Assert.Equal(key, kvp.Key); Assert.Equal(value, kvp.Value); });
         }
-
 
         private string CreateNewDir()
         {

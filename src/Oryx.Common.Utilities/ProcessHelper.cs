@@ -76,9 +76,12 @@ namespace Microsoft.Oryx.Common.Utilities
                 process.ErrorDataReceived += standardErrorHandler;
             }
 
-            foreach (var argument in arguments)
+            if (arguments != null)
             {
-                process.StartInfo.ArgumentList.Add(argument);
+                foreach (var argument in arguments)
+                {
+                    process.StartInfo.ArgumentList.Add(argument);
+                }
             }
 
             using (process)

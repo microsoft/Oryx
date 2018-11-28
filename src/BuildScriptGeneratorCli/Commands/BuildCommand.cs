@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -70,56 +69,83 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
+            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
+            var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
+            var sourceRepo = sourceRepoProvider.GetSourceRepo();
+
+            var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
+            if (!environmentSettingsProvider.TryGetSettings(out var environmentSettings))
+            {
+                return Constants.ExitFailure;
+            }
+
+            // Run pre-build script
+            var exitCode = Constants.ExitFailure;
+            if (!string.IsNullOrEmpty(environmentSettings.PreBuildScriptPath))
+            {
+                logger.LogDebug($"Executing pre-build script '{environmentSettings.PreBuildScriptPath}' ...");
+
+                exitCode = scriptExecutor.ExecuteScript(
+                    environmentSettings.PreBuildScriptPath,
+                    args: null,
+                    stdOutHandler,
+                    stdOutHandler);
+                if (exitCode != Constants.ExitSuccess)
+                {
+                    return exitCode;
+                }
+            }
+
+            // Run actual build
             var scriptGenerator = new ScriptGenerator(console, serviceProvider);
             if (!scriptGenerator.TryGenerateScript(out var scriptContent))
             {
-                return 1;
+                return Constants.ExitFailure;
             }
 
             // Get the path where the generated script should be written into.
             var tempDirectoryProvider = serviceProvider.GetRequiredService<ITempDirectoryProvider>();
-            var scriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "build.sh");
+            var buildScriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "build.sh");
 
             // Write the content to the script.
-            File.WriteAllText(scriptPath, scriptContent);
-            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            logger.LogDebug($"Script was generated successfully at '{scriptPath}'.");
-
-            // Set execute permission on the generated script.
-            (var exitCode, var output, var error) = ProcessHelper.RunProcessAndCaptureOutput(
-                "chmod",
-                arguments: new[] { "+x", scriptPath },
-                // Do not provide wait time as the caller can do this themselves.
-                waitForExitInSeconds: null);
-            if (exitCode != 0)
-            {
-                console.Error.WriteLine(
-                    $"Error: Could not set execute permission on the generated script '{scriptPath}'." +
-                    Environment.NewLine +
-                    $"Output: {output}" +
-                    Environment.NewLine +
-                    $"Error: {error}");
-                return 1;
-            }
+            File.WriteAllText(buildScriptPath, scriptContent);
+            logger.LogDebug($"Script was generated successfully at '{buildScriptPath}'.");
 
             // Run the generated script
+            logger.LogDebug($"Running the script '{buildScriptPath}' ...");
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
-            var sourceRepo = sourceRepoProvider.GetSourceRepo();
-
-            logger.LogDebug($"Running the script '{scriptPath}' ...");
-            exitCode = ProcessHelper.RunProcess(
-                scriptPath,
-                arguments: new[]
+            exitCode = scriptExecutor.ExecuteScript(
+                buildScriptPath,
+                new[]
                 {
                     sourceRepo.RootPath,
                     options.DestinationDir ?? string.Empty
                 },
-                standardOutputHandler: stdOutHandler,
-                standardErrorHandler: stdErrHandler,
-                // Do not provide wait time as the caller can do this themselves.
-                waitForExitInSeconds: null);
-            return exitCode;
+                stdOutHandler,
+                stdErrHandler);
+            if (exitCode != Constants.ExitSuccess)
+            {
+                return exitCode;
+            }
+
+            // Run post-build script
+            if (!string.IsNullOrEmpty(environmentSettings.PostBuildScriptPath))
+            {
+                logger.LogDebug($"Executing post-build script '{environmentSettings.PostBuildScriptPath}' ...");
+
+                exitCode = scriptExecutor.ExecuteScript(
+                    environmentSettings.PostBuildScriptPath,
+                    args: null,
+                    stdOutHandler,
+                    stdErrHandler);
+                if (exitCode != Constants.ExitSuccess)
+                {
+                    return exitCode;
+                }
+            }
+
+            return Constants.ExitSuccess;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)

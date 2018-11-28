@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             _serviceCollection = new ServiceCollection();
             _serviceCollection
                 .AddBuildScriptGeneratorServices()
+                .AddCliServices()
                 .AddLogging(loggingBuilder =>
                 {
                     loggingBuilder

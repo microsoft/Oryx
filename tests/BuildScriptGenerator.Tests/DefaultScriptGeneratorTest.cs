@@ -469,6 +469,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 throw new NotImplementedException();
             }
+
+            public string[] ReadAllLines(params string[] paths)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

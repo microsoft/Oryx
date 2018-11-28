@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 _serviceProvider = GetServiceProvider();
                 if (!IsValidInput(_serviceProvider, console))
                 {
-                    return 1;
+                    return Constants.ExitFailure;
                 }
 
                 return Execute(_serviceProvider, console);

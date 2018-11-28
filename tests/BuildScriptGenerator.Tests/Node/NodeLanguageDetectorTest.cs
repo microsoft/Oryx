@@ -421,6 +421,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             {
                 throw new System.NotImplementedException();
             }
+
+            public string[] ReadAllLines(params string[] paths)
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
         private class TestEnvironemnt : IEnvironment

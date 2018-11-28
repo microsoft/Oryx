@@ -17,8 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool FileExists(params string[] paths)
         {
-            var filePathInRepo = Path.Combine(paths);
-            var path = Path.Combine(RootPath, filePathInRepo);
+            var path = ResolvePath(paths);
             return File.Exists(path);
         }
 
@@ -30,9 +29,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string ReadFile(params string[] paths)
         {
-            var filePathInRepo = Path.Combine(paths);
-            var path = Path.Combine(RootPath, filePathInRepo);
+            var path = ResolvePath(paths);
             return File.ReadAllText(path);
+        }
+
+        public string[] ReadAllLines(params string[] paths)
+        {
+            var path = ResolvePath(paths);
+            return File.ReadAllLines(path);
+        }
+
+        private string ResolvePath(params string[] paths)
+        {
+            var filePathInRepo = Path.Combine(paths);
+            return Path.Combine(RootPath, filePathInRepo);
         }
     }
 }

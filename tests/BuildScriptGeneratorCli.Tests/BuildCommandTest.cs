@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -520,6 +521,31 @@ namespace BuildScriptGeneratorCli.Tests
                     Language = "test",
                     LanguageVersion = "1.0.0"
                 };
+            }
+        }
+
+        private class TestScriptExecutor : IScriptExecutor
+        {
+            public string ScriptPath { get; private set; }
+            public string[] Args { get; private set; }
+            public bool ExecuteScriptCalled { get; private set; }
+            public int ReturnExitCode { get; }
+
+            public TestScriptExecutor(int returnExitCode)
+            {
+                ReturnExitCode = returnExitCode;
+            }
+
+            public int ExecuteScript(
+                string scriptPath,
+                string[] args,
+                DataReceivedEventHandler stdOutHandler,
+                DataReceivedEventHandler stdErrHandler)
+            {
+                ScriptPath = scriptPath;
+                Args = args;
+                ExecuteScriptCalled = true;
+                return ReturnExitCode;
             }
         }
 

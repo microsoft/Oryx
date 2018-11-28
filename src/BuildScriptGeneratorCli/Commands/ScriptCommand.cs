@@ -46,12 +46,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var scriptGenerator = new ScriptGenerator(console, serviceProvider);
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {
-                return 1;
+                return Constants.ExitFailure;
             }
 
             console.WriteLine(generatedScript);
 
-            return 0;
+            return Constants.ExitSuccess;
         }
         
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
