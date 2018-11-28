@@ -27,24 +27,6 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsHelp_AndExits_WhenSourceDirIsNull()
-        {
-            // Arrange
-            var buildCommand = new BuildCommand
-            {
-                SourceDir = null
-            };
-            var testConsole = new TestConsole();
-
-            // Act
-            var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
-
-            // Assert
-            Assert.NotEqual(0, exitCode);
-            Assert.Contains("Usage:", testConsole.StdOutput);
-        }
-
-        [Fact]
         public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
@@ -63,6 +45,21 @@ namespace BuildScriptGeneratorCli.Tests
             var error = testConsole.StdError;
             Assert.DoesNotContain("Usage:", error);
             Assert.Contains("Could not find the source directory", error);
+        }
+
+        [Fact]
+        public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
+        {
+            // Arrange
+            var scriptCommand = new BuildCommand { SourceDir = string.Empty };
+            var testConsole = new TestConsole();
+
+            // Act
+            BuildScriptGeneratorOptions opts = new BuildScriptGeneratorOptions();
+            scriptCommand.ConfigureBuildScriptGeneratorOptions(opts);
+
+            // Assert
+            Assert.Equal(Directory.GetCurrentDirectory(), opts.SourceDir);
         }
 
         [Fact]

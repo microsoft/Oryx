@@ -14,12 +14,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
-            if (ShowHelp())
-            {
-                app.ShowHelp();
-                return 1;
-            }
-
             console.CancelKeyPress += Console_CancelKeyPress;
 
             try
@@ -40,15 +34,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal abstract int Execute(IServiceProvider serviceProvider, IConsole console);
 
-        internal virtual void ConfigureBuildScriptGeneratorOptoins(BuildScriptGeneratorOptions options)
+        internal virtual void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
         }
-
-        internal virtual bool ShowHelp()
-        {
-            return false;
-        }
-
+        
         internal virtual bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             return true;
@@ -59,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var serviceProviderBuilder = new ServiceProviderBuilder()
                 .ConfigureScriptGenerationOptions(o =>
                 {
-                    ConfigureBuildScriptGeneratorOptoins(o);
+                    ConfigureBuildScriptGeneratorOptions(o);
                 });
             return serviceProviderBuilder.Build();
         }

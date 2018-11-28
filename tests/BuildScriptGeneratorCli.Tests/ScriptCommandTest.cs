@@ -25,24 +25,6 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void ScriptCommand_OnExecute_ShowsHelp_AndExits_WhenSourceFolderIsEmpty()
-        {
-            // Arrange
-            var scriptCommand = new ScriptCommand
-            {
-                SourceDir = string.Empty
-            };
-            var testConsole = new TestConsole();
-
-            // Act
-            var exitCode = scriptCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
-
-            // Assert
-            Assert.NotEqual(0, exitCode);
-            Assert.Contains("Usage:", testConsole.StdOutput);
-        }
-
-        [Fact]
         public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
@@ -60,6 +42,21 @@ namespace BuildScriptGeneratorCli.Tests
             var error = testConsole.StdError;
             Assert.DoesNotContain("Usage:", error);
             Assert.Contains("Could not find the source code folder", error);
+        }
+
+        [Fact]
+        public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
+        {
+            // Arrange
+            var scriptCommand = new ScriptCommand { SourceDir = string.Empty };
+            var testConsole = new TestConsole();
+
+            // Act
+            BuildScriptGeneratorOptions opts = new BuildScriptGeneratorOptions();
+            scriptCommand.ConfigureBuildScriptGeneratorOptions(opts);
+
+            // Assert
+            Assert.Equal(Directory.GetCurrentDirectory(), opts.SourceDir);
         }
 
         [Fact]
@@ -83,7 +80,7 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void ScripOnly_OnSuccess_GeneratesScript_ReplacingCRLF_WithLF()
+        public void ScriptOnly_OnSuccess_GeneratesScript_ReplacingCRLF_WithLF()
         {
             // Arrange
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";

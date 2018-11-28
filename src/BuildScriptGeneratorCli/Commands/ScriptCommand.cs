@@ -53,16 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             return 0;
         }
-
-        internal override bool ShowHelp()
-        {
-            if (string.IsNullOrEmpty(SourceDir))
-            {
-                return true;
-            }
-            return false;
-        }
-
+        
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
@@ -83,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal override void ConfigureBuildScriptGeneratorOptoins(BuildScriptGeneratorOptions options)
+        internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
