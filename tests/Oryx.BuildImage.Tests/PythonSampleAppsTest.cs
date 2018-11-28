@@ -29,10 +29,10 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
@@ -46,9 +46,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -67,11 +65,11 @@ namespace Oryx.BuildImage.Tests
         public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/flask-app-output";
             var subDir = Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 // Add a test sub-directory with a file
                 .CreateDirectory($"{appDir}/{subDir}")
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
@@ -91,9 +89,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -109,10 +105,10 @@ namespace Oryx.BuildImage.Tests
         public override void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var nestedOutputDir = "/output/subdir1";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/pythonenv")
                 .ToString();
@@ -126,9 +122,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -144,9 +138,9 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
-            var script = new BashScriptBuilder()
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/pythonenv")
                 .ToString();
@@ -160,9 +154,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -178,10 +170,10 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
@@ -195,9 +187,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -213,10 +203,10 @@ namespace Oryx.BuildImage.Tests
         public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 // Pre-populate the output directory with content
                 .CreateDirectory(appOutputDir)
                 .CreateFile($"{appOutputDir}/hi.txt", "hi")
@@ -237,9 +227,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -259,12 +247,12 @@ namespace Oryx.BuildImage.Tests
 
             // Arrange
             var langVersion = Settings.Python37Version;
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/python2-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "python2-flask-app"));
+            var appDir = volume.ContainerDir;
             var generatedScript = "/build.sh";
-            var appOutputDir = "/python2-app-output";
+            var appOutputDir = "/python2-flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -280,9 +268,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -299,10 +285,10 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python36Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
@@ -316,9 +302,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -337,12 +321,12 @@ namespace Oryx.BuildImage.Tests
         public override void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var generatedScript = "/build.sh";
             var appOutputDir = "/flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} -l python --language-version {Settings.Python36Version} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -359,9 +343,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -377,12 +359,12 @@ namespace Oryx.BuildImage.Tests
         public void CanthrowException_ForInvalidPythonVersion()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var generatedScript = "/build.sh";
             var appOutputDir = "/flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} -l python --language-version 4.0.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -399,9 +381,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -422,12 +402,12 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange
             var langVersion = Settings.Python27Version;
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/python2-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "python2-flask-app"));
+            var appDir = volume.ContainerDir;
             var generatedScript = "/build.sh";
-            var appOutputDir = "/python2-app-output";
+            var appOutputDir = "/python2-flask-app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -444,9 +424,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -462,11 +440,11 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appIntermediateDir = "/flask-app-int";
             var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
@@ -480,9 +458,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -499,10 +475,10 @@ namespace Oryx.BuildImage.Tests
         {
             // Arrange
             var virtualEnvironmentName = "myenv";
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .ToString();
@@ -516,9 +492,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -537,10 +511,10 @@ namespace Oryx.BuildImage.Tests
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/jinja2")
                 .ToString();
@@ -554,9 +528,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -575,10 +547,10 @@ namespace Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_DjangoApp()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/django-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "django-app"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/django-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/django")
                 // These css files should be available since 'collectstatic' is run in the script
@@ -595,9 +567,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -616,7 +586,7 @@ namespace Oryx.BuildImage.Tests
             var volume = DockerVolume.Create(_hostSamplesDir);
             var appDir = $"{volume.ContainerDir}/python/flask-app";
             var appOutputDir = "/flask-app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
                 .ToString();
@@ -630,9 +600,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert

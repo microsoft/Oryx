@@ -26,7 +26,8 @@ namespace Oryx.BuildImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(
                 imageId: Settings.BuildImageName,
-                commandToExecuteOnRun: "oryx");
+                commandToExecuteOnRun: "oryx",
+                commandArguments: null);
 
             // Assert
             RunAsserts(() =>

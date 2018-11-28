@@ -6,12 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="TestScripts\**\*">
-      <Link>TestScripts\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="xunit" Version="2.3.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\..\src\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj" />
   </ItemGroup>

@@ -3,6 +3,13 @@
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"
 
+mountedDirs="/tmp/OryxTestsMountedDirs"
+if [ -d "$mountedDirs" ]; then
+	echo
+	echo "Cleaning up files created by tests' docker containers ..."
+	docker run -v $mountedDirs:/tempDirs oryxdevms/build rm -rf /tempDirs/*
+fi
+
 echo
 echo "Stop running containers:"
 echo

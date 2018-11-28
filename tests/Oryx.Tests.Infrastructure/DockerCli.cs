@@ -1,10 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-using Microsoft.Oryx.Common.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using Microsoft.Oryx.Common.Utilities;
 
 namespace Oryx.Tests.Infrastructure
 {
@@ -28,6 +27,8 @@ namespace Oryx.Tests.Infrastructure
             string imageId,
             List<EnvironmentVariable> environmentVariables,
             List<DockerVolume> volumes,
+            string portMapping,
+            bool runContainerInBackground,
             string command,
             string[] commandArguments)
         {
@@ -36,6 +37,11 @@ namespace Oryx.Tests.Infrastructure
                 throw new ArgumentException($"'{nameof(imageId)}' cannot be null or empty.");
             }
 
+            var output = string.Empty;
+            var error = string.Empty;
+            int exitCode = -1;
+            Exception exception = null;
+
             // Generate a unique container name for each 'run' call.
             // Provide a prefix so that one can delete the containers using regex, if needed
             var containerName = $"{CreatedContainerPrefix}{Guid.NewGuid().ToString("N")}";
@@ -43,16 +49,12 @@ namespace Oryx.Tests.Infrastructure
             var fileName = "docker";
             var arguments = PrepareArguments();
 
-            var output = string.Empty;
-            var error = string.Empty;
-            int exitCode = -1;
-            Exception exception = null;
             try
             {
-                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(
-                    fileName,
-                    arguments,
-                    _waitTimeInSeconds);
+                (exitCode, output, error) = ProcessHelper.RunProcess(
+                        fileName,
+                        arguments,
+                        _waitTimeInSeconds);
             }
             catch (InvalidOperationException invalidOperationException)
             {
@@ -75,6 +77,11 @@ namespace Oryx.Tests.Infrastructure
                 args.Add("--name");
                 args.Add(containerName);
 
+                if (runContainerInBackground)
+                {
+                    args.Add("-d");
+                }
+
                 if (environmentVariables?.Count > 0)
                 {
                     foreach (var environmentVariable in environmentVariables)
@@ -84,32 +91,22 @@ namespace Oryx.Tests.Infrastructure
                     }
                 }
 
-                DockerVolume testScriptsVolume = null;
                 if (volumes?.Count > 0)
                 {
-                    var hostTestScriptsDir = Path.Combine(Directory.GetCurrentDirectory(), "TestScripts");
-                    testScriptsVolume = DockerVolume.Create(hostTestScriptsDir);
-
-                    volumes.Add(testScriptsVolume);
-
                     foreach (var volume in volumes)
                     {
                         args.Add("-v");
-                        // Always mount as read only to prevent the containers (which run as 'root' by default)
-                        // from writing to the host's directory (which does not run as 'root', for example on 
-                        // the build agent).
-                        args.Add($"{volume.HostDir}:{volume.ReadOnlyContainerDir}:ro");
+                        args.Add($"{volume.MountedHostDir}:{volume.ContainerDir}");
                     }
                 }
 
-                args.Add(imageId);
-
-                if (volumes?.Count > 0)
+                if (!string.IsNullOrEmpty(portMapping))
                 {
-                    args.Add($"{testScriptsVolume.ReadOnlyContainerDir}/copyVolumesAndExecuteCommand.sh");
-                    args.Add(DockerVolume.ReadOnlyDirRootInContainer);
-                    args.Add(DockerVolume.WritableDirRootInContainer);
+                    args.Add("-p");
+                    args.Add(portMapping);
                 }
+
+                args.Add(imageId);
 
                 args.Add(command);
 
@@ -129,31 +126,8 @@ namespace Oryx.Tests.Infrastructure
                 throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
             }
 
-            var fileName = "docker";
             var arguments = PrepareArguments();
-
-            var output = string.Empty;
-            var error = string.Empty;
-            int exitCode = -1;
-            Exception exception = null;
-            try
-            {
-                (exitCode, output, error) = ProcessHelper.RunProcessAndCaptureOutput(
-                    fileName,
-                    arguments,
-                    _waitTimeInSeconds);
-            }
-            catch (InvalidOperationException invalidOperationException)
-            {
-                exception = invalidOperationException;
-            }
-
-            return new DockerCommandResult(
-                exitCode,
-                exception,
-                output,
-                error,
-                $"{fileName} {string.Join(" ", arguments)}");
+            return ExecuteCommand(arguments);
 
             IEnumerable<string> PrepareArguments()
             {
@@ -169,6 +143,72 @@ namespace Oryx.Tests.Infrastructure
                 args.Add(containerName);
                 return args;
             }
+        }
+
+        public DockerCommandResult StopContainer(string containerName)
+        {
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
+            }
+
+            var arguments = PrepareArguments();
+            return ExecuteCommand(arguments);
+
+            IEnumerable<string> PrepareArguments()
+            {
+                var args = new List<string>();
+                args.Add("stop");
+                args.Add(containerName);
+                return args;
+            }
+        }
+
+        public DockerCommandResult Logs(string containerName)
+        {
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
+            }
+
+            var arguments = PrepareArguments();
+            return ExecuteCommand(arguments);
+
+            IEnumerable<string> PrepareArguments()
+            {
+                var args = new List<string>();
+                args.Add("logs");
+                args.Add(containerName);
+                return args;
+            }
+        }
+
+        private DockerCommandResult ExecuteCommand(IEnumerable<string> arguments)
+        {
+            var fileName = "docker";
+
+            var output = string.Empty;
+            var error = string.Empty;
+            int exitCode = -1;
+            Exception exception = null;
+            try
+            {
+                (exitCode, output, error) = ProcessHelper.RunProcess(
+                    fileName,
+                    arguments,
+                    _waitTimeInSeconds);
+            }
+            catch (InvalidOperationException invalidOperationException)
+            {
+                exception = invalidOperationException;
+            }
+
+            return new DockerCommandResult(
+                exitCode,
+                exception,
+                output,
+                error,
+                $"{fileName} {string.Join(" ", arguments)}");
         }
     }
 }

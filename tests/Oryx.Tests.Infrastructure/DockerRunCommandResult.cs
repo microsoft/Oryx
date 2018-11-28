@@ -36,7 +36,7 @@ namespace Oryx.Tests.Infrastructure
             {
                 volumeList = string.Join(
                     " ",
-                    Volumes.Select(kvp => $"-v {kvp.HostDir}:/{kvp.ContainerDir.TrimStart('/')}:ro"));
+                    Volumes.Select(kvp => $"-v {kvp.MountedHostDir}:/{kvp.ContainerDir.TrimStart('/')}"));
             }
 
             var sb = new StringBuilder();

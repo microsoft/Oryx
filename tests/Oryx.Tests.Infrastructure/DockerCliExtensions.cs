@@ -11,42 +11,18 @@ namespace Oryx.Tests.Infrastructure
         public static DockerRunCommandResult Run(
             this DockerCli dockerCli,
             string imageId,
-            string commandToExecuteOnRun)
-        {
-            return dockerCli.Run(
-                imageId,
-                environmentVariable: null,
-                volume: null,
-                commandToExecuteOnRun,
-                commandArguments: null);
-        }
-
-        public static DockerRunCommandResult Run(
-            this DockerCli dockerCli,
-            string imageId,
             string commandToExecuteOnRun,
             string[] commandArguments)
         {
-            return dockerCli.Run(
+            return Run(
+                dockerCli,
                 imageId,
                 environmentVariable: null,
                 volume: null,
+                portMapping: null,
+                runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
-        }
-
-        public static DockerRunCommandResult Run(
-            this DockerCli dockerCli,
-            string imageId,
-            DockerVolume volume,
-            string commandToExecuteOnRun)
-        {
-            return dockerCli.Run(
-                imageId,
-                environmentVariable: null,
-                volume,
-                commandToExecuteOnRun,
-                commandArguments: null);
         }
 
         public static DockerRunCommandResult Run(
@@ -56,10 +32,13 @@ namespace Oryx.Tests.Infrastructure
             string commandToExecuteOnRun,
             string[] commandArguments)
         {
-            return dockerCli.Run(
+            return Run(
+                dockerCli,
                 imageId,
                 environmentVariable: null,
                 volume,
+                portMapping: null,
+                runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
         }
@@ -67,15 +46,20 @@ namespace Oryx.Tests.Infrastructure
         public static DockerRunCommandResult Run(
             this DockerCli dockerCli,
             string imageId,
-            EnvironmentVariable environmentVariable,
-            string commandToExecuteOnRun)
+            DockerVolume volume,
+            string portMapping,
+            string commandToExecuteOnRun,
+            string[] commandArguments)
         {
-            return dockerCli.Run(
+            return Run(
+                dockerCli,
                 imageId,
-                environmentVariable,
-                volume: null,
+                environmentVariable: null,
+                volume,
+                portMapping,
+                runContainerInBackground: false,
                 commandToExecuteOnRun,
-                commandArguments: null);
+                commandArguments);
         }
 
         public static DockerRunCommandResult Run(
@@ -85,10 +69,13 @@ namespace Oryx.Tests.Infrastructure
             string commandToExecuteOnRun,
             string[] commandArguments)
         {
-            return dockerCli.Run(
+            return Run(
+                dockerCli,
                 imageId,
                 environmentVariable,
                 volume: null,
+                portMapping: null,
+                runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
         }
@@ -98,14 +85,18 @@ namespace Oryx.Tests.Infrastructure
             string imageId,
             EnvironmentVariable environmentVariable,
             DockerVolume volume,
-            string commandToExecuteOnRun)
+            string commandToExecuteOnRun,
+            string[] commandArguments)
         {
-            return dockerCli.Run(
+            return Run(
+                dockerCli,
                 imageId,
                 environmentVariable,
                 volume,
+                portMapping: null,
+                runContainerInBackground: false,
                 commandToExecuteOnRun,
-                commandArguments: null);
+                commandArguments);
         }
 
         public static DockerRunCommandResult Run(
@@ -113,6 +104,8 @@ namespace Oryx.Tests.Infrastructure
             string imageId,
             EnvironmentVariable environmentVariable,
             DockerVolume volume,
+            string portMapping,
+            bool runContainerInBackground,
             string commandToExecuteOnRun,
             string[] commandArguments)
         {
@@ -132,6 +125,8 @@ namespace Oryx.Tests.Infrastructure
                 imageId,
                 environmentVariables,
                 volumes,
+                portMapping,
+                runContainerInBackground,
                 commandToExecuteOnRun,
                 commandArguments);
         }

@@ -28,10 +28,10 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/webfrontend-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -45,9 +45,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -63,11 +61,11 @@ namespace Oryx.BuildImage.Tests
         public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/webfrontend-output";
             var subDir = Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 // Add a test sub-directory with a file
                 .CreateDirectory($"{appDir}/{subDir}")
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
@@ -87,9 +85,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -105,10 +101,10 @@ namespace Oryx.BuildImage.Tests
         public override void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var nestedOutputDir = "/output/subdir1";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .ToString();
@@ -122,9 +118,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -140,10 +134,10 @@ namespace Oryx.BuildImage.Tests
         public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 // Pre-populate the output directory with content
                 .CreateDirectory(appOutputDir)
                 .CreateFile($"{appOutputDir}/hi.txt", "hi")
@@ -164,9 +158,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -186,7 +178,7 @@ namespace Oryx.BuildImage.Tests
             var serverJsWithErrors = @"var http = require(""http""); http.createServerFoooo();";
             var appDir = "/app";
             var appOutputDir = "/app-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .CreateDirectory(appDir)
                 .CreateFile($"{appDir}/server.js", serverJsWithErrors)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
@@ -218,10 +210,10 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/webfrontend-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l nodejs --language-version 8.2.1")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -235,9 +227,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -253,12 +243,12 @@ namespace Oryx.BuildImage.Tests
         public override void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/webfrontend-output";
             var generatedScript = "/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -275,9 +265,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -293,12 +281,12 @@ namespace Oryx.BuildImage.Tests
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption_AndWhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/webfrontend-output";
             var generatedScript = "/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} -l nodejs --language-version 8.2.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -315,9 +303,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -333,11 +319,11 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var intermediateDir = $"/webfrontend-intermediate";
             var appOutputDir = "/webfrontend-output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {intermediateDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -351,9 +337,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -369,9 +353,9 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
-            var script = new BashScriptBuilder()
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .ToString();
@@ -385,9 +369,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert
@@ -403,10 +385,10 @@ namespace Oryx.BuildImage.Tests
         public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/nodejs/webfrontend";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
-            var script = new BashScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -420,9 +402,7 @@ namespace Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    "\"" +
-                    script +
-                    "\""
+                    script
                 });
 
             // Assert

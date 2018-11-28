@@ -11,20 +11,7 @@ namespace Microsoft.Oryx.Common.Utilities
 {
     public static class ProcessHelper
     {
-        public static int RunProcess(
-            string fileName,
-            IEnumerable<string> arguments,
-            int? waitForExitInSeconds)
-        {
-            return RunProcess(
-                fileName,
-                arguments,
-                standardOutputHandler: null,
-                standardErrorHandler: null,
-                waitForExitInSeconds);
-        }
-
-        public static (int exitCode, string output, string error) RunProcessAndCaptureOutput(
+        public static (int exitCode, string output, string error) RunProcess(
             string fileName,
             IEnumerable<string> arguments,
             int? waitForExitInSeconds)
@@ -63,7 +50,6 @@ namespace Microsoft.Oryx.Common.Utilities
             var process = new Process();
             process.StartInfo.FileName = fileName;
             process.StartInfo.CreateNoWindow = true;
-
             if (redirectOutput)
             {
                 process.StartInfo.RedirectStandardOutput = true;
@@ -133,6 +119,5 @@ namespace Microsoft.Oryx.Common.Utilities
                 return process.ExitCode;
             }
         }
-
     }
 }

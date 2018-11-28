@@ -9,7 +9,7 @@ namespace Oryx.Tests.Infrastructure
     /// <summary>
     /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
     /// </summary>
-    public class BashScriptBuilder
+    public class ShellScriptBuilder
     {
         private bool _contentPresent = false;
         private readonly StringBuilder _scriptBuilder;
@@ -17,12 +17,12 @@ namespace Oryx.Tests.Infrastructure
         /// <summary>
         /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
         /// </summary>
-        public BashScriptBuilder()
+        public ShellScriptBuilder()
         {
             _scriptBuilder = new StringBuilder();
         }
 
-        public BashScriptBuilder AddCommand(string command)
+        public ShellScriptBuilder AddCommand(string command)
         {
             command = command.Trim(' ', '&');
             return Append(command);
@@ -33,7 +33,7 @@ namespace Oryx.Tests.Infrastructure
         /// </summary>
         /// <param name="argumentsString"></param>
         /// <returns></returns>
-        public BashScriptBuilder AddBuildCommand(string argumentsString)
+        public ShellScriptBuilder AddBuildCommand(string argumentsString)
         {
             return Append($"oryx build {argumentsString}");
         }
@@ -43,35 +43,35 @@ namespace Oryx.Tests.Infrastructure
         /// </summary>
         /// <param name="argumentsString"></param>
         /// <returns></returns>
-        public BashScriptBuilder AddScriptCommand(string argumentsString)
+        public ShellScriptBuilder AddScriptCommand(string argumentsString)
         {
             return Append($"oryx script {argumentsString}");
         }
 
-        public BashScriptBuilder CreateDirectory(string directory)
+        public ShellScriptBuilder CreateDirectory(string directory)
         {
             return Append($"mkdir -p \"{directory}\"");
         }
 
-        public BashScriptBuilder CreateFile(string file, string content)
+        public ShellScriptBuilder CreateFile(string file, string content)
         {
             return Append($"echo \"{content}\" > \"{file}\"");
         }
 
-        public BashScriptBuilder SetExecutePermissionOnFile(string file)
+        public ShellScriptBuilder SetExecutePermissionOnFile(string file)
         {
             return Append($"chmod +x \"{file}\"");
         }
 
-        public BashScriptBuilder AddDirectoryDoesNotExistCheck(string directory)
+        public ShellScriptBuilder AddDirectoryDoesNotExistCheck(string directory)
         {
             return Append(
                 $"if [ -d \"{directory}\" ]; then " +
-                $"echo Directory '{directory}' is still prsent 1>&2 && " +
+                $"echo Directory '{directory}' is still present 1>&2 && " +
                 "exit 1; fi");
         }
 
-        public BashScriptBuilder AddDirectoryExistsCheck(string directory)
+        public ShellScriptBuilder AddDirectoryExistsCheck(string directory)
         {
             return Append(
                 $"if [ ! -d \"{directory}\" ]; then " +
@@ -79,15 +79,15 @@ namespace Oryx.Tests.Infrastructure
                 "exit 1; fi");
         }
 
-        public BashScriptBuilder AddFileDoesNotExistCheck(string file)
+        public ShellScriptBuilder AddFileDoesNotExistCheck(string file)
         {
             return Append(
                 $"if [ -f \"{file}\" ]; then " +
-                $"echo File '{file}' is still prsent 1>&2 && " +
+                $"echo File '{file}' is still present 1>&2 && " +
                 "exit 1; fi");
         }
 
-        public BashScriptBuilder AddFileExistsCheck(string file)
+        public ShellScriptBuilder AddFileExistsCheck(string file)
         {
             return Append(
                 $"if [ ! -f \"{file}\" ]; then " +
@@ -95,7 +95,7 @@ namespace Oryx.Tests.Infrastructure
                 "exit 1; fi");
         }
 
-        private BashScriptBuilder Append(string content)
+        private ShellScriptBuilder Append(string content)
         {
             // NOTE: do not use AppendLine as in the script must be in one line
             if (_contentPresent)
