@@ -46,9 +46,9 @@ steps:
   condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Test NodeJS startup command generator'
+  displayName: 'Test the startup command generators'
   inputs:
-    scriptPath: ./build/test-nodestartupgenerator.sh
+    scriptPath: ./build/test-startupgenerators.sh
   condition: and(succeeded(), eq(variables['BuildAndTestRuntimeImages'], 'true'))
 
 - task: ShellScript@2

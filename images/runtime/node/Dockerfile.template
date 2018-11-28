@@ -2,7 +2,6 @@
 FROM golang:1.11-alpine as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
-RUN chmod a+x ./build.sh
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM node:%NODE_BASE_IMAGE%
