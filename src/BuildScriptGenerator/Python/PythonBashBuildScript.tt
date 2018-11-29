@@ -57,7 +57,7 @@ echo pip install finished.
 
 if [ -e "$SOURCE_DIR/manage.py" ]
 then
-	if grep -iq "Django==" "$SOURCE_DIR/requirements.txt"
+	if grep -iq "Django" "$SOURCE_DIR/requirements.txt"
 	then
 		echo
 		echo Content in source directory is a Django app
