@@ -14,11 +14,11 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 {
-    public class PythonLanguageDetectorTest : IClassFixture<TestTempDirTestFixure>
+    public class PythonLanguageDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public PythonLanguageDetectorTest(TestTempDirTestFixure testFixture)
+        public PythonLanguageDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
         }
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
         private PythonLanguageDetector CreatePythonLanguageDetector(string[] supportedPythonVersions)
         {
-            return CreatePythonLanguageDetector(supportedPythonVersions, new TestEnvironemnt());
+            return CreatePythonLanguageDetector(supportedPythonVersions, new TestEnvironment());
         }
 
         private PythonLanguageDetector CreatePythonLanguageDetector(
@@ -175,20 +175,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 Options.Create(options),
                 new TestPythonVersionProvider(supportedPythonVersions),
                 NullLogger<PythonLanguageDetector>.Instance);
-        }
-
-        private class TestEnvironemnt : IEnvironment
-        {
-            public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>();
-
-            public string GetEnvironmentVariable(string name)
-            {
-                if (Variables.TryGetValue(name, out var value))
-                {
-                    return value;
-                }
-                return null;
-            }
         }
 
         private class TestPythonVersionProvider : IPythonVersionProvider

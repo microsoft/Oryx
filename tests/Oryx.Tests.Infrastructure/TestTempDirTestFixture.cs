@@ -7,9 +7,9 @@ using System.IO;
 
 namespace Oryx.Tests.Infrastructure
 {
-    public class TestTempDirTestFixure : IDisposable
+    public class TestTempDirTestFixture : IDisposable
     {
-        public TestTempDirTestFixure()
+        public TestTempDirTestFixture()
         {
             // Prefix with 'tmp/oryxtests' so that one could clean the directory explicitly if its
             // not cleaned automatically (for example, in cases where a build is stopped manually

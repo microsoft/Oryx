@@ -2,8 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
@@ -39,20 +39,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.Equal("10.10.10", options.PythonDefaultVersion);
-        }
-
-        private class TestEnvironment : IEnvironment
-        {
-            public Dictionary<string, string> Variables { get; set; } = new Dictionary<string, string>();
-
-            public string GetEnvironmentVariable(string name)
-            {
-                if (Variables.TryGetValue(name, out var value))
-                {
-                    return value;
-                }
-                return null;
-            }
         }
     }
 }

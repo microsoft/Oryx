@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
@@ -242,7 +243,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsResult_WithNodeVersionFromEnvironmentVariable_ForPackageJsonWithNoNodeVersion()
         {
             // Arrange
-            var environment = new TestEnvironemnt();
+            var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = "500.500.500";
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "500.500.500" },
@@ -264,7 +265,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsResult_WithNodeVersionSpecified_InPackageJson()
         {
             // Arrange
-            var environment = new TestEnvironemnt();
+            var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = "8.11.2";
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2" },
@@ -373,7 +374,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             string[] supportedNodeVersions,
             string[] supportedNpmVersions)
         {
-            return CreateNodeLanguageDetector(supportedNodeVersions, supportedNpmVersions, new TestEnvironemnt());
+            return CreateNodeLanguageDetector(supportedNodeVersions, supportedNpmVersions, new TestEnvironment());
         }
 
         private NodeLanguageDetector CreateNodeLanguageDetector(
@@ -425,20 +426,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public string[] ReadAllLines(params string[] paths)
             {
                 throw new System.NotImplementedException();
-            }
-        }
-
-        private class TestEnvironemnt : IEnvironment
-        {
-            public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>();
-
-            public string GetEnvironmentVariable(string name)
-            {
-                if (Variables.TryGetValue(name, out var value))
-                {
-                    return value;
-                }
-                return null;
             }
         }
 

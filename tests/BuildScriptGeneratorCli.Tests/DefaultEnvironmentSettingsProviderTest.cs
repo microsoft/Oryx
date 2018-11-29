@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -13,11 +12,11 @@ using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    public class DefaultEnvironmentSettingsProviderTest : IClassFixture<TestTempDirTestFixure>
+    public class DefaultEnvironmentSettingsProviderTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public DefaultEnvironmentSettingsProviderTest(TestTempDirTestFixure tempDirFixture)
+        public DefaultEnvironmentSettingsProviderTest(TestTempDirTestFixture tempDirFixture)
         {
             _tempDirRoot = tempDirFixture.RootDirPath;
         }
@@ -33,7 +32,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Act
             var settings = provider.ReadSettingsFromFile();
 
-            // Assertt
+            // Assert
             Assert.NotNull(settings);
             Assert.Equal(2, settings.Count);
             Assert.True(settings.TryGetValue("key1", out var value));
@@ -53,7 +52,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Act
             var settings = provider.ReadSettingsFromFile();
 
-            // Assertt
+            // Assert
             Assert.NotNull(settings);
             Assert.Equal(2, settings.Count);
             Assert.True(settings.TryGetValue("key1", out var value));
@@ -73,7 +72,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Act
             var settings = provider.ReadSettingsFromFile();
 
-            // Assertt
+            // Assert
             Assert.NotNull(settings);
             Assert.Equal(2, settings.Count);
             Assert.True(settings.TryGetValue("key1", out var value));
@@ -94,7 +93,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Act
             var settings = provider.IsValid(environmentSettings);
 
-            // Assertt
+            // Assert
             Assert.False(settings);
         }
 
@@ -110,7 +109,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Act
             var settings = provider.IsValid(environmentSettings);
 
-            // Assertt
+            // Assert
             Assert.False(settings);
         }
 
@@ -125,7 +124,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Act
             var settings = provider.IsValid(environmentSettings);
 
-            // Assertt
+            // Assert
             Assert.True(settings);
         }
 

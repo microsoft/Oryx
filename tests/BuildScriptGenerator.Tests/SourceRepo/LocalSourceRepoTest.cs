@@ -8,13 +8,13 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    public class LocalSourceRepoTest : IClassFixture<LocalSourceRepoTest.SourceRepoTestFixutre>
+    public class LocalSourceRepoTest : IClassFixture<LocalSourceRepoTest.SourceRepoTestFixture>
     {
         private readonly string _rootDirPath;
 
-        public LocalSourceRepoTest(SourceRepoTestFixutre fixutre)
+        public LocalSourceRepoTest(SourceRepoTestFixture fixture)
         {
-            _rootDirPath = fixutre.RootDirPath;
+            _rootDirPath = fixture.RootDirPath;
         }
 
         [Fact]
@@ -95,9 +95,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(3, files.Count());
         }
 
-        public class SourceRepoTestFixutre : IDisposable
+        public class SourceRepoTestFixture : IDisposable
         {
-            public SourceRepoTestFixutre()
+            public SourceRepoTestFixture()
             {
                 RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 

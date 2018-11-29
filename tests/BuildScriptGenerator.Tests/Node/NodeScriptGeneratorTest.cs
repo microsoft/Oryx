@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Oryx.Tests.Infrastructure;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -186,7 +187,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         private ILanguageScriptGenerator GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)
         {
-            var environment = new TestEnvironemnt();
+            var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
             environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
 
@@ -250,16 +251,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             public string[] ReadAllLines(params string[] paths)
             {
                 throw new System.NotImplementedException();
-            }
-        }
-
-        private class TestEnvironemnt : IEnvironment
-        {
-            public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>();
-
-            public string GetEnvironmentVariable(string name)
-            {
-                return Variables[name];
             }
         }
 

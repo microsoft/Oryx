@@ -10,6 +10,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildScriptGenerator\BuildScriptGenerator.csproj" />
     <ProjectReference Include="..\..\src\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj" />
   </ItemGroup>
 </Project>

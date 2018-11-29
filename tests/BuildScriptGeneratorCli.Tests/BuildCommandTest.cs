@@ -18,13 +18,13 @@ using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    public class BuildCommandTest : IClassFixture<TestTempDirTestFixure>
+    public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
         private static string _testDirPath;
 
-        public BuildCommandTest(TestTempDirTestFixure testFixutre)
+        public BuildCommandTest(TestTempDirTestFixture testFixture)
         {
-            _testDirPath = testFixutre.RootDirPath;
+            _testDirPath = testFixture.RootDirPath;
         }
 
         [Fact]

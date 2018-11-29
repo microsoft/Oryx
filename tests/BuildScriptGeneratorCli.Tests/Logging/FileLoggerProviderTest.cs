@@ -13,11 +13,11 @@ using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    public class FileLoggerProviderTest : IClassFixture<TestTempDirTestFixure>
+    public class FileLoggerProviderTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _rooDirPath;
 
-        public FileLoggerProviderTest(TestTempDirTestFixure testFixture)
+        public FileLoggerProviderTest(TestTempDirTestFixture testFixture)
         {
             _rooDirPath = testFixture.RootDirPath;
         }

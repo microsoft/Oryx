@@ -11,13 +11,13 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    public class NodeVersionProviderTest : IClassFixture<NodeVersionProviderTest.TestFixutre>
+    public class NodeVersionProviderTest : IClassFixture<NodeVersionProviderTest.TestFixture>
     {
         private readonly string _rootDirPath;
 
-        public NodeVersionProviderTest(TestFixutre testFixutre)
+        public NodeVersionProviderTest(TestFixture testFixture)
         {
-            _rootDirPath = testFixutre.RootDirPath;
+            _rootDirPath = testFixture.RootDirPath;
         }
 
         [Fact]
@@ -62,9 +62,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return new NodeVersionProvider(Options.Create(options));
         }
 
-        public class TestFixutre : IDisposable
+        public class TestFixture : IDisposable
         {
-            public TestFixutre()
+            public TestFixture()
             {
                 RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 

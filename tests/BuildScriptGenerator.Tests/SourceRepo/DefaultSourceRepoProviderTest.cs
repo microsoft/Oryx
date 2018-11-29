@@ -11,13 +11,13 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    public class DefaultSourceRepoProviderTest : IClassFixture<TestTempDirTestFixure>
+    public class DefaultSourceRepoProviderTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRootPath;
 
-        public DefaultSourceRepoProviderTest(TestTempDirTestFixure fixutre)
+        public DefaultSourceRepoProviderTest(TestTempDirTestFixture fixture)
         {
-            _tempDirRootPath = fixutre.RootDirPath;
+            _tempDirRootPath = fixture.RootDirPath;
         }
 
         [Fact]
