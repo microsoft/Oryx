@@ -13,6 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         private const string NodeJsName = "nodejs";
         private const string PackageJsonFileName = "package.json";
+        private const string YarnLockFileName = "yarn.lock";
 
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
@@ -38,16 +39,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             var benvArgs = $"node={context.LanguageVersion} ";
 
-            var npmVersion = GetNpmVersion(context);
-            if (!string.IsNullOrEmpty(npmVersion))
+            string installCommand;
+            if (context.SourceRepo.FileExists(YarnLockFileName))
             {
-                benvArgs += $"npm={npmVersion} ";
+                installCommand = "yarn install";
+            }
+            else
+            {
+                var npmVersion = GetNpmVersion(context);
+                if (!string.IsNullOrEmpty(npmVersion))
+                {
+                    benvArgs += $"npm={npmVersion} ";
+                }
+                installCommand = "npm install";
             }
 
-            var installCommand = "eval npm install --production";
-
             script = new NodeBashBuildScript(installCommand, benvArgs).TransformText();
-
             return true;
         }
 

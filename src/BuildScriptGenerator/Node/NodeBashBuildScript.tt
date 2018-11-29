@@ -36,12 +36,12 @@ echo
 
 source /usr/local/bin/benv <#= BenvArgs #>
 
-echo Installing npm packages ...
+echo Installing packages ...
 cd "$SOURCE_DIR"
 echo
-echo "Running '<#= NpmInstallCommand  #>' ..."
+echo "Running '<#= PackageInstallCommand  #>' ..."
 echo
-<#= NpmInstallCommand #>
+<#= PackageInstallCommand #>
 
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then

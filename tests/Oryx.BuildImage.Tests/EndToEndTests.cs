@@ -67,6 +67,45 @@ namespace Oryx.BuildImage.Tests
                 });
         }
 
+        [Fact]
+        public async Task NodeApp_WithYarnLock()
+        {
+            // Arrange
+            var nodeVersion = "10.13";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "webfrontend-yarnlock");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var portMapping = $"{port}:80";
+            var startupFile = "/tmp/startup.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"echo '#!/bin/sh' > {startupFile}")
+                .AddCommand($"{startupCommand} -appPath {appDir} >> {startupFile} 2>&1")
+                .AddCommand($"chmod a+x {startupFile}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+
         [Fact(Skip = "https://devdiv.visualstudio.com/DevDiv/_workitems/edit/736633")]
         public async Task Python27App()
         {

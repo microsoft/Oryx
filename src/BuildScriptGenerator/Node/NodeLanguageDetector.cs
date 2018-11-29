@@ -14,6 +14,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         private const string NodeJsName = "nodejs";
         private const string PackageJsonFileName = "package.json";
+        private const string PackageLockJsonFileName = "package-lock.json";
+        private const string YarnLockFileName = "yarn.lock";
+
         private static readonly string[] IisStartupFiles = new[]
         {
             "default.htm",
@@ -49,13 +52,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             bool isNodeApp = false;
 
-            if (sourceRepo.FileExists(PackageJsonFileName))
+            if (sourceRepo.FileExists(PackageJsonFileName) ||
+                sourceRepo.FileExists(PackageLockJsonFileName) ||
+                sourceRepo.FileExists(YarnLockFileName))
             {
                 isNodeApp = true;
             }
             else
             {
-                _logger.LogDebug($"Could not find file '{PackageJsonFileName}' in the source directory.");
+                _logger.LogDebug(
+                    $"Could not find file '{PackageJsonFileName}' or '{PackageLockJsonFileName}' or" +
+                    $" '{YarnLockFileName}' in the source directory.");
             }
 
             if (!isNodeApp)

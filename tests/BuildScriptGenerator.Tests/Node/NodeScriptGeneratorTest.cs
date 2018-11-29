@@ -142,6 +142,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Contains("benv node=8.2.1 npm=5.4.2", generatedScriptContent);
         }
 
+        [Fact]
+        public void GeneratedScript_UsesYarnInstall_IfYarnLockFileIsPresent()
+        {
+            // Arrange
+            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+            var repo = new CachedSourceRepo();
+            repo.AddFile(PackageJsonWithNoNpmVersion, "package.json");
+            repo.AddFile("Yarn lock file content here", "yarn.lock");
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+
+            // Act
+            var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
+
+            // Assert
+            Assert.True(canGenerateScript);
+            Assert.Contains("yarn install", generatedScriptContent);
+            Assert.DoesNotContain("npm install", generatedScriptContent);
+            Assert.Contains("benv node=8.2.1", generatedScriptContent);
+        }
+
+        [Fact]
+        public void GeneratedScript_UsesNpmInstall_IfPackageLockJsonFileIsPresent()
+        {
+            // Arrange
+            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+            var repo = new CachedSourceRepo();
+            repo.AddFile(PackageJsonWithNoNpmVersion, "package.json");
+            repo.AddFile("Package lock json file content here", "package-lock.json");
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+
+            // Act
+            var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
+
+            // Assert
+            Assert.True(canGenerateScript);
+            Assert.Contains("npm install", generatedScriptContent);
+            Assert.DoesNotContain("yarn install", generatedScriptContent);
+            Assert.Contains("benv node=8.2.1 npm=6.0.0", generatedScriptContent);
+        }
+
         private ILanguageScriptGenerator GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)
         {
             var environment = new TestEnvironemnt();
