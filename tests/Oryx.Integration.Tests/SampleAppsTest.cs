@@ -31,24 +31,19 @@ namespace Oryx.Integration.Tests
         private static readonly string VOLUME_NAME = "samples";
         private static readonly string STORAGE_ACCOUNT_NAME = "oryxautomation";
         private static readonly string STORAGE_SHARE_NAME = "oryx";
-
-        private static readonly string CFG_BUILD_IMG = "build-image.yaml";
-        private static readonly string CFG_BUILD_VOL = "build-volume.yaml";
-        private static readonly string CFG_BUILD_VOL_CLAIM = "build-volume-claim.yaml";
-        private static readonly string CFG_RT_DEPLOYMENT = "runtime-deployment.yaml";
-        private static readonly string CFG_RT_SVC = "runtime-service.yaml";
+        private static readonly string STORAGE_REQUESTED_CAPACITY = "1Gi";
 
         private SampleAppsFixture fixture;
 
         private static HttpClient httpClient = new HttpClient();
 
-        public SampleAppsTests(ITestOutputHelper output, SampleAppsTests.SampleAppsFixture fixture)
+        public SampleAppsTests(ITestOutputHelper output, SampleAppsFixture fixture)
         {
             _output = output;
             this.fixture = fixture;
         }
 
-        public class SampleAppsFixture
+        public class SampleAppsFixture : IDisposable
         {
             private CloudFileShare fileShare;
             private V1PersistentVolume storage;
@@ -86,28 +81,24 @@ namespace Oryx.Integration.Tests
                 }
                 Client = new Kubernetes(config);
 
-                try
-                {
-                    BuildPod = Client.ReadNamespacedPod(BUILD_POD_NAME, NAMESPACE);
-                    Assert.True(k8sHelpers.IsPodRunning(BuildPod));
-                }
-                catch (HttpOperationException exc)
-                {
-                    if (exc.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    {
-                        // Create a PV for our Azure File share and a corresponding claim if they don't already exist
-                        // If these fail, make sure that they don't already exist in the cluster: `kubectl delete -n default pvc,pv --all`
-                        storage = Client.CreatePersistentVolume(LoadYamlConfig<V1PersistentVolume>(CFG_BUILD_VOL, VOLUME_NAME, STORAGE_SHARE_NAME));
-                        storageClaim = Client.CreateNamespacedPersistentVolumeClaim(LoadYamlConfig<V1PersistentVolumeClaim>(CFG_BUILD_VOL_CLAIM), NAMESPACE);
-                        Console.WriteLine("Created PersistentVolume and correspoinding PersistentVolumeClaim");
+                // Create a PV for our Azure File share and a corresponding claim if they don't already exist
+                // If these fail, make sure that they don't already exist in the cluster: `kubectl delete -n default pvc,pv --all`
+                storage = Client.CreatePersistentVolume(Specs.BuildVolume.GetSpec(VOLUME_NAME, STORAGE_REQUESTED_CAPACITY, STORAGE_SHARE_NAME));
+                storageClaim = Client.CreateNamespacedPersistentVolumeClaim(Specs.BuildVolumeClaim.GetSpec(STORAGE_REQUESTED_CAPACITY), NAMESPACE);
+                Console.WriteLine("Created PersistentVolume and corresponding PersistentVolumeClaim");
 
-                        // Create the build pod
-                        V1Pod podSpec = LoadYamlConfig<V1Pod>(CFG_BUILD_IMG, BUILD_POD_NAME, VOLUME_NAME, storageClaim.Metadata.Name);
-                        BuildPod = k8sHelpers.CreatePodAndWait(Client, podSpec, NAMESPACE, k8sHelpers.IsPodRunning).Result;
-                    }
-                    else throw exc;
-                }
-                Console.WriteLine("Build pod is running");
+                // Create the build pod
+                var podSpec = Specs.BuildPod.GetSpec(BUILD_POD_NAME, VOLUME_NAME, storageClaim.Metadata.Name);
+                BuildPod = k8sHelpers.CreatePodAndWait(Client, podSpec, NAMESPACE, k8sHelpers.IsPodRunning).Result;
+                Console.WriteLine("Build pod is up & running");
+            }
+
+            public void Dispose()
+            {
+                Client.DeleteNamespacedPod(new V1DeleteOptions(), BUILD_POD_NAME, NAMESPACE);
+                Client.DeleteNamespacedPersistentVolumeClaim(new V1DeleteOptions(), storageClaim.Metadata.Name, NAMESPACE);
+                Client.DeletePersistentVolume(new V1DeleteOptions(), VOLUME_NAME);
+                Console.WriteLine("Deleted build pod, volume & volume claim");
             }
 
             public V1Pod BuildPod { get; }
@@ -182,7 +173,7 @@ namespace Oryx.Integration.Tests
                 Console.WriteLine("> " + buildOutput.Replace("\n", "\n> ") + Environment.NewLine);
 
                 // Create a deployment with runtime image and run the compiled app
-                var runtimeDeploymentSpec = LoadYamlConfig<V1Deployment>(CFG_RT_DEPLOYMENT, appName, fixture.BuildNumber, runtimeImage, language, STORAGE_SHARE_NAME, fixture.FolderName);
+                var runtimeDeploymentSpec = Specs.RunTimeDeployment.GetSpec(appName + fixture.BuildNumber, appName, runtimeImage, appFolder, VOLUME_NAME, STORAGE_SHARE_NAME);
                 runtimeDeployment = await k8sHelpers.CreateDeploymentAndWait(fixture.Client, runtimeDeploymentSpec, NAMESPACE, dep =>
                 {
                     string minAvailabilityStatus = dep.Status.Conditions.Where(cond => string.Equals(cond.Type, "Available")).First()?.Status;
@@ -191,9 +182,7 @@ namespace Oryx.Integration.Tests
                 });
                 
                 // Create load balancer for the deployed app
-                var runtimeServiceSpec = LoadYamlConfig<V1Service>(CFG_RT_SVC, appName + fixture.BuildNumber);
-
-                runtimeService = await k8sHelpers.CreateServiceAndWait(fixture.Client, runtimeServiceSpec, NAMESPACE,
+                runtimeService = await k8sHelpers.CreateServiceAndWait(fixture.Client, Specs.RunTimeService.GetSpec(appName + fixture.BuildNumber), NAMESPACE,
                     svc => svc.Status.LoadBalancer.Ingress != null && svc.Status.LoadBalancer.Ingress.Count > 0);
                 Console.WriteLine("Load balancer started");
 
@@ -244,7 +233,7 @@ namespace Oryx.Integration.Tests
                         lastExc = exc;
                         --retries;
 
-                        int interval = rand.Next(1000, 3000);
+                        int interval = rand.Next(1000, 4000);
                         Console.WriteLine("GET failed: {0}", exc.Message);
                         Console.WriteLine("Retrying in {0}ms ({1} retries left)...", interval, retries);
                         await Task.Delay(interval);
@@ -257,14 +246,6 @@ namespace Oryx.Integration.Tests
                 }
             }
             throw lastExc;
-        }
-
-        private static T LoadYamlConfig<T>(string configName, params object[] formatArgs)
-        {
-            string yaml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "configurations", configName));
-            if (formatArgs.Length > 0)
-                yaml = string.Format(yaml, formatArgs);
-            return Yaml.LoadFromString<T>(yaml);
         }
     }
 }

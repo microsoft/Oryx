@@ -1,7 +1,8 @@
+<#@ template language="C#" #>
 apiVersion: v1
 kind: Pod
 metadata:
- name: {0}
+ name: <#= Name #>
 spec:
  containers:
   - image: oryxdevms/build:latest
@@ -9,9 +10,9 @@ spec:
     command: [ "/bin/bash", "-c", "--" ]
     args: [ "while true; do sleep 30; done;" ]
     volumeMounts:
-      - name: {1}
+      - name: <#= VolumeName #>
         mountPath: /mnt/samples
  volumes:
-  - name: {1}
+  - name: <#= VolumeName #>
     persistentVolumeClaim:
-      claimName: {2}
+      claimName: <#= VolumeClaimName #>

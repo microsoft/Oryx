@@ -1,10 +1,11 @@
+<#@ template language="C#" #>
 apiVersion: v1
 kind: Service
 metadata:
-  name: {0}
+  name: <#= Name #>
 spec:
   type: LoadBalancer
   ports:
   - port: 80
   selector:
-    app: {0}
+    app: <#= Name #>

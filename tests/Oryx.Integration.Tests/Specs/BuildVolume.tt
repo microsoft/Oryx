@@ -1,10 +1,11 @@
-﻿apiVersion: v1
+﻿<#@ template language="C#" #>
+apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {0}
+  name: <#= Name #>
 spec:
   capacity:
-    storage: 1Gi
+    storage: <#= Capacity #>
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
@@ -12,4 +13,4 @@ spec:
     - mfsymlinks
   azureFile:
     secretName: storage-secret
-    shareName: {1}
+    shareName: <#= AzureFileShareName #>

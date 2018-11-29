@@ -1,7 +1,8 @@
+<#@ template language="C#" #>
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {0}{1}
+  name: <#= Name #>
 spec:
   replicas: 1
   strategy:
@@ -11,26 +12,25 @@ spec:
   minReadySeconds: 5
   selector:
     matchLabels:
-      app: {0}{1}
+      app: <#= Name #>
   template:
     metadata:
       labels:
-        app: {0}{1}
+        app: <#= Name #>
     spec:
      containers:
-      - image: {2}
-        name: {0}
-#        command: [ "/bin/bash", "-c", "--" ]
-#        args: [ "while true; do sleep 30; done;" ]
+      - image: <#= Image #>
+        name: <#= AppName #>
         command: [ "/bin/bash", "-c", "--" ]
-        args: [ "cd /mnt/samples/{5}/{3}/{0}_out && npm start" ]
+#        args: [ "while true; do sleep 30; done;" ]
+        args: [ "cd <#= AppDir #>_out && npm start" ]
         volumeMounts:
-          - name: samples
+          - name: <#= VolumeName #>
             mountPath: /mnt/samples
         ports:
           - containerPort: 80
      volumes:
-      - name: samples
+      - name: <#= VolumeName #>
         azureFile:
           secretName: storage-secret
-          shareName: {4}
+          shareName: <#= AzureFileShareName #>
