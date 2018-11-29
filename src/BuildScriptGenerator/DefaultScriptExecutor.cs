@@ -20,10 +20,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public int ExecuteScript(
             string scriptPath,
             string[] args,
+            string workingDirectory,
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
-            var exitCode = SetExecutePerimssionOnScript(scriptPath, stdOutHandler, stdErrHandler);
+            var exitCode = SetExecutePerimssionOnScript(scriptPath, workingDirectory, stdOutHandler, stdErrHandler);
             if (exitCode != 0)
             {
                 _logger.LogError(
@@ -32,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return exitCode;
             }
 
-            exitCode = ExecuteScriptInternal(scriptPath, args, stdOutHandler, stdErrHandler);
+            exitCode = ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
             if (exitCode != 0)
             {
                 _logger.LogError(
@@ -44,12 +45,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected virtual int SetExecutePerimssionOnScript(
             string scriptPath,
+            string workingDirectory,
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
             var exitCode = ProcessHelper.RunProcess(
                 "chmod",
                 arguments: new[] { "+x", scriptPath },
+                workingDirectory,
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
                 // Do not provide wait time as the caller can do this themselves.
@@ -60,12 +63,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         protected virtual int ExecuteScriptInternal(
             string scriptPath,
             string[] args,
+            string workingDirectory,
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
             var exitCode = ProcessHelper.RunProcess(
                 scriptPath,
                 args,
+                workingDirectory,
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
                 // Do not provide wait time as the caller can do this themselves.

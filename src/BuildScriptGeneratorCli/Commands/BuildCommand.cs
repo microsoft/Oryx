@@ -86,9 +86,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 logger.LogDebug($"Executing pre-build script '{environmentSettings.PreBuildScriptPath}' ...");
 
+                var scriptDirectory = new FileInfo(environmentSettings.PreBuildScriptPath).Directory.FullName;
                 exitCode = scriptExecutor.ExecuteScript(
                     environmentSettings.PreBuildScriptPath,
                     args: null,
+                    workingDirectory: scriptDirectory,
                     stdOutHandler,
                     stdOutHandler);
                 if (exitCode != Constants.ExitSuccess)
@@ -122,6 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     sourceRepo.RootPath,
                     options.DestinationDir ?? string.Empty
                 },
+                workingDirectory: sourceRepo.RootPath,
                 stdOutHandler,
                 stdErrHandler);
             if (exitCode != Constants.ExitSuccess)
@@ -134,9 +137,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 logger.LogDebug($"Executing post-build script '{environmentSettings.PostBuildScriptPath}' ...");
 
+                var scriptDirectory = new FileInfo(environmentSettings.PostBuildScriptPath).Directory.FullName;
                 exitCode = scriptExecutor.ExecuteScript(
                     environmentSettings.PostBuildScriptPath,
                     args: null,
+                    workingDirectory: scriptDirectory,
                     stdOutHandler,
                     stdErrHandler);
                 if (exitCode != Constants.ExitSuccess)

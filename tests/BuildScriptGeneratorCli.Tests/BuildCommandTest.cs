@@ -539,6 +539,7 @@ namespace BuildScriptGeneratorCli.Tests
             public int ExecuteScript(
                 string scriptPath,
                 string[] args,
+                string workingDirectory,
                 DataReceivedEventHandler stdOutHandler,
                 DataReceivedEventHandler stdErrHandler)
             {

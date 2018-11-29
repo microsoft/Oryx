@@ -54,6 +54,7 @@ namespace Oryx.Tests.Infrastructure
                 (exitCode, output, error) = ProcessHelper.RunProcess(
                         fileName,
                         arguments,
+                        workingDirectory: null,
                         _waitTimeInSeconds);
             }
             catch (InvalidOperationException invalidOperationException)
@@ -196,6 +197,7 @@ namespace Oryx.Tests.Infrastructure
                 (exitCode, output, error) = ProcessHelper.RunProcess(
                     fileName,
                     arguments,
+                    workingDirectory: null,
                     _waitTimeInSeconds);
             }
             catch (InvalidOperationException invalidOperationException)

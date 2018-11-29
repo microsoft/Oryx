@@ -14,6 +14,7 @@ namespace Microsoft.Oryx.Common.Utilities
         public static (int exitCode, string output, string error) RunProcess(
             string fileName,
             IEnumerable<string> arguments,
+            string workingDirectory,
             int? waitForExitInSeconds)
         {
             var outputBuilder = new StringBuilder();
@@ -22,6 +23,7 @@ namespace Microsoft.Oryx.Common.Utilities
             var exitCode = RunProcess(
                 fileName,
                 arguments,
+                workingDirectory,
                 // Preserve the output structure and use AppendLine as these handlers
                 // are called for each line that is written to the output.
                 standardOutputHandler: (sender, args) =>
@@ -40,6 +42,7 @@ namespace Microsoft.Oryx.Common.Utilities
         public static int RunProcess(
             string fileName,
             IEnumerable<string> arguments,
+            string workingDirectory,
             DataReceivedEventHandler standardOutputHandler,
             DataReceivedEventHandler standardErrorHandler,
             int? waitForExitInSeconds)
@@ -50,6 +53,12 @@ namespace Microsoft.Oryx.Common.Utilities
             var process = new Process();
             process.StartInfo.FileName = fileName;
             process.StartInfo.CreateNoWindow = true;
+
+            if (!string.IsNullOrEmpty(workingDirectory))
+            {
+                process.StartInfo.WorkingDirectory = workingDirectory;
+            }
+
             if (redirectOutput)
             {
                 process.StartInfo.RedirectStandardOutput = true;
