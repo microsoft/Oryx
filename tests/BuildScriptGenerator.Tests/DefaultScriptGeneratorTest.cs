@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Act & Assert
             var exception = Assert.Throws<InvalidOperationException>(
                 () => generator.TryGenerateBashScript(context, out var generatedScript));
-            Assert.Equal("Could not detect the language and/or version from source directory.", exception.Message);
+            Assert.Equal("Could not detect the language and/or version from repo", exception.Message);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Act & Assert
             var exception = Assert.Throws<InvalidOperationException>(
                 () => generator.TryGenerateBashScript(context, out var generatedScript));
-            Assert.Equal("Could not detect the language and/or version from source directory.", exception.Message);
+            Assert.Equal("Could not detect the language and/or version from repo", exception.Message);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -350,20 +350,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             ILanguageDetector languageDetector,
             ILanguageScriptGenerator generator)
         {
-            return new DefaultScriptGenerator(
-                new[] { languageDetector },
-                new[] { generator },
-                NullLogger<DefaultScriptGenerator>.Instance);
+            return new DefaultScriptGenerator(new[] { languageDetector }, new[] { generator }, NullLogger<DefaultScriptGenerator>.Instance);
         }
 
         private DefaultScriptGenerator CreateDefaultScriptGenerator(
             ILanguageDetector[] languageDetectors,
             ILanguageScriptGenerator[] generators)
         {
-            return new DefaultScriptGenerator(
-                languageDetectors,
-                generators,
-                NullLogger<DefaultScriptGenerator>.Instance);
+            return new DefaultScriptGenerator(languageDetectors, generators, NullLogger<DefaultScriptGenerator>.Instance);
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(

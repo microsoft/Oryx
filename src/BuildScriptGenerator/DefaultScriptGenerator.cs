@@ -43,15 +43,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 if (scriptGenerator.TryGenerateBashScript(context, out script))
                 {
-                    _logger.LogDebug(
-                        $"Script generator '{scriptGenerator.GetType()}' was used to generate the script.");
-
+                    _logger.LogDebug("Script generator {ScriptGenType} was used", scriptGenerator.GetType());
                     return true;
                 }
                 else
                 {
-                    _logger.LogDebug(
-                        $"Script generator '{scriptGenerator.GetType()}' cannot generate the script.");
+                    _logger.LogDebug("Script generator {ScriptGenType} cannot be used", scriptGenerator.GetType());
                 }
             }
 
@@ -63,9 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             EnsureLanguageAndVersion(context);
 
-            _logger.LogDebug(
-                $"Finding script generator for language '{context.Language}' " +
-                $"and version '{context.LanguageVersion}'.");
+            _logger.LogDebug("Finding script generator for {Lang} {LangVer}", context.Language, context.LanguageVersion);
 
             var languageScriptGenerators = _allScriptGenerators.Where(sg =>
             {
@@ -78,11 +73,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (!languageScriptGenerators.Any())
             {
                 var languages = _allScriptGenerators.Select(sg => sg.SupportedLanguageName);
-                var message = $"'{context.Language}' language is not supported. " +
-                    $"Supported languages are: {string.Join(", ", languages)}";
-
-                _logger.LogError(message);
-                throw new UnsupportedLanguageException(message);
+                var exc = new UnsupportedLanguageException($"'{context.Language}' language is not supported. " +
+                    $"Supported languages are: {string.Join(", ", languages)}");
+                _logger.LogError(exc, "Exception caught");
+                throw exc;
             }
 
             if (string.IsNullOrEmpty(context.LanguageVersion))
@@ -100,11 +94,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 allLanguageScriptGeneratorsVersions);
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var message = $"The '{context.Language}' version '{context.LanguageVersion}' is not supported. " +
-                    $"Supported versions are: {string.Join(", ", allLanguageScriptGeneratorsVersions)}";
-
-                _logger.LogError(message);
-                throw new UnsupportedVersionException(message);
+                var exc = new UnsupportedVersionException($"The '{context.Language}' version '{context.LanguageVersion}' is not supported. " +
+                    $"Supported versions are: {string.Join(", ", allLanguageScriptGeneratorsVersions)}");
+                _logger.LogError(exc, "Exception caught");
+                throw exc;
             }
 
             var maxSatisfyingVersionGenerators = languageScriptGenerators.Where(
@@ -123,20 +116,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // If 'language' or 'language version' wasn't explicitly provided, detect the source directory
             if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
             {
-                _logger.LogDebug(
-                    "Detecting the source directory for language and/or version ...");
+                _logger.LogDebug("Detecting the source directory for language and/or version");
 
                 (languageName, languageVersion) = DetectLanguageAndVersion(context.SourceRepo);
 
                 if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
                 {
-                    throw new InvalidOperationException(
-                        "Could not detect the language and/or version from source directory.");
+                    throw new InvalidOperationException("Could not detect the language and/or version from repo");
                 }
 
-                _logger.LogDebug(
-                    $"Detected language '{languageName}' and version '{languageVersion}' " +
-                    "for application in source directory.");
+                _logger.LogDebug("Detected {Lang} {LangVer} for app in repo", languageName, languageVersion);
 
                 // Reset the context with detected values so that downstream components
                 // use these detected values.
@@ -153,8 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 result = languageDetector.Detect(sourceRepo);
                 if (result == null)
                 {
-                    _logger.LogDebug($"Language detector '{languageDetector.GetType()}' could not " +
-                        "detect language in source directory.");
+                    _logger.LogWarning("Language detector {LangDetectorType} could not detect language in repo", languageDetector.GetType());
                 }
                 else
                 {

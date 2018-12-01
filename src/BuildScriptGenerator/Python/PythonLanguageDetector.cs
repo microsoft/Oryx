@@ -36,9 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             if (!sourceRepo.FileExists(RequirementsFileName))
             {
-                _logger.LogDebug(
-                    "Could not detect the source directory as a python app as it " +
-                    $"does not have file '{RequirementsFileName}'.");
+                _logger.LogDebug("File {ReqsFileName} does not exist in source repo", RequirementsFileName);
                 return null;
             }
 
@@ -49,8 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 var files = sourceRepo.EnumerateFiles(PythonFileExtension, searchSubDirectories: false);
                 if (files == null || !files.Any())
                 {
-                    _logger.LogDebug(
-                        $"Could not find any files with file extension '{PythonFileExtension}' in source directory.");
+                    _logger.LogDebug("Could not find any files with extension {PyFileExt} in source repo", PythonFileExtension);
                     return null;
                 }
             }
@@ -78,10 +75,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
                 if (string.IsNullOrEmpty(maxSatisfyingVersion))
                 {
-                    var message = $"The target python version '{version}' is not supported. " +
-                        $"Supported versions are: {string.Join(", ", _pythonVersionProvider.SupportedPythonVersions)}";
-                    _logger.LogError(message);
-                    throw new UnsupportedVersionException(message);
+                    var exc = new UnsupportedVersionException($"Target Python version '{version}' is unsupported. " +
+                        $"Supported versions are: {string.Join(", ", _pythonVersionProvider.SupportedPythonVersions)}");
+                    _logger.LogError(exc, "Exception caught");
+                    throw exc;
                 }
 
                 return maxSatisfyingVersion;
@@ -103,27 +100,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     var hasPythonVersion = content.StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase);
                     if (!hasPythonVersion)
                     {
-                        _logger.LogDebug(
-                            $"Cound not find any text of the form '{versionPrefix}' in the file '{RuntimeFileName}'.");
+                        _logger.LogDebug("Prefix {VerPrefix} was not found in file {RtFileName}", versionPrefix, RuntimeFileName);
                         return null;
                     }
 
                     var pythonVersion = content.Remove(0, versionPrefix.Length);
 
-                    _logger.LogDebug($"Found version '{pythonVersion}' in the '{RuntimeFileName}' file.");
+                    _logger.LogDebug("Found version {PyVer} in file {RtFileName}", pythonVersion, RuntimeFileName);
 
                     return pythonVersion;
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(
-                        ex,
-                        $"An error occurred while trying to read the file '{RuntimeFileName}'.");
+                    _logger.LogError(ex, "An error occurred while reading file {RtFileName}", RuntimeFileName);
                 }
             }
             else
             {
-                _logger.LogDebug($"Could not find file '{RuntimeFileName}' in source directory.");
+                _logger.LogDebug("Could not find file '{RtFileName}' in source repo", RuntimeFileName);
             }
             return null;
         }

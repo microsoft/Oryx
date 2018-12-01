@@ -18,9 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<ScriptGenerator> _logger;
 
-        public ScriptGenerator(
-            IConsole console,
-            IServiceProvider serviceProvider)
+        public ScriptGenerator(IConsole console, IServiceProvider serviceProvider)
         {
             _console = console;
             _serviceProvider = serviceProvider;
@@ -63,12 +61,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (InvalidUsageException ex)
             {
+                _logger.LogError(ex, "Invalid usage");
                 _console.Error.WriteLine(ex.Message);
                 return false;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An error occurred while running this tool:" + Environment.NewLine + ex.ToString());
+                _logger.LogError(ex, "Exception caught");
                 _console.Error.WriteLine("Oops... An unexpected error has occurred.");
                 return false;
             }

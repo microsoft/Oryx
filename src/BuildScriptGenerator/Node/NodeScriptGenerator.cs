@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,10 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeScriptGenerator : ILanguageScriptGenerator
     {
-        private const string NodeJsName = "nodejs";
-        private const string PackageJsonFileName = "package.json";
-        private const string YarnLockFileName = "yarn.lock";
-
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodeScriptGenerator> _logger;
@@ -29,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _logger = logger;
         }
 
-        public string SupportedLanguageName => NodeJsName;
+        public string SupportedLanguageName => Constants.NodeJsName;
 
         public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
 
@@ -40,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var benvArgs = $"node={context.LanguageVersion} ";
 
             string installCommand;
-            if (context.SourceRepo.FileExists(YarnLockFileName))
+            if (context.SourceRepo.FileExists(Constants.YarnLockFileName))
             {
                 installCommand = "yarn install";
             }
@@ -54,6 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 installCommand = "npm install";
             }
 
+            _logger.LogDebug("Using benv args: {BenvArgs}", benvArgs);
             script = new NodeBashBuildScript(installCommand, benvArgs).TransformText();
             return true;
         }
@@ -88,15 +86,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile(PackageJsonFileName);
+                var jsonContent = sourceRepo.ReadFile(Constants.PackageJsonFileName);
                 packageJson = JsonConvert.DeserializeObject(jsonContent);
             }
-            catch
+            catch (Exception ex)
             {
-                // we just ignore errors, so we leave malformed package.json
+                // We just ignore errors, so we leave malformed package.json
                 // files for node.js to handle, not us. This prevents us from
                 // erroring out when node itself might be able to tolerate some errors
                 // in the package.json file.
+                _logger.LogInformation(ex, $"Exception caught while trying to deserialize {Constants.PackageJsonFileName}");
             }
 
             return packageJson;

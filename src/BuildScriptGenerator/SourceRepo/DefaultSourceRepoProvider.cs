@@ -29,7 +29,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
                 _logger.LogDebug("Intermediate directory was not provided, so using source directory for build.");
-
                 return new LocalSourceRepo(_options.SourceDir);
             }
 
@@ -37,8 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 PrepareIntermediateDirectory();
 
-                _logger.LogDebug(
-                    $"Copying content from '{_options.SourceDir}' to '{_options.IntermediateDir}' ...");
+                _logger.LogDebug("Copying content from {SrcDir} to {IntermediateDir}", _options.SourceDir, _options.IntermediateDir);
 
                 CopyDirectories(_options.SourceDir, _options.IntermediateDir, recursive: true);
                 _copiedToIntermediateDirectory = true;
@@ -51,16 +49,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (Directory.Exists(_options.IntermediateDir))
             {
-                _logger.LogWarning(
-                    $"Intermediate directory '{_options.IntermediateDir}' already exists. Deleting it's contents ...");
-
+                _logger.LogWarning("Intermediate directory {IntermediateDir} already exists; deleting it", _options.IntermediateDir);
                 Directory.Delete(_options.IntermediateDir, recursive: true);
             }
-            else
-            {
-                _logger.LogDebug($"Creating intermediate directory at '{_options.IntermediateDir}' ...");
-            }
 
+            _logger.LogDebug("Creating intermediate directory at {IntermediateDir}", _options.IntermediateDir);
             Directory.CreateDirectory(_options.IntermediateDir);
         }
 
@@ -70,9 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var sourceDir = new DirectoryInfo(sourceDirectory);
             if (!sourceDir.Exists)
             {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + sourceDirectory);
+                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirectory);
             }
 
             // If the destination directory doesn't exist, create it.

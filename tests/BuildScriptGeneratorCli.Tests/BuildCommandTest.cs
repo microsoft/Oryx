@@ -326,8 +326,7 @@ namespace BuildScriptGeneratorCli.Tests
         [InlineData("")]
         [InlineData("subdir1")]
         [InlineData("subdir1", "subdir2")]
-        public void IsValid_IsFalse_IfDestinationDir_IsSubDirectory_OfSourceDir_AndIntermediateDirIsProvided(
-            params string[] paths)
+        public void IsValid_IsFalse_IfDestinationDir_IsSubDirectory_OfSourceDir_AndIntermediateDirIsProvided(params string[] paths)
         {
             // Arrange
             var sourceDir = CreateNewDir();

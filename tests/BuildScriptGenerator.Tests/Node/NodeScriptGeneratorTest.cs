@@ -199,11 +199,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
 
-            var scriptGenerator = new NodeScriptGenerator(
-                nodeScriptGeneratorOptions,
-                nodeVersionProvider,
-                NullLogger<NodeScriptGenerator>.Instance);
-            return scriptGenerator;
+            return new NodeScriptGenerator(nodeScriptGeneratorOptions, nodeVersionProvider, NullLogger<NodeScriptGenerator>.Instance);
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(

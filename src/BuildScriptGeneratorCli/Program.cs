@@ -14,9 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand("script", typeof(ScriptCommand))]
     internal class Program
     {
-        [Option(
-            CommandOptionType.NoValue,
-            Description = "Print version information.")]
+        [Option(CommandOptionType.NoValue, Description = "Print version information.")]
         public bool Version { get; set; }
 
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);

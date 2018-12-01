@@ -60,14 +60,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private void DisposeServiceProvider()
         {
-            // In general it is a good practice to dispose services before this program is exiting, but there's
-            // one more reason we would need to do this i.e that the File logger doesn't write to a file
-            // immediately. This is because it queues up messages until a certain threshold is reached and then
-            // flushes them.
             if (_serviceProvider is IDisposable disposable)
             {
                 disposable.Dispose();
             }
+            NLog.LogManager.Shutdown(); // Sends queued messages to Application Insights
         }
     }
 }

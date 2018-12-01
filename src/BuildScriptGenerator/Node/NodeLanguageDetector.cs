@@ -12,11 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeLanguageDetector : ILanguageDetector
     {
-        private const string NodeJsName = "nodejs";
-        private const string PackageJsonFileName = "package.json";
-        private const string PackageLockJsonFileName = "package-lock.json";
-        private const string YarnLockFileName = "yarn.lock";
-
         private static readonly string[] IisStartupFiles = new[]
         {
             "default.htm",
@@ -28,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             "default.aspx",
             "index.php"
         };
+
         private static readonly string[] TypicalNodeDetectionFiles = new[]
         {
             "server.js",
@@ -52,17 +48,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             bool isNodeApp = false;
 
-            if (sourceRepo.FileExists(PackageJsonFileName) ||
-                sourceRepo.FileExists(PackageLockJsonFileName) ||
-                sourceRepo.FileExists(YarnLockFileName))
+            if (sourceRepo.FileExists(Constants.PackageJsonFileName) ||
+                sourceRepo.FileExists(Constants.PackageLockJsonFileName) ||
+                sourceRepo.FileExists(Constants.YarnLockFileName))
             {
                 isNodeApp = true;
             }
             else
             {
-                _logger.LogDebug(
-                    $"Could not find file '{PackageJsonFileName}' or '{PackageLockJsonFileName}' or" +
-                    $" '{YarnLockFileName}' in the source directory.");
+                _logger.LogDebug($"Could not find {Constants.PackageJsonFileName}/{Constants.PackageLockJsonFileName}/{Constants.YarnLockFileName} in repo");
             }
 
             if (!isNodeApp)
@@ -86,10 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     {
                         if (sourceRepo.FileExists(iisStartupFile))
                         {
-                            _logger.LogDebug(
-                                "Application in source directory is not a Node app as it has one of " +
-                                $"the following files: {string.Join(", ", IisStartupFiles)}");
-
+                            _logger.LogDebug("App in repo is not a Node.js app as it has the file {IisStartupFile}", iisStartupFile);
                             return null;
                         }
                     }
@@ -97,9 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
                 else
                 {
-                    _logger.LogDebug(
-                        $"Could not find following typical node files in the source directory: " +
-                        string.Join(", ", TypicalNodeDetectionFiles));
+                    _logger.LogDebug("Could not find typical Node.js files in repo"); // No point in logging the actual file list, as it's constant
                 }
             }
 
@@ -110,13 +99,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                 return new LanguageDetectorResult
                 {
-                    Language = NodeJsName,
+                    Language = Constants.NodeJsName,
                     LanguageVersion = nodeVersion,
                 };
             }
             else
             {
-                _logger.LogDebug("Application in source directory is not a Node app.");
+                _logger.LogDebug("App in repo is not a Node.js app");
             }
 
             return null;
@@ -139,11 +128,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                 if (string.IsNullOrWhiteSpace(nodeVersion))
                 {
-                    var message = $"The target Node.js version '{nodeVersionRange}' is not supported. " +
-                        $"Supported versions are: {string.Join(", ", _nodeVersionProvider.SupportedNodeVersions)}";
-
-                    _logger.LogError(message);
-                    throw new UnsupportedVersionException(message);
+                    var exc = new UnsupportedVersionException($"Target Node.js version '{nodeVersionRange}' is unsupported. " +
+                        $"Supported versions are: {string.Join(", ", _nodeVersionProvider.SupportedNodeVersions)}");
+                    _logger.LogError(exc, "Exception caught");
+                    throw exc;
                 }
             }
             return nodeVersion;
@@ -154,19 +142,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile(PackageJsonFileName);
+                var jsonContent = sourceRepo.ReadFile(Constants.PackageJsonFileName);
                 packageJson = JsonConvert.DeserializeObject(jsonContent);
             }
             catch (Exception ex)
             {
-                // we just ignore errors, so we leave malformed package.json
+                // We just ignore errors, so we leave malformed package.json
                 // files for node.js to handle, not us. This prevents us from
                 // erroring out when node itself might be able to tolerate some errors
                 // in the package.json file.
-                _logger.LogError(
-                    ex,
-
-                    $"An error occurred while trying to deserialize the '{PackageJsonFileName}' file.");
+                _logger.LogError(ex, $"An error occurred while trying to deserialize {Constants.PackageJsonFileName}");
             }
 
             return packageJson;

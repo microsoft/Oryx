@@ -52,8 +52,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 IgnoreInaccessible = false,
             };
 
-            var versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
-                .Select(versionDir => new DirectoryInfo(versionDir));
+            IEnumerable<DirectoryInfo> versionDirectories;
+            try
+            {
+                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions).Select(versionDir => new DirectoryInfo(versionDir));
+            }
+            catch (IOException)
+            {
+                return Enumerable.Empty<string>();
+            }
 
             var versions = new List<SemVer.Version>();
             foreach (var versionDir in versionDirectories)

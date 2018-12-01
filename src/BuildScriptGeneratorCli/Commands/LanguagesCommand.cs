@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            // Note: Ensure all these labels have equal length
+            // Note: Ensure all these labels have equal lengths
             var languageLabel =
                 "Language    : ";
             var versionLabel =
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     continue;
                 }
 
-                if (scriptGenerator.SupportedLanguageVersions != null)
+                if (scriptGenerator.SupportedLanguageVersions != null && scriptGenerator.SupportedLanguageVersions.Any())
                 {
                     var sortedVersions = SortVersions(scriptGenerator.SupportedLanguageVersions);
                     console.WriteLine($"{languageLabel}{scriptGenerator.SupportedLanguageName}");
@@ -86,6 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // ignore non semantic version based versions like 'latest' or 'lts'
                 }
             }
+
             result.Sort();
 
             return result.Select(v => v.ToString());

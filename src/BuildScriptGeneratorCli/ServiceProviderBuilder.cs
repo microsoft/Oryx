@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli.Logging;
+using NLog.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -23,16 +23,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public ServiceProviderBuilder()
         {
             var configuration = GetConfiguration();
-
             _serviceCollection = new ServiceCollection();
             _serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices()
-                .AddLogging(loggingBuilder =>
+                .AddLogging(builder =>
                 {
-                    loggingBuilder
-                    .SetMinimumLevel(LogLevel.Trace)
-                    .AddFile();
+                    builder.SetMinimumLevel(LogLevel.Trace);
+                    builder.AddNLog(new NLogProviderOptions
+                    {
+                        CaptureMessageTemplates = true,
+                        CaptureMessageProperties = true
+                    });
                 });
         }
 

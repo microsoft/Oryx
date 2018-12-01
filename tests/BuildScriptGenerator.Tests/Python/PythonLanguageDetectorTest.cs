@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                $"The target python version '100.100.100' is not supported. Supported versions are: {Settings.Python37Version}",
+                $"Target Python version '100.100.100' is unsupported. Supported versions are: {Settings.Python37Version}",
                 exception.Message);
         }
 
@@ -171,10 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var options = new PythonScriptGeneratorOptions();
             optionsSetup.Configure(options);
 
-            return new PythonLanguageDetector(
-                Options.Create(options),
-                new TestPythonVersionProvider(supportedPythonVersions),
-                NullLogger<PythonLanguageDetector>.Instance);
+            return new PythonLanguageDetector(Options.Create(options), new TestPythonVersionProvider(supportedPythonVersions), NullLogger<PythonLanguageDetector>.Instance);
         }
 
         private class TestPythonVersionProvider : IPythonVersionProvider

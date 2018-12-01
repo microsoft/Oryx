@@ -2,10 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -66,6 +66,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         throw new NotSupportedException(errorMessage);
                 }
             }
+
+            _logger.LogDebug("Selected Python version: {PyVer}; venv module: {VenvModule}", pythonVersion, virtualEnvModule);
 
             script = new PythonBashBuildScript(
                 virtualEnvironmentName: virtualEnvName,
