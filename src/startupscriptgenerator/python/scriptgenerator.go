@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 )
 
 type PythonStartupScriptGenerator struct {
@@ -13,7 +14,17 @@ type PythonStartupScriptGenerator struct {
 	VirtualEnvironmentName string
 }
 
-func (gen *PythonStartupScriptGenerator) GenerateEntrypointCommand() string {
+func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
+	scriptBuilder := strings.Builder{}
+	scriptBuilder.WriteString("#!/bin/sh\n")
+	if gen.VirtualEnvironmentName != "" {
+		scriptBuilder.WriteString(". " + gen.VirtualEnvironmentName + "/bin/activate\n")
+		// TODO - gunicorn has to be installed in the virtual environenment for things to work correctly.
+		// This will be one more benefit of getting rid of virtual envs, which is to be able to run gunicorn
+		// from the image instead of from the virutal env.
+		scriptBuilder.WriteString("\n# gunicorn has to be installed in the virtual environment\n")
+		scriptBuilder.WriteString("pip install gunicorn\n")
+	}
 	command := ""
 	appDirectory := gen.SourcePath
 	appModule := gen.getDjangoStartupModule()
@@ -28,7 +39,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointCommand() string {
 	if appModule != "" {
 		command = gen.getCommandFromModule(appModule, appDirectory)
 	}
-	return command
+	scriptBuilder.WriteString(command + "\n")
+	return scriptBuilder.String()
 }
 
 // Checks if the app is based on Flask, and returns a startup command if so.

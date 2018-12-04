@@ -27,7 +27,7 @@ type packageJsonScripts struct {
 	Start string `json:"start"`
 }
 
-func (gen *NodeStartupScriptGenerator) GenerateEntrypointCommand() string {
+func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	startupCommand := getPackageJsonStartCommand(gen.SourcePath)
 	if startupCommand == "" {
 		startupCommand = gen.getCandidateFilesStartCommand()

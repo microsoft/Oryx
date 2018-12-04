@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -16,6 +15,7 @@ namespace Oryx.BuildImage.Tests
     public class EndToEndTests
     {
         private const string startupCommand = "/opt/startupcmdgen/startupcmdgen";
+        private const string startupFilePath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
@@ -38,13 +38,10 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var port = 8000;
             var portMapping = $"{port}:80";
-            var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"echo '#!/bin/sh' > {startupFile}")
-                .AddCommand($"{startupCommand} -appPath {appDir} >> {startupFile} 2>&1")
-                .AddCommand($"chmod a+x {startupFile}")
-                .AddCommand(startupFile)
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath}")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -80,9 +77,7 @@ namespace Oryx.BuildImage.Tests
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"echo '#!/bin/sh' > {startupFile}")
-                .AddCommand($"{startupCommand} -appPath {appDir} >> {startupFile} 2>&1")
-                .AddCommand($"chmod a+x {startupFile}")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFile}")
                 .AddCommand(startupFile)
                 .ToString();
 
@@ -151,7 +146,8 @@ namespace Oryx.BuildImage.Tests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("./entryPoint.sh")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=\":5000\"")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -185,7 +181,8 @@ namespace Oryx.BuildImage.Tests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("./entryPoint.sh")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -219,7 +216,8 @@ namespace Oryx.BuildImage.Tests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("./entryPoint.sh")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -262,7 +260,8 @@ namespace Oryx.BuildImage.Tests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("./entryPoint.sh")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -295,7 +294,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding, 
+        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
         // see the documentation for the Encoding.RegisterProvider method.
         private async Task<string> GetResponseDataAsync(string url)
         {

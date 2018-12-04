@@ -11,10 +11,11 @@ func main() {
 	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application, e.g. 'application:app'.")
 	virtualEnvironmentNamePtr := flag.String("virtualEnvName", "pythonenv", "Name of the virtual environment for the app")
 	bindHostPtr := flag.String("hostBind", "0.0.0.0", "Host where the application will bind to")
+	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 
-	fullAppPath := fsvalidation.GetValidatedFullPath(*appPathPtr)
-	defaultAppFullPAth := fsvalidation.GetValidatedFullPath(*defaultAppFilePathPtr)
+	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
+	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
 	entrypointGenerator := PythonStartupScriptGenerator{
 		SourcePath:             fullAppPath,
@@ -24,6 +25,6 @@ func main() {
 		DefaultAppModule:       *defaultAppModulePtr,
 	}
 
-	command := entrypointGenerator.GenerateEntrypointCommand()
-	println(command)
+	command := entrypointGenerator.GenerateEntrypointScript()
+	common.WriteScript(*outputPathPtr, command)
 }

@@ -34,4 +34,3 @@ UsageCount=1' > /etc/unixODBC/odbcinst.ini
 
 # Use Gunicorn as our WSGI Servier
 pip install --upgrade pip
-pip install gunicorn

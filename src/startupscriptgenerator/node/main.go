@@ -1,11 +1,12 @@
 package main
 
-import "flag"
-import "os"
-
-import "strings"
-import "strconv"
-import "startupscriptgenerator/common"
+import (
+	"flag"
+	"os"
+	"startupscriptgenerator/common"
+	"strconv"
+	"strings"
+)
 
 func main() {
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
@@ -15,10 +16,11 @@ func main() {
 	remoteDebugBrkEnabledPtr := flag.Bool("remoteDebugBrk", false, "Application will run in debug mode, and will debugger will break before the user code starts.")
 	remoteDebugIp := flag.String("debugHost", "", "The IP address where the debugger will listen to, e.g. '0.0.0.0' or '127.0.0.1")
 	remoteDebugPort := flag.String("debugPort", "", "The port the debugger will listen to.")
+	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 
-	fullAppPath := fsvalidation.GetValidatedFullPath(*appPathPtr)
-	defaultAppFullPAth := fsvalidation.GetValidatedFullPath(*defaultAppFilePathPtr)
+	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
+	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 	useLegacyDebugger := isLegacyDebuggerNeeded()
 
 	gen := NodeStartupScriptGenerator{
@@ -31,8 +33,8 @@ func main() {
 		RemoteDebuggingPort:             *remoteDebugPort,
 		UseLegacyDebugger:               useLegacyDebugger,
 	}
-	script := gen.GenerateEntrypointCommand()
-	println(script)
+	script := gen.GenerateEntrypointScript()
+	common.WriteScript(*outputPathPtr, script)
 }
 
 // Checks if the legacy debugger should be used for the current node image

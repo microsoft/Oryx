@@ -1,6 +1,8 @@
-package fsvalidation
+package common
 
 import (
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -16,4 +18,10 @@ func GetValidatedFullPath(filePath string) string {
 		panic("Path '" + fullAppPath + "' does not exist.")
 	}
 	return fullAppPath
+}
+
+// Writes the entrypoint command to an executable file
+func WriteScript(filePath string, command string) {
+	fmt.Println("Writing output script to '" + filePath + "'")
+	ioutil.WriteFile(filePath, []byte(command), 755)
 }
