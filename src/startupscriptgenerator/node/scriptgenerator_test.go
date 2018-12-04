@@ -12,6 +12,16 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 	// node a/b/c.js
 }
 
+func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupCommandIsUsed() {
+	gen := &NodeStartupScriptGenerator{
+		UserStartupCommand: "abc",
+	}
+	command := gen.GenerateEntrypointScript()
+	fmt.Println(command)
+	// Output:
+	// abc
+}
+
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
 	gen := &NodeStartupScriptGenerator{
 		CustomStartCommand: "pm2 start --no-daemon",

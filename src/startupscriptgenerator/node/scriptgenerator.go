@@ -10,6 +10,7 @@ import (
 
 type NodeStartupScriptGenerator struct {
 	SourcePath                      string
+	UserStartupCommand              string
 	DefaultAppJsFilePath            string
 	CustomStartCommand              string
 	RemoteDebugging                 bool
@@ -28,13 +29,18 @@ type packageJsonScripts struct {
 }
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
-	startupCommand := getPackageJsonStartCommand(gen.SourcePath)
+	startupCommand := strings.TrimSpace(gen.UserStartupCommand) // If user passed a custom startup command, it should take precedence above all other options
+
+	if startupCommand == "" {
+		startupCommand = getPackageJsonStartCommand(gen.SourcePath)
+	}
 	if startupCommand == "" {
 		startupCommand = gen.getCandidateFilesStartCommand()
 	}
 	if startupCommand == "" {
 		startupCommand = gen.getDefaultAppStartCommand()
 	}
+
 	return startupCommand
 }
 
