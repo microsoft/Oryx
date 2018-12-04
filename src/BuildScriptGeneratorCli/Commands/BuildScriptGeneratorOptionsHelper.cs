@@ -71,6 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     throw new InvalidUsageException($"Property key cannot start with '=' for property '{property}'.");
                 }
             }
+
             return propertyList;
         }
     }

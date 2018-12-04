@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal virtual void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
         }
-        
+
         internal virtual bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             return true;
@@ -64,6 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 disposable.Dispose();
             }
+
             NLog.LogManager.Shutdown(); // Sends queued messages to Application Insights
         }
     }

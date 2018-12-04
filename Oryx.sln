@@ -74,6 +74,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles", "{7475604B-12AC-4765-9259-505BF742FDEF}"
 	ProjectSection(SolutionItems) = preProject
 		src\CommonFiles\AssemblyVersion.proj = src\CommonFiles\AssemblyVersion.proj
+		src\CommonFiles\NLog.config = src\CommonFiles\NLog.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"

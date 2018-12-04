@@ -93,6 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     workingDirectory: scriptDirectory,
                     stdOutHandler,
                     stdOutHandler);
+
                 if (exitCode != Constants.ExitSuccess)
                 {
                     return exitCode;
@@ -122,6 +123,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 workingDirectory: sourceRepo.RootPath,
                 stdOutHandler,
                 stdErrHandler);
+
             if (exitCode != Constants.ExitSuccess)
             {
                 return exitCode;
@@ -139,6 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     workingDirectory: scriptDirectory,
                     stdOutHandler,
                     stdErrHandler);
+
                 if (exitCode != Constants.ExitSuccess)
                 {
                     return exitCode;

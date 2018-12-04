@@ -25,25 +25,25 @@ namespace Oryx.Integration.Tests.Specs
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\napiVersion: v1\nkind: PersistentVolume\nmetadata:\n  name: ");
+            this.Write("apiVersion: v1\r\nkind: PersistentVolume\r\nmetadata:\r\n  name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolume.tt"
+            #line 5 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolume.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("\nspec:\n  capacity:\n    storage: ");
+            this.Write("\r\nspec:\r\n  capacity:\r\n    storage: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolume.tt"
+            #line 8 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolume.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Capacity));
             
             #line default
             #line hidden
-            this.Write("\n  accessModes:\n    - ReadWriteOnce\n  persistentVolumeReclaimPolicy: Retain\n  mou" +
-                    "ntOptions:\n    - mfsymlinks\n  azureFile:\n    secretName: storage-secret\n    shar" +
-                    "eName: ");
+            this.Write("\r\n  accessModes:\r\n    - ReadWriteOnce\r\n  persistentVolumeReclaimPolicy: Retain\r\n " +
+                    " mountOptions:\r\n    - mfsymlinks\r\n  azureFile:\r\n    secretName: storage-secret\r\n" +
+                    "    shareName: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolume.tt"
+            #line 16 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolume.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(AzureFileShareName));
             
             #line default

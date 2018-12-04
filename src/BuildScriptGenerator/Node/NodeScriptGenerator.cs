@@ -48,6 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     benvArgs += $"npm={npmVersion} ";
                 }
+
                 installCommand = "npm install";
             }
 
@@ -59,6 +60,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private string GetNpmVersion(ScriptGeneratorContext context)
         {
             var packageJson = GetPackageJsonObject(context.SourceRepo);
+
+            if (packageJson?.dependencies != null)
+            {
+                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
+                _logger.LogEvent("ReadPackageJson", deps.ToObject<IDictionary<string, string>>());
+            }
 
             var npmVersionRange = packageJson?.engines?.npm?.Value;
             if (npmVersionRange == null)
@@ -78,6 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     return null;
                 }
             }
+
             return npmVersion;
         }
 

@@ -25,68 +25,70 @@ namespace Oryx.Integration.Tests.Specs
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: ");
+            this.Write("apiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 5 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("\nspec:\n  replicas: 1\n  strategy:\n    rollingUpdate:\n      maxSurge: 1\n      maxUn" +
-                    "available: 1\n  minReadySeconds: 5\n  selector:\n    matchLabels:\n      app: ");
+            this.Write("\r\nspec:\r\n  replicas: 1\r\n  strategy:\r\n    rollingUpdate:\r\n      maxSurge: 1\r\n     " +
+                    " maxUnavailable: 1\r\n  minReadySeconds: 5\r\n  selector:\r\n    matchLabels:\r\n      a" +
+                    "pp: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 15 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("\n  template:\n    metadata:\n      labels:\n        app: ");
+            this.Write("\r\n  template:\r\n    metadata:\r\n      labels:\r\n        app: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 19 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("\n    spec:\n     containers:\n      - image: ");
+            this.Write("\r\n    spec:\r\n     containers:\r\n      - image: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 22 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Image));
             
             #line default
             #line hidden
-            this.Write("\n        name: ");
+            this.Write("\r\n        name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 23 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(AppName));
             
             #line default
             #line hidden
-            this.Write("\n        command: [ \"/bin/bash\", \"-c\", \"--\" ]\n#        args: [ \"while true; do sl" +
-                    "eep 30; done;\" ]\n        args: [ \"cd ");
+            this.Write("\r\n        command: [ \"/bin/bash\", \"-c\", \"--\" ]\r\n#        args: [ \"while true; do " +
+                    "sleep 30; done;\" ]\r\n        args: [ \"cd ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 26 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(AppDir));
             
             #line default
             #line hidden
-            this.Write("_out && npm start\" ]\n        volumeMounts:\n          - name: ");
+            this.Write("_out && npm start\" ]\r\n        volumeMounts:\r\n          - name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 28 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VolumeName));
             
             #line default
             #line hidden
-            this.Write("\n            mountPath: /mnt/samples\n        ports:\n          - containerPort: 80" +
-                    "\n     volumes:\n      - name: ");
+            this.Write("\r\n            mountPath: /mnt/samples\r\n        ports:\r\n          - containerPort:" +
+                    " 80\r\n     volumes:\r\n      - name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 33 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VolumeName));
             
             #line default
             #line hidden
-            this.Write("\n        azureFile:\n          secretName: storage-secret\n          shareName: ");
+            this.Write("\r\n        azureFile:\r\n          secretName: storage-secret\r\n          shareName: " +
+                    "");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
+            #line 36 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeDeployment.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(AzureFileShareName));
             
             #line default

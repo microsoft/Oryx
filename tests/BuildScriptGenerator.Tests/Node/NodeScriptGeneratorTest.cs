@@ -42,7 +42,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
           },
           ""author"": ""Dev"",
           ""license"": ""ISC"",
-          ""engines"" : { ""npm"" : ""5.4.2"" }
+          ""engines"" : { ""npm"" : ""5.4.2"" },
+          ""dependencies"": { ""foo"" : ""1.0.0 - 2.9999.9999"", ""bar"" : "">=1.0.2 <2.1.2"" }
         }";
 
         private const string PackageJsonWithUnsupportedNpmVersion = @"{

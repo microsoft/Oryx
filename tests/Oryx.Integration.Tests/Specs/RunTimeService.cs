@@ -25,16 +25,16 @@ namespace Oryx.Integration.Tests.Specs
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\napiVersion: v1\nkind: Service\nmetadata:\n  name: ");
+            this.Write("apiVersion: v1\r\nkind: Service\r\nmetadata:\r\n  name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeService.tt"
+            #line 5 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeService.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("\nspec:\n  type: LoadBalancer\n  ports:\n  - port: 80\n  selector:\n    app: ");
+            this.Write("\r\nspec:\r\n  type: LoadBalancer\r\n  ports:\r\n  - port: 80\r\n  selector:\r\n    app: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeService.tt"
+            #line 11 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\RunTimeService.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default

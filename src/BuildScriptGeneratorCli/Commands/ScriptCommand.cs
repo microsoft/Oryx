@@ -44,6 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var scriptGenerator = new ScriptGenerator(console, serviceProvider);
+
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {
                 return Constants.ExitFailure;
@@ -53,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             return Constants.ExitSuccess;
         }
-        
+
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;

@@ -25,12 +25,19 @@ namespace Oryx.Integration.Tests.Specs
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\napiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: build-volume-claim\n" +
-                    "spec:\n  storageClassName: \'\' # No need for dynamic storage provisioning in our t" +
-                    "esting cluster\n  accessModes:\n    - ReadWriteOnce\n  resources:\n    requests:\n   " +
-                    "   storage: ");
+            this.Write(@"apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: build-volume-claim
+spec:
+  storageClassName: '' # No need for dynamic storage provisioning in our testing cluster
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolumeClaim.tt"
+            #line 12 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildVolumeClaim.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Capacity));
             
             #line default

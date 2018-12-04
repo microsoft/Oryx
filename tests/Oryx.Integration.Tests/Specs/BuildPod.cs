@@ -25,32 +25,32 @@ namespace Oryx.Integration.Tests.Specs
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\napiVersion: v1\nkind: Pod\nmetadata:\n name: ");
+            this.Write("apiVersion: v1\r\nkind: Pod\r\nmetadata:\r\n name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
+            #line 5 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
-            this.Write("\nspec:\n containers:\n  - image: oryxdevms/build:latest\n    name: azure\n    command" +
-                    ": [ \"/bin/bash\", \"-c\", \"--\" ]\n    args: [ \"while true; do sleep 30; done;\" ]\n   " +
-                    " volumeMounts:\n      - name: ");
+            this.Write("\r\nspec:\r\n containers:\r\n  - image: oryxdevms/build:latest\r\n    name: azure\r\n    co" +
+                    "mmand: [ \"/bin/bash\", \"-c\", \"--\" ]\r\n    args: [ \"while true; do sleep 30; done;\"" +
+                    " ]\r\n    volumeMounts:\r\n      - name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
+            #line 13 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VolumeName));
             
             #line default
             #line hidden
-            this.Write("\n        mountPath: /mnt/samples\n volumes:\n  - name: ");
+            this.Write("\r\n        mountPath: /mnt/samples\r\n volumes:\r\n  - name: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
+            #line 16 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VolumeName));
             
             #line default
             #line hidden
-            this.Write("\n    persistentVolumeClaim:\n      claimName: ");
+            this.Write("\r\n    persistentVolumeClaim:\r\n      claimName: ");
             
-            #line 1 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
+            #line 18 "C:\Users\dorfire\source\repos\Oryx\tests\Oryx.Integration.Tests\Specs\BuildPod.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VolumeClaimName));
             
             #line default

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -27,46 +28,50 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 "Properties  : ";
             var padding = new string(' ', languageLabel.Length);
 
+            var logger = serviceProvider.GetRequiredService<ILogger<LanguagesCommand>>();
             var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<ILanguageScriptGenerator>>();
             scriptGenerators = scriptGenerators
                 .OrderBy(sg => sg.SupportedLanguageName, StringComparer.OrdinalIgnoreCase);
 
-            foreach (var scriptGenerator in scriptGenerators)
+            using (logger.LogTimedEvent("ListLanguages"))
             {
-                if (string.IsNullOrWhiteSpace(scriptGenerator.SupportedLanguageName))
+                foreach (var scriptGenerator in scriptGenerators)
                 {
-                    continue;
-                }
+                    if (string.IsNullOrWhiteSpace(scriptGenerator.SupportedLanguageName))
+                    {
+                        continue;
+                    }
 
-                if (scriptGenerator.SupportedLanguageVersions != null && scriptGenerator.SupportedLanguageVersions.Any())
-                {
-                    var sortedVersions = SortVersions(scriptGenerator.SupportedLanguageVersions);
-                    console.WriteLine($"{languageLabel}{scriptGenerator.SupportedLanguageName}");
-                    console.WriteLine($"{versionLabel}{sortedVersions.First()}");
-                    console.Write(string.Join(Environment.NewLine, sortedVersions.Skip(1).Select(
-                        v => $"{padding}{v}")));
+                    if (scriptGenerator.SupportedLanguageVersions != null && scriptGenerator.SupportedLanguageVersions.Any())
+                    {
+                        var sortedVersions = SortVersions(scriptGenerator.SupportedLanguageVersions);
+                        console.WriteLine($"{languageLabel}{scriptGenerator.SupportedLanguageName}");
+                        console.WriteLine($"{versionLabel}{sortedVersions.First()}");
+                        console.Write(string.Join(Environment.NewLine, sortedVersions.Skip(1).Select(
+                            v => $"{padding}{v}")));
+                        console.WriteLine();
+                    }
+                    else
+                    {
+                        console.WriteLine($"{scriptGenerator.SupportedLanguageName}");
+                    }
+
+                    // get properties
+                    var properties = scriptGenerator.GetType()
+                        .GetCustomAttributes(typeof(BuildPropertyAttribute), inherit: true)
+                        .OfType<BuildPropertyAttribute>();
+                    if (!properties.Any())
+                    {
+                        console.WriteLine();
+                        continue;
+                    }
+
+                    console.WriteLine($"{propertiesLabel}Name, Description");
+                    console.Write(string.Join(Environment.NewLine, properties.Select(
+                        p => $"{padding}{p.Name}, {p.Description}")));
+                    console.WriteLine();
                     console.WriteLine();
                 }
-                else
-                {
-                    console.WriteLine($"{scriptGenerator.SupportedLanguageName}");
-                }
-
-                // get properties
-                var properties = scriptGenerator.GetType()
-                    .GetCustomAttributes(typeof(BuildPropertyAttribute), inherit: true)
-                    .OfType<BuildPropertyAttribute>();
-                if (!properties.Any())
-                {
-                    console.WriteLine();
-                    continue;
-                }
-
-                console.WriteLine($"{propertiesLabel}Name, Description");
-                console.Write(string.Join(Environment.NewLine, properties.Select(
-                    p => $"{padding}{p.Name}, {p.Description}")));
-                console.WriteLine();
-                console.WriteLine();
             }
 
             return Constants.ExitSuccess;
