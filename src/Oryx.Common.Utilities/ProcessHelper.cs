@@ -50,6 +50,59 @@ namespace Microsoft.Oryx.Common.Utilities
             var redirectOutput = standardOutputHandler != null;
             var redirectError = standardErrorHandler != null;
 
+            Process process = null;
+            try
+            {
+                process = StartProcess(
+                    fileName,
+                    arguments,
+                    workingDirectory,
+                    standardOutputHandler,
+                    standardErrorHandler);
+
+                if (waitForExitInSeconds.HasValue)
+                {
+                    var hasExited = process.WaitForExit(
+                        (int)TimeSpan.FromSeconds(waitForExitInSeconds.Value).TotalMilliseconds);
+                    if (!hasExited)
+                    {
+                        throw new InvalidOperationException(
+                            $"The process with id '{process.Id}' didn't exit within the allocated time.");
+                    }
+
+                    if (redirectOutput || redirectError)
+                    {
+                        // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
+                        // When standard output has been redirected to asynchronous event handlers, it is possible that output
+                        // processing will not have completed when this method returns. To ensure that asynchronous
+                        // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
+                        // receiving a true from this overload
+                        process.WaitForExit();
+                    }
+                }
+                else
+                {
+                    process.WaitForExit();
+                }
+
+                return process.ExitCode;
+            }
+            finally
+            {
+                process?.Dispose();
+            }
+        }
+
+        public static Process StartProcess(
+            string fileName,
+            IEnumerable<string> arguments,
+            string workingDirectory,
+            DataReceivedEventHandler standardOutputHandler,
+            DataReceivedEventHandler standardErrorHandler)
+        {
+            var redirectOutput = standardOutputHandler != null;
+            var redirectError = standardErrorHandler != null;
+
             var process = new Process();
             process.StartInfo.FileName = fileName;
             process.StartInfo.CreateNoWindow = true;
@@ -79,54 +132,26 @@ namespace Microsoft.Oryx.Common.Utilities
                 }
             }
 
-            using (process)
+            var hasStarted = process.Start();
+            if (!hasStarted)
             {
-                var hasStarted = process.Start();
-                if (!hasStarted)
-                {
-                    throw new InvalidOperationException(
-                        "Process failed to start. The command used to run the process was:" +
-                        Environment.NewLine +
-                        $"{fileName} {string.Join(" ", arguments)}");
-                }
-
-                if (redirectOutput)
-                {
-                    process.BeginOutputReadLine();
-                }
-
-                if (redirectError)
-                {
-                    process.BeginErrorReadLine();
-                }
-
-                if (waitForExitInSeconds.HasValue)
-                {
-                    var hasExited = process.WaitForExit(
-                        (int)TimeSpan.FromSeconds(waitForExitInSeconds.Value).TotalMilliseconds);
-                    if (!hasExited)
-                    {
-                        throw new InvalidOperationException(
-                            $"The process with id '{process.Id}' didn't exit within the allocated time.");
-                    }
-
-                    if (redirectOutput || redirectError)
-                    {
-                        // From https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
-                        // When standard output has been redirected to asynchronous event handlers, it is possible that output
-                        // processing will not have completed when this method returns. To ensure that asynchronous
-                        // eventhandling has been completed, call the WaitForExit() overload that takes no parameter after
-                        // receiving a true from this overload
-                        process.WaitForExit();
-                    }
-                }
-                else
-                {
-                    process.WaitForExit();
-                }
-
-                return process.ExitCode;
+                throw new InvalidOperationException(
+                    "Process failed to start. The command used to run the process was:" +
+                    Environment.NewLine +
+                    $"{fileName} {string.Join(" ", arguments)}");
             }
+
+            if (redirectOutput)
+            {
+                process.BeginOutputReadLine();
+            }
+
+            if (redirectError)
+            {
+                process.BeginErrorReadLine();
+            }
+
+            return process;
         }
     }
 }

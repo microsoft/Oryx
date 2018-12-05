@@ -3,6 +3,8 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 using Microsoft.Oryx.Common.Utilities;
 
 namespace Oryx.Tests.Common
@@ -47,7 +49,15 @@ namespace Oryx.Tests.Common
             var containerName = $"{CreatedContainerPrefix}{Guid.NewGuid().ToString("N")}";
 
             var fileName = "docker";
-            var arguments = PrepareArguments();
+            var arguments = PrepareDockerRunArguments(
+                containerName,
+                runContainerInBackground,
+                environmentVariables,
+                volumes,
+                portMapping,
+                imageId,
+                command,
+                commandArguments);
 
             try
             {
@@ -70,54 +80,70 @@ namespace Oryx.Tests.Common
                 error,
                 volumes,
                 $"{fileName} {string.Join(" ", arguments)}");
+        }
 
-            IEnumerable<string> PrepareArguments()
+        public DockerRunCommandProcessResult RunAndDoNotWaitForProcessExit(
+            string imageId,
+            List<EnvironmentVariable> environmentVariables,
+            List<DockerVolume> volumes,
+            string portMapping,
+            string command,
+            string[] commandArguments)
+        {
+            if (string.IsNullOrEmpty(imageId))
             {
-                var args = new List<string>();
-                args.Add("run");
-                args.Add("--name");
-                args.Add(containerName);
-
-                if (runContainerInBackground)
-                {
-                    args.Add("-d");
-                }
-
-                if (environmentVariables?.Count > 0)
-                {
-                    foreach (var environmentVariable in environmentVariables)
-                    {
-                        args.Add("-e");
-                        args.Add($"{environmentVariable.Key}={environmentVariable.Value}");
-                    }
-                }
-
-                if (volumes?.Count > 0)
-                {
-                    foreach (var volume in volumes)
-                    {
-                        args.Add("-v");
-                        args.Add($"{volume.MountedHostDir}:{volume.ContainerDir}");
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(portMapping))
-                {
-                    args.Add("-p");
-                    args.Add(portMapping);
-                }
-
-                args.Add(imageId);
-
-                args.Add(command);
-
-                if (commandArguments?.Length > 0)
-                {
-                    args.AddRange(commandArguments);
-                }
-
-                return args;
+                throw new ArgumentException($"'{nameof(imageId)}' cannot be null or empty.");
             }
+
+            Process process = null;
+            Exception exception = null;
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+
+            // Generate a unique container name for each 'run' call.
+            // Provide a prefix so that one can delete the containers using regex, if needed
+            var containerName = $"{CreatedContainerPrefix}{Guid.NewGuid().ToString("N")}";
+
+            var fileName = "docker";
+            var arguments = PrepareDockerRunArguments(
+                containerName,
+                runContainerInBackground: false,
+                environmentVariables,
+                volumes,
+                portMapping,
+                imageId,
+                command,
+                commandArguments);
+
+            try
+            {
+                process = ProcessHelper.StartProcess(
+                    fileName,
+                    arguments,
+                    workingDirectory: null,
+                    // Preserve the output structure and use AppendLine as these handlers
+                    // are called for each line that is written to the output.
+                    standardOutputHandler: (sender, args) =>
+                    {
+                        outputBuilder.AppendLine(args.Data);
+                    },
+                    standardErrorHandler: (sender, args) =>
+                    {
+                        errorBuilder.AppendLine(args.Data);
+                    });
+            }
+            catch (InvalidOperationException invalidOperationException)
+            {
+                exception = invalidOperationException;
+            }
+
+            return new DockerRunCommandProcessResult(
+                containerName,
+                process,
+                exception,
+                outputBuilder,
+                errorBuilder,
+                $"{fileName} {string.Join(" ", arguments)}");
         }
 
         public DockerCommandResult RemoveContainer(string containerName, bool forceRemove)
@@ -211,6 +237,62 @@ namespace Oryx.Tests.Common
                 output,
                 error,
                 $"{fileName} {string.Join(" ", arguments)}");
+        }
+
+        private IEnumerable<string> PrepareDockerRunArguments(
+            string containerName,
+            bool runContainerInBackground,
+            List<EnvironmentVariable> environmentVariables,
+            List<DockerVolume> volumes,
+            string portMapping,
+            string imageId,
+            string command,
+            string[] commandArguments)
+        {
+            var args = new List<string>();
+            args.Add("run");
+            args.Add("--name");
+            args.Add(containerName);
+
+            if (runContainerInBackground)
+            {
+                args.Add("-d");
+            }
+
+            if (environmentVariables?.Count > 0)
+            {
+                foreach (var environmentVariable in environmentVariables)
+                {
+                    args.Add("-e");
+                    args.Add($"{environmentVariable.Key}={environmentVariable.Value}");
+                }
+            }
+
+            if (volumes?.Count > 0)
+            {
+                foreach (var volume in volumes)
+                {
+                    args.Add("-v");
+                    args.Add($"{volume.MountedHostDir}:{volume.ContainerDir}");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(portMapping))
+            {
+                args.Add("-p");
+                args.Add(portMapping);
+            }
+
+            args.Add(imageId);
+
+            args.Add(command);
+
+            if (commandArguments?.Length > 0)
+            {
+                args.AddRange(commandArguments);
+            }
+
+            return args;
         }
     }
 }

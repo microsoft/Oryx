@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace Oryx.Tests.Common
 {
     public static class EndToEndTestHelper
     {
-        private const int MaxRetryCount = 10;
-        private const int DelayBetweenRetriesInSeconds = 1;
+        private const int MaxRetryCount = 20;
+        private const int DelayBetweenRetriesInSeconds = 3;
 
         //  The sequence of steps are:
         //  1.  Copies the sample app from host machine's git repo to a different folder (under 'tmp/<reserved-name>' folder
@@ -51,55 +52,51 @@ namespace Oryx.Tests.Common
                buildAppResult.GetDebugInfo());
 
             // Run
-            DockerRunCommandResult runAppResult = null;
+            DockerRunCommandProcessResult runResult = null;
             try
             {
-                runAppResult = dockerCli.Run(
+                // Docker run the runtime container as a foreground process. This way we can catch any errors
+                // that might occur when the application is being started.
+                runResult = dockerCli.RunAndDoNotWaitForProcessExit(
                     runtimeImageName,
-                    environmentVariable: null,
-                    volume,
+                    environmentVariables: null,
+                    volumes: new List<DockerVolume> { volume },
                     portMapping,
-                    runContainerInBackground: true,
-                    commandToExecuteOnRun: runCmd,
-                    commandArguments: runArgs);
+                    runCmd,
+                    runArgs);
 
-                RunAsserts(
-                    () =>
-                    {
-                        Assert.True(runAppResult.IsSuccess);
-                    },
-                    runAppResult.GetDebugInfo());
+                // An exception could have occurred when a docker process failed to start.
+                Assert.Null(runResult.Exception);
 
-                var succeeded = false;
-                for (var i = 0; i < MaxRetryCount && !succeeded; i++)
+                for (var i = 0; i < MaxRetryCount; i++)
                 {
+                    await Task.Delay(TimeSpan.FromSeconds(DelayBetweenRetriesInSeconds));
+
                     try
                     {
+                        // Make sure the process is still alive and fail fast if not alive.
+                        Assert.False(runResult.Process.HasExited);
+
                         await assertAction();
-                        succeeded = true;
+                        break;
                     }
                     catch (Exception ex) when (ex.InnerException is IOException || ex.InnerException is SocketException)
                     {
                         if (i == MaxRetryCount - 1)
                         {
-                            var logsResult = dockerCli.Logs(runAppResult.ContainerName);
-                            output.WriteLine("Logs from the runtime container:");
-                            output.WriteLine("StdOutput:" + logsResult.Output);
-                            output.WriteLine("StdOutput:" + logsResult.Error);
-
+                            output.WriteLine(runResult.GetDebugInfo());
                             throw;
-                        }
-                        else
-                        {
-                            await Task.Delay(TimeSpan.FromSeconds(DelayBetweenRetriesInSeconds));
                         }
                     }
                 }
             }
             finally
             {
-                // Stop the container so that shard resources (like ports) are disposed.
-                dockerCli.StopContainer(runAppResult.ContainerName);
+                if (runResult != null && runResult.Exception == null)
+                {
+                    // Stop the container so that shared resources (like ports) are disposed.
+                    dockerCli.StopContainer(runResult.ContainerName);
+                }
             }
 
             void RunAsserts(Action action, string message)
