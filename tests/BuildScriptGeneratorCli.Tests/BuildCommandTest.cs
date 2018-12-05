@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -546,21 +545,6 @@ namespace BuildScriptGeneratorCli.Tests
                 Args = args;
                 ExecuteScriptCalled = true;
                 return ReturnExitCode;
-            }
-        }
-
-        public class EnableOnPlatformAttribute : FactAttribute
-        {
-            private readonly OSPlatform _platform;
-
-            public EnableOnPlatformAttribute(string platform)
-            {
-                _platform = OSPlatform.Create(platform);
-
-                if (!RuntimeInformation.IsOSPlatform(_platform))
-                {
-                    Skip = $"This test can only run on platform '{_platform}'.";
-                }
             }
         }
     }

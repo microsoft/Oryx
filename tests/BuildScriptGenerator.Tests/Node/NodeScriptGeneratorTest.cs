@@ -17,6 +17,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
     /// </summary>
     public class NodeScriptGeneratorTest
     {
+        private const string PackageJsonWithBuildScript = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""description"": ""test app"",
+          ""main"": ""server.js"",
+          ""scripts"": {
+            ""build"": ""tsc"",
+            ""build:azure"": ""tsc"",
+          },
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""dependencies"": {
+            ""@types/node"": ""7.0.22"",
+            ""express"": ""4.15.3"",
+          },
+          ""devDependencies"": {
+            ""@types/mocha"": ""2.2.41"",
+            ""@types/node"": ""7.0.22"",
+            ""tsc"": ""1.20150623.0"",
+            ""typescript"": ""2.3.3"",
+            ""typescript-eslint-parser"": ""3.0.0""
+          }
+        }";
+
         private const string PackageJsonWithNoNpmVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
@@ -79,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "5.4.2");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithUnsupportedNpmVersion, "package.json");
+            repo.AddFile(PackageJsonWithUnsupportedNpmVersion, Constants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
 
@@ -93,17 +117,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNpmVersion, "package.json");
+            repo.AddFile(PackageJsonWithNpmVersion, Constants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                Constants.NpmInstallCommand,
+                runBuildCommand: null,
+                runBuildAzureCommand: null,
+                "node=8.2.1 npm=5.4.2");
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Contains("npm install", generatedScriptContent);
-            Assert.Contains("benv node=8.2.1 npm=5.4.2", generatedScriptContent);
+            Assert.Equal(expected.TransformText(), generatedScriptContent);
         }
 
         [Fact]
@@ -112,17 +140,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoNpmVersion, "package.json");
+            repo.AddFile(PackageJsonWithNoNpmVersion, Constants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                Constants.NpmInstallCommand,
+                runBuildCommand: null,
+                runBuildAzureCommand: null,
+                "node=8.2.1 npm=6.0.0");
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Contains("npm install", generatedScriptContent);
-            Assert.Contains("benv node=8.2.1 npm=6.0.0", generatedScriptContent);
+            Assert.Equal(expected.TransformText(), generatedScriptContent);
         }
 
         [Fact]
@@ -131,17 +163,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "5.4.2");
             var repo = new CachedSourceRepo();
-            repo.AddFile(MalformedPackageJson, "package.json");
+            repo.AddFile(MalformedPackageJson, Constants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                Constants.NpmInstallCommand,
+                runBuildCommand: null,
+                runBuildAzureCommand: null,
+                "node=8.2.1 npm=5.4.2");
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Contains("npm install", generatedScriptContent);
-            Assert.Contains("benv node=8.2.1 npm=5.4.2", generatedScriptContent);
+            Assert.Equal(expected.TransformText(), generatedScriptContent);
         }
 
         [Fact]
@@ -150,19 +186,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoNpmVersion, "package.json");
-            repo.AddFile("Yarn lock file content here", "yarn.lock");
+            repo.AddFile(PackageJsonWithNoNpmVersion, Constants.PackageJsonFileName);
+            repo.AddFile("Yarn lock file content here", Constants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                Constants.YarnInstallCommand,
+                runBuildCommand: null,
+                runBuildAzureCommand: null,
+                "node=8.2.1");
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Contains("yarn install", generatedScriptContent);
-            Assert.DoesNotContain("npm install", generatedScriptContent);
-            Assert.Contains("benv node=8.2.1", generatedScriptContent);
+            Assert.Equal(expected.TransformText(), generatedScriptContent);
         }
 
         [Fact]
@@ -171,19 +210,45 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoNpmVersion, "package.json");
-            repo.AddFile("Package lock json file content here", "package-lock.json");
+            repo.AddFile(PackageJsonWithNoNpmVersion, Constants.PackageJsonFileName);
+            repo.AddFile("Package lock json file content here", Constants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                Constants.NpmInstallCommand,
+                runBuildCommand: null,
+                runBuildAzureCommand: null,
+                "node=8.2.1 npm=6.0.0");
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Contains("npm install", generatedScriptContent);
-            Assert.DoesNotContain("yarn install", generatedScriptContent);
-            Assert.Contains("benv node=8.2.1 npm=6.0.0", generatedScriptContent);
+            Assert.Equal(expected.TransformText(), generatedScriptContent);
+        }
+
+        [Fact]
+        public void GeneratedScript_UsesNpmRunBuild_IfBuildNodeIsPresentUnderScripts()
+        {
+            // Arrange
+            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+            var repo = new CachedSourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, Constants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                Constants.NpmInstallCommand,
+                Constants.NpmRunBuildCommand,
+                Constants.NpmRunBuildAzureCommand,
+                "node=8.2.1 npm=6.0.0");
+
+            // Act
+            var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
+
+            // Assert
+            Assert.True(canGenerateScript);
+            Assert.Equal(expected.TransformText(), generatedScriptContent);
         }
 
         private ILanguageScriptGenerator GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)

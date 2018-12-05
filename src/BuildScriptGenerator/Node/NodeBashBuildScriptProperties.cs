@@ -8,14 +8,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// </summary>
     public partial class NodeBashBuildScript
     {
-        public NodeBashBuildScript(string packageInstallCommand, string benvArgs)
+        public NodeBashBuildScript(
+            string packageInstallCommand,
+            string runBuildCommand,
+            string runBuildAzureCommand,
+            string benvArgs)
         {
-            PackageInstallCommand = packageInstallCommand;
-            BenvArgs = benvArgs;
+            PackageInstallCommand = packageInstallCommand ?? string.Empty;
+            NpmRunBuildCommand = runBuildCommand ?? string.Empty;
+            NpmRunBuildAzureCommand = runBuildAzureCommand ?? string.Empty;
+            BenvArgs = benvArgs ?? string.Empty;
         }
 
         public string PackageInstallCommand { get; set; }
-
+        public string NpmRunBuildCommand { get; set; }
+        public string NpmRunBuildAzureCommand { get; set; }
         public string BenvArgs { get; set; }
     }
 }

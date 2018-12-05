@@ -43,6 +43,10 @@ echo "Running '<#= PackageInstallCommand  #>' ..."
 echo
 <#= PackageInstallCommand #>
 
+<#= NpmRunBuildCommand #>
+
+<#= NpmRunBuildAzureCommand #>
+
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
     echo Done.

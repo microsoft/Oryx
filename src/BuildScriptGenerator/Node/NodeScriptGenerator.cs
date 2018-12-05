@@ -34,33 +34,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             script = null;
 
-            var benvArgs = $"node={context.LanguageVersion} ";
+            var benvArgs = $"node={context.LanguageVersion}";
 
-            string installCommand;
+            string packageInstallCommand = null;
+            string npmRunBuildCommand = null;
+            string npmRunBuildAzureCommand = null;
             if (context.SourceRepo.FileExists(Constants.YarnLockFileName))
             {
-                installCommand = "yarn install";
+                packageInstallCommand = Constants.YarnInstallCommand;
             }
             else
             {
-                var npmVersion = GetNpmVersion(context);
+                var packageJson = GetPackageJsonObject(context.SourceRepo);
+                var npmVersion = GetNpmVersion(packageJson);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
-                    benvArgs += $"npm={npmVersion} ";
+                    benvArgs += $" npm={npmVersion}";
                 }
+                packageInstallCommand = Constants.NpmInstallCommand;
 
-                installCommand = "npm install";
+                var scriptsNode = packageJson?.scripts;
+                if (scriptsNode != null)
+                {
+                    if (scriptsNode.build != null)
+                    {
+                        npmRunBuildCommand = Constants.NpmRunBuildCommand;
+                    }
+
+                    if (scriptsNode["build:azure"] != null)
+                    {
+                        npmRunBuildAzureCommand = Constants.NpmRunBuildAzureCommand;
+                    }
+                }
             }
 
             _logger.LogDebug("Using benv args: {BenvArgs}", benvArgs);
-            script = new NodeBashBuildScript(installCommand, benvArgs).TransformText();
+            script = new NodeBashBuildScript(
+                packageInstallCommand,
+                npmRunBuildCommand,
+                npmRunBuildAzureCommand,
+                benvArgs).TransformText();
             return true;
         }
 
-        private string GetNpmVersion(ScriptGeneratorContext context)
+        private string GetNpmVersion(dynamic packageJson)
         {
-            var packageJson = GetPackageJsonObject(context.SourceRepo);
-
             if (packageJson?.dependencies != null)
             {
                 Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;

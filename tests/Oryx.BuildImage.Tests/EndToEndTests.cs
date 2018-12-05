@@ -101,6 +101,42 @@ namespace Oryx.BuildImage.Tests
                 });
         }
 
+        // Run on Linux only as TypeScript seems to create symlinks and this does not work on Windows machines.
+        [EnableOnPlatform("LINUX")]
+        public async Task NodeApp_BuildNodeUnderScripts()
+        {
+            // Arrange
+            var nodeVersion = "10.13";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "NodeAndTypeScriptHelloWorld");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var portMapping = $"{port}:3000";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand("node dist/index.js")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("{\"message\":\"Hello World!\"}", data);
+                });
+        }
+
         [Fact(Skip = "https://devdiv.visualstudio.com/DevDiv/_workitems/edit/736633")]
         public async Task Python27App()
         {
