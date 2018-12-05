@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Oryx.Common.Utilities;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public class DockerCli
     {

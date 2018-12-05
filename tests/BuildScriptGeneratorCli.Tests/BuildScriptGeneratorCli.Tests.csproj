@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BuildScriptGeneratorCli\BuildScriptGeneratorCli.csproj" />
-    <ProjectReference Include="..\Oryx.Tests.Infrastructure\Oryx.Tests.Infrastructure.csproj" />
+    <ProjectReference Include="..\Oryx.Tests.Common\Oryx.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

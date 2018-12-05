@@ -4,7 +4,7 @@
 
 using System;
 using System.IO;
-using Oryx.Tests.Infrastructure;
+using Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 

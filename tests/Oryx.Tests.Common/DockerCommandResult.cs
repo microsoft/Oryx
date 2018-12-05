@@ -5,7 +5,7 @@
 using System;
 using System.Text;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public class DockerCommandResult
     {

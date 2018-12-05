@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Tests.Infrastructure", "tests\Oryx.Tests.Infrastructure\Oryx.Tests.Infrastructure.csproj", "{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Tests.Common", "tests\Oryx.Tests.Common\Oryx.Tests.Common.csproj", "{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.RuntimeImage.Tests", "tests\Oryx.RuntimeImage.Tests\Oryx.RuntimeImage.Tests.csproj", "{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}"
 EndProject

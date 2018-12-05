@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Oryx.Tests.Infrastructure;
+using Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node

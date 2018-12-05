@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public static class EndToEndTestHelper
     {

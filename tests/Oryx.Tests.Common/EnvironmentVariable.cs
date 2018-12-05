@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public class EnvironmentVariable
     {

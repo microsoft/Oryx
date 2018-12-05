@@ -7,7 +7,7 @@ using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Oryx.Tests.Infrastructure;
+using Oryx.Tests.Common;
 using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests

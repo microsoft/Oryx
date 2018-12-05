@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public class TestTempDirTestFixture : IDisposable
     {

@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Oryx.Tests.Infrastructure;
+using Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests

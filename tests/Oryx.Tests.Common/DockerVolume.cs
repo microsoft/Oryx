@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public class DockerVolume
     {

@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator;
 
-namespace Oryx.Tests.Infrastructure
+namespace Oryx.Tests.Common
 {
     public class TestEnvironment : IEnvironment
     {
