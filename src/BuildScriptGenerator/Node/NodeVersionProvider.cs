@@ -1,10 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -26,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNodeVersions == null)
                 {
-                    _supportedNodeVersions = GetVersionsFromDirectory(_options.InstalledNodeVersionsDir);
+                    _supportedNodeVersions = VersionProviderHelpers.GetVersionsFromDirectory(_options.InstalledNodeVersionsDir);
                 }
                 return _supportedNodeVersions;
             }
@@ -38,46 +35,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNpmVersions == null)
                 {
-                    _supportedNpmVersions = GetVersionsFromDirectory(_options.InstalledNpmVersionsDir);
+                    _supportedNpmVersions = VersionProviderHelpers.GetVersionsFromDirectory(_options.InstalledNpmVersionsDir);
                 }
                 return _supportedNpmVersions;
             }
-        }
-
-        private static IEnumerable<string> GetVersionsFromDirectory(string versionsDir)
-        {
-            var listOptions = new EnumerationOptions()
-            {
-                RecurseSubdirectories = false,
-                IgnoreInaccessible = false,
-            };
-
-            IEnumerable<DirectoryInfo> versionDirectories;
-            try
-            {
-                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions).Select(versionDir => new DirectoryInfo(versionDir));
-            }
-            catch (IOException)
-            {
-                return Enumerable.Empty<string>();
-            }
-
-            var versions = new List<SemVer.Version>();
-            foreach (var versionDir in versionDirectories)
-            {
-                try
-                {
-                    var version = new SemVer.Version(versionDir.Name);
-                    versions.Add(version);
-                }
-                catch (ArgumentException)
-                {
-                    // ignore non semantic version based versions like 'latest' or 'lts'
-                }
-            }
-            versions.Sort();
-
-            return versions.Select(v => v.ToString());
         }
     }
 }
