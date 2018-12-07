@@ -15,7 +15,32 @@ namespace Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 20;
-        private const int DelayBetweenRetriesInSeconds = 3;
+        private const int DelayBetweenRetriesInSeconds = 6;
+
+        public static Task BuildRunAndAssertAppAsync(
+            ITestOutputHelper output,
+            DockerVolume volume,
+            string buildCmd,
+            string[] buildArgs,
+            string runtimeImageName,
+            string portMapping,
+            string runCmd,
+            string[] runArgs,
+            Func<Task> assertAction)
+        {
+            return BuildRunAndAssertAppAsync(
+                output,
+                volume,
+                buildCmd,
+                buildArgs,
+                runtimeImageName,
+                environmentVariables: null,
+                portMapping,
+                link: null,
+                runCmd,
+                runArgs,
+                assertAction);
+        }
 
         //  The sequence of steps are:
         //  1.  Copies the sample app from host machine's git repo to a different folder (under 'tmp/<reserved-name>' folder
@@ -30,7 +55,9 @@ namespace Oryx.Tests.Common
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
+            List<EnvironmentVariable> environmentVariables,
             string portMapping,
+            string link,
             string runCmd,
             string[] runArgs,
             Func<Task> assertAction)
@@ -44,10 +71,11 @@ namespace Oryx.Tests.Common
                 commandToExecuteOnRun: buildCmd,
                 commandArguments: buildArgs);
 
-            RunAsserts(
+            await RunAssertsAsync(
                () =>
                {
                    Assert.True(buildAppResult.IsSuccess);
+                   return Task.CompletedTask;
                },
                buildAppResult.GetDebugInfo());
 
@@ -59,14 +87,22 @@ namespace Oryx.Tests.Common
                 // that might occur when the application is being started.
                 runResult = dockerCli.RunAndDoNotWaitForProcessExit(
                     runtimeImageName,
-                    environmentVariables: null,
+                    environmentVariables,
                     volumes: new List<DockerVolume> { volume },
                     portMapping,
+                    link,
                     runCmd,
                     runArgs);
 
-                // An exception could have occurred when a docker process failed to start.
-                Assert.Null(runResult.Exception);
+                await RunAssertsAsync(
+                    () =>
+                    {
+                        // An exception could have occurred when a docker process failed to start.
+                        Assert.Null(runResult.Exception);
+                        Assert.False(runResult.Process.HasExited);
+                        return Task.CompletedTask;
+                    },
+                    runResult.GetDebugInfo());
 
                 for (var i = 0; i < MaxRetryCount; i++)
                 {
@@ -75,9 +111,14 @@ namespace Oryx.Tests.Common
                     try
                     {
                         // Make sure the process is still alive and fail fast if not alive.
-                        Assert.False(runResult.Process.HasExited);
+                        await RunAssertsAsync(
+                            async () =>
+                            {
+                                Assert.False(runResult.Process.HasExited);
+                                await assertAction();
+                            },
+                            runResult.GetDebugInfo());
 
-                        await assertAction();
                         break;
                     }
                     catch (Exception ex) when (ex.InnerException is IOException || ex.InnerException is SocketException)
@@ -99,11 +140,11 @@ namespace Oryx.Tests.Common
                 }
             }
 
-            void RunAsserts(Action action, string message)
+            async Task RunAssertsAsync(Func<Task> action, string message)
             {
                 try
                 {
-                    action();
+                    await action();
                 }
                 catch (Exception)
                 {

@@ -1,6 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +31,7 @@ namespace Oryx.Tests.Common
             List<EnvironmentVariable> environmentVariables,
             List<DockerVolume> volumes,
             string portMapping,
+            string link,
             bool runContainerInBackground,
             string command,
             string[] commandArguments)
@@ -55,6 +57,7 @@ namespace Oryx.Tests.Common
                 environmentVariables,
                 volumes,
                 portMapping,
+                link,
                 imageId,
                 command,
                 commandArguments);
@@ -87,6 +90,7 @@ namespace Oryx.Tests.Common
             List<EnvironmentVariable> environmentVariables,
             List<DockerVolume> volumes,
             string portMapping,
+            string link,
             string command,
             string[] commandArguments)
         {
@@ -111,6 +115,7 @@ namespace Oryx.Tests.Common
                 environmentVariables,
                 volumes,
                 portMapping,
+                link,
                 imageId,
                 command,
                 commandArguments);
@@ -210,6 +215,31 @@ namespace Oryx.Tests.Common
             }
         }
 
+        public DockerCommandResult Exec(string containerName, string command, string[] commandArgs)
+        {
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
+            }
+
+            var arguments = PrepareArguments();
+            return ExecuteCommand(arguments);
+
+            IEnumerable<string> PrepareArguments()
+            {
+                var args = new List<string>();
+                args.Add("exec");
+                args.Add(containerName);
+                args.Add(command);
+
+                if (commandArgs?.Length > 0)
+                {
+                    args.AddRange(commandArgs);
+                }
+                return args;
+            }
+        }
+
         private DockerCommandResult ExecuteCommand(IEnumerable<string> arguments)
         {
             var fileName = "docker";
@@ -245,6 +275,7 @@ namespace Oryx.Tests.Common
             List<EnvironmentVariable> environmentVariables,
             List<DockerVolume> volumes,
             string portMapping,
+            string link,
             string imageId,
             string command,
             string[] commandArguments)
@@ -277,6 +308,12 @@ namespace Oryx.Tests.Common
                 }
             }
 
+            if (!string.IsNullOrEmpty(link))
+            {
+                args.Add("--link");
+                args.Add(link);
+            }
+
             if (!string.IsNullOrEmpty(portMapping))
             {
                 args.Add("-p");
@@ -285,7 +322,10 @@ namespace Oryx.Tests.Common
 
             args.Add(imageId);
 
-            args.Add(command);
+            if (!string.IsNullOrEmpty(command))
+            {
+                args.Add(command);
+            }
 
             if (commandArguments?.Length > 0)
             {

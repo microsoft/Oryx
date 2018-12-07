@@ -26,11 +26,13 @@ apt-get update \
         msodbcsql17
 
 mkdir -p /etc/unixODBC
-echo $'[ODBC Driver 17 for SQL Server]\n\
-Description=Microsoft ODBC Driver 17 for SQL Server\n\
-Driver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.2.so.0.1\n\
-Threading=1\n\
-UsageCount=1' > /etc/unixODBC/odbcinst.ini
+cat >/etc/unixODBC/odbcinst.ini <<EOL
+[ODBC Driver 17 for SQL Server]
+Description=Microsoft ODBC Driver 17 for SQL Server
+Driver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.2.so.0.1
+Threading=1
+UsageCount=1
+EOL
 
 # Use Gunicorn as our WSGI Servier
 pip install --upgrade pip

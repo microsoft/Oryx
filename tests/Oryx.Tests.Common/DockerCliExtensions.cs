@@ -20,6 +20,7 @@ namespace Oryx.Tests.Common
                 environmentVariable: null,
                 volume: null,
                 portMapping: null,
+                link: null,
                 runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
@@ -38,6 +39,7 @@ namespace Oryx.Tests.Common
                 environmentVariable: null,
                 volume,
                 portMapping: null,
+                link: null,
                 runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
@@ -57,6 +59,7 @@ namespace Oryx.Tests.Common
                 environmentVariable: null,
                 volume,
                 portMapping,
+                link: null,
                 runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
@@ -75,6 +78,7 @@ namespace Oryx.Tests.Common
                 environmentVariable,
                 volume: null,
                 portMapping: null,
+                link: null,
                 runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
@@ -94,6 +98,7 @@ namespace Oryx.Tests.Common
                 environmentVariable,
                 volume,
                 portMapping: null,
+                link: null,
                 runContainerInBackground: false,
                 commandToExecuteOnRun,
                 commandArguments);
@@ -105,6 +110,7 @@ namespace Oryx.Tests.Common
             EnvironmentVariable environmentVariable,
             DockerVolume volume,
             string portMapping,
+            string link,
             bool runContainerInBackground,
             string commandToExecuteOnRun,
             string[] commandArguments)
@@ -126,6 +132,7 @@ namespace Oryx.Tests.Common
                 environmentVariables,
                 volumes,
                 portMapping,
+                link,
                 runContainerInBackground,
                 commandToExecuteOnRun,
                 commandArguments);

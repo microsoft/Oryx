@@ -19,6 +19,12 @@ else
 fi
 
 echo
+echo Pulling docker images required for running tests against databases ...
+docker pull mysql/mysql-server:5.7
+docker pull postgres
+docker pull microsoft/mssql-server-linux:2017-CU12
+
+echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
 dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
