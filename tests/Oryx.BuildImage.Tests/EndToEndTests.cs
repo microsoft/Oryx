@@ -112,9 +112,11 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var port = 8000;
             var portMapping = $"{port}:3000";
+            var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("node dist/index.js")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFile}")
+                .AddCommand(startupFile)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

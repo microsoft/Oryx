@@ -21,6 +21,7 @@ type NodeStartupScriptGenerator struct {
 }
 
 type packageJson struct {
+	Main string
 	Scripts *packageJsonScripts `json:"scripts"`
 }
 
@@ -30,12 +31,21 @@ type packageJsonScripts struct {
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	startupCommand := strings.TrimSpace(gen.UserStartupCommand) // If user passed a custom startup command, it should take precedence above all other options
+	if startupCommand != ""	{
+		return startupCommand
+	}
 
+	// deserialize package.json content
+	packageJsonObj := getPackageJsonObject(gen.SourcePath)
+
+	startupCommand = getPackageJsonStartCommand(packageJsonObj)
 	if startupCommand == "" {
-		startupCommand = getPackageJsonStartCommand(gen.SourcePath)
+		if packageJsonObj != nil && packageJsonObj.Main != "" {
+			return gen.getStartupCommandFromJsFile(packageJsonObj.Main)
+		}
 	}
 	if startupCommand == "" {
-		startupCommand = gen.getCandidateFilesStartCommand()
+		startupCommand = gen.getCandidateFilesStartCommand(gen.SourcePath)
 	}
 	if startupCommand == "" {
 		startupCommand = gen.getDefaultAppStartCommand()
@@ -45,27 +55,15 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 }
 
 // Gets the startup script from package.json if defined. Returns empty string if not found.
-func getPackageJsonStartCommand(appPath string) string {
-	packageJsonPath := filepath.Join(appPath, "package.json")
-	if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
-		packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
-		if err == nil {
-			packageObj := &packageJson{
-				Scripts: &packageJsonScripts{
-					Start: "",
-				},
-			}
-			err := json.Unmarshal(packageJsonBytes, &packageObj)
-			if err == nil && packageObj.Scripts.Start != "" {
-				return "npm start"
-			}
-		}
+func getPackageJsonStartCommand(packageJsonObj *packageJson) string {
+	if packageJsonObj != nil && packageJsonObj.Scripts != nil && packageJsonObj.Scripts.Start != "" {
+		return "npm start"
 	}
 	return ""
 }
 
 // Try to find the main file for the app
-func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand() string {
+func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath string) string {
 	startupFileCommand := ""
 	filesToSearch := []string{"bin/www", "server.js", "app.js", "index.js", "hostingstart.js"}
 	for _, file := range filesToSearch {
@@ -75,7 +73,6 @@ func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand() string {
 			break
 		}
 	}
-
 	return startupFileCommand
 }
 
@@ -115,4 +112,21 @@ func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePat
 
 	commandBuilder.WriteString(" " + mainJsFilePath)
 	return commandBuilder.String()
+}
+
+func getPackageJsonObject(appPath string) *packageJson {
+	packageJsonPath := filepath.Join(appPath, "package.json")
+	if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
+		packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
+		if err != nil {
+			return nil
+		}
+
+		packageJsonObj := new(packageJson)
+		err = json.Unmarshal(packageJsonBytes, &packageJsonObj)
+		if err == nil {
+			return packageJsonObj
+		}
+	}
+	return nil
 }
