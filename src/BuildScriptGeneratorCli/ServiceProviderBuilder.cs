@@ -1,10 +1,10 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
-
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,6 +35,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         CaptureMessageTemplates = true,
                         CaptureMessageProperties = true
                     });
+
+                    // This sets a global operation ID, even for the TelemetryClient object used inside ApplicationInsightsTarget.
+                    new TelemetryClient().StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>("oryx");
                 });
         }
 
