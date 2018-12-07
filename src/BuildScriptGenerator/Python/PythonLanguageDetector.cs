@@ -13,11 +13,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonLanguageDetector : ILanguageDetector
     {
-        private const string PythonName = "python";
-        private const string RequirementsFileName = "requirements.txt";
-        private const string RuntimeFileName = "runtime.txt";
-        private const string PythonFileExtension = "*.py";
-
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly ILogger<PythonLanguageDetector> _logger;
@@ -34,20 +29,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            if (!sourceRepo.FileExists(RequirementsFileName))
+            if (!sourceRepo.FileExists(Constants.RequirementsFileName))
             {
-                _logger.LogDebug("File {ReqsFileName} does not exist in source repo", RequirementsFileName);
+                _logger.LogDebug("File {ReqsFileName} does not exist in source repo", Constants.RequirementsFileName);
                 return null;
             }
 
-            var runtimeVersion = DetectPythonVersionFromRuntimeFile(sourceRepo);
+            string runtimeVersion = DetectPythonVersionFromRuntimeFile(sourceRepo);
 
             if (string.IsNullOrEmpty(runtimeVersion))
             {
-                var files = sourceRepo.EnumerateFiles(PythonFileExtension, searchSubDirectories: false);
+                var files = sourceRepo.EnumerateFiles(Constants.PythonFileExtension, searchSubDirectories: false);
                 if (files == null || !files.Any())
                 {
-                    _logger.LogDebug("Could not find any files with extension {PyFileExt} in source repo", PythonFileExtension);
+                    _logger.LogDebug($"Could not find any files with extension '{Constants.PythonFileExtension}' in source repo");
                     return null;
                 }
             }
@@ -56,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             return new LanguageDetectorResult
             {
-                Language = PythonName,
+                Language = Constants.PythonName,
                 LanguageVersion = runtimeVersion,
             };
         }
@@ -92,33 +87,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Most Python sites will have at least a .py file in the root, but
             // some may not. In that case, let them opt in with the runtime.txt
             // file, which is used to specify the version of Python.
-            if (sourceRepo.FileExists(RuntimeFileName))
+            if (sourceRepo.FileExists(Constants.RuntimeFileName))
             {
                 try
                 {
-                    var content = sourceRepo.ReadFile(RuntimeFileName);
+                    var content = sourceRepo.ReadFile(Constants.RuntimeFileName);
                     var hasPythonVersion = content.StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase);
                     if (!hasPythonVersion)
                     {
-                        _logger.LogDebug("Prefix {VerPrefix} was not found in file {RtFileName}", versionPrefix, RuntimeFileName);
+                        _logger.LogDebug("Prefix {VerPrefix} was not found in file {RtFileName}", versionPrefix, Constants.RuntimeFileName);
                         return null;
                     }
 
                     var pythonVersion = content.Remove(0, versionPrefix.Length);
 
-                    _logger.LogDebug("Found version {PyVer} in file {RtFileName}", pythonVersion, RuntimeFileName);
+                    _logger.LogDebug("Found version {PyVer} in file {RtFileName}", pythonVersion, Constants.RuntimeFileName);
 
                     return pythonVersion;
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(ex, "An error occurred while reading file {RtFileName}", RuntimeFileName);
+                    _logger.LogError(ex, "An error occurred while reading file {RtFileName}", Constants.RuntimeFileName);
                 }
             }
             else
             {
-                _logger.LogDebug("Could not find file '{RtFileName}' in source repo", RuntimeFileName);
+                _logger.LogDebug("Could not find file '{RtFileName}' in source repo", Constants.RuntimeFileName);
             }
+
             return null;
         }
     }

@@ -5,36 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.NLogTarget;
 
 namespace Microsoft.Extensions.Logging
 {
-    public static class LoggerMetricsExtensions
-    {
-        public static void LogEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
-        {
-            GetTelemetryClient()?.TrackEvent(eventName, props);
-        }
-
-        public static EventStopwatch LogTimedEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
-        {
-            return new EventStopwatch(GetTelemetryClient(), eventName, props);
-        }
-
-        private static TelemetryClient GetTelemetryClient()
-        {
-            ApplicationInsightsTarget aiTarget = (ApplicationInsightsTarget)NLog.LogManager.Configuration?.FindTargetByName("ai");
-            if (aiTarget == null)
-            {
-                return null;
-            }
-
-            var client = new TelemetryClient();
-            client.Context.InstrumentationKey = aiTarget.InstrumentationKey;
-            return client;
-        }
-    }
-
     public class EventStopwatch : IDisposable
     {
         private readonly TelemetryClient client;

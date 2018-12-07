@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -36,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             var benvArgs = $"node={context.LanguageVersion}";
 
+            var packageJson = GetPackageJsonObject(context.SourceRepo);
             string packageInstallCommand = null;
             string npmRunBuildCommand = null;
             string npmRunBuildAzureCommand = null;
@@ -45,12 +47,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                var packageJson = GetPackageJsonObject(context.SourceRepo);
                 var npmVersion = GetNpmVersion(packageJson);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
                     benvArgs += $" npm={npmVersion}";
                 }
+
                 packageInstallCommand = Constants.NpmInstallCommand;
 
                 var scriptsNode = packageJson?.scripts;
@@ -68,6 +70,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
+            if (packageJson?.dependencies != null)
+            {
+                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
+                var depSpecs = deps.ToObject<IDictionary<string, string>>();
+                _logger.LogDependencies(context.Language, context.LanguageVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+            }
+
             _logger.LogDebug("Using benv args: {BenvArgs}", benvArgs);
             script = new NodeBashBuildScript(
                 packageInstallCommand,
@@ -79,12 +88,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetNpmVersion(dynamic packageJson)
         {
-            if (packageJson?.dependencies != null)
-            {
-                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
-                _logger.LogEvent("ReadPackageJson", deps.ToObject<IDictionary<string, string>>());
-            }
-
             var npmVersionRange = packageJson?.engines?.npm?.Value;
             if (npmVersionRange == null)
             {

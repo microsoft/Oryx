@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -68,6 +69,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             _logger.LogDebug("Selected Python version: {PyVer}; venv module: {VenvModule}", pythonVersion, virtualEnvModule);
+
+            _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(Constants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));
 
             script = new PythonBashBuildScript(
                 virtualEnvironmentName: virtualEnvName,
