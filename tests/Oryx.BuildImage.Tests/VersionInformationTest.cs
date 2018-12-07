@@ -29,7 +29,7 @@ namespace Oryx.BuildImage.Tests
         public void DotnetAlias_UsesLatestVersion()
         {
             // Arrange
-            var expectedOutput = "2.2.100-preview2-009404";
+            var expectedOutput = "2.2.100";
 
             // Act
             var result = _dockerCli.Run(

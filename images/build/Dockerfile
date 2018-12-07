@@ -40,18 +40,10 @@ RUN apt-get update \
 RUN set -ex \
  && DOTNET_DIR=/opt/dotnet \
  && mkdir -p $DOTNET_DIR \
- # Install .NET Core SDK 2.1.400
- && DOTNET_SDK_VER=2.1.400 \
+ # Install .NET Core SDK 2.2.100
+ && DOTNET_SDK_VER=2.2.100 \
  && DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz \
- && DOTNET_SDK_SHA=9c850fe9d1ac335376fb3ed1f07472d281a9c4ac8ed02cf752ce36c3488d6746c09d6e2101184f3c8de357aae86b567196f4d071b6c55505a250ce6db53ab532 \
- && curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz \
- && echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c - \
- && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
- && rm dotnet.tar.gz \
- # Install .NET Core SDK 2.2.100-preview2
- && DOTNET_SDK_VER=2.2.100-preview2-009404 \
- && DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz \
- && DOTNET_SDK_SHA=05c4e4accea5cae674bfde24ac883ba7aa733686479621411a5d8fb9c030e0c053d5c0f2c4a4fb62bc8b0f651987ce0f33628ac8a26af1d5c7a4259b3cba7a21 \
+ && DOTNET_SDK_SHA=6bde1d0f186f068b1300d5a67e8aba56ff271b940bc0782c3a254dc0f67e7167d2fca12fc51eb3319d4ab4a91cbe5639e5104e9e0036adb8a27ca5711453a1c3 \
  && curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz \
  && echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c - \
  && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
@@ -72,26 +64,6 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 # so the Kudu user can access them; this can be removed if we run Kudu as root later.
 RUN mkdir /var/nuget \
  && chmod a+rw /var/nuget \
- && dotnet new -i "Microsoft.DotNet.Web.ProjectTemplates.1.x::1.0.0-*" \
- && mkdir warmup \
- && cd warmup \
- && dotnet new mvc -f netcoreapp1.1 \
- && dotnet restore \
- && cd .. \
- && rm -rf warmup \
- && mkdir warmup \
- && cd warmup \
- && dotnet new mvc -f netcoreapp1.0 \
- && dotnet restore \
- && cd .. \
- && rm -rf warmup \
- && mkdir warmup \
- && cd warmup \
- && echo '{"sdk":{"version":"2.1.400"}}' > global.json \
- && dotnet new mvc \
- && dotnet restore \
- && cd .. \
- && rm -rf warmup \
  && mkdir warmup \
  && cd warmup \
  && dotnet new mvc \
