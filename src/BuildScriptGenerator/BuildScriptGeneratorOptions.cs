@@ -18,10 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string LanguageVersion { get; set; }
 
-        public string LogFile { get; set; }
-
-        public LogLevel MinimumLogLevel { get; set; }
-
         public bool ScriptOnly { get; set; }
 
         public IDictionary<string, string> Properties { get; set; }

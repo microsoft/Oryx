@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
+using NLog;
 using NLog.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -19,8 +20,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private IServiceCollection _serviceCollection;
 
-        public ServiceProviderBuilder()
+        public ServiceProviderBuilder(string logPath = null)
         {
+            if (!string.IsNullOrWhiteSpace(logPath) && LogManager.Configuration != null)
+            {
+                var fileTarget = new NLog.Targets.FileTarget("file") { FileName = Path.GetFullPath(logPath) };
+                LogManager.Configuration.AddTarget(fileTarget);
+                LogManager.Configuration.AddRuleForAllLevels(fileTarget);
+                LogManager.ReconfigExistingLoggers();
+            }
+
             var configuration = GetConfiguration();
             _serviceCollection = new ServiceCollection();
             _serviceCollection
@@ -28,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 .AddCliServices()
                 .AddLogging(builder =>
                 {
-                    builder.SetMinimumLevel(LogLevel.Trace);
+                    builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                     builder.AddNLog(new NLogProviderOptions
                     {
                         CaptureMessageTemplates = true,

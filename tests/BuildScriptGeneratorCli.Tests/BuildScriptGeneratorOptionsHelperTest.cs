@@ -36,7 +36,6 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateDir: ".",
                 language: null,
                 languageVersion: null,
-                logFile: "logFile.txt",
                 scriptOnly: false,
                 properties: null);
 
@@ -44,7 +43,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(currentDir, options.SourceDir);
             Assert.Equal(currentDir, options.DestinationDir);
             Assert.Equal(currentDir, options.IntermediateDir);
-            Assert.Equal(Path.Combine(currentDir, "logFile.txt"), options.LogFile);
         }
 
         [Theory]
@@ -56,7 +54,6 @@ namespace BuildScriptGeneratorCli.Tests
             var options = new BuildScriptGeneratorOptions();
             var providedPath = Path.Combine(paths);
             var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), providedPath);
-            var logFile = Path.Combine(Directory.GetCurrentDirectory(), "logFile.txt");
 
             // Act
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
@@ -66,7 +63,6 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateDir: providedPath,
                 language: null,
                 languageVersion: null,
-                logFile: "logFile.txt",
                 scriptOnly: false,
                 properties: null);
 
@@ -74,7 +70,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(absolutePath, options.SourceDir);
             Assert.Equal(absolutePath, options.DestinationDir);
             Assert.Equal(absolutePath, options.IntermediateDir);
-            Assert.Equal(logFile, options.LogFile);
         }
 
         [Fact]
@@ -83,7 +78,6 @@ namespace BuildScriptGeneratorCli.Tests
             // Arrange
             var options = new BuildScriptGeneratorOptions();
             var absolutePath = Path.GetTempPath();
-            var logFile = Path.Combine(Path.GetTempPath(), "logFile.txt");
 
             // Act
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
@@ -93,7 +87,6 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateDir: absolutePath,
                 language: null,
                 languageVersion: null,
-                logFile: logFile,
                 scriptOnly: false,
                 properties: null);
 
@@ -101,7 +94,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(absolutePath, options.SourceDir);
             Assert.Equal(absolutePath, options.DestinationDir);
             Assert.Equal(absolutePath, options.IntermediateDir);
-            Assert.Equal(logFile, options.LogFile);
         }
 
         [Fact]
@@ -120,7 +112,6 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateDir: "..",
                 language: null,
                 languageVersion: null,
-                logFile: Path.Combine("..", "logFile.txt"),
                 scriptOnly: false,
                 properties: null);
 
@@ -128,7 +119,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.SourceDir);
             Assert.Equal(expected, options.DestinationDir);
             Assert.Equal(expected, options.IntermediateDir);
-            Assert.Equal(Path.Combine(expected, "logFile.txt"), options.LogFile);
         }
 
         [Fact]
@@ -148,7 +138,6 @@ namespace BuildScriptGeneratorCli.Tests
                 intermediateDir: Path.Combine(dir2, "..", "subDir2"),
                 language: null,
                 languageVersion: null,
-                logFile: Path.Combine(dir2, "..", "subDir2", "logFile.txt"),
                 scriptOnly: false,
                 properties: null);
 
@@ -156,7 +145,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.SourceDir);
             Assert.Equal(expected, options.DestinationDir);
             Assert.Equal(expected, options.IntermediateDir);
-            Assert.Equal(Path.Combine(expected, "logFile.txt"), options.LogFile);
         }
 
         [Theory]

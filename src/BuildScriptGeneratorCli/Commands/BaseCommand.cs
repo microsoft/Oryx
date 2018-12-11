@@ -11,6 +11,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal abstract class BaseCommand
     {
+        [Option("--log-file <file>", CommandOptionType.SingleValue, Description = "The file to which the log will be written to.")]
+        public string LogFilePath { get; set; }
+
         private IServiceProvider _serviceProvider = null;
 
         public int OnExecute(CommandLineApplication app, IConsole console)
@@ -46,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal virtual IServiceProvider GetServiceProvider()
         {
-            var serviceProviderBuilder = new ServiceProviderBuilder()
+            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
                 .ConfigureScriptGenerationOptions(o =>
                 {
                     ConfigureBuildScriptGeneratorOptions(o);

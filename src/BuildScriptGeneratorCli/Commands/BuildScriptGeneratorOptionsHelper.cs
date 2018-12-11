@@ -20,7 +20,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string intermediateDir,
             string language,
             string languageVersion,
-            string logFile,
             bool scriptOnly,
             string[] properties)
         {
@@ -38,12 +37,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 options.IntermediateDir = Path.GetFullPath(intermediateDir);
             }
 
-            if (!string.IsNullOrEmpty(logFile))
-            {
-                options.LogFile = Path.GetFullPath(logFile);
-            }
-
-            options.MinimumLogLevel = LogLevel.Trace;
             options.ScriptOnly = scriptOnly;
 
             // Process properties

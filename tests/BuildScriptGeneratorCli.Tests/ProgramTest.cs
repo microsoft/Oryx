@@ -29,10 +29,7 @@ namespace BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsVersion_WhenVersionOptionIsUsed()
         {
             // Arrange
-            var program = new Program
-            {
-                Version = true
-            };
+            var program = new Program { Version = true };
             var testConsole = new TestConsole();
 
             // Act

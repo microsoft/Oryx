@@ -39,12 +39,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string LanguageVersion { get; set; }
 
         [Option(
-            "--log-file <file>",
-            CommandOptionType.SingleValue,
-            Description = "The file to which logs have to be written to.")]
-        public string LogFile { get; set; }
-
-        [Option(
             "-o|--output <dir>",
             CommandOptionType.SingleValue,
             Description = "The destination directory.")]
@@ -210,7 +204,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 IntermediateDir,
                 Language,
                 LanguageVersion,
-                LogFile,
                 scriptOnly: false,
                 Properties);
         }
