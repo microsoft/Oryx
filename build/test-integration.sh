@@ -11,7 +11,14 @@ fi
 source $REPO_DIR/build/__variables.sh
 
 echo
+echo Pulling docker images required for running tests against databases ...
+docker pull mysql/mysql-server:5.7
+docker pull postgres
+docker pull microsoft/mssql-server-linux:2017-CU12
+
+echo
 echo "Building and running tests..."
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"
-dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=artifacts\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
+# Run non-AKS tests temporarily
+dotnet test --filter E2E!=AKS --test-adapter-path:. --logger:"xunit;LogFilePath=artifacts\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION

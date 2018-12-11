@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Integration.Tests
+namespace Oryx.Integration.Tests.AksTests
 {
     public class SampleAppsTests : IClassFixture<SampleAppsTests.SampleAppsFixture>
     {
@@ -146,7 +146,7 @@ namespace Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory, Trait("E2E", "AKS")]
         [InlineData("linxnodeexpress", "oryxdevms/node-4.4:latest", "nodejs", "4.4.7")]
         [InlineData("webfrontend", "oryxdevms/node-8.1:latest", "nodejs", "8.1")]
         //[InlineData("flask-app", "oryxdevms/python-3.7.0:latest", "python", "3.7")]
@@ -158,7 +158,7 @@ namespace Oryx.Integration.Tests
             try
             {
                 var appFolder = string.Format("/mnt/samples/{0}/{1}/{2}", fixture.FolderName, language, appName);
-                
+
                 // execute build command on a pod with build image
                 var command = new[]
                 {
@@ -167,7 +167,7 @@ namespace Oryx.Integration.Tests
                     "-l", language,
                     "--language-version", languageVersion
                 };
-                
+
                 Console.WriteLine("Running command in build pod: `{0}`", string.Join(' ', command));
                 string buildOutput = await k8sHelpers.ExecInPodAsync(fixture.Client, fixture.BuildPod, NAMESPACE, command);
                 Console.WriteLine("> " + buildOutput.Replace("\n", "\n> ") + Environment.NewLine);
@@ -180,7 +180,7 @@ namespace Oryx.Integration.Tests
                     Console.WriteLine("Deployment's minAvailabilityStatus = {0}", minAvailabilityStatus);
                     return string.Equals(minAvailabilityStatus, "True");
                 });
-                
+
                 // Create load balancer for the deployed app
                 runtimeService = await k8sHelpers.CreateServiceAndWait(fixture.Client, Specs.RunTimeService.GetSpec(appName + fixture.BuildNumber), NAMESPACE,
                     svc => svc.Status.LoadBalancer.Ingress != null && svc.Status.LoadBalancer.Ingress.Count > 0);
@@ -194,7 +194,7 @@ namespace Oryx.Integration.Tests
                 Assert.True(response.IsSuccessStatusCode);
                 _output.WriteLine(await response.Content.ReadAsStringAsync());
             }
-            finally 
+            finally
             {
                 if (fixture.Client != null)
                 {

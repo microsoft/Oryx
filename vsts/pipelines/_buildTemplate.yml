@@ -1,9 +1,9 @@
 steps:
 - script: |
-    if [ "$(BuildAndTestBuildImages)" != "true" ] && [ "$(BuildAndTestRuntimeImages)" != "true" ]
+    if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
     then
       echo "Invalid configuration."
-      echo "Variable 'BuildAndTestBuildImages' or 'BuildAndTestRuntimeImages' needs to be 'true' to run this build."
+      echo "Variable 'BuildBuildImages' or 'BuildRuntimeImages' needs to be 'true' to run this build."
       exit 1
     fi
   displayName: 'Validate pipeline run'
@@ -24,39 +24,39 @@ steps:
   displayName: 'Build build images'
   inputs:
     scriptPath: ./build/build-buildimages.sh
-  condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build runtime images'
   inputs:
     scriptPath: ./build/build-runtimeimages.sh
-  condition: and(succeeded(), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test script generator'
   inputs:
     scriptPath: ./build/test-scriptgenerator.sh
-  condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
     scriptPath: ./build/test-buildimages.sh
     args: skipBuildingImages
-  condition: and(succeeded(), eq(variables['BuildAndTestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test the startup command generators'
   inputs:
     scriptPath: ./build/test-startupgenerators.sh
-  condition: and(succeeded(), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test runtime images'
   inputs:
     scriptPath: ./build/test-runtimeimages.sh
     args: skipBuildingImages
-  condition: and(succeeded(), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
@@ -93,7 +93,7 @@ steps:
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
     includeLatestTag: false
-  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@1
   displayName: 'Push Build image to ACR'
@@ -104,7 +104,7 @@ steps:
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
     includeLatestTag: false
-  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildAndTestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@0
   displayName: 'Push runtime images to DockerHub'
@@ -114,7 +114,7 @@ steps:
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
     includeLatestTag: false
-  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
@@ -125,13 +125,13 @@ steps:
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     includeLatestTag: false
-  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Clean up docker artifacts'
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
-  condition: or(eq(variables['BuildAndTestBuildImages'], 'true'), eq(variables['BuildAndTestRuntimeImages'], 'true'))
+  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: AzureKeyVault@1
   displayName: 'Fetch storage account key from vault'
