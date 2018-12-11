@@ -1,7 +1,10 @@
 queue:
   name: OryxLinux
 
-trigger: none
+trigger:
+  branches:
+    include:
+    - master
 
 steps:
 - script: |
