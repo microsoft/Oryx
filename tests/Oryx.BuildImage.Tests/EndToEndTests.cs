@@ -139,7 +139,7 @@ namespace Oryx.BuildImage.Tests
                 });
         }
 
-        [Fact(Skip = "https://devdiv.visualstudio.com/DevDiv/_workitems/edit/736633")]
+        [Fact]
         public async Task Python27App()
         {
             // Arrange
@@ -147,10 +147,12 @@ namespace Oryx.BuildImage.Tests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var port = 8000;
+            var startupFile = "/tmp/startup.sh";
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("./entryPoint.sh")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFile} -hostBind=\":5000\"")
+                .AddCommand(startupFile)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -169,7 +171,7 @@ namespace Oryx.BuildImage.Tests
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
-                    Assert.Contains("Hello World!!!!", data);
+                    Assert.Contains("Hello World!", data);
                 });
         }
 
@@ -263,6 +265,51 @@ namespace Oryx.BuildImage.Tests
                 volume,
                 "oryx",
                 new[] { "build", appDir },
+                "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{port}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{port}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Fact]
+        public async Task DjangoApp_Python37_virtualenv()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var portMapping = $"{port}:5000";
+            const string virtualEnvName = "antenv";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}" },
                 "oryxdevms/python-3.7",
                 portMapping,
                 "/bin/bash",

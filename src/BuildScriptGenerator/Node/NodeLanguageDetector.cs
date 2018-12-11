@@ -84,6 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                             return null;
                         }
                     }
+
                     isNodeApp = true;
                 }
                 else
@@ -134,6 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     throw exc;
                 }
             }
+
             return nodeVersion;
         }
 

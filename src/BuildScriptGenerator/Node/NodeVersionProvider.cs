@@ -8,9 +8,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeVersionProvider : INodeVersionProvider
     {
+        private readonly NodeScriptGeneratorOptions _options;
         private IEnumerable<string> _supportedNodeVersions;
         private IEnumerable<string> _supportedNpmVersions;
-        private readonly NodeScriptGeneratorOptions _options;
 
         public NodeVersionProvider(IOptions<NodeScriptGeneratorOptions> options)
         {
@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     _supportedNodeVersions = VersionProviderHelpers.GetVersionsFromDirectory(_options.InstalledNodeVersionsDir);
                 }
+
                 return _supportedNodeVersions;
             }
         }
@@ -37,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     _supportedNpmVersions = VersionProviderHelpers.GetVersionsFromDirectory(_options.InstalledNpmVersionsDir);
                 }
+
                 return _supportedNpmVersions;
             }
         }

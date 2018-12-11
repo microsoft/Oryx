@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
@@ -7,16 +7,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    [BuildProperty(VirtualEnvironmentNamePropertyKey, "Name of the virtual environment to create.")]
+    [BuildProperty(VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
+    [BuildProperty(TargetPackageDirectoryPropertyKey, "Directory to download the packages to, if no virtual environment is provided. Default: '" + DefaultTargetPackageDirectory + "'")]
     internal class PythonScriptGenerator : ILanguageScriptGenerator
     {
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
+        internal const string TargetPackageDirectoryPropertyKey = "packagedir";
 
         private const string PythonName = "python";
-        private const string DefaultVirtualEnvironmentName = "pythonenv";
+        private const string DefaultTargetPackageDirectory = "__oryx_packages__";
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
@@ -41,14 +45,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             if (context.Properties == null ||
                 !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
             {
-                virtualEnvName = DefaultVirtualEnvironmentName;
+                virtualEnvName = string.Empty;
             }
 
-            var virtualEnvModule = "venv";
+            string packageDir = null;
+            if ((context.Properties == null ||
+                !context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir)) &&
+                string.IsNullOrEmpty(virtualEnvName))
+            {
+                // Only default if no virtual environment has been provided.
+                packageDir = DefaultTargetPackageDirectory;
+            }
+
+            if (!string.IsNullOrWhiteSpace(virtualEnvName) && !string.IsNullOrWhiteSpace(packageDir))
+            {
+                throw new InvalidUsageException(Labels.PythonBuildCantHaveVirtualEnvAndTargetPackageDirErrorMessage);
+            }
+
+            var virtualEnvModule = string.Empty;
             var virtualEnvCopyParam = string.Empty;
 
             var pythonVersion = context.LanguageVersion;
-            if (!string.IsNullOrEmpty(pythonVersion))
+            _logger.LogDebug("Selected Python version: {PyVer}", pythonVersion);
+
+            if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
                 switch (pythonVersion.Split('.')[0])
                 {
@@ -62,13 +82,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         break;
 
                     default:
-                        string errorMessage = "Python version " + pythonVersion + " is not supported";
+                        string errorMessage = "Python version '" + pythonVersion + "' is not supported";
                         _logger.LogError(errorMessage);
                         throw new NotSupportedException(errorMessage);
                 }
-            }
 
-            _logger.LogDebug("Selected Python version: {PyVer}; venv module: {VenvModule}", pythonVersion, virtualEnvModule);
+                _logger.LogDebug("Using virtual environment '{Venv}', module '{VenvModule}'", virtualEnvName, virtualEnvModule);
+            }
 
             _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(Constants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));
 
@@ -76,8 +96,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
-                pythonVersion: pythonVersion
-            ).TransformText();
+                packagesDirectory: packageDir,
+                pythonVersion: pythonVersion)
+                .TransformText();
 
             return true;
         }

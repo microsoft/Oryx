@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    internal static class BuildScriptGeneratorCliServiceCollectionExtensions
+    internal static class CliServiceCollectionExtensions
     {
         public static IServiceCollection AddCliServices(this IServiceCollection services)
         {

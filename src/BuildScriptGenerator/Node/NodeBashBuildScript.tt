@@ -61,10 +61,12 @@ then
 fi
 
 appTempDir=`mktemp -d`
-cp -rf "$SOURCE_DIR"/* "$appTempDir"
+cd "$SOURCE_DIR"
+# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+cp -rf . "$appTempDir"
 mkdir -p "$DESTINATION_DIR"
-cp -rf "$appTempDir"/* "$DESTINATION_DIR"
-rm -rf "$appTempDir"
+cd "$appTempDir"
+cp -rf . "$DESTINATION_DIR"
 
 echo
 echo Done.

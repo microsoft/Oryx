@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+    #line 1 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class NodeBashBuildScript : NodeBashBuildScriptBase
     {
@@ -61,35 +61,35 @@ echo
 
 source /usr/local/bin/benv ");
             
-            #line 37 "C:\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 37 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
             
             #line default
             #line hidden
             this.Write("\r\n\r\necho Installing packages ...\r\ncd \"$SOURCE_DIR\"\r\necho\r\necho \"Running \'");
             
-            #line 42 "C:\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 42 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
             this.Write("\' ...\"\r\necho\r\n");
             
-            #line 44 "C:\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 44 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
             this.Write("\r\n\r\n");
             
-            #line 46 "C:\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 46 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildCommand));
             
             #line default
             #line hidden
             this.Write("\r\n\r\n");
             
-            #line 48 "C:\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 48 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildAzureCommand));
             
             #line default
@@ -110,10 +110,12 @@ then
 fi
 
 appTempDir=`mktemp -d`
-cp -rf ""$SOURCE_DIR""/* ""$appTempDir""
+cd ""$SOURCE_DIR""
+# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+cp -rf . ""$appTempDir""
 mkdir -p ""$DESTINATION_DIR""
-cp -rf ""$appTempDir""/* ""$DESTINATION_DIR""
-rm -rf ""$appTempDir""
+cd ""$appTempDir""
+cp -rf . ""$DESTINATION_DIR""
 
 echo
 echo Done.");

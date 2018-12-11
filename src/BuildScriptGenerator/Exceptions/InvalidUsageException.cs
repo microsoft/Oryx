@@ -10,7 +10,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Exceptions
     /// </summary>
     public class InvalidUsageException : Exception
     {
-        public InvalidUsageException(string message) : base(message)
-        { }
+        public InvalidUsageException(string message)
+            : base(message)
+        {
+        }
     }
 }

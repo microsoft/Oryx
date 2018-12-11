@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var exitCode = ProcessHelper.RunProcess(
                 "chmod",
                 arguments: new[] { "+x", scriptPath },
-                workingDirectory,
+                workingDirectory: workingDirectory,
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
                 waitForExitInSeconds: null); // Do not provide wait time as the caller can do this themselves.

@@ -84,6 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 _logger.LogDebug($"Could not find file '{Constants.EnvironmentFileName}' to load environment settings.");
             }
+
             return _settings;
         }
 
@@ -119,6 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         return path.Trim(quote);
                     }
                 }
+
                 return path;
             }
 
@@ -134,6 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     return settings[name];
                 }
+
                 return null;
             }
 
@@ -143,6 +146,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     path = Path.Combine(_sourceRepo.RootPath, path);
                 }
+
                 return Path.GetFullPath(path);
             }
         }
@@ -162,6 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 _console.WriteLine($"Post-build script file '{settings.PostBuildScriptPath}' does not exist.");
                 return false;
             }
+
             return true;
         }
     }

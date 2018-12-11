@@ -1,6 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// --------------------------------------------------------------------------------------------
 
 using System;
 using System.IO;
@@ -34,7 +37,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -75,7 +78,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
                 // Execute command
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 // Check the output directory for the sub directory
                 .AddFileExistsCheck($"{appOutputDir}/{subDir}/file1.txt")
                 .ToString();
@@ -110,7 +113,7 @@ namespace Oryx.BuildImage.Tests
             var nestedOutputDir = "/output/subdir1";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -142,7 +145,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -175,7 +178,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -213,7 +216,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateDirectory($"{appOutputDir}/blah")
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
                 .ToString();
@@ -290,7 +293,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python36Version}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -331,7 +334,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -369,7 +372,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -412,7 +415,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python2.7/site-packages/flask")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__/flask")
                 .ToString();
 
             // Act
@@ -446,7 +449,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act
@@ -516,7 +519,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/jinja2")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__/jinja2")
                 .ToString();
 
             // Act
@@ -552,7 +555,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/django-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv/lib/python3.7/site-packages/django")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__/django")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
@@ -588,7 +591,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv")
+                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
                 .ToString();
 
             // Act

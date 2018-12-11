@@ -12,12 +12,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string virtualEnvironmentName,
             string virtualEnvironmentModule,
             string virtualEnvironmentParameters,
+            string packagesDirectory,
             string pythonVersion)
         {
-            this.VirtualEnvironmentName = virtualEnvironmentName;
-            this.VirtualEnvironmentModule = virtualEnvironmentModule;
-            this.VirtualEnvironmentParameters = virtualEnvironmentParameters;
-            this.PythonVersion = pythonVersion;
+            VirtualEnvironmentName = virtualEnvironmentName;
+            VirtualEnvironmentModule = virtualEnvironmentModule;
+            VirtualEnvironmentParameters = virtualEnvironmentParameters;
+            PythonVersion = pythonVersion;
+            PackagesDirectory = packagesDirectory;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -27,5 +29,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public string VirtualEnvironmentParameters { get; set; }
 
         public string PythonVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the directory where the packages will be downloaded to.
+        /// </summary>
+        public string PackagesDirectory { get; set; }
     }
 }

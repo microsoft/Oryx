@@ -45,18 +45,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return new LocalSourceRepo(_options.IntermediateDir);
         }
 
-        private void PrepareIntermediateDirectory()
-        {
-            if (Directory.Exists(_options.IntermediateDir))
-            {
-                _logger.LogWarning("Intermediate directory {IntermediateDir} already exists; deleting it", _options.IntermediateDir);
-                Directory.Delete(_options.IntermediateDir, recursive: true);
-            }
-
-            _logger.LogDebug("Creating intermediate directory at {IntermediateDir}", _options.IntermediateDir);
-            Directory.CreateDirectory(_options.IntermediateDir);
-        }
-
         private static void CopyDirectories(string sourceDirectory, string destinationDirectory, bool recursive)
         {
             // Get the subdirectories for the specified directory.
@@ -90,6 +78,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     CopyDirectories(sourceSubDir.FullName, destinationSubDir, recursive);
                 }
             }
+        }
+
+        private void PrepareIntermediateDirectory()
+        {
+            if (Directory.Exists(_options.IntermediateDir))
+            {
+                _logger.LogWarning("Intermediate directory {IntermediateDir} already exists; deleting it", _options.IntermediateDir);
+                Directory.Delete(_options.IntermediateDir, recursive: true);
+            }
+
+            _logger.LogDebug("Creating intermediate directory at {IntermediateDir}", _options.IntermediateDir);
+            Directory.CreateDirectory(_options.IntermediateDir);
         }
     }
 }

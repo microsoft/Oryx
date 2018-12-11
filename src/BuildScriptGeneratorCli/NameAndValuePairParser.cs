@@ -43,6 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 key = pair.Substring(0, equalToSymbolIndex);
                 value = pair.Substring(equalToSymbolIndex + 1);
             }
+
             return true;
         }
     }

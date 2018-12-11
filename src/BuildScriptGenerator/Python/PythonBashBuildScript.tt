@@ -1,4 +1,4 @@
-﻿<#@ template language="C#" #>
+<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -34,14 +34,17 @@ echo "Destination directory: $DESTINATION_DIR"
 
 source /usr/local/bin/benv python=<#= PythonVersion #>
 
+echo "Python Version: $python"
+cd "$SOURCE_DIR"
+
+<#
+	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
+#>
 VIRTUALENVIRONMENTNAME=<#= VirtualEnvironmentName #>
 VIRTUALENVIRONMENTMODULE=<#= VirtualEnvironmentModule #>
 VIRTUALENVIRONMENTOPTIONS=<#= VirtualEnvironmentParameters #>
 
 echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
-echo "Python Version: $python"
-
-cd "$SOURCE_DIR"
 
 echo Creating virtual environment ...
 $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
@@ -52,6 +55,25 @@ source $VIRTUALENVIRONMENTNAME/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
+# For virtual environment, we use the actual 'python' alias that as setup by the venv,
+python_bin=python
+<#
+	}
+	else {
+#>
+$pip install -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade
+# We need to use the python binary selected by benv
+python_bin=$python
+
+# Detect the location of the site-packages to add the .pth file
+SITE_PACKAGES_PATH=$($python -c "import site; print(site.getsitepackages()[0])")
+# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth poiting to them
+APP_PACKAGES_PATH=$(pwd)"/<#= PackagesDirectory #>"
+echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
+
+<#
+	}
+#>
 echo
 echo pip install finished.
 
@@ -62,7 +84,7 @@ then
 		echo
 		echo Content in source directory is a Django app
 		echo Running 'collectstatic' ...
-		python manage.py collectstatic --noinput --clear
+		$python_bin manage.py collectstatic --noinput --clear
 	fi
 fi
 
@@ -81,10 +103,13 @@ then
 fi
 
 appTempDir=`mktemp -d`
-cp -rf "$SOURCE_DIR"/* "$appTempDir"
+cd "$SOURCE_DIR"
+# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+cp -rf . "$appTempDir"
 mkdir -p "$DESTINATION_DIR"
-cp -rf "$appTempDir"/* "$DESTINATION_DIR"
-rm -rf "$appTempDir"
+cd "$appTempDir"
+echo "Copying files to destination, '$DESTINATION_DIR'"
+cp -rf . "$DESTINATION_DIR"
 
 echo
 echo Done.

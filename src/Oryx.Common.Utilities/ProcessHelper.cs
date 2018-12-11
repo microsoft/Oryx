@@ -24,10 +24,10 @@ namespace Microsoft.Oryx.Common.Utilities
                 fileName,
                 arguments,
                 workingDirectory,
-                // Preserve the output structure and use AppendLine as these handlers
-                // are called for each line that is written to the output.
                 standardOutputHandler: (sender, args) =>
                 {
+                    // Preserve the output structure and use AppendLine as these handlers
+                    // are called for each line that is written to the output.
                     outputBuilder.AppendLine(args.Data);
                 },
                 standardErrorHandler: (sender, args) =>
@@ -131,14 +131,21 @@ namespace Microsoft.Oryx.Common.Utilities
                     process.StartInfo.ArgumentList.Add(argument);
                 }
             }
-
-            var hasStarted = process.Start();
-            if (!hasStarted)
+            try
             {
-                throw new InvalidOperationException(
-                    "Process failed to start. The command used to run the process was:" +
-                    Environment.NewLine +
-                    $"{fileName} {string.Join(" ", arguments)}");
+                var hasStarted = process.Start();
+                if (!hasStarted)
+                {
+                    throw new InvalidOperationException(
+                        "Process failed to start. The command used to run the process was:" +
+                        Environment.NewLine +
+                        $"{fileName} {string.Join(" ", arguments)}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error running an internal command '{fileName} {string.Join(" ", arguments)}': {e.Message}");
+                throw;
             }
 
             if (redirectOutput)

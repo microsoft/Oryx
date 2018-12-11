@@ -21,8 +21,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         public string PackageInstallCommand { get; set; }
+
         public string NpmRunBuildCommand { get; set; }
+
         public string NpmRunBuildAzureCommand { get; set; }
+
         public string BenvArgs { get; set; }
     }
 }
