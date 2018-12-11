@@ -5,6 +5,7 @@
 using System;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -65,7 +66,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 disposable.Dispose();
             }
 
-            NLog.LogManager.Shutdown(); // Sends queued messages to Application Insights
+            // Sends queued messages to Application Insights
+            NLog.LogManager.Flush(LoggingConstants.FlushTimeout);
+            NLog.LogManager.Shutdown();
         }
     }
 }
