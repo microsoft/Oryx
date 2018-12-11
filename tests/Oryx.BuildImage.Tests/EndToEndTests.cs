@@ -29,7 +29,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("10.13")]
+        [InlineData("10.14")]
         public async Task NodeApp(string nodeVersion)
         {
             // Arrange
@@ -68,7 +68,7 @@ namespace Oryx.BuildImage.Tests
         public async Task NodeApp_WithYarnLock()
         {
             // Arrange
-            var nodeVersion = "10.13";
+            var nodeVersion = "10.14";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "webfrontend-yarnlock");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
@@ -106,7 +106,7 @@ namespace Oryx.BuildImage.Tests
         public async Task NodeApp_BuildNodeUnderScripts()
         {
             // Arrange
-            var nodeVersion = "10.13";
+            var nodeVersion = "10.14";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "NodeAndTypeScriptHelloWorld");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;

@@ -92,7 +92,7 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 8.12.0 \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
- && ~/n/bin/n -d 10.13.0 \
+ && ~/n/bin/n -d 10.14.1 \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -ex \
@@ -143,9 +143,9 @@ RUN set -ex \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
- && ln -s 10.13.0 /opt/nodejs/lts \
- && ln -s 10.13.0 /opt/nodejs/10.13 \
- && ln -s 10.13 /opt/nodejs/10
+ && ln -s 10.14.1 /opt/nodejs/lts \
+ && ln -s 10.14.1 /opt/nodejs/10.14 \
+ && ln -s 10.14 /opt/nodejs/10
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \

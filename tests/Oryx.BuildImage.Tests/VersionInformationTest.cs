@@ -52,7 +52,7 @@ namespace Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
             // Arrange
-            var expectedOutput = "v10.13.0";
+            var expectedOutput = "v10.14.1";
 
             // Arrange & Act
             var result = _dockerCli.Run(
@@ -124,7 +124,7 @@ namespace Oryx.BuildImage.Tests
         [InlineData("6", "v6.11.0")]
         [InlineData("6.11", "v6.11.0")]
         [InlineData("6.11.0", "v6.11.0")]
-        [InlineData("lts", "v10.13.0")]
+        [InlineData("lts", "v10.14.1")]
         [InlineData("8", "v8.12.0")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.2")]
@@ -133,10 +133,10 @@ namespace Oryx.BuildImage.Tests
         [InlineData("9", "v9.4.0")]
         [InlineData("9.4", "v9.4.0")]
         [InlineData("9.4.0", "v9.4.0")]
-        [InlineData("10", "v10.13.0")]
+        [InlineData("10", "v10.14.1")]
         [InlineData("10.1", "v10.1.0")]
         [InlineData("10.1.0", "v10.1.0")]
-        [InlineData("10.13.0", "v10.13.0")]
+        [InlineData("10.14.1", "v10.14.1")]
 
         public void NodeAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
