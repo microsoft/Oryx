@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -70,6 +71,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            console.WriteLine("Operation ID: {0}", logger.StartOperation("oryx"));
+
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
             var sourceRepo = sourceRepoProvider.GetSourceRepo();

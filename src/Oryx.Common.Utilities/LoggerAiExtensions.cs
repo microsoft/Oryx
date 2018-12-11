@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.NLogTarget;
 
 namespace Microsoft.Extensions.Logging
@@ -26,13 +27,19 @@ namespace Microsoft.Extensions.Logging
 
             foreach (string dep in dependencySpecs)
             {
-                client?.TrackTrace($"Dependency: {dep}", ApplicationInsights.DataContracts.SeverityLevel.Information, props);
+                client.TrackTrace($"Dependency: {dep}", ApplicationInsights.DataContracts.SeverityLevel.Information, props);
             }
         }
 
         public static void LogEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
         {
-            GetTelemetryClient()?.TrackEvent(eventName, props);
+            GetTelemetryClient().TrackEvent(eventName, props);
+        }
+
+        public static string StartOperation(this ILogger logger, string name)
+        {
+            var op = GetTelemetryClient().StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);
+            return op.Telemetry.Id;
         }
 
         public static EventStopwatch LogTimedEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
@@ -42,14 +49,14 @@ namespace Microsoft.Extensions.Logging
 
         private static TelemetryClient GetTelemetryClient()
         {
+            var client = new TelemetryClient();
+
             ApplicationInsightsTarget aiTarget = (ApplicationInsightsTarget)NLog.LogManager.Configuration?.FindTargetByName("ai");
-            if (aiTarget == null)
+            if (aiTarget != null)
             {
-                return null;
+                client.Context.InstrumentationKey = aiTarget.InstrumentationKey;
             }
 
-            var client = new TelemetryClient();
-            client.Context.InstrumentationKey = aiTarget.InstrumentationKey;
             return client;
         }
     }

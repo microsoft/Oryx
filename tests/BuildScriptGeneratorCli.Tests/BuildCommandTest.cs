@@ -315,7 +315,6 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Equal(string.Empty, testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
             Assert.Equal("Hello World", outputBuilder.ToString().Replace(Environment.NewLine, string.Empty));
             Assert.Equal(string.Empty, errorBuilder.ToString().Replace(Environment.NewLine, string.Empty));
