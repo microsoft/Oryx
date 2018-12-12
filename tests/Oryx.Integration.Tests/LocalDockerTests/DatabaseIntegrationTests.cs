@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Oryx.BuildImage.Tests.LocalDockerTests
 {
-    public class EndToEndTestsWithDatabase
+    public class DatabaseIntegrationTests
     {
         private const int HostPort = 9095;
         private const string startupCommand = "/opt/startupcmdgen/startupcmdgen";
@@ -23,7 +23,7 @@ namespace Oryx.BuildImage.Tests.LocalDockerTests
         private readonly string _hostSamplesDir;
         private readonly HttpClient _httpClient;
 
-        public EndToEndTestsWithDatabase(ITestOutputHelper output)
+        public DatabaseIntegrationTests(ITestOutputHelper output)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
@@ -33,19 +33,19 @@ namespace Oryx.BuildImage.Tests.LocalDockerTests
         [Fact]
         public async Task NodeApp_MySqlDB()
         {
-            await NodeApp_MySqlDBAsync("10.13");
+            await NodeApp_MySqlDBAsync("10.14");
         }
 
         [Fact]
         public async Task NodeApp_PostgresDB()
         {
-            await NodeApp_PostgresDBAsync("10.13");
+            await NodeApp_PostgresDBAsync("10.14");
         }
 
         [Fact]
         public async Task NodeApp_MicrosoftSqlServerDB()
         {
-            await NodeApp_MicrosoftSqlServerDBAsync("10.13");
+            await NodeApp_MicrosoftSqlServerDBAsync("10.14");
         }
 
         [Fact]

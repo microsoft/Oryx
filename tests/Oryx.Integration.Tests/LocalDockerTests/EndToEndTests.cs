@@ -10,7 +10,7 @@ using Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.BuildImage.Tests
+namespace Oryx.Integration.Tests.LocalDockerTests
 {
     public class EndToEndTests
     {
