@@ -46,3 +46,5 @@ ln -s /usr/local/bin/ /opt/python/$PYTHON_VERSION/
 ln -s /usr/local/include/ /opt/python/$PYTHON_VERSION/
 ln -s /usr/local/lib/ /opt/python/$PYTHON_VERSION/
 ln -s /usr/local/share/ /opt/python/$PYTHON_VERSION/
+
+ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
