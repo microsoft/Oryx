@@ -2,8 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -392,54 +390,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     supportedNpmVersions: supportedNpmVersions),
                 Options.Create(options),
                 NullLogger<NodeLanguageDetector>.Instance);
-        }
-
-        private class CachedSourceRepo : ISourceRepo
-        {
-            private Dictionary<string, string> pathToContent = new Dictionary<string, string>();
-
-            public void AddFile(string content, params string[] paths)
-            {
-                var filePath = Path.Combine(paths);
-                pathToContent[filePath] = content;
-            }
-
-            public string RootPath => string.Empty;
-
-            public bool FileExists(params string[] paths)
-            {
-                var path = Path.Combine(paths);
-                return pathToContent.ContainsKey(path);
-            }
-
-            public string ReadFile(params string[] paths)
-            {
-                var path = Path.Combine(paths);
-                return pathToContent[path];
-            }
-
-            public IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public string[] ReadAllLines(params string[] paths)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-
-        private class TestNodeVersionProvider : INodeVersionProvider
-        {
-            public TestNodeVersionProvider(string[] supportedNodeVersions, string[] supportedNpmVersions)
-            {
-                SupportedNodeVersions = supportedNodeVersions;
-                SupportedNpmVersions = supportedNpmVersions;
-            }
-
-            public IEnumerable<string> SupportedNodeVersions { get; }
-
-            public IEnumerable<string> SupportedNpmVersions { get; }
         }
     }
 }

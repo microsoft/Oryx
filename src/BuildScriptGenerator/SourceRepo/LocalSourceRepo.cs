@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -37,6 +38,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var path = ResolvePath(paths);
             return File.ReadAllLines(path);
+        }
+
+        public string GetGitCommitId()
+        {
+            (int exitCode, string output, string error) = ProcessHelper.RunProcess("git", new string[] { "rev-parse", "HEAD" }, this.RootPath, 2);
+
+            if (exitCode != 0)
+            {
+                return null;
+            }
+
+            return output?.Trim();
         }
 
         private string ResolvePath(params string[] paths)

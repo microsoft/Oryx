@@ -65,11 +65,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            console.WriteLine("Operation ID: {0}", logger.StartOperation("oryx"));
-
+            console.WriteLine("Build Operation ID: {0}", logger.StartOperation("oryx"));
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
             var sourceRepo = sourceRepoProvider.GetSourceRepo();
+
+            using (var stopwatch = logger.LogTimedEvent("GetGitCommitId"))
+            {
+                string commitId = sourceRepo.GetGitCommitId();
+                stopwatch.AddProperty(nameof(commitId), commitId);
+                if (!string.IsNullOrWhiteSpace(commitId))
+                {
+                    console.WriteLine("Git Commit ID:      {0}", commitId); // Spacing is meant to equalize the length to "Build Operation ID"
+                }
+            }
 
             var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
             if (!environmentSettingsProvider.TryGetSettings(out var environmentSettings))
