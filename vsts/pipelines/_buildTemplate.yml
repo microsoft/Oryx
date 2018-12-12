@@ -127,12 +127,6 @@ steps:
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
-- task: ShellScript@2
-  displayName: 'Clean up docker artifacts'
-  inputs:
-    scriptPath: ./vsts/scripts/dockerCleanup.sh
-  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
-
 - task: AzureKeyVault@1
   displayName: 'Fetch storage account key from vault'
   inputs:
@@ -149,6 +143,12 @@ steps:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Clean up docker artifacts'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerCleanup.sh
+  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ArchiveFiles@2
   displayName: 'Archive docker files and scripts for Oryx build and runtime images'
