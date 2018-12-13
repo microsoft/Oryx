@@ -96,6 +96,12 @@ namespace Oryx.BuildImage.Tests.LocalDockerTests
             await PythonApp_MicrosoftSqlServerDBAsync("3.7");
         }
 
+        [Fact]
+        public async Task Python37App_MySqlDB_UsingMySqlClient()
+        {
+            await PythonApp_MySqlDB_UsingMySqlClientAsync("3.7");
+        }
+
         private async Task NodeApp_MySqlDBAsync(string nodeVersion)
         {
             // Arrange
@@ -535,6 +541,109 @@ namespace Oryx.BuildImage.Tests.LocalDockerTests
                     {
                         var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                         Assert.Contains("Microblog", data);
+                    });
+            }
+            finally
+            {
+                if (runDatabaseContainerResult != null)
+                {
+                    dockerCli.StopContainer(runDatabaseContainerResult.ContainerName);
+                }
+            }
+        }
+
+        private async Task PythonApp_MySqlDB_UsingMySqlClientAsync(string pythonVersion)
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "python", "mysqlclient-sample");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:8000";
+            var entrypointScript = "./start.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"{startupCommand} -appPath {appDir} -output {entrypointScript}")
+                .AddCommand(entrypointScript)
+                .ToString();
+
+            var dockerCli = new DockerCli((int)TimeSpan.FromMinutes(10).TotalSeconds);
+            DockerRunCommandResult runDatabaseContainerResult = null;
+            try
+            {
+                var internalDbLinkName = "dbserver";
+                var databaseName = "oryxdb";
+                var databaseUserName = "oryxuser";
+                var databaseUserPwd = "Passw0rd";
+                runDatabaseContainerResult = dockerCli.Run(
+                    Settings.MySqlDbImageName,
+                    environmentVariables: new List<EnvironmentVariable>
+                    {
+                            new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
+                            new EnvironmentVariable("MYSQL_DATABASE", databaseName),
+                            new EnvironmentVariable("MYSQL_USER", databaseUserName),
+                            new EnvironmentVariable("MYSQL_PASSWORD", databaseUserPwd),
+                    },
+                    volumes: null,
+                    portMapping: null,
+                    link: null,
+                    runContainerInBackground: true,
+                    command: null,
+                    commandArguments: null);
+
+                RunAsserts(
+                   () =>
+                   {
+                       Assert.True(runDatabaseContainerResult.IsSuccess);
+                   },
+                   runDatabaseContainerResult.GetDebugInfo());
+
+                await Task.Delay(TimeSpan.FromMinutes(1));
+
+                // Setup user, database
+                var dbSetupSql = "/tmp/databaseSetup.sql";
+                var databaseSetupScript = new ShellScriptBuilder()
+                    .AddCommand($"echo \"USE {databaseName};\" > {dbSetupSql}")
+                    .AddCommand($"echo \"CREATE TABLE Products (Name varchar(255) NOT NULL);\" >> {dbSetupSql}")
+                    .AddCommand($"echo \"INSERT INTO Products VALUES ('Lamp');\" >> {dbSetupSql}")
+                    .AddCommand($"mysql -u {databaseUserName} -p{databaseUserPwd} < {dbSetupSql}")
+                    .ToString();
+
+                var setupDatabaseResult = dockerCli.Exec(
+                    runDatabaseContainerResult.ContainerName,
+                    "/bin/sh",
+                    new[]
+                    {
+                        "-c",
+                        databaseSetupScript
+                    });
+
+                RunAsserts(
+                   () =>
+                   {
+                       Assert.True(setupDatabaseResult.IsSuccess);
+                   },
+                   setupDatabaseResult.GetDebugInfo());
+
+                await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                    _output,
+                    volume,
+                    "oryx",
+                    new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
+                    $"oryxdevms/python-{pythonVersion}",
+                    new List<EnvironmentVariable>(),
+                    portMapping,
+                    link: $"{runDatabaseContainerResult.ContainerName}:{internalDbLinkName}",
+                    "/bin/bash",
+                    new[]
+                    {
+                        "-c",
+                        script
+                    },
+                    async () =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                        _output.WriteLine(data);
+                        Assert.Contains("Lamp", data);
                     });
             }
             finally

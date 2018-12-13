@@ -7,6 +7,7 @@ apt-get update \
         curl \
         gnupg \
         libpq-dev \
+        default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
  
 # Microsoft SQL Server 2017

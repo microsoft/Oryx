@@ -1,4 +1,4 @@
-FROM buildpack-deps:jessie-curl AS main
+FROM buildpack-deps:stable AS main
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -16,23 +16,21 @@ RUN apt-get update \
         unixodbc-dev \
         # Required for PostgreSQL
         libpq-dev \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-        ca-certificates \
         libc6 \
-        libcurl3 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu52 \
+        libicu57 \
         liblttng-ust0 \
-        libssl1.0.0 \
+        libssl1.0.2 \
         libstdc++6 \
-        libunwind8 \
-        libuuid1 \
         zlib1g \
  && rm -rf /var/lib/apt/lists/*
 
@@ -171,7 +169,7 @@ RUN set -ex \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
 # Install Python build prerequisites
-FROM buildpack-deps:jessie AS python-build-prereqs
+FROM buildpack-deps:stable AS python-build-prereqs
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       tk-dev \
@@ -207,18 +205,8 @@ COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
-# Build OpenSSL 1.1.1 (needed for Python 3.7)
-FROM buildpack-deps:jessie AS openssl1.1.1-build
-WORKDIR /usr/src/openssl
-COPY images/build/openssl-build.sh /
-RUN chmod +x /openssl-build.sh
-RUN /openssl-build.sh
-
 # Build Python 3.7
 FROM python-build-prereqs AS python3.7-build
-COPY --from=openssl1.1.1-build /usr/local/include /usr/local/include
-COPY --from=openssl1.1.1-build /usr/local/lib /usr/local/lib
-RUN ldconfig
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.7.1
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
@@ -228,19 +216,6 @@ RUN chmod +x /python-build.sh
 RUN /python-build.sh
 
 FROM main AS python
-COPY --from=openssl1.1.1-build /usr/local/lib/libssl.so.1.1 /usr/local/lib/
-COPY --from=openssl1.1.1-build /usr/local/lib/libcrypto.so.1.1 /usr/local/lib/
-COPY --from=openssl1.1.1-build /usr/local/lib/libssl.a /usr/local/lib/
-COPY --from=openssl1.1.1-build /usr/local/lib/engines-1.1/ /usr/local/lib/engines-1.1/
-
-# rbenv (for Ruby) requires libssl 1.0 for Ruby versions 2.4 and lower.
-# We then need both libssl 1.0 and libssl 1.1, which Python 3 requires, side by side. To achieve that
-# we suffix the library and package files with their version.
-COPY --from=openssl1.1.1-build /usr/local/lib/pkgconfig/libcrypto.pc /usr/local/lib/pkgconfig/libcrypto.1.1.pc
-COPY --from=openssl1.1.1-build /usr/local/lib/pkgconfig/libssl.pc /usr/local/lib/pkgconfig/libssl.1.1.pc
-COPY --from=openssl1.1.1-build /usr/local/lib/pkgconfig/openssl.pc /usr/local/lib/pkgconfig/openssl.1.1.pc
-
-RUN ldconfig
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \

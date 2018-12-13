@@ -7,10 +7,10 @@ wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_
 ## Try 5 times at most else it's fine to fail the build
 for (( i=0; i<5; i++ )); do
 
-    gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys $GPG_KEY || \
-    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys $GPG_KEY || \
-    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys $GPG_KEY  || \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY;
+    gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys $GPG_KEY || \
+    gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys $GPG_KEY || \
+    gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys $GPG_KEY  || \
+    gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY;
     
     ##if we get sucess during execution we will break the loop
     if [ $? -eq 0 ]; then break; fi    
