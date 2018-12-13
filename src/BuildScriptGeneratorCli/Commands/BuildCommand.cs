@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -65,7 +66,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            console.WriteLine("Build Operation ID: {0}", logger.StartOperation("oryx"));
+
+            var opName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? "oryx"; // This will be an App Service app name if Oryx was invoked by Kudu
+            console.WriteLine("Build Operation ID: {0}", logger.StartOperation(opName));
+
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
             var sourceRepo = sourceRepoProvider.GetSourceRepo();
