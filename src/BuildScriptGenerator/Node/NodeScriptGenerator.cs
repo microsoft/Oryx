@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetNpmVersion(dynamic packageJson)
         {
-            var npmVersionRange = packageJson?.engines?.npm?.Value;
+            string npmVersionRange = packageJson?.engines?.npm?.Value;
             if (npmVersionRange == null)
             {
                 npmVersionRange = _nodeScriptGeneratorOptions.NpmDefaultVersion;
@@ -103,6 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     supportedNpmVersions);
                 if (string.IsNullOrWhiteSpace(npmVersion))
                 {
+                    _logger.LogWarning("User requested npm version {npmVersion} but it wasn't resolved", npmVersionRange);
                     return null;
                 }
             }

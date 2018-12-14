@@ -23,6 +23,11 @@ namespace Oryx.Tests.Common
             return null;
         }
 
+        public IList<string> GetEnvironmentVariableAsList(string name)
+        {
+            return null;
+        }
+
         public IDictionary GetEnvironmentVariables()
         {
             return Variables;

@@ -224,9 +224,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         /// <summary>
         /// Checks if <paramref name="dir1"/> is a sub-directory of <paramref name="dir2"/>.
         /// </summary>
-        /// <param name="dir1"></param>
-        /// <param name="dir2"></param>
-        /// <returns></returns>
+        /// <param name="dir1">The directory to be checked as subdirectory.</param>
+        /// <param name="dir2">The directory to be tested as the parent.</param>
+        /// <returns>true if <c>dir1</c> is a sub-directory of <c>dir2</c>, false otherwise.</returns>
         internal bool IsSubDirectory(string dir1, string dir2)
         {
             var dir1Segments = dir1.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);

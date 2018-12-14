@@ -131,6 +131,7 @@ namespace Microsoft.Oryx.Common.Utilities
                     process.StartInfo.ArgumentList.Add(argument);
                 }
             }
+
             try
             {
                 var hasStarted = process.Start();

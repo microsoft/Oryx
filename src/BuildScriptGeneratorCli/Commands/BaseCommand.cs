@@ -11,10 +11,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal abstract class BaseCommand
     {
+        private IServiceProvider _serviceProvider = null;
+
         [Option("--log-file <file>", CommandOptionType.SingleValue, Description = "The file to which the log will be written to.")]
         public string LogFilePath { get; set; }
-
-        private IServiceProvider _serviceProvider = null;
 
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
