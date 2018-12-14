@@ -14,7 +14,6 @@ namespace Oryx.Integration.Tests.LocalDockerTests
 {
     public class EndToEndTests
     {
-        private const string startupCommand = "/opt/startupcmdgen/startupcmdgen";
         private const string startupFilePath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
@@ -40,7 +39,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{port}:80";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -77,7 +76,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFile}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFile}")
                 .AddCommand(startupFile)
                 .ToString();
 
@@ -115,7 +114,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFile}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFile}")
                 .AddCommand(startupFile)
                 .ToString();
 
@@ -151,7 +150,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFile} -hostBind=\":5000\"")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -hostBind=\":5000\"")
                 .AddCommand(startupFile)
                 .ToString();
 
@@ -186,7 +185,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=\":5000\"")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=\":5000\"")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -221,7 +220,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -256,7 +255,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -301,7 +300,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             const string virtualEnvName = "antenv";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -345,7 +344,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{port}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"{startupCommand} -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
                 .AddCommand(startupFilePath)
                 .ToString();
 

@@ -1,7 +1,7 @@
 # Generate images from template
 
 Since our node images are identical except for the base image, which determines the node version,
-all our node images are generated from a template file, `./Dockerfile.template`, which contains the placefolder
+all our node images are generated from a template file, `./Dockerfile.template`, which contains the placeholder
 for the base image name. File `./nodeVersions.txt` has a list of the supported node versions as their tags for the official node images.
 
 To generate the dockerfiles for all the images, run `./generateDockerfiles.sh`.

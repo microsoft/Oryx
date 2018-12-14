@@ -15,7 +15,8 @@ The "build" image is defined in `./images/build`, and its development bits are p
 The runtime images are defined in `./images/runtime`, and their development images are listed in
 [https://hub.docker.com/r/oryxdevms/]. They also contain a tool that detects how the app should be started by
 analyzing the build output directory, and that tool can be found under `/opt/startupcmdgen/startupcmdgen` inside
-each image. They output a startup script to a file that then will run the app when executed.
+each image. This tool can be accessed by a link called 'oryx' too. They output a startup script to a file that then
+will run the app when executed.
 
 ## <a name="supportedRuntimes">Supported runtimes
 
@@ -36,7 +37,7 @@ Currently supported commands include:
 
 The build command accepts an optional output directory where the compiled bits will be placed, and if none is provided they will be added in the source directory itself. This directory can then be volume mounted in the runtime
 image corresponding to the language and version being used by the app. Using the startup detection tool, the app can 
-be started from there, for example using `docker run -v <path to source>:/app oryxdevms/python-3.7 bash -c "/opt/startupcmdgen/startupcmdgen -appPath /app -output /app/start.sh && /app/start.sh"`.
+be started from there, for example using `docker run -v <path to source>:/app oryxdevms/python-3.7 bash -c "oryx -appPath /app -output /app/start.sh && /app/start.sh"`.
 
 # License
 
