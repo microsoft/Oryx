@@ -58,6 +58,33 @@ steps:
     args: skipBuildingImages
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
+- task: CopyFiles@2
+  displayName: 'Copy source projects output to artifacts folder'
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)
+    contents: 'src/**/bin/**/*.*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    cleanTargetFolder: true
+    overWrite: true
+    flattenFolders: true
+  condition: true
+
+- task: CopyFiles@2
+  displayName: 'Copy artifacts from source repo to agent artifacts folder'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
+    contents: '**/*.*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    overWrite: true
+  condition: true
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'xUnit'
+    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
+    mergeTestResults: true
+  condition: true
+
 - task: Docker@0
   displayName: 'Push Build image to DockerHub'
   inputs:
@@ -122,33 +149,6 @@ steps:
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
-
-- task: CopyFiles@2
-  displayName: 'Copy source projects output to artifacts folder'
-  inputs:
-    sourceFolder: $(Build.SourcesDirectory)
-    contents: 'src/**/bin/**/*.*'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    cleanTargetFolder: true
-    overWrite: true
-    flattenFolders: true
-  condition: true
-
-- task: CopyFiles@2
-  displayName: 'Copy artifacts from source repo to agent artifacts folder'
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
-    contents: '**/*.*'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    overWrite: true
-  condition: true
-
-- task: PublishTestResults@2
-  inputs:
-    testRunner: 'xUnit'
-    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
-    mergeTestResults: true
-  condition: true
 
 - task: ArchiveFiles@2
   displayName: 'Archive docker files and scripts for Oryx build and runtime images'
