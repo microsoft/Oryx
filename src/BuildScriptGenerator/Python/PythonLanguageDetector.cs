@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             if (!sourceRepo.FileExists(Constants.RequirementsFileName))
             {
-                _logger.LogDebug("File {ReqsFileName} does not exist in source repo", Constants.RequirementsFileName);
+                _logger.LogDebug($"File '{Constants.RequirementsFileName}' does not exist in source repo");
                 return null;
             }
 
@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 var files = sourceRepo.EnumerateFiles(Constants.PythonFileExtension, searchSubDirectories: false);
                 if (files == null || !files.Any())
                 {
-                    _logger.LogDebug($"Could not find any files with extension '{Constants.PythonFileExtension}' in source repo");
+                    _logger.LogDebug($"Files with extension '{Constants.PythonFileExtension}' do not exist in source repo root");
                     return null;
                 }
             }
