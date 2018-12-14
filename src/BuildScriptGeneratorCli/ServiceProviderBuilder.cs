@@ -3,8 +3,6 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.IO;
-using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -30,7 +28,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 LogManager.ReconfigExistingLoggers();
             }
 
-            var configuration = GetConfiguration();
             _serviceCollection = new ServiceCollection();
             _serviceCollection
                 .AddBuildScriptGeneratorServices()
@@ -64,23 +61,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public IServiceProvider Build()
         {
             return _serviceCollection.BuildServiceProvider();
-        }
-
-        private static IConfiguration GetConfiguration()
-        {
-            var executingAssemblyFileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
-            var basePath = executingAssemblyFileInfo.Directory.FullName;
-
-            // The order of 'Add' is important here.
-            // The values provided at commandline override any values provided in environment variables
-            // and values provided in environment variables override any values provided in appsettings.json.
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder
-                .SetBasePath(basePath)
-                .AddJsonFile(path: "appsettings.json", optional: true)
-                .AddEnvironmentVariables();
-
-            return configurationBuilder.Build();
         }
     }
 }

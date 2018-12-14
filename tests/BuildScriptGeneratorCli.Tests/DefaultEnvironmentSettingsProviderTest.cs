@@ -3,8 +3,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Oryx.Tests.Common;
@@ -22,18 +24,97 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void GetSettings_ReturnsSettings_IgnoringBlankLinesAndComments()
+        public void TryGetAndLoadSettings_PrefersPrefixedName_IfPresent()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var preBuildPath1 = Path.Combine(sourceDir, "foo.sh");
+            var preBuildPath2 = Path.Combine(sourceDir, "bar.sh");
+            File.Create(preBuildPath1);
+            File.Create(preBuildPath2);
+            WriteEnvFile(
+                sourceDir,
+                "PRE_BUILD_SCRIPT_PATH=bar.sh",
+                "ORYX_PRE_BUILD_SCRIPT_PATH=foo.sh");
+            var provider = CreateProvider(sourceDir);
+
+            // Act
+            var result = provider.TryGetAndLoadSettings(out var environmentSettings);
+
+            // Assert
+            Assert.True(result);
+            Assert.NotNull(environmentSettings);
+            Assert.Equal(preBuildPath1, environmentSettings.PreBuildScriptPath);
+            Assert.Null(environmentSettings.PostBuildScriptPath);
+        }
+
+        [Fact]
+        public void TryGetAndLoadSettings_SetsEnvironmentVariablesInCurrentProcess()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            WriteEnvFile(sourceDir, "PRE_BUILD_SCRIPT_PATH=bar.sh");
+            var preBuildPath = Path.Combine(sourceDir, "bar.sh");
+            File.Create(preBuildPath);
+            var testEnvironment = new TestEnvironment();
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            var result = provider.TryGetAndLoadSettings(out var environmentSettings);
+
+            // Assert
+            Assert.True(result);
+            var envVariable = Assert.Single(testEnvironment.Variables);
+            Assert.Equal("PRE_BUILD_SCRIPT_PATH", envVariable.Key);
+            Assert.Equal("bar.sh", envVariable.Value);
+            Assert.NotNull(environmentSettings);
+            Assert.Equal(preBuildPath, environmentSettings.PreBuildScriptPath);
+        }
+
+        [Fact]
+        public void ReadSettingsFromFile_DoesNotThrow_IfCouldNotFindSettingsFile()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var provider = CreateProvider(sourceDir);
+            var settings = new Dictionary<string, string>();
+
+            // Act
+            provider.ReadSettingsFromFile(settings);
+
+            // Assert
+            Assert.Empty(settings);
+        }
+
+        [Fact]
+        public void ReadSettingsFromFile_DoesNotThrow_IfSettingsFileIsEmpty()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            WriteEnvFile(sourceDir);
+            var provider = CreateProvider(sourceDir);
+            var settings = new Dictionary<string, string>();
+
+            // Act
+            provider.ReadSettingsFromFile(settings);
+
+            // Assert
+            Assert.Empty(settings);
+        }
+
+        [Fact]
+        public void ReadSettingsFromFile_ReturnsSettings_IgnoringBlankLinesAndComments()
         {
             // Arrange
             var sourceDir = CreateNewDir();
             WriteEnvFile(sourceDir, "   ", "", "#foo=bar", "key1=value1", "key2=value2");
             var provider = CreateProvider(sourceDir);
+            var settings = new Dictionary<string, string>();
 
             // Act
-            var settings = provider.ReadSettingsFromFile();
+            provider.ReadSettingsFromFile(settings);
 
             // Assert
-            Assert.NotNull(settings);
             Assert.Equal(2, settings.Count);
             Assert.True(settings.TryGetValue("key1", out var value));
             Assert.Equal("value1", value);
@@ -42,18 +123,18 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void GetSettings_ReturnsSettings_IgnoringInvalidNameValuePairs()
+        public void ReadSettingsFromFile_ReturnsSettings_IgnoringInvalidNameValuePairs()
         {
             // Arrange
             var sourceDir = CreateNewDir();
             WriteEnvFile(sourceDir, "key1=value1", "key2=value2", "=value3");
             var provider = CreateProvider(sourceDir);
+            var settings = new Dictionary<string, string>();
 
             // Act
-            var settings = provider.ReadSettingsFromFile();
+            provider.ReadSettingsFromFile(settings);
 
             // Assert
-            Assert.NotNull(settings);
             Assert.Equal(2, settings.Count);
             Assert.True(settings.TryGetValue("key1", out var value));
             Assert.Equal("value1", value);
@@ -62,18 +143,18 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void GetSettings_ReturnsSettings_ConsideringCaseSensitiveness()
+        public void ReadSettingsFromFile_ReturnsSettings_ConsideringCaseSensitiveness()
         {
             // Arrange
             var sourceDir = CreateNewDir();
             WriteEnvFile(sourceDir, "key1=value1", "kEy1=value2");
             var provider = CreateProvider(sourceDir);
+            var settings = new Dictionary<string, string>();
 
             // Act
-            var settings = provider.ReadSettingsFromFile();
+            provider.ReadSettingsFromFile(settings);
 
             // Assert
-            Assert.NotNull(settings);
             Assert.Equal(2, settings.Count);
             Assert.True(settings.TryGetValue("key1", out var value));
             Assert.Equal("value1", value);
@@ -128,6 +209,94 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.True(settings);
         }
 
+        [Fact]
+        public void MergeSettingsFromEnvironmentVariables_OverridesExistingSetting()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var settings = new Dictionary<string, string>(StringComparer.Ordinal);
+            settings["key1"] = "value1";
+            settings["key2"] = "value2";
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable("key1", "value1-new");
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.MergeSettingsFromEnvironmentVariables(settings);
+
+            // Assert
+            Assert.Equal(2, settings.Count);
+            Assert.True(settings.TryGetValue("key1", out var value));
+            Assert.Equal("value1-new", value);
+            Assert.True(settings.TryGetValue("key2", out value));
+            Assert.Equal("value2", value);
+        }
+
+        [Fact]
+        public void MergeSettingsFromEnvironmentVariables_OverrideIsCaseSensitive()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var settings = new Dictionary<string, string>(StringComparer.Ordinal);
+            settings["key1"] = "value1";
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable("kEy1", "value1-new");
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.MergeSettingsFromEnvironmentVariables(settings);
+
+            // Assert
+            var kvp = Assert.Single(settings);
+            Assert.Equal("key1", kvp.Key);
+            Assert.Equal("value1", kvp.Value);
+        }
+
+        [Fact]
+        public void MergeSettingsFromEnvironmentVariables_DoesNotPopulateSettings_ThatAreNotAlreadyPresent()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var settings = new Dictionary<string, string>(StringComparer.Ordinal);
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable("key1", "value1");
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.MergeSettingsFromEnvironmentVariables(settings);
+
+            // Assert
+            Assert.Empty(settings);
+        }
+
+        [Fact]
+        public void GetSettings_FollowsPrecedenceOrder()
+        {
+            // Arrange
+            var settings = new Dictionary<string, string>(StringComparer.Ordinal);
+            var sourceDir = CreateNewDir();
+            // From source repo's build.env file
+            WriteEnvFile(sourceDir, "key1=value1-buildenv", "key2=value2-buildenv", "foo=bar");
+            // From environment variables
+            var environment = new TestEnvironment();
+            environment.Variables["key2"] = "value2-envvariable";
+            environment.Variables["size"] = "small";
+            var provider = CreateProvider(sourceDir, environment);
+
+            // Act
+            provider.GetSettings(settings);
+
+            // Assert
+            Assert.Equal(3, settings.Count);
+            Assert.True(settings.TryGetValue("key1", out var value));
+            Assert.Equal("value1-buildenv", value);
+            Assert.True(settings.TryGetValue("key2", out value));
+            Assert.Equal("value2-envvariable", value);
+            Assert.True(settings.TryGetValue("foo", out value));
+            Assert.Equal("bar", value);
+            Assert.False(settings.TryGetValue("size", out value));
+        }
+
         private string CreateNewDir()
         {
             return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString())).FullName;
@@ -135,13 +304,19 @@ namespace BuildScriptGeneratorCli.Tests
 
         private void WriteEnvFile(string sourceDir, params string[] contentLines)
         {
-            File.WriteAllText(Path.Combine(sourceDir, ".env"), string.Join(Environment.NewLine, contentLines));
+            File.WriteAllText(Path.Combine(sourceDir, Constants.BuildEnvironmentFileName), string.Join(Environment.NewLine, contentLines));
         }
 
         private DefaultEnvironmentSettingsProvider CreateProvider(string sourceDir)
         {
+            return CreateProvider(sourceDir, new TestEnvironment());
+        }
+
+        private DefaultEnvironmentSettingsProvider CreateProvider(string sourceDir, TestEnvironment testEnvironment)
+        {
             return new DefaultEnvironmentSettingsProvider(
                 new TestSourceRepoProvider(sourceDir),
+                testEnvironment,
                 new TestConsole(),
                 NullLogger<DefaultEnvironmentSettingsProvider>.Instance);
         }

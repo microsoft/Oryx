@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator;
 
@@ -9,7 +11,8 @@ namespace Oryx.Tests.Common
 {
     public class TestEnvironment : IEnvironment
     {
-        public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>();
+        // Environment variables in Linux are case-sensitive
+        public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
         public string GetEnvironmentVariable(string name)
         {
@@ -18,6 +21,16 @@ namespace Oryx.Tests.Common
                 return value;
             }
             return null;
+        }
+
+        public IDictionary GetEnvironmentVariables()
+        {
+            return Variables;
+        }
+
+        public void SetEnvironmentVariable(string name, string value)
+        {
+            Variables[name] = value;
         }
     }
 }

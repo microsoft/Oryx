@@ -12,6 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
 
-        public const string EnvironmentFileName = ".env";
+        public const string BuildEnvironmentFileName = "build.env";
     }
 }

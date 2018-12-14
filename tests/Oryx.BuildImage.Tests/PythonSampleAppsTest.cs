@@ -6,7 +6,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,6 +17,7 @@ namespace Oryx.BuildImage.Tests
 {
     public class PythonSampleAppsTest : SampleAppsTestBase
     {
+        private const string PackagesDirectory = "__oryx_packages__";
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
         private readonly string _hostSamplesDir;
@@ -37,7 +40,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -78,7 +81,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
                 // Execute command
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 // Check the output directory for the sub directory
                 .AddFileExistsCheck($"{appOutputDir}/{subDir}/file1.txt")
                 .ToString();
@@ -113,7 +116,7 @@ namespace Oryx.BuildImage.Tests
             var nestedOutputDir = "/output/subdir1";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -145,7 +148,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -178,7 +181,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -216,7 +219,7 @@ namespace Oryx.BuildImage.Tests
                 .CreateDirectory($"{appOutputDir}/blah")
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
                 .ToString();
@@ -293,7 +296,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python36Version}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -334,7 +337,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -372,7 +375,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -415,7 +418,7 @@ namespace Oryx.BuildImage.Tests
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__/flask")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/flask")
                 .ToString();
 
             // Act
@@ -449,7 +452,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -519,7 +522,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__/jinja2")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/jinja2")
                 .ToString();
 
             // Act
@@ -555,7 +558,7 @@ namespace Oryx.BuildImage.Tests
             var appOutputDir = "/django-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__/django")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
@@ -583,15 +586,34 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_ExecutesPreAndPostBuildScripts()
+        public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
-            var volume = DockerVolume.Create(_hostSamplesDir);
-            var appDir = $"{volume.ContainerDir}/python/flask-app";
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
+                sw.WriteLine("POST_BUILD_SCRIPT_PATH=scripts/postbuild.sh");
+            }
+            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo Executing the pre-build script from a standalone script!");
+            }
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo Executing the post-build script from a standalone script!");
+            }
+            var appDir = volume.ContainerDir;
             var appOutputDir = "/flask-app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/__oryx_packages__")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
             // Act
@@ -616,6 +638,138 @@ namespace Oryx.BuildImage.Tests
                         result.Output);
                     Assert.Contains(
                         "Executing the post-build script from a standalone script!",
+                        result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ExecutesPreAndPostBuildScripts_UsingEnvironmentVariables()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo Executing the pre-build script from a standalone script!");
+            }
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo Executing the post-build script from a standalone script!");
+            }
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/flask-app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new List<EnvironmentVariable>()
+                {
+                    new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
+                    new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh")
+                },
+                new List<DockerVolume>() { volume },
+                portMapping: null,
+                link: null,
+                runContainerInBackground: false,
+                command: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        "Executing the pre-build script from a standalone script!",
+                        result.Output);
+                    Assert.Contains(
+                        "Executing the post-build script from a standalone script!",
+                        result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_UsesEnvironmentSettings_InOrderOfPrecedence()
+        {
+            // Order of precedence is: EnvironmentVariables -> build.env file settings
+
+            // Arrange
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "flask-app"));
+            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
+                sw.WriteLine("POST_BUILD_SCRIPT_PATH=scripts/postbuild.sh");
+                sw.WriteLine("key1=value-from-buildenv-file");
+                sw.WriteLine("key2=value-from-buildenv-file");
+            }
+            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo From pre-build script: \"$key1, $key2\"");
+            }
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo From post-build script: \"$key1, $key2\"");
+            }
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/flask-app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new List<EnvironmentVariable>()
+                {
+                    new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
+                    new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh"),
+                    new EnvironmentVariable("key2", "value-from-environmentvariable")
+                },
+                new List<DockerVolume>() { volume },
+                portMapping: null,
+                link: null,
+                runContainerInBackground: false,
+                command: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    var values = "value-from-buildenv-file, value-from-environmentvariable";
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"From pre-build script: {values}",
+                        result.Output);
+                    Assert.Contains(
+                        $"From post-build script: {values}",
                         result.Output);
                 },
                 result.GetDebugInfo());

@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
-            if (!environmentSettingsProvider.TryGetSettings(out var environmentSettings))
+            if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
             {
                 return Constants.ExitFailure;
             }

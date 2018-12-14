@@ -8,6 +8,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal interface IEnvironmentSettingsProvider
     {
-        bool TryGetSettings(out EnvironmentSettings environmentSettings);
+        bool TryGetAndLoadSettings(out EnvironmentSettings environmentSettings);
     }
 }
