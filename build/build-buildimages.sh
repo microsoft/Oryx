@@ -14,13 +14,14 @@ then
 	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
 fi
 
-function BuildAndTagStage(){
+function BuildAndTagStage()
+{
 	local stageName="$1"
 	local stageTagName="oryxdevms/$1"
 
 	echo
 	echo
-	echo "Building stage '$stageName' with tag '$stageTagName' ..."
+	echo "Building stage '$stageName' with tag '$stageTagName'..."
 	docker build --target $stageName -t $stageTagName $args -f "$BUILD_IMAGES_DOCKERFILE" .
 }
 
@@ -57,7 +58,8 @@ else
 	echo "Building build image(s)..."
 fi
 
-docker build $noCache -t $tags $args -f "$BUILD_IMAGES_DOCKERFILE" .
+echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
+docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $args -f "$BUILD_IMAGES_DOCKERFILE" .
 
 # Retag build image with acr tags
 docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:latest"

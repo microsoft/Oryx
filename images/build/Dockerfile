@@ -282,6 +282,11 @@ RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
+
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_KEY
+ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
