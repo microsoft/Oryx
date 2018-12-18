@@ -53,7 +53,7 @@ echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install --prefer-binary -r requirements.txt
 
 # For virtual environment, we use the actual 'python' alias that as setup by the venv,
 python_bin=python
@@ -61,7 +61,7 @@ python_bin=python
 	}
 	else {
 #>
-$pip install -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade
+$pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade
 # We need to use the python binary selected by benv
 python_bin=$python
 

@@ -105,7 +105,7 @@ echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install --prefer-binary -r requirements.txt
 
 # For virtual environment, we use the actual 'python' alias that as setup by the venv,
 python_bin=python
@@ -119,7 +119,7 @@ python_bin=python
             
             #line default
             #line hidden
-            this.Write("$pip install -r requirements.txt --target=\"");
+            this.Write("$pip install --prefer-binary -r requirements.txt --target=\"");
             
             #line 64 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
