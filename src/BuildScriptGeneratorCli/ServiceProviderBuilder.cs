@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common.Utilities;
 using NLog;
+using NLog.Config;
 using NLog.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -21,10 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder(string logFilePath = null)
         {
-            if (LogManager.Configuration != null)
-            {
-                ConfigureNLog(logFilePath);
-            }
+            LogManager.Configuration = BuildNLogConfiguration(logFilePath);
+            LogManager.ReconfigExistingLoggers();
 
             _serviceCollection = new ServiceCollection();
             _serviceCollection
@@ -61,24 +60,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return _serviceCollection.BuildServiceProvider();
         }
 
-        private void ConfigureNLog(string logPath)
+        private LoggingConfiguration BuildNLogConfiguration(string logPath)
         {
+            var config = new LoggingConfiguration();
+
             var aiKey = Environment.GetEnvironmentVariable(LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(aiKey))
             {
-                var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget() { InstrumentationKey = aiKey };
-                LogManager.Configuration.AddTarget(aiTarget);
-                LogManager.Configuration.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, aiTarget);
+                var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget() { Name = "ai", InstrumentationKey = aiKey };
+                config.AddTarget(aiTarget);
+                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, aiTarget);
             }
 
             if (!string.IsNullOrWhiteSpace(logPath))
             {
                 var fileTarget = new NLog.Targets.FileTarget("file") { FileName = Path.GetFullPath(logPath) };
-                LogManager.Configuration.AddTarget(fileTarget);
-                LogManager.Configuration.AddRuleForAllLevels(fileTarget);
+                config.AddTarget(fileTarget);
+                config.AddRuleForAllLevels(fileTarget);
             }
 
-            LogManager.ReconfigExistingLoggers();
+            return config;
         }
     }
 }
