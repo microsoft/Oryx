@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
-            var exitCode = SetExecutePerimssionOnScript(scriptPath, workingDirectory, stdOutHandler, stdErrHandler);
+            int exitCode = SetExecutePerimssionOnScript(scriptPath, workingDirectory, stdOutHandler, stdErrHandler);
             if (exitCode != 0)
             {
                 _logger.LogError("Failed to set execute permission on script {ScriptPath} ({ExitCode})", scriptPath, exitCode);

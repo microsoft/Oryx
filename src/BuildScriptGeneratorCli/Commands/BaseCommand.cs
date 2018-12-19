@@ -4,6 +4,8 @@
 
 using System;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common.Utilities;
 
@@ -29,6 +31,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 return Execute(_serviceProvider, console);
+            }
+            catch (Exception exc)
+            {
+                _serviceProvider?.GetRequiredService<ILogger<BaseCommand>>()?.LogError(exc, "Exception caught");
+                console.Error.WriteLine(Constants.GenericErrorMessage);
+                return Constants.ExitFailure;
             }
             finally
             {

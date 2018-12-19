@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception caught");
-                _console.Error.WriteLine("Oops... An unexpected error has occurred.");
+                _console.Error.WriteLine(Constants.GenericErrorMessage);
                 return false;
             }
         }

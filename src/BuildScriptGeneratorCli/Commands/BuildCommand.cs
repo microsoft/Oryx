@@ -106,6 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (exitCode != Constants.ExitSuccess)
                 {
+                    logger.LogInformation("Pre-build script exited with {exitCode}", exitCode);
                     return exitCode;
                 }
             }
@@ -136,6 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (exitCode != Constants.ExitSuccess)
             {
+                logger.LogError("Build script exited with {exitCode}", exitCode);
                 return exitCode;
             }
 
@@ -154,6 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (exitCode != Constants.ExitSuccess)
                 {
+                    logger.LogInformation("Post-build script exited with {exitCode}", exitCode);
                     return exitCode;
                 }
             }

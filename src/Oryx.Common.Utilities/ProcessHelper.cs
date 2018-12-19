@@ -62,8 +62,7 @@ namespace Microsoft.Oryx.Common.Utilities
 
                 if (waitForExitInSeconds.HasValue)
                 {
-                    var hasExited = process.WaitForExit(
-                        (int)TimeSpan.FromSeconds(waitForExitInSeconds.Value).TotalMilliseconds);
+                    var hasExited = process.WaitForExit(waitForExitInSeconds.Value * 1_000);
                     if (!hasExited)
                     {
                         throw new InvalidOperationException(
@@ -132,21 +131,13 @@ namespace Microsoft.Oryx.Common.Utilities
                 }
             }
 
-            try
+            var hasStarted = process.Start();
+            if (!hasStarted)
             {
-                var hasStarted = process.Start();
-                if (!hasStarted)
-                {
-                    throw new InvalidOperationException(
-                        "Process failed to start. The command used to run the process was:" +
-                        Environment.NewLine +
-                        $"{fileName} {string.Join(" ", arguments)}");
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error running an internal command '{fileName} {string.Join(" ", arguments)}': {e.Message}");
-                throw;
+                throw new InvalidOperationException(
+                    "Process failed to start. The command used to run the process was:" +
+                    Environment.NewLine +
+                    $"{fileName} {string.Join(" ", arguments)}");
             }
 
             if (redirectOutput)
