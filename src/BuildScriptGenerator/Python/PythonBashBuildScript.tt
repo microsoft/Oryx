@@ -84,7 +84,8 @@ then
 		echo
 		echo Content in source directory is a Django app
 		echo Running 'collectstatic' ...
-		$python_bin manage.py collectstatic --noinput --clear
+		$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
+		echo "'collectstatic' exited with exit code $EXIT_CODE."
 	fi
 fi
 

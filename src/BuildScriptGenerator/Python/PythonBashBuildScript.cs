@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+    #line 1 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class PythonBashBuildScript : PythonBashBuildScriptBase
     {
@@ -59,14 +59,14 @@ echo ""Destination directory: $DESTINATION_DIR""
 
 source /usr/local/bin/benv python=");
             
-            #line 35 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 35 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PythonVersion));
             
             #line default
             #line hidden
             this.Write("\r\n\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
             
-            #line 40 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 40 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
 
@@ -75,21 +75,21 @@ source /usr/local/bin/benv python=");
             #line hidden
             this.Write("VIRTUALENVIRONMENTNAME=");
             
-            #line 43 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 43 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 44 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 44 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 45 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 45 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
@@ -111,7 +111,7 @@ pip install --prefer-binary -r requirements.txt
 python_bin=python
 ");
             
-            #line 60 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 60 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 	else {
@@ -121,7 +121,7 @@ python_bin=python
             #line hidden
             this.Write("$pip install --prefer-binary -r requirements.txt --target=\"");
             
-            #line 64 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 64 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
@@ -135,14 +135,14 @@ SITE_PACKAGES_PATH=$($python -c ""import site; print(site.getsitepackages()[0])"
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth poiting to them
 APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 71 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 71 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
             this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
             
-            #line 74 "C:\src\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 74 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
@@ -159,7 +159,8 @@ then
 		echo
 		echo Content in source directory is a Django app
 		echo Running 'collectstatic' ...
-		$python_bin manage.py collectstatic --noinput --clear
+		$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
+		echo ""'collectstatic' exited with exit code $EXIT_CODE.""
 	fi
 fi
 

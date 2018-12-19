@@ -775,6 +775,39 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void Django_CollectStaticFailure_DoesNotFailBuild()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "django-realworld-example-app"));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/django-app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("'collectstatic' exited with exit code 1.", result.Output);
+                },
+                result.GetDebugInfo());
+        }
         private void RunAsserts(Action action, string message)
         {
             try
