@@ -14,11 +14,16 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 
 func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupCommandIsUsed() {
 	gen := &NodeStartupScriptGenerator{
+		SourcePath:         "output",
 		UserStartupCommand: "abc",
 	}
 	command := gen.GenerateEntrypointScript()
 	fmt.Println(command)
 	// Output:
+	// #!/bin/sh
+	//
+	// # Enter the source directory do make sure the  script runs where the user expects
+	// cd output
 	// abc
 }
 

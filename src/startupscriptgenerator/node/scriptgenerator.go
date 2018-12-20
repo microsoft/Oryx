@@ -21,7 +21,7 @@ type NodeStartupScriptGenerator struct {
 }
 
 type packageJson struct {
-	Main string
+	Main    string
 	Scripts *packageJsonScripts `json:"scripts"`
 }
 
@@ -30,28 +30,32 @@ type packageJsonScripts struct {
 }
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
-	startupCommand := strings.TrimSpace(gen.UserStartupCommand) // If user passed a custom startup command, it should take precedence above all other options
-	if startupCommand != ""	{
-		return startupCommand
-	}
+	scriptBuilder := strings.Builder{}
+	scriptBuilder.WriteString("#!/bin/sh\n")
+	scriptBuilder.WriteString("\n# Enter the source directory do make sure the  script runs where the user expects\n")
+	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 
-	// deserialize package.json content
-	packageJsonObj := getPackageJsonObject(gen.SourcePath)
-
-	startupCommand = getPackageJsonStartCommand(packageJsonObj)
+	// If user passed a custom startup command, it should take precedence above all other options
+	startupCommand := strings.TrimSpace(gen.UserStartupCommand)
 	if startupCommand == "" {
-		if packageJsonObj != nil && packageJsonObj.Main != "" {
-			return gen.getStartupCommandFromJsFile(packageJsonObj.Main)
+		// deserialize package.json content
+		packageJsonObj := getPackageJsonObject(gen.SourcePath)
+
+		startupCommand = getPackageJsonStartCommand(packageJsonObj)
+		if startupCommand == "" {
+			if packageJsonObj != nil && packageJsonObj.Main != "" {
+				return gen.getStartupCommandFromJsFile(packageJsonObj.Main)
+			}
+		}
+		if startupCommand == "" {
+			startupCommand = gen.getCandidateFilesStartCommand(gen.SourcePath)
+		}
+		if startupCommand == "" {
+			startupCommand = gen.getDefaultAppStartCommand()
 		}
 	}
-	if startupCommand == "" {
-		startupCommand = gen.getCandidateFilesStartCommand(gen.SourcePath)
-	}
-	if startupCommand == "" {
-		startupCommand = gen.getDefaultAppStartCommand()
-	}
-
-	return startupCommand
+	scriptBuilder.WriteString(startupCommand + "\n")
+	return scriptBuilder.String()
 }
 
 // Gets the startup script from package.json if defined. Returns empty string if not found.
