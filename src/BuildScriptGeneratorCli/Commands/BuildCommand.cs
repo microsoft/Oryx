@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var exitCode = Constants.ExitFailure;
             if (!string.IsNullOrEmpty(environmentSettings.PreBuildScriptPath))
             {
-                logger.LogInformation("Executing pre-build script {PreBuildScript}...", environmentSettings.PreBuildScriptPath);
+                logger.LogInformation("Executing pre-build script {preBuildScript}...", environmentSettings.PreBuildScriptPath);
 
                 var scriptDirectory = new FileInfo(environmentSettings.PreBuildScriptPath).Directory.FullName;
                 exitCode = scriptExecutor.ExecuteScript(
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Write the content to the script.
             File.WriteAllText(buildScriptPath, scriptContent);
-            logger.LogDebug("Script was generated successfully at {BuildScript}; running it...", buildScriptPath);
+            logger.LogDebug("Script was generated successfully at {buildScript}; running it...", buildScriptPath);
 
             // Run the generated script
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
@@ -144,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Run post-build script
             if (!string.IsNullOrEmpty(environmentSettings.PostBuildScriptPath))
             {
-                logger.LogInformation("Executing post-build script {PostBuildScript}...", environmentSettings.PostBuildScriptPath);
+                logger.LogInformation("Executing post-build script {postBuildScript}...", environmentSettings.PostBuildScriptPath);
 
                 var scriptDirectory = new FileInfo(environmentSettings.PostBuildScriptPath).Directory.FullName;
                 exitCode = scriptExecutor.ExecuteScript(
@@ -171,7 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                logger.LogError("Could not find the source directory {SrcDir}", options.SourceDir);
+                logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
                 console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 // Intermediate directory cannot be a sub-directory of the source directory
                 if (IsSubDirectory(options.IntermediateDir, options.SourceDir))
                 {
-                    logger.LogError("Intermediate directory {IntermediateDir} cannot be a child of {SrcDir}", options.IntermediateDir, options.SourceDir);
+                    logger.LogError("Intermediate directory {intermediateDir} cannot be a child of {srcDir}", options.IntermediateDir, options.SourceDir);
                     console.Error.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");
@@ -200,7 +200,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 // we do not want the output folder to be part of source directory.
                 if (!string.IsNullOrEmpty(options.DestinationDir) && IsSubDirectory(options.DestinationDir, options.SourceDir))
                 {
-                    logger.LogError("Destination directory {DstDir} cannot be a child of {SrcDir}", options.DestinationDir, options.SourceDir);
+                    logger.LogError("Destination directory {dstDir} cannot be a child of {srcDir}", options.DestinationDir, options.SourceDir);
                     console.Error.WriteLine(
                         $"Destination directory '{options.DestinationDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");

@@ -36,6 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var scriptGenerators = GetScriptGeneratorsByLanguageNameAndVersion(context);
             if (scriptGenerators == null)
             {
+                _logger.LogWarning("Could not find any script generators");
                 return false;
             }
 
@@ -43,12 +44,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 if (scriptGenerator.TryGenerateBashScript(context, out script))
                 {
-                    _logger.LogDebug("Script generator {ScriptGenType} was used", scriptGenerator.GetType());
+                    _logger.LogDebug("Script generator {scriptGenType} was used", scriptGenerator.GetType());
                     return true;
                 }
                 else
                 {
-                    _logger.LogDebug("Script generator {ScriptGenType} cannot be used", scriptGenerator.GetType());
+                    _logger.LogDebug("Script generator {scriptGenType} cannot be used", scriptGenerator.GetType());
                 }
             }
 
@@ -60,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             EnsureLanguageAndVersion(context);
 
-            _logger.LogDebug("Finding script generator for {Lang} {LangVer}", context.Language, context.LanguageVersion);
+            _logger.LogDebug("Finding script generator for {lang} {langVer}", context.Language, context.LanguageVersion);
 
             var languageScriptGenerators = _allScriptGenerators.Where(sg =>
             {
@@ -125,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     throw new InvalidOperationException("Could not detect the language and/or version from repo");
                 }
 
-                _logger.LogDebug("Detected {Lang} {LangVer} for app in repo", languageName, languageVersion);
+                _logger.LogDebug("Detected {lang} {langVer} for app in repo", languageName, languageVersion);
 
                 // Reset the context with detected values so that downstream components
                 // use these detected values.
@@ -142,7 +143,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 result = languageDetector.Detect(sourceRepo);
                 if (result == null)
                 {
-                    _logger.LogWarning("Language detector {LangDetectorType} could not detect language in repo", languageDetector.GetType());
+                    _logger.LogWarning("Language detector {langDetectorType} could not detect language in repo", languageDetector.GetType());
                 }
                 else
                 {

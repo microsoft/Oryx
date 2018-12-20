@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvCopyParam = string.Empty;
 
             var pythonVersion = context.LanguageVersion;
-            _logger.LogDebug("Selected Python version: {PyVer}", pythonVersion);
+            _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         throw new NotSupportedException(errorMessage);
                 }
 
-                _logger.LogDebug("Using virtual environment '{Venv}', module '{VenvModule}'", virtualEnvName, virtualEnvModule);
+                _logger.LogDebug("Using virtual environment {venv}, module {venvModule}", virtualEnvName, virtualEnvModule);
             }
 
             _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(Constants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));

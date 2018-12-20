@@ -28,14 +28,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             int exitCode = SetExecutePerimssionOnScript(scriptPath, workingDirectory, stdOutHandler, stdErrHandler);
             if (exitCode != 0)
             {
-                _logger.LogError("Failed to set execute permission on script {ScriptPath} ({ExitCode})", scriptPath, exitCode);
+                _logger.LogError("Failed to set execute permission on script {scriptPath} ({exitCode})", scriptPath, exitCode);
                 return exitCode;
             }
 
             exitCode = ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
             if (exitCode != 0)
             {
-                _logger.LogError("Execution of script {ScriptPath} failed ({ExitCode})", scriptPath, exitCode);
+                _logger.LogError("Execution of script {scriptPath} failed ({exitCode})", scriptPath, exitCode);
             }
 
             return exitCode;

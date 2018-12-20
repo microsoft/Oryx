@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     {
                         if (sourceRepo.FileExists(iisStartupFile))
                         {
-                            _logger.LogDebug("App in repo is not a Node.js app as it has the file {IisStartupFile}", iisStartupFile);
+                            _logger.LogDebug("App in repo is not a Node.js app as it has the file {iisStartupFile}", iisStartupFile);
                             return null;
                         }
                     }

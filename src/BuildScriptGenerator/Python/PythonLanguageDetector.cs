@@ -95,24 +95,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     var hasPythonVersion = content.StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase);
                     if (!hasPythonVersion)
                     {
-                        _logger.LogDebug("Prefix {VerPrefix} was not found in file {RtFileName}", versionPrefix, Constants.RuntimeFileName);
+                        _logger.LogDebug("Prefix {verPrefix} was not found in file {rtFileName}", versionPrefix, Constants.RuntimeFileName);
                         return null;
                     }
 
                     var pythonVersion = content.Remove(0, versionPrefix.Length);
-
-                    _logger.LogDebug("Found version {PyVer} in file {RtFileName}", pythonVersion, Constants.RuntimeFileName);
-
+                    _logger.LogDebug("Found version {pyVer} in runtime file", pythonVersion);
                     return pythonVersion;
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(ex, "An error occurred while reading file {RtFileName}", Constants.RuntimeFileName);
+                    _logger.LogError(ex, "An error occurred while reading file {rtFileName}", Constants.RuntimeFileName);
                 }
             }
             else
             {
-                _logger.LogDebug("Could not find file '{RtFileName}' in source repo", Constants.RuntimeFileName);
+                _logger.LogDebug("Could not find file '{rtFileName}' in source repo", Constants.RuntimeFileName);
             }
 
             return null;
