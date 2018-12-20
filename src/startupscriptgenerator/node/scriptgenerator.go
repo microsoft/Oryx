@@ -44,7 +44,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		startupCommand = getPackageJsonStartCommand(packageJsonObj)
 		if startupCommand == "" {
 			if packageJsonObj != nil && packageJsonObj.Main != "" {
-				return gen.getStartupCommandFromJsFile(packageJsonObj.Main)
+				startupCommand = gen.getStartupCommandFromJsFile(packageJsonObj.Main)
 			}
 		}
 		if startupCommand == "" {
