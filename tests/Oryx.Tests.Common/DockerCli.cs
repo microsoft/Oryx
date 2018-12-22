@@ -299,6 +299,13 @@ namespace Oryx.Tests.Common
                 }
             }
 
+            string aiKeyOverride = Environment.GetEnvironmentVariable("TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
+            if (!string.IsNullOrWhiteSpace(aiKeyOverride))
+            {
+                args.Add("-e");
+                args.Add($"{LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName}={aiKeyOverride}");
+            }
+
             if (volumes?.Count > 0)
             {
                 foreach (var volume in volumes)
