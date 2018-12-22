@@ -20,38 +20,52 @@ type PythonStartupScriptGenerator struct {
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
+	scriptBuilder.WriteString("\n#Enter the source directory do make sure the  script runs where the user expects\n")
+	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
+
+	packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
+	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
+		"ORYX_PACKAGES_PATH=" + packagedDir + "\n" +
+		"if [ -d $ORYX_PACKAGES_PATH ]; then\n" +
+		"  SITE_PACKAGES_PATH=$(python -c \"import site; print(site.getsitepackages()[0])\")\n" +
+		"  echo $ORYX_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n" +
+		"  PATH=\"$ORYX_PACKAGES_PATH/bin:$PATH\"\n")
+
+	// If the build was created with an earlier version of the build image that created virtual environments,
+	// we still use it for backwards compatibility.
 	if gen.VirtualEnvironmentName != "" {
-		scriptBuilder.WriteString(". " + gen.VirtualEnvironmentName + "/bin/activate\n")
+		scriptBuilder.WriteString("elif [ -d " + gen.VirtualEnvironmentName + " ]; then\n")
+		scriptBuilder.WriteString("  . " + gen.VirtualEnvironmentName + "/bin/activate\n")
 		// TODO - gunicorn has to be installed in the virtual environenment for things to work correctly.
 		// This will be one more benefit of getting rid of virtual envs, which is to be able to run gunicorn
 		// from the image instead of from the virutal env.
-		scriptBuilder.WriteString("\n# gunicorn has to be installed in the virtual environment\n")
-		scriptBuilder.WriteString("pip install gunicorn\n")
-	} else {
-		packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
-		scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
-			"ORYX_PACKAGES_PATH=" + packagedDir + "\n" +
-			"if [ -d $ORYX_PACKAGES_PATH ]; then\n" +
-			"  SITE_PACKAGES_PATH=$(python -c \"import site; print(site.getsitepackages()[0])\")\n" +
-			"  echo $ORYX_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n" +
-			"  PATH=\"$ORYX_PACKAGES_PATH/bin:$PATH\"\n" +
-			"fi\n")
+		scriptBuilder.WriteString("\n  # gunicorn has to be installed in the virtual environment\n")
+		scriptBuilder.WriteString("  pip install gunicorn\n")
 	}
-	scriptBuilder.WriteString("\n#Enter the source directory do make sure the  script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
+
+	scriptBuilder.WriteString("else\n")
+	// We just warn the user and don't error out, since we still can run the default website.
+	scriptBuilder.WriteString("  echo \"WARNING: Could not find packages folder or virtual environment.\"\n")
+	scriptBuilder.WriteString("fi\n")
 	command := gen.UserStartupCommand
 	if command == "" {
 		appDirectory := gen.SourcePath
 		appModule := gen.getDjangoStartupModule()
 		if appModule == "" {
 			appModule = gen.getFlaskStartupModule()
+		} else {
+			println("Detected Django app.")
 		}
 		if appModule == "" {
+			println("Using default app from " + gen.DefaultAppPath)
 			appDirectory = gen.DefaultAppPath
 			appModule = gen.DefaultAppModule
+		} else {
+			println("Detected flask app.")
 		}
 
 		if appModule != "" {
+
 			command = gen.getCommandFromModule(appModule, appDirectory)
 		}
 	}
@@ -88,6 +102,7 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(gen.SourcePath, file)
 		if _, err := os.Stat(fullPath); !os.IsNotExist(err) {
+			println("Found file '" + fullPath + "' to run the app with.")
 			// Remove the '.py' from the end to get the module name
 			modulename := file[0 : len(file)-3]
 			return modulename + ":app"
