@@ -21,9 +21,6 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var runResult = StartDatabaseContainer();
             DatabaseServerContainerName = runResult.ContainerName;
 
-            // Wait for the database server to be up
-            Thread.Sleep(TimeSpan.FromMinutes(1));
-
             InsertSampleData(runResult.ContainerName);
         }
 
@@ -81,21 +78,29 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(
-                databaseServerContainerName,
-                "/bin/sh",
-                new[]
-                {
+            DockerCommandResult setupDatabaseResult;
+            var maxRetries = 10;
+            do
+            {
+                // Wait for the database server to be up
+                Thread.Sleep(TimeSpan.FromSeconds(30));
+
+                setupDatabaseResult = _dockerCli.Exec(
+                    databaseServerContainerName,
+                    "/bin/sh",
+                    new[]
+                    {
                         "-c",
                         databaseSetupScript
-                });
+                    });
+                maxRetries--;
+            } while (maxRetries > 0 && setupDatabaseResult.IsSuccess == false);
 
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(setupDatabaseResult.IsSuccess);
-               },
-               setupDatabaseResult.GetDebugInfo());
+            if (setupDatabaseResult.IsSuccess == false)
+            {
+                Console.WriteLine(setupDatabaseResult.GetDebugInfo());
+                throw new Exception("Couldn't setup MS SQL Server on time");
+            }
         }
 
         private void RunAsserts(Action action, string message)
