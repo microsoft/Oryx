@@ -139,6 +139,80 @@ namespace Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
+        public async Task Node_Lab2AppServiceApp()
+        {
+            // Arrange
+            var nodeVersion = "10.14";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "lab2-appservice");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var portMapping = $"{port}:3000";
+            var startupFile = "/tmp/startup.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFile}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("Welcome to Express", data);
+                });
+        }
+
+        [Fact]
+        public async Task Node_CreateReactAppSample()
+        {
+            // Arrange
+            var nodeVersion = "10.14";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "create-react-app-sample");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var portMapping = $"{port}:3000";
+            var startupFile = "/tmp/startup.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFile}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("<title>React App</title>", data);
+                });
+        }
+
+        [Fact]
         public async Task Python27App()
         {
             // Arrange
@@ -374,6 +448,42 @@ namespace Oryx.Integration.Tests.LocalDockerTests
 
                     data = await GetResponseDataAsync($"http://localhost:{port}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Fact]
+        public async Task Tweeter3_Python37()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "python", "tweeter3");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var containerPort = 8000;
+            var portMapping = $"{port}:{containerPort}";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=\":{containerPort}\"")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir },
+                "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("logged in as: bob", data);
                 });
         }
 

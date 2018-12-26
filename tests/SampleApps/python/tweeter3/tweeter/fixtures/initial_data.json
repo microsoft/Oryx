@@ -1,0 +1,258 @@
+[
+
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "nina",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": true,
+            "is_staff": true,
+            "last_login": "2014-08-31T00:20:41.771Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$2LSBfxYO9fJJ$UT/BLyRLwBQIOUtOfA2aKkGw+xe44ZNYD2TWXqXoT3E=",
+            "email": "",
+            "date_joined": "2014-08-30T18:10:53.539Z"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.user",
+        "fields": {
+            "username": "admin",
+            "first_name": "Admin",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": true,
+            "is_staff": true,
+            "last_login": "2014-08-31T00:22:38Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$6JY3bvlplRf0$Rm6rcK9M3LNuTw1uZ3B/Je7rq420UCaf2iwmY8pIv2U=",
+            "email": "admin@admin.com",
+            "date_joined": "2014-08-31T00:22:38Z"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.user",
+        "fields": {
+            "username": "bob",
+            "first_name": "Bob",
+            "last_name": "Bobman",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2014-08-31T00:23:06Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$ehuPT7BoKVpF$VZTxDeaHtLG7jU4wQ1erlFciwMk7l8aCp9MIjSVa/NU=",
+            "email": "bob@bob.com",
+            "date_joined": "2014-08-31T00:23:06Z"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "auth.user",
+        "fields": {
+            "username": "amy",
+            "first_name": "Amy",
+            "last_name": "Smith",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2014-08-31T00:23:24Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$12000$Tv4vWeWICkfS$qcMP+xddceQZMVjHbdOhOsV6LKOQntKOkiaqdEzS2p8=",
+            "email": "amy@smith.com",
+            "date_joined": "2014-08-31T00:23:24Z"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tweeter.tweet",
+        "fields": {
+            "text": "I'm an Admin! ",
+            "user": 2,
+            "timestamp": "2014-08-30T18:51:04Z"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "tweeter.tweet",
+        "fields": {
+            "text": "Bob is the coolest name!!",
+            "user": 3,
+            "timestamp": "2014-08-29T18:51:19Z"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "tweeter.tweet",
+        "fields": {
+            "text": "I <3 Tweeter",
+            "user": 4,
+            "timestamp": "2014-08-30T15:52:09Z"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2014-08-31T00:22:38.417Z",
+            "object_repr": "Admin",
+            "object_id": "2",
+            "change_message": "",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 2,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-08-31T00:22:57.048Z",
+            "object_repr": "Admin",
+            "object_id": "2",
+            "change_message": "Changed first_name, email, is_staff and is_superuser.",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 3,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2014-08-31T00:23:06.858Z",
+            "object_repr": "Bob",
+            "object_id": "3",
+            "change_message": "",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 4,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-08-31T00:23:17.098Z",
+            "object_repr": "Bob",
+            "object_id": "3",
+            "change_message": "Changed first_name, last_name and email.",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 5,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2014-08-31T00:23:24.481Z",
+            "object_repr": "Amy",
+            "object_id": "4",
+            "change_message": "",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 6,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-08-31T00:23:35.860Z",
+            "object_repr": "Amy",
+            "object_id": "4",
+            "change_message": "Changed first_name, last_name and email.",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 7,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2014-08-31T00:51:05.451Z",
+            "object_repr": "I'm an Admin! ",
+            "object_id": "1",
+            "change_message": "",
+            "user": 1,
+            "content_type": 7
+        }
+    },
+    {
+        "pk": 8,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2014-08-31T00:51:26.097Z",
+            "object_repr": "Bob is the coolest name EVAR",
+            "object_id": "2",
+            "change_message": "",
+            "user": 1,
+            "content_type": 7
+        }
+    },
+    {
+        "pk": 9,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2014-08-31T00:52:12.916Z",
+            "object_repr": "I <3 Tweeter",
+            "object_id": "3",
+            "change_message": "",
+            "user": 1,
+            "content_type": 7
+        }
+    },
+    {
+        "pk": 10,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-08-31T01:06:18.846Z",
+            "object_repr": "admin",
+            "object_id": "2",
+            "change_message": "Changed username.",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 11,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-08-31T01:06:26.076Z",
+            "object_repr": "bob",
+            "object_id": "3",
+            "change_message": "Changed username.",
+            "user": 1,
+            "content_type": 4
+        }
+    },
+    {
+        "pk": 12,
+        "model": "admin.logentry",
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2014-08-31T01:06:34.096Z",
+            "object_repr": "amy",
+            "object_id": "4",
+            "change_message": "Changed username.",
+            "user": 1,
+            "content_type": 4
+        }
+    }
+]
