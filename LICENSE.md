@@ -1,4 +1,8 @@
-Copyright Microsoft Corporation
+Oryx
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+MIT license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

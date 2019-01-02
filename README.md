@@ -1,54 +1,114 @@
-# Oryx Build System
+# Oryx
 
-The Oryx build system compiles a code repo into runnable artifacts. It
-generates and runs an opinionated build script based on analysis of the repo's
-contents; for example if it discovers `package.json` it includes `npm run
-build` in the build script. Currently supported runtimes are listed [below](#supportedRuntimes).
+Oryx is a build system which automatically compiles source code repos into
+runnable artifacts.
 
-The system is divided in two sets of images: build, which includes the SDKs for all platforms,
-and runtime, which are much smaller in size and are specific to a given language and version.
-Both sets of images are made to interact through a file sharing mechanism, either using a network volume,
-or by copying the output of the command ran in the build image into the runtime-base image using a Dockerfile.
+Oryx generates and runs an opinionated build script based on analysis of the
+repo's contents; for example, if `package.json` is discovered in the repo
+Oryx includes `npm run build` in the build script; if `requirements.txt` is
+found it includes `pip install -r requirements.txt`. Oryx also analyzes and
+selects a run-time entry point for the app such as `npm run start` for
+Node.js or a WSGI host for Python.
 
-The "build" image is defined in `./images/build`, and its development bits are pushed to Docker repository `oryxdevms/build`; it contains many build-time tools like compilers and header files. 
-
-The runtime images are defined in `./images/runtime`, and their development images are listed in
-[https://hub.docker.com/r/oryxdevms/]. They also contain a tool that detects how the app should be started by
-analyzing the build output directory, and that tool can be found under `/opt/startupcmdgen/startupcmdgen` inside
-each image. This tool can be accessed by a link called 'oryx' too. They output a startup script to a file that then
-will run the app when executed.
-
-## <a name="supportedRuntimes">Supported runtimes
+# Supported runtimes
 
 Runtime | Version
 --------|--------
 Python  | 2.7<br />3.6,3.7
-Node.js | 4.4,4.5,4.8<br />6.2,6.6,6.9,6.10,6.11<br />8.0,8.1,8.2,8.8,8.9,8.11,8.12<br />9.4<br />10.1,10.12,10.14.1
+Node.js | 4.4,4.5,4.8<br />6.2,6.6,6.9,6.10,6.11<br />8.0,8.1,8.2,8.8,8.9,8.11,8.12<br />9.4<br />10.1,10.12,10.14
 
-# Using the system
+Patches (0.0.**x**) are applied as soon as possible after they are released upstream.
 
-To build an app, mount it as a volume inside the build container, and run our build tool using the `oryx` command. For details further details, run `docker run  oryx --help`.
+# Use the system yourself
 
-Currently supported commands include:
+Though primarily intended for use within Azure services, you can also use the
+Oryx build system yourself for troubleshooting and tests.
 
-* build: Generate and run build scripts.
-* languages: Show the list of supported languages and their versions.
-* script: Generate build script and print to stdout.
+Oryx includes two command-line applications; the first is included in the
+build image and generates a build script. The second is included in run
+images and generates a run script. Both are aliased and accessible as `oryx`
+in their respective environments.
 
-The build command accepts an optional output directory where the compiled bits will be placed, and if none is provided they will be added in the source directory itself. This directory can then be volume mounted in the runtime
-image corresponding to the language and version being used by the app. Using the startup detection tool, the app can 
-be started from there, for example using `docker run -v <path to source>:/app oryxdevms/python-3.7 bash -c "oryx -appPath /app -output /app/start.sh && /app/start.sh"`.
+## Build (`oryx build`)
+
+* `build`: Generate and run build scripts.
+* `script`: Generate build script and print to stdout.
+* `languages`: Show the list of supported languages and versions.
+
+For all options, specify `oryx --help`.
+
+The build command takes the parameter `--output` to specify where prepared
+artifacts will be placed; if not specified the source directory is used for
+output as well.
+
+## Run (`oryx -appPath`)
+
+The Oryx application in the run image generates a start script named run.sh, by
+default in the same folder as the compiled artifact.
+
+## Build and run an app
+
+To build and run an app from a repo, follow these steps. An example script
+follows.
+
+1. Mount the repo's directory as a volume in Oryx's "build" container.
+1. Run `oryx build ...` within the container to build a runnable artifact.
+1. Mount the output directory from build in one of Oryx's "run" containers.
+1. Run `oryx --appPath ...` within the container to write a start script.
+1. Run the generated started script, by default `./run.sh`.
+
+From your locally-cloned repo, run the following. Be sure to add
+`-p/--publish` and `-e/--env` flags to the "run" docker command as necessary.
+
+```bash
+# build
+docker run --volume $(pwd):/repo \
+    'mcr.microsoft.com/oryx/build:latest' \
+    'oryx build /repo --output /repo/out'
+
+# run
+docker run --detach --rm \
+    --volume $(pwd)/out:/app \
+    # use --publish to expose ports
+    # --publish 8080:8080 \
+    # use --env to add env vars
+    # --env MYKEY=value \
+    'mcr.microsoft.com/oryx/node-10.12:latest' \
+    # or use the Python image
+    # 'mcr.microsoft.com/oryx/python-3.7:latest \
+    sh -c 'oryx -appPath /app && /app/run.sh'
+```
+
+# Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 # License
 
 MIT, see [LICENSE.md](./LICENSE.md).
 
-# Contributing
+# Security
 
-See [CONTRIBUTING.md](./contributing.md).
+Security issues and bugs should be reported privately, via email, to the
+Microsoft Security Response Center (MSRC) at
+[secure@microsoft.com](mailto:secure@microsoft.com). You should receive a
+response within 24 hours. If for some reason you do not, please follow up via
+email to ensure we received your original message. Further information,
+including the [MSRC
+PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found
+in the [Security
+TechCenter](https://technet.microsoft.com/en-us/security/default).
 
-This project follows the [Microsoft Open Source Code of Conduct][coc]. For more
-information see the [Code of Conduct FAQ][cocfaq]. Contact
+# Data/Telemetry
+
+When utilized within Azure services, this project collects usage data and
+sends it to Microsoft to help improve our products and services. Read
+[Microsoft's privacy statement][] to learn more.
+
+[Microsoft's privacy statement]: http://go.microsoft.com/fwlink/?LinkId=521839
+
+This project follows the [Microsoft Open Source Code of Conduct][coc]. For
+more information see the [Code of Conduct FAQ][cocfaq]. Contact
 [opencode@microsoft.com][cocmail] with questions and comments.
 
 [coc]: https://opensource.microsoft.com/codeofconduct/
