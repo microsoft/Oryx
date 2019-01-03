@@ -136,6 +136,7 @@ namespace Oryx.BuildImage.Tests
         [InlineData("10", "v10.14.1")]
         [InlineData("10.1", "v10.1.0")]
         [InlineData("10.1.0", "v10.1.0")]
+        [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.1", "v10.14.1")]
 
         public void NodeAlias_UsesVersion_SpecifiedAtDockerRun(

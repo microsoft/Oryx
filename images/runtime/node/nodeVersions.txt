@@ -15,5 +15,6 @@
 8.12.0-alpine
 9.4.0-alpine
 10.1.0-alpine
+10.10.0-alpine
 10.12.0-alpine
 10.14.1-alpine

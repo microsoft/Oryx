@@ -38,6 +38,7 @@ namespace Oryx.RuntimeImage.Tests
         [InlineData("8.12", "8.12.0")]
         [InlineData("9.4", "9.4.0")]
         [InlineData("10.1", "10.1.0")]
+        [InlineData("10.10", "10.10.0")]
         [InlineData("10.12", "10.12.0")]
         [InlineData("10.14", "10.14.1")]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)

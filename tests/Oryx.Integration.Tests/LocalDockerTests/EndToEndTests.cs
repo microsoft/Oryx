@@ -28,6 +28,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
+        [InlineData("10.10")]
         [InlineData("10.14")]
         public async Task NodeApp(string nodeVersion)
         {
