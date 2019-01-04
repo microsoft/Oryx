@@ -10,9 +10,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string PackageJsonFileName = "package.json";
         internal const string PackageLockJsonFileName = "package-lock.json";
         internal const string YarnLockFileName = "yarn.lock";
-        internal const string NpmInstallCommand = "npm install";
-        internal const string NpmRunBuildCommand = "npm run build";
-        internal const string NpmRunBuildAzureCommand = "npm run build:azure";
-        internal const string YarnInstallCommand = "yarn install";
+        internal const string NpmCommand = "npm";
+        internal const string YarnCommand = "yarn";
+        internal const string PackageInstallCommandTemplate = "{0} install";
+        internal const string PkgMgrRunBuildCommandTemplate = "{0} run build";
+        internal const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";
     }
 }

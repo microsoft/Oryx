@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible Node.js debug attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "client server",
+            "configurations": [
+                "Launch Chrome",
+                "Launch Program"
+            ]
+        }
+    ],
+    "configurations": [
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "container",
+            "address": "localhost",
+            "port": 5858,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "/usr/src/app"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceRoot}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Gulp populate-mongodb",
+            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "args": [
+                "populate-mongodb"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceRoot}/server/index.js"
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+.gs-stickerlist {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}

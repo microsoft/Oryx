@@ -95,6 +95,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
           ""license"": ""ISC""
         }";
 
+        private const string NpmInstallCommand = "npm install";
+        private const string YarnInstallCommand = "yarn install";
+
         [Fact]
         public void TryGenerateBashScript_ReturnsFalse_WhenPackageJsonHas_UnsupportedNpmVersion()
         {
@@ -120,7 +123,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
                 preBuildScriptPath: null,
-                packageInstallCommand: NodeConstants.NpmInstallCommand,
+                packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 benvArgs: "node=8.2.1 npm=5.4.2",
@@ -146,7 +149,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = new NodeBashBuildScript(
                 preBuildScriptPath: null,
                 benvArgs: "node=8.2.1 npm=6.0.0",
-                packageInstallCommand: NodeConstants.NpmInstallCommand,
+                packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 postBuildScriptPath: null);
@@ -171,7 +174,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = new NodeBashBuildScript(
                 preBuildScriptPath: null,
                 benvArgs: "node=8.2.1 npm=5.4.2",
-                packageInstallCommand: NodeConstants.NpmInstallCommand,
+                packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 postBuildScriptPath: null);
@@ -197,7 +200,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = new NodeBashBuildScript(
                 preBuildScriptPath: null,
                 benvArgs: "node=8.2.1",
-                packageInstallCommand: NodeConstants.YarnInstallCommand,
+                packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 postBuildScriptPath: null);
@@ -208,6 +211,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.True(canGenerateScript);
             Assert.Equal(expected.TransformText(), generatedScriptContent);
+        }
+
+        [Fact]
+        public void GeneratedScript_UsesYarnInstallAndRunsNpmBuild_IfYarnLockFileIsPresent_AndBuildNodeIsPresentUnderScripts()
+        {
+            // Arrange
+            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+            var repo = new CachedSourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildScript(
+                 preBuildScriptPath: null,
+                benvArgs: "node=8.2.1",
+                packageInstallCommand: YarnInstallCommand,
+                runBuildCommand: "yarn run build",
+                runBuildAzureCommand: "yarn run build:azure",
+                postBuildScriptPath: null);
+
+            // Act
+            var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
+
+            // Assert
+            Assert.True(canGenerateScript);
+            string extectedText = expected.TransformText();
+            Assert.Equal(extectedText, generatedScriptContent);
         }
 
         [Fact]
@@ -223,7 +253,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = new NodeBashBuildScript(
                 preBuildScriptPath: null,
                 benvArgs: "node=8.2.1 npm=6.0.0",
-                packageInstallCommand: NodeConstants.NpmInstallCommand,
+                packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 postBuildScriptPath: null);
@@ -248,9 +278,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = new NodeBashBuildScript(
                 preBuildScriptPath: null,
                 benvArgs: "node=8.2.1 npm=6.0.0",
-                packageInstallCommand: NodeConstants.NpmInstallCommand,
-                runBuildCommand: NodeConstants.NpmRunBuildCommand,
-                runBuildAzureCommand: NodeConstants.NpmRunBuildAzureCommand,
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
                 postBuildScriptPath: null);
 
             // Act

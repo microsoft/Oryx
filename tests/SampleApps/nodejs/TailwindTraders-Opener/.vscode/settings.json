@@ -1,0 +1,15 @@
+{
+  "search.exclude": {
+    "client/dist": true
+  },
+  "appService.deploySubpath": "",
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}"
+  ],  
+
+  "files.exclude": {
+    "obj": true,
+    "bin": true
+  },
+  "appService.showBuildDuringDeployPrompt": true
+}

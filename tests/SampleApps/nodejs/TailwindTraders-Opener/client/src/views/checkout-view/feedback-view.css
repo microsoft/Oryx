@@ -1,0 +1,20 @@
+.gs-feedback-browse-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #2f4b66;
+    color: #2f4b66;
+    text-decoration: none;
+    border-radius: 2px;
+    background-color: #ffffff;
+    height: 47px;
+    width: 200px;
+    margin-top: 25px;
+    font-size: 18px;
+}
+
+.gs-feedback-browse-button:hover {
+    color: #ffffff;
+    background-color: #2f4b66;
+    text-decoration: none;
+}

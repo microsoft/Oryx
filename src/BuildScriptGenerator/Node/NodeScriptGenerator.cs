@@ -41,35 +41,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var benvArgs = $"node={context.LanguageVersion}";
 
             var packageJson = GetPackageJsonObject(context.SourceRepo);
-            string packageInstallCommand = null;
-            string npmRunBuildCommand = null;
-            string npmRunBuildAzureCommand = null;
+            string packageManagerCmd = null;
+            string runBuildCommand = null;
+            string runBuildAzureCommand = null;
             if (context.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
-                packageInstallCommand = NodeConstants.YarnInstallCommand;
+                packageManagerCmd = NodeConstants.YarnCommand;
             }
             else
             {
+                packageManagerCmd = NodeConstants.NpmCommand;
                 var npmVersion = GetNpmVersion(packageJson);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
                     benvArgs += $" npm={npmVersion}";
                 }
+            }
 
-                packageInstallCommand = NodeConstants.NpmInstallCommand;
+            var packageInstallCommand = string.Format(NodeConstants.PackageInstallCommandTemplate, packageManagerCmd);
 
-                var scriptsNode = packageJson?.scripts;
-                if (scriptsNode != null)
+            var scriptsNode = packageJson?.scripts;
+            if (scriptsNode != null)
+            {
+                if (scriptsNode.build != null)
                 {
-                    if (scriptsNode.build != null)
-                    {
-                        npmRunBuildCommand = NodeConstants.NpmRunBuildCommand;
-                    }
+                    runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
+                }
 
-                    if (scriptsNode["build:azure"] != null)
-                    {
-                        npmRunBuildAzureCommand = NodeConstants.NpmRunBuildAzureCommand;
-                    }
+                if (scriptsNode["build:azure"] != null)
+                {
+                    runBuildAzureCommand = string.Format(NodeConstants.PkgMgrRunBuildAzureCommandTemplate, packageManagerCmd);
                 }
             }
 
@@ -88,8 +89,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 preBuildScriptPath: environmentSettings?.PreBuildScriptPath,
                 benvArgs: benvArgs,
                 packageInstallCommand: packageInstallCommand,
-                runBuildCommand: npmRunBuildCommand,
-                runBuildAzureCommand: npmRunBuildAzureCommand,
+                runBuildCommand: runBuildCommand,
+                runBuildAzureCommand: runBuildAzureCommand,
                 postBuildScriptPath: environmentSettings?.PostBuildScriptPath).TransformText();
 
             return true;
