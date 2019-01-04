@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"startupscriptgenerator/common"
 )
 
 type NodeStartupScriptGenerator struct {
@@ -30,31 +31,59 @@ type packageJsonScripts struct {
 }
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
+	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
+
+	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory do make sure the  script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 
+	commandSource := ""
+
 	// If user passed a custom startup command, it should take precedence above all other options
 	startupCommand := strings.TrimSpace(gen.UserStartupCommand)
 	if startupCommand == "" {
+		logger.LogVerbose("No user-supplied startup command found")
+
 		// deserialize package.json content
 		packageJsonObj := getPackageJsonObject(gen.SourcePath)
 
 		startupCommand = getPackageJsonStartCommand(packageJsonObj)
-		if startupCommand == "" {
+		if startupCommand != "" {
+			commandSource = "PackageJsonStart"
+		} else {
+			logger.LogVerbose("scripts.start not found in package.json")
 			if packageJsonObj != nil && packageJsonObj.Main != "" {
+				logger.LogVerbose("Using startup command from package.json main field")
 				startupCommand = gen.getStartupCommandFromJsFile(packageJsonObj.Main)
 			}
 		}
-		if startupCommand == "" {
+
+		if startupCommand != "" {
+			commandSource = "PackageJsonMain"
+		} else {
 			startupCommand = gen.getCandidateFilesStartCommand(gen.SourcePath)
 		}
-		if startupCommand == "" {
+
+		if startupCommand != "" {
+			commandSource = "CandidateFile"
+		} else {
+			logger.LogWarning("Resorting to default startup command")
 			startupCommand = gen.getDefaultAppStartCommand()
+			commandSource = "DefaultApp"
 		}
+	} else {
+		commandSource = "User"
+		logger.LogInformation("User-supplied startup command: '%s'", gen.UserStartupCommand)
 	}
+	
 	scriptBuilder.WriteString(startupCommand + "\n")
+
+	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
+
+	logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
 	return scriptBuilder.String()
 }
 
@@ -68,15 +97,20 @@ func getPackageJsonStartCommand(packageJsonObj *packageJson) string {
 
 // Try to find the main file for the app
 func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath string) string {
+	logger := common.GetLogger("node.scriptgenerator.getCandidateFilesStartCommand")
+
 	startupFileCommand := ""
 	filesToSearch := []string{"bin/www", "server.js", "app.js", "index.js", "hostingstart.js"}
+	
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(gen.SourcePath, file)
 		if _, err := os.Stat(fullPath); !os.IsNotExist(err) {
+			logger.LogInformation("Found startup candidate '%s'", fullPath)
 			startupFileCommand = gen.getStartupCommandFromJsFile(fullPath)
 			break
 		}
 	}
+
 	return startupFileCommand
 }
 
@@ -89,8 +123,11 @@ func (gen *NodeStartupScriptGenerator) getDefaultAppStartCommand() string {
 }
 
 func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePath string) string {
+	logger := common.GetLogger("node.scriptgenerator.getStartupCommandFromJsFile")
+
 	var commandBuilder strings.Builder
 	if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
+		logger.LogInformation("Remote debugging on")
 
 		if gen.UseLegacyDebugger {
 			commandBuilder.WriteString("node --debug")

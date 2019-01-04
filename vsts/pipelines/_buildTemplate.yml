@@ -35,7 +35,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test script generator'
   inputs:
-    scriptPath: ./build/test-scriptgenerator.sh
+    scriptPath: ./build/test-buildscriptgenerator.sh
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
@@ -48,7 +48,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test the startup command generators'
   inputs:
-    scriptPath: ./build/test-startupgenerators.sh
+    scriptPath: ./build/test-startupscriptgenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: ShellScript@2

@@ -17,6 +17,12 @@ LANGUAGE=$1
 TARGET_OUTPUT=$2
 DIR=$(dirname "$0")
 
+. prepare-go-env.sh
+
 echo "Trying to find the language..."
 cd "$DIR/$LANGUAGE"
 go build -o "$TARGET_OUTPUT" .
+
+# Remove packages added by prepare-go-env.sh as they are not needed at runtime
+apk del build-base
+apk del git
