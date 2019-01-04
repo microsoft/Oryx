@@ -2,10 +2,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class NameAndValuePairParserTest
     {

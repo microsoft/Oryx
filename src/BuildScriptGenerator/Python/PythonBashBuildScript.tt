@@ -32,7 +32,17 @@ fi
 echo "Source directory     : $SOURCE_DIR"
 echo "Destination directory: $DESTINATION_DIR"
 
-source /usr/local/bin/benv python=<#= PythonVersion #>
+source /usr/local/bin/benv <#= BenvArgs #>
+<#
+	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+#>
+
+echo "Executing pre-build script ..."
+chmod +x "<#= PreBuildScriptPath #>"
+"<#= PreBuildScriptPath #>"
+<#
+	}
+#>
 
 echo "Python Version: $python"
 cd "$SOURCE_DIR"
@@ -89,28 +99,35 @@ then
 	fi
 fi
 
-if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	echo
-    echo Done.
-    exit 0
-fi
+	if [ -d "$DESTINATION_DIR" ]
+	then
+		echo
+		echo Destination directory already exists. Deleting it ...
+		rm -rf "$DESTINATION_DIR"
+	fi
 
-if [ -d "$DESTINATION_DIR" ]
-then
-    echo
-    echo Destination directory already exists. Deleting it ...
-    rm -rf "$DESTINATION_DIR"
+	appTempDir=`mktemp -d`
+	cd "$SOURCE_DIR"
+	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+	cp -rf . "$appTempDir"
+	mkdir -p "$DESTINATION_DIR"
+	cd "$appTempDir"
+	echo "Copying files to destination, '$DESTINATION_DIR'"
+	cp -rf . "$DESTINATION_DIR"
 fi
+<#
+	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
+#>
 
-appTempDir=`mktemp -d`
-cd "$SOURCE_DIR"
-# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-cp -rf . "$appTempDir"
-mkdir -p "$DESTINATION_DIR"
-cd "$appTempDir"
-echo "Copying files to destination, '$DESTINATION_DIR'"
-cp -rf . "$DESTINATION_DIR"
+echo
+echo "Executing post-build script ..."
+chmod +x "<#= PostBuildScriptPath #>"
+"<#= PostBuildScriptPath #>"
+<#
+	}
+#>
 
 echo
 echo Done.

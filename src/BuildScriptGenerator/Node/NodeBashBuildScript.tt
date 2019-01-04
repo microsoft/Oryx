@@ -35,6 +35,16 @@ echo "Destination directory: $DESTINATION_DIR"
 echo
 
 source /usr/local/bin/benv <#= BenvArgs #>
+<#
+	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+#>
+
+echo "Executing pre-build script ..."
+chmod +x "<#= PreBuildScriptPath #>"
+"<#= PreBuildScriptPath #>"
+<#
+	}
+#>
 
 echo Installing packages ...
 cd "$SOURCE_DIR"
@@ -43,30 +53,52 @@ echo "Running '<#= PackageInstallCommand  #>' ..."
 echo
 <#= PackageInstallCommand #>
 
+<#
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildCommand)) {
+#>
+
 <#= NpmRunBuildCommand #>
+<#
+	}
+#>
+<#
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildAzureCommand)) {
+#>
 
 <#= NpmRunBuildAzureCommand #>
+<#
+	}
+#>
 
-if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-    echo Done.
-    exit 0
-fi
+	if [ -d "$DESTINATION_DIR" ]
+	then
+		echo
+		echo Destination directory already exists. Deleting it ...
+		rm -rf "$DESTINATION_DIR"
+	fi
 
-if [ -d "$DESTINATION_DIR" ]
-then
-    echo
-    echo Destination directory already exists. Deleting it ...
-    rm -rf "$DESTINATION_DIR"
+	appTempDir=`mktemp -d`
+	cd "$SOURCE_DIR"
+	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+	cp -rf . "$appTempDir"
+	mkdir -p "$DESTINATION_DIR"
+	cd "$appTempDir"
+	echo "Copying files to destination, '$DESTINATION_DIR'"
+	cp -rf . "$DESTINATION_DIR"
 fi
+<#
+	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
+#>
 
-appTempDir=`mktemp -d`
-cd "$SOURCE_DIR"
-# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-cp -rf . "$appTempDir"
-mkdir -p "$DESTINATION_DIR"
-cd "$appTempDir"
-cp -rf . "$DESTINATION_DIR"
+echo
+echo "Executing post-build script ..."
+chmod +x "<#= PostBuildScriptPath #>"
+"<#= PostBuildScriptPath #>"
+<#
+	}
+#>
 
 echo
 echo Done.

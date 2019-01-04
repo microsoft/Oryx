@@ -6,13 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Oryx.Tests.Common;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class DefaultEnvironmentSettingsProviderTest : IClassFixture<TestTempDirTestFixture>
     {
@@ -163,7 +161,7 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void IsValid_ReturnsFalse_IfPreBuildScriptPath_IsNotPresent()
+        public void IsValid_Throws_IfPreBuildScriptPath_IsNotPresent()
         {
             // Arrange
             var environmentSettings = new EnvironmentSettings();
@@ -172,14 +170,16 @@ namespace BuildScriptGeneratorCli.Tests
             var provider = CreateProvider(sourceDir);
 
             // Act
-            var settings = provider.IsValid(environmentSettings);
+            var exception = Assert.Throws<InvalidUsageException>(() => provider.IsValid(environmentSettings));
 
             // Assert
-            Assert.False(settings);
+            Assert.Equal(
+                $"Pre-build script file '{environmentSettings.PreBuildScriptPath}' does not exist.",
+                exception.Message);
         }
 
         [Fact]
-        public void IsValid_ReturnsFalse_IfPostBuildScriptPath_IsNotPresent()
+        public void IsValid_Throws_IfPostBuildScriptPath_IsNotPresent()
         {
             // Arrange
             var environmentSettings = new EnvironmentSettings();
@@ -188,10 +188,12 @@ namespace BuildScriptGeneratorCli.Tests
             var provider = CreateProvider(sourceDir);
 
             // Act
-            var settings = provider.IsValid(environmentSettings);
+            var exception = Assert.Throws<InvalidUsageException>(() => provider.IsValid(environmentSettings));
 
             // Assert
-            Assert.False(settings);
+            Assert.Equal(
+                $"Post-build script file '{environmentSettings.PostBuildScriptPath}' does not exist.",
+                exception.Message);
         }
 
         [Fact]
@@ -317,7 +319,6 @@ namespace BuildScriptGeneratorCli.Tests
             return new DefaultEnvironmentSettingsProvider(
                 new TestSourceRepoProvider(sourceDir),
                 testEnvironment,
-                new TestConsole(),
                 NullLogger<DefaultEnvironmentSettingsProvider>.Instance);
         }
 

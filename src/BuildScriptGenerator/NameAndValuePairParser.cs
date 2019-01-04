@@ -4,9 +4,9 @@
 
 using System;
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal static class NameAndValuePairParser
+    public static class NameAndValuePairParser
     {
         public static bool TryParse(string pair, out string key, out string value)
         {

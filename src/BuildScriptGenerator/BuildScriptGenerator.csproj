@@ -59,6 +59,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>NodeBashBuildScript.tt</DependentUpon>
     </Compile>
+    <Compile Update="MasterBashBuildScript.cs">
+      <DependentUpon>MasterBashBuildScript.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Python\PythonBashBuildScript.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -83,6 +88,10 @@
     <None Update="Node\NodeBashBuildScript.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>NodeBashBuildScript.cs</LastGenOutput>
+    </None>
+    <None Update="MasterBashBuildScript.tt">
+      <LastGenOutput>MasterBashBuildScript.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
     </None>
     <None Update="Python\PythonBashBuildScript.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>

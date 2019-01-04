@@ -4,7 +4,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal static class Constants
+    internal static class NodeConstants
     {
         internal const string NodeJsName = "nodejs";
         internal const string PackageJsonFileName = "package.json";

@@ -15,19 +15,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
+        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<NodeScriptGenerator> _logger;
 
         public NodeScriptGenerator(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
+            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<NodeScriptGenerator> logger)
         {
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
+            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
-        public string SupportedLanguageName => Constants.NodeJsName;
+        public string SupportedLanguageName => NodeConstants.NodeJsName;
 
         public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
 
@@ -41,9 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageInstallCommand = null;
             string npmRunBuildCommand = null;
             string npmRunBuildAzureCommand = null;
-            if (context.SourceRepo.FileExists(Constants.YarnLockFileName))
+            if (context.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
-                packageInstallCommand = Constants.YarnInstallCommand;
+                packageInstallCommand = NodeConstants.YarnInstallCommand;
             }
             else
             {
@@ -53,19 +56,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     benvArgs += $" npm={npmVersion}";
                 }
 
-                packageInstallCommand = Constants.NpmInstallCommand;
+                packageInstallCommand = NodeConstants.NpmInstallCommand;
 
                 var scriptsNode = packageJson?.scripts;
                 if (scriptsNode != null)
                 {
                     if (scriptsNode.build != null)
                     {
-                        npmRunBuildCommand = Constants.NpmRunBuildCommand;
+                        npmRunBuildCommand = NodeConstants.NpmRunBuildCommand;
                     }
 
                     if (scriptsNode["build:azure"] != null)
                     {
-                        npmRunBuildAzureCommand = Constants.NpmRunBuildAzureCommand;
+                        npmRunBuildAzureCommand = NodeConstants.NpmRunBuildAzureCommand;
                     }
                 }
             }
@@ -77,12 +80,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 _logger.LogDependencies(context.Language, context.LanguageVersion, depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
+            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
+
             _logger.LogDebug("Using benv args: {BenvArgs}", benvArgs);
+
             script = new NodeBashBuildScript(
-                packageInstallCommand,
-                npmRunBuildCommand,
-                npmRunBuildAzureCommand,
-                benvArgs).TransformText();
+                preBuildScriptPath: environmentSettings?.PreBuildScriptPath,
+                benvArgs: benvArgs,
+                packageInstallCommand: packageInstallCommand,
+                runBuildCommand: npmRunBuildCommand,
+                runBuildAzureCommand: npmRunBuildAzureCommand,
+                postBuildScriptPath: environmentSettings?.PostBuildScriptPath).TransformText();
+
             return true;
         }
 
@@ -116,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile(Constants.PackageJsonFileName);
+                var jsonContent = sourceRepo.ReadFile(NodeConstants.PackageJsonFileName);
                 packageJson = JsonConvert.DeserializeObject(jsonContent);
             }
             catch (Exception ex)
@@ -125,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 // files for node.js to handle, not us. This prevents us from
                 // erroring out when node itself might be able to tolerate some errors
                 // in the package.json file.
-                _logger.LogInformation(ex, $"Exception caught while trying to deserialize {Constants.PackageJsonFileName}");
+                _logger.LogInformation(ex, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
             }
 
             return packageJson;

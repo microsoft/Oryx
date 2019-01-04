@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+    #line 1 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class NodeBashBuildScript : NodeBashBuildScriptBase
     {
@@ -61,64 +61,158 @@ echo
 
 source /usr/local/bin/benv ");
             
-            #line 37 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 37 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
             
             #line default
             #line hidden
-            this.Write("\r\n\r\necho Installing packages ...\r\ncd \"$SOURCE_DIR\"\r\necho\r\necho \"Running \'");
+            this.Write("\r\n");
             
-            #line 42 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 38 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+
+	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho \"Executing pre-build script ...\"\r\nchmod +x \"");
+            
+            #line 43 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n\"");
+            
+            #line 44 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n");
+            
+            #line 45 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+
+	}
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho Installing packages ...\r\ncd \"$SOURCE_DIR\"\r\necho\r\necho \"Running \'");
+            
+            #line 52 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
             this.Write("\' ...\"\r\necho\r\n");
             
-            #line 44 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 54 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
             this.Write("\r\n\r\n");
             
-            #line 46 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 56 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildCommand)) {
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\n");
+            
+            #line 60 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildCommand));
             
             #line default
             #line hidden
-            this.Write("\r\n\r\n");
+            this.Write("\r\n");
             
-            #line 48 "C:\src\Oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 61 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+
+	}
+
+            
+            #line default
+            #line hidden
+            
+            #line 64 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildAzureCommand)) {
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\n");
+            
+            #line 68 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildAzureCommand));
             
             #line default
             #line hidden
+            this.Write("\r\n");
+            
+            #line 69 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+
+	}
+
+            
+            #line default
+            #line hidden
             this.Write(@"
-
-if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
+if [ ""$SOURCE_DIR"" != ""$DESTINATION_DIR"" ]
 then
-    echo Done.
-    exit 0
+	if [ -d ""$DESTINATION_DIR"" ]
+	then
+		echo
+		echo Destination directory already exists. Deleting it ...
+		rm -rf ""$DESTINATION_DIR""
+	fi
+
+	appTempDir=`mktemp -d`
+	cd ""$SOURCE_DIR""
+	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+	cp -rf . ""$appTempDir""
+	mkdir -p ""$DESTINATION_DIR""
+	cd ""$appTempDir""
+	echo ""Copying files to destination, '$DESTINATION_DIR'""
+	cp -rf . ""$DESTINATION_DIR""
 fi
+");
+            
+            #line 91 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
-if [ -d ""$DESTINATION_DIR"" ]
-then
-    echo
-    echo Destination directory already exists. Deleting it ...
-    rm -rf ""$DESTINATION_DIR""
-fi
+	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
-appTempDir=`mktemp -d`
-cd ""$SOURCE_DIR""
-# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-cp -rf . ""$appTempDir""
-mkdir -p ""$DESTINATION_DIR""
-cd ""$appTempDir""
-cp -rf . ""$DESTINATION_DIR""
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\nchmod +x \"");
+            
+            #line 97 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n\"");
+            
+            #line 98 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n");
+            
+            #line 99 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
-echo
-echo Done.");
+	}
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho\r\necho Done.");
             return this.GenerationEnvironment.ToString();
         }
     }

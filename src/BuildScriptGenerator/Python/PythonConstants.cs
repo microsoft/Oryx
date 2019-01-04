@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// --------------------------------------------------------------------------------------------
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal static class Constants
+    internal static class PythonConstants
     {
         internal const string PythonName = "python";
         internal const string RequirementsFileName = "requirements.txt";

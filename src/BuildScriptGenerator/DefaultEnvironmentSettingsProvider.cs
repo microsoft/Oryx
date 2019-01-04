@@ -6,33 +6,43 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultEnvironmentSettingsProvider : IEnvironmentSettingsProvider
     {
         private readonly ISourceRepo _sourceRepo;
         private readonly IEnvironment _environment;
-        private readonly IConsole _console;
         private readonly ILogger<DefaultEnvironmentSettingsProvider> _logger;
+
+        /// <summary>
+        /// This service is registered as a singleton, so use the following flag to figure out if settings have already
+        /// been loaded to avoid reloading them again.
+        /// </summary>
+        private bool _loadedSettings;
+        private EnvironmentSettings _environmentSettings;
 
         public DefaultEnvironmentSettingsProvider(
             ISourceRepoProvider sourceRepoProvider,
             IEnvironment environment,
-            IConsole console,
             ILogger<DefaultEnvironmentSettingsProvider> logger)
         {
             _sourceRepo = sourceRepoProvider.GetSourceRepo();
             _environment = environment;
-            _console = console;
             _logger = logger;
         }
 
         public bool TryGetAndLoadSettings(out EnvironmentSettings environmentSettings)
         {
+            // Avoid loading settings if they have been loaded already
+            if (_loadedSettings)
+            {
+                environmentSettings = _environmentSettings;
+                return true;
+            }
+
             environmentSettings = null;
 
             // Environment variable names in Linux are case-sensitive
@@ -45,11 +55,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 _environment.SetEnvironmentVariable(setting.Key, setting.Value);
             }
 
+            _loadedSettings = true;
+
             // Validate settings
             var preparedSettings = PrepareEnvironmentSettings();
             if (IsValid(preparedSettings))
             {
-                environmentSettings = preparedSettings;
+                // Store the prepared settings so that in later calls this value could be returned quickly.
+                _environmentSettings = preparedSettings;
+
+                environmentSettings = _environmentSettings;
                 return true;
             }
 
@@ -67,7 +82,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!_sourceRepo.FileExists(Constants.BuildEnvironmentFileName))
             {
-                _logger.LogDebug($"Could not find file '{Constants.BuildEnvironmentFileName}' to load environment settings.");
+                _logger.LogDebug(
+                    $"Could not find file '{Constants.BuildEnvironmentFileName}' to load environment settings.");
                 return;
             }
 
@@ -92,7 +108,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
                 else
                 {
-                    _logger.LogDebug($"Ignoring invalid line '{line}' in '{Constants.BuildEnvironmentFileName}' file.");
+                    _logger.LogDebug(
+                        $"Ignoring invalid line '{line}' in '{Constants.BuildEnvironmentFileName}' file.");
                 }
             }
         }
@@ -188,15 +205,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!string.IsNullOrEmpty(settings.PreBuildScriptPath) &&
                 !File.Exists(settings.PreBuildScriptPath))
             {
-                _console.WriteLine($"Pre-build script file '{settings.PreBuildScriptPath}' does not exist.");
-                return false;
+                throw new InvalidUsageException(
+                    $"Pre-build script file '{settings.PreBuildScriptPath}' does not exist.");
             }
 
             if (!string.IsNullOrEmpty(settings.PostBuildScriptPath) &&
                 !File.Exists(settings.PostBuildScriptPath))
             {
-                _console.WriteLine($"Post-build script file '{settings.PostBuildScriptPath}' does not exist.");
-                return false;
+                throw new InvalidUsageException(
+                    $"Post-build script file '{settings.PostBuildScriptPath}' does not exist.");
             }
 
             return true;

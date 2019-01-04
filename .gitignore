@@ -264,3 +264,5 @@ images/runtime/node/*.*/
 # Golang packages, if oryx is added to GOPATH (which it should)
 pkg/
 bin/
+
+__oryx_packages__

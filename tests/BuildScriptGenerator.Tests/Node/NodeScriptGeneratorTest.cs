@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "5.4.2");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithUnsupportedNpmVersion, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithUnsupportedNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
 
@@ -115,14 +115,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNpmVersion, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
-                Constants.NpmInstallCommand,
+                preBuildScriptPath: null,
+                packageInstallCommand: NodeConstants.NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
-                "node=8.2.1 npm=5.4.2");
+                benvArgs: "node=8.2.1 npm=5.4.2",
+                postBuildScriptPath: null);
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
@@ -138,14 +140,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoNpmVersion, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
-                Constants.NpmInstallCommand,
+                preBuildScriptPath: null,
+                benvArgs: "node=8.2.1 npm=6.0.0",
+                packageInstallCommand: NodeConstants.NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
-                "node=8.2.1 npm=6.0.0");
+                postBuildScriptPath: null);
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
@@ -161,14 +165,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "5.4.2");
             var repo = new CachedSourceRepo();
-            repo.AddFile(MalformedPackageJson, Constants.PackageJsonFileName);
+            repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
-                Constants.NpmInstallCommand,
+                preBuildScriptPath: null,
+                benvArgs: "node=8.2.1 npm=5.4.2",
+                packageInstallCommand: NodeConstants.NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
-                "node=8.2.1 npm=5.4.2");
+                postBuildScriptPath: null);
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
@@ -184,15 +190,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoNpmVersion, Constants.PackageJsonFileName);
-            repo.AddFile("Yarn lock file content here", Constants.YarnLockFileName);
+            repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
+            repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
-                Constants.YarnInstallCommand,
+                preBuildScriptPath: null,
+                benvArgs: "node=8.2.1",
+                packageInstallCommand: NodeConstants.YarnInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
-                "node=8.2.1");
+                postBuildScriptPath: null);
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
@@ -208,15 +216,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoNpmVersion, Constants.PackageJsonFileName);
-            repo.AddFile("Package lock json file content here", Constants.PackageLockJsonFileName);
+            repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
+            repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
-                Constants.NpmInstallCommand,
+                preBuildScriptPath: null,
+                benvArgs: "node=8.2.1 npm=6.0.0",
+                packageInstallCommand: NodeConstants.NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
-                "node=8.2.1 npm=6.0.0");
+                postBuildScriptPath: null);
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
@@ -232,14 +242,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithBuildScript, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildScript(
-                Constants.NpmInstallCommand,
-                Constants.NpmRunBuildCommand,
-                Constants.NpmRunBuildAzureCommand,
-                "node=8.2.1 npm=6.0.0");
+                preBuildScriptPath: null,
+                benvArgs: "node=8.2.1 npm=6.0.0",
+                packageInstallCommand: NodeConstants.NpmInstallCommand,
+                runBuildCommand: NodeConstants.NpmRunBuildCommand,
+                runBuildAzureCommand: NodeConstants.NpmRunBuildAzureCommand,
+                postBuildScriptPath: null);
 
             // Act
             var canGenerateScript = scriptGenerator.TryGenerateBashScript(context, out var generatedScriptContent);
@@ -263,7 +275,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
 
-            return new NodeScriptGenerator(nodeScriptGeneratorOptions, nodeVersionProvider, NullLogger<NodeScriptGenerator>.Instance);
+            return new NodeScriptGenerator(
+                nodeScriptGeneratorOptions,
+                nodeVersionProvider,
+                new TestEnvironmentSettingsProvider(),
+                NullLogger<NodeScriptGenerator>.Instance);
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(

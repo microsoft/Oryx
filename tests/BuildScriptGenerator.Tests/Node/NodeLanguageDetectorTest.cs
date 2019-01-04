@@ -187,7 +187,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoVersions, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
 
             // Act
             var result = detector.Detect(repo);
@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNodeVersion, "subDir1", Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
 
             // Act
             var result = detector.Detect(repo);
@@ -226,7 +226,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithOnlyNpmVersion, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithOnlyNpmVersion, NodeConstants.PackageJsonFileName);
 
             // Act
             var result = detector.Detect(repo);
@@ -248,7 +248,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" },
                 environment);
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNoVersions, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
 
             // Act
             var result = detector.Detect(repo);
@@ -270,7 +270,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" },
                 environment);
             var repo = new CachedSourceRepo();
-            repo.AddFile(PackageJsonWithNodeVersion, Constants.PackageJsonFileName);
+            repo.AddFile(PackageJsonWithNodeVersion, NodeConstants.PackageJsonFileName);
 
             // Act
             var result = detector.Detect(repo);
@@ -289,7 +289,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new CachedSourceRepo();
-            repo.AddFile(MalformedPackageJson, Constants.PackageJsonFileName);
+            repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
 
             // Act
             var result = detector.Detect(repo);
@@ -308,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "6.11.0" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new CachedSourceRepo();
-            repo.AddFile(PakageJsonWithUnsupportedNodeVersion, Constants.PackageJsonFileName);
+            repo.AddFile(PakageJsonWithUnsupportedNodeVersion, NodeConstants.PackageJsonFileName);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));

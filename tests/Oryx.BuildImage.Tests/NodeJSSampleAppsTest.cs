@@ -414,6 +414,62 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
+        {
+            // Arrange
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
+                sw.WriteLine("POST_BUILD_SCRIPT_PATH=scripts/postbuild.sh");
+            }
+            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo \"Pre-build script: $node\"");
+                sw.WriteLine("echo \"Pre-build script: $npm\"");
+            }
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo \"Post-build script: $node\"");
+                sw.WriteLine("echo \"Post-build script: $npm\"");
+            }
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -l nodejs --language-version 6")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"Pre-build script: /opt/nodejs/6/bin/node", result.Output);
+                    Assert.Contains($"Pre-build script: /opt/nodejs/6/bin/npm", result.Output);
+                    Assert.Contains($"Post-build script: /opt/nodejs/6/bin/node", result.Output);
+                    Assert.Contains($"Post-build script: /opt/nodejs/6/bin/npm", result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

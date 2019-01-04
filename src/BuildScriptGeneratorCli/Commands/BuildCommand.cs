@@ -67,7 +67,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
 
-            var opName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? "oryx"; // This will be an App Service app name if Oryx was invoked by Kudu
+            // This will be an App Service app name if Oryx was invoked by Kudu
+            var opName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? "oryx";
             console.WriteLine("Build Operation ID: {0}", logger.StartOperation(opName));
 
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
@@ -80,7 +81,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 stopwatch.AddProperty(nameof(commitId), commitId);
                 if (!string.IsNullOrWhiteSpace(commitId))
                 {
-                    console.WriteLine("Git Commit ID:      {0}", commitId); // Spacing is meant to equalize the length to "Build Operation ID"
+                    // Spacing is meant to equalize the length to "Build Operation ID"
+                    console.WriteLine("Git Commit ID:      {0}", commitId);
                 }
             }
 
@@ -88,27 +90,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
             {
                 return Constants.ExitFailure;
-            }
-
-            // Run pre-build script
-            var exitCode = Constants.ExitFailure;
-            if (!string.IsNullOrEmpty(environmentSettings.PreBuildScriptPath))
-            {
-                logger.LogInformation("Executing pre-build script {preBuildScript}...", environmentSettings.PreBuildScriptPath);
-
-                var scriptDirectory = new FileInfo(environmentSettings.PreBuildScriptPath).Directory.FullName;
-                exitCode = scriptExecutor.ExecuteScript(
-                    environmentSettings.PreBuildScriptPath,
-                    args: null,
-                    workingDirectory: scriptDirectory,
-                    stdOutHandler,
-                    stdOutHandler);
-
-                if (exitCode != Constants.ExitSuccess)
-                {
-                    logger.LogInformation("Pre-build script exited with {exitCode}", exitCode);
-                    return exitCode;
-                }
             }
 
             // Run actual build
@@ -128,7 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Run the generated script
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            exitCode = scriptExecutor.ExecuteScript(
+            var exitCode = scriptExecutor.ExecuteScript(
                 buildScriptPath,
                 new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty },
                 workingDirectory: sourceRepo.RootPath,
@@ -139,26 +120,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 logger.LogError("Build script exited with {exitCode}", exitCode);
                 return exitCode;
-            }
-
-            // Run post-build script
-            if (!string.IsNullOrEmpty(environmentSettings.PostBuildScriptPath))
-            {
-                logger.LogInformation("Executing post-build script {postBuildScript}...", environmentSettings.PostBuildScriptPath);
-
-                var scriptDirectory = new FileInfo(environmentSettings.PostBuildScriptPath).Directory.FullName;
-                exitCode = scriptExecutor.ExecuteScript(
-                    environmentSettings.PostBuildScriptPath,
-                    args: null,
-                    workingDirectory: scriptDirectory,
-                    stdOutHandler,
-                    stdErrHandler);
-
-                if (exitCode != Constants.ExitSuccess)
-                {
-                    logger.LogInformation("Post-build script exited with {exitCode}", exitCode);
-                    return exitCode;
-                }
             }
 
             return Constants.ExitSuccess;

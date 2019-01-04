@@ -48,15 +48,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             bool isNodeApp = false;
 
-            if (sourceRepo.FileExists(Constants.PackageJsonFileName) ||
-                sourceRepo.FileExists(Constants.PackageLockJsonFileName) ||
-                sourceRepo.FileExists(Constants.YarnLockFileName))
+            if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
+                sourceRepo.FileExists(NodeConstants.PackageLockJsonFileName) ||
+                sourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
                 isNodeApp = true;
             }
             else
             {
-                _logger.LogDebug($"Could not find {Constants.PackageJsonFileName}/{Constants.PackageLockJsonFileName}/{Constants.YarnLockFileName} in repo");
+                _logger.LogDebug($"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}/{NodeConstants.YarnLockFileName} in repo");
             }
 
             if (!isNodeApp)
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                 return new LanguageDetectorResult
                 {
-                    Language = Constants.NodeJsName,
+                    Language = NodeConstants.NodeJsName,
                     LanguageVersion = nodeVersion,
                 };
             }
@@ -144,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile(Constants.PackageJsonFileName);
+                var jsonContent = sourceRepo.ReadFile(NodeConstants.PackageJsonFileName);
                 packageJson = JsonConvert.DeserializeObject(jsonContent);
             }
             catch (Exception ex)
@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 // files for node.js to handle, not us. This prevents us from
                 // erroring out when node itself might be able to tolerate some errors
                 // in the package.json file.
-                _logger.LogError(ex, $"An error occurred while trying to deserialize {Constants.PackageJsonFileName}");
+                _logger.LogError(ex, $"An error occurred while trying to deserialize {NodeConstants.PackageJsonFileName}");
             }
 
             return packageJson;

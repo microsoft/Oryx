@@ -24,15 +24,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
+        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<PythonScriptGenerator> _logger;
 
         public PythonScriptGenerator(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
+            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<PythonScriptGenerator> logger)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
+            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
@@ -90,15 +93,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 _logger.LogDebug("Using virtual environment {venv}, module {venvModule}", virtualEnvName, virtualEnvModule);
             }
 
-            _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(Constants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));
+            _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));
+
+            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
             script = new PythonBashBuildScript(
+                preBuildScriptPath: environmentSettings?.PreBuildScriptPath,
+                benvArgs: $"python={pythonVersion}",
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
-                pythonVersion: pythonVersion)
-                .TransformText();
+                postBuildScriptPath: environmentSettings?.PostBuildScriptPath).TransformText();
 
             return true;
         }

@@ -57,16 +57,48 @@ fi
 echo ""Source directory     : $SOURCE_DIR""
 echo ""Destination directory: $DESTINATION_DIR""
 
-source /usr/local/bin/benv python=");
+source /usr/local/bin/benv ");
             
             #line 35 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PythonVersion));
+            this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
             
             #line default
             #line hidden
-            this.Write("\r\n\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
+            this.Write("\r\n");
             
-            #line 40 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 36 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+
+	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho \"Executing pre-build script ...\"\r\nchmod +x \"");
+            
+            #line 41 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n\"");
+            
+            #line 42 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n");
+            
+            #line 43 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+
+	}
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
+            
+            #line 50 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
 
@@ -75,21 +107,21 @@ source /usr/local/bin/benv python=");
             #line hidden
             this.Write("VIRTUALENVIRONMENTNAME=");
             
-            #line 43 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 53 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 44 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 54 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 45 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 55 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
@@ -111,7 +143,7 @@ pip install --prefer-binary -r requirements.txt
 python_bin=python
 ");
             
-            #line 60 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 70 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 	else {
@@ -121,7 +153,7 @@ python_bin=python
             #line hidden
             this.Write("$pip install --prefer-binary -r requirements.txt --target=\"");
             
-            #line 64 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 74 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
@@ -135,14 +167,14 @@ SITE_PACKAGES_PATH=$($python -c ""import site; print(site.getsitepackages()[0])"
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth poiting to them
 APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 71 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 81 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
             this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
             
-            #line 74 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 84 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
@@ -164,31 +196,57 @@ then
 	fi
 fi
 
-if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
+if [ ""$SOURCE_DIR"" != ""$DESTINATION_DIR"" ]
 then
-	echo
-    echo Done.
-    exit 0
+	if [ -d ""$DESTINATION_DIR"" ]
+	then
+		echo
+		echo Destination directory already exists. Deleting it ...
+		rm -rf ""$DESTINATION_DIR""
+	fi
+
+	appTempDir=`mktemp -d`
+	cd ""$SOURCE_DIR""
+	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
+	cp -rf . ""$appTempDir""
+	mkdir -p ""$DESTINATION_DIR""
+	cd ""$appTempDir""
+	echo ""Copying files to destination, '$DESTINATION_DIR'""
+	cp -rf . ""$DESTINATION_DIR""
 fi
+");
+            
+            #line 120 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
-if [ -d ""$DESTINATION_DIR"" ]
-then
-    echo
-    echo Destination directory already exists. Deleting it ...
-    rm -rf ""$DESTINATION_DIR""
-fi
+	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
-appTempDir=`mktemp -d`
-cd ""$SOURCE_DIR""
-# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-cp -rf . ""$appTempDir""
-mkdir -p ""$DESTINATION_DIR""
-cd ""$appTempDir""
-echo ""Copying files to destination, '$DESTINATION_DIR'""
-cp -rf . ""$DESTINATION_DIR""
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\nchmod +x \"");
+            
+            #line 126 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n\"");
+            
+            #line 127 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n");
+            
+            #line 128 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
-echo
-echo Done.");
+	}
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\necho\r\necho Done.");
             return this.GenerationEnvironment.ToString();
         }
     }

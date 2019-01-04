@@ -1,6 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     /// <summary>
@@ -9,26 +10,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     public partial class PythonBashBuildScript
     {
         public PythonBashBuildScript(
+            string preBuildScriptPath,
+            string benvArgs,
             string virtualEnvironmentName,
             string virtualEnvironmentModule,
             string virtualEnvironmentParameters,
             string packagesDirectory,
-            string pythonVersion)
+            string postBuildScriptPath)
         {
+            BenvArgs = benvArgs;
+            PreBuildScriptPath = preBuildScriptPath;
+            PostBuildScriptPath = postBuildScriptPath;
             VirtualEnvironmentName = virtualEnvironmentName;
             VirtualEnvironmentModule = virtualEnvironmentModule;
             VirtualEnvironmentParameters = virtualEnvironmentParameters;
-            PythonVersion = pythonVersion;
             PackagesDirectory = packagesDirectory;
         }
+
+        public string PreBuildScriptPath { get; set; }
+
+        public string BenvArgs { get; set; }
+
+        public string PostBuildScriptPath { get; set; }
 
         public string VirtualEnvironmentName { get; set; }
 
         public string VirtualEnvironmentModule { get; set; }
 
         public string VirtualEnvironmentParameters { get; set; }
-
-        public string PythonVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the directory where the packages will be downloaded to.

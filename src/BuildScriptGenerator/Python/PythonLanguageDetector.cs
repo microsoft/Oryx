@@ -29,9 +29,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            if (!sourceRepo.FileExists(Constants.RequirementsFileName))
+            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
-                _logger.LogDebug($"File '{Constants.RequirementsFileName}' does not exist in source repo");
+                _logger.LogDebug($"File '{PythonConstants.RequirementsFileName}' does not exist in source repo");
                 return null;
             }
 
@@ -39,10 +39,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (string.IsNullOrEmpty(runtimeVersion))
             {
-                var files = sourceRepo.EnumerateFiles(Constants.PythonFileExtension, searchSubDirectories: false);
+                var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileExtension, searchSubDirectories: false);
                 if (files == null || !files.Any())
                 {
-                    _logger.LogDebug($"Files with extension '{Constants.PythonFileExtension}' do not exist in source repo root");
+                    _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileExtension}' do not exist in source repo root");
                     return null;
                 }
             }
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             return new LanguageDetectorResult
             {
-                Language = Constants.PythonName,
+                Language = PythonConstants.PythonName,
                 LanguageVersion = runtimeVersion,
             };
         }
@@ -87,15 +87,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Most Python sites will have at least a .py file in the root, but
             // some may not. In that case, let them opt in with the runtime.txt
             // file, which is used to specify the version of Python.
-            if (sourceRepo.FileExists(Constants.RuntimeFileName))
+            if (sourceRepo.FileExists(PythonConstants.RuntimeFileName))
             {
                 try
                 {
-                    var content = sourceRepo.ReadFile(Constants.RuntimeFileName);
+                    var content = sourceRepo.ReadFile(PythonConstants.RuntimeFileName);
                     var hasPythonVersion = content.StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase);
                     if (!hasPythonVersion)
                     {
-                        _logger.LogDebug("Prefix {verPrefix} was not found in file {rtFileName}", versionPrefix, Constants.RuntimeFileName);
+                        _logger.LogDebug("Prefix {verPrefix} was not found in file {rtFileName}", versionPrefix, PythonConstants.RuntimeFileName);
                         return null;
                     }
 
@@ -105,12 +105,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(ex, "An error occurred while reading file {rtFileName}", Constants.RuntimeFileName);
+                    _logger.LogError(ex, "An error occurred while reading file {rtFileName}", PythonConstants.RuntimeFileName);
                 }
             }
             else
             {
-                _logger.LogDebug("Could not find file '{rtFileName}' in source repo", Constants.RuntimeFileName);
+                _logger.LogDebug("Could not find file '{rtFileName}' in source repo", PythonConstants.RuntimeFileName);
             }
 
             return null;
