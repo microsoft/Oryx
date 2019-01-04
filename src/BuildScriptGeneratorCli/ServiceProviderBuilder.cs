@@ -74,7 +74,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!string.IsNullOrWhiteSpace(logPath))
             {
-                var fileTarget = new NLog.Targets.FileTarget("file") { FileName = Path.GetFullPath(logPath) };
+                // Default layout: "${longdate}|${level:uppercase=true}|${logger}|${message}"
+                var fileTarget = new NLog.Targets.FileTarget("file") { FileName = Path.GetFullPath(logPath), Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}${exception:format=ToString}" };
                 config.AddTarget(fileTarget);
                 config.AddRuleForAllLevels(fileTarget);
             }
