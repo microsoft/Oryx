@@ -1,0 +1,49 @@
+@import 'styles/base';
+
+//=========================================================
+//  PlayerControlsComponent
+//---------------------------------------------------------
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  padding-top: 8px;
+  max-width: 970px;
+  font-size: rem(13px);
+
+  .btn--icon {
+    fill: #5d5e5f;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    &:hover {
+      fill: #78797a;
+    }
+  }
+}
+
+.player-controls__time {
+  padding: 0 10px;
+}
+
+.player-controls__title {
+  flex: 1;
+  padding: 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
+.player-controls__volume {
+  display: flex;
+  align-items: center;
+
+  span {
+    width: 35px;
+    text-align: center;
+  }
+}
