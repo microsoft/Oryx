@@ -1,5 +1,7 @@
 # Oryx
 
+[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Oryx/Oryx-BuildImage?branchName=master)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=9922?branchName=master)
+
 Oryx is a build system which automatically compiles source code repos into
 runnable artifacts.
 
@@ -22,7 +24,8 @@ Patches (0.0.**x**) are applied as soon as possible after they are released upst
 # Use the system yourself
 
 Though primarily intended for use within Azure services, you can also use the
-Oryx build system yourself for troubleshooting and tests.
+Oryx build system yourself for troubleshooting and tests. Following are
+simple instructions; for more details see [our docs](./doc).
 
 Oryx includes two command-line applications; the first is included in the
 build image and generates a build script. The second is included in run
