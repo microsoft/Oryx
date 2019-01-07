@@ -14,6 +14,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
 {
     public class EndToEndTests
     {
+        private const int HostPort = 8000;
         private const string startupFilePath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
@@ -36,8 +37,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "webfrontend");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:80";
+            var portMapping = $"{HostPort}:80";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath}")
@@ -59,7 +59,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -72,8 +72,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "webfrontend-yarnlock");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:80";
+            var portMapping = $"{HostPort}:80";
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -96,7 +95,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -147,8 +146,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "NodeAndTypeScriptHelloWorld");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:3000";
+            var portMapping = $"{HostPort}:3000";
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -171,7 +169,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("{\"message\":\"Hello World!\"}", data);
                 });
         }
@@ -257,9 +255,8 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "python2-flask-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
             var startupFile = "/tmp/startup.sh";
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFile} -hostBind=\":5000\"")
@@ -281,7 +278,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
         }
@@ -293,8 +290,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "flask-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=\":5000\"")
@@ -316,7 +312,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
         }
@@ -328,8 +324,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "flask-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
@@ -351,7 +346,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
         }
@@ -363,8 +358,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
@@ -386,16 +380,16 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/boards.css");
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
                     Assert.Contains("CSS file from Boards app module", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/uservoice.css");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
                     Assert.Contains("CSS file from UserVoice app module", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/boards/");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
                     Assert.Contains("Hello, World! from Boards app", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/uservoice/");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
@@ -407,8 +401,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             const string virtualEnvName = "antenv";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -431,16 +424,16 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/boards.css");
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
                     Assert.Contains("CSS file from Boards app module", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/uservoice.css");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
                     Assert.Contains("CSS file from UserVoice app module", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/boards/");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
                     Assert.Contains("Hello, World! from Boards app", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/uservoice/");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
@@ -452,8 +445,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000")
@@ -475,16 +467,16 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/boards.css");
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
                     Assert.Contains("CSS file from Boards app module", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/staticfiles/css/uservoice.css");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
                     Assert.Contains("CSS file from UserVoice app module", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/boards/");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
                     Assert.Contains("Hello, World! from Boards app", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{port}/uservoice/");
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
@@ -496,9 +488,8 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "tweeter3");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
             var containerPort = 8000;
-            var portMapping = $"{port}:{containerPort}";
+            var portMapping = $"{HostPort}:{containerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=\":{containerPort}\"")
@@ -520,7 +511,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("logged in as: bob", data);
                 });
         }

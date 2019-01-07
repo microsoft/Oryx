@@ -31,8 +31,14 @@ function getTagName()
     return 0
 }
 
-# Node images are created from a template
+# Node and .NET Core images are created from a template
+echo
+echo Generating Dockerfiles for Node runtime images ...
 $REPO_DIR/images/runtime/node/generateDockerfiles.sh
+
+echo
+echo Generating Dockerfiles for .NET Core runtime images ...
+$REPO_DIR/images/runtime/dotnetcore/generateDockerfiles.sh
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
@@ -50,8 +56,6 @@ clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
-    echo $getTagName
-    echo $getTagName_result
     runtimeImageTagName="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
     runtimeImageACRTagName="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
 
@@ -65,7 +69,6 @@ for dockerFile in $dockerFiles; do
     
     echo
     echo "Building image '$runtimeImageTagName' for docker file located at '$dockerFile'..."
-    echo
     
     cd $REPO_DIR
 
@@ -73,9 +76,8 @@ for dockerFile in $dockerFiles; do
     then
         echo "Building image '$runtimeImageTagName' with NO cache..."
         noCache="--no-cache"
-    else
-        echo "Building image '$runtimeImageTagName'..."
     fi
+
     echo
     docker build $noCache -f $dockerFile -t $tags $labels .
     
@@ -112,6 +114,7 @@ done
 echo
 echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
 cat $RUNTIME_IMAGES_ARTIFACTS_FILE
+echo
 echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
 cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 

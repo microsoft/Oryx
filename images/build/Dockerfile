@@ -6,7 +6,7 @@ ENV LANG C.UTF-8
 
 # Install basic build tools
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
         git \
         jq \
         make \
@@ -18,12 +18,14 @@ RUN apt-get update \
         libpq-dev \
         # Required for mysqlclient
         default-libmysqlclient-dev \
- && rm -rf /var/lib/apt/lists/*
+        # Required for .NET Core 1.1
+        libunwind8 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
@@ -32,21 +34,11 @@ RUN apt-get update \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
- && rm -rf /var/lib/apt/lists/*
-
-# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-RUN set -ex \
- && DOTNET_DIR=/opt/dotnet \
- && mkdir -p $DOTNET_DIR \
- # Install .NET Core SDK 2.2.100
- && DOTNET_SDK_VER=2.2.100 \
- && DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz \
- && DOTNET_SDK_SHA=6bde1d0f186f068b1300d5a67e8aba56ff271b940bc0782c3a254dc0f67e7167d2fca12fc51eb3319d4ab4a91cbe5639e5104e9e0036adb8a27ca5711453a1c3 \
- && curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz \
- && echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c - \
- && tar -xzf dotnet.tar.gz -C $DOTNET_DIR \
- && rm dotnet.tar.gz \
- && ln -s $DOTNET_DIR/dotnet /usr/bin/dotnet
+        # For .NET Core 1.1
+        libcurl3 \
+        libuuid1 \
+        libunwind8 \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
@@ -55,21 +47,37 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
 
-# Trigger the population of the local package cache
-# We install the 1.x web templates just so we can create and restore 1.0 and 1.1 MVC apps here
-# See https://github.com/aspnet/Tooling/blob/master/missing-template.md
-# Note that after populating the cache we need to chmod 777 every directory underneath
-# so the Kudu user can access them; this can be removed if we run Kudu as root later.
 RUN mkdir /var/nuget \
- && chmod a+rw /var/nuget \
- && mkdir warmup \
- && cd warmup \
- && dotnet new mvc \
- && dotnet restore \
- && cd .. \
- && rm -rf warmup \
- && rm -rf /tmp/NuGetScratch \
- && find /var/nuget -type d -exec chmod 777 {} \;
+    && chmod a+rw /var/nuget
+
+COPY images/build/dotnetcore-install.sh /
+RUN chmod +x /dotnetcore-install.sh
+
+# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
+
+RUN DOTNET_SDK_VER=1.1.11 \
+    DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
+    # To save disk space do not install packages for this old version which is soon going to be out of support
+    INSTALL_PACKAGES=false \
+    /dotnetcore-install.sh
+
+RUN DOTNET_SDK_VER=2.1.502 \
+    DOTNET_SDK_SHA=366609243fcae4693218154a3f374822b5ceb77b7e1a3561dd0cc89755131fcaec04777e99ac041554d452b4862d2856926a1c213029fc80c7292959caf3aaf6 \
+    /dotnetcore-install.sh
+
+RUN DOTNET_SDK_VER=2.2.100 \
+    DOTNET_SDK_SHA=6bde1d0f186f068b1300d5a67e8aba56ff271b940bc0782c3a254dc0f67e7167d2fca12fc51eb3319d4ab4a91cbe5639e5104e9e0036adb8a27ca5711453a1c3 \
+    /dotnetcore-install.sh
+
+RUN set -ex \
+    rm -rf /tmp/NuGetScratch \
+    && find /var/nuget -type d -exec chmod 777 {} \;
+
+RUN set -ex \
+ && ln -s 1.1 /opt/dotnet/1 \
+ && ln -s 2.1 /opt/dotnet/2 \
+ && ln -s 2 /opt/dotnet/lts \
+ && ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
@@ -272,7 +280,7 @@ ENV NUGET_XMLDOC_MODE=skip \
 	NUGET_PACKAGES=/var/nuget
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-RUN ln -s /opt/dotnet/dotnet /usr/local/bin/dotnet
+RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt

@@ -258,11 +258,13 @@ paket-files/
 # launchSettings.json
 launchSettings.json
 
-# Node runtime images, that are auto generated
+# Node and .NET Core runtime images dockerfiles, that are auto generated
 images/runtime/node/*.*/
+images/runtime/dotnetcore/*.*/
 
 # Golang packages, if oryx is added to GOPATH (which it should)
 pkg/
 bin/
 
-__oryx_packages__
+# Go packages from github
+src/github.com/

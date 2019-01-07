@@ -26,14 +26,46 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void DotnetAlias_UsesLatestVersion()
+        public void DotnetAlias_UsesLtsVersion_ByDefault()
         {
             // Arrange
-            var expectedOutput = "2.2.100";
+            var expectedOutput = "2.1.502";
 
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                commandToExecuteOnRun: "dotnet",
+                commandArguments: new[] { "--version" });
+
+            // Assert
+            var actualOutput = result.Output.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("1", "1.1.11")]
+        [InlineData("1.1", "1.1.11")]
+        [InlineData("1.1.11", "1.1.11")]
+        [InlineData("2", "2.1.502")]
+        [InlineData("2.1", "2.1.502")]
+        [InlineData("lts", "2.1.502")]
+        [InlineData("2.1.502", "2.1.502")]
+        [InlineData("2.2", "2.2.100")]
+        [InlineData("2.2.100", "2.2.100")]
+        public void DotnetAlias_UsesVersion_SpecifiedAtDockerRun(
+            string versionSentToDockerRun,
+            string expectedOutput)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new EnvironmentVariable("dotnet", versionSentToDockerRun),
                 commandToExecuteOnRun: "dotnet",
                 commandArguments: new[] { "--version" });
 
@@ -138,7 +170,6 @@ namespace Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.1", "v10.14.1")]
-
         public void NodeAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)

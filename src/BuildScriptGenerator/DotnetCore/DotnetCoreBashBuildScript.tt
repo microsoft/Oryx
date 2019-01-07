@@ -1,0 +1,87 @@
+<#@ template language="C#" #>
+#!/bin/bash
+set -e
+
+SOURCE_DIR=$1
+DESTINATION_DIR=$2
+
+if [ ! -d "$SOURCE_DIR" ]; then
+    echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
+    exit 1
+fi
+
+if [ -z "$DESTINATION_DIR" ]
+then
+    DESTINATION_DIR="$SOURCE_DIR"
+fi
+
+# Get full file paths to source and destination directories
+cd $SOURCE_DIR
+SOURCE_DIR=$(pwd -P)
+
+if [ -d "$DESTINATION_DIR" ]
+then
+    cd $DESTINATION_DIR
+    DESTINATION_DIR=$(pwd -P)
+fi
+
+if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
+then
+	outputDir="$DESTINATION_DIR/<#= PublishDirectory #>"
+else 
+	outputDir="$DESTINATION_DIR"
+fi
+
+echo
+echo "Source directory     : $SOURCE_DIR"
+echo "Destination directory: $outputDir"
+
+source /usr/local/bin/benv <#= BenvArgs #>
+
+cd $SOURCE_DIR
+
+<#
+	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+#>
+
+echo Executing pre-build script '<#= PreBuildScriptPath #>' ...
+chmod +x "<#= PreBuildScriptPath #>"
+"<#= PreBuildScriptPath #>"
+<#
+	}
+#>
+
+echo
+dotnetCoreVersion=$(dotnet --version)
+echo ".NET Core Version: $dotnetCoreVersion"
+
+echo
+echo Restoring packages ...
+echo
+dotnet restore
+
+if [ -d "$outputDir" ]
+then
+	echo
+	echo "Destination directory '$outputDir' already exists. Deleting it ..."
+	rm -rf "$outputDir"
+fi
+
+echo
+echo "Publishing to directory $outputDir ..."
+echo
+dotnet publish -c Release -o "$outputDir"
+
+<#
+	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
+#>
+
+echo Executing post-build script '<#= PostBuildScriptPath #>' ...
+chmod +x "<#= PostBuildScriptPath #>"
+"<#= PostBuildScriptPath #>"
+<#
+	}
+#>
+
+echo
+echo Done.

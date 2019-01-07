@@ -1,0 +1,5 @@
+1.0, microsoft/dotnet:1.0.13-runtime
+1.1, microsoft/dotnet:1.1.10-runtime
+2.0, microsoft/aspnetcore:2.0.9
+2.1, microsoft/dotnet:2.1.6-aspnetcore-runtime
+2.2, microsoft/dotnet:2.2.0-aspnetcore-runtime-alpine

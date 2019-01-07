@@ -54,6 +54,11 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Compile Update="DotnetCore\DotnetCoreBashBuildScript.cs">
+      <DependentUpon>DotnetCoreBashBuildScript.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Node\NodeBashBuildScript.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -85,6 +90,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <None Update="DotnetCore\DotnetCoreBashBuildScript.tt">
+      <LastGenOutput>DotnetCoreBashBuildScript.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
     <None Update="Node\NodeBashBuildScript.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>NodeBashBuildScript.cs</LastGenOutput>

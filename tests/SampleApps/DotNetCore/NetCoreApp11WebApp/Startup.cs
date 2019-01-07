@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace NetCoreApp10WebApp
+namespace NetCoreApp11WebApp
 {
     public class Startup
     {

@@ -17,6 +17,10 @@ while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep '^node_')
 [ -n "$node" ] && set -- "node=$node" "$@"
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep '^dotnet_')
+[ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
 unset benvvar # Remove all traces of this part of the script
 
 benv-versions() {
@@ -113,6 +117,23 @@ benv-resolve() {
       if [ -e "$DIR/virtualenv" ]; then
         eval export virtualenv_${name:7}=$DIR/virtualenv
       fi
+    fi
+    return 0
+  fi
+
+  # Resolve dotnet versions
+  if [ "$name" == "dotnet" -o "${name::11}" == "dotnet_" ] && [ "${value::1}" != "/" ]; then
+    if [ ! -d "/opt/dotnet/$value" ]; then
+      echo >&2 benv: dotnet version \'$value\' not found\; choose one of:
+      benv-versions >&2 /opt/dotnet
+      return 1
+    fi
+    local DIR="/opt/dotnet/$value"
+    if [ "$name" == "dotnet" ]; then
+      export PATH="$DIR:$PATH"
+      export dotnet="$DIR/dotnet"
+    else
+      eval export dotnet_${name:7}=\"$DIR/dotnet\"
     fi
     return 0
   fi
