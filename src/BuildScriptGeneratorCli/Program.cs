@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
-        private string GetVersion()
+        internal static string GetVersion()
         {
             var informationalVersion = Assembly.GetExecutingAssembly()
                     .GetCustomAttribute<AssemblyInformationalVersionAttribute>();
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return null;
         }
 
-        private string GetCommit()
+        internal static string GetCommit()
         {
             var commitMetadata = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>()
                     .Where(attr => attr.Key.Equals("GitCommit"))
