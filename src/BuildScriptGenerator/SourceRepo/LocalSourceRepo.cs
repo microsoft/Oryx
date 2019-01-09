@@ -1,17 +1,23 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class LocalSourceRepo : ISourceRepo
     {
-        public LocalSourceRepo(string sourceDirectory)
+        private readonly ILogger<LocalSourceRepo> _logger;
+
+        public LocalSourceRepo(string sourceDirectory, ILoggerFactory loggerFactory)
         {
             RootPath = sourceDirectory;
+            _logger = loggerFactory.CreateLogger<LocalSourceRepo>();
         }
 
         public string RootPath { get; }
@@ -42,10 +48,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GetGitCommitId()
         {
-            (int exitCode, string output, string error) = ProcessHelper.RunProcess("git", new string[] { "rev-parse", "HEAD" }, this.RootPath, 2);
+            var exitCode = 1;
+            var output = string.Empty;
+            var error = string.Empty;
+
+            try
+            {
+                (exitCode, output, error) = ProcessHelper.RunProcess(
+                    "git",
+                    new string[] { "rev-parse", "HEAD" },
+                    RootPath,
+                    TimeSpan.FromSeconds(5));
+            }
+            catch (Exception ex)
+            {
+                // Ignore any exceptions as we do not want them to bubble up to end user as this functionality
+                // is not required for the build to work.
+                _logger.LogError(ex, "An error occurred while trying to get commit id from the repository.");
+                return null;
+            }
 
             if (exitCode != 0)
             {
+                _logger.LogWarning(
+                    "Could not get commit id from the repository. " +
+                    "Exit code: {exitCode}, Output: {stdOut}, Error: {stdErr}",
+                    exitCode,
+                    output,
+                    error);
                 return null;
             }
 

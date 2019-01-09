@@ -62,7 +62,7 @@ namespace Oryx.Tests.Common
             string[] runArgs,
             Func<Task> assertAction)
         {
-            var dockerCli = new DockerCli(waitTimeInSeconds: (int)TimeSpan.FromMinutes(10).TotalSeconds);
+            var dockerCli = new DockerCli();
 
             // Build
             var buildAppResult = dockerCli.Run(

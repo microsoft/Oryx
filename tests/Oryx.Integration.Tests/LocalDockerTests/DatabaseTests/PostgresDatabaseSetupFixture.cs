@@ -16,7 +16,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
 
         public PostgresDatabaseSetupFixture()
         {
-            _dockerCli = new DockerCli((int)TimeSpan.FromMinutes(10).TotalSeconds);
+            _dockerCli = new DockerCli();
 
             var runResult = StartDatabaseContainer();
             DatabaseServerContainerName = runResult.ContainerName;

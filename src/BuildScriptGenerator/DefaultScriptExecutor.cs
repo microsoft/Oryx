@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 workingDirectory: workingDirectory,
                 standardOutputHandler: stdOutHandler,
                 standardErrorHandler: stdErrHandler,
-                waitForExitInSeconds: null); // Do not provide wait time as the caller can do this themselves.
+                waitTimeForExit: null); // Do not provide wait time as the caller can do this themselves.
             return exitCode;
         }
 
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     workingDirectory,
                     standardOutputHandler: stdOutHandler,
                     standardErrorHandler: stdErrHandler,
-                    waitForExitInSeconds: null); // Do not provide wait time as the caller can do this themselves.
+                    waitTimeForExit: null); // Do not provide wait time as the caller can do this themselves.
                 eventStopwatch.AddProperty("exitCode", exitCode.ToString());
             }
 

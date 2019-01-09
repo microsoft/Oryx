@@ -11,17 +11,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly ITempDirectoryProvider _tempDirectoryProvider;
         private readonly BuildScriptGeneratorOptions _options;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<DefaultSourceRepoProvider> _logger;
         private bool _copiedToIntermediateDirectory = false;
 
         public DefaultSourceRepoProvider(
             ITempDirectoryProvider tempDirectoryProvider,
             IOptions<BuildScriptGeneratorOptions> options,
-            ILogger<DefaultSourceRepoProvider> logger)
+            ILoggerFactory loggerFactory)
         {
             _tempDirectoryProvider = tempDirectoryProvider;
             _options = options.Value;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<DefaultSourceRepoProvider>();
         }
 
         public ISourceRepo GetSourceRepo()
@@ -29,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
                 _logger.LogDebug("Intermediate directory was not provided, so using source directory for build.");
-                return new LocalSourceRepo(_options.SourceDir);
+                return new LocalSourceRepo(_options.SourceDir, _loggerFactory);
             }
 
             if (!_copiedToIntermediateDirectory)
@@ -42,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _copiedToIntermediateDirectory = true;
             }
 
-            return new LocalSourceRepo(_options.IntermediateDir);
+            return new LocalSourceRepo(_options.IntermediateDir, _loggerFactory);
         }
 
         private void CopyDirectories(string sourceDirectory, string destinationDirectory, bool recursive)

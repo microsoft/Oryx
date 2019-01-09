@@ -1,9 +1,11 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -21,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void RootPath_ReturnsRootOfTheSourceDirectory()
         {
             // Arrange & Act
-            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+            var sourceRepo = new LocalSourceRepo(_rootDirPath, NullLoggerFactory.Instance);
 
             // Assert
             Assert.Equal(_rootDirPath, sourceRepo.RootPath);
@@ -34,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void FileExists_DoesRelativePathLookupForFiles(params string[] paths)
         {
             // Arrange
-            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+            var sourceRepo = new LocalSourceRepo(_rootDirPath, NullLoggerFactory.Instance);
 
             // Act
             var exists = sourceRepo.FileExists(paths);
@@ -47,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void ReadFile_ReturnsConentOfTheFileRequested()
         {
             // Arrange-1
-            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+            var sourceRepo = new LocalSourceRepo(_rootDirPath, NullLoggerFactory.Instance);
 
             // Act-1
             var exists = sourceRepo.FileExists("subDir1", "subDir2", "file1.txt");
@@ -70,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             // Arrange
             var expected = Path.Combine(_rootDirPath, "file1.txt");
-            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+            var sourceRepo = new LocalSourceRepo(_rootDirPath, NullLoggerFactory.Instance);
 
             // Act
             var files = sourceRepo.EnumerateFiles("*.txt", searchSubDirectories: false);
@@ -85,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void GetFilesWithExtension_ReturnsFilesAtAllDirectories_IfSubDirectorySearchIsTrue()
         {
             // Arrange
-            var sourceRepo = new LocalSourceRepo(_rootDirPath);
+            var sourceRepo = new LocalSourceRepo(_rootDirPath, NullLoggerFactory.Instance);
 
             // Act
             var files = sourceRepo.EnumerateFiles("*.txt", searchSubDirectories: true);

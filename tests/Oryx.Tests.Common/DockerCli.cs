@@ -14,16 +14,16 @@ namespace Oryx.Tests.Common
     {
         private const string CreatedContainerPrefix = "oryxtests_";
 
-        private readonly int _waitTimeInSeconds;
+        private readonly TimeSpan _waitTimeForExit;
 
         public DockerCli()
+            : this(TimeSpan.FromMinutes(1))
         {
-            _waitTimeInSeconds = 10;
         }
 
-        public DockerCli(int waitTimeInSeconds)
+        public DockerCli(TimeSpan waitTimeForExit)
         {
-            _waitTimeInSeconds = waitTimeInSeconds;
+            _waitTimeForExit = waitTimeForExit;
         }
 
         public DockerRunCommandResult Run(
@@ -68,7 +68,7 @@ namespace Oryx.Tests.Common
                         fileName,
                         arguments,
                         workingDirectory: null,
-                        _waitTimeInSeconds);
+                        _waitTimeForExit);
             }
             catch (InvalidOperationException invalidOperationException)
             {
@@ -254,7 +254,7 @@ namespace Oryx.Tests.Common
                     fileName,
                     arguments,
                     workingDirectory: null,
-                    _waitTimeInSeconds);
+                    _waitTimeForExit);
             }
             catch (InvalidOperationException invalidOperationException)
             {

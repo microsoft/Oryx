@@ -20,7 +20,7 @@ namespace Oryx.BuildImage.Tests
         public DotnetCoreSampleAppsTest(ITestOutputHelper output)
         {
             _output = output;
-            _dockerCli = new DockerCli(waitTimeInSeconds: (int)TimeSpan.FromMinutes(10).TotalSeconds);
+            _dockerCli = new DockerCli();
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
 

@@ -19,7 +19,7 @@ namespace Oryx.BuildImage.Tests
         {
             _output = output;
 
-            _dockerCli = new DockerCli(waitTimeInSeconds: (int)TimeSpan.FromMinutes(10).TotalSeconds);
+            _dockerCli = new DockerCli();
 
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }

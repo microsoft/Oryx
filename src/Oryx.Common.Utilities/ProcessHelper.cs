@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.Common.Utilities
             string fileName,
             IEnumerable<string> arguments,
             string workingDirectory,
-            int? waitForExitInSeconds)
+            TimeSpan? waitTimeForExit)
         {
             var outputBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Common.Utilities
                 {
                     errorBuilder.AppendLine(args.Data);
                 },
-                waitForExitInSeconds);
+                waitTimeForExit);
 
             return (exitCode, output: outputBuilder.ToString(), error: errorBuilder.ToString());
         }
@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.Common.Utilities
             string workingDirectory,
             DataReceivedEventHandler standardOutputHandler,
             DataReceivedEventHandler standardErrorHandler,
-            int? waitForExitInSeconds)
+            TimeSpan? waitTimeForExit)
         {
             var redirectOutput = standardOutputHandler != null;
             var redirectError = standardErrorHandler != null;
@@ -60,9 +60,9 @@ namespace Microsoft.Oryx.Common.Utilities
                     standardOutputHandler,
                     standardErrorHandler);
 
-                if (waitForExitInSeconds.HasValue)
+                if (waitTimeForExit.HasValue)
                 {
-                    var hasExited = process.WaitForExit(waitForExitInSeconds.Value * 1_000);
+                    var hasExited = process.WaitForExit((int)waitTimeForExit.Value.TotalMilliseconds);
                     if (!hasExited)
                     {
                         throw new InvalidOperationException(

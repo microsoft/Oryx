@@ -333,7 +333,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             public ISourceRepo GetSourceRepo()
             {
-                return new LocalSourceRepo(_sourceDir);
+                return new LocalSourceRepo(_sourceDir, NullLoggerFactory.Instance);
             }
         }
     }

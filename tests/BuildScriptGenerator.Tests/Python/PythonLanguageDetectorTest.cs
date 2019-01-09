@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
             var sourceDir = CreateNewDir();
             // No files in source directory
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
             var result = detector.Detect(repo);
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "foo.py content", "foo.py");
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
             var result = detector.Detect(repo);
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var sourceDir = CreateNewDir();
             // No files with '.py' or no runtime.txt file
             CreateFile(sourceDir, "requirements.txt content", "requirements.txt");
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
             var result = detector.Detect(repo);
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // No file with a '.py' extension
             CreateFile(sourceDir, "", "requirements.txt");
             CreateFile(sourceDir, $"python-{Settings.Python37Version}", "runtime.txt");
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
             var result = detector.Detect(repo);
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "", "requirements.txt");
             CreateFile(sourceDir, "python-100.100.100", "runtime.txt");
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "", "requirements.txt");
             CreateFile(sourceDir, fileContent, "runtime.txt");
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
             var result = detector.Detect(repo);
@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "content", "requirements.txt");
             CreateFile(sourceDir, "foo.py content", "foo.py");
-            var repo = new LocalSourceRepo(sourceDir);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
             var result = detector.Detect(repo);
