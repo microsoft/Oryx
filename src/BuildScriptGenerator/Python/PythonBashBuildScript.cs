@@ -186,8 +186,7 @@ APP_PACKAGES_PATH=$(pwd)""/");
             
             #line default
             #line hidden
-            this.Write(@"echo
-echo Done running pip install.
+            this.Write(@"echo Done running pip install.
 
 if [ -e ""$SOURCE_DIR/manage.py"" ]
 then
@@ -221,7 +220,7 @@ then
 fi
 ");
             
-            #line 126 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 125 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
@@ -230,21 +229,21 @@ fi
             #line hidden
             this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\nchmod +x \"");
             
-            #line 132 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 131 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n\"");
             
-            #line 133 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 132 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 134 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 133 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
