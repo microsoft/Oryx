@@ -6,7 +6,7 @@
 
 set -e
 
-if [[ "$1" == "" || "$2" == "" ]]; then
+if [ "$1" = "" ] || [ "$2" = "" ]; then
     echo "Usage: build <language> <target output>"
     echo "Language should match the directory name of the language-specific implementation."
     echo "Target output is the path to the Linux binary to be produced."
@@ -17,12 +17,8 @@ LANGUAGE=$1
 TARGET_OUTPUT=$2
 DIR=$(dirname "$0")
 
-. prepare-go-env.sh
+. $DIR/prepare-go-env.sh
 
 echo "Trying to find the language..."
 cd "$DIR/$LANGUAGE"
-go build -o "$TARGET_OUTPUT" .
-
-# Remove packages added by prepare-go-env.sh as they are not needed at runtime
-apk del build-base
-apk del git
+go build -v -o "$TARGET_OUTPUT" .
