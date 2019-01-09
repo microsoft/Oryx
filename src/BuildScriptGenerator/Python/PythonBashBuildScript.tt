@@ -75,6 +75,12 @@ python_bin=python
 # confuse an end user.
 echo Running pip install ...
 $pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade | sed 's/^/   /'
+pipInstallExitCode=${PIPESTATUS[0]}
+if [[ $pipInstallExitCode != 0 ]]
+then
+	exit $pipInstallExitCode
+fi
+
 # We need to use the python binary selected by benv
 python_bin=$python
 

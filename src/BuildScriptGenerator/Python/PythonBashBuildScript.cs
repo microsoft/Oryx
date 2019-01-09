@@ -161,6 +161,12 @@ python_bin=python
             #line default
             #line hidden
             this.Write(@""" --upgrade | sed 's/^/   /'
+pipInstallExitCode=${PIPESTATUS[0]}
+if [[ $pipInstallExitCode != 0 ]]
+then
+	exit $pipInstallExitCode
+fi
+
 # We need to use the python binary selected by benv
 python_bin=$python
 
@@ -172,14 +178,14 @@ mkdir -p $SITE_PACKAGES_PATH
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
 APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 87 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 93 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
             this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
             
-            #line 90 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 96 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
@@ -220,7 +226,7 @@ then
 fi
 ");
             
-            #line 125 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 131 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
@@ -229,21 +235,21 @@ fi
             #line hidden
             this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\nchmod +x \"");
             
-            #line 131 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 137 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n\"");
             
-            #line 132 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 138 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 133 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 139 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
