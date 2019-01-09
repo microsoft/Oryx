@@ -1,10 +1,10 @@
 # Startup script generator
-FROM golang:1.11-alpine as startupCmdGen
+FROM golang:1.11-%DOTNETCORE_BASE_IMAGE_ALPINE_OR_STRETCH% as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM DOTNETCORE_BASE_IMAGE_HERE
+FROM %DOTNETCORE_BASE_IMAGE%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

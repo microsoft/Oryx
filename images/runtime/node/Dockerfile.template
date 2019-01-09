@@ -1,5 +1,5 @@
 # Startup script generator
-FROM golang:1.11-stretch as startupCmdGen
+FROM golang:1.11-%NODE_BASE_IMAGE_ALPINE_OR_STRETCH% as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
