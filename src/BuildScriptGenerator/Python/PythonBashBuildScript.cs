@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+    #line 1 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class PythonBashBuildScript : PythonBashBuildScriptBase
     {
@@ -59,14 +59,14 @@ echo ""Destination directory: $DESTINATION_DIR""
 
 source /usr/local/bin/benv ");
             
-            #line 35 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 35 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 36 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 36 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
 
@@ -75,21 +75,21 @@ source /usr/local/bin/benv ");
             #line hidden
             this.Write("\r\necho \"Executing pre-build script ...\"\r\nchmod +x \"");
             
-            #line 41 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 41 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n\"");
             
-            #line 42 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 42 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 43 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 43 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
@@ -98,7 +98,7 @@ source /usr/local/bin/benv ");
             #line hidden
             this.Write("\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
             
-            #line 50 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 50 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
 
@@ -107,21 +107,21 @@ source /usr/local/bin/benv ");
             #line hidden
             this.Write("VIRTUALENVIRONMENTNAME=");
             
-            #line 53 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 53 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 54 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 54 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
             this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 55 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 55 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
@@ -143,7 +143,7 @@ pip install --prefer-binary -r requirements.txt
 python_bin=python
 ");
             
-            #line 70 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 70 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 	else {
@@ -151,14 +151,16 @@ python_bin=python
             
             #line default
             #line hidden
-            this.Write("$pip install --prefer-binary -r requirements.txt --target=\"");
+            this.Write("# Indent the output as pip install prints the \'Successfully Installed...\' message" +
+                    " and then waits which can\r\n# confuse an end user.\r\necho Running pip install ...\r" +
+                    "\n$pip install --prefer-binary -r requirements.txt --target=\"");
             
-            #line 74 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 77 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
-            this.Write(@""" --upgrade
+            this.Write(@""" --upgrade | sed 's/^/   /'
 # We need to use the python binary selected by benv
 python_bin=$python
 
@@ -167,17 +169,17 @@ python_bin=$python
 SITE_PACKAGE_PYTHON_VERSION=$($python -c ""import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))"")
 SITE_PACKAGES_PATH=$HOME""/.local/lib/python""$SITE_PACKAGE_PYTHON_VERSION""/site-packages""
 mkdir -p $SITE_PACKAGES_PATH
-# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth poiting to them
+# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
 APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 84 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 87 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
             this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
             
-            #line 87 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 90 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 
@@ -185,7 +187,7 @@ APP_PACKAGES_PATH=$(pwd)""/");
             #line default
             #line hidden
             this.Write(@"echo
-echo pip install finished.
+echo Done running pip install.
 
 if [ -e ""$SOURCE_DIR/manage.py"" ]
 then
@@ -219,7 +221,7 @@ then
 fi
 ");
             
-            #line 123 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 126 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
@@ -228,21 +230,21 @@ fi
             #line hidden
             this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\nchmod +x \"");
             
-            #line 129 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 132 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n\"");
             
-            #line 130 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 133 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 131 "C:\src\oryx-patch\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 134 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
 
 	}
 

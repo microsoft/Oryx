@@ -71,7 +71,10 @@ python_bin=python
 	}
 	else {
 #>
-$pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade
+# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can
+# confuse an end user.
+echo Running pip install ...
+$pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade | sed 's/^/   /'
 # We need to use the python binary selected by benv
 python_bin=$python
 
@@ -80,7 +83,7 @@ python_bin=$python
 SITE_PACKAGE_PYTHON_VERSION=$($python -c "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")
 SITE_PACKAGES_PATH=$HOME"/.local/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
 mkdir -p $SITE_PACKAGES_PATH
-# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth poiting to them
+# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
 APP_PACKAGES_PATH=$(pwd)"/<#= PackagesDirectory #>"
 echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 
@@ -88,7 +91,7 @@ echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 	}
 #>
 echo
-echo pip install finished.
+echo Done running pip install.
 
 if [ -e "$SOURCE_DIR/manage.py" ]
 then
