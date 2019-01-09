@@ -286,6 +286,44 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Fact(Skip = "This test only works if ran with app service image, and is left here only so we can investigate issues if they arrive." +
+             "This is for backwards comptability with apps built using the virtual env which we no longer do.")]
+        public async Task Python27App_virtualEnv()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "python", "python2-flask-app");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            const string virtualEnvName = "antenv2.7";
+            var startupFile = "/tmp/startup.sh";
+            var portMapping = $"{port}:5000";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -hostBind=\":5000\" -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "python", "--language-version", "2.7", "-p", $"virtualenv_name={virtualEnvName}" },
+                "oryxdevms/python-2.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
         [Fact]
         public async Task FlaskApp_Python37()
         {
@@ -400,7 +438,8 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "This test only works if ran with app service image, and is left here only so we can investigate issues if they arrive." +
+             "This is for backwards comptability with apps built using the virtual env which we no longer do.")]
         public async Task DjangoApp_Python37_virtualenv()
         {
             // Arrange

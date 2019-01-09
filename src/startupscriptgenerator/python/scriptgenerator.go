@@ -27,7 +27,9 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
 		"ORYX_PACKAGES_PATH=" + packagedDir + "\n" +
 		"if [ -d $ORYX_PACKAGES_PATH ]; then\n" +
-		"  SITE_PACKAGES_PATH=$(python -c \"import site; print(site.getsitepackages()[0])\")\n" +
+		"  SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n" +
+		"  SITE_PACKAGES_PATH=$HOME\"/.local/lib/python\"$SITE_PACKAGE_PYTHON_VERSION\"/site-packages\"\n" +
+		"  mkdir -p $SITE_PACKAGES_PATH\n" +
 		"  echo $ORYX_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n" +
 		"  PATH=\"$ORYX_PACKAGES_PATH/bin:$PATH\"\n")
 
@@ -35,12 +37,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	// we still use it for backwards compatibility.
 	if gen.VirtualEnvironmentName != "" {
 		scriptBuilder.WriteString("elif [ -d " + gen.VirtualEnvironmentName + " ]; then\n")
+		scriptBuilder.WriteString("  echo \"Using virtual environment " + gen.VirtualEnvironmentName + ".\"\n")
 		scriptBuilder.WriteString("  . " + gen.VirtualEnvironmentName + "/bin/activate\n")
-		// TODO - gunicorn has to be installed in the virtual environenment for things to work correctly.
-		// This will be one more benefit of getting rid of virtual envs, which is to be able to run gunicorn
-		// from the image instead of from the virutal env.
-		scriptBuilder.WriteString("\n  # gunicorn has to be installed in the virtual environment\n")
-		scriptBuilder.WriteString("  pip install gunicorn\n")
 	}
 
 	scriptBuilder.WriteString("else\n")
@@ -53,15 +51,15 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		appModule := gen.getDjangoStartupModule()
 		if appModule == "" {
 			appModule = gen.getFlaskStartupModule()
+			if appModule == "" {
+				println("Using default app from " + gen.DefaultAppPath)
+				appDirectory = gen.DefaultAppPath
+				appModule = gen.DefaultAppModule
+			} else {
+				println("Detected flask app.")
+			}
 		} else {
 			println("Detected Django app.")
-		}
-		if appModule == "" {
-			println("Using default app from " + gen.DefaultAppPath)
-			appDirectory = gen.DefaultAppPath
-			appModule = gen.DefaultAppModule
-		} else {
-			println("Detected flask app.")
 		}
 
 		if appModule != "" {
