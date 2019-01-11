@@ -1,6 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
+
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<DefaultSourceRepoProvider> _logger;
         private bool _copiedToIntermediateDirectory = false;
+        private LocalSourceRepo _sourceRepo;
 
         public DefaultSourceRepoProvider(
             ITempDirectoryProvider tempDirectoryProvider,
@@ -28,23 +30,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public ISourceRepo GetSourceRepo()
         {
+            if (_sourceRepo != null)
+            {
+                return _sourceRepo;
+            }
+
             if (string.IsNullOrEmpty(_options.IntermediateDir))
             {
                 _logger.LogDebug("Intermediate directory was not provided, so using source directory for build.");
-                return new LocalSourceRepo(_options.SourceDir, _loggerFactory);
+                _sourceRepo = new LocalSourceRepo(_options.SourceDir, _loggerFactory);
+                return _sourceRepo;
             }
 
             if (!_copiedToIntermediateDirectory)
             {
                 PrepareIntermediateDirectory();
 
-                _logger.LogDebug("Copying content from {srcDir} to {intermediateDir}", _options.SourceDir, _options.IntermediateDir);
+                _logger.LogDebug(
+                    "Copying content from {srcDir} to {intermediateDir}",
+                    _options.SourceDir,
+                    _options.IntermediateDir);
 
                 CopyDirectories(_options.SourceDir, _options.IntermediateDir, recursive: true);
                 _copiedToIntermediateDirectory = true;
             }
 
-            return new LocalSourceRepo(_options.IntermediateDir, _loggerFactory);
+            _sourceRepo = new LocalSourceRepo(_options.IntermediateDir, _loggerFactory);
+            return _sourceRepo;
         }
 
         private void CopyDirectories(string sourceDirectory, string destinationDirectory, bool recursive)

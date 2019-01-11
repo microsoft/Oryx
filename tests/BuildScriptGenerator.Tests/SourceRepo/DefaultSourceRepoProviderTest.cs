@@ -21,6 +21,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void GetSourceRepo_ReturnsSameInstance_OnMultipleCalls()
+        {
+            // Arrange
+            var guid = Guid.NewGuid();
+            var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
+            var tempDir = Path.Combine(_tempDirRootPath, $"temp-{guid}");
+            Directory.CreateDirectory(appDir);
+            Directory.CreateDirectory(tempDir);
+            var options = new BuildScriptGeneratorOptions
+            {
+                SourceDir = appDir,
+            };
+            var provider = GetSourceRepoProvider(options, tempDir);
+
+            // Act-1
+            var sourceRepo1 = provider.GetSourceRepo();
+
+            // Assert-1
+            Assert.Equal(appDir, sourceRepo1.RootPath);
+
+            // Act-2
+            var sourceRepo2 = provider.GetSourceRepo();
+
+            // Assert-2
+            Assert.Equal(appDir, sourceRepo2.RootPath);
+            Assert.Same(sourceRepo1, sourceRepo2);
+
+        }
+        [Fact]
         public void IntermediateDir_IsNotUsed_ByDefault()
         {
             // Arrange
