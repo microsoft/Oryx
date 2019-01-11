@@ -76,7 +76,10 @@ $pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory
 python_bin=$python
 
 # Detect the location of the site-packages to add the .pth file
-SITE_PACKAGES_PATH=$($python -c "import site; print(site.getsitepackages()[0])")
+# For the local site package, only major and minor versions are provided, so we fetch it again
+SITE_PACKAGE_PYTHON_VERSION=$($python -c "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")
+SITE_PACKAGES_PATH=$HOME"/.local/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
+mkdir -p $SITE_PACKAGES_PATH
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth poiting to them
 APP_PACKAGES_PATH=$(pwd)"/<#= PackagesDirectory #>"
 echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"

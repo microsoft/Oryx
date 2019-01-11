@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"startupscriptgenerator/common"
+	"strings"
 )
 
 type PythonStartupScriptGenerator struct {
@@ -32,7 +32,9 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
 		"ORYX_PACKAGES_PATH=" + packagedDir + "\n" +
 		"if [ -d $ORYX_PACKAGES_PATH ]; then\n" +
-		"  SITE_PACKAGES_PATH=$(python -c \"import site; print(site.getsitepackages()[0])\")\n" +
+		"  SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n" +
+		"  SITE_PACKAGES_PATH=$HOME\"/.local/lib/python\"$SITE_PACKAGE_PYTHON_VERSION\"/site-packages\"\n" +
+		"  mkdir -p $SITE_PACKAGES_PATH\n" +
 		"  echo $ORYX_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n" +
 		"  PATH=\"$ORYX_PACKAGES_PATH/bin:$PATH\"\n")
 
@@ -40,12 +42,14 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	// we still use it for backwards compatibility.
 	if gen.VirtualEnvironmentName != "" {
 		scriptBuilder.WriteString("elif [ -d " + gen.VirtualEnvironmentName + " ]; then\n")
-		scriptBuilder.WriteString("  . " + gen.VirtualEnvironmentName + "/bin/activate\n")
-		// TODO - gunicorn has to be installed in the virtual environenment for things to work correctly.
-		// This will be one more benefit of getting rid of virtual envs, which is to be able to run gunicorn
-		// from the image instead of from the virutal env.
-		scriptBuilder.WriteString("\n  # gunicorn has to be installed in the virtual environment\n")
-		scriptBuilder.WriteString("  pip install gunicorn\n")
+		// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
+		// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
+		// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
+		// the libraries are not found.
+		scriptBuilder.WriteString("  PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
+		scriptBuilder.WriteString("  echo \"Using packages from virtual environment " + gen.VirtualEnvironmentName + ".\"\n")
+		virtualEnvFolder := filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName, "lib", "python$PYTHON_VERSION", "site-packages")
+		scriptBuilder.WriteString("  export PYTHONPATH=$PYTHONPATH:" + virtualEnvFolder + "\n")
 	}
 
 	appType := ""
@@ -59,23 +63,22 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	if command == "" {
 		appDirectory := gen.SourcePath
 		appModule = gen.getDjangoStartupModule()
-		
+
 		if appModule == "" {
 			appModule = gen.getFlaskStartupModule()
+			if appModule == "" {
+				appType = "Default"
+				logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
+				println("Using default app from " + gen.DefaultAppPath)
+				appDirectory = gen.DefaultAppPath
+				appModule = gen.DefaultAppModule
+			} else {
+				appType = "Flask"
+				println("Detected flask app.")
+			}
 		} else {
 			appType = "Django"
 			println("Detected Django app.")
-		}
-
-		if appModule == "" {
-			appType = "Default"
-			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
-			println("Using default app from " + gen.DefaultAppPath)
-			appDirectory = gen.DefaultAppPath
-			appModule = gen.DefaultAppModule
-		} else {
-			appType = "Flask"
-			println("Detected Flask app.")
 		}
 
 		if appModule != "" {

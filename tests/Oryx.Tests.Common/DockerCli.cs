@@ -17,7 +17,7 @@ namespace Oryx.Tests.Common
         private readonly TimeSpan _waitTimeForExit;
 
         public DockerCli()
-            : this(TimeSpan.FromMinutes(1))
+            : this(TimeSpan.FromMinutes(3))
         {
         }
 
