@@ -6,5 +6,5 @@ if type "apk" > /dev/null; then
 	apk add --no-cache build-base
 fi
 
-go get github.com/Microsoft/ApplicationInsights-Go/appinsights
-go get github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts
+go get -u github.com/golang/dep/cmd/dep
+dep ensure
