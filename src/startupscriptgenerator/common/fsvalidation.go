@@ -23,5 +23,5 @@ func GetValidatedFullPath(filePath string) string {
 // Writes the entrypoint command to an executable file
 func WriteScript(filePath string, command string) {
 	fmt.Println("Writing output script to '" + filePath + "'")
-	ioutil.WriteFile(filePath, []byte(command), 755)
+	ioutil.WriteFile(filePath, []byte(command), 0755)
 }

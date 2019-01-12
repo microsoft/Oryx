@@ -67,7 +67,7 @@ function test-repo () {
         --env PORT=${container_port} \
         --env-file run.env \
         "$RUN_IMAGE" \
-        sh -c "cd /app && oryx && chmod 0755 run.sh && /app/run.sh" 
+        sh -c "cd /app && oryx && /app/run.sh" 
 
     if [[ "$rm_buildenv" == "true" ]]; then rm build.env; fi
     if [[ "$rm_runenv" == "true" ]]; then rm run.env; fi
