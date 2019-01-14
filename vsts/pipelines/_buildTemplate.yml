@@ -78,13 +78,6 @@ steps:
     overWrite: true
   condition: true
 
-- task: PublishTestResults@2
-  inputs:
-    testRunner: 'xUnit'
-    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
-    mergeTestResults: true
-  condition: true
-
 - task: Docker@0
   displayName: 'Push Build image to DockerHub'
   inputs:
@@ -143,6 +136,13 @@ steps:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'xUnit'
+    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
+    mergeTestResults: true
+  condition: true
 
 - task: ShellScript@2
   displayName: 'Clean up docker artifacts'
