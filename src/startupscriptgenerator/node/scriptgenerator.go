@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
 package main
 
 import (
@@ -5,8 +10,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"startupscriptgenerator/common"
+	"strings"
 )
 
 type NodeStartupScriptGenerator struct {
@@ -78,7 +83,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		commandSource = "User"
 		logger.LogInformation("User-supplied startup command: '%s'", gen.UserStartupCommand)
 	}
-	
+
 	scriptBuilder.WriteString(startupCommand + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
@@ -101,7 +106,7 @@ func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath str
 
 	startupFileCommand := ""
 	filesToSearch := []string{"bin/www", "server.js", "app.js", "index.js", "hostingstart.js"}
-	
+
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(gen.SourcePath, file)
 		if _, err := os.Stat(fullPath); !os.IsNotExist(err) {

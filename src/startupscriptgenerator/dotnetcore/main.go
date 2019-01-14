@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
 package main
 
 import (
@@ -38,10 +43,10 @@ func main() {
 	}
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
-		SourcePath:         	fullSourcePath,
-		PublishedOutputPath:	fullPublishedOutputPath,
-		UserStartupCommand: 	*userStartupCommandPtr,
-		DefaultAppFilePath:		fullDefaultAppFilePath,
+		SourcePath:          fullSourcePath,
+		PublishedOutputPath: fullPublishedOutputPath,
+		UserStartupCommand:  *userStartupCommandPtr,
+		DefaultAppFilePath:  fullDefaultAppFilePath,
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()

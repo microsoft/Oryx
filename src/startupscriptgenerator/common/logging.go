@@ -1,30 +1,36 @@
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
 package common
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"time"
+
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts"
 )
 
 const SHUTDOWN_CLOSE_TIMEOUT time.Duration = 3 * time.Second
-const SHUTDOWN_EXIT_TIMEOUT time.Duration  = 6 * time.Second
+const SHUTDOWN_EXIT_TIMEOUT time.Duration = 6 * time.Second
 const APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME string = "ORYX_AI_INSTRUMENTATION_KEY"
 const APP_SERVICE_APP_NAME_ENV_VAR_NAME string = "APPSETTING_WEBSITE_SITE_NAME"
 
 type Logger struct {
-	AiClient	appinsights.TelemetryClient
-	LoggerName	string
-	AppName		string
+	AiClient   appinsights.TelemetryClient
+	LoggerName string
+	AppName    string
 }
 
 func GetLogger(name string) *Logger {
 	key := os.Getenv(APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME)
 	logger := Logger{
-		AiClient:	appinsights.NewTelemetryClient(key),
-		LoggerName:	name,
-		AppName:	os.Getenv(APP_SERVICE_APP_NAME_ENV_VAR_NAME),
+		AiClient:   appinsights.NewTelemetryClient(key),
+		LoggerName: name,
+		AppName:    os.Getenv(APP_SERVICE_APP_NAME_ENV_VAR_NAME),
 	}
 	return &logger
 }
@@ -75,14 +81,14 @@ func (logger *Logger) Shutdown() {
 	select {
 	case <-logger.AiClient.Channel().Close(SHUTDOWN_CLOSE_TIMEOUT):
 		// Two second timeout for retries.
-		
+
 		// If we got here, then all telemetry was submitted
 		// successfully, and we can proceed to exiting.
 	case <-time.After(SHUTDOWN_EXIT_TIMEOUT):
 		// Five second absolute timeout.  This covers any
 		// previous telemetry submission that may not have
 		// completed before Close was called.
-		
+
 		// There are a number of reasons we could have
 		// reached here.  We gave it a go, but telemetry
 		// submission failed somewhere.  Perhaps old events
