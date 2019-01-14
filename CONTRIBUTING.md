@@ -87,6 +87,11 @@ The following are required to run and test this project locally.
 - go 1.11+ (for startup script generator)
 - docker v18.06.1-ce
 
+#### Additional integration test prerequisites
+- Azure CLI.
+- kubectl. Can be installed using Azure CLI: `az aks install-cli`
+- Credentials to an Azure Kubernetes Service cluster. To fetch: `az aks get-credentials -g <resource group> -n <cluster>`
+
 # Go (Golang)
 
 The startup script generator is written in Go to reduce storage space

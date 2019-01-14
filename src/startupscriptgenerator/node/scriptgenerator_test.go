@@ -27,7 +27,7 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	// Output:
 	// #!/bin/sh
 	//
-	// # Enter the source directory do make sure the  script runs where the user expects
+	// # Enter the source directory to make sure the script runs where the user expects
 	// cd output
 	// abc
 }

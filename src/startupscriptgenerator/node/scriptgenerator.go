@@ -42,7 +42,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
-	scriptBuilder.WriteString("\n# Enter the source directory do make sure the  script runs where the user expects\n")
+	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 
 	commandSource := ""
