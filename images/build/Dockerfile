@@ -116,7 +116,7 @@ RUN set -ex \
         fi; \
     done
 RUN set -ex \
- && YARN_VERSION=1.12.3 \
+ && YARN_VERSION=1.13.0 \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
  && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
     gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
@@ -169,10 +169,10 @@ RUN set -ex \
  && ln -s 6.4.1 /opt/npm/6.4 \
  && ln -s 6.4 /opt/npm/6
 RUN set -ex \
- && ln -s 1.12.3 /opt/yarn/stable \
- && ln -s 1.12.3 /opt/yarn/latest \
- && ln -s 1.12.3 /opt/yarn/1.12 \
- && ln -s 1.12 /opt/yarn/1
+ && ln -s 1.13.0 /opt/yarn/stable \
+ && ln -s 1.13.0 /opt/yarn/latest \
+ && ln -s 1.13.0 /opt/yarn/1.13 \
+ && ln -s 1.13 /opt/yarn/1
 RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/nodejs/lts/bin/* /links \
