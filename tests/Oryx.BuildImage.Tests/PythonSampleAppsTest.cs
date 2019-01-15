@@ -889,6 +889,7 @@ namespace Oryx.BuildImage.Tests
                 });
 
             // Assert
+
             RunAsserts(
                 () =>
                 {
