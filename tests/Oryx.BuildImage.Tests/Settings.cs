@@ -3,11 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Runtime.InteropServices;
+
 namespace Oryx.BuildImage.Tests
 {
-    internal class Settings
+    internal static class Settings
     {
-        public const string BuildImageName = "oryxdevms/build:latest";
+        public const string BuildImageName = "oryxtests/build:latest";
 
         public const string Python27Version = "2.7.15";
         public const string Python35Version = "3.5.6";
@@ -17,5 +19,7 @@ namespace Oryx.BuildImage.Tests
         public const string MySqlDbImageName = "mysql/mysql-server:5.7";
         public const string PostgresDbImageName = "postgres";
         public const string MicrosoftSQLServerImageName = "microsoft/mssql-server-linux:2017-CU12";
+
+        public static readonly OSPlatform LinuxOS = OSPlatform.Create("LINUX");
     }
 }

@@ -13,7 +13,7 @@ source $REPO_DIR/build/__variables.sh
 echo
 echo Pulling docker images required for running tests against databases ...
 docker pull mysql/mysql-server:5.7
-docker pull postgres
+docker pull postgres:9.5
 docker pull microsoft/mssql-server-linux:2017-CU12
 
 echo

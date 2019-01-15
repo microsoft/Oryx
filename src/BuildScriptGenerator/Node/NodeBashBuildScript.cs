@@ -75,23 +75,16 @@ source /usr/local/bin/benv ");
             
             #line default
             #line hidden
-            this.Write("\r\necho \"Executing pre-build script ...\"\r\nchmod +x \"");
+            this.Write("\r\necho \"Executing pre-build script ...\"\r\n\"");
             
             #line 43 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
             
             #line default
             #line hidden
-            this.Write("\"\r\n\"");
-            
-            #line 44 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
-            
-            #line default
-            #line hidden
             this.Write("\"\r\n");
             
-            #line 45 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 44 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	}
 
@@ -100,21 +93,21 @@ source /usr/local/bin/benv ");
             #line hidden
             this.Write("\r\necho Installing packages ...\r\ncd \"$SOURCE_DIR\"\r\necho\r\necho \"Running \'");
             
-            #line 52 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 51 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
             this.Write("\' ...\"\r\necho\r\n");
             
-            #line 54 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 53 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
             this.Write("\r\n\r\n");
             
-            #line 56 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 55 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(NpmRunBuildCommand)) {
 
@@ -123,14 +116,14 @@ source /usr/local/bin/benv ");
             #line hidden
             this.Write("\r\n");
             
-            #line 60 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 59 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildCommand));
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 61 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 60 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	}
 
@@ -138,7 +131,7 @@ source /usr/local/bin/benv ");
             #line default
             #line hidden
             
-            #line 64 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 63 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(NpmRunBuildAzureCommand)) {
 
@@ -147,14 +140,14 @@ source /usr/local/bin/benv ");
             #line hidden
             this.Write("\r\n");
             
-            #line 68 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 67 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildAzureCommand));
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 69 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 68 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	}
 
@@ -182,30 +175,23 @@ then
 fi
 ");
             
-            #line 91 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 90 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
             
             #line default
             #line hidden
-            this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\nchmod +x \"");
+            this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\n\"");
             
-            #line 97 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
-            
-            #line default
-            #line hidden
-            this.Write("\"\r\n\"");
-            
-            #line 98 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 96 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 99 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
+            #line 97 "C:\oryx\src\BuildScriptGenerator\Node\NodeBashBuildScript.tt"
 
 	}
 

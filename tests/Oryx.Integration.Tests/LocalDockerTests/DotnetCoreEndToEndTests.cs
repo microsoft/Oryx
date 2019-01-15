@@ -157,7 +157,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             string appOutputDir = null;
             if (publishToDifferentOutputDirectory)
             {
-                appOutputDir = $"{appDir}-output";
+                appOutputDir = $"/tmp/{appDir}-output";
             }
 
             var command = $"oryx -sourcePath {appDir} -output {startupFilePath}";

@@ -45,7 +45,6 @@ cd $SOURCE_DIR
 #>
 
 echo Executing pre-build script '<#= PreBuildScriptPath #>' ...
-chmod +x "<#= PreBuildScriptPath #>"
 "<#= PreBuildScriptPath #>"
 <#
 	}
@@ -77,7 +76,6 @@ dotnet publish -c Release -o "$outputDir"
 #>
 
 echo Executing post-build script '<#= PostBuildScriptPath #>' ...
-chmod +x "<#= PostBuildScriptPath #>"
 "<#= PostBuildScriptPath #>"
 <#
 	}

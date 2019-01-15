@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Oryx.Common.Utilities;
 using Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,7 +33,7 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/webfrontend-output";
+            var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -64,7 +66,7 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/webfrontend-output";
+            var appOutputDir = "/tmp/webfrontend-output";
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 // Add a test sub-directory with a file
@@ -104,7 +106,7 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var nestedOutputDir = "/output/subdir1";
+            var nestedOutputDir = "/tmp/output/subdir1";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
@@ -137,7 +139,7 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/output";
+            var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
                 // Pre-populate the output directory with content
                 .CreateDirectory(appOutputDir)
@@ -178,7 +180,7 @@ namespace Oryx.BuildImage.Tests
             // Here 'createServerFoooo' is a non-existing function in 'http' library
             var serverJsWithErrors = @"var http = require(""http""); http.createServerFoooo();";
             var appDir = "/app";
-            var appOutputDir = "/app-output";
+            var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appDir)
                 .CreateFile($"{appDir}/server.js", serverJsWithErrors)
@@ -213,7 +215,7 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/webfrontend-output";
+            var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l nodejs --language-version 8.2.1")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -246,8 +248,8 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/webfrontend-output";
-            var generatedScript = "/build.sh";
+            var appOutputDir = "/tmp/webfrontend-output";
+            var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} > {generatedScript}")
@@ -284,8 +286,8 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/webfrontend-output";
-            var generatedScript = "/build.sh";
+            var appOutputDir = "/tmp/webfrontend-output";
+            var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 .AddScriptCommand($"{appDir} -l nodejs --language-version 8.2.1 > {generatedScript}")
@@ -322,8 +324,8 @@ namespace Oryx.BuildImage.Tests
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
             var appDir = volume.ContainerDir;
-            var intermediateDir = $"/webfrontend-intermediate";
-            var appOutputDir = "/webfrontend-output";
+            var intermediateDir = "/tmp/app-intermediate";
+            var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {intermediateDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -441,6 +443,15 @@ namespace Oryx.BuildImage.Tests
                 sw.WriteLine("echo \"Post-build script: $node\"");
                 sw.WriteLine("echo \"Post-build script: $npm\"");
             }
+            if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
+            {
+                ProcessHelper.RunProcess(
+                    "chmod",
+                    new[] { "-R", "777", scriptsDir.FullName },
+                    workingDirectory: null,
+                    waitTimeForExit: null);
+            }
+
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -l nodejs --language-version 6")

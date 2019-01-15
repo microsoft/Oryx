@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+    #line 1 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class DotnetCoreBashBuildScript : DotnetCoreBashBuildScriptBase
     {
@@ -55,7 +55,7 @@ if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
 then
 	outputDir=""$DESTINATION_DIR/");
             
-            #line 30 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 30 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PublishDirectory));
             
             #line default
@@ -64,14 +64,14 @@ then
                     " $SOURCE_DIR\"\r\necho \"Destination directory: $outputDir\"\r\n\r\nsource /usr/local/bin" +
                     "/benv ");
             
-            #line 39 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 39 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
             
             #line default
             #line hidden
             this.Write("\r\n\r\ncd $SOURCE_DIR\r\n\r\n");
             
-            #line 43 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 43 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
 
@@ -80,28 +80,21 @@ then
             #line hidden
             this.Write("\r\necho Executing pre-build script \'");
             
-            #line 47 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 47 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
             
             #line default
             #line hidden
-            this.Write("\' ...\r\nchmod +x \"");
+            this.Write("\' ...\r\n\"");
             
-            #line 48 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
-            
-            #line default
-            #line hidden
-            this.Write("\"\r\n\"");
-            
-            #line 49 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 48 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 50 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 49 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
 
 	}
 
@@ -132,7 +125,7 @@ dotnet publish -c Release -o ""$outputDir""
 
 ");
             
-            #line 75 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 74 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
@@ -141,28 +134,21 @@ dotnet publish -c Release -o ""$outputDir""
             #line hidden
             this.Write("\r\necho Executing post-build script \'");
             
-            #line 79 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 78 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
-            this.Write("\' ...\r\nchmod +x \"");
+            this.Write("\' ...\r\n\"");
             
-            #line 80 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
-            
-            #line default
-            #line hidden
-            this.Write("\"\r\n\"");
-            
-            #line 81 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 79 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 82 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 80 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
 
 	}
 

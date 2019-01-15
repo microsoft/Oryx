@@ -12,6 +12,7 @@ declare -r BUILD_RUNTIMEIMAGES_USING_NOCACHE="$BUILD_RUNTIMEIMAGES_USING_NOCACHE
 
 declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$__REPO_DIR/"
 declare -r BUILD_IMAGES_DOCKERFILE="$__REPO_DIR/images/build/Dockerfile"
+declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$__REPO_DIR/tests/images/build/Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$__REPO_DIR/images/runtime"
 declare -r SOURCES_SRC_DIR="$__REPO_DIR/src"
 declare -r TESTS_SRC_DIR="$__REPO_DIR/tests"
@@ -23,6 +24,7 @@ declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-a
 declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr.txt"
 
 declare -r DOCKER_BUILD_IMAGES_REPO="oryxdevms/build"
+declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO="oryxdevms"
 declare -r ACR_BUILD_IMAGES_REPO="oryxdevmcr.azurecr.io/public/oryx/build"
 declare -r ACR_RUNTIME_IMAGES_REPO="oryxdevmcr.azurecr.io/public/oryx"

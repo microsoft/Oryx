@@ -6,6 +6,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using Microsoft.Oryx.Common.Utilities;
 
 namespace Oryx.Tests.Common
 {
@@ -79,6 +81,19 @@ namespace Oryx.Tests.Common
                 Guid.NewGuid().ToString("N"),
                 dirInfo.Name);
             CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
+
+            // Grant permissions to the folder we just copied on the host machine. The permisions here allow the
+            // user(a non-root user) in the container to read/write/execute files.
+            var linuxOS = OSPlatform.Create("LINUX");
+            if (RuntimeInformation.IsOSPlatform(linuxOS))
+            {
+                ProcessHelper.RunProcess(
+                    "chmod",
+                    new[] { "-R", "777", writableHostDir },
+                    workingDirectory: null,
+                    waitTimeForExit: null);
+            }
+
             var containerDirName = dirInfo.Name;
 
             // Note: Path.Combine is the ideal solution here but this would fail when we run the

@@ -7,7 +7,7 @@ namespace Oryx.Tests.Common
 {
     public class Settings
     {
-        public const string BuildImageName = "oryxdevms/build:latest";
+        public const string BuildImageName = "oryxtests/build:latest";
 
         public const string MySqlDbImageName = "mysql/mysql-server:5.7";
         public const string PostgresDbImageName = "postgres";

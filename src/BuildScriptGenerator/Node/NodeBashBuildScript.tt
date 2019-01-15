@@ -40,7 +40,6 @@ source /usr/local/bin/benv <#= BenvArgs #>
 #>
 
 echo "Executing pre-build script ..."
-chmod +x "<#= PreBuildScriptPath #>"
 "<#= PreBuildScriptPath #>"
 <#
 	}
@@ -94,7 +93,6 @@ fi
 
 echo
 echo "Executing post-build script ..."
-chmod +x "<#= PostBuildScriptPath #>"
 "<#= PostBuildScriptPath #>"
 <#
 	}

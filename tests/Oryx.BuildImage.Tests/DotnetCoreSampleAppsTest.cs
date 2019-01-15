@@ -5,7 +5,9 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.Common.Utilities;
 using Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -32,7 +34,7 @@ namespace Oryx.BuildImage.Tests
             var appName = "NetCoreApp11WebApp";
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/NetCoreApp11WebApp-output";
+            var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
@@ -101,7 +103,7 @@ namespace Oryx.BuildImage.Tests
             var appName = "NetCoreApp21WebApp";
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/NetCoreApp21WebApp-output";
+            var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
@@ -170,7 +172,7 @@ namespace Oryx.BuildImage.Tests
             var appName = "NetCoreApp22WebApp";
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/NetCoreApp22WebApp-output";
+            var appOutputDir = "/tmp/NetCoreApp22WebApp-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
@@ -257,6 +259,15 @@ namespace Oryx.BuildImage.Tests
                 sw.WriteLine("#!/bin/bash");
                 sw.WriteLine("echo \"Post-build script: $dotnet\"");
             }
+            if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
+            {
+                ProcessHelper.RunProcess(
+                    "chmod",
+                    new[] { "-R", "777", scriptsDir.FullName },
+                    workingDirectory: null,
+                    waitTimeForExit: null);
+            }
+
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -l dotnet --language-version 2.1")

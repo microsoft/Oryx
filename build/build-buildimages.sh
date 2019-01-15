@@ -61,6 +61,11 @@ fi
 echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
 docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $args -f "$BUILD_IMAGES_DOCKERFILE" .
 
+echo
+echo Building a base image for tests ...
+# Do not write this image tag to the artifacts file as we do not intend to push it
+docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+
 # Retag build image with acr tags
 docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:latest"
 

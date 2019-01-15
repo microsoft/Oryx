@@ -47,9 +47,7 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
 
-RUN mkdir /var/nuget \
-    && chmod a+rw /var/nuget
-
+RUN mkdir /var/nuget
 COPY images/build/dotnetcore-install.sh /
 RUN chmod +x /dotnetcore-install.sh
 
@@ -280,6 +278,9 @@ ENV NUGET_XMLDOC_MODE=skip \
 	NUGET_PACKAGES=/var/nuget
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
+# Grant read-write permissions to the nuget folder so that dotnet restore
+# can write into it.
+RUN chmod a+rw /var/nuget
 RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 
 # Copy NodeJs, NPM and Yarn related content
