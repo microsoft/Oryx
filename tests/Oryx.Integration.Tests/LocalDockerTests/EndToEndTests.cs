@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -209,6 +210,46 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
                     Assert.Contains("Welcome to Express", data);
+                });
+        }
+
+        [Fact]
+        public async Task Node_SoundCloudNgrxApp()
+        {
+            // Arrange
+            var nodeVersion = "8.11";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "soundcloud-ngrx");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var port = 8000;
+            var portMapping = $"{port}:3000";
+            var startupFile = "./run.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand($"npm rebuild node-sass") //remove this once workitem 762584 is done
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var response = await _httpClient.GetAsync($"http://localhost:{port}/");
+                    Assert.True(response.IsSuccessStatusCode);
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    Assert.Contains("<title>SoundCloud • Angular2 NgRx</title>", data);
                 });
         }
 
