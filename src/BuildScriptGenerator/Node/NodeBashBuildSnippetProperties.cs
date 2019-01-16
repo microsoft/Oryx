@@ -8,29 +8,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// <summary>
     /// Build script template for NodeJs in Bash.
     /// </summary>
-    public partial class NodeBashBuildScript
+    public partial class NodeBashBuildSnippet
     {
-        public NodeBashBuildScript(
-            string preBuildScriptPath,
-            string benvArgs,
+        public NodeBashBuildSnippet(
             string packageInstallCommand,
             string runBuildCommand,
-            string runBuildAzureCommand,
-            string postBuildScriptPath)
+            string runBuildAzureCommand)
         {
-            BenvArgs = benvArgs;
-            PreBuildScriptPath = preBuildScriptPath;
-            PostBuildScriptPath = postBuildScriptPath;
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
             NpmRunBuildAzureCommand = runBuildAzureCommand;
         }
-
-        public string PreBuildScriptPath { get; set; }
-
-        public string BenvArgs { get; set; }
-
-        public string PostBuildScriptPath { get; set; }
 
         public string PackageInstallCommand { get; set; }
 

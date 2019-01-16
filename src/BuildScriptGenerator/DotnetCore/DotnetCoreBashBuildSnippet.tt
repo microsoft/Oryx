@@ -1,0 +1,26 @@
+<#@ template language="C#" #>
+if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
+then
+	outputDir="$DESTINATION_DIR/<#= PublishDirectory #>"
+	if [ -d "$outputDir" ]
+	then
+		echo
+		echo "Destination directory '$outputDir' already exists. Deleting it ..."
+		rm -rf "$outputDir"
+	fi
+else 
+	outputDir="$DESTINATION_DIR"
+fi
+
+echo
+dotnetCoreVersion=$(dotnet --version)
+echo ".NET Core Version: $dotnetCoreVersion"
+
+echo
+echo Restoring packages ...
+echo
+dotnet restore
+echo
+echo "Publishing to directory $outputDir ..."
+echo
+dotnet publish -c Release -o "$outputDir"

@@ -2,10 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -23,14 +19,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnumerable<ILanguageDetector> _languageDetectors;
         private readonly IEnumerable<ILanguageScriptGenerator> _allScriptGenerators;
         private readonly ILogger<DefaultScriptGenerator> _logger;
+        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
 
         public DefaultScriptGenerator(
             IEnumerable<ILanguageDetector> languageDetectors,
             IEnumerable<ILanguageScriptGenerator> scriptGenerators,
+            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DefaultScriptGenerator> logger)
         {
             _languageDetectors = languageDetectors;
             _allScriptGenerators = scriptGenerators;
+            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
@@ -45,12 +44,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return false;
             }
 
+            var snippets = new List<BuildScriptSnippet>();
             foreach (var scriptGenerator in scriptGenerators)
             {
-                if (scriptGenerator.TryGenerateBashScript(context, out script))
+                var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+                if (snippet != null)
                 {
                     _logger.LogDebug("Script generator {scriptGenType} was used", scriptGenerator.GetType());
-                    return true;
+                    snippets.Add(snippet);
                 }
                 else
                 {
@@ -58,7 +59,42 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
+            if (snippets.Any())
+            {
+                string benvArgs = GetBenvArgs(snippets);
+                _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
+                var buildScript = new BaseBashBuildScript()
+                {
+                    BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
+                    BenvArgs = benvArgs,
+                    PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
+                    PostBuildScriptPath = environmentSettings?.PostBuildScriptPath
+                };
+                script = buildScript.TransformText();
+                return true;
+            }
+
             return false;
+        }
+
+        private static string GetBenvArgs(List<BuildScriptSnippet> snippets)
+        {
+            // Build a dictionary to make sure we only pass one version for each tool to benv
+            var benvArgsMap = new Dictionary<string, string>();
+            foreach (var snippet in snippets)
+            {
+                if (snippet.RequiredToolsVersion != null)
+                {
+                    foreach (var tool in snippet.RequiredToolsVersion.Keys)
+                    {
+                        benvArgsMap[tool] = snippet.RequiredToolsVersion[tool];
+                    }
+                }
+            }
+
+            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
+            var benvArgs = string.Join(' ', listOfBenvArgs);
+            return benvArgs;
         }
 
         private IEnumerable<ILanguageScriptGenerator> GetScriptGeneratorsByLanguageNameAndVersion(

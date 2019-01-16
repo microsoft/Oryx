@@ -14,17 +14,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
         private readonly DotnetCoreScriptGeneratorOptions _scriptGeneratorOptions;
         private readonly IDotnetCoreVersionProvider _versionProvider;
         private readonly ILogger<DotnetCoreScriptGenerator> _logger;
-        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
 
         public DotnetCoreScriptGenerator(
             IOptions<DotnetCoreScriptGeneratorOptions> scriptGeneratorOptions,
             IDotnetCoreVersionProvider versionProvider,
-            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotnetCoreScriptGenerator> logger)
         {
             _scriptGeneratorOptions = scriptGeneratorOptions.Value;
             _versionProvider = versionProvider;
-            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
@@ -32,17 +29,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 
         public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedVersions;
 
-        public bool TryGenerateBashScript(ScriptGeneratorContext scriptGeneratorContext, out string script)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
         {
-            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
+            var script = new DotnetCoreBashBuildSnippet(
+                publishDirectory: DotnetCoreConstants.OryxOutputPublishDirectory).TransformText();
 
-            script = new DotnetCoreBashBuildScript(
-                preBuildScriptPath: environmentSettings?.PreBuildScriptPath,
-                benvArgs: $"dotnet={scriptGeneratorContext.LanguageVersion}",
-                publishDirectory: DotnetCoreConstants.OryxOutputPublishDirectory,
-                postBuildScriptPath: environmentSettings?.PostBuildScriptPath).TransformText();
-
-            return true;
+            return new BuildScriptSnippet()
+            {
+                BashBuildScriptSnippet = script,
+                RequiredToolsVersion = new Dictionary<string, string>() { { "dotnet", scriptGeneratorContext.LanguageVersion } }
+            };
         }
     }
 }

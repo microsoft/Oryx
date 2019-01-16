@@ -76,7 +76,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Equal(scriptContent, testConsole.StdOutput);
+            Assert.Contains(scriptContent, testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
         }
 
@@ -97,7 +97,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Equal(expected, testConsole.StdOutput);
+            Assert.Contains(expected, testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
         }
 
@@ -168,8 +168,9 @@ namespace BuildScriptGeneratorCli.Tests
 
             public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
 
-            public bool TryGenerateBashScript(ScriptGeneratorContext scriptGeneratorContext, out string script)
+            public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
             {
+                string script;
                 if (string.IsNullOrEmpty(_scriptContent))
                 {
                     script = "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
@@ -178,7 +179,10 @@ namespace BuildScriptGeneratorCli.Tests
                 {
                     script = _scriptContent;
                 }
-                return true;
+                return new BuildScriptSnippet()
+                {
+                    BashBuildScriptSnippet = script
+                };
             }
         }
 

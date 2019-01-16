@@ -1,48 +1,4 @@
 <#@ template language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
-#!/bin/bash
-set -e
-
-SOURCE_DIR=$1
-DESTINATION_DIR=$2
-
-if [ ! -d "$SOURCE_DIR" ]; then
-    echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
-    exit 1
-fi
-
-if [ -z "$DESTINATION_DIR" ]
-then
-    DESTINATION_DIR="$SOURCE_DIR"
-fi
-
-# Get full file paths to source and destination directories
-cd $SOURCE_DIR
-SOURCE_DIR=$(pwd -P)
-
-if [ -d "$DESTINATION_DIR" ]
-then
-    cd $DESTINATION_DIR
-    DESTINATION_DIR=$(pwd -P)
-fi
-
-echo "Source directory     : $SOURCE_DIR"
-echo "Destination directory: $DESTINATION_DIR"
-
-source /usr/local/bin/benv <#= BenvArgs #>
-<#
-	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
-#>
-
-echo "Executing pre-build script ..."
-"<#= PreBuildScriptPath #>"
-<#
-	}
-#>
-
 echo "Python Version: $python"
 cd "$SOURCE_DIR"
 
@@ -108,35 +64,3 @@ then
 		echo "'collectstatic' exited with exit code $EXIT_CODE."
 	fi
 fi
-
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
-then
-	if [ -d "$DESTINATION_DIR" ]
-	then
-		echo
-		echo Destination directory already exists. Deleting it ...
-		rm -rf "$DESTINATION_DIR"
-	fi
-
-	appTempDir=`mktemp -d`
-	cd "$SOURCE_DIR"
-	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-	cp -rf `ls -A | grep -v ".git"` "$appTempDir"
-	mkdir -p "$DESTINATION_DIR"
-	cd "$appTempDir"
-	echo "Copying files to destination, '$DESTINATION_DIR'"
-	cp -rf . "$DESTINATION_DIR"
-fi
-<#
-	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
-#>
-
-echo
-echo "Executing post-build script ..."
-"<#= PostBuildScriptPath #>"
-<#
-	}
-#>
-
-echo
-echo Done.

@@ -7,20 +7,17 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Microsoft.Oryx.BuildScriptGenerator.Python
+namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    using System.Linq;
-    using System.Text;
-    using System.Collections.Generic;
     using System;
     
     /// <summary>
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+    #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
-    public partial class PythonBashBuildScript : PythonBashBuildScriptBase
+    public partial class NodeBashBuildSnippet : NodeBashBuildSnippetBase
     {
 #line hidden
         /// <summary>
@@ -28,221 +25,71 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"#!/bin/bash
-set -e
-
-SOURCE_DIR=$1
-DESTINATION_DIR=$2
-
-if [ ! -d ""$SOURCE_DIR"" ]; then
-    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
-    exit 1
-fi
-
-if [ -z ""$DESTINATION_DIR"" ]
-then
-    DESTINATION_DIR=""$SOURCE_DIR""
-fi
-
-# Get full file paths to source and destination directories
-cd $SOURCE_DIR
-SOURCE_DIR=$(pwd -P)
-
-if [ -d ""$DESTINATION_DIR"" ]
-then
-    cd $DESTINATION_DIR
-    DESTINATION_DIR=$(pwd -P)
-fi
-
-echo ""Source directory     : $SOURCE_DIR""
-echo ""Destination directory: $DESTINATION_DIR""
-
-source /usr/local/bin/benv ");
+            this.Write("\necho Installing packages ...\ncd \"$SOURCE_DIR\"\necho\necho \"Running \'");
             
-            #line 35 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
-            this.Write("\r\n");
+            this.Write("\' ...\"\necho\n");
             
-            #line 36 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
+            
+            #line default
+            #line hidden
+            this.Write("\n\n");
+            
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
-	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildCommand)) {
 
             
             #line default
             #line hidden
-            this.Write("\r\necho \"Executing pre-build script ...\"\r\n\"");
+            this.Write("\n\n");
             
-            #line 41 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildCommand));
             
             #line default
             #line hidden
-            this.Write("\"\r\n");
+            this.Write("\n");
             
-            #line 42 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write("\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
+            this.Write("\n");
             
-            #line 49 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
-	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
-
-            
-            #line default
-            #line hidden
-            this.Write("VIRTUALENVIRONMENTNAME=");
-            
-            #line 52 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
-            
-            #line default
-            #line hidden
-            this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
-            
-            #line 53 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
-            
-            #line default
-            #line hidden
-            this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
-            
-            #line 54 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
-            
-            #line default
-            #line hidden
-            this.Write(@"
-
-echo ""Python Virtual Environment: $VIRTUALENVIRONMENTNAME""
-
-echo Creating virtual environment ...
-$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
-
-echo Activating virtual environment ...
-source $VIRTUALENVIRONMENTNAME/bin/activate
-
-pip install --upgrade pip
-pip install --prefer-binary -r requirements.txt
-
-# For virtual environment, we use the actual 'python' alias that as setup by the venv,
-python_bin=python
-");
-            
-            #line 69 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-
-	}
-	else {
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildAzureCommand)) {
 
             
             #line default
             #line hidden
-            this.Write("# Indent the output as pip install prints the \'Successfully Installed...\' message" +
-                    " and then waits which can\r\n# confuse an end user.\r\necho Running pip install ...\r" +
-                    "\n$pip install --prefer-binary -r requirements.txt --target=\"");
+            this.Write("\n\n");
             
-            #line 76 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildAzureCommand));
             
             #line default
             #line hidden
-            this.Write(@""" --upgrade | sed 's/^/   /'
-pipInstallExitCode=${PIPESTATUS[0]}
-if [[ $pipInstallExitCode != 0 ]]
-then
-	exit $pipInstallExitCode
-fi
-
-# We need to use the python binary selected by benv
-python_bin=$python
-
-# Detect the location of the site-packages to add the .pth file
-# For the local site package, only major and minor versions are provided, so we fetch it again
-SITE_PACKAGE_PYTHON_VERSION=$($python -c ""import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))"")
-SITE_PACKAGES_PATH=$HOME""/.local/lib/python""$SITE_PACKAGE_PYTHON_VERSION""/site-packages""
-mkdir -p $SITE_PACKAGES_PATH
-# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
-APP_PACKAGES_PATH=$(pwd)""/");
+            this.Write("\n");
             
-            #line 92 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
-            
-            #line default
-            #line hidden
-            this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
-            
-            #line 95 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write(@"echo Done running pip install.
-
-if [ -e ""$SOURCE_DIR/manage.py"" ]
-then
-	if grep -iq ""Django"" ""$SOURCE_DIR/requirements.txt""
-	then
-		echo
-		echo Content in source directory is a Django app
-		echo Running 'collectstatic' ...
-		$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
-		echo ""'collectstatic' exited with exit code $EXIT_CODE.""
-	fi
-fi
-
-if [ ""$SOURCE_DIR"" != ""$DESTINATION_DIR"" ]
-then
-	if [ -d ""$DESTINATION_DIR"" ]
-	then
-		echo
-		echo Destination directory already exists. Deleting it ...
-		rm -rf ""$DESTINATION_DIR""
-	fi
-
-	appTempDir=`mktemp -d`
-	cd ""$SOURCE_DIR""
-	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-	cp -rf `ls -A | grep -v "".git""` ""$appTempDir""
-	mkdir -p ""$DESTINATION_DIR""
-	cd ""$appTempDir""
-	echo ""Copying files to destination, '$DESTINATION_DIR'""
-	cp -rf . ""$DESTINATION_DIR""
-fi
-");
-            
-            #line 130 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-
-	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
-
-            
-            #line default
-            #line hidden
-            this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\n\"");
-            
-            #line 136 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
-            
-            #line default
-            #line hidden
-            this.Write("\"\r\n");
-            
-            #line 137 "C:\oryx\src\BuildScriptGenerator\Python\PythonBashBuildScript.tt"
-
-	}
-
-            
-            #line default
-            #line hidden
-            this.Write("\r\necho\r\necho Done.");
+            this.Write("\n");
             return this.GenerationEnvironment.ToString();
         }
     }
@@ -254,7 +101,7 @@ fi
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
-    public class PythonBashBuildScriptBase
+    public class NodeBashBuildSnippetBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

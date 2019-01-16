@@ -25,18 +25,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
-        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<PythonScriptGenerator> _logger;
 
         public PythonScriptGenerator(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
-            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<PythonScriptGenerator> logger)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
-            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
@@ -44,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
 
-        public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
         {
             if (context.Properties == null ||
                 !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
@@ -96,18 +93,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));
 
-            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
-
-            script = new PythonBashBuildScript(
-                preBuildScriptPath: environmentSettings?.PreBuildScriptPath,
-                benvArgs: $"python={pythonVersion}",
+            var script = new PythonBashBuildSnippet(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
-                packagesDirectory: packageDir,
-                postBuildScriptPath: environmentSettings?.PostBuildScriptPath).TransformText();
+                packagesDirectory: packageDir).TransformText();
 
-            return true;
+            return new BuildScriptSnippet()
+            {
+                BashBuildScriptSnippet = script,
+                RequiredToolsVersion = new Dictionary<string, string> { { "python", pythonVersion } }
+            };
         }
     }
 }

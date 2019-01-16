@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Equal("script-content", generatedScript);
+            Assert.Contains("script-content", generatedScript);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.Equal("1.0.0", context.LanguageVersion);
-            Assert.Equal("script-content", generatedScript);
+            Assert.Contains("script-content", generatedScript);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -237,7 +237,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Act
             var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
 
-            // Assert  
+            // Assert
             Assert.True(detector.DetectInvoked);
             Assert.False(canGenerateScript);
             Assert.Null(generatedScript);
@@ -272,7 +272,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Equal("1.5.5-content", generatedScript);
+            Assert.Contains("1.5.5-content", generatedScript);
             Assert.False(detector.DetectInvoked);
         }
 
@@ -305,7 +305,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Equal("1.1.5-content", generatedScript);
+            Assert.Contains("1.1.5-content", generatedScript);
             Assert.False(detector.DetectInvoked);
         }
 
@@ -338,7 +338,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.True(canGenerateScript);
-            Assert.Equal("script-content", generatedScript);
+            Assert.Contains("script-content", generatedScript);
             Assert.False(detector.DetectInvoked);
         }
 
@@ -351,14 +351,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             ILanguageDetector languageDetector,
             ILanguageScriptGenerator generator)
         {
-            return new DefaultScriptGenerator(new[] { languageDetector }, new[] { generator }, NullLogger<DefaultScriptGenerator>.Instance);
+            return new DefaultScriptGenerator(new[] { languageDetector }, new[] { generator }, new TestEnvironmentSettingsProvider(), NullLogger<DefaultScriptGenerator>.Instance);
         }
 
         private DefaultScriptGenerator CreateDefaultScriptGenerator(
             ILanguageDetector[] languageDetectors,
             ILanguageScriptGenerator[] generators)
         {
-            return new DefaultScriptGenerator(languageDetectors, generators, NullLogger<DefaultScriptGenerator>.Instance);
+            return new DefaultScriptGenerator(languageDetectors, generators, new TestEnvironmentSettingsProvider(), NullLogger<DefaultScriptGenerator>.Instance);
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(
@@ -428,21 +428,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             public IEnumerable<string> SupportedLanguageVersions { get; }
 
-            public bool TryGenerateBashScript(ScriptGeneratorContext scriptGeneratorContext, out string script)
+            public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
             {
-                script = null;
-
                 if (_canGenerateScript.HasValue)
                 {
                     if (_canGenerateScript.Value)
                     {
-                        script = _scriptContent;
+                        return new BuildScriptSnippet()
+                        {
+                            BashBuildScriptSnippet = _scriptContent
+                        };
                     }
-
-                    return _canGenerateScript.Value;
                 }
 
-                return false;
+                return null;
             }
         }
 

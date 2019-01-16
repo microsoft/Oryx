@@ -16,18 +16,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
-        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<NodeScriptGenerator> _logger;
 
         public NodeScriptGenerator(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
-            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<NodeScriptGenerator> logger)
         {
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
-            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
@@ -35,11 +32,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
 
-        public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
         {
-            script = null;
-
-            var benvArgs = $"node={context.LanguageVersion}";
+            var requiredTools = new Dictionary<string, string>() { { "node", context.LanguageVersion } };
 
             var packageJson = GetPackageJsonObject(context.SourceRepo);
             string packageManagerCmd = null;
@@ -55,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var npmVersion = GetNpmVersion(packageJson);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
-                    benvArgs += $" npm={npmVersion}";
+                    requiredTools.Add("npm", npmVersion);
                 }
             }
 
@@ -82,19 +77,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 _logger.LogDependencies(context.Language, context.LanguageVersion, depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
-            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
-
-            _logger.LogDebug("Using benv args: {BenvArgs}", benvArgs);
-
-            script = new NodeBashBuildScript(
-                preBuildScriptPath: environmentSettings?.PreBuildScriptPath,
-                benvArgs: benvArgs,
+            var script = new NodeBashBuildSnippet(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
-                runBuildAzureCommand: runBuildAzureCommand,
-                postBuildScriptPath: environmentSettings?.PostBuildScriptPath).TransformText();
+                runBuildAzureCommand: runBuildAzureCommand).TransformText();
 
-            return true;
+            return new BuildScriptSnippet()
+            {
+                BashBuildScriptSnippet = script,
+                RequiredToolsVersion = requiredTools
+            };
         }
 
         private string GetNpmVersion(dynamic packageJson)

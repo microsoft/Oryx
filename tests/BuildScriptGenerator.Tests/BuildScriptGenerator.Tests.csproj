@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Oryx.Tests.Common\Oryx.Tests.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MultiLanguage\" />
+  </ItemGroup>
+
 </Project>

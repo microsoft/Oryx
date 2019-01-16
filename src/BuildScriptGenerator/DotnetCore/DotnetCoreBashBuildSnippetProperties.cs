@@ -8,26 +8,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     /// <summary>
     /// Build script template for DotnetCore in Bash.
     /// </summary>
-    public partial class DotnetCoreBashBuildScript
+    public partial class DotnetCoreBashBuildSnippet
     {
-        public DotnetCoreBashBuildScript(
-            string preBuildScriptPath,
-            string benvArgs,
-            string publishDirectory,
-            string postBuildScriptPath)
+        public DotnetCoreBashBuildSnippet(
+            string publishDirectory)
         {
-            PreBuildScriptPath = preBuildScriptPath;
-            BenvArgs = benvArgs;
             PublishDirectory = publishDirectory;
-            PostBuildScriptPath = postBuildScriptPath;
         }
 
-        public string PreBuildScriptPath { get; set; }
-
-        public string BenvArgs { get; set; }
-
         public string PublishDirectory { get; set; }
-
-        public string PostBuildScriptPath { get; set; }
     }
 }

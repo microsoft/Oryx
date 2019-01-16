@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     using System;
     
@@ -15,9 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+    #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
-    public partial class DotnetCoreBashBuildScript : DotnetCoreBashBuildScriptBase
+    public partial class PythonBashBuildSnippet : PythonBashBuildSnippetBase
     {
 #line hidden
         /// <summary>
@@ -25,137 +25,116 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"#!/bin/bash
-set -e
-
-SOURCE_DIR=$1
-DESTINATION_DIR=$2
-
-if [ ! -d ""$SOURCE_DIR"" ]; then
-    echo ""Source directory '$SOURCE_DIR' does not exist."" 1>&2
-    exit 1
-fi
-
-if [ -z ""$DESTINATION_DIR"" ]
-then
-    DESTINATION_DIR=""$SOURCE_DIR""
-fi
-
-# Get full file paths to source and destination directories
-cd $SOURCE_DIR
-SOURCE_DIR=$(pwd -P)
-
-if [ -d ""$DESTINATION_DIR"" ]
-then
-    cd $DESTINATION_DIR
-    DESTINATION_DIR=$(pwd -P)
-fi
-
-if [ ""$SOURCE_DIR"" == ""$DESTINATION_DIR"" ]
-then
-	outputDir=""$DESTINATION_DIR/");
+            this.Write("echo \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
             
-            #line 30 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PublishDirectory));
-            
-            #line default
-            #line hidden
-            this.Write("\"\r\nelse \r\n\toutputDir=\"$DESTINATION_DIR\"\r\nfi\r\n\r\necho\r\necho \"Source directory     :" +
-                    " $SOURCE_DIR\"\r\necho \"Destination directory: $outputDir\"\r\n\r\nsource /usr/local/bin" +
-                    "/benv ");
-            
-            #line 39 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n\r\ncd $SOURCE_DIR\r\n\r\n");
-            
-            #line 43 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 5 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
-	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
+	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
 
             
             #line default
             #line hidden
-            this.Write("\r\necho Executing pre-build script \'");
+            this.Write("VIRTUALENVIRONMENTNAME=");
             
-            #line 47 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
-            
-            #line default
-            #line hidden
-            this.Write("\' ...\r\n\"");
-            
-            #line 48 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
+            #line 8 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
-            this.Write("\"\r\n");
+            this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 49 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-
-	}
-
+            #line 9 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
+            
+            #line default
+            #line hidden
+            this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
+            
+            #line 10 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
             #line hidden
             this.Write(@"
-echo
-dotnetCoreVersion=$(dotnet --version)
-echo "".NET Core Version: $dotnetCoreVersion""
 
-echo
-echo Restoring packages ...
-echo
-dotnet restore
+echo ""Python Virtual Environment: $VIRTUALENVIRONMENTNAME""
 
-if [ -d ""$outputDir"" ]
-then
-	echo
-	echo ""Destination directory '$outputDir' already exists. Deleting it ...""
-	rm -rf ""$outputDir""
-fi
+echo Creating virtual environment ...
+$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
 
-echo
-echo ""Publishing to directory $outputDir ...""
-echo
-dotnet publish -c Release -o ""$outputDir""
+echo Activating virtual environment ...
+source $VIRTUALENVIRONMENTNAME/bin/activate
 
+pip install --upgrade pip
+pip install --prefer-binary -r requirements.txt
+
+# For virtual environment, we use the actual 'python' alias that as setup by the venv,
+python_bin=python
 ");
             
-            #line 74 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 25 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
-	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
+	}
+	else {
 
             
             #line default
             #line hidden
-            this.Write("\r\necho Executing post-build script \'");
+            this.Write("# Indent the output as pip install prints the \'Successfully Installed...\' message" +
+                    " and then waits which can\r\n# confuse an end user.\r\necho Running pip install ...\r" +
+                    "\n$pip install --prefer-binary -r requirements.txt --target=\"");
             
-            #line 78 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
-            
-            #line default
-            #line hidden
-            this.Write("\' ...\r\n\"");
-            
-            #line 79 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
+            #line 32 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
-            this.Write("\"\r\n");
+            this.Write(@""" --upgrade | sed 's/^/   /'
+pipInstallExitCode=${PIPESTATUS[0]}
+if [[ $pipInstallExitCode != 0 ]]
+then
+	exit $pipInstallExitCode
+fi
+
+# We need to use the python binary selected by benv
+python_bin=$python
+
+# Detect the location of the site-packages to add the .pth file
+# For the local site package, only major and minor versions are provided, so we fetch it again
+SITE_PACKAGE_PYTHON_VERSION=$($python -c ""import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))"")
+SITE_PACKAGES_PATH=$HOME""/.local/lib/python""$SITE_PACKAGE_PYTHON_VERSION""/site-packages""
+mkdir -p $SITE_PACKAGES_PATH
+# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
+APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 80 "C:\oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildScript.tt"
+            #line 48 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
+            
+            #line 51 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write("\r\necho\r\necho Done.");
+            this.Write(@"echo Done running pip install.
+
+if [ -e ""$SOURCE_DIR/manage.py"" ]
+then
+	if grep -iq ""Django"" ""$SOURCE_DIR/requirements.txt""
+	then
+		echo
+		echo Content in source directory is a Django app
+		echo Running 'collectstatic' ...
+		$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
+		echo ""'collectstatic' exited with exit code $EXIT_CODE.""
+	fi
+fi
+");
             return this.GenerationEnvironment.ToString();
         }
     }
@@ -167,7 +146,7 @@ dotnet publish -c Release -o ""$outputDir""
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
-    public class DotnetCoreBashBuildScriptBase
+    public class PythonBashBuildSnippetBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

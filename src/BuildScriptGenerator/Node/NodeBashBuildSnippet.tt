@@ -1,0 +1,24 @@
+<#@ template language="C#" #>
+echo Installing packages ...
+cd "$SOURCE_DIR"
+echo
+echo "Running '<#= PackageInstallCommand  #>' ..."
+echo
+<#= PackageInstallCommand #>
+
+<#
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildCommand)) {
+#>
+
+<#= NpmRunBuildCommand #>
+<#
+	}
+#>
+<#
+	if (!string.IsNullOrWhiteSpace(NpmRunBuildAzureCommand)) {
+#>
+
+<#= NpmRunBuildAzureCommand #>
+<#
+	}
+#>
