@@ -25,6 +25,7 @@ type PythonStartupScriptGenerator struct {
 
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
+	defer logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
@@ -96,7 +97,6 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogProperties("Finalizing script", map[string]string{"appType": appType, "appModule": appModule, "venv": gen.VirtualEnvironmentName})
 
-	logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
 	return scriptBuilder.String()
 }
 

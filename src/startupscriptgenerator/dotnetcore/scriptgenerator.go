@@ -33,6 +33,7 @@ type propertyGroup struct {
 
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
+	defer logger.Shutdown()
 
 	logger.LogInformation(
 		"Generating script for source at '%s' and published output at '%s'",
@@ -60,11 +61,13 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 			log.Fatal("Could not generate startup script.")
 		}
 	}
+
 	return scriptBuilder.String()
 }
 
 func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string) {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupCommand")
+	defer logger.Shutdown()
 
 	publishOutputDir := gen.PublishedOutputPath
 	if publishOutputDir == "" {

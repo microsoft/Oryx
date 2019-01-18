@@ -37,6 +37,7 @@ type packageJsonScripts struct {
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
+	defer logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
@@ -88,7 +89,6 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
 
-	logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
 	return scriptBuilder.String()
 }
 
