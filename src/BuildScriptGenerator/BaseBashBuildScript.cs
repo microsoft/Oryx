@@ -122,7 +122,7 @@ then
 	appTempDir=`mktemp -d`
 	cd ""$SOURCE_DIR""
 	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-	cp -rf `ls -A | grep -v "".git""` ""$appTempDir""
+	cp -rf `ls -A | grep -v "".git"" || echo .` ""$appTempDir""
 	mkdir -p ""$DESTINATION_DIR""
 	cd ""$appTempDir""
 	echo ""Copying files to destination, '$DESTINATION_DIR'""
