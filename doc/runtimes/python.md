@@ -3,11 +3,12 @@ details on components and configuration of build and run images too.
 
 # Contents
 
-1. [Base Image](#base_image)
-    * [System packages](#system_packages)
+1. [Base Image](#base-image)
+    * [System packages](#system-packages)
 1. [Detect](#detect)
 1. [Build](#build)
-1. [Run](#runtime)
+    * [Package manager](#package-manager)
+1. [Run](#run)
 
 # Base image
 
@@ -39,21 +40,16 @@ The Python toolset is run when the following conditions are met:
 
 The following process is applied for each build.
 
-1. Run custom script if specified in `PRE_BUILD_SCRIPT_PATH`.
+1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
 1. Run `pip install -r requirements.txt`.
 1. If `manage.py` is found in the root of the repo `manage.py collectstatic` is run.
-1. Run custom script if specified in `POST_BUILD_SCRIPT_PATH`.
+1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
 
 The latest version of `pip` is used to install dependencies.
 
 # Run
-
-The version of Python which runs your app is determined by the value of
-`LinuxFxVersion` in your [site config][].
-
-See [Configuration](../configuration.md) for how to modify this.
 
 The following process is applied to determine how to start an app.
 
@@ -66,4 +62,10 @@ The following process is applied to determine how to start an app.
         * `index.py`
         * `server.py`
 
+In Azure Web Apps the version of the Python runtime which runs your app is
+determined by the value of `LinuxFxVersion` in your [site config][]. See
+[../base\_images.md](../base_images.md#azure-web-apps-runtimes-and-versions)
+for how to modify this.
+
 [gunicorn]: https://gunicorn.org/
+[site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig

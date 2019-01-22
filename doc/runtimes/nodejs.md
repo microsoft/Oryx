@@ -4,11 +4,11 @@ and run images too.
 
 # Contents
 
-1. [Base image](#base_image)
+1. [Base image](#base-image)
 1. [Detect](#detect)
 1. [Build](#build)
-    * [Package Manager](#package_manager)
-1. [Runtime](#runtime)
+    * [Package manager](#package-manager)
+1. [Run](#run)
 
 # Base image
 
@@ -31,11 +31,12 @@ The Node.js toolset is run when the following conditions are met:
 
 The following process is applied for each build.
 
-1. Run custom script if specified in `PRE_BUILD_SCRIPT_PATH`.
-1. Run `npm install` without any flags, which includes npm `preinstall` and `postinstall` scripts and also installs devDependencies.
+1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+1. Run `npm install` without any flags, which includes npm `preinstall` and
+   `postinstall` scripts and also installs devDependencies.
 1. Run `npm run build` if a `build` script is specified.
 1. Run `npm run build:azure` if a `build:azure` script is specified.
-1. Run custom script if specified in `POST_BUILD_SCRIPT_PATH`.
+1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
 
@@ -49,11 +50,6 @@ will be used instead of npm.
 
 # Run
 
-The version of the Node.js runtime which runs your app is determined by the
-value of `LinuxFxVersion` in your [site config][]. 
-
-See [Configuration](../configuration.md) for how to modify this.
-
 The following process is applied to determine how to start an app.
 
 1. Run `npm start` if a `start` script is specified.
@@ -64,3 +60,10 @@ The following process is applied to determine how to start an app.
     * app.js
     * index.js
     * hostingstart.js
+
+In Azure Web Apps the version of the Node.js runtime which runs your app is
+determined by the value of `LinuxFxVersion` in your [site config][]. See
+[../base\_images.md](../base_images.md#azure-web-apps-runtimes-and-versions)
+for how to modify this.
+
+[site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig

@@ -13,7 +13,7 @@ packages required at build-time. The following system packages are also added
 to the Oryx image. If you require additional packages please [open an
 issue][].
 
-[open an issue]: https://github.com/Microsoft/Oryx/issues/new
+[open an issue]: https://github.com/Microsoft/Oryx/issues/new/choose
 
 * jq
 * libgssapi-krb5-2 (for dotnetcore)
@@ -30,14 +30,16 @@ Oryx's run images build on Docker's runtime-specific images for [Node.js][]
 and [Python][]. A start script generator is included. Packages included for
 specific runtimes are described in their documentation.
 
-Runtimes and versions supported by Oryx are listed in [the main README](../README.md#supported-runtimes).
+Runtimes and versions supported by Oryx are listed in [the main
+README](../README.md#supported-runtimes).
 
 [Node.js]: https://github.com/nodejs/docker-node
 [Python]: https://github.com/docker-library/python
 
-# App Service runtimes and versions
+# Azure Web Apps runtimes and versions
 
-Runtime types and versions supported by App Service can be listed with `az
+Runtime types and versions in Azure Web Apps are not necessarily the same as
+those supported by Oryx.  Web App runtimes and versions can be listed with `az
 webapp list-runtimes --linux`.
 
 The ultimate type and version of your app's runtime in App Service is

@@ -1,45 +1,54 @@
 # Oryx configuration
 
-Oryx provides options to enable users to apply minor adjustments to its build
-process. These options are configured by specially-named environment
-variables which can be specified in an [env file][] named `build.env` in the
-repo root.
+Oryx provides configuration options through environment variables so that you
+can apply minor adjustments and still utilize the automatic build process. The following variables are supported today:
 
-These environment variables can also be specified as App Service [App
-Settings][] in that environment; App Settings take precedence over variables
-specified in a local file.
+> NOTE: In Azure Web Apps, these variables are set as App Service [App Settings][].
 
-Only the names explicitly specified here are recognized and used.
+Setting name                     | Description                                                    | Example
+---------------------------------|----------------------------------------------------------------|------------
+PRE\_BUILD\_SCRIPT\_PATH         | repo-relative path to a shell script to be run before build    | "repo/path/to/pre-script.sh"
+POST\_BUILD\_SCRIPT\_PATH        | repo-relative path to a shell script to be run after build     | "repo/path/to/post-script.sh"
+PROJECT                          | repo-relative path to directory with `.csproj` file for build  | "repo/path/to/src"
 
-* `PRE_BUILD_SCRIPT_PATH`: repo-relative path to a Bash script to run before
-  build.
-* `POST_BUILD_SCRIPT_PATH`: repo-relative path to a Bash script to run after
-  build.
+# Azure Web Apps configuration
 
-[env file]: https://docs.docker.com/compose/env-file/
+Within Azure Web Apps, Oryx's environment variables are set via [App
+Settings][].
 
-# App Service configuration
+List and modify these App Settings with the [az CLI][] using the following
+commands:
 
-App Service also defines variables to control aspects of build and run as
-[documented here][Configurable settings]. These can be specified in an
-ini-style [.deployment file][] in the repo root or as [App Settings][] on
-the web app resource. Some important variables related to build are as
-follows:
+```bash
+app_group=your-group
+app_name=your-app
 
-* `ENABLE_ORYX_BUILD`: if `true`, use the Oryx build system instead of the legacy Kudu system.
-* `COMMAND`: alternate build script. Bypasses automatic build completely.
-* `PROJECT`: alternate path to root of build directory.
-* `SCM_POST_DEPLOYMENT_ACTIONS_PATH`: path to directory of scripts to be executed after deployment.
-* `SCM_DO_BUILD_DURING_DEPLOYMENT`: if `false`, bypass automatic build.
+# list current settings
+az webapp config appsettings list \
+  --resource-group $app_group --name $app_name \
+  --output table
 
-[Configurable settings]: https://github.com/projectkudu/kudu/wiki/Configurable-settings
-[.deployment file]: https://github.com/projectkudu/kudu/wiki/Custom-Deployment-Script
-[App Settings]: https://docs.microsoft.com/en-us/azure/app-service/web-sites-configure#app-settings
+# replace current settings
+az webapp config appsettings set \
+    --resource-group $app_group --name $app_name \
+    --settings \
+      "settingA=${settingA}" \
+      "settingB=${settingB}"
+```
+
+App Service adds the following settings that govern build:
+
+Setting name                     | Description                                                    | Example
+---------------------------------|----------------------------------------------------------------|------------
+ENABLE\_ORYX\_BUILD              | if `true`, use the Oryx build system instead of the legacy Kudu system | 
+COMMAND                          | provide an alternate build-and-run script. Bypasses automatic build completely. | "repo/path/to/script.sh"
+SCM\_DO\_BUILD\_DURING\_DEPLOYMENT` | if `false`, bypass automatic build | 
 
 ## Startup file
 
-To override Oryx's defaults for starting your app, specify a command or path
-for the `--startup-file` parameter of `az webapp create ...` or `az webapp
-config set ...`.
+Within App Service, to explicitly specify a start script use the
+`--startup-file` parameter of `az webapp create ...` or `az webapp config set
+...`.
 
-TODO: enable user-specified start file outside of App Service.
+[App Settings]: https://docs.microsoft.com/en-us/azure/app-service/web-sites-configure#app-settings
+[az CLI]: https://github.com/Azure/azure-cli

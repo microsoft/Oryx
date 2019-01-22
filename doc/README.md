@@ -5,10 +5,10 @@ system and how to configure or change them.
 
 1. [Build](./base_images.md#build)
 1. [Run](./base_images.md#run)
-    * [App Service runtimes and versions](./base_images.md#app-service-runtimes-and-versions)
+    * [Azure Web Apps runtimes and versions](./base_images.md#azure-web-apps-runtimes-and-versions)
 1. [Configure](./configuration.md)
     * [Oryx configuration](./configuration.md#oryx-configuration)
-    * [App Service configuration](./configuration.md#app-service-configuration)
+    * [Azure Web Apps configuration](./configuration.md#azure-web-apps-configuration)
     * [Startup file](./configuration.md#startup-file)
 1. [Runtimes](./runtimes)
     * [Node.js](./runtimes/nodejs.md)
