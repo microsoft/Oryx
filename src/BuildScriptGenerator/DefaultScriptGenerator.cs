@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -117,6 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var languages = _allScriptGenerators.Select(sg => sg.SupportedLanguageName);
                 var exc = new UnsupportedLanguageException($"'{context.Language}' language is not supported. " +
                     $"Supported languages are: {string.Join(", ", languages)}");
+
                 _logger.LogError(exc, "Exception caught");
                 throw exc;
             }
@@ -164,7 +166,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
                 {
-                    throw new InvalidOperationException("Could not detect the language and/or version from repo");
+                    try
+                    {
+                        var diretoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(context.SourceRepo.RootPath);
+                        _logger.LogDebug("Source repo structure {repoDir}", diretoryStructureData);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Exception caught");
+                    }
+                    finally
+                    {
+                        throw new InvalidOperationException("Could not detect the language and/or version from repo");
+                    }
                 }
 
                 _logger.LogDebug("Detected {lang} {langVer} for app in repo", languageName, languageVersion);

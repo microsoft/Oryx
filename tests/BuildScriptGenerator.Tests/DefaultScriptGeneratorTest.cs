@@ -447,7 +447,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         private class TestSourceRepo : ISourceRepo
         {
-            public string RootPath => throw new NotImplementedException();
+            public string RootPath => string.Empty;
 
             public bool FileExists(params string[] paths)
             {

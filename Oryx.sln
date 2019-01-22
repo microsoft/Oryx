@@ -79,6 +79,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oryx.Common.Utilities.Test", "Oryx.Common.Utilities.Test\Oryx.Common.Utilities.Test.csproj", "{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,10 @@ Global
 		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{4885C6A7-0C9A-406C-89E9-D06A3A03C52D} = {D7D9E386-B13E-45FA-8AE6-8FC20CB84974}
 		{7475604B-12AC-4765-9259-505BF742FDEF} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 		{A563B2F8-26B1-4114-AE1C-C9E078BC7754} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}

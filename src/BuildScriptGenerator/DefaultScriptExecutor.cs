@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             exitCode = ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
             if (exitCode != 0)
             {
-                _logger.LogError("Execution of script {scriptPath} failed ({exitCode})", scriptPath, exitCode);
+                try
+                {
+                    var diretoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(workingDirectory);
+                    _logger.LogDebug("Working directory structure {repoDir}", diretoryStructureData);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Exception caught");
+                }
+                finally
+                {
+                    _logger.LogError("Execution of script {scriptPath} failed ({exitCode})", scriptPath, exitCode);
+                }
             }
 
             return exitCode;

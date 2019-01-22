@@ -80,35 +80,57 @@ namespace Oryx.Tests.Common
                 "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddFileDoesNotExistCheck(string file)
+        public ShellScriptBuilder AddFileDoesNotExistCheck(string file, bool isAppendSemiColon=false)
         {
             return Append(
                 $"if [ -f \"{file}\" ]; then " +
                 $"echo File '{file}' is still present 1>&2 && " +
-                "exit 1; fi");
+                "exit 1; fi", isAppendSemiColon);
         }
 
-        public ShellScriptBuilder AddFileExistsCheck(string file)
+        public ShellScriptBuilder AddFileExistsCheck(string file, bool isAppendSemicolon=false)
         {
             return Append(
                 $"if [ ! -f \"{file}\" ]; then " +
                 $"echo File '{file}' not found 1>&2 && " +
-                "exit 1; fi");
+                "exit 1; fi", isAppendSemicolon);
         }
 
-        private ShellScriptBuilder Append(string content)
+        public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file, bool isAppendSemiColon=false)
+        {
+            return Append(
+                $"grep '{searchString}' '{file}' && if [ $? -eq 1 ]; then " +
+                $"echo '{searchString}' not found 1>&2 && " +
+                "exit 1; fi", isAppendSemiColon);
+        }
+
+        public ShellScriptBuilder AddStringNotExistsInFileCheck(string searchString, string file, bool isAppendSemiColon=false)
+        {
+            return Append(
+                $"grep '{searchString}' '{file}' && if [ $? -eq 0 ]; then " +
+                $"echo '{searchString}' found 1>&2 && " +
+                "exit 0; fi", isAppendSemiColon);
+        }
+
+        private ShellScriptBuilder Append(string content, bool isAppendSemiColon=false)
         {
             // NOTE: do not use AppendLine as in the script must be in one line
             if (_contentPresent)
             {
-                _scriptBuilder.Append(" && ");
+                if (!isAppendSemiColon)
+                {
+                    _scriptBuilder.Append(" && ");
+                }
+                else
+                {
+                    _scriptBuilder.Append("; ");
+                }
             }
 
             _scriptBuilder.Append(content);
             _contentPresent = true;
             return this;
         }
-
         public override string ToString()
         {
             return _scriptBuilder.ToString();

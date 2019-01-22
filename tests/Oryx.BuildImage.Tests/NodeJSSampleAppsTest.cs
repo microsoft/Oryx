@@ -173,6 +173,104 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        private ShellScriptBuilder SetupEnvironment_ErrorDetectingNodeTest(string appDir, string appOutputDir, string logFile)
+        {
+            var nodeCode =
+            @"var http = require('http'); var server = http.createServer(function(req, res) { res.writeHead(200); res.end('Hi oryx');}); server.listen(8080);";
+
+            //following is the directory structure of the source repo in the test
+            //temp
+            //  app1
+            //    idea.js
+            //    1.log
+            //    app2
+            //      2.log
+            //      app3
+            //        3.log
+            //        app4
+
+            var script = new ShellScriptBuilder()
+                .CreateDirectory($"{appDir}/app2/app3/app4")
+                .CreateFile($"{appDir}/1.log", "hello1")
+                .CreateFile($"{appDir}/app2/2.log", "hello2")
+                .CreateFile($"{appDir}/app2/app3/3.log", "hello3")
+                .CreateFile($"{appDir}/idea.js", nodeCode)
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --log-file {logFile}");
+
+            return script;
+        }
+
+        [Fact]
+        public void ErrorDetectingNode_FailedExitCode_StringContentFound()
+        {
+            var appDir = "/tmp/app1";
+            var appOutputDir = "/tmp/app-output";
+            var logFile = "/tmp/directory.log";
+
+            var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
+                .AddFileExistsCheck(logFile, true)
+                .AddStringExistsInFileCheck("idea.js", logFile)
+                .AddStringExistsInFileCheck("app2", logFile)
+                .AddStringExistsInFileCheck("app3", logFile)
+                .AddStringExistsInFileCheck("2.log", logFile)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                   script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                Assert.True(result.IsSuccess);
+                Assert.Equal(0, result.ExitCode);
+
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void ErrorDetectingNode_FailedExitCode_StringContentNotFound()
+        {
+            var appDir = "/tmp/app1";
+            var appOutputDir = "/tmp/app-output";
+            var logFile = "/tmp/directory.log";
+
+            var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --log-file {logFile}")
+                .AddStringNotExistsInFileCheck("app4", logFile, true)
+                .AddStringNotExistsInFileCheck("3.log", logFile)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                   script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.Equal(1, result.ExitCode);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public override void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
