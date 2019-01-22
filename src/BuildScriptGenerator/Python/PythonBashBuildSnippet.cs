@@ -25,7 +25,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("echo \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
+            this.Write("declare -r REQS_NOT_FOUND_MSG=\'Could not find requirements.txt; Not running pip i" +
+                    "nstall\'\r\n\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
             
             #line 5 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
@@ -65,8 +66,13 @@ $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENT
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
-pip install --upgrade pip
-pip install --prefer-binary -r requirements.txt
+if [ -e ""requirements.txt"" ]
+then
+	pip install --upgrade pip
+	pip install --prefer-binary -r requirements.txt
+else
+	echo $REQS_NOT_FOUND_MSG
+fi
 
 # For virtual environment, we use the actual 'python' alias that as setup by the venv,
 python_bin=python
@@ -80,9 +86,11 @@ python_bin=python
             
             #line default
             #line hidden
-            this.Write("# Indent the output as pip install prints the \'Successfully Installed...\' message" +
-                    " and then waits which can\r\n# confuse an end user.\r\necho Running pip install ...\r" +
-                    "\n$pip install --prefer-binary -r requirements.txt --target=\"");
+            this.Write(@"if [ -e ""requirements.txt"" ]
+then
+	# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can confuse an end user.
+	echo Running pip install ...
+	$pip install --prefer-binary -r requirements.txt --target=""");
             
             #line 32 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
@@ -90,10 +98,13 @@ python_bin=python
             #line default
             #line hidden
             this.Write(@""" --upgrade | sed 's/^/   /'
-pipInstallExitCode=${PIPESTATUS[0]}
-if [[ $pipInstallExitCode != 0 ]]
-then
-	exit $pipInstallExitCode
+	pipInstallExitCode=${PIPESTATUS[0]}
+	if [[ $pipInstallExitCode != 0 ]]
+	then
+		exit $pipInstallExitCode
+	fi
+else
+	echo $REQS_NOT_FOUND_MSG
 fi
 
 # We need to use the python binary selected by benv

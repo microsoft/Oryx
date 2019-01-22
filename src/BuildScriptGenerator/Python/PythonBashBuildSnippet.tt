@@ -1,4 +1,6 @@
 <#@ template language="C#" #>
+declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
+
 echo "Python Version: $python"
 cd "$SOURCE_DIR"
 
@@ -17,8 +19,13 @@ $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENT
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
-pip install --upgrade pip
-pip install --prefer-binary -r requirements.txt
+if [ -e "requirements.txt" ]
+then
+	pip install --upgrade pip
+	pip install --prefer-binary -r requirements.txt
+else
+	echo $REQS_NOT_FOUND_MSG
+fi
 
 # For virtual environment, we use the actual 'python' alias that as setup by the venv,
 python_bin=python
@@ -26,14 +33,18 @@ python_bin=python
 	}
 	else {
 #>
-# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can
-# confuse an end user.
-echo Running pip install ...
-$pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade | sed 's/^/   /'
-pipInstallExitCode=${PIPESTATUS[0]}
-if [[ $pipInstallExitCode != 0 ]]
+if [ -e "requirements.txt" ]
 then
-	exit $pipInstallExitCode
+	# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can confuse an end user.
+	echo Running pip install ...
+	$pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade | sed 's/^/   /'
+	pipInstallExitCode=${PIPESTATUS[0]}
+	if [[ $pipInstallExitCode != 0 ]]
+	then
+		exit $pipInstallExitCode
+	fi
+else
+	echo $REQS_NOT_FOUND_MSG
 fi
 
 # We need to use the python binary selected by benv
