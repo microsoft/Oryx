@@ -71,7 +71,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // This will be an App Service app name if Oryx was invoked by Kudu
             var opName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? "oryx";
             console.WriteLine("Build Operation ID: {0}", logger.StartOperation(opName));
-            console.WriteLine($"Oryx Version:       {Program.GetVersion()}");
+
+            console.WriteLine("Oryx Version      : {0}, Commit: {1}", Program.GetVersion(), Program.GetCommit());
+            logger.LogInformation(
+                "Oryx Version: {OryxVersion}, Commit: {OryxCommit}",
+                Program.GetVersion(),
+                Program.GetCommit());
 
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
@@ -84,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!string.IsNullOrWhiteSpace(commitId))
                 {
                     // Spacing is meant to equalize the length to "Build Operation ID"
-                    console.WriteLine("Git Commit ID:      {0}", commitId);
+                    console.WriteLine("Repository Commit : {0}", commitId);
                 }
             }
 
