@@ -7,10 +7,12 @@ package main
 
 import (
 	"flag"
+	"log"
 	"startupscriptgenerator/common"
 )
 
 func main() {
+	common.PrintVersionInfo()
 	sourcePathPtr := flag.String(
 		"sourcePath",
 		".",
@@ -50,5 +52,9 @@ func main() {
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()
+	if command == "" {
+		log.Fatal("Could not generate a startup script.")
+	}
+
 	common.WriteScript(*outputPathPtr, command)
 }

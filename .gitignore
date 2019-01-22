@@ -261,6 +261,7 @@ launchSettings.json
 # Node and .NET Core runtime images dockerfiles, that are auto generated
 images/runtime/node/*.*/
 images/runtime/dotnetcore/*.*/
+images/runtime/python/*.*/
 
 # Golang packages, if oryx is added to GOPATH (which it should)
 pkg/

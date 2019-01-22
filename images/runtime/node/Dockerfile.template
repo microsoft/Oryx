@@ -2,6 +2,10 @@
 FROM golang:1.11-%NODE_BASE_IMAGE_ALPINE_OR_STRETCH% as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM node:%NODE_BASE_IMAGE%

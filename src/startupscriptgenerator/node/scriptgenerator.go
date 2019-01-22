@@ -37,7 +37,7 @@ type packageJsonScripts struct {
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
-	defer logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
+	defer logger.Shutdown()
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
@@ -103,6 +103,7 @@ func getPackageJsonStartCommand(packageJsonObj *packageJson) string {
 // Try to find the main file for the app
 func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath string) string {
 	logger := common.GetLogger("node.scriptgenerator.getCandidateFilesStartCommand")
+	defer logger.Shutdown()
 
 	startupFileCommand := ""
 	filesToSearch := []string{"bin/www", "server.js", "app.js", "index.js", "hostingstart.js"}
@@ -129,7 +130,8 @@ func (gen *NodeStartupScriptGenerator) getDefaultAppStartCommand() string {
 
 func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePath string) string {
 	logger := common.GetLogger("node.scriptgenerator.getStartupCommandFromJsFile")
-
+	defer logger.Shutdown()
+	
 	var commandBuilder strings.Builder
 	if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
 		logger.LogInformation("Remote debugging on")

@@ -8,7 +8,6 @@ package main
 import (
 	"encoding/xml"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"startupscriptgenerator/common"
@@ -58,7 +57,8 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 			command = "dotnet \"" + gen.DefaultAppFilePath + "\""
 			scriptBuilder.WriteString(command + "\n\n")
 		} else {
-			log.Fatal("Could not generate startup script.")
+			logger.LogInformation("Default app file path was not provided. Could not generate a startup script.")
+			return ""
 		}
 	}
 
@@ -133,6 +133,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 
 func getProjectFile(sourcePath string) os.FileInfo {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getProjectFile")
+	defer logger.Shutdown()
 
 	repoFiles, err := ioutil.ReadDir(sourcePath)
 	if err != nil {
@@ -158,6 +159,7 @@ func getProjectFile(sourcePath string) os.FileInfo {
 
 func getAssemblyNameFromProjectFile(sourcePath string, projectFileName string) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getAssemblyNameFromProjectFile")
+	defer logger.Shutdown()
 
 	// get the assembly name if defined /Project/PropertyGroup/AssemblyName
 	fullProjectFilePath := filepath.Join(sourcePath, projectFileName)

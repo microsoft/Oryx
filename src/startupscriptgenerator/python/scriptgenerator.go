@@ -25,7 +25,7 @@ type PythonStartupScriptGenerator struct {
 
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
-	defer logger.Shutdown() // Not shutting down other loggers to avoid too-long hangs
+	defer logger.Shutdown()
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
@@ -107,6 +107,7 @@ func logReadDirError(logger *common.Logger, path string, err error) {
 // Checks if the app is based on Django, and returns a startup command if so.
 func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 	logger := common.GetLogger("python.scriptgenerator.getDjangoStartupModule")
+	defer logger.Shutdown()
 
 	appRootFiles, err := ioutil.ReadDir(gen.SourcePath)
 	if err != nil {
@@ -134,6 +135,7 @@ func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 // Checks if the app is based on Flask, and returns a startup command if so.
 func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 	logger := common.GetLogger("python.scriptgenerator.getFlaskStartupModule")
+	defer logger.Shutdown()
 
 	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
 	for _, file := range filesToSearch {

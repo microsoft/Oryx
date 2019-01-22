@@ -2,15 +2,17 @@
 FROM golang:1.11-stretch as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM python:3.6.7-slim-stretch
-
+FROM python:%PYTHON_BASE_IMAGE%
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-
-ADD /images/runtime/python/scripts /tmp/scripts
+COPY images/runtime/python/install-dependencies.sh /tmp/scripts/install-dependencies.sh
 RUN /tmp/scripts/install-dependencies.sh
 RUN rm -rf /tmp/scripts
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

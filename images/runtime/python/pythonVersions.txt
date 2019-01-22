@@ -1,0 +1,3 @@
+2.7.15-slim-stretch
+3.6.7-slim-stretch
+3.7.1-slim-stretch

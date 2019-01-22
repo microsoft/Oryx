@@ -40,7 +40,17 @@ echo
 echo Generating Dockerfiles for .NET Core runtime images ...
 $REPO_DIR/images/runtime/dotnetcore/generateDockerfiles.sh
 
+echo
+echo Generating Dockerfiles for Python runtime images ...
+$REPO_DIR/images/runtime/python/generateDockerfiles.sh
+
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+
+# Avoid causing cache invalidation with the following check
+if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
+then
+	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+fi
 
 dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
 if [ -z "$dockerFiles" ]
@@ -79,7 +89,7 @@ for dockerFile in $dockerFiles; do
     fi
 
     echo
-    docker build $noCache -f $dockerFile -t $tags $labels .
+    docker build $noCache -f $dockerFile -t $tags $args $labels .
     
     # Retag build image with acr tags
     docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:latest"

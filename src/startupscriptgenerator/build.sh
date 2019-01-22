@@ -21,4 +21,4 @@ DIR=$(dirname "$0")
 
 echo "Trying to find the language..."
 cd "$DIR/$LANGUAGE"
-go build -v -o "$TARGET_OUTPUT" .
+go build -ldflags "-X startupscriptgenerator/common.BuildNumber=$BUILD_NUMBER -X startupscriptgenerator/common.Commit=$GIT_COMMIT" -v -o "$TARGET_OUTPUT" .
