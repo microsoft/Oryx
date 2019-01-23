@@ -63,12 +63,22 @@ namespace Oryx.BuildImage.Tests
             string versionSentToDockerRun,
             string expectedOutput)
         {
-            // Arrange & Act
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv dotnet={versionSentToDockerRun}")
+                .AddCommand("dotnet --version")
+                .ToString();
+
+            // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                new EnvironmentVariable("dotnet", versionSentToDockerRun),
-                commandToExecuteOnRun: "dotnet",
-                commandArguments: new[] { "--version" });
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
 
             // Assert
             var actualOutput = result.Output.ReplaceNewLine();
@@ -175,12 +185,22 @@ namespace Oryx.BuildImage.Tests
             string versionSentToDockerRun,
             string expectedOutput)
         {
-            // Arrange & Act
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv node={versionSentToDockerRun}")
+                .AddCommand("node --version")
+                .ToString();
+
+            // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                new EnvironmentVariable("node", versionSentToDockerRun),
-                commandToExecuteOnRun: "node",
-                commandArguments: new[] { "--version" });
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
 
             // Assert
             var actualOutput = result.Output.ReplaceNewLine();
@@ -201,14 +221,25 @@ namespace Oryx.BuildImage.Tests
             string versionSentToDockerRun,
             string expectedOutput)
         {
-            // Arrange & Act
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv python={versionSentToDockerRun}")
+                .AddCommand("python --version")
+                .ToString();
+
+            // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                new EnvironmentVariable("python", versionSentToDockerRun),
-                commandToExecuteOnRun: "python",
-                commandArguments: new[] { "--version" });
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
 
             // Assert
+            // NOTE: Python2 version writes out information to StdErr unlike Python3 versions
             var actualOutput = result.Error.ReplaceNewLine();
             RunAsserts(
                 () =>
@@ -227,12 +258,22 @@ namespace Oryx.BuildImage.Tests
             string versionSentToDockerRun,
             string expectedOutput)
         {
-            // Arrange & Act
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv python={versionSentToDockerRun}")
+                .AddCommand("python2 --version")
+                .ToString();
+
+            // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                new EnvironmentVariable("python", versionSentToDockerRun),
-                commandToExecuteOnRun: "python2",
-                commandArguments: new[] { "--version" });
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
 
             // Assert
             var actualOutput = result.Error.ReplaceNewLine();
@@ -254,16 +295,26 @@ namespace Oryx.BuildImage.Tests
         [InlineData(Settings.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
         [InlineData(Settings.Python37Version, Python37VersionInfo)]
-        public void Python3Alias_UsesVersion_SpecifiedAtDockerRun(
+        public void Python3_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)
         {
-            // Arrange & Act
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv python={versionSentToDockerRun}")
+                .AddCommand("python --version")
+                .ToString();
+
+            // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                new EnvironmentVariable("python", versionSentToDockerRun),
-                commandToExecuteOnRun: "python3",
-                commandArguments: new[] { "--version" });
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
 
             // Assert
             var actualOutput = result.Output.ReplaceNewLine();

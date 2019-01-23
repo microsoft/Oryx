@@ -43,7 +43,8 @@ make install
 
 PYTHON_PATH=/opt/python/$PYTHON_VERSION
 
-wget https://bootstrap.pypa.io/get-pip.py -O /get-pip.py
+# Using specific Git commit here due to https://github.com/pypa/get-pip/issues/40
+wget https://github.com/pypa/get-pip/raw/b3d0f6c0faa8e02322efb00715f8460965eb5d5f/get-pip.py -O /get-pip.py
 LD_LIBRARY_PATH=/usr/src/python \
 /usr/src/python/python /get-pip.py \
     --prefix $PYTHON_PATH \
@@ -55,4 +56,18 @@ LD_LIBRARY_PATH=/usr/src/python \
 if [ "${PYTHON_VERSION::1}" == "2" ]; then
     LD_LIBRARY_PATH=$PYTHON_PATH/lib \
     $PYTHON_PATH/bin/pip install --no-cache-dir virtualenv
+fi
+
+# Currently only for version '2' of Python, the alias 'python' exists in the 'bin'
+# directory. So to make sure other versions also have this alias, we create the link
+# explicitly here. This is for the scenarios where a user does 'benv python=3.7' and
+# expects the alias 'python' to point to '3.7' rather than '2'. In cases where benv is
+# not passed as an explicit python version, the version '2' is used by default. This is
+# done in the Dockerfile.
+pythonBinDir="$PYTHON_PATH/bin"
+pythonAliasFile="$pythonBinDir/python"
+if [ ! -e "$pythonAliasFile" ]; then
+    IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+    majorAndMinorParts="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
+    ln -s $pythonBinDir/python$majorAndMinorParts $pythonBinDir/python
 fi
