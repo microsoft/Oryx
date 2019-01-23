@@ -38,6 +38,12 @@ The following process is applied for each build.
 1. Run `npm run build:azure` if a `build:azure` script is specified.
 1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
+> NOTE: As described in [npm docs][], scripts named `prebuild` and `postbuild`
+will run before and after `build` respectively if specified; and `preinstall` and
+`postinstall` will run before and after `install`.
+
+[npm docs]: https://docs.npmjs.com/misc/scripts
+
 ## Package manager
 
 The version of npm used to install dependencies and run npm scripts is the
@@ -60,10 +66,3 @@ The following process is applied to determine how to start an app.
     * app.js
     * index.js
     * hostingstart.js
-
-In Azure Web Apps the version of the Node.js runtime which runs your app is
-determined by the value of `LinuxFxVersion` in your [site config][]. See
-[../base\_images.md](../base_images.md#azure-web-apps-runtimes-and-versions)
-for how to modify this.
-
-[site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig
