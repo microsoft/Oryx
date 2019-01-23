@@ -20,6 +20,8 @@ RUN apt-get update \
         default-libmysqlclient-dev \
         # Required for .NET Core 1.1
         libunwind8 \
+        # Required for ts
+        moreutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core

@@ -25,33 +25,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("declare -r REQS_NOT_FOUND_MSG=\'Could not find requirements.txt; Not running pip i" +
-                    "nstall\'\r\n\r\necho \"Python Version: $python\"\r\ncd \"$SOURCE_DIR\"\r\n\r\n");
+            this.Write("\ndeclare -r TS_FMT=\'[%T%z] \'\ndeclare -r REQS_NOT_FOUND_MSG=\'Could not find requir" +
+                    "ements.txt; Not running pip install\'\n\necho \"Python Version: $python\"\ncd \"$SOURCE" +
+                    "_DIR\"\n\n");
             
-            #line 5 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
 
             
             #line default
             #line hidden
-            this.Write("VIRTUALENVIRONMENTNAME=");
+            this.Write("\nVIRTUALENVIRONMENTNAME=");
             
-            #line 8 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
-            this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
+            this.Write("\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 9 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
-            this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
+            this.Write("\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 10 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
@@ -69,7 +70,7 @@ source $VIRTUALENVIRONMENTNAME/bin/activate
 if [ -e ""requirements.txt"" ]
 then
 	pip install --upgrade pip
-	pip install --prefer-binary -r requirements.txt
+	pip install --prefer-binary -r requirements.txt | ts $TS_FMT
 else
 	echo $REQS_NOT_FOUND_MSG
 fi
@@ -78,7 +79,7 @@ fi
 python_bin=python
 ");
             
-            #line 25 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	}
 	else {
@@ -86,19 +87,19 @@ python_bin=python
             
             #line default
             #line hidden
-            this.Write(@"if [ -e ""requirements.txt"" ]
-then
-	# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can confuse an end user.
-	echo Running pip install ...
-	$pip install --prefer-binary -r requirements.txt --target=""");
+            this.Write("\nif [ -e \"requirements.txt\" ]\nthen\n\t# Indent the output as pip install prints the" +
+                    " \'Successfully Installed...\' message and then waits which can confuse an end use" +
+                    "r.\n\techo Running pip install...\n\n\t$pip install --prefer-binary -r requirements.t" +
+                    "xt --target=\"");
             
-            #line 32 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
-            this.Write(@""" --upgrade | sed 's/^/   /'
+            this.Write(@""" --upgrade | ts $TS_FMT
 	pipInstallExitCode=${PIPESTATUS[0]}
+
 	if [[ $pipInstallExitCode != 0 ]]
 	then
 		exit $pipInstallExitCode
@@ -118,21 +119,22 @@ mkdir -p $SITE_PACKAGES_PATH
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
 APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 48 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
-            this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
+            this.Write("\"\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n\n");
             
-            #line 51 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write(@"echo Done running pip install.
+            this.Write(@"
+echo Done running pip install.
 
 if [ -e ""$SOURCE_DIR/manage.py"" ]
 then

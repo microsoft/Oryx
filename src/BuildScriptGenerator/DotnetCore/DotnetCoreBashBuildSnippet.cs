@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 		echo ""Destination directory '$outputDir' already exists. Deleting it ...""
 		rm -rf ""$outputDir""
 	fi
-else 
+else
 	outputDir=""$DESTINATION_DIR""
 fi
 
