@@ -4,3 +4,8 @@
 **/.git/
 tests/
 vsts/
+src/golang.org/
+src/github.com/
+pkg/
+bin/
+artifacts/

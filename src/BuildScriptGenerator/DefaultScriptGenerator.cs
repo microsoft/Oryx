@@ -138,7 +138,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 allLanguageScriptGeneratorsVersions);
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exc = new UnsupportedVersionException($"The '{context.Language}' version '{context.LanguageVersion}' is not supported. " +
+                var exc = new UnsupportedVersionException(
+                    $"The '{context.Language}' version '{context.LanguageVersion}' is not supported. " +
                     $"Supported versions are: {string.Join(", ", allLanguageScriptGeneratorsVersions)}");
                 _logger.LogError(exc, "Exception caught");
                 throw exc;

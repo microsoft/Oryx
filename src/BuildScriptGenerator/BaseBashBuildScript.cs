@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+    #line 1 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class BaseBashBuildScript : BaseBashBuildScriptBase
     {
@@ -58,7 +58,7 @@ echo
 
 ");
             
-            #line 33 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 33 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
 
 if (!string.IsNullOrEmpty(BenvArgs)) {
 
@@ -67,25 +67,36 @@ if (!string.IsNullOrEmpty(BenvArgs)) {
             #line hidden
             this.Write("source /usr/local/bin/benv ");
             
-            #line 36 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 36 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(BenvArgs));
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 37 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 37 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
 
 }
 
             
             #line default
             #line hidden
-            this.Write("\r\nif [ \"$SOURCE_DIR\" != \"$DESTINATION_DIR\" ]\r\nthen\r\n\tif [ -d \"$DESTINATION_DIR\" ]" +
-                    "\r\n\tthen\r\n\t\techo\r\n\t\techo Destination directory already exists. Deleting it ...\r\n\t" +
-                    "\trm -rf \"$DESTINATION_DIR\"\r\n\tfi\r\nfi\r\n\r\n");
+            this.Write(@"
+if [ ""$SOURCE_DIR"" != ""$DESTINATION_DIR"" ]
+then
+	if [ -d ""$DESTINATION_DIR"" ]
+	then
+		echo
+		echo Destination directory already exists. Deleting it ...
+		rm -rf ""$DESTINATION_DIR""
+	fi
+fi
+
+# Make sure to cd to the source directory so that pre and post build scripts run from there
+cd $SOURCE_DIR
+");
             
-            #line 51 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 53 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
 
@@ -94,14 +105,14 @@ if (!string.IsNullOrEmpty(BenvArgs)) {
             #line hidden
             this.Write("\r\necho \"Executing pre-build script ...\"\r\n\"");
             
-            #line 56 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 58 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PreBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 57 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 59 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
 
 	}
 
@@ -110,7 +121,7 @@ if (!string.IsNullOrEmpty(BenvArgs)) {
             #line hidden
             this.Write("\r\n");
             
-            #line 61 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 63 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(BuildScriptSnippetsBlock));
             
             #line default
@@ -130,23 +141,24 @@ then
 fi
 ");
             
-            #line 74 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 76 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
 
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 
             
             #line default
             #line hidden
-            this.Write("\r\necho\r\necho \"Executing post-build script ...\"\r\n\"");
+            this.Write("\r\n# Make sure to cd to the source directory so that pre and post build scripts ru" +
+                    "n from there\r\ncd $SOURCE_DIR\r\n\r\necho\r\necho \"Executing post-build script ...\"\r\n\"");
             
-            #line 80 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 85 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PostBuildScriptPath));
             
             #line default
             #line hidden
             this.Write("\"\r\n");
             
-            #line 81 "C:\src\oryx2\src\BuildScriptGenerator\BaseBashBuildScript.tt"
+            #line 86 "C:\oryx\src\BuildScriptGenerator\BaseBashBuildScript.tt"
 
 	}
 

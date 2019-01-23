@@ -5,7 +5,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -18,28 +17,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     {
         private readonly IDotnetCoreVersionProvider _versionProvider;
         private readonly DotnetCoreScriptGeneratorOptions _scriptGeneratorOptions;
+        private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
         private readonly ILogger<DotnetCoreLanguageDetector> _logger;
 
         public DotnetCoreLanguageDetector(
             IDotnetCoreVersionProvider versionProvider,
             IOptions<DotnetCoreScriptGeneratorOptions> options,
+            IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
             ILogger<DotnetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
             _scriptGeneratorOptions = options.Value;
+            _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
             _logger = logger;
         }
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            var projectFile = sourceRepo
-                .EnumerateFiles($"*.{DotnetCoreConstants.ProjectFileExtensionName}", searchSubDirectories: false)
-                .FirstOrDefault();
-
-            if (projectFile == null)
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(sourceRepo);
+            if (string.IsNullOrEmpty(projectFile))
             {
-                _logger.LogDebug(
-                    $"Could not find file with extension '{DotnetCoreConstants.ProjectFileExtensionName}' in repo");
                 return null;
             }
 

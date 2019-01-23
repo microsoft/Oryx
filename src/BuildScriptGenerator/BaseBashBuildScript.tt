@@ -48,6 +48,8 @@ then
 	fi
 fi
 
+# Make sure to cd to the source directory so that pre and post build scripts run from there
+cd $SOURCE_DIR
 <#
 	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
 #>
@@ -74,6 +76,9 @@ fi
 <#
 	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
 #>
+
+# Make sure to cd to the source directory so that pre and post build scripts run from there
+cd $SOURCE_DIR
 
 echo
 echo "Executing post-build script ..."

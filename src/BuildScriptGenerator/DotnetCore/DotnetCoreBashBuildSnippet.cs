@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\oryx2\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildSnippet.tt"
+    #line 1 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildSnippet.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class DotnetCoreBashBuildSnippet : DotnetCoreBashBuildSnippetBase
     {
@@ -25,9 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\nif [ \"$SOURCE_DIR\" == \"$DESTINATION_DIR\" ]\nthen\n\toutputDir=\"$DESTINATION_DIR/");
+            this.Write("if [ \"$SOURCE_DIR\" == \"$DESTINATION_DIR\" ]\r\nthen\r\n\toutputDir=\"");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildSnippet.tt"
+            #line 4 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PublishDirectory));
             
             #line default
@@ -35,7 +35,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
             this.Write(@"""
 	if [ -d ""$outputDir"" ]
 	then
-		echo
 		echo ""Destination directory '$outputDir' already exists. Deleting it ...""
 		rm -rf ""$outputDir""
 	fi
@@ -50,12 +49,21 @@ echo "".NET Core Version: $dotnetCoreVersion""
 echo
 echo Restoring packages ...
 echo
-dotnet restore
-echo
-echo ""Publishing to directory $outputDir ...""
-echo
-dotnet publish -c Release -o ""$outputDir""
-");
+dotnet restore """);
+            
+            #line 21 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(ProjectFile));
+            
+            #line default
+            #line hidden
+            this.Write("\"\r\n\r\necho\r\necho \"Publishing to directory $outputDir ...\"\r\necho\r\ndotnet publish \"");
+            
+            #line 26 "C:\Oryx\src\BuildScriptGenerator\DotnetCore\DotnetCoreBashBuildSnippet.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(ProjectFile));
+            
+            #line default
+            #line hidden
+            this.Write("\" -c Release -o \"$outputDir\"\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

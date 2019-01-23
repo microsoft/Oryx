@@ -59,7 +59,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                 supportedVersions: new[]
                 {
                     DotnetCoreConstants.DotnetCoreSdkVersion11
-                });
+                },
+                projectFile: null);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -72,10 +73,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
         public void Detect_ReturnsNull_IfProjectFile_DoesNotHaveTargetFrameworkSpecified()
         {
             // Arrange
+            var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { "test.csproj" });
+                .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithNoTargetFramework);
@@ -83,7 +85,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                 supportedVersions: new[]
                 {
                     DotnetCoreConstants.DotnetCoreSdkVersion11
-                });
+                },
+                projectFile);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -103,13 +106,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
             string expectedSdkVersion)
         {
             // Arrange
+            var projectFile = "test.csproj";
             var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                 "#TargetFramework#",
                 netCoreAppVersion);
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { "test.csproj" });
+                .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
@@ -119,7 +123,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                     DotnetCoreConstants.DotnetCoreSdkVersion11,
                     DotnetCoreConstants.DotnetCoreSdkVersion21,
                     DotnetCoreConstants.DotnetCoreSdkVersion22
-                });
+                },
+                projectFile);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -134,10 +139,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
         public void Detect_ReturnsExpectedLanguageVersion_WhenProjectFileHasMultiplePropertyGroups()
         {
             // Arrange
+            var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { "test.csproj" });
+                .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithMultipleProperties);
@@ -147,7 +153,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                     DotnetCoreConstants.DotnetCoreSdkVersion11,
                     DotnetCoreConstants.DotnetCoreSdkVersion21,
                     DotnetCoreConstants.DotnetCoreSdkVersion22
-                });
+                },
+                projectFile);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -162,13 +169,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
         public void Detect_ReturnsNull_ForUnknownNetCoreAppVersion()
         {
             // Arrange
+            var projectFile = "test.csproj";
             var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                 "#TargetFramework#",
                 "netcoreapp0.0");
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { "test.csproj" });
+                .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
@@ -178,7 +186,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                     DotnetCoreConstants.DotnetCoreSdkVersion11,
                     DotnetCoreConstants.DotnetCoreSdkVersion21,
                     DotnetCoreConstants.DotnetCoreSdkVersion22
-                });
+                },
+                projectFile);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -191,6 +200,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
         public void Detect_ReturnsSdkVersion_SpecifiedInGlobalJsonFile()
         {
             // Arrange
+            var projectFile = "test.csproj";
             var globalJsonFileContent = GlobalJsonWithSdkVersionPlaceholder.Replace(
                 "#version#",
                 "100.100.100");
@@ -200,7 +210,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { "test.csproj", "global.json" });
+                .Returns(new[] { projectFile, "global.json" });
             sourceRepo
                 .Setup(repo => repo.FileExists("global.json"))
                 .Returns(true);
@@ -216,7 +226,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                     DotnetCoreConstants.DotnetCoreSdkVersion11,
                     DotnetCoreConstants.DotnetCoreSdkVersion21,
                     DotnetCoreConstants.DotnetCoreSdkVersion22
-                });
+                },
+                projectFile);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -231,13 +242,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
         public void Detect_ReturnsSdkVersion_BasedOnTargetFramework_IfSpecifiedInGlobalJsonDoesNotHaveSdkVersion()
         {
             // Arrange
+            var projectFile = "test.csproj";
             var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                 "#TargetFramework#",
                 "netcoreapp2.1");
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { "test.csproj", "global.json" });
+                .Returns(new[] { projectFile, "global.json" });
             sourceRepo
                 .Setup(repo => repo.FileExists("global.json"))
                 .Returns(true);
@@ -253,7 +265,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
                     DotnetCoreConstants.DotnetCoreSdkVersion11,
                     DotnetCoreConstants.DotnetCoreSdkVersion21,
                     DotnetCoreConstants.DotnetCoreSdkVersion22
-                });
+                },
+                projectFile);
 
             // Act
             var result = detector.Detect(sourceRepo.Object);
@@ -264,13 +277,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
             Assert.Equal("2.1", result.LanguageVersion);
         }
 
-        private DotnetCoreLanguageDetector CreateDotnetCoreLanguageDetector(string[] supportedVersions)
+        private DotnetCoreLanguageDetector CreateDotnetCoreLanguageDetector(
+            string[] supportedVersions,
+            string projectFile)
         {
-            return CreateDotnetCoreLanguageDetector(supportedVersions, new TestEnvironment());
+            return CreateDotnetCoreLanguageDetector(
+                supportedVersions,
+                projectFile,
+                new TestEnvironment());
         }
 
         private DotnetCoreLanguageDetector CreateDotnetCoreLanguageDetector(
             string[] supportedVersions,
+            string projectFile,
             IEnvironment environment)
         {
             var optionsSetup = new DotnetCoreScriptGeneratorOptionsSetup(environment);
@@ -280,7 +299,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
             return new DotnetCoreLanguageDetector(
                 new TestDotnetCoreVersionProvider(supportedVersions),
                 Options.Create(options),
+                new TestAspNetCoreWebAppProjectFileProvider(projectFile),
                 NullLogger<DotnetCoreLanguageDetector>.Instance);
+        }
+
+        private class TestAspNetCoreWebAppProjectFileProvider : IAspNetCoreWebAppProjectFileProvider
+        {
+            private readonly string _projectFilePath;
+
+            public TestAspNetCoreWebAppProjectFileProvider(string projectFilePath)
+            {
+                _projectFilePath = projectFilePath;
+            }
+
+            public string GetProjectFile(ISourceRepo sourceRepo)
+            {
+                return _projectFilePath;
+            }
         }
     }
 }

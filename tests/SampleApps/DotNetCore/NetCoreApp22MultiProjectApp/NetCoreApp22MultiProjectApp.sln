@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreApp22MultiProjectApp", "NetCoreApp22MultiProjectApp\NetCoreApp22MultiProjectApp.csproj", "{2AA4A7F3-C6DC-4FF1-BDBB-A4791FE8FCD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreApp22MultiProjectApp", "src\NetCoreApp22MultiProjectApp\NetCoreApp22MultiProjectApp.csproj", "{2AA4A7F3-C6DC-4FF1-BDBB-A4791FE8FCD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Greeter", "Greeter\Greeter.csproj", "{8B177925-71B7-4647-9CAE-39AAE12C706B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Greeter", "src\Greeter\Greeter.csproj", "{8B177925-71B7-4647-9CAE-39AAE12C706B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -21,6 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<DotnetCoreScriptGeneratorOptions>, DotnetCoreScriptGeneratorOptionsSetup>());
             services.AddSingleton<IDotnetCoreVersionProvider, DotnetCoreVersionProvider>();
+            services.AddSingleton<IAspNetCoreWebAppProjectFileProvider, DefaultAspNetCoreWebAppProjectFileProvider>();
             return services;
         }
     }

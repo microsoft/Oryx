@@ -3,18 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 {
-    public class DotnetCoreScriptGeneratorOptions
+    /// <summary>
+    /// Represents an abstraction which probes the source repository
+    /// for project files which represent a web application
+    /// </summary>
+    public interface IAspNetCoreWebAppProjectFileProvider
     {
-        public string DefaultVersion { get; set; }
-
-        public string InstalledVersionsDir { get; set; }
-
-        public IList<string> SupportedVersions { get; set; }
-
-        public string Project { get; set; }
+        string GetProjectFile(ISourceRepo sourceRepo);
     }
 }

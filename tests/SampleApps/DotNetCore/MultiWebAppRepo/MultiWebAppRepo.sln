@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp1", "src\WebApp1\WebApp1.csproj", "{D3C3A67C-236F-4D72-B810-2A5E986575FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp2", "src\WebApp2\WebApp2.csproj", "{16814052-EF30-4414-BC2F-37C77083122C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Greeter", "src\Greeter\Greeter.csproj", "{CD7724F9-1206-4199-9FCD-CD1856AF846B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3C3A67C-236F-4D72-B810-2A5E986575FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3C3A67C-236F-4D72-B810-2A5E986575FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3C3A67C-236F-4D72-B810-2A5E986575FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3C3A67C-236F-4D72-B810-2A5E986575FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16814052-EF30-4414-BC2F-37C77083122C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16814052-EF30-4414-BC2F-37C77083122C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16814052-EF30-4414-BC2F-37C77083122C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16814052-EF30-4414-BC2F-37C77083122C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD7724F9-1206-4199-9FCD-CD1856AF846B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD7724F9-1206-4199-9FCD-CD1856AF846B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD7724F9-1206-4199-9FCD-CD1856AF846B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD7724F9-1206-4199-9FCD-CD1856AF846B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D90809DF-F464-41EF-AF27-D50979EBF70B}
+	EndGlobalSection
+EndGlobal

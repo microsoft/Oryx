@@ -21,14 +21,37 @@ type DotnetCoreStartupScriptGenerator struct {
 	DefaultAppFilePath  string
 }
 
-type project struct {
+type projectDetails struct {
+	Name         string
+	FullPath     string
+	Directory    string
+	CSProjectObj csProject
+}
+
+// Object models representing .NET Core '.csproj' file xml content
+type csProject struct {
 	XMLName    xml.Name        `xml:"Project"`
 	Properties []propertyGroup `xml:"PropertyGroup"`
+	ItemGroups []itemGroup     `xml:"ItemGroup"`
 }
 
 type propertyGroup struct {
 	AssemblyName string `xml:"AssemblyName"`
 }
+
+type itemGroup struct {
+	PackageReferences []packageReference `xml:"PackageReference"`
+}
+
+type packageReference struct {
+	Name string `xml:"Include,attr"`
+}
+
+const ProjectEnvironmentVariableName = "PROJECT"
+const OryxPublishOutputDirectory = "oryx_publish_output"
+
+var _retrievedProjectDetails = false
+var _projDetails projectDetails = projectDetails{}
 
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
@@ -69,9 +92,16 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupCommand")
 	defer logger.Shutdown()
 
+	// Get the publish output directory irrespective of whether the user supplied a custom startup command
+	// as we want to generate a script which does a 'cd' to this directory and run the user startup command
 	publishOutputDir := gen.PublishedOutputPath
 	if publishOutputDir == "" {
-		publishOutputDir = filepath.Join(gen.SourcePath, "oryx_publish_output")
+		projDetails := gen.getProjectDetailsAndCache()
+		if projDetails.FullPath == "" {
+			return "", ""
+		}
+
+		publishOutputDir = filepath.Join(projDetails.Directory, OryxPublishOutputDirectory)
 
 		logger.LogInformation(
 			"Published output directory not supplied. Checking for default oryx publish output directory at '%s'",
@@ -90,24 +120,23 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 
 	command := gen.UserStartupCommand
 	if command == "" {
+		projDetails := gen.getProjectDetailsAndCache()
+		if projDetails.FullPath == "" {
+			return "", ""
+		}
+
 		// Since an application's published output can contain many .dll files,
 		// find the name of the .dll which has the entry point to the application.
 		// Resolution logic:
 		// If the .csproj file has an explicitly AssemblyName property element, then use that value to get the name of the .dll
 		// else
 		// Use the .csproj file name (excluding the .csproj extension name) as the name of the .dll
-		projectFile := getProjectFile(gen.SourcePath)
 
-		if projectFile == nil {
-			logger.LogError("Could not find project file in source directory '%s'", gen.SourcePath)
-			return "", ""
-		}
-
-		assemblyName := getAssemblyNameFromProjectFile(gen.SourcePath, projectFile.Name())
+		assemblyName := getAssemblyNameFromProjectFile(projDetails)
 
 		startupFileName := ""
 		if assemblyName == "" {
-			projectName := getFileNameWithoutExtension(projectFile.Name())
+			projectName := getFileNameWithoutExtension(projDetails.Name)
 			startupFileName = projectName + ".dll"
 		} else {
 			startupFileName = assemblyName + ".dll"
@@ -131,64 +160,126 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 	return command, publishOutputDir
 }
 
-func getProjectFile(sourcePath string) os.FileInfo {
-	logger := common.GetLogger("dotnetcore.scriptgenerator.getProjectFile")
+func (gen *DotnetCoreStartupScriptGenerator) getProjectDetailsAndCache() projectDetails {
+	if _retrievedProjectDetails {
+		return _projDetails
+	}
+
+	projDetails := gen.getProjectDetails()
+	_retrievedProjectDetails = true
+	_projDetails = projDetails
+	return _projDetails
+}
+
+func (gen *DotnetCoreStartupScriptGenerator) getProjectDetails() projectDetails {
+	logger := common.GetLogger("dotnetcore.scriptgenerator.getProjectDetails")
 	defer logger.Shutdown()
 
-	repoFiles, err := ioutil.ReadDir(sourcePath)
+	projDetails := projectDetails{}
+
+	projectEnv := os.Getenv(ProjectEnvironmentVariableName)
+	if projectEnv != "" {
+		// Since relative paths are provided to the environment variable, get the full path
+		projectFilePath := filepath.Join(gen.SourcePath, projectEnv)
+		if _, err := os.Stat(projectFilePath); os.IsNotExist(err) {
+			logger.LogError(
+				"Could not find project file '%s'. Error: %s",
+				projectFilePath,
+				err.Error())
+			return projDetails
+		} else {
+			projFileInfo, _ := os.Stat(projectFilePath)
+			projDetails.Name = projFileInfo.Name()
+			projDetails.FullPath = projectFilePath
+			projDetails.Directory = filepath.Dir(projectFilePath)
+			projDetails.CSProjectObj = deserializeProjectFile(projectFilePath)
+			return projDetails
+		}
+	}
+
+	rootProjectFile := gen.getRootProjectFile()
+	if rootProjectFile != "" {
+		projFileInfo, _ := os.Stat(rootProjectFile)
+		projDetails.Name = projFileInfo.Name()
+		projDetails.FullPath = rootProjectFile
+		projDetails.Directory = filepath.Dir(rootProjectFile)
+		projDetails.CSProjectObj = deserializeProjectFile(rootProjectFile)
+		return projDetails
+	}
+
+	logger.LogInformation(
+		"Could not find project file at directory '%s'. Searching sub-directories ...", gen.SourcePath)
+
+	projectFiles, err := gen.findProjectFiles()
+	if err != nil {
+		logger.LogError(
+			"An error occurred while trying to search the repository for a web application project: '%s'",
+			err.Error())
+		return projDetails
+	}
+
+	for _, projectFile := range projectFiles {
+		csProjObj := deserializeProjectFile(projectFile)
+		if csProjObj.ItemGroups == nil {
+			continue
+		}
+
+		for _, itemGroup := range csProjObj.ItemGroups {
+			if itemGroup.PackageReferences == nil {
+				continue
+			}
+
+			for _, packageReference := range itemGroup.PackageReferences {
+				if packageReference.Name == "" {
+					continue
+				}
+
+				if packageReference.Name == "Microsoft.AspNetCore.App" ||
+					packageReference.Name == "Microsoft.AspNetCore.All" ||
+					packageReference.Name == "Microsoft.AspNetCore" {
+					projFileInfo, _ := os.Stat(projectFile)
+					projDetails.Name = projFileInfo.Name()
+					projDetails.FullPath = projectFile
+					projDetails.Directory = filepath.Dir(projectFile)
+					projDetails.CSProjectObj = csProjObj
+					break
+				}
+			}
+		}
+	}
+	return projDetails
+}
+
+func (gen *DotnetCoreStartupScriptGenerator) getRootProjectFile() string {
+	logger := common.GetLogger("dotnetcore.scriptgenerator.getProjgetRootProjectFilectFile")
+	defer logger.Shutdown()
+
+	repoFiles, err := ioutil.ReadDir(gen.SourcePath)
 	if err != nil {
 		logger.LogError(
 			"Error occurred while trying to read the source directory '%s'. Error: %s",
-			sourcePath,
+			gen.SourcePath,
 			err.Error())
-		return nil
+		return ""
 	}
 
-	var projectFile os.FileInfo
 	for _, file := range repoFiles {
 		if file.Mode().IsRegular() {
 			fileName := file.Name()
 			if filepath.Ext(fileName) == ".csproj" {
-				projectFile = file
-				break
+				return filepath.Join(gen.SourcePath, fileName)
 			}
 		}
 	}
-	return projectFile
+	return ""
 }
 
-func getAssemblyNameFromProjectFile(sourcePath string, projectFileName string) string {
-	logger := common.GetLogger("dotnetcore.scriptgenerator.getAssemblyNameFromProjectFile")
-	defer logger.Shutdown()
-
+func getAssemblyNameFromProjectFile(projDetails projectDetails) string {
 	// get the assembly name if defined /Project/PropertyGroup/AssemblyName
-	fullProjectFilePath := filepath.Join(sourcePath, projectFileName)
-	xmlFile, err := os.Open(fullProjectFilePath)
-	// if os.Open returns an error then handle it
-	if err != nil {
-		logger.LogError(
-			"Error occurred when trying to read project file '%s'. Error: %s",
-			fullProjectFilePath,
-			err.Error())
-		return ""
-	}
-	// defer the closing of our xmlFile so that we can parse it later on
-	defer xmlFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(xmlFile)
-	var projFile project
-	err = xml.Unmarshal(byteValue, &projFile)
-	if err != nil {
-		logger.LogError(
-			"Error occurred when trying to deserialize project file '%s'. Error: %s",
-			fullProjectFilePath,
-			err.Error())
-		return ""
-	}
-
+	csProjObj := projDetails.CSProjectObj
 	assemblyName := ""
-	for i := 0; i < len(projFile.Properties); i++ {
-		assemblyName = projFile.Properties[i].AssemblyName
+	for i := 0; i < len(csProjObj.Properties); i++ {
+		assemblyName = csProjObj.Properties[i].AssemblyName
 		if assemblyName != "" {
 			break
 		}
@@ -202,4 +293,42 @@ func getFileNameWithoutExtension(fileName string) string {
 		return fileName[:index]
 	}
 	return fileName
+}
+
+func (gen *DotnetCoreStartupScriptGenerator) findProjectFiles() ([]string, error) {
+	projectFiles := []string{}
+	err := filepath.Walk(gen.SourcePath, func(path string, f os.FileInfo, err error) error {
+		if filepath.Ext(path) == ".csproj" {
+			projectFiles = append(projectFiles, path)
+		}
+		return nil
+	})
+	return projectFiles, err
+}
+
+func deserializeProjectFile(projectFile string) csProject {
+	logger := common.GetLogger("dotnetcore.scriptgenerator.deserializeProjectFile")
+
+	projFile := csProject{}
+	xmlFile, err := os.Open(projectFile)
+	// if os.Open returns an error then handle it
+	if err != nil {
+		logger.LogError(
+			"Error occurred when trying to read project file '%s'. Error: %s",
+			projectFile,
+			err.Error())
+		return projFile
+	}
+	// defer the closing of our xmlFile so that we can parse it later on
+	defer xmlFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(xmlFile)
+	err = xml.Unmarshal(byteValue, &projFile)
+	if err != nil {
+		logger.LogError(
+			"Error occurred when trying to deserialize project file '%s'. Error: %s",
+			projectFile,
+			err.Error())
+	}
+	return projFile
 }

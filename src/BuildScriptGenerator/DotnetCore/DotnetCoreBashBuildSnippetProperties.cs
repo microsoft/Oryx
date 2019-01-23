@@ -11,10 +11,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     public partial class DotnetCoreBashBuildSnippet
     {
         public DotnetCoreBashBuildSnippet(
+            string projectFile,
             string publishDirectory)
         {
+            ProjectFile = projectFile;
             PublishDirectory = publishDirectory;
         }
+
+        public string ProjectFile { get; set; }
 
         public string PublishDirectory { get; set; }
     }

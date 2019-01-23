@@ -22,5 +22,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
         public const string DotnetCoreSdkVersion22 = "2.2.100";
 
         public const string OryxOutputPublishDirectory = "oryx_publish_output";
+
+        public const string AspNetCorePackageReference = "Microsoft.AspNetCore";
+        public const string AspNetCoreAllPackageReference = "Microsoft.AspNetCore.All";
+        public const string AspNetCoreAppPackageReference = "Microsoft.AspNetCore.App";
+
+        public const string ProjectFileLanguageDetectorProperty = "ProjectFile";
     }
 }

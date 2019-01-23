@@ -79,7 +79,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oryx.Common.Utilities.Test", "Oryx.Common.Utilities.Test\Oryx.Common.Utilities.Test.csproj", "{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oryx.Common.Utilities.Test", "tests\Oryx.Common.Utilities.Test\Oryx.Common.Utilities.Test.csproj", "{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

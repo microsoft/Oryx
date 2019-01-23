@@ -278,6 +278,7 @@ namespace Oryx.RuntimeImage.Tests
             var appDir = "/app";
             var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet foo.dll";
+            var expectedWorkingDir = $"cd \"{appOutputDir}\"";
             var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
@@ -303,6 +304,7 @@ namespace Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.Output);
                     Assert.Contains(expectedStartupCommand, result.Output);
                 },
                 result.GetDebugInfo());
@@ -361,6 +363,130 @@ namespace Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_UsingProjectEnvironmentVariable()
+        {
+            // Arrange
+            var repoDir = "/repo";
+            var webApp1Dir = $"{repoDir}/src/Apps/WebApp1";
+            var webApp2Dir = $"{repoDir}/src/Apps/WebApp2";
+            var webApp1OutputDir = $"{webApp1Dir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var expectedStartupCommand = $"dotnet \"webapp1.dll\"";
+            var expectedWorkingDir = $"cd \"{webApp1OutputDir}\"";
+            var scriptLocation = "/tmp/run.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"export PROJECT=src/Apps/WebApp1/webapp1.csproj")
+                .AddCommand($"mkdir -p {webApp1Dir}")
+                .AddCommand($"mkdir -p {webApp2Dir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {webApp1Dir}/webapp1.csproj")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {webApp2Dir}/webapp2.csproj")
+                .AddCommand($"mkdir -p {webApp1OutputDir}")
+                .AddCommand($"echo > {webApp1OutputDir}/webapp1.dll")
+                .AddCommand($"oryx -sourcePath {repoDir} -output {scriptLocation}")
+                .AddCommand($"cat {scriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.Output);
+                    Assert.Contains(expectedStartupCommand, result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_WhenWebApplicationProject_IsDeeplyNested()
+        {
+            // Arrange
+            var repoDir = "/repo";
+            var webAppDir = $"{repoDir}/src/Apps/WebApp";
+            var webAppOutputDir = $"{webAppDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var expectedStartupCommand = $"dotnet \"webapp.dll\"";
+            var expectedWorkingDir = $"cd \"{webAppOutputDir}\"";
+            var scriptLocation = "/tmp/run.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {webAppDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {webAppDir}/webapp.csproj")
+                .AddCommand($"mkdir -p {webAppOutputDir}")
+                .AddCommand($"echo > {webAppOutputDir}/webapp.dll")
+                .AddCommand($"oryx -sourcePath {repoDir} -output {scriptLocation}")
+                .AddCommand($"cat {scriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.Output);
+                    Assert.Contains(expectedStartupCommand, result.Output);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_WithDefaultAppFilePath_IfMultipleWebApplicationProjectsFound()
+        {
+            // Arrange
+            var repoDir = "/repo";
+            var webApp1Dir = $"{repoDir}/src/Apps/WebApp1";
+            var webApp2Dir = $"{repoDir}/src/Apps/WebApp2";
+            var defaultWebAppFile = "/tmp/defaultwebapp.dll";
+            var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
+            var scriptLocation = "/tmp/run.sh";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {webApp1Dir}")
+                .AddCommand($"mkdir -p {webApp2Dir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {webApp1Dir}/webapp1.csproj")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {webApp2Dir}/webapp2.csproj")
+                .AddCommand($"echo > {defaultWebAppFile}")
+                .AddCommand($"oryx -sourcePath {repoDir} -output {scriptLocation} -defaultAppFilePath {defaultWebAppFile}")
+                .AddCommand($"cat {scriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedStartupCommand, result.Output);
                 },
                 result.GetDebugInfo());
         }

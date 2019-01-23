@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -110,8 +109,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "TailwindTraders-Opener");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:3000";
+            var portMapping = $"{HostPort}:3000";
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -134,7 +132,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/browse");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/browse");
                     Assert.Contains("<!DOCTYPE html><html lang=\"en\">", data);
                 });
         }
@@ -184,8 +182,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "lab2-appservice");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:3000";
+            var portMapping = $"{HostPort}:3000";
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -208,7 +205,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Welcome to Express", data);
                 });
         }
@@ -221,8 +218,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "soundcloud-ngrx");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:3000";
+            var portMapping = $"{HostPort}:3000";
             var startupFile = "./run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -246,9 +242,9 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var response = await _httpClient.GetAsync($"http://localhost:{port}/");
+                    var response = await _httpClient.GetAsync($"http://localhost:{HostPort}/");
                     Assert.True(response.IsSuccessStatusCode);
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>SoundCloud • Angular2 NgRx</title>", data);
                 });
         }
@@ -261,8 +257,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "create-react-app-sample");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
-            var portMapping = $"{port}:3000";
+            var portMapping = $"{HostPort}:3000";
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -285,7 +280,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>React App</title>", data);
                 });
         }
@@ -332,10 +327,9 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "python", "python2-flask-app");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var port = 8000;
             const string virtualEnvName = "antenv2.7";
             var startupFile = "/tmp/startup.sh";
-            var portMapping = $"{port}:5000";
+            var portMapping = $"{HostPort}:5000";
             var script = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
@@ -360,7 +354,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{port}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
         }
