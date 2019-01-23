@@ -43,8 +43,7 @@ make install
 
 PYTHON_PATH=/opt/python/$PYTHON_VERSION
 
-# Using specific Git commit here due to https://github.com/pypa/get-pip/issues/40
-wget https://github.com/pypa/get-pip/raw/b3d0f6c0faa8e02322efb00715f8460965eb5d5f/get-pip.py -O /get-pip.py
+wget https://bootstrap.pypa.io/get-pip.py -O /get-pip.py
 LD_LIBRARY_PATH=/usr/src/python \
 /usr/src/python/python /get-pip.py \
     --prefix $PYTHON_PATH \
