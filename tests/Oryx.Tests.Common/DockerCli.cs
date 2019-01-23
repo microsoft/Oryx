@@ -300,11 +300,21 @@ namespace Oryx.Tests.Common
                 }
             }
 
-            string aiKeyOverride = Environment.GetEnvironmentVariable("TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
+            var aiKeyOverride = Environment.GetEnvironmentVariable(
+                "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(aiKeyOverride))
             {
                 args.Add("-e");
-                args.Add($"{LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName}={aiKeyOverride}");
+                args.Add(
+                    $"{LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName}={aiKeyOverride}");
+            }
+
+            var appServiceAppName = Environment.GetEnvironmentVariable(
+                LoggingConstants.AppServiceAppNameEnvironmentVariableName);
+            if (!string.IsNullOrWhiteSpace(appServiceAppName))
+            {
+                args.Add("-e");
+                args.Add($"{LoggingConstants.AppServiceAppNameEnvironmentVariableName}={appServiceAppName}");
             }
 
             if (volumes?.Count > 0)

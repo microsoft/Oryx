@@ -12,6 +12,7 @@ import (
 
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts"
+	"github.com/google/uuid"
 )
 
 const SHUTDOWN_CLOSE_TIMEOUT time.Duration = 3 * time.Second
@@ -23,14 +24,25 @@ type Logger struct {
 	AiClient   appinsights.TelemetryClient
 	LoggerName string
 	AppName    string
+	SessionId  string
 }
 
+// Represents unique correlation id that is used for correlating messages that get logged
+// in a single session
+var sessionId string
+
 func GetLogger(name string) *Logger {
+	// Create the session id only once for the whole session
+	if sessionId == "" {
+		sessionId = uuid.New().String()
+	}
+
 	key := os.Getenv(APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME)
 	logger := Logger{
 		AiClient:   appinsights.NewTelemetryClient(key),
 		LoggerName: name,
 		AppName:    os.Getenv(APP_SERVICE_APP_NAME_ENV_VAR_NAME),
+		SessionId:  sessionId,
 	}
 	return &logger
 }
@@ -39,6 +51,7 @@ func (logger *Logger) makeTraceItem(message string, sev contracts.SeverityLevel)
 	trace := appinsights.NewTraceTelemetry(message, sev)
 	trace.Properties["LoggerName"] = logger.LoggerName
 	trace.Properties["AppName"] = logger.AppName
+	trace.Properties["SessionId"] = logger.SessionId
 	return trace
 }
 
