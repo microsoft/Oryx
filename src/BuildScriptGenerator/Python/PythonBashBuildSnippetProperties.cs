@@ -14,12 +14,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string virtualEnvironmentName,
             string virtualEnvironmentModule,
             string virtualEnvironmentParameters,
-            string packagesDirectory)
+            string packagesDirectory,
+            bool disableCollectStatic)
         {
             VirtualEnvironmentName = virtualEnvironmentName;
             VirtualEnvironmentModule = virtualEnvironmentModule;
             VirtualEnvironmentParameters = virtualEnvironmentParameters;
             PackagesDirectory = packagesDirectory;
+            DisableCollectStatic = disableCollectStatic;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -32,5 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// Gets or sets the directory where the packages will be downloaded to.
         /// </summary>
         public string PackagesDirectory { get; set; }
+
+        public bool DisableCollectStatic { get; set; }
     }
 }

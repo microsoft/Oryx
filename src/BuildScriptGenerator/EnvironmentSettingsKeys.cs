@@ -16,5 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string DotnetCoreSupportedVersions = "DOTNETCORE_SUPPORTED_VERSIONS";
 
         public const string Project = "PROJECT";
+
+        public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";
     }
 }

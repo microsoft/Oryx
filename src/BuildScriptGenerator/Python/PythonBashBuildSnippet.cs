@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+    #line 1 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class PythonBashBuildSnippet : PythonBashBuildSnippetBase
     {
@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     "ements.txt; Not running pip install\'\n\necho \"Python Version: $python\"\ncd \"$SOURCE" +
                     "_DIR\"\n\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 7 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
 
@@ -38,21 +38,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             #line hidden
             this.Write("\nVIRTUALENVIRONMENTNAME=");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 10 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
             this.Write("\nVIRTUALENVIRONMENTMODULE=");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 11 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
             this.Write("\nVIRTUALENVIRONMENTOPTIONS=");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 12 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
             
             #line default
@@ -79,7 +79,7 @@ fi
 python_bin=python
 ");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 32 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	}
 	else {
@@ -92,7 +92,7 @@ python_bin=python
                     "r.\n\techo Running pip install...\n\n\t$pip install --prefer-binary -r requirements.t" +
                     "xt --target=\"");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 40 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
@@ -119,24 +119,30 @@ mkdir -p $SITE_PACKAGES_PATH
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
 APP_PACKAGES_PATH=$(pwd)""/");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 59 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
             
             #line default
             #line hidden
             this.Write("\"\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+            #line 62 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write(@"
-echo Done running pip install.
+            this.Write("echo Done running pip install.\r\n\r\n");
+            
+            #line 67 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
-if [ -e ""$SOURCE_DIR/manage.py"" ]
+	if (!DisableCollectStatic) {
+
+            
+            #line default
+            #line hidden
+            this.Write(@"if [ -e ""$SOURCE_DIR/manage.py"" ]
 then
 	if grep -iq ""Django"" ""$SOURCE_DIR/requirements.txt""
 	then
@@ -148,6 +154,14 @@ then
 	fi
 fi
 ");
+            
+            #line 81 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
+
+	}
+
+            
+            #line default
+            #line hidden
             return this.GenerationEnvironment.ToString();
         }
     }

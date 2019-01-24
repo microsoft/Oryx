@@ -549,19 +549,67 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        public void GeneratesScript_AndBuilds_DjangoApp()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("false")]
+        public void GeneratesScript_AndBuilds_DjangoApp_RunningCollectStatic(string disableCollectStatic)
+        {
+            // Arrange
+            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "django-app"));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var scriptBuilder = new ShellScriptBuilder();
+            if (string.IsNullOrEmpty(disableCollectStatic))
+            {
+                scriptBuilder.AddCommand(
+                    $"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}");
+            }
+            var script = scriptBuilder
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
+                // These css files should be available since 'collectstatic' is run in the script
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("true")]
+        [InlineData("True")]
+        public void GeneratesScript_AndBuilds_DjangoApp_WithoutRunningCollectStatic_IfDisableCollectStatic_IsTrue(
+            string disableCollectStatic)
         {
             // Arrange
             var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", "django-app"));
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
-                // These css files should be available since 'collectstatic' is run in the script
-                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
-                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
+                // These css files should NOT be available since 'collectstatic' is set off
+                .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
                 .ToString();
 
             // Act

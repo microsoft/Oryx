@@ -25,15 +25,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
+        private readonly IEnvironment _environment;
         private readonly ILogger<PythonScriptGenerator> _logger;
 
         public PythonScriptGenerator(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
+            IEnvironment environment,
             ILogger<PythonScriptGenerator> logger)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
+            _environment = environment;
             _logger = logger;
         }
 
@@ -88,16 +91,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         throw new NotSupportedException(errorMessage);
                 }
 
-                _logger.LogDebug("Using virtual environment {venv}, module {venvModule}", virtualEnvName, virtualEnvModule);
+                _logger.LogDebug(
+                    "Using virtual environment {venv}, module {venvModule}",
+                    virtualEnvName,
+                    virtualEnvModule);
             }
 
-            _logger.LogDependencies("Python", pythonVersion, context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName).Where(line => !line.TrimStart().StartsWith("#")));
+            // Collect static is enabled by default, but users can opt-out of it
+            var disableCollectStatic = false;
+            var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
+                EnvironmentSettingsKeys.DisableCollectStatic);
+            if (string.Equals(disableCollectStaticEnvValue, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                disableCollectStatic = true;
+            }
+
+            _logger.LogDependencies(
+                "Python",
+                pythonVersion,
+                context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName)
+                .Where(line => !line.TrimStart().StartsWith("#")));
 
             var script = new PythonBashBuildSnippet(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
-                packagesDirectory: packageDir).TransformText();
+                packagesDirectory: packageDir,
+                disableCollectStatic: disableCollectStatic).TransformText();
 
             return new BuildScriptSnippet()
             {
