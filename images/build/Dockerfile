@@ -218,7 +218,7 @@ RUN /python-build.sh
 # Build Python 3.7
 FROM python-build-prereqs AS python3.7-build
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=3.7.1
+ENV PYTHON_VERSION=3.7.2
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.1
 COPY images/build/python-build.sh /
@@ -242,15 +242,15 @@ RUN set -ex \
  && echo /opt/python/2.7.15/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.5.6/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.6.7/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.7.1/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/3.7.2/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN set -ex \
  && ln -s 2.7.15 /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s 3.5.6 /opt/python/3.5 \
  && ln -s 3.6.7 /opt/python/3.6 \
- && ln -s 3.7.1 /opt/python/latest \
- && ln -s 3.7.1 /opt/python/3.7 \
+ && ln -s 3.7.2 /opt/python/latest \
+ && ln -s 3.7.2 /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
  && cd /usr/local/bin \

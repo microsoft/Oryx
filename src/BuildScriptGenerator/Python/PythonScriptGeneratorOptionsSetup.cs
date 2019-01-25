@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         // other environments, e.g. our local machines for debugging.
         internal const string PythonSupportedVersionsEnvVariable = "PYTHON_SUPPORTED_VERSIONS";
 
-        internal const string PythonLtsVersion = "3.7.1";
+        internal const string PythonLtsVersion = "3.7.2";
         internal const string InstalledPythonVersionsDir = "/opt/python/";
 
         private readonly IEnvironment _environment;
