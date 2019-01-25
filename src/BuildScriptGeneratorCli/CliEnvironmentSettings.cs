@@ -7,11 +7,12 @@ using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    internal class CliEnvironmentSettings
+    public class CliEnvironmentSettings
     {
         private const string DisableDotNetCoreEnvVarName = "DISABLE_DOTNETCORE_BUILD";
         private const string DisablePythonEnvVarName = "DISABLE_PYTHON_BUILD";
         private const string DisableNodeJsEnvVarName = "DISABLE_NODEJS_BUILD";
+        private const string DisableMultiPlatformBuildEnvVarName = "DISABLE_MULTIPLATFORM_BUILD";
 
         private IEnvironment _environment;
 
@@ -20,18 +21,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
-        public bool DisableDotNetCore => IsLanguageDisabled(DisableDotNetCoreEnvVarName);
+        public bool DisableDotNetCore => IsDisableVariableSet(DisableDotNetCoreEnvVarName);
 
-        public bool DisableNodeJs => IsLanguageDisabled(DisableNodeJsEnvVarName);
+        public bool DisableNodeJs => IsDisableVariableSet(DisableNodeJsEnvVarName);
 
-        public bool DisablePython => IsLanguageDisabled(DisablePythonEnvVarName);
+        public bool DisablePython => IsDisableVariableSet(DisablePythonEnvVarName);
 
-        private bool IsLanguageDisabled(string disableLanguageEnvVarName)
+        public bool DisableMultiPlatformBuild => IsDisableVariableSet(DisableMultiPlatformBuildEnvVarName);
+
+        private bool IsDisableVariableSet(string disableEnvVarName)
         {
-            var isLangDisabledVar = _environment.GetBoolEnvironmentVariable(disableLanguageEnvVarName);
-            if (isLangDisabledVar == true)
+            var isDisabledVar = _environment.GetBoolEnvironmentVariable(disableEnvVarName);
+            if (isDisabledVar == true)
             {
-                // The user has set the variable _and_ its value is true, so the language is disabled.
+                // The user has set the variable _and_ its value is true, so the feature is disabled.
                 return true;
             }
             else

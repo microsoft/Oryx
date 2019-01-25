@@ -50,6 +50,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void TryGenerateScript_OnlyProcessProvidedPlatform_IfMultiPlatformIsDisabled()
+        {
+            // Arrange
+            var detector1 = new TestLanguageDetectorSimpleMatch(shouldMatch: true);
+            var platform1 = new TestProgrammingPlatform(
+                "main",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: detector1);
+            var detector2 = new TestLanguageDetectorSimpleMatch(shouldMatch: true);
+            var platform2 = new TestProgrammingPlatform(
+                "anotherPlatform",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "some code",
+                detector: detector2);
+            var generator = CreateDefaultScriptGenerator(new[] { platform1, platform2 });
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "main",
+                suppliedLanguageVersion: "1.0.0");
+            context.DisableMultiPlatformBuild = true;
+
+            // Act
+            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+
+            // Assert
+            Assert.True(canGenerateScript);
+            Assert.Contains("script-content", generatedScript);
+            Assert.DoesNotContain("some code", generatedScript);
+        }
+
+        [Fact]
         public void TryGenerateScript_ReturnsTrue_IfLanguageIsProvidedButNoVersion_AndCanDetectVersion()
         {
             // Arrange

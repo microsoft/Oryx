@@ -80,6 +80,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     targetVersionSpec = context.LanguageVersion;
                     usePlatform = true;
                 }
+                else if (context.DisableMultiPlatformBuild)
+                {
+                    continue;
+                }
 
                 if (!currPlatformMatch || string.IsNullOrEmpty(targetVersionSpec))
                 {
