@@ -1,7 +1,6 @@
 <#@ template language="C#" #>
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
-
 echo "Python Version: $python"
 cd "$SOURCE_DIR"
 

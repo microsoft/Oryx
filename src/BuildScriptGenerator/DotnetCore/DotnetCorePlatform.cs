@@ -4,34 +4,42 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 {
-    public class DotnetCoreScriptGenerator : ILanguageScriptGenerator
+    /// <summary>
+    /// .NET Core platform.
+    /// </summary>
+    internal class DotnetCorePlatform : IProgrammingPlatform
     {
-        private readonly DotnetCoreScriptGeneratorOptions _scriptGeneratorOptions;
         private readonly IDotnetCoreVersionProvider _versionProvider;
         private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
-        private readonly ILogger<DotnetCoreScriptGenerator> _logger;
+        private readonly ILogger<DotnetCorePlatform> _logger;
+        private readonly DotnetCoreLanguageDetector _detector;
 
-        public DotnetCoreScriptGenerator(
-            IOptions<DotnetCoreScriptGeneratorOptions> scriptGeneratorOptions,
+        public DotnetCorePlatform(
             IDotnetCoreVersionProvider versionProvider,
             IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
-            ILogger<DotnetCoreScriptGenerator> logger)
+            ILogger<DotnetCorePlatform> logger,
+            DotnetCoreLanguageDetector detector)
         {
-            _scriptGeneratorOptions = scriptGeneratorOptions.Value;
             _versionProvider = versionProvider;
             _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
             _logger = logger;
+            _detector = detector;
         }
 
-        public string SupportedLanguageName => DotnetCoreConstants.LanguageName;
+        public string Name => DotnetCoreConstants.LanguageName;
 
         public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedVersions;
+
+        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        {
+            return _detector.Detect(sourceRepo);
+        }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
         {
@@ -49,12 +57,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 
             return new BuildScriptSnippet()
             {
-                BashBuildScriptSnippet = script,
-                RequiredToolsVersion = new Dictionary<string, string>()
-                {
-                    { "dotnet", scriptGeneratorContext.LanguageVersion }
-                }
+                BashBuildScriptSnippet = script
             };
+        }
+
+        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        {
+            return scriptGeneratorContext.EnableDotNetCore;
+        }
+
+        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        {
+            Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
+            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
+            {
+                toolsToVersion["dotnet"] = targetPlatformVersion;
+            }
+        }
+
+        public void SetVersion(ScriptGeneratorContext context, string version)
+        {
+            context.DotnetCoreVersion = version;
         }
     }
 }

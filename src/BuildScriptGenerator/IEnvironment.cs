@@ -24,6 +24,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         string GetEnvironmentVariable(string name);
 
         /// <summary>
+        /// Gets the value of an environment variable as a boolean, if found. The check
+        /// is case insensitive.
+        /// </summary>
+        /// <param name="name">The name of the environment variable.</param>
+        /// <returns>true if the variable exists and has value "true";
+        /// false if it has value "false", or no value otherwise.
+        ///</returns>
+        bool? GetBoolEnvironmentVariable(string name);
+
+        /// <summary>
         /// Retrieves the value of an environment variable that might contain a list of comma-separated values.
         /// </summary>
         /// <param name="name">The name of the environment variable.</param>

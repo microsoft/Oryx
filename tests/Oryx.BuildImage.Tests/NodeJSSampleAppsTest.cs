@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -230,9 +234,8 @@ namespace Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                Assert.True(result.IsSuccess);
-                Assert.Equal(0, result.ExitCode);
-
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(0, result.ExitCode);
                 },
                 result.GetDebugInfo());
         }
@@ -572,12 +575,29 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"Pre-build script: /opt/nodejs/6/bin/node", result.Output);
-                    Assert.Contains($"Pre-build script: /opt/nodejs/6/bin/npm", result.Output);
-                    Assert.Contains($"Post-build script: /opt/nodejs/6/bin/node", result.Output);
-                    Assert.Contains($"Post-build script: /opt/nodejs/6/bin/npm", result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.Output);
+                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.Output);
+                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.Output);
                 },
                 result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void TestRegex()
+        {
+            Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", @"
+a
+d
+d
+d
+d
+d
+Pre-build script: /opt/nodejs/6.11.0/bin/node
+d
+a
+
+");
         }
 
         private void RunAsserts(Action action, string message)

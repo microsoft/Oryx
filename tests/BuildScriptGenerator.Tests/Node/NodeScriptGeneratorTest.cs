@@ -256,7 +256,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
         }
 
-        private ILanguageScriptGenerator GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)
+        private IProgrammingPlatform GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)
         {
             var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
@@ -270,10 +270,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
 
-            return new NodeScriptGenerator(
+            return new NodePlatform(
                 nodeScriptGeneratorOptions,
                 nodeVersionProvider,
-                NullLogger<NodeScriptGenerator>.Instance);
+                NullLogger<NodePlatform>.Instance,
+                null);
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(

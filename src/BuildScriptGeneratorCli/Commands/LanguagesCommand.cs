@@ -30,15 +30,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var padding = new string(' ', languageLabel.Length);
 
             var logger = serviceProvider.GetRequiredService<ILogger<LanguagesCommand>>();
-            var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<ILanguageScriptGenerator>>();
+            var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>();
             scriptGenerators = scriptGenerators
-                .OrderBy(sg => sg.SupportedLanguageName, StringComparer.OrdinalIgnoreCase);
+                .OrderBy(sg => sg.Name, StringComparer.OrdinalIgnoreCase);
 
             using (logger.LogTimedEvent("ListLanguages"))
             {
                 foreach (var scriptGenerator in scriptGenerators)
                 {
-                    if (string.IsNullOrWhiteSpace(scriptGenerator.SupportedLanguageName))
+                    if (string.IsNullOrWhiteSpace(scriptGenerator.Name))
                     {
                         continue;
                     }
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     if (scriptGenerator.SupportedLanguageVersions != null && scriptGenerator.SupportedLanguageVersions.Any())
                     {
                         var sortedVersions = SortVersions(scriptGenerator.SupportedLanguageVersions);
-                        console.WriteLine($"{languageLabel}{scriptGenerator.SupportedLanguageName}");
+                        console.WriteLine($"{languageLabel}{scriptGenerator.Name}");
                         console.WriteLine($"{versionLabel}{sortedVersions.First()}");
                         console.Write(string.Join(Environment.NewLine, sortedVersions.Skip(1).Select(
                             v => $"{padding}{v}")));
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     }
                     else
                     {
-                        console.WriteLine($"{scriptGenerator.SupportedLanguageName}");
+                        console.WriteLine($"{scriptGenerator.Name}");
                     }
 
                     // get properties

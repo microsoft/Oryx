@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -66,7 +67,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Arrange
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
-                new TestScriptGenerator(scriptContent),
+                new TestProgrammingPlatform(scriptContent),
                 scriptOnly: true);
             var scriptCommand = new ScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -87,7 +88,7 @@ namespace BuildScriptGeneratorCli.Tests
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
             var expected = scriptContentWithCRLF.Replace("\r\n", "\n");
             var serviceProvider = CreateServiceProvider(
-                new TestScriptGenerator(scriptContentWithCRLF),
+                new TestProgrammingPlatform(scriptContentWithCRLF),
                 scriptOnly: true);
             var scriptCommand = new ScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -101,7 +102,7 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(string.Empty, testConsole.StdError);
         }
 
-        private IServiceProvider CreateServiceProvider(TestScriptGenerator generator, bool scriptOnly)
+        private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
             Directory.CreateDirectory(sourceCodeFolder);
@@ -118,9 +119,9 @@ namespace BuildScriptGeneratorCli.Tests
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
 
-                    services.RemoveAll<ILanguageScriptGenerator>();
+                    services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(generator));
+                        ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
 
                     services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
@@ -150,23 +151,32 @@ namespace BuildScriptGeneratorCli.Tests
             }
         }
 
-        private class TestScriptGenerator : ILanguageScriptGenerator
+        private class TestProgrammingPlatform : IProgrammingPlatform
         {
             private readonly string _scriptContent;
 
-            public TestScriptGenerator()
+            public TestProgrammingPlatform()
                 : this(scriptContent: null)
             {
             }
 
-            public TestScriptGenerator(string scriptContent)
+            public TestProgrammingPlatform(string scriptContent)
             {
                 _scriptContent = scriptContent;
             }
 
-            public string SupportedLanguageName => "test";
+            public string Name => "test";
 
             public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
+
+            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+            {
+                return new LanguageDetectorResult
+                {
+                    Language = Name,
+                    LanguageVersion = SupportedLanguageVersions.First()
+                };
+            }
 
             public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
             {
@@ -183,6 +193,19 @@ namespace BuildScriptGeneratorCli.Tests
                 {
                     BashBuildScriptSnippet = script
                 };
+            }
+
+            public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+            {
+                return true;
+            }
+
+            public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+            {
+            }
+
+            public void SetVersion(ScriptGeneratorContext context, string version)
+            {
             }
         }
 

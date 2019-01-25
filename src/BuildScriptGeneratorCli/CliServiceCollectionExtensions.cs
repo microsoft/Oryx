@@ -13,6 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static IServiceCollection AddCliServices(this IServiceCollection services)
         {
             services.AddSingleton<IConsole, PhysicalConsole>();
+            services.AddSingleton<CliEnvironmentSettings>();
             return services;
         }
     }

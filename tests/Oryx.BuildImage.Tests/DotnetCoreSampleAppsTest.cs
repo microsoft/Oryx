@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
 
 using System;
 using System.IO;
@@ -290,8 +294,8 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"Pre-build script: /opt/dotnet/2.1/dotnet", result.Output);
-                    Assert.Contains($"Post-build script: /opt/dotnet/2.1/dotnet", result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/dotnet/2.1.\d+", result.Output);
+                    Assert.Matches(@"Post-build script: /opt/dotnet/2.1.\d+", result.Output);
                 },
                 result.GetDebugInfo());
         }

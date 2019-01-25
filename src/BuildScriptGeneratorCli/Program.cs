@@ -18,24 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]
         public bool Version { get; set; }
 
-        internal int OnExecute(CommandLineApplication app, IConsole console)
-        {
-            if (Version)
-            {
-                var version = GetVersion();
-                var commit = GetCommit();
-                console.WriteLine($"Version: {version}, Commit: {commit}");
-
-                return Constants.ExitSuccess;
-            }
-
-            app.ShowHelp();
-
-            return Constants.ExitSuccess;
-        }
-
-        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
-
         internal static string GetVersion()
         {
             var informationalVersion = Assembly.GetExecutingAssembly()
@@ -60,5 +42,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             return null;
         }
+
+        internal int OnExecute(CommandLineApplication app, IConsole console)
+        {
+            if (Version)
+            {
+                var version = GetVersion();
+                var commit = GetCommit();
+                console.WriteLine($"Version: {version}, Commit: {commit}");
+
+                return Constants.ExitSuccess;
+            }
+
+            app.ShowHelp();
+
+            return Constants.ExitSuccess;
+        }
+
+        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
     }
 }

@@ -17,10 +17,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<ILanguageDetector, NodeLanguageDetector>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<ILanguageScriptGenerator, NodeScriptGenerator>());
+                ServiceDescriptor.Singleton<IProgrammingPlatform, NodePlatform>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());
             services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
+            services.AddScoped<NodeLanguageDetector>();
             return services;
         }
     }

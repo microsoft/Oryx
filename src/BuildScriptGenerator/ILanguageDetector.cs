@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Detects language name and version of the application in source directory.
     /// </summary>
-    public interface ILanguageDetector
+    internal interface ILanguageDetector
     {
         /// <summary>
         /// Detects language name and version of the application in source directory.

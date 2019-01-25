@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,30 +13,36 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal class NodeScriptGenerator : ILanguageScriptGenerator
+    internal class NodePlatform : IProgrammingPlatform
     {
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
-        private readonly ILogger<NodeScriptGenerator> _logger;
+        private readonly ILogger<NodePlatform> _logger;
+        private readonly NodeLanguageDetector _detector;
 
-        public NodeScriptGenerator(
+        public NodePlatform(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
-            ILogger<NodeScriptGenerator> logger)
+            ILogger<NodePlatform> logger,
+            NodeLanguageDetector detector)
         {
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
             _logger = logger;
+            _detector = detector;
         }
 
-        public string SupportedLanguageName => NodeConstants.NodeJsName;
+        public string Name => NodeConstants.NodeJsName;
 
         public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
 
+        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        {
+            return _detector.Detect(sourceRepo);
+        }
+
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
         {
-            var requiredTools = new Dictionary<string, string>() { { "node", context.LanguageVersion } };
-
             var packageJson = GetPackageJsonObject(context.SourceRepo);
             string packageManagerCmd = null;
             string runBuildCommand = null;
@@ -47,11 +54,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             else
             {
                 packageManagerCmd = NodeConstants.NpmCommand;
-                var npmVersion = GetNpmVersion(packageJson);
-                if (!string.IsNullOrEmpty(npmVersion))
-                {
-                    requiredTools.Add("npm", npmVersion);
-                }
             }
 
             var packageInstallCommand = string.Format(NodeConstants.PackageInstallCommandTemplate, packageManagerCmd);
@@ -74,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
                 var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(context.Language, context.LanguageVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+                _logger.LogDependencies(context.Language, context.NodeVersion, depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
             var script = new NodeBashBuildSnippet(
@@ -84,9 +86,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             return new BuildScriptSnippet()
             {
-                BashBuildScriptSnippet = script,
-                RequiredToolsVersion = requiredTools
+                BashBuildScriptSnippet = script
             };
+        }
+
+        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        {
+            return scriptGeneratorContext.EnableNodeJs;
+        }
+
+        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        {
+            Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
+            Debug.Assert(sourceRepo != null, $"{nameof(sourceRepo)} must not be null since Node needs access to the repository");
+            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
+            {
+                toolsToVersion["node"] = targetPlatformVersion;
+            }
+
+            var packageJson = GetPackageJsonObject(sourceRepo);
+            if (packageJson != null)
+            {
+                var npmVersion = GetNpmVersion(packageJson);
+                if (!string.IsNullOrEmpty(npmVersion))
+                {
+                    toolsToVersion["npm"] = npmVersion;
+                }
+            }
+        }
+
+        public void SetVersion(ScriptGeneratorContext context, string version)
+        {
+            context.NodeVersion = version;
         }
 
         private string GetNpmVersion(dynamic packageJson)

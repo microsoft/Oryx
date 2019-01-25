@@ -35,15 +35,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var options = _serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
                 var scriptGenerator = _serviceProvider.GetRequiredService<IScriptGenerator>();
                 var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
-
+                var environment = _serviceProvider.GetRequiredService<CliEnvironmentSettings>();
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
                 var scriptGeneratorContext = new ScriptGeneratorContext
                 {
                     SourceRepo = sourceRepo,
                     Language = options.Language,
                     LanguageVersion = options.LanguageVersion,
-                    DestinationDir = options.DestinationDir,
-                    Properties = options.Properties
+                    Properties = options.Properties,
+                    EnableDotNetCore = !environment.DisableDotNetCore,
+                    EnableNodeJs = !environment.DisableNodeJs,
+                    EnablePython = !environment.DisablePython
                 };
 
                 // Try generating a script

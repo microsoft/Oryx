@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     [BuildProperty(VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
     [BuildProperty(TargetPackageDirectoryPropertyKey, "Directory to download the packages to, if no virtual environment is provided. Default: '" + DefaultTargetPackageDirectory + "'")]
-    internal class PythonScriptGenerator : ILanguageScriptGenerator
+    internal class PythonPlatform : IProgrammingPlatform
     {
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
@@ -26,23 +27,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
-        private readonly ILogger<PythonScriptGenerator> _logger;
+        private readonly ILogger<PythonPlatform> _logger;
+        private readonly PythonLanguageDetector _detector;
 
-        public PythonScriptGenerator(
+        public PythonPlatform(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
-            ILogger<PythonScriptGenerator> logger)
+            ILogger<PythonPlatform> logger,
+            PythonLanguageDetector detector)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
             _environment = environment;
             _logger = logger;
+            _detector = detector;
         }
 
-        public string SupportedLanguageName => PythonName;
+        public string Name => PythonName;
 
         public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
+
+        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        {
+            return _detector.Detect(sourceRepo);
+        }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
         {
@@ -69,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvModule = string.Empty;
             var virtualEnvCopyParam = string.Empty;
 
-            var pythonVersion = context.LanguageVersion;
+            var pythonVersion = context.PythonVersion;
             _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
@@ -122,8 +131,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return new BuildScriptSnippet()
             {
                 BashBuildScriptSnippet = script,
-                RequiredToolsVersion = new Dictionary<string, string> { { "python", pythonVersion } }
             };
+        }
+
+        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        {
+            return scriptGeneratorContext.EnablePython;
+        }
+
+        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        {
+            Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
+            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
+            {
+                toolsToVersion["python"] = targetPlatformVersion;
+            }
+        }
+
+        public void SetVersion(ScriptGeneratorContext context, string version)
+        {
+            context.PythonVersion = version;
         }
     }
 }

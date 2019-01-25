@@ -12,6 +12,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultEnvironment : IEnvironment
     {
+        public bool? GetBoolEnvironmentVariable(string name)
+        {
+            var variable = GetEnvironmentVariable(name);
+            if (!string.IsNullOrEmpty(variable))
+            {
+                if (variable.Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+                else if (variable.Equals("false", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return null;
+        }
+
         public string GetEnvironmentVariable(string name)
         {
             return Environment.GetEnvironmentVariable(name);

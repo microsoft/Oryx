@@ -17,19 +17,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class DefaultScriptGenerator : IScriptGenerator
     {
-        private readonly IEnumerable<ILanguageDetector> _languageDetectors;
-        private readonly IEnumerable<ILanguageScriptGenerator> _allScriptGenerators;
+        private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultScriptGenerator> _logger;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
 
         public DefaultScriptGenerator(
-            IEnumerable<ILanguageDetector> languageDetectors,
-            IEnumerable<ILanguageScriptGenerator> scriptGenerators,
+            IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DefaultScriptGenerator> logger)
         {
-            _languageDetectors = languageDetectors;
-            _allScriptGenerators = scriptGenerators;
+            _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
@@ -37,177 +34,171 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
         {
             script = null;
-
-            var scriptGenerators = GetScriptGeneratorsByLanguageNameAndVersion(context);
-            if (scriptGenerators == null)
-            {
-                _logger.LogWarning("Could not find any script generators");
-                return false;
-            }
-
-            var snippets = new List<BuildScriptSnippet>();
-            foreach (var scriptGenerator in scriptGenerators)
-            {
-                var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
-                if (snippet != null)
-                {
-                    _logger.LogDebug("Script generator {scriptGenType} was used", scriptGenerator.GetType());
-                    snippets.Add(snippet);
-                }
-                else
-                {
-                    _logger.LogDebug("Script generator {scriptGenType} cannot be used", scriptGenerator.GetType());
-                }
-            }
+            var toolsToVersion = new Dictionary<string, string>();
+            List<BuildScriptSnippet> snippets = GetBuildSnippets(context, toolsToVersion);
 
             if (snippets.Any())
             {
-                string benvArgs = GetBenvArgs(snippets);
-                _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
-                var buildScript = new BaseBashBuildScript()
-                {
-                    BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
-                    BenvArgs = benvArgs,
-                    PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
-                    PostBuildScriptPath = environmentSettings?.PostBuildScriptPath
-                };
-                script = buildScript.TransformText();
+                script = BuildScriptFromSnippets(snippets, toolsToVersion);
                 return true;
             }
-
-            return false;
+            else
+            {
+                LogAndThrowNoPlatformFound(context);
+                return false;
+            }
         }
 
-        private static string GetBenvArgs(List<BuildScriptSnippet> snippets)
+        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
         {
-            // Build a dictionary to make sure we only pass one version for each tool to benv
-            var benvArgsMap = new Dictionary<string, string>();
-            foreach (var snippet in snippets)
-            {
-                if (snippet.RequiredToolsVersion != null)
-                {
-                    foreach (var tool in snippet.RequiredToolsVersion.Keys)
-                    {
-                        benvArgsMap[tool] = snippet.RequiredToolsVersion[tool];
-                    }
-                }
-            }
-
             var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
             var benvArgs = string.Join(' ', listOfBenvArgs);
             return benvArgs;
         }
 
-        private IEnumerable<ILanguageScriptGenerator> GetScriptGeneratorsByLanguageNameAndVersion(
-            ScriptGeneratorContext context)
+        private List<BuildScriptSnippet> GetBuildSnippets(ScriptGeneratorContext context, Dictionary<string, string> toolsToVersion)
         {
-            EnsureLanguageAndVersion(context);
+            bool providedLanguageFound = false;
+            var snippets = new List<BuildScriptSnippet>();
 
-            _logger.LogDebug("Finding script generator for {lang} {langVer}", context.Language, context.LanguageVersion);
-
-            var languageScriptGenerators = _allScriptGenerators.Where(sg =>
+            foreach (var platform in _programmingPlatforms)
             {
-                return string.Equals(
-                    context.Language,
-                    sg.SupportedLanguageName,
-                    StringComparison.OrdinalIgnoreCase);
-            });
+                if (!platform.IsEnabled(context))
+                {
+                    _logger.LogDebug("{lang} has been disabled.", platform.Name);
+                    continue;
+                }
 
-            if (!languageScriptGenerators.Any())
-            {
-                var languages = _allScriptGenerators.Select(sg => sg.SupportedLanguageName);
-                var exc = new UnsupportedLanguageException($"'{context.Language}' language is not supported. " +
-                    $"Supported languages are: {string.Join(", ", languages)}");
+                bool usePlatform = false;
+                var currPlatformMatch = !string.IsNullOrEmpty(context.Language) &&
+                    string.Equals(context.Language, platform.Name, StringComparison.OrdinalIgnoreCase);
 
-                _logger.LogError(exc, "Exception caught");
-                throw exc;
+                string targetVersionSpec = null;
+                if (currPlatformMatch)
+                {
+                    providedLanguageFound = true;
+                    targetVersionSpec = context.LanguageVersion;
+                    usePlatform = true;
+                }
+
+                if (!currPlatformMatch || string.IsNullOrEmpty(targetVersionSpec))
+                {
+                    _logger.LogDebug("Detecting platform using {langPlat}", platform.Name);
+                    var detectionResult = platform.Detect(context.SourceRepo);
+                    if (detectionResult != null)
+                    {
+                        _logger.LogDebug("Detected {lang} version {version} for app in repo", platform.Name, detectionResult.LanguageVersion);
+                        usePlatform = true;
+                        targetVersionSpec = detectionResult.LanguageVersion;
+                        if (string.IsNullOrEmpty(targetVersionSpec))
+                        {
+                            throw new UnsupportedVersionException($"Couldn't detect a version for the platform '{platform.Name}' in the repo.");
+                        }
+                    }
+                }
+
+                if (usePlatform)
+                {
+                    string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
+                    platform.SetVersion(context, targetVersion);
+                    var snippet = platform.GenerateBashBuildScriptSnippet(context);
+                    if (snippet != null)
+                    {
+                        _logger.LogDebug("Script generator {scriptGenType} was used", platform.GetType());
+                        snippets.Add(snippet);
+                        platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Script generator {scriptGenType} cannot be used", platform.GetType());
+                    }
+                }
             }
 
-            if (string.IsNullOrEmpty(context.LanguageVersion))
+            // Even if a language was detected, we throw an error if the user provided an unsupported language
+            // as target.
+            if (!string.IsNullOrEmpty(context.Language) && !providedLanguageFound)
             {
-                return languageScriptGenerators;
+                ThrowInvalidLanguageProvided(context);
             }
 
-            // Ignoring the order in which script generators are registered, find the script generator
-            // which best matches the provided version semantically.
-            var allLanguageScriptGeneratorsVersions = languageScriptGenerators.SelectMany(
-                sg => sg.SupportedLanguageVersions);
+            return snippets;
+        }
 
+        private void ThrowInvalidLanguageProvided(ScriptGeneratorContext context)
+        {
+            var languages = _programmingPlatforms.Select(sg => sg.Name);
+            var exc = new UnsupportedLanguageException($"'{context.Language}' platform is not supported. " +
+                $"Supported platforms are: {string.Join(", ", languages)}");
+            _logger.LogError(exc, "Exception caught");
+            throw exc;
+        }
+
+        /// <summary>
+        /// Builds the full build script from the list of snippets for each platform.
+        /// </summary>
+        private string BuildScriptFromSnippets(List<BuildScriptSnippet> snippets, Dictionary<string, string> toolsToVersion)
+        {
+            string script;
+            string benvArgs = GetBenvArgs(toolsToVersion);
+            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
+            var buildScript = new BaseBashBuildScript()
+            {
+                BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
+                BenvArgs = benvArgs,
+                PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
+                PostBuildScriptPath = environmentSettings?.PostBuildScriptPath
+            };
+            script = buildScript.TransformText();
+            return script;
+        }
+
+        /// <summary>
+        /// Handles the error when no platform was found, logging information about the repo.
+        /// </summary>
+        private void LogAndThrowNoPlatformFound(ScriptGeneratorContext context)
+        {
+            try
+            {
+                var diretoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(context.SourceRepo.RootPath);
+                _logger.LogDebug("Source repo structure {repoDir}", diretoryStructureData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception caught");
+            }
+            finally
+            {
+                throw new UnsupportedLanguageException("Could not detect the language from repo.");
+            }
+        }
+
+        /// <summary>
+        /// Gets a matching version for the platform given a version in SemVer format.
+        /// If the given version is not supported, an exception is thrown.
+        /// </summary>
+        /// <returns>The maximum version that satisfies the requested version spec.</returns>
+        private string GetMatchingTargetVersion(IProgrammingPlatform platform, string targetVersionSpec)
+        {
+            string targetVersion;
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                context.LanguageVersion,
-                allLanguageScriptGeneratorsVersions);
+               targetVersionSpec,
+               platform.SupportedLanguageVersions);
+
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
-                    $"The '{context.Language}' version '{context.LanguageVersion}' is not supported. " +
-                    $"Supported versions are: {string.Join(", ", allLanguageScriptGeneratorsVersions)}");
+                    $"The '{platform.Name}' version '{targetVersionSpec}' is not supported. " +
+                    $"Supported versions are: {string.Join(", ", platform.SupportedLanguageVersions)}");
                 _logger.LogError(exc, "Exception caught");
                 throw exc;
             }
-
-            var maxSatisfyingVersionGenerators = languageScriptGenerators.Where(
-                sg => sg.SupportedLanguageVersions.Contains(
-                    maxSatisfyingVersion,
-                    StringComparer.OrdinalIgnoreCase));
-
-            return maxSatisfyingVersionGenerators;
-        }
-
-        private void EnsureLanguageAndVersion(ScriptGeneratorContext context)
-        {
-            var languageName = context.Language;
-            var languageVersion = context.LanguageVersion;
-
-            // If 'language' or 'language version' wasn't explicitly provided, detect the source directory
-            if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
+            else
             {
-                _logger.LogDebug("Detecting the source directory for language and/or version");
-
-                (languageName, languageVersion) = DetectLanguageAndVersion(context.SourceRepo);
-
-                if (string.IsNullOrEmpty(languageName) || string.IsNullOrEmpty(languageVersion))
-                {
-                    try
-                    {
-                        var diretoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(context.SourceRepo.RootPath);
-                        _logger.LogDebug("Source repo structure {repoDir}", diretoryStructureData);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Exception caught");
-                    }
-                    finally
-                    {
-                        throw new InvalidOperationException("Could not detect the language and/or version from repo");
-                    }
-                }
-
-                _logger.LogDebug("Detected {lang} {langVer} for app in repo", languageName, languageVersion);
-
-                // Reset the context with detected values so that downstream components
-                // use these detected values.
-                context.Language = languageName;
-                context.LanguageVersion = languageVersion;
-            }
-        }
-
-        private (string language, string languageVersion) DetectLanguageAndVersion(ISourceRepo sourceRepo)
-        {
-            LanguageDetectorResult result = null;
-            foreach (var languageDetector in _languageDetectors)
-            {
-                result = languageDetector.Detect(sourceRepo);
-                if (result == null)
-                {
-                    _logger.LogWarning("Language detector {langDetectorType} could not detect language in repo", languageDetector.GetType());
-                }
-                else
-                {
-                    break;
-                }
+                targetVersion = maxSatisfyingVersion;
             }
 
-            return (language: result?.Language, languageVersion: result?.LanguageVersion);
+            return targetVersion;
         }
     }
 }

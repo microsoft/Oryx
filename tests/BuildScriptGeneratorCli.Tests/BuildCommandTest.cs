@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -294,7 +295,7 @@ namespace BuildScriptGeneratorCli.Tests
         public void OnSuccess_Execute_WritesOnlyBuildOutput_ToStandardOutput()
         {
             // Arrange
-            var serviceProvider = CreateServiceProvider(new TestScriptGenerator(), scriptOnly: false);
+            var serviceProvider = CreateServiceProvider(new TestProgrammingPlatform(), scriptOnly: false);
             var outputBuilder = new StringBuilder();
             var errorBuilder = new StringBuilder();
             var buildCommand = new BuildCommand();
@@ -421,7 +422,7 @@ namespace BuildScriptGeneratorCli.Tests
             return Path.Combine(_testDirPath, Guid.NewGuid().ToString());
         }
 
-        private IServiceProvider CreateServiceProvider(TestScriptGenerator generator, bool scriptOnly)
+        private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
             Directory.CreateDirectory(sourceCodeFolder);
@@ -436,9 +437,9 @@ namespace BuildScriptGeneratorCli.Tests
                     services.RemoveAll<ILanguageDetector>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
-                    services.RemoveAll<ILanguageScriptGenerator>();
+                    services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageScriptGenerator>(generator));
+                        ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
                     services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
                 })
@@ -476,23 +477,32 @@ namespace BuildScriptGeneratorCli.Tests
             }
         }
 
-        private class TestScriptGenerator : ILanguageScriptGenerator
+        private class TestProgrammingPlatform : IProgrammingPlatform
         {
             private readonly string _scriptContent;
 
-            public TestScriptGenerator()
+            public TestProgrammingPlatform()
                 : this(scriptContent: null)
             {
             }
 
-            public TestScriptGenerator(string scriptContent)
+            public TestProgrammingPlatform(string scriptContent)
             {
                 _scriptContent = scriptContent;
             }
 
-            public string SupportedLanguageName => "test";
+            public string Name => "test";
 
             public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
+
+            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+            {
+                return new LanguageDetectorResult
+                {
+                    Language = Name,
+                    LanguageVersion = SupportedLanguageVersions.First()
+                };
+            }
 
             public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
             {
@@ -510,6 +520,19 @@ namespace BuildScriptGeneratorCli.Tests
                 {
                     BashBuildScriptSnippet = script
                 };
+            }
+
+            public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+            {
+                return true;
+            }
+
+            public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+            {
+            }
+
+            public void SetVersion(ScriptGeneratorContext context, string version)
+            {
             }
         }
 

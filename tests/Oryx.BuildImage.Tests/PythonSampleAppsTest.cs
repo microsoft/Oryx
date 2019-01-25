@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -942,10 +946,10 @@ namespace Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"Pre-build script: /opt/python/{version}/bin/python{version}", result.Output);
-                    Assert.Contains($"Pre-build script: /opt/python/{version}/bin/pip", result.Output);
-                    Assert.Contains($"Post-build script: /opt/python/{version}/bin/python{version}", result.Output);
-                    Assert.Contains($"Post-build script: /opt/python/{version}/bin/pip", result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.Output);
+                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.Output);
+                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.Output);
                 },
                 result.GetDebugInfo());
         }

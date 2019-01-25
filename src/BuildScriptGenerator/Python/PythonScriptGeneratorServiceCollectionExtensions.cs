@@ -17,10 +17,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<ILanguageDetector, PythonLanguageDetector>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<ILanguageScriptGenerator, PythonScriptGenerator>());
+                ServiceDescriptor.Singleton<IProgrammingPlatform, PythonPlatform>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
+            services.AddScoped<PythonLanguageDetector>();
             return services;
         }
     }

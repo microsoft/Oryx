@@ -15,6 +15,19 @@ namespace Oryx.Tests.Common
         // Environment variables in Linux are case-sensitive
         public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
+        public bool? GetBoolEnvironmentVariable(string name)
+        {
+            var variable = GetEnvironmentVariable(name);
+            if (!string.IsNullOrEmpty(variable))
+            {
+                if (variable.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                    return true;
+                if (variable.Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                    return false;
+            }
+            return null;
+        }
+
         public string GetEnvironmentVariable(string name)
         {
             if (Variables.TryGetValue(name, out var value))

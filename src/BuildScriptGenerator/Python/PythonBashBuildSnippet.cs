@@ -25,9 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\ndeclare -r TS_FMT=\'[%T%z] \'\ndeclare -r REQS_NOT_FOUND_MSG=\'Could not find requir" +
-                    "ements.txt; Not running pip install\'\n\necho \"Python Version: $python\"\ncd \"$SOURCE" +
-                    "_DIR\"\n\n");
+            this.Write("declare -r TS_FMT=\'[%T%z] \'\r\ndeclare -r REQS_NOT_FOUND_MSG=\'Could not find requir" +
+                    "ements.txt; Not running pip install\'\r\necho \"Python Version: $python\"\r\ncd \"$SOURC" +
+                    "E_DIR\"\r\n\r\n");
             
             #line 7 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 
@@ -36,21 +36,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             
             #line default
             #line hidden
-            this.Write("\nVIRTUALENVIRONMENTNAME=");
+            this.Write("VIRTUALENVIRONMENTNAME=");
             
             #line 10 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentName));
             
             #line default
             #line hidden
-            this.Write("\nVIRTUALENVIRONMENTMODULE=");
+            this.Write("\r\nVIRTUALENVIRONMENTMODULE=");
             
             #line 11 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentModule));
             
             #line default
             #line hidden
-            this.Write("\nVIRTUALENVIRONMENTOPTIONS=");
+            this.Write("\r\nVIRTUALENVIRONMENTOPTIONS=");
             
             #line 12 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(VirtualEnvironmentParameters));
@@ -87,10 +87,12 @@ python_bin=python
             
             #line default
             #line hidden
-            this.Write("\nif [ -e \"requirements.txt\" ]\nthen\n\t# Indent the output as pip install prints the" +
-                    " \'Successfully Installed...\' message and then waits which can confuse an end use" +
-                    "r.\n\techo Running pip install...\n\n\t$pip install --prefer-binary -r requirements.t" +
-                    "xt --target=\"");
+            this.Write(@"if [ -e ""requirements.txt"" ]
+then
+	# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can confuse an end user.
+	echo Running pip install...
+
+	$pip install --prefer-binary -r requirements.txt --target=""");
             
             #line 40 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackagesDirectory));
@@ -124,7 +126,7 @@ APP_PACKAGES_PATH=$(pwd)""/");
             
             #line default
             #line hidden
-            this.Write("\"\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n\n");
+            this.Write("\"\r\necho $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\r\n\r\n");
             
             #line 62 "C:\Oryx\src\BuildScriptGenerator\Python\PythonBashBuildSnippet.tt"
 

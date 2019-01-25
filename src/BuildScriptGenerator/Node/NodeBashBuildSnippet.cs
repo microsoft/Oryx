@@ -25,71 +25,69 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\necho Installing packages ...\ncd \"$SOURCE_DIR\"\necho\necho \"Running \'");
+            this.Write("echo Installing packages ...\r\ncd \"$SOURCE_DIR\"\r\necho\r\necho \"Running \'");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 5 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
-            this.Write("\' ...\"\necho\n");
+            this.Write("\' ...\"\r\necho\r\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 7 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(PackageInstallCommand));
             
             #line default
             #line hidden
-            this.Write("\n\n");
+            this.Write("\r\n\r\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 9 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
 	if (!string.IsNullOrWhiteSpace(NpmRunBuildCommand)) {
 
             
             #line default
             #line hidden
-            this.Write("\n\n");
+            this.Write("\r\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 13 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildCommand));
             
             #line default
             #line hidden
-            this.Write("\n");
+            this.Write("\r\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 14 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write("\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 17 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
 	if (!string.IsNullOrWhiteSpace(NpmRunBuildAzureCommand)) {
 
             
             #line default
             #line hidden
-            this.Write("\n\n");
+            this.Write("\r\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 21 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NpmRunBuildAzureCommand));
             
             #line default
             #line hidden
-            this.Write("\n");
+            this.Write("\r\n");
             
-            #line 1 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
+            #line 22 "C:\src\oryx2\src\BuildScriptGenerator\Node\NodeBashBuildSnippet.tt"
 
 	}
 
             
             #line default
             #line hidden
-            this.Write("\n");
             return this.GenerationEnvironment.ToString();
         }
     }
