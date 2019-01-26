@@ -10,6 +10,10 @@ Setting name                     | Description                                  
 PRE\_BUILD\_SCRIPT\_PATH         | repo-relative path to a shell script to be run before build    | "repo/path/to/pre-script.sh"
 POST\_BUILD\_SCRIPT\_PATH        | repo-relative path to a shell script to be run after build     | "repo/path/to/post-script.sh"
 PROJECT                          | repo-relative path to directory with `.csproj` file for build  | "repo/path/to/src"
+DISABLE\_DOTNETCORE\_BUILD       | if `true`, the system won't attempt to detect or build any .NET Core code in the repo. |
+DISABLE\_PYTHON\_BUILD           | if `true`, the system won't attempt to detect or build any Python code in the repo. |
+DISABLE\_NODEJS\_BUILD           | if `true`, the system won't attempt to detect or build any NodeJS code in the repo. |
+DISABLE\_MULTIPLATFORM\_BUILD    | if `true`, only the selected platform is used, e.g. in AppService language selection or `oryx build` command; no automatic detection or build for other platforms will be performed. |
 
 # Azure Web Apps configuration
 

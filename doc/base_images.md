@@ -24,6 +24,17 @@ issue][].
 * tk-dev (for Python)
 * uuid-dev (for Python)
 
+When building the application, Oryx tries to detect every programming platform being used
+and for each one that it finds, it adds the corresponding commands to the build script. If the
+user wants to disable a specific programming platform, there are a set of environment variables
+that can be set - please refer to [Oryx configuration](./configuration.md#oryx-configuration).
+
+For instace, if there is a `package.json` file at the root of the repo but it is not in the format expected
+by npm, Oryx build will fail since it assumes that having that file in the repo's root means Node is
+being used. There's also an option to disable _all_ platforms other than the one specified in `oryx build` 
+or in AppService's language selection.
+[Runtimes](./runtimes) have more information on how each platform is detected.
+
 # Run
 
 Oryx's run images build on Docker's runtime-specific images for [Node.js][]

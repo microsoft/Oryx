@@ -44,6 +44,11 @@ The build command takes the parameter `--output` to specify where prepared
 artifacts will be placed; if not specified the source directory is used for
 output as well.
 
+Oryx detects which programming platforms are used and attempts to build all of them.
+There are ways to turn off specific platforms or even any platform other than the
+one given to `oryx build`. For details on the configuration, please refer
+to [Oryx configuration](./doc/configuration.md#oryx-configuration).
+
 ## Run (`oryx -appPath`)
 
 The Oryx application in the run image generates a start script named run.sh, by
