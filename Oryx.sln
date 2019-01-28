@@ -56,6 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{
 		vsts\pipelines\_buildTemplate.yml = vsts\pipelines\_buildTemplate.yml
 		vsts\pipelines\buildimage.yml = vsts\pipelines\buildimage.yml
 		vsts\pipelines\nightly.yml = vsts\pipelines\nightly.yml
+		vsts\pipelines\release.yml = vsts\pipelines\release.yml
 		vsts\pipelines\runtime.yml = vsts\pipelines\runtime.yml
 		vsts\pipelines\validation.yml = vsts\pipelines\validation.yml
 	EndProjectSection
