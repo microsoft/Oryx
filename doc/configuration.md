@@ -3,13 +3,14 @@
 Oryx provides configuration options through environment variables so that you
 can apply minor adjustments and still utilize the automatic build process. The following variables are supported today:
 
-> NOTE: In Azure Web Apps, these variables are set as App Service [App Settings][].
+> NOTE: In Azure Web Apps, these variables are set as App Settings [App Settings][].
 
 Setting name                     | Description                                                    | Example
 ---------------------------------|----------------------------------------------------------------|------------
-PRE\_BUILD\_SCRIPT\_PATH         | repo-relative path to a shell script to be run before build    | "repo/path/to/pre-script.sh"
-POST\_BUILD\_SCRIPT\_PATH        | repo-relative path to a shell script to be run after build     | "repo/path/to/post-script.sh"
-PROJECT                          | repo-relative path to directory with `.csproj` file for build  | "repo/path/to/src"
+DISABLE\_COLLECTSTATIC           | Disable running `collecstatic` when building Python applications. Valid values are `true` or `false`. |
+PRE\_BUILD\_SCRIPT\_PATH         | repo-relative path to a shell script to be run before build    | scripts/prebuild.sh
+POST\_BUILD\_SCRIPT\_PATH        | repo-relative path to a shell script to be run after build     | scripts/postbuild.sh
+PROJECT                          | repo-relative path to directory with `.csproj` file for build  | src/WebApp1/WebApp1.csproj
 DISABLE\_DOTNETCORE\_BUILD       | if `true`, the system won't attempt to detect or build any .NET Core code in the repo. |
 DISABLE\_PYTHON\_BUILD           | if `true`, the system won't attempt to detect or build any Python code in the repo. |
 DISABLE\_NODEJS\_BUILD           | if `true`, the system won't attempt to detect or build any NodeJS code in the repo. |
@@ -46,7 +47,7 @@ Setting name                     | Description                                  
 ---------------------------------|----------------------------------------------------------------|------------
 ENABLE\_ORYX\_BUILD              | if `true`, use the Oryx build system instead of the legacy Kudu system | 
 COMMAND                          | provide an alternate build-and-run script. Bypasses automatic build completely. | "repo/path/to/script.sh"
-SCM\_DO\_BUILD\_DURING\_DEPLOYMENT` | if `false`, bypass automatic build | 
+SCM\_DO\_BUILD\_DURING\_DEPLOYMENT` | if `false`, bypass automatic build |
 
 ## Startup file
 

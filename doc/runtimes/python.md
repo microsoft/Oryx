@@ -42,7 +42,8 @@ The following process is applied for each build.
 
 1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
 1. Run `pip install -r requirements.txt`.
-1. If `manage.py` is found in the root of the repo `manage.py collectstatic` is run.
+1. If `manage.py` is found in the root of the repo `manage.py collectstatic` is run. However,
+   if `DISABLE_COLLECTSTATIC` is set to `true` this step is skipped.
 1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
