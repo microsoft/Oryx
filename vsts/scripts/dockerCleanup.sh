@@ -1,4 +1,8 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"
@@ -8,7 +12,7 @@ echo "Stop running containers:"
 echo
 docker ps -q | docker stop
 
-function UntagImages(){
+function UntagImages() {
 	local imagePattern=$1
 	local imagesToUntag=$(docker images --filter=reference="$imagePattern" --format "{{.Repository}}:{{.Tag}}")
 

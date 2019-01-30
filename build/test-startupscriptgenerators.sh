@@ -1,4 +1,9 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
+
 set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )

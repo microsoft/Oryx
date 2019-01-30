@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 # Description:
 #   Run from root of a repo to build and run as a containerized app.
@@ -18,7 +22,7 @@ BUILD_IMAGE="mcr.microsoft.com/oryx/build:${ORYX_VERSION}"
 RUN_IMAGE_NODEJS="mcr.microsoft.com/oryx/node-${NODE_VERSION}:${ORYX_VERSION}"
 RUN_IMAGE_PYTHON="mcr.microsoft.com/oryx/python-${PYTHON_VERSION}:${ORYX_VERSION}"
 
-function test-repo () {
+function test-repo() {
     local repo_path=${1:-"$(pwd)"}
     local host_port=${2:-"8080"}
     local container_port=${3:-"8080"}
