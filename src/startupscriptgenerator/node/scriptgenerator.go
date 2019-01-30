@@ -56,7 +56,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		// deserialize package.json content
 		packageJsonObj := getPackageJsonObject(gen.SourcePath)
 
-		startupCommand = getPackageJsonStartCommand(packageJsonObj)
+		startupCommand = gen.getPackageJsonStartCommand(packageJsonObj)
 		if startupCommand != "" {
 			commandSource = "PackageJsonStart"
 		} else {
@@ -93,9 +93,14 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 }
 
 // Gets the startup script from package.json if defined. Returns empty string if not found.
-func getPackageJsonStartCommand(packageJsonObj *packageJson) string {
+func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj *packageJson) string {
 	if packageJsonObj != nil && packageJsonObj.Scripts != nil && packageJsonObj.Scripts.Start != "" {
-		return "npm start"
+		yarnLockPath := filepath.Join(gen.SourcePath, "yarn.lock") // TODO: consolidate with Microsoft.Oryx.BuildScriptGenerator.Node.NodeConstants.YarnLockFileName
+		if common.FileExists(yarnLockPath) {
+			return "yarn run start"
+		} else {
+			return "npm start"
+		}
 	}
 	return ""
 }
@@ -110,7 +115,7 @@ func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath str
 
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(gen.SourcePath, file)
-		if _, err := os.Stat(fullPath); !os.IsNotExist(err) {
+		if common.FileExists(fullPath) {
 			logger.LogInformation("Found startup candidate '%s'", fullPath)
 			startupFileCommand = gen.getStartupCommandFromJsFile(fullPath)
 			break

@@ -7,7 +7,6 @@ package main
 
 import (
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"startupscriptgenerator/common"
 	"strings"
@@ -138,9 +137,10 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 	defer logger.Shutdown()
 
 	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
+
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(gen.SourcePath, file)
-		if _, err := os.Stat(fullPath); !os.IsNotExist(err) {
+		if common.FileExists(fullPath) {
 			logger.LogInformation("Found file '%s'", fullPath)
 			println("Found file '" + fullPath + "' to run the app with.")
 			// Remove the '.py' from the end to get the module name

@@ -12,6 +12,11 @@ import (
 	"path/filepath"
 )
 
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
 // Gets the full path from a relative path, and ensure the path exists.
 func GetValidatedFullPath(filePath string) string {
 	fullAppPath, err := filepath.Abs(filePath)
