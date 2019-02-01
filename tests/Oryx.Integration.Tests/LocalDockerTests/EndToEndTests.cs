@@ -592,6 +592,43 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Fact]
+        public async Task ReactAndDotNet()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", "dotnetreact");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:5000";
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "dotnet", "--language-version", "2.2" },
+                "oryxdevms/dotnetcore-2.2",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runAppScript
+                },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("src=\"/static/js/main", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/static/js/main.df777a6e.js");
+                    Assert.Contains("!function(e){function t(o){if(n[o])return", data);
+                });
+        }
+
         // The following method is used to avoid following exception from HttpClient when trying to read a response:
         // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
         // see the documentation for the Encoding.RegisterProvider method.
