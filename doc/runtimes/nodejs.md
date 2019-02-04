@@ -9,6 +9,7 @@ and run images too.
 1. [Build](#build)
     * [Package manager](#package-manager)
 1. [Run](#run)
+1. [Version support](#version-support)
 
 # Base image
 
@@ -66,3 +67,23 @@ The following process is applied to determine how to start an app.
     * app.js
     * index.js
     * hostingstart.js
+
+# Version support
+
+<img width=500 src="https://raw.githubusercontent.com/nodejs/Release/master/schedule.svg?sanitize=true" />
+
+The Node.js project follows the above [release schedule][]. Oryx will support
+Long Term Stable (LTS) releases supported by the Node.js project and the
+current release. Releases no longer supported by the upstream project will
+eventually be removed from Oryx; even while they remain we may be constrained
+in the support we can provide once upstream support ends.
+
+We will provide notification twelve months prior to removing a release line;
+subscribe to [Azure Updates][] to stay updated!
+
+We will release updated versions of supported release lines at least
+once every 3 months. Previous minor versions will remain available
+as long as the release is available.
+
+[release schedule]: https://github.com/nodejs/Release#release-schedule
+[Azure Updates]: https://azure.microsoft.com/updates/

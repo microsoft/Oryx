@@ -9,6 +9,7 @@ details on components and configuration of build and run images too.
 1. [Build](#build)
     * [Package manager](#package-manager)
 1. [Run](#run)
+1. [Version support](#version-support)
 
 # Base image
 
@@ -70,3 +71,21 @@ for how to modify this.
 
 [gunicorn]: https://gunicorn.org/
 [site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig
+
+# Version support
+
+The Python project uses this [release schedule][], clarified further in
+["Development Lifecycle"][]. Oryx will support all releases in `bugfix`
+status, i.e. `3.7.x` and `2.7.x` in early 2019; and 3.6 and later releases in
+`security` status.
+
+We will provide notification twelve months prior to removing a release line;
+subscribe to [Azure Updates][] to stay updated!
+
+We will update the `micro` version of supported `major.minor` releases at
+least once every 3 months, replacing the previous `micro` version for that
+release.
+
+[release schedule]: https://devguide.python.org/#status-of-python-branches
+["Development Lifecycle"]: https://devguide.python.org/devcycle/#devcycle
+[Azure Updates]: https://azure.microsoft.com/updates/
