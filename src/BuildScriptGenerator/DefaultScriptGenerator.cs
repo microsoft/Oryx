@@ -146,14 +146,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string script;
             string benvArgs = GetBenvArgs(toolsToVersion);
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
-            var buildScript = new BaseBashBuildScript()
+            var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
                 PostBuildScriptPath = environmentSettings?.PostBuildScriptPath
             };
-            script = buildScript.TransformText();
+            script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, buildScriptProps, _logger);
             return script;
         }
 

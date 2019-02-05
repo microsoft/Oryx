@@ -8,9 +8,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     /// <summary>
     /// Build script template for Python in Bash.
     /// </summary>
-    public partial class PythonBashBuildSnippet
+    public class PythonBashBuildSnippetProperties
     {
-        public PythonBashBuildSnippet(
+        public PythonBashBuildSnippetProperties(
             string virtualEnvironmentName,
             string virtualEnvironmentModule,
             string virtualEnvironmentParameters,

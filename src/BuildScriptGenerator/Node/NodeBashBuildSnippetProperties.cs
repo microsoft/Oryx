@@ -8,9 +8,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// <summary>
     /// Build script template for NodeJs in Bash.
     /// </summary>
-    public partial class NodeBashBuildSnippet
+    public class NodeBashBuildSnippetProperties
     {
-        public NodeBashBuildSnippet(
+        public NodeBashBuildSnippetProperties(
             string packageInstallCommand,
             string runBuildCommand,
             string runBuildAzureCommand)

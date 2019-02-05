@@ -10,9 +10,9 @@ using Moq;
 using Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
-    public class DotnetCoreLanguageDetectorTest
+    public class DotNetCoreLanguageDetectorTest
     {
         private const string ProjectFileWithNoTargetFramework = @"
         <Project Sdk=""Microsoft.NET.Sdk.Web"">

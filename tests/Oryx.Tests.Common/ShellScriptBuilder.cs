@@ -36,7 +36,7 @@ namespace Oryx.Tests.Common
         /// <returns></returns>
         public ShellScriptBuilder AddBuildCommand(string argumentsString)
         {
-            return Append($"oryx build {argumentsString}");
+            return Append($"oryx build --debug {argumentsString}");
         }
 
         /// <summary>

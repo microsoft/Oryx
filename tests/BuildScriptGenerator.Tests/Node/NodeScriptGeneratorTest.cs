@@ -9,7 +9,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {
     /// <summary>
     /// Component tests for NodeJs support.
@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null);
@@ -118,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null);
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -152,7 +152,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null);
@@ -162,7 +162,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null);
@@ -185,7 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: "yarn run build",
                 runBuildAzureCommand: "yarn run build:azure");
@@ -208,7 +208,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -221,7 +221,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null);
@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -243,7 +243,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippet(
+            var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure");
@@ -253,7 +253,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(expected.TransformText(), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         }
 
         private IProgrammingPlatform GetScriptGenerator(string defaultNodeVersion = null, string defaultNpmVersion = null)

@@ -8,9 +8,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
     /// <summary>
     /// Build script template for DotnetCore in Bash.
     /// </summary>
-    public partial class DotnetCoreBashBuildSnippet
+    public class DotNetCoreBashBuildSnippetProperties
     {
-        public DotnetCoreBashBuildSnippet(
+        public DotNetCoreBashBuildSnippetProperties(
             string projectFile,
             string publishDirectory)
         {

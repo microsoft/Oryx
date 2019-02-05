@@ -11,21 +11,45 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
     public class BaseBashBuildScriptTests
     {
         [Fact]
-        public void ManyBuildScriptsShouldBeIncludedInOrder()
+        public void BuildSnippets_ShouldBeIncluded_InOrder()
         {
             // Arrange
             const string script1 = "abcdefg";
             const string script2 = "123456";
-            var scriptTemplate = new BaseBashBuildScript()
+            var scriptProps = new BaseBashBuildScriptProperties()
             {
                 BuildScriptSnippets = new List<string>() { script1, script2 }
             };
 
             // Act
-            var script = scriptTemplate.TransformText();
+            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, scriptProps);
 
             // Assert
-            script.Contains(script1 + Environment.NewLine + script2);
+            Assert.Contains(script1 + "\n\n" + script2, script); // The template engine uses UNIX-style line endings
+            Assert.DoesNotContain("Executing pre-build script", script);
+            Assert.DoesNotContain("Executing post-build script", script);
+        }
+
+        [Fact]
+        public void PrePostBuildScripts_ShouldBeIncluded_IfSupplied()
+        {
+            // Arrange
+            const string script1 = "abcdefg";
+            const string script2 = "hijklmn";
+            var scriptProps = new BaseBashBuildScriptProperties()
+            {
+                PreBuildScriptPath = script1,
+                PostBuildScriptPath = script2
+            };
+
+            // Act
+            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, scriptProps);
+
+            // Assert
+            Assert.Contains("Executing pre-build script", script);
+            Assert.Contains(script1, script);
+            Assert.Contains("Executing post-build script", script);
+            Assert.Contains(script2, script);
         }
     }
 }

@@ -6,7 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -121,12 +123,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName)
                 .Where(line => !line.TrimStart().StartsWith("#")));
 
-            var script = new PythonBashBuildSnippet(
+            var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
-                disableCollectStatic: disableCollectStatic).TransformText();
+                disableCollectStatic: disableCollectStatic);
+            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
 
             return new BuildScriptSnippet()
             {

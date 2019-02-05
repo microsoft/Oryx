@@ -21,18 +21,11 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
 
   <ItemGroup>
-    <None Include="BaseBashBuildScript.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BaseBashBuildScript.tt</DependentUpon>
-    </None>
-  </ItemGroup>
-  
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Scriban.Signed" Version="1.2.9" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
@@ -62,31 +55,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Update="BaseBashBuildScript.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BaseBashBuildScript.tt</DependentUpon>
-    </Compile>
-    <Compile Update="DotnetCore\DotnetCoreBashBuildSnippet.cs">
-      <DependentUpon>DotnetCoreBashBuildSnippet.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Node\NodeBashBuildSnippet.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>NodeBashBuildSnippet.tt</DependentUpon>
-    </Compile>
-    <Compile Update="MasterBashBuildScript.cs">
-      <DependentUpon>MasterBashBuildScript.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Python\PythonBashBuildSnippet.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>PythonBashBuildSnippet.tt</DependentUpon>
-    </Compile>
     <Compile Update="Resources\Labels.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -101,28 +69,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  
+
   <ItemGroup>
-    <None Update="BaseBashBuildScript.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>BaseBashBuildScript.cs</LastGenOutput>
-    </None>
-    <None Update="DotnetCore\DotnetCoreBashBuildSnippet.tt">
-      <LastGenOutput>DotnetCoreBashBuildSnippet.cs</LastGenOutput>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-    </None>
-    <None Update="Node\NodeBashBuildSnippet.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>NodeBashBuildSnippet.cs</LastGenOutput>
-    </None>
-    <None Update="MasterBashBuildScript.tt">
-      <LastGenOutput>MasterBashBuildScript.cs</LastGenOutput>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-    </None>
-    <None Update="Python\PythonBashBuildSnippet.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PythonBashBuildSnippet.cs</LastGenOutput>
-    </None>
+    <Content Remove="BaseBashBuildScript.sh.tpl" />
+    <Content Remove="DotnetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <Content Remove="Node\NodeBashBuildSnippet.sh.tpl" />
+    <Content Remove="Python\PythonBashBuildSnippet.sh.tpl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" />
+    <EmbeddedResource Include="DotnetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
+    <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
   </ItemGroup>
   
 </Project>

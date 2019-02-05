@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.Common.Utilities
 {
@@ -152,6 +153,14 @@ namespace Microsoft.Oryx.Common.Utilities
             }
 
             return process;
+        }
+
+        public static void TrySetExecutableMode([CanBeNull] string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                RunProcess("chmod", new string[] { "+rx", path }, System.IO.Path.GetDirectoryName(path), TimeSpan.FromSeconds(2)); // Ignoring errors
+            }
         }
     }
 }

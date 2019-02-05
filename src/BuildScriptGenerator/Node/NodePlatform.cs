@@ -6,7 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -79,10 +81,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 _logger.LogDependencies(context.Language, context.NodeVersion, depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
-            var script = new NodeBashBuildSnippet(
+            var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
-                runBuildAzureCommand: runBuildAzureCommand).TransformText();
+                runBuildAzureCommand: runBuildAzureCommand);
+            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, scriptProps, _logger);
 
             return new BuildScriptSnippet()
             {

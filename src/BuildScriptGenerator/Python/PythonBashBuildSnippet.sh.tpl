@@ -1,15 +1,13 @@
-<#@ template language="C#" #>
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
 echo "Python Version: $python"
 cd "$SOURCE_DIR"
 
-<#
-	if (!string.IsNullOrWhiteSpace(VirtualEnvironmentName)) {
-#>
-VIRTUALENVIRONMENTNAME=<#= VirtualEnvironmentName #>
-VIRTUALENVIRONMENTMODULE=<#= VirtualEnvironmentModule #>
-VIRTUALENVIRONMENTOPTIONS=<#= VirtualEnvironmentParameters #>
+{{ if VirtualEnvironmentName | IsNotBlank }}
+
+VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
+VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
+VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}
 
 echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
@@ -29,16 +27,15 @@ fi
 
 # For virtual environment, we use the actual 'python' alias that as setup by the venv,
 python_bin=python
-<#
-	}
-	else {
-#>
+
+{{ else }}
+
 if [ -e "requirements.txt" ]
 then
 	# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can confuse an end user.
 	echo Running pip install...
 
-	$pip install --prefer-binary -r requirements.txt --target="<#= PackagesDirectory #>" --upgrade | ts $TS_FMT
+	$pip install --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
 	pipInstallExitCode=${PIPESTATUS[0]}
 
 	if [[ $pipInstallExitCode != 0 ]]
@@ -58,17 +55,16 @@ SITE_PACKAGE_PYTHON_VERSION=$($python -c "import sys; print(str(sys.version_info
 SITE_PACKAGES_PATH=$HOME"/.local/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
 mkdir -p $SITE_PACKAGES_PATH
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
-APP_PACKAGES_PATH=$(pwd)"/<#= PackagesDirectory #>"
+APP_PACKAGES_PATH=$(pwd)"/{{ PackagesDirectory }}"
 echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 
-<#
-	}
-#>
+{{ end }}
+
 echo Done running pip install.
 
-<#
-	if (!DisableCollectStatic) {
-#>
+
+{{ if !DisableCollectStatic }}
+
 if [ -e "$SOURCE_DIR/manage.py" ]
 then
 	if grep -iq "Django" "$SOURCE_DIR/requirements.txt"
@@ -80,6 +76,5 @@ then
 		echo "'collectstatic' exited with exit code $EXIT_CODE."
 	fi
 fi
-<#
-	}
-#>
+
+{{ end }}

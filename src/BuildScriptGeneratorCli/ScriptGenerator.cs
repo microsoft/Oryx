@@ -58,21 +58,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return false;
                 }
 
-                // Replace any CRLF with LF
-                generatedScript = generatedScript.Replace("\r\n", "\n");
-
                 return true;
             }
             catch (InvalidUsageException ex)
             {
                 _logger.LogError(ex, "Invalid usage");
                 _console.Error.WriteLine(ex.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception caught");
-                _console.Error.WriteLine(Constants.GenericErrorMessage);
                 return false;
             }
         }

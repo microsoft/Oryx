@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {
     public class NodeVersionProviderTest : IClassFixture<NodeVersionProviderTest.TestFixture>
     {

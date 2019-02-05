@@ -19,6 +19,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option("--log-file <file>", CommandOptionType.SingleValue, Description = "The file to which the log will be written to.")]
         public string LogFilePath { get; set; }
 
+        [Option("--debug", Description = "Print stack traces for exceptions.")]
+        public bool DebugMode { get; set; }
+
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
             console.CancelKeyPress += Console_CancelKeyPress;
@@ -31,12 +34,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Constants.ExitFailure;
                 }
 
+                if (DebugMode)
+                {
+                    console.WriteLine("Debug mode enabled");
+                }
+
                 return Execute(_serviceProvider, console);
             }
             catch (Exception exc)
             {
                 _serviceProvider?.GetRequiredService<ILogger<BaseCommand>>()?.LogError(exc, "Exception caught");
+
                 console.Error.WriteLine(Constants.GenericErrorMessage);
+                if (DebugMode)
+                {
+                    console.Error.WriteLine("Exception.ToString():");
+                    console.Error.WriteLine(exc.ToString());
+                }
+
                 return Constants.ExitFailure;
             }
             finally

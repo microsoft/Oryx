@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
     internal class TestDotnetCoreVersionProvider : IDotnetCoreVersionProvider
     {

@@ -1,4 +1,3 @@
-﻿<#@ template language="C#" #>
 #!/bin/bash
 set -e
 
@@ -30,13 +29,11 @@ echo "Source directory     : $SOURCE_DIR"
 echo "Destination directory: $DESTINATION_DIR"
 echo
 
-<#
-if (!string.IsNullOrEmpty(BenvArgs)) {
-#>
-source /usr/local/bin/benv <#= BenvArgs #>
-<#
-}
-#>
+{{ if BenvArgs }}
+if [ -f /usr/local/bin/benv ]; then
+	source /usr/local/bin/benv {{ BenvArgs }}
+fi
+{{ end }}
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
@@ -50,17 +47,15 @@ fi
 
 # Make sure to cd to the source directory so that pre and post build scripts run from there
 cd $SOURCE_DIR
-<#
-	if (!string.IsNullOrWhiteSpace(PreBuildScriptPath)) {
-#>
+{{ if PreBuildScriptPath }}
 
 echo "Executing pre-build script ..."
-"<#= PreBuildScriptPath #>"
-<#
-	}
-#>
+"{{ PreBuildScriptPath }}"
+{{ end }}
 
-<#= BuildScriptSnippetsBlock #>
+{{ for Snippet in BuildScriptSnippets }}
+{{~ Snippet }}
+{{ end }}
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
@@ -73,19 +68,15 @@ then
 	echo "Copying files to destination, '$DESTINATION_DIR'"
 	cp -rf . "$DESTINATION_DIR"
 fi
-<#
-	if (!string.IsNullOrWhiteSpace(PostBuildScriptPath)) {
-#>
+{{ if PostBuildScriptPath }}
 
 # Make sure to cd to the source directory so that pre and post build scripts run from there
 cd $SOURCE_DIR
 
 echo
 echo "Executing post-build script ..."
-"<#= PostBuildScriptPath #>"
-<#
-	}
-#>
+"{{ PostBuildScriptPath }}"
+{{ end }}
 
 echo
 echo Done.

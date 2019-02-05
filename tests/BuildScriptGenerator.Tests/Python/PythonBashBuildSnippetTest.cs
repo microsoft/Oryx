@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void GeneratedSnippet_ContainsCollectStatic_IfDisableCollectStatic_IsFalse()
         {
             // Arrange
-            var snippetBuilder = new PythonBashBuildSnippet(
+            var snippetProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: null,
                 virtualEnvironmentModule: null,
                 virtualEnvironmentParameters: null,
@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 disableCollectStatic: false);
 
             // Act
-            var text = snippetBuilder.TransformText();
+            var text = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
             Assert.Contains("manage.py collectstatic", text);
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void GeneratedSnippet_DoesNotContainCollectStatic_IfDisableCollectStatic_IsTrue()
         {
             // Arrange
-            var snippetBuilder = new PythonBashBuildSnippet(
+            var snippetProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: null,
                 virtualEnvironmentModule: null,
                 virtualEnvironmentParameters: null,
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 disableCollectStatic: true);
 
             // Act
-            var text = snippetBuilder.TransformText();
+            var text = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
             Assert.DoesNotContain("manage.py collectstatic", text);

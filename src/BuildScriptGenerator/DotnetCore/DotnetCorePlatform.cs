@@ -51,9 +51,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 
             var projectDir = new FileInfo(projectFile).Directory.FullName;
             var publishDir = Path.Combine(projectDir, DotnetCoreConstants.OryxOutputPublishDirectory);
-            var script = new DotnetCoreBashBuildSnippet(
+            var scriptProps = new DotNetCoreBashBuildSnippetProperties(
                 publishDirectory: publishDir,
-                projectFile: projectFile).TransformText();
+                projectFile: projectFile);
+            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.DotNetCoreSnippet, scriptProps, _logger);
 
             return new BuildScriptSnippet()
             {

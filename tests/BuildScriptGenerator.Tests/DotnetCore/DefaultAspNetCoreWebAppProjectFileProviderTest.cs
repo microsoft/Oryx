@@ -13,7 +13,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
     public class DefaultAspNetCoreWebAppProjectFileProviderTest : IClassFixture<TestTempDirTestFixture>
     {
