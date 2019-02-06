@@ -1,0 +1,30 @@
+steps:
+- checkout: self
+  clean: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(Build.SourcesDirectory)\src\**\*.csproj'
+    arguments: '-o $(Build.BinariesDirectory)'
+    zipAfterPublish: false
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+  displayName: 'Run CredScan'
+  inputs:
+    debugMode: false
+  condition: always()
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@3
+  displayName: 'Run BinSkim '
+  inputs:
+    arguments: 'analyze $(Build.BinariesDirectory)\* --recurse --output $(Build.BinariesDirectory)\binskim.sarif --verbose'
+  condition: always()
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+  displayName: 'Post Analysis'
+  inputs:
+    BinSkim: true
+    CredScan: true
