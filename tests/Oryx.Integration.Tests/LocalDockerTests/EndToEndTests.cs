@@ -629,6 +629,55 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Fact]
+        public async Task ReactAndDjango()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", "reactdjango");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:8000";
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddBuildCommand($"{appDir} -l python --language-version 3.7")
+                .ToString();
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                // User would do this through app settings
+                .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local\"")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                _output,
+                volume,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runAppScript
+                },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("<h1>it works! (Django Template)</h1>", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/static/webpack_bundles/main-137f65fb0e0a8e523666.js");
+                    Assert.Contains("!function(e){var t={};function n(r){if(t[r])return t[r].exports", data);
+                });
+        }
+
         // The following method is used to avoid following exception from HttpClient when trying to read a response:
         // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
         // see the documentation for the Encoding.RegisterProvider method.
