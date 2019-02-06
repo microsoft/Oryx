@@ -15,12 +15,19 @@
 #   ./test-repo.sh ./app 88 8088 python
 
 ORYX_VERSION=latest
-NODE_VERSION=10.12
+NODE_VERSION=10.14
 PYTHON_VERSION=3.7
+DOTNETCORE_VERSION=2.2
 
-BUILD_IMAGE="mcr.microsoft.com/oryx/build:${ORYX_VERSION}"
-RUN_IMAGE_NODEJS="mcr.microsoft.com/oryx/node-${NODE_VERSION}:${ORYX_VERSION}"
-RUN_IMAGE_PYTHON="mcr.microsoft.com/oryx/python-${PYTHON_VERSION}:${ORYX_VERSION}"
+IMAGE_HOST=docker.io
+IMAGE_USER=oryxprod
+
+BUILD_IMAGE="${IMAGE_HOST}/${IMAGE_USER}/build:${ORYX_VERSION}"
+RUN_IMAGE_NODEJS="${IMAGE_HOST}/${IMAGE_USER}/node-${NODE_VERSION}:${ORYX_VERSION}"
+RUN_IMAGE_PYTHON="${IMAGE_HOST}/${IMAGE_USER}/python-${PYTHON_VERSION}:${ORYX_VERSION}"
+RUN_IMAGE_DOTNETCORE="${IMAGE_HOST}/${IMAGE_USER}/dotnetcore-${DOTNETCORE_VERSION}:${ORYX_VERSION}"
+
+LOGFILE_PATH="./test-repo.log"
 
 function test-repo() {
     local repo_path=${1:-"$(pwd)"}
@@ -29,52 +36,46 @@ function test-repo() {
     local runtime=${4:-"nodejs"}
     local start_script=${5:-""}
 
-    rm_buildenv=false
-    rm_runenv=false
-    if [[ ! -e build.env ]]; then
-        touch build.env
-        rm_buildenv=true
-    fi
-    if [[ ! -e run.env ]]; then
-        touch run.env
-        rm_runenv=true
+    DOCKER_FLAGS=''
+    if [[ -e "${repo_path}/.env" ]]; then
+        DOCKER_FLAGS+="--env-file ${repo_path}/.env"
     fi
 
     # build
     docker pull ${BUILD_IMAGE}
     docker run --interactive --tty \
         --volume "$repo_path":/repo \
-        --env-file build.env \
+        ${DOCKER_FLAGS} \
         "$BUILD_IMAGE" \
-        sh -c 'oryx build /repo'
+        sh -c "oryx build --log-file ${LOGFILE_PATH} /repo"
 
     # run
     case $runtime in
         nodejs)
-            RUN_IMAGE="$RUN_IMAGE_NODEJS"
+            RUN_IMAGE="${RUN_IMAGE_NODEJS}"
             ;;
         python)
-            RUN_IMAGE="$RUN_IMAGE_PYTHON"
+            RUN_IMAGE="${RUN_IMAGE_PYTHON}"
+            ;;
+        dotnetcore)
+            RUN_IMAGE="${RUN_IMAGE_DOTNETCORE}"
             ;;
     esac
-
+    
     TEST_CONTAINER_NAME=oryx-test-repo
     cid=$(docker container ls \
       --all --filter "name=${TEST_CONTAINER_NAME}" --quiet)
     if [[ -n "$cid" ]]; then docker stop $cid; docker rm $cid; fi
 
     docker pull ${RUN_IMAGE}
-    docker run --interactive --tty \
+    docker run --detach \
         --name ${TEST_CONTAINER_NAME} \
         --volume $(pwd):/app \
         --publish ${host_port}:${container_port} \
         --env PORT=${container_port} \
-        --env-file run.env \
+        ${DOCKER_FLAGS} \
         "$RUN_IMAGE" \
         sh -c "cd /app && oryx && /app/run.sh" 
-
-    if [[ "$rm_buildenv" == "true" ]]; then rm build.env; fi
-    if [[ "$rm_runenv" == "true" ]]; then rm run.env; fi
 }
 
 test-repo $@
