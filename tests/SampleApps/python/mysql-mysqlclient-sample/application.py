@@ -1,11 +1,12 @@
 from flask import Flask, jsonify
 import MySQLdb
+import os
 
 app = Flask(__name__)
 
 class Database:
     def listProductNames(self):
-        conn=MySQLdb.connect(host='dbserver', user='oryxuser', password='Passw0rd', db='oryxdb')
+        conn=MySQLdb.connect(host='dbserver', user='oryxuser', password=os.getenv('DATABASE_PASSWORD'), db='oryxdb')
         try:
             c = conn.cursor()
             c.execute("SELECT Name FROM Products")

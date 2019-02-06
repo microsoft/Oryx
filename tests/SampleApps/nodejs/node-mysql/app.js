@@ -5,7 +5,7 @@ const app = express();
 const db = mysql.createConnection ({
     host: 'dbserver',
     user: 'oryxuser',
-    password: 'Passw0rd',
+    password: process.env.DATABASE_PASSWORD,
     database: 'oryxdb'
 });
 

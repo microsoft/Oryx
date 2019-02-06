@@ -1,11 +1,13 @@
 from flask import Flask, jsonify
 import psycopg2
+import os
 
 app = Flask(__name__)
 
 class Database:
     def listProductNames(self):
-        conn = psycopg2.connect("dbname='oryxdb' user='oryxuser' host='dbserver' password='Passw0rd'")
+        password = os.getenv('DATABASE_PASSWORD')
+        conn = psycopg2.connect("dbname='oryxdb' user='oryxuser' host='dbserver' password='" + password + "'")
         try:
             c = conn.cursor()
             c.execute("SELECT Name FROM Products")

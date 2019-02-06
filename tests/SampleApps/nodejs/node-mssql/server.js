@@ -7,7 +7,7 @@ app.get('/', function (req, res) {
     //set up the connection information
     var config = {
         userName: 'sa',
-        password: 'Passw0rd', // update me
+        password: process.env.DATABASE_PASSWORD,
         server: 'dbserver',
         options: {
             database: 'oryxdb'

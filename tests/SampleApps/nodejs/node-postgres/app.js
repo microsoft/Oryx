@@ -3,7 +3,7 @@ const app = express()
 var pg = require('pg')
 var PGUSER = 'oryxuser'
 var PGDATABASE = 'oryxdb'
-var PASSWORD = 'Passw0rd'
+var PASSWORD = process.env.DATABASE_PASSWORD
 var HOST = 'dbserver'
 
 var config = {

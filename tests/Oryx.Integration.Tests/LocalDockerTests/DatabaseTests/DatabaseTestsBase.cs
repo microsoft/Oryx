@@ -48,7 +48,6 @@ namespace Oryx.Integration.Tests.LocalDockerTests
             string samplePath,
             string databaseServerContainerName)
         {
-            // Arrange
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:8000";
@@ -78,7 +77,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
                 "oryx",
                 new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
-                new List<EnvironmentVariable>(),
+                new List<EnvironmentVariable>() { new EnvironmentVariable(Constants.DatabaseUserPwdEnvVar, Constants.DatabaseUserPwd) },
                 portMapping,
                 link,
                 "/bin/sh",

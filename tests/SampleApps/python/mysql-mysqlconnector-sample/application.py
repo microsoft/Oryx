@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 class Database:
     def listProductNames(self):
-        conn = mysql.connector.connect(user='oryxuser', password='Passw0rd', host='dbserver', database='oryxdb')
+        conn = mysql.connector.connect(user='oryxuser', password=os.getenv('DATABASE_PASSWORD'), host='dbserver', database='oryxdb')
         try:
             c = conn.cursor()
             c.execute("SELECT Name FROM Products")

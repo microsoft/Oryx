@@ -15,6 +15,7 @@ namespace Oryx.Integration.Tests.LocalDockerTests
         public const string InternalDbLinkName = "dbserver";
         public const string DatabaseName = "oryxdb";
         public const string DatabaseUserName = "oryxuser";
-        public const string DatabaseUserPwd = "Passw0rd";
+        public static readonly string DatabaseUserPwd = System.Guid.NewGuid().ToString();
+        public const string DatabaseUserPwdEnvVar = "DATABASE_PASSWORD";
     }
 }

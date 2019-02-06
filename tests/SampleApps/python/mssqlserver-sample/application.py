@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 import pyodbc
+import os
 
 app = Flask(__name__)
 
@@ -8,7 +9,7 @@ class Database:
         host = "dbserver"
         databaseName = "oryxdb"
         user = "sa"
-        password = "Passw0rd"
+        password = os.getenv('DATABASE_PASSWORD')
 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+host+';DATABASE='+databaseName+';UID='+user+';PWD='+ password)
         try:
