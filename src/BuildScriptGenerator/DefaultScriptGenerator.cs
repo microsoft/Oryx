@@ -138,6 +138,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             throw exc;
         }
 
+        private void LogScriptIfGiven(string type, string scriptPath)
+        {
+            if (!string.IsNullOrWhiteSpace(scriptPath))
+            {
+                _logger.LogInformation("Using {type} script from {scriptPath}", type, scriptPath);
+            }
+        }
+
         /// <summary>
         /// Builds the full build script from the list of snippets for each platform.
         /// </summary>
@@ -153,6 +161,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
                 PostBuildScriptPath = environmentSettings?.PostBuildScriptPath
             };
+
+            LogScriptIfGiven("pre-build", buildScriptProps.PreBuildScriptPath);
+            LogScriptIfGiven("post-build", buildScriptProps.PostBuildScriptPath);
+
             script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, buildScriptProps, _logger);
             return script;
         }

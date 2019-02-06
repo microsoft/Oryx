@@ -29,7 +29,7 @@ echo "Source directory     : $SOURCE_DIR"
 echo "Destination directory: $DESTINATION_DIR"
 echo
 
-{{ if BenvArgs }}
+{{ if BenvArgs | IsNotBlank }}
 if [ -f /usr/local/bin/benv ]; then
 	source /usr/local/bin/benv {{ BenvArgs }}
 fi
@@ -45,10 +45,9 @@ then
 	fi
 fi
 
-# Make sure to cd to the source directory so that pre and post build scripts run from there
+{{ if PreBuildScriptPath | IsNotBlank }}
+# Make sure to cd to the source directory so that the pre-build script runs from there
 cd $SOURCE_DIR
-{{ if PreBuildScriptPath }}
-
 echo "Executing pre-build script ..."
 "{{ PreBuildScriptPath }}"
 {{ end }}
@@ -68,12 +67,10 @@ then
 	echo "Copying files to destination, '$DESTINATION_DIR'"
 	cp -rf . "$DESTINATION_DIR"
 fi
-{{ if PostBuildScriptPath }}
 
-# Make sure to cd to the source directory so that pre and post build scripts run from there
+{{ if PostBuildScriptPath | IsNotBlank }}
+# Make sure to cd to the source directory so that the post-build script runs from there
 cd $SOURCE_DIR
-
-echo
 echo "Executing post-build script ..."
 "{{ PostBuildScriptPath }}"
 {{ end }}
