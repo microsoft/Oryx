@@ -8,7 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public class TestEnvironment : IEnvironment
     {

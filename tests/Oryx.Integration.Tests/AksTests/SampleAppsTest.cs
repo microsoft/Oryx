@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Integration.Tests.AksTests
+namespace Microsoft.Oryx.Integration.Tests.AksTests
 {
     public class SampleAppsTests : IClassFixture<SampleAppsTests.SampleAppsFixture>
     {

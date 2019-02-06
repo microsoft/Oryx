@@ -5,7 +5,7 @@
 
 using System.Collections.Generic;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public static class DockerCliExtensions
     {

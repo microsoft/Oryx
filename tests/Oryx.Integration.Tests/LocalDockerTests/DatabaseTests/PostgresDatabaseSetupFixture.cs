@@ -6,10 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Oryx.Tests.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PostgresDatabaseSetupFixture : IDisposable
     {

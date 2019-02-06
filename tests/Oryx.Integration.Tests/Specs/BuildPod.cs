@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Oryx.Integration.Tests.Specs
+namespace Microsoft.Oryx.Integration.Tests.Specs
 {
     using System;
     

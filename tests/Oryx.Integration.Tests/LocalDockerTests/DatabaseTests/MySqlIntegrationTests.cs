@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class MySqlIntegrationTests : DatabaseTestsBase, IClassFixture<MySqlDatabaseSetupFixture>
     {

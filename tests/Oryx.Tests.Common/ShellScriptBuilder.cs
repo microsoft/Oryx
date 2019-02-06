@@ -5,7 +5,7 @@
 
 using System.Text;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     /// <summary>
     /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.

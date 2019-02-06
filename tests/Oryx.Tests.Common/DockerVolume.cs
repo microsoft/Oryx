@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.Common.Utilities;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerVolume
     {

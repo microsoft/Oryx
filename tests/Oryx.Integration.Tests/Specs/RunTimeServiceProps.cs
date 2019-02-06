@@ -4,7 +4,7 @@ using System.Text;
 using k8s;
 using k8s.Models;
 
-namespace Oryx.Integration.Tests.Specs
+namespace Microsoft.Oryx.Integration.Tests.Specs
 {
     partial class RunTimeService
     {

@@ -13,11 +13,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common.Utilities;
-using Oryx.Tests.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.BuildImage.Tests
+namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class PythonSampleAppsTest : SampleAppsTestBase
     {

@@ -4,11 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using Oryx.Tests.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.RuntimeImage.Tests
+namespace Microsoft.Oryx.RuntimeImage.Tests
 {
     public class NodeImagesTest
     {

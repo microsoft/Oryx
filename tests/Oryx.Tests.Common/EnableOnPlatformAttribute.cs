@@ -6,7 +6,7 @@
 using System.Runtime.InteropServices;
 using Xunit;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public class EnableOnPlatformAttribute : FactAttribute
     {

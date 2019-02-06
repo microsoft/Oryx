@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Oryx.Tests.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests

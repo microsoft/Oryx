@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Oryx.Common.Utilities;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerCli
     {

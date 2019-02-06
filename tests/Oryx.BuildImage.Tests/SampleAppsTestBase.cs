@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Oryx.BuildImage.Tests
+namespace Microsoft.Oryx.BuildImage.Tests
 {
     /// <summary>
     /// The methods here represent the tests that every supported language must have.

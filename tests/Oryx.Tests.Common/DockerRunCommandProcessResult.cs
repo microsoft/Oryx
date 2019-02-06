@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerRunCommandProcessResult
     {

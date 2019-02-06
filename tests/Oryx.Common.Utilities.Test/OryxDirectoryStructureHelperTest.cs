@@ -4,12 +4,12 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.Common.Utilities;
-using Oryx.Tests.Common;
+using Microsoft.Oryx.Tests.Common;
 using System;
 using System.IO;
 using Xunit;
 
-namespace Oryx.Common.Utilities.Test
+namespace Microsoft.Oryx.Common.Utilities.Test
 {
     public class OryxDirectoryStructureHelperTest : IClassFixture<TestTempDirTestFixture>
     {

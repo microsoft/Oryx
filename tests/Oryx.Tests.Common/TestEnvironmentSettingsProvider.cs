@@ -5,7 +5,7 @@
 
 using Microsoft.Oryx.BuildScriptGenerator;
 
-namespace Oryx.Tests.Common
+namespace Microsoft.Oryx.Tests.Common
 {
     public class TestEnvironmentSettingsProvider : IEnvironmentSettingsProvider
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 
-namespace Oryx.Integration.Tests.AksTests
+namespace Microsoft.Oryx.Integration.Tests.AksTests
 {
     static class k8sHelpers
     {

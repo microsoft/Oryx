@@ -4,11 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using Oryx.Tests.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.BuildImage.Tests
+namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class BuildScriptGenFromBuildImageTests
     {

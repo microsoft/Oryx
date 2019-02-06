@@ -5,7 +5,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Oryx.BuildImage.Tests
+namespace Microsoft.Oryx.BuildImage.Tests
 {
     internal static class Settings
     {
