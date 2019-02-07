@@ -51,6 +51,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp11WebApp,
                 _output,
                 volume,
                 "oryx",
@@ -74,8 +75,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task CanBuildAndRun_NetCore11WebApp_HavingExplicitAssemblyName()
         {
             // Arrange
+            var appName = "NetCoreApp11WithExplicitAssemblyName";
             var dotnetcoreVersion = "1.1";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "NetCoreApp11WithExplicitAssemblyName");
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var containerPort = "9095";
@@ -88,6 +90,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -125,6 +128,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
                 _output,
                 volume,
                 "oryx",
@@ -148,8 +152,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task CanBuildAndRun_NetCore21WebApp_HavingExplicitAssemblyName()
         {
             // Arrange
+            var appName = "NetCoreApp21WithExplicitAssemblyName";
             var dotnetcoreVersion = "2.1";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "NetCoreApp21WithExplicitAssemblyName");
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var containerPort = "9095";
@@ -162,6 +167,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -203,6 +209,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
                 _output,
                 volume,
                 "/bin/sh",
@@ -244,6 +251,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp22WebApp,
                 _output,
                 volume,
                 "oryx",
@@ -267,8 +275,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task CanBuildAndRun_NetCore22WebApp_HavingExplicitAssemblyName()
         {
             // Arrange
+            var appName = "NetCoreApp22WithExplicitAssemblyName";
             var dotnetcoreVersion = "2.2";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "NetCoreApp22WithExplicitAssemblyName");
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var containerPort = "9095";
@@ -281,6 +290,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -325,6 +335,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
                 _output,
                 volume,
                 "oryx",
@@ -348,8 +359,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task CanBuildAndRun_NetCore21WebApp_HavingNestProjectDirectory_WhenNotSpecifyingLanguageVersion()
         {
             // Arrange
+            var appName = "MultiWebAppRepo";
             var dotnetcoreVersion = "2.1";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "MultiWebAppRepo");
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.Create(hostDir);
             var repoDir = volume.ContainerDir;
             var containerPort = "9095";
@@ -368,6 +380,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "/bin/sh",
@@ -395,8 +408,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task CanBuildAndRun_NetCore21WebApp_HavingNestProjectDirectory()
         {
             // Arrange
+            var appName = "MultiWebAppRepo";
             var dotnetcoreVersion = "2.1";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "MultiWebAppRepo");
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.Create(hostDir);
             var repoDir = volume.ContainerDir;
             var containerPort = "9095";
@@ -415,6 +429,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "/bin/sh",

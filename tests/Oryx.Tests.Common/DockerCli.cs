@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using JetBrains.Annotations;
 using Microsoft.Oryx.Common.Utilities;
 
 namespace Microsoft.Oryx.Tests.Common
@@ -16,15 +17,17 @@ namespace Microsoft.Oryx.Tests.Common
         private const string CreatedContainerPrefix = "oryxtests_";
 
         private readonly TimeSpan _waitTimeForExit;
+        private readonly IEnumerable<EnvironmentVariable> _globalEnvVars;
 
-        public DockerCli()
-            : this(TimeSpan.FromMinutes(10))
+        public DockerCli(IEnumerable<EnvironmentVariable> globalEnvVars = null)
+            : this(TimeSpan.FromMinutes(10), globalEnvVars)
         {
         }
 
-        public DockerCli(TimeSpan waitTimeForExit)
+        public DockerCli(TimeSpan waitTimeForExit, IEnumerable<EnvironmentVariable> globalEnvVars = null)
         {
             _waitTimeForExit = waitTimeForExit;
+            _globalEnvVars = globalEnvVars;
         }
 
         public DockerRunCommandResult Run(
@@ -270,6 +273,25 @@ namespace Microsoft.Oryx.Tests.Common
                 $"{fileName} {string.Join(" ", arguments)}");
         }
 
+        private static void AddEnvVarArg([NotNull] List<string> args, EnvironmentVariable newVar)
+        {
+            args.Add("-e");
+            args.Add($"{newVar.Key}={newVar.Value}");
+        }
+
+        private static void AddEnvVarArgs([NotNull] List<string> args, [CanBeNull] IEnumerable<EnvironmentVariable> newVars)
+        {
+            if (newVars == null)
+            {
+                return;
+            }
+
+            foreach (var envVar in newVars)
+            {
+                AddEnvVarArg(args, envVar);
+            }
+        }
+
         private IEnumerable<string> PrepareDockerRunArguments(
             string containerName,
             bool runContainerInBackground,
@@ -291,30 +313,21 @@ namespace Microsoft.Oryx.Tests.Common
                 args.Add("-d");
             }
 
-            if (environmentVariables?.Count > 0)
-            {
-                foreach (var environmentVariable in environmentVariables)
-                {
-                    args.Add("-e");
-                    args.Add($"{environmentVariable.Key}={environmentVariable.Value}");
-                }
-            }
+            AddEnvVarArgs(args, _globalEnvVars);
+            AddEnvVarArgs(args, environmentVariables);
 
             var aiKeyOverride = Environment.GetEnvironmentVariable(
                 "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(aiKeyOverride))
             {
-                args.Add("-e");
-                args.Add(
-                    $"{LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName}={aiKeyOverride}");
+                AddEnvVarArg(args, new EnvironmentVariable(LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName, aiKeyOverride));
             }
 
             var appServiceAppName = Environment.GetEnvironmentVariable(
                 LoggingConstants.AppServiceAppNameEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(appServiceAppName))
             {
-                args.Add("-e");
-                args.Add($"{LoggingConstants.AppServiceAppNameEnvironmentVariableName}={appServiceAppName}");
+                AddEnvVarArg(args, new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appServiceAppName));
             }
 
             if (volumes?.Count > 0)

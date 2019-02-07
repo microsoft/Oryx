@@ -35,7 +35,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task NodeApp(string nodeVersion)
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "webfrontend");
+            var appName = "webfrontend";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:80";
@@ -46,6 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -69,8 +71,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task NodeApp_WithYarnLock()
         {
             // Arrange
+            var appName = "webfrontend-yarnlock";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "webfrontend-yarnlock");
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:80";
@@ -82,6 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -105,8 +109,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task NodeApp_WithYarnLock_AndNpmBuild()
         {
             // Arrange
+            var appName = "TailwindTraders-Opener";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "TailwindTraders-Opener");
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:3000";
@@ -118,6 +123,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -142,8 +148,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task NodeApp_BuildNodeUnderScripts()
         {
             // Arrange
+            var appName = "NodeAndTypeScriptHelloWorld";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "NodeAndTypeScriptHelloWorld");
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:3000";
@@ -155,6 +162,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -178,8 +186,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Node_Lab2AppServiceApp()
         {
             // Arrange
+            var appName = "lab2-appservice";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "lab2-appservice");
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:3000";
@@ -191,6 +200,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -214,8 +224,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Node_SoundCloudNgrxApp()
         {
             // Arrange
+            var appName = "soundcloud-ngrx";
             var nodeVersion = "8.11";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "soundcloud-ngrx");
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:3000";
@@ -228,6 +239,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -253,8 +265,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Node_CreateReactAppSample()
         {
             // Arrange
+            var appName = "create-react-app-sample";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", "create-react-app-sample");
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:3000";
@@ -266,6 +279,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -289,7 +303,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Python27App()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "python2-flask-app");
+            var appName = "python2-flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
@@ -301,6 +316,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -324,7 +340,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Python27App_virtualEnv()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "python2-flask-app");
+            var appName = "python2-flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
@@ -340,6 +357,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -363,7 +381,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task FlaskApp_Python37()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "flask-app");
+            var appName = "flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
@@ -374,6 +393,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -397,7 +417,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task FlaskApp_Python36()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "flask-app");
+            var appName = "flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
@@ -408,6 +429,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -431,7 +453,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task DjangoApp_Python37()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
@@ -442,6 +465,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -474,7 +498,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task DjangoApp_Python37_virtualenv()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
@@ -486,6 +511,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -518,7 +544,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task DjangoApp_Python36()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "django-app");
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
@@ -529,6 +556,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -561,7 +589,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Tweeter3_Python37()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "python", "tweeter3");
+            var appName = "tweeter3";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var containerPort = 8000;
@@ -573,6 +602,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -596,7 +626,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task ReactAndDotNet()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", "dotnetreact");
+            var appName = "dotnetreact";
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
@@ -607,6 +638,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "oryx",
@@ -633,7 +665,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task ReactAndDjango()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", "reactdjango");
+            var appName = "reactdjango";
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:8000";
@@ -652,6 +685,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "/bin/bash",

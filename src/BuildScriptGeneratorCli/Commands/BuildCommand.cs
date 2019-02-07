@@ -99,11 +99,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return Constants.ExitFailure;
             }
 
-            // Run actual build
-            var scriptGenerator = new ScriptGenerator(console, serviceProvider);
-            if (!scriptGenerator.TryGenerateScript(out var scriptContent))
+            string scriptContent;
+            using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
-                return Constants.ExitFailure;
+                var scriptGenerator = new ScriptGenerator(console, serviceProvider);
+                if (!scriptGenerator.TryGenerateScript(out scriptContent))
+                {
+                    stopwatch.AddProperty("failed", "true");
+                    return Constants.ExitFailure;
+                }
             }
 
             // Get the path where the generated script should be written into.

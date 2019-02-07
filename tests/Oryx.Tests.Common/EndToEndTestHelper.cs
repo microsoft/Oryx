@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const int DelayBetweenRetriesInSeconds = 6;
 
         public static Task BuildRunAndAssertAppAsync(
+            string appName,
             ITestOutputHelper output,
             DockerVolume volume,
             string buildCmd,
@@ -35,7 +37,7 @@ namespace Microsoft.Oryx.Tests.Common
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
-                environmentVariables: null,
+                new List<EnvironmentVariable>() { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName) },
                 portMapping,
                 link: null,
                 runCmd,

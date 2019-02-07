@@ -2,10 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license.
-// --------------------------------------------------------------------------------------------
+
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -18,6 +15,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class NodeJSSampleAppsTest : SampleAppsTestBase
     {
+        private static readonly string SampleAppName = "webfrontend";
+
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
         private readonly string _hostSamplesDir;
@@ -25,17 +24,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public NodeJSSampleAppsTest(ITestOutputHelper output)
         {
             _output = output;
-
-            _dockerCli = new DockerCli();
-
+            _dockerCli = new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) });
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
+
+        private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
 
         [Fact]
         public override void GeneratesScript_AndBuilds()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
@@ -68,7 +67,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var subDir = Guid.NewGuid();
@@ -108,7 +107,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output/subdir1";
             var script = new ShellScriptBuilder()
@@ -141,7 +140,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
@@ -314,7 +313,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
@@ -347,7 +346,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var generatedScript = "/tmp/build.sh";
@@ -385,7 +384,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption_AndWhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var generatedScript = "/tmp/build.sh";
@@ -423,7 +422,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var intermediateDir = "/tmp/app-intermediate";
             var appOutputDir = "/tmp/webfrontend-output";
@@ -457,7 +456,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
@@ -489,7 +488,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
@@ -522,7 +521,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = CreateWebFrontEndVolume();
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";

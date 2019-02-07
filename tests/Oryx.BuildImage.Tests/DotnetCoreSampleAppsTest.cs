@@ -2,10 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license.
-// --------------------------------------------------------------------------------------------
 
 using System;
 using System.IO;
@@ -30,13 +26,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
+        
+        private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
+            DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
+
+        private EnvironmentVariable CreateAppNameEnvVar(string sampleAppName) =>
+            new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, sampleAppName);
 
         [Fact]
         public void Builds_NetCore11App_UsingNetCore11_DotnetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
             var script = new ShellScriptBuilder()
@@ -47,6 +49,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -71,7 +74,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
@@ -81,6 +84,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -105,7 +109,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
             var script = new ShellScriptBuilder()
@@ -116,6 +120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -140,7 +145,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
@@ -150,6 +155,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -174,7 +180,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "NetCoreApp22WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp22WebApp-output";
             var script = new ShellScriptBuilder()
@@ -185,6 +191,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -209,7 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "NetCoreApp22WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
@@ -219,6 +226,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -243,7 +251,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
-            var volume = DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";
@@ -280,6 +288,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
