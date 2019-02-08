@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Utilities;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -66,7 +67,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{Settings.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.Output);
                 },
                 result.GetDebugInfo());
@@ -258,11 +259,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact]
         public override void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
-            // Try building a Python 2.7 app with 3.7 version. This should fail as there are major
-            // api changes between these versions
+            // Try building a Python 2.7 app with 3.7 version. This should fail as there are major API changes between these versions
 
             // Arrange
-            var langVersion = Settings.Python37Version;
+            var langVersion = PythonVersions.Python37Version;
             var volume = CreateSampleAppVolume("python2-flask-app");
             var appDir = volume.ContainerDir;
             var generatedScript = "/tmp/build.sh";
@@ -410,7 +410,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     string errorMessage =
                     "The 'python' version '4.0.1' is not supported. Supported versions are: " +
-                    $"{Settings.Python27Version}, {Settings.Python35Version}, {Settings.Python36Version}, {Settings.Python37Version}";
+                    $"{Settings.Python27Version}, {Settings.Python35Version}, {Settings.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.Error);
                 },
@@ -524,7 +524,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{Settings.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.Output);
                 },
                 result.GetDebugInfo());
@@ -538,7 +538,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/jinja2")
                 .ToString();
 
@@ -561,7 +561,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{Settings.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.Output);
                 },
                 result.GetDebugInfo());
@@ -583,7 +583,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     $"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}");
             }
             var script = scriptBuilder
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
@@ -624,7 +624,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
                 // These css files should NOT be available since 'collectstatic' is set off
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
@@ -878,7 +878,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python37Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}/django")
                 .ToString();
 

@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReturnsNull_IfSourceDirectory_IsEmpty()
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             // No files in source directory
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReutrnsNull_WhenRequirementsTextFile_IsNotPresent()
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReutrnsNull_WhenRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             // No files with '.py' or no runtime.txt file
             CreateFile(sourceDir, "requirements.txt content", "requirements.txt");
@@ -77,11 +77,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReutrnsResult_WhenNoPyFileExists_ButRuntimeTextFileExists_HavingPythonVersionInIt()
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             // No file with a '.py' extension
             CreateFile(sourceDir, "", "requirements.txt");
-            CreateFile(sourceDir, $"python-{Settings.Python37Version}", "runtime.txt");
+            CreateFile(sourceDir, $"python-{Common.PythonVersions.Python37Version}", "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -90,14 +90,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal("python", result.Language);
-            Assert.Equal(Settings.Python37Version, result.LanguageVersion);
+            Assert.Equal(Common.PythonVersions.Python37Version, result.LanguageVersion);
         }
 
         [Fact]
         public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeTextfile()
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "", "requirements.txt");
             CreateFile(sourceDir, "python-100.100.100", "runtime.txt");
@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                $"Target Python version '100.100.100' is unsupported. Supported versions are: {Settings.Python37Version}",
+                $"Target Python version '100.100.100' is unsupported. Supported versions are: {Common.PythonVersions.Python37Version}",
                 exception.Message);
         }
 
@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReutrnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "", "requirements.txt");
             CreateFile(sourceDir, fileContent, "runtime.txt");
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReturnsResult_WithPythonDefaultVersion_WhenNoRuntimeTextFileExists()
         {
             // Arrange
-            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Settings.Python37Version });
+            var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = CreateNewDir();
             CreateFile(sourceDir, "content", "requirements.txt");
             CreateFile(sourceDir, "foo.py content", "foo.py");
@@ -146,7 +146,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal("python", result.Language);
-            Assert.Equal(Settings.Python37Version, result.LanguageVersion);
+            Assert.Equal(Common.PythonVersions.Python37Version, result.LanguageVersion);
         }
 
         private string CreateNewDir()

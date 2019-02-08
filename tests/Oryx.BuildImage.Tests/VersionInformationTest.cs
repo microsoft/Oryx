@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private const string Python27VersionInfo = "Python " + Settings.Python27Version;
         private const string Python35VersionInfo = "Python " + Settings.Python35Version;
         private const string Python36VersionInfo = "Python " + Settings.Python36Version;
-        private const string Python37VersionInfo = "Python " + Settings.Python37Version;
+        private const string Python37VersionInfo = "Python " + Common.PythonVersions.Python37Version;
 
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
             // Arrange
-            var expectedOutput = $"Python {Settings.Python37Version}";
+            var expectedOutput = $"Python {Common.PythonVersions.Python37Version}";
 
             // Arrange & Act
             var result = _dockerCli.Run(
@@ -294,7 +294,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("3.6", Python36VersionInfo)]
         [InlineData(Settings.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
-        [InlineData(Settings.Python37Version, Python37VersionInfo)]
+        [InlineData(Common.PythonVersions.Python37Version, Python37VersionInfo)]
         public void Python3_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)

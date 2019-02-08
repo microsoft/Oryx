@@ -10,14 +10,17 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__python-versions.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
-	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+	ctxArgs="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
 fi
+
+constArgs="--build-arg PYTHON37_VERSION=$PYTHON37_VERSION" # Sourced from __python-versions.sh
 
 function BuildAndTagStage()
 {
@@ -27,7 +30,7 @@ function BuildAndTagStage()
 	echo
 	echo
 	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build --target $stageName -t $stageTagName $args -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --target $stageName -t $stageTagName $ctxArgs $constArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 }
 
 # Tag stages to avoid creating dangling images.
@@ -64,7 +67,7 @@ else
 fi
 
 echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
-docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $args -f "$BUILD_IMAGES_DOCKERFILE" .
+docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $ctxArgs $constArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
 echo Building a base image for tests ...

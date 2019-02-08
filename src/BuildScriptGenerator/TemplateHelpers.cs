@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     logger?.LogError("Could not get resource {resourceName}. Available resources: {availableResourceNames}", templateResource.Name, string.Join("|", assembly.GetManifestResourceNames()));
                 }
 
-                using (TextReader tplReader = new StreamReader(stream))
+                using (var tplReader = new StreamReader(stream))
                 {
                     using (logger?.LogTimedEvent("RenderTemplate", new Dictionary<string, string> { { "templateName", templateResource.Name } }))
                     {

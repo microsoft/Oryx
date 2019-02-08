@@ -8,4 +8,4 @@ that you are testing against the latest built image.
 An easy way to both build the image and run tests would be to follow this flow:  
 - Run the `build/test-buildimages.sh` script. This script first builds the `build image` and then runs tests.  
 - If you see any test failures and want to debug you can Visual Studio in that case and needn't worry about testing  
-  against an older `build image`.  
+  against an older `build image`.

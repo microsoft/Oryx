@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("3.6", "Python " + Settings.Python36Version)]
-        [InlineData("3.7", "Python " + Settings.Python37Version)]
+        [InlineData("3.7", "Python " + Common.PythonVersions.Python37Version)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
             // Arrange & Act

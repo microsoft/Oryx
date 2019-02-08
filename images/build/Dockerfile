@@ -218,12 +218,12 @@ RUN /python-build.sh
 # Build Python 3.7
 FROM python-build-prereqs AS python3.7-build
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=3.7.2
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.1
+COPY build/__python-versions.sh /
 COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
-RUN /python-build.sh
+RUN . /__python-versions.sh && PYTHON_VERSION=$PYTHON37_VERSION /python-build.sh
 
 FROM main AS python
 # It's not clear whether these are needed at runtime...
@@ -234,23 +234,24 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
+COPY build/__python-versions.sh /
 COPY --from=python2.7-build /opt /opt
 COPY --from=python3.5-build /opt /opt
 COPY --from=python3.6-build /opt /opt
 COPY --from=python3.7-build /opt /opt
-RUN set -ex \
+RUN . /__python-versions.sh && set -ex \
  && echo /opt/python/2.7.15/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.5.6/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.6.7/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.7.2/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-RUN set -ex \
+RUN . /__python-versions.sh && set -ex \
  && ln -s 2.7.15 /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s 3.5.6 /opt/python/3.5 \
  && ln -s 3.6.7 /opt/python/3.6 \
- && ln -s 3.7.2 /opt/python/latest \
- && ln -s 3.7.2 /opt/python/3.7 \
+ && ln -s $PYTHON37_VERSION /opt/python/latest \
+ && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
  && cd /usr/local/bin \

@@ -1,0 +1,10 @@
+- name: python-versions
+  constants:
+    python37-version: 3.7.2
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.Common
+    - type: shell
+      directory: build
+      file-name-prefix: __
