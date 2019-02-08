@@ -11,6 +11,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\BuildScriptGenerator\BuildScriptGenerator.csproj" />
-    <ProjectReference Include="..\..\src\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj" />
+    <ProjectReference Include="..\..\src\Common\Common.csproj" />
   </ItemGroup>
 </Project>

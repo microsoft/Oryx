@@ -35,10 +35,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>mscorlib</HintPath>
     </Reference>
@@ -82,6 +78,10 @@
     <EmbeddedResource Include="DotnetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
   
 </Project>

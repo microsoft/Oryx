@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
-    <ProjectReference Include="..\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

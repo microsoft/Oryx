@@ -262,7 +262,7 @@ RUN set -ex \
 FROM dotnet-install AS buildscriptbuilder
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
-COPY src/Oryx.Common.Utilities /usr/oryx/src/Oryx.Common.Utilities
+COPY src/Common /usr/oryx/src/Common
 COPY build/FinalPublicKey.snk usr/oryx/build/
 COPY src/CommonFiles /usr/oryx/src/CommonFiles
 WORKDIR /usr/oryx/src

@@ -30,9 +30,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{0FEBE7DD
 		build\build-runtimeimages.sh = build\build-runtimeimages.sh
 		build\build-solution.sh = build\build-solution.sh
 		build\test-buildimages.sh = build\test-buildimages.sh
+		build\test-buildscriptgenerator.sh = build\test-buildscriptgenerator.sh
 		build\test-integration.sh = build\test-integration.sh
 		build\test-runtimeimages.sh = build\test-runtimeimages.sh
-		build\test-buildscriptgenerator.sh = build\test-buildscriptgenerator.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{45542CEB-0A3B-42DF-95AE-D13A673D3183}"
@@ -65,7 +65,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGeneratorCli.Tests", "tests\BuildScriptGeneratorCli.Tests\BuildScriptGeneratorCli.Tests.csproj", "{16C061C3-3F6E-43C2-A9CC-3E905322E443}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Common.Utilities", "src\Oryx.Common.Utilities\Oryx.Common.Utilities.csproj", "{8E76A7A1-1382-4232-BBDE-F0A3808105E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common.csproj", "{8E76A7A1-1382-4232-BBDE-F0A3808105E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885C6A7-0C9A-406C-89E9-D06A3A03C52D}"
 	ProjectSection(SolutionItems) = preProject
@@ -80,7 +80,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oryx.Common.Utilities.Test", "tests\Oryx.Common.Utilities.Test\Oryx.Common.Utilities.Test.csproj", "{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Common.Utilities.Test", "tests\Oryx.Common.Utilities.Test\Oryx.Common.Utilities.Test.csproj", "{DEC78E98-7B16-46B3-BBF8-D3CA8C3BB19E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
