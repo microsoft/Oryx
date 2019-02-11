@@ -22,8 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     {
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
-
-        private const string PythonName = "python";
+        
         private const string DefaultTargetPackageDirectory = "__oryx_packages__";
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
@@ -46,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _detector = detector;
         }
 
-        public string Name => PythonName;
+        public string Name => PythonConstants.PythonName;
 
         public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
 
