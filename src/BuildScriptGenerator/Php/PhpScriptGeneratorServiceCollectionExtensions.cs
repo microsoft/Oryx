@@ -6,20 +6,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal static class PythonScriptGeneratorServiceCollectionExtensions
+    internal static class PhpScriptGeneratorServiceCollectionExtensions
     {
-        public static IServiceCollection AddPythonScriptGeneratorServices(this IServiceCollection services)
+        public static IServiceCollection AddPhpScriptGeneratorServices(this IServiceCollection services)
         {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<ILanguageDetector, PythonLanguageDetector>());
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IProgrammingPlatform, PythonPlatform>());
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILanguageDetector, PhpLanguageDetector>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
             services.AddScoped<PythonLanguageDetector>();
             return services;

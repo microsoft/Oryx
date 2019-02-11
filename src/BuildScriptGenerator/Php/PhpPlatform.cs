@@ -12,28 +12,27 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Python
+namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    [BuildProperty(VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
-    [BuildProperty(TargetPackageDirectoryPropertyKey, "Directory to download the packages to, if no virtual environment is provided. Default: '" + DefaultTargetPackageDirectory + "'")]
-    internal class PythonPlatform : IProgrammingPlatform
+    internal class PhpPlatform : IProgrammingPlatform
     {
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
 
+        private const string PythonName = "python";
         private const string DefaultTargetPackageDirectory = "__oryx_packages__";
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
-        private readonly ILogger<PythonPlatform> _logger;
+        private readonly ILogger<PhpPlatform> _logger;
         private readonly PythonLanguageDetector _detector;
 
-        public PythonPlatform(
+        public PhpPlatform(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
-            ILogger<PythonPlatform> logger,
+            ILogger<PhpPlatform> logger,
             PythonLanguageDetector detector)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
@@ -43,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _detector = detector;
         }
 
-        public string Name => PythonConstants.PythonName;
+        public string Name => PythonName;
 
         public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
 
