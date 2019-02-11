@@ -32,7 +32,6 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 
             IOutputFile outputFile = Activator.CreateInstance(_outputsByType[typeName]) as IOutputFile;
             outputFile.Initialize(constantCollection, typeInfo);
-
             return outputFile;
         }
     }

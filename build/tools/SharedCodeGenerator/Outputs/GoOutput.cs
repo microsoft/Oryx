@@ -9,38 +9,34 @@ using System.Linq;
 using System.Reflection;
 using Scriban;
 
-namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
+namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 {
-    [OutputType("csharp")]
-    internal class CSharpOutput : IOutputFile
+    [OutputType("go")]
+    internal class GoOutput : IOutputFile
     {
         private static readonly Template OutputTemplate;
 
-        static CSharpOutput()
+        static GoOutput()
         {
             var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "CSharpConstants.cs.tpl")))
+            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "GoConstants.go.tpl")))
             {
                 OutputTemplate = Template.Parse(templateReader.ReadToEnd());
             }
         }
 
         private ConstantCollection _collection;
-        private string _className;
         private string _directory;
-        private string _namespace;
 
         public void Initialize(ConstantCollection constantCollection, Dictionary<string, string> typeInfo)
         {
             _collection = constantCollection;
-            _className = _collection.Name.Camelize();
             _directory = typeInfo["directory"];
-            _namespace = typeInfo["namespace"];
         }
 
         public string GetPath()
         {
-            return Path.Combine(_directory, _className + ".cs");
+            return Path.Combine(_directory, _collection.Name.Replace("-", "_") + ".go");
         }
 
         public string GetContent()
@@ -48,8 +44,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
             var model = new ConstantCollectionTemplateModel
             {
                 AutogenDisclaimer = Program.BuildAutogenDisclaimer(_collection.SourcePath),
-                Namespace = _namespace,
-                Name = _className,
+                Namespace = Path.GetFileName(_directory), // "/path/to/project/package" => "package"
                 Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value)
             };
             return OutputTemplate.Render(model, member => member.Name);

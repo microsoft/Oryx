@@ -16,9 +16,6 @@ import (
 func main() {
 	common.PrintVersionInfo()
 
-	logger := common.GetLogger("node.scriptgenerator.main")
-	println("Session Id : " + logger.SessionId)
-
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
 	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed to start the application up.")
 	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/startup/default-static-site.js'")
@@ -33,6 +30,8 @@ func main() {
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 	useLegacyDebugger := isLegacyDebuggerNeeded()
+
+	common.SetGlobalOperationId(fullAppPath)
 
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,
