@@ -153,8 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile(NodeConstants.PackageJsonFileName);
-                packageJson = JsonConvert.DeserializeObject(jsonContent);
+                packageJson = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, NodeConstants.PackageJsonFileName);
             }
             catch (Exception ex)
             {
