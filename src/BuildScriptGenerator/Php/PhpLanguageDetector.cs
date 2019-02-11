@@ -1,24 +1,27 @@
-﻿using JetBrains.Annotations;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpLanguageDetector : ILanguageDetector
     {
-        private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
-        private readonly IPythonVersionProvider _pythonVersionProvider;
+        private readonly PhpScriptGeneratorOptions _opts;
+        private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpLanguageDetector> _logger;
 
         public PhpLanguageDetector(
-            IOptions<PythonScriptGeneratorOptions> options,
-            IPythonVersionProvider pythonVersionProvider,
+            IOptions<PhpScriptGeneratorOptions> options,
+            IPhpVersionProvider versionProvider,
             ILogger<PhpLanguageDetector> logger)
         {
-            _pythonScriptGeneratorOptions = options.Value;
-            _pythonVersionProvider = pythonVersionProvider;
+            _opts = options.Value;
+            _versionProvider = versionProvider;
             _logger = logger;
         }
 
@@ -31,24 +34,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
 
             dynamic composerFile = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, PhpConstants.ComposerFileName);
-
-            string runtimeVersionSpec = composerFile?.require?.php;
-            string runtimeVersion = SelectVersionFromComposerSpec(composerFile?.require?.php) ?? PhpConstants.DefaultPhpRuntimeVersion;
-            if (string.IsNullOrEmpty(runtimeVersionSpec))
-            {
-                
-            }
-
-            runtimeVersion = VerifyAndResolveVersion(runtimeVersion);
-
+            string runtimeVersion = ResolveVersionFromComposerSpec(composerFile?.require?.php) ?? PhpConstants.DefaultPhpRuntimeVersion;
             return new LanguageDetectorResult
             {
-                Language = PythonConstants.PythonName,
+                Language = PhpConstants.PhpName,
                 LanguageVersion = runtimeVersion,
             };
         }
 
-        private string SelectVersionFromComposerSpec([CanBeNull] string spec)
+        /// <summary>
+        /// Resolve a version specication string, like "^5.5 || ^7.0", to a single selection from the available versions.
+        /// </summary>
+        /// <param name="spec">`composer.json` version specification string</param>
+        /// <returns>Resolved PHP runtime version.</returns>
+        private string ResolveVersionFromComposerSpec([CanBeNull] string spec)
         {
             return null;
         }
