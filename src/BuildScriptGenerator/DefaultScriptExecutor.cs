@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdErrHandler)
         {
             int exitCode;
-            using (var eventStopwatch = _logger.LogTimedEvent("RunProcess", new Dictionary<string, string> { { "scriptPath", scriptPath } }))
+            using (var timedEvent = _logger.LogTimedEvent("ExecuteScript", new Dictionary<string, string> { { "scriptPath", scriptPath } }))
             {
                 exitCode = ProcessHelper.RunProcess(
                     scriptPath,
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     standardOutputHandler: stdOutHandler,
                     standardErrorHandler: stdErrHandler,
                     waitTimeForExit: null); // Do not provide wait time as the caller can do this themselves.
-                eventStopwatch.AddProperty("exitCode", exitCode.ToString());
+                timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
             return exitCode;

@@ -23,15 +23,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 if (stream == null)
                 {
-                    logger?.LogError("Could not get resource {resourceName}. Available resources: {availableResourceNames}", templateResource.Name, string.Join("|", assembly.GetManifestResourceNames()));
+                    logger?.LogError(
+                        "Could not get resource {resourceName}. Available resources: {availableResourceNames}",
+                        templateResource.Name,
+                        string.Join("|", assembly.GetManifestResourceNames()));
                 }
 
-                using (var tplReader = new StreamReader(stream))
+                using (TextReader tplReader = new StreamReader(stream))
+                using (logger?.LogTimedEvent("RenderTemplate", new Dictionary<string, string> { { "templateName", templateResource.Name } }))
                 {
-                    using (logger?.LogTimedEvent("RenderTemplate", new Dictionary<string, string> { { "templateName", templateResource.Name } }))
-                    {
-                        return RenderString(tplReader.ReadToEnd(), model);
-                    }
+                    return RenderString(tplReader.ReadToEnd(), model);
                 }
             }
         }

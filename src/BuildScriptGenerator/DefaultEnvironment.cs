@@ -57,5 +57,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             Environment.SetEnvironmentVariable(name, value);
         }
+
+        public string[] GetCommandLineArgs()
+        {
+            return Environment.GetCommandLineArgs();
+        }
     }
 }

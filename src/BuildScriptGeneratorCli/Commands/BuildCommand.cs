@@ -4,8 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,19 +72,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
 
             // This will be an App Service app name if Oryx was invoked by Kudu
-            var opName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? "oryx";
-            var buildOpId = logger.StartOperation(opName);
+            var appName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
+            var buildOpId = logger.StartOperation(appName);
             console.WriteLine("Build Operation ID: {0}", buildOpId);
 
             console.WriteLine("Oryx Version      : {0}, Commit: {1}", Program.GetVersion(), Program.GetCommit());
-            logger.LogInformation(
-                "Oryx Version: {OryxVersion}, Commit: {OryxCommit}",
-                Program.GetVersion(),
-                Program.GetCommit());
 
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
-            var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
-            var sourceRepo = sourceRepoProvider.GetSourceRepo();
+            var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
+            var commitId = GetSourceRepoCommitId(console, sourceRepo, logger);
 
             // Try writing the ID to a file in the source directory
             try
@@ -97,23 +96,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logger.LogError(exc, "Exception caught while trying to write build ID file");
             }
 
-            using (var stopwatch = logger.LogTimedEvent("GetGitCommitId"))
-            {
-                string commitId = sourceRepo.GetGitCommitId();
-                stopwatch.AddProperty(nameof(commitId), commitId);
-                if (!string.IsNullOrWhiteSpace(commitId))
-                {
-                    // Spacing is meant to equalize the length to "Build Operation ID"
-                    console.WriteLine("Repository Commit : {0}", commitId);
-                }
-            }
-
             var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
             if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
             {
                 return Constants.ExitFailure;
             }
 
+            // Generate build script
             string scriptContent;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
@@ -129,18 +118,32 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var tempDirectoryProvider = serviceProvider.GetRequiredService<ITempDirectoryProvider>();
             var buildScriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "build.sh");
 
-            // Write the content to the script.
+            // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
-            logger.LogDebug("Script was generated successfully at {buildScript}; running it...", buildScriptPath);
+            logger.LogTrace("Build script written to file");
+
+            var buildEventProps = new Dictionary<string, string>()
+            {
+                { "oryxVersion", Program.GetVersion() },
+                { "oryxCommitId", Program.GetCommit() },
+                { "oryxCommandLine", string.Join(' ', serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs()) },
+                { nameof(commitId), commitId },
+                { "scriptPath", buildScriptPath },
+                { "envVars", string.Join(',', serviceProvider.GetRequiredService<IEnvironment>().GetEnvironmentVariables().Keys) },
+            };
 
             // Run the generated script
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            var exitCode = scriptExecutor.ExecuteScript(
-                buildScriptPath,
-                new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty },
-                workingDirectory: sourceRepo.RootPath,
-                stdOutHandler,
-                stdErrHandler);
+            int exitCode;
+            using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
+            {
+                exitCode = scriptExecutor.ExecuteScript(
+                    buildScriptPath,
+                    new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty },
+                    workingDirectory: sourceRepo.RootPath,
+                    stdOutHandler,
+                    stdErrHandler);
+            }
 
             if (exitCode != Constants.ExitSuccess)
             {
@@ -239,6 +242,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return true;
+        }
+
+        private string GetSourceRepoCommitId(IConsole console, ISourceRepo repo, ILogger<BuildCommand> logger)
+        {
+            string commitId;
+            using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+            {
+                commitId = repo.GetGitCommitId();
+                timedEvent.AddProperty(nameof(commitId), commitId);
+                if (!string.IsNullOrWhiteSpace(commitId))
+                {
+                    // Spacing is meant to equalize the length to "Build Operation ID"
+                    console.WriteLine("Repository Commit : {0}", commitId);
+                }
+            }
+
+            return commitId;
         }
     }
 }

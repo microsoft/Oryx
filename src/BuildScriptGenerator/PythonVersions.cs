@@ -2,8 +2,8 @@
 
 namespace Microsoft.Oryx.Common
 {
-	public static class PythonVersions
-	{
-		public const string Python37Version = "3.7.2";
-	}
+    public static class PythonVersions
+    {
+        public const string Python37Version = "3.7.2";
+    }
 }
