@@ -14,9 +14,6 @@ import (
 func main() {
 	common.PrintVersionInfo()
 
-	logger := common.GetLogger("dotnetcore.scriptgenerator.main")
-	println("Session Id : " + logger.SessionId + "\n")
-
 	sourcePathPtr := flag.String(
 		"sourcePath",
 		".",
@@ -37,6 +34,8 @@ func main() {
 	flag.Parse()
 
 	fullSourcePath := common.GetValidatedFullPath(*sourcePathPtr)
+
+	common.SetGlobalOperationId(fullSourcePath)
 
 	fullPublishedOutputPath := ""
 	if *publishedOutputPathPtr != "" {

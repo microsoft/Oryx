@@ -7,12 +7,13 @@ package common
 
 import (
 	"fmt"
+	"strings"
 	"os"
 	"time"
-
+	"path"
+	"io/ioutil"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts"
-	"github.com/google/uuid"
 )
 
 const SHUTDOWN_CLOSE_TIMEOUT time.Duration = 3 * time.Second
@@ -21,37 +22,40 @@ const APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME string = "ORYX_AI_IN
 const APP_SERVICE_APP_NAME_ENV_VAR_NAME string = "APPSETTING_WEBSITE_SITE_NAME"
 
 type Logger struct {
-	AiClient   appinsights.TelemetryClient
-	LoggerName string
-	AppName    string
-	SessionId  string
+	AiClient    appinsights.TelemetryClient
+	LoggerName  string
+	AppName     string
+	OperationId string
 }
 
-// Represents unique correlation id that is used for correlating messages that get logged
-// in a single session
-var sessionId string
+// Represents unique identifier that can be used to correlate messages with the build logs
+var buildOpId string
+
+func SetGlobalOperationId(appRootPath string) {
+	if buildOpId == "" {
+		rawId, err := ioutil.ReadFile(path.Join(appRootPath, BuildIdFileName))
+		if err == nil { // Silently ignore errors
+			buildOpId = strings.TrimSpace(string(rawId))
+		}
+	}
+}
 
 func GetLogger(name string) *Logger {
-	// Create the session id only once for the whole session
-	if sessionId == "" {
-		sessionId = uuid.New().String()
-	}
-
 	key := os.Getenv(APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME)
 	logger := Logger{
-		AiClient:   appinsights.NewTelemetryClient(key),
-		LoggerName: name,
-		AppName:    os.Getenv(APP_SERVICE_APP_NAME_ENV_VAR_NAME),
-		SessionId:  sessionId,
+		AiClient:    appinsights.NewTelemetryClient(key),
+		LoggerName:  name,
+		AppName:     os.Getenv(APP_SERVICE_APP_NAME_ENV_VAR_NAME),
+		OperationId: buildOpId,
 	}
 	return &logger
 }
 
 func (logger *Logger) makeTraceItem(message string, sev contracts.SeverityLevel) *appinsights.TraceTelemetry {
 	trace := appinsights.NewTraceTelemetry(message, sev)
+	trace.BaseTelemetry.Tags.Operation().SetId(logger.OperationId)
 	trace.Properties["LoggerName"] = logger.LoggerName
 	trace.Properties["AppName"] = logger.AppName
-	trace.Properties["SessionId"] = logger.SessionId
 	return trace
 }
 

@@ -30,9 +30,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             string typeName = typeInfo["type"];
             typeInfo.Remove("type");
 
-            IOutputFile outputFile = Activator.CreateInstance(_outputsByType[typeName], constantCollection, typeInfo) as IOutputFile;
+            IOutputFile outputFile = Activator.CreateInstance(_outputsByType[typeName]) as IOutputFile;
             outputFile.Initialize(constantCollection, typeInfo);
-
             return outputFile;
         }
     }

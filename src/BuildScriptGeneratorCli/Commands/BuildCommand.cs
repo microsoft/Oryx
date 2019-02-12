@@ -70,7 +70,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // This will be an App Service app name if Oryx was invoked by Kudu
             var opName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? "oryx";
-            console.WriteLine("Build Operation ID: {0}", logger.StartOperation(opName));
+            var buildOpId = logger.StartOperation(opName);
+            console.WriteLine("Build Operation ID: {0}", buildOpId);
 
             console.WriteLine("Oryx Version      : {0}, Commit: {1}", Program.GetVersion(), Program.GetCommit());
             logger.LogInformation(
@@ -81,6 +82,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
             var sourceRepo = sourceRepoProvider.GetSourceRepo();
+
+            // Try writing the ID to a file in the source directory
+            try
+            {
+                using (logger.LogTimedEvent("WriteBuildIdFile"))
+                using (var idFileWriter = new StreamWriter(Path.Combine(sourceRepo.RootPath, Common.FilePaths.BuildIdFileName)))
+                {
+                    idFileWriter.Write(buildOpId);
+                }
+            }
+            catch (Exception exc)
+            {
+                logger.LogError(exc, "Exception caught while trying to write build ID file");
+            }
 
             using (var stopwatch = logger.LogTimedEvent("GetGitCommitId"))
             {

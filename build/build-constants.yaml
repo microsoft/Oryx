@@ -8,3 +8,21 @@
     - type: shell
       directory: build
       file-name-prefix: __
+- name: file-paths
+  constants:
+    build-id-file-name: .oryx_build_id
+  outputs:
+    - type: csharp
+      directory: src/Common
+      namespace: Microsoft.Oryx.Common
+    - type: go
+      directory: src/startupscriptgenerator/common
+- name: node-versions
+  constants:
+    yarn-version: 1.13.0
+    yarn-minor-version: 1.13
+    yarn-major-version: 1
+  outputs:
+    - type: shell
+      directory: build
+      file-name-prefix: __

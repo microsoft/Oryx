@@ -115,8 +115,10 @@ RUN set -ex \
             fi; \
         fi; \
     done
+
+COPY build/__node-versions.sh /tmp
 RUN set -ex \
- && YARN_VERSION=1.13.0 \
+ && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
  && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
     gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
@@ -169,10 +171,11 @@ RUN set -ex \
  && ln -s 6.4.1 /opt/npm/6.4 \
  && ln -s 6.4 /opt/npm/6
 RUN set -ex \
- && ln -s 1.13.0 /opt/yarn/stable \
- && ln -s 1.13.0 /opt/yarn/latest \
- && ln -s 1.13.0 /opt/yarn/1.13 \
- && ln -s 1.13 /opt/yarn/1
+ && . /tmp/__node-versions.sh \
+ && ln -s $YARN_VERSION /opt/yarn/stable \
+ && ln -s $YARN_VERSION /opt/yarn/latest \
+ && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
+ && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
 RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/nodejs/lts/bin/* /links \

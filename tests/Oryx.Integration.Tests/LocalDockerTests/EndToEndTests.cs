@@ -105,44 +105,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Fact]
-        public async Task NodeApp_WithYarnLock_AndNpmBuild()
-        {
-            // Arrange
-            var appName = "TailwindTraders-Opener";
-            var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
-            var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:3000";
-            var startupFile = "/tmp/startup.sh";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFile}")
-                .AddCommand(startupFile)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
-                portMapping,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async () =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/browse");
-                    Assert.Contains("<!DOCTYPE html><html lang=\"en\">", data);
-                });
-        }
-
         // Run on Linux only as TypeScript seems to create symlinks and this does not work on Windows machines.
         [EnableOnPlatform("LINUX")]
         public async Task NodeApp_BuildNodeUnderScripts()
