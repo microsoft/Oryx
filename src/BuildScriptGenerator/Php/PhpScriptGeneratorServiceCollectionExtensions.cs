@@ -17,8 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ILanguageDetector, PhpLanguageDetector>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
-            services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
-            services.AddScoped<PythonLanguageDetector>();
+            services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
+            services.AddScoped<PhpLanguageDetector>();
             return services;
         }
     }

@@ -10,5 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         internal const string PhpName = "php";
         internal const string ComposerFileName = "composer.json";
         internal const string DefaultPhpRuntimeVersion = "???";
+        internal const string InstalledPhpVersionsDir = "/opt/php/"; // TODO: consolidate with Dockerfile to yaml?
     }
 }
