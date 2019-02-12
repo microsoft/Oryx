@@ -18,10 +18,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public void Configure(PhpScriptGeneratorOptions options)
         {
-            var defaultVersion = _settings.TryGetAndLoadSettings.GetEnvironmentVariable(PythonDefaultVersion);
+            var defaultVersion = _environment.GetEnvironmentVariable(PhpConstants.DefaultVersion);
             if (string.IsNullOrEmpty(defaultVersion))
             {
-                defaultVersion = PythonLtsVersion;
+                defaultVersion = PythonConstants.PythonLtsVersion;
             }
 
             options.PythonDefaultVersion = defaultVersion;
