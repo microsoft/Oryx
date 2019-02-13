@@ -26,4 +26,4 @@ echo "Building and running tests..."
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"
 # Run non-AKS tests temporarily
-dotnet test --filter E2E!=AKS --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
+dotnet test --filter E2E!=AKS --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName.xml" -c $BUILD_CONFIGURATION
