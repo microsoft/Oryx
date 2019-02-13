@@ -13,8 +13,8 @@ namespace Microsoft.Extensions.Logging
     {
         private readonly TelemetryClient client;
         private readonly string eventName;
-        private readonly IDictionary<string, string> eventProps;
         private readonly Stopwatch stopwatch;
+        private IDictionary<string, string> eventProps;
 
         public EventStopwatch(TelemetryClient telemetryClient, string eventName, IDictionary<string, string> eventProperties)
         {
@@ -27,6 +27,11 @@ namespace Microsoft.Extensions.Logging
         public void AddProperty(string name, string value)
         {
             this.eventProps.Add(name, value);
+        }
+
+        public void SetProperties(Dictionary<string, string> props)
+        {
+            this.eventProps = props;
         }
 
         public void Dispose()

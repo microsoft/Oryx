@@ -34,8 +34,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
         {
             script = null;
+
             var toolsToVersion = new Dictionary<string, string>();
-            List<BuildScriptSnippet> snippets = GetBuildSnippets(context, toolsToVersion);
+            List<BuildScriptSnippet> snippets;
+
+            using (var timedEvent = _logger.LogTimedEvent("GetBuildSnippets"))
+            {
+                snippets = GetBuildSnippets(context, toolsToVersion);
+                timedEvent.SetProperties(toolsToVersion);
+            }
 
             if (snippets.Any())
             {
@@ -149,6 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Builds the full build script from the list of snippets for each platform.
         /// </summary>
+        /// <returns>Finalized build script as a string.</returns>
         private string BuildScriptFromSnippets(List<BuildScriptSnippet> snippets, Dictionary<string, string> toolsToVersion)
         {
             string script;

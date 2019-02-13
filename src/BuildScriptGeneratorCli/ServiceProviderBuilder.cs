@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget() { Name = "ai", InstrumentationKey = aiKey };
                 config.AddTarget(aiTarget);
-                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, aiTarget);
+                config.AddRuleForAllLevels(aiTarget);
             }
 
             bool hasLogPath = !string.IsNullOrWhiteSpace(logPath);

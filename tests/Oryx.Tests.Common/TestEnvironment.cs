@@ -51,5 +51,10 @@ namespace Microsoft.Oryx.Tests.Common
         {
             Variables[name] = value;
         }
+
+        public string[] GetCommandLineArgs()
+        {
+            return new string[] { };
+        }
     }
 }
