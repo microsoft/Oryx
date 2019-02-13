@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     internal class ConstantCollectionTemplateModel
     {
         public string AutogenDisclaimer { get; set; }
-        
+
         public string Namespace { get; set; }
 
         public string Name { get; set; }

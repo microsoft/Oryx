@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 string name = constant.Key.Replace('-', '_').ToUpper();
                 body.AppendLine($"{name}='{constant.Value}'");
             }
+
             return body.ToString();
         }
     }

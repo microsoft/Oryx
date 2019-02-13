@@ -12,11 +12,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     {
         private readonly string _type;
 
-        public string Type => _type;
-
         public OutputTypeAttribute(string type)
         {
             _type = type;
         }
+
+        public string Type => _type;
     }
 }
