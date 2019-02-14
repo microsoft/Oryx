@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Oryx.SharedCodeGenerator.Outputs;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
@@ -16,6 +17,9 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private const int ArgOutputBase = 1;
         private const int ExitSuccess = 0;
         private const int ExitFailure = 1;
+
+        private const string VarPrefix = "${";
+        private const string VarSuffix = "}";
 
         public static int Main(string[] args)
         {
@@ -52,6 +56,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
             foreach (ConstantCollection col in input)
             {
+                ReplaceVariablesWithValues(col.Constants);
                 col.SourcePath = inputPath; // This isn't set by YamlDotNet, so it's added manually
 
                 foreach (Dictionary<string, string> outputInfo in col.Outputs)
@@ -67,6 +72,18 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             }
 
             return ExitSuccess;
+        }
+
+        private static void ReplaceVariablesWithValues(IDictionary<string, string> dict)
+        {
+            var colReplacements = dict
+                        .Where(e => e.Value.StartsWith(VarPrefix) && e.Value.EndsWith(VarSuffix))
+                        .Select(e => KeyValuePair.Create(e.Key, e.Value.Substring(VarPrefix.Length, e.Value.Length - VarPrefix.Length - VarSuffix.Length)))
+                        .ToList();
+            foreach (var entry in colReplacements)
+            {
+                dict[entry.Key] = dict[entry.Value];
+            }
         }
 
         private static T LoadFromString<T>(string content)

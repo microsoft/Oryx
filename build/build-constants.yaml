@@ -8,6 +8,17 @@
     - type: shell
       directory: build
       file-name-prefix: __
+- name: php-versions
+  constants:
+    php73-version: 7.3.2
+    php7-version: ${php73-version}
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.Common
+    - type: shell
+      directory: build
+      file-name-prefix: __
 - name: file-paths
   constants:
     build-id-file-name: .oryx_build_id
