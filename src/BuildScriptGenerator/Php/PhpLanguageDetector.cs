@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -33,8 +34,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            dynamic composerFile = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, PhpConstants.ComposerFileName);
-            string runtimeVersion = ResolveVersionFromComposerSpec(composerFile?.require?.php) ?? PhpConstants.DefaultPhpRuntimeVersion;
+            dynamic composerFile = null;
+            try
+            {
+                composerFile = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, PhpConstants.ComposerFileName);
+            }
+            catch (Exception ex)
+            {
+                // We just ignore errors, so we leave malformed composer.json files for Composer to handle,
+                // not us. This prevents us from erroring out when Composer itself might be able to tolerate
+                // some errors in the composer.json file.
+                _logger.LogWarning(ex, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
+            }
+
+            string runtimeVersion = ResolveVersionFromComposerSpec(composerFile?.require?.php) ?? _opts.PhpDefaultVersion;
             return new LanguageDetectorResult
             {
                 Language = PhpConstants.PhpName,

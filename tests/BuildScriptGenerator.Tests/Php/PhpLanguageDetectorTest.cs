@@ -131,13 +131,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithPhpDefaultVersion_WhenNoComposerFileExists()
+        public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WhenComposerFileDoesNotSpecifyRuntimeVersion()
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "content", "requirements.txt");
-            IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
+            IOHelpers.CreateFile(sourceDir, "content", PhpConstants.ComposerFileName);
+            IOHelpers.CreateFile(sourceDir, "<?php echo true; ?>", "foo.php");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
