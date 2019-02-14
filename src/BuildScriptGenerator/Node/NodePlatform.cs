@@ -157,11 +157,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             catch (Exception ex)
             {
-                // We just ignore errors, so we leave malformed package.json
-                // files for node.js to handle, not us. This prevents us from
-                // erroring out when node itself might be able to tolerate some errors
-                // in the package.json file.
-                _logger.LogInformation(ex, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
+                // We just ignore errors, so we leave malformed package.json files for npm to handle,
+                // not us. This prevents us from erroring out when npm itself might be able to tolerate
+                // some errors in the package.json file.
+                _logger.LogWarning(ex, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
             }
 
             return packageJson;

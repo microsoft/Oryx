@@ -136,7 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "content", "requirements.txt");
+            IOHelpers.CreateFile(sourceDir, "content", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
