@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeTextfile()
+        public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeFile()
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
