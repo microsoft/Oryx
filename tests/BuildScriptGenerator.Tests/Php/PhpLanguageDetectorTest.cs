@@ -130,13 +130,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Null(result);
         }
 
-        [Fact]
-        public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WhenComposerFileDoesNotSpecifyRuntimeVersion()
+        [Theory]
+        [InlineData("invalid json")]
+        [InlineData("{\"data\": \"valid but meaningless\"}")]
+        public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WithComposerFile(string composerFileContent)
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "content", PhpConstants.ComposerFileName);
+            IOHelpers.CreateFile(sourceDir, composerFileContent, PhpConstants.ComposerFileName);
             IOHelpers.CreateFile(sourceDir, "<?php echo true; ?>", "foo.php");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
