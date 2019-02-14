@@ -1,5 +1,5 @@
 # Startup script generator
-FROM golang:1.11-%DOTNETCORE_BASE_IMAGE_ALPINE_OR_STRETCH% as startupCmdGen
+FROM golang:1.11-alpine as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
 ARG GIT_COMMIT=unspecified
@@ -8,14 +8,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM %DOTNETCORE_BASE_IMAGE%
-
-
-# Older .NET core versions, which have reached end of life and therefore are no longer updated, use
-# a version of `curl` that has known issues.
-# We manually update it here so we can still depend on the original images.
-# This command should be removed once support for deprecated .NET core images is halted.
-RUN apt update && apt install curl --yes
+FROM microsoft/dotnet:2.2.0-aspnetcore-runtime-alpine
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

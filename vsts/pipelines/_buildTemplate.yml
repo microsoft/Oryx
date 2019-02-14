@@ -75,13 +75,6 @@ steps:
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
-- task: PublishTestResults@2
-  inputs:
-    testRunner: 'xUnit'
-    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
-    mergeTestResults: true
-  condition: true
-
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
   inputs:
@@ -100,6 +93,13 @@ steps:
     contents: '**/*.*'
     targetFolder: $(Build.ArtifactStagingDirectory)
     overWrite: true
+  condition: true
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'xUnit'
+    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
+    mergeTestResults: true
   condition: true
 
 - task: Docker@0

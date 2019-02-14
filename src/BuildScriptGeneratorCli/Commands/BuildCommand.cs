@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
@@ -129,7 +130,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 { "oryxCommandLine", string.Join(' ', serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs()) },
                 { nameof(commitId), commitId },
                 { "scriptPath", buildScriptPath },
-                { "envVars", string.Join(',', serviceProvider.GetRequiredService<IEnvironment>().GetEnvironmentVariables().Keys) },
+                { "envVars", string.Join(",", GetEnvVarNames(serviceProvider.GetRequiredService<IEnvironment>())) },
             };
 
             // Run the generated script
@@ -259,6 +260,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return commitId;
+        }
+
+        private string[] GetEnvVarNames([CanBeNull] IEnvironment env)
+        {
+            var envVarKeyCollection = env?.GetEnvironmentVariables()?.Keys;
+            if (envVarKeyCollection == null)
+            {
+                return new string[] { };
+            }
+
+            string[] envVarNames = new string[envVarKeyCollection.Count];
+            envVarKeyCollection.CopyTo(envVarNames, 0);
+            return envVarNames;
         }
     }
 }
