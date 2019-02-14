@@ -22,18 +22,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private const string PythonName = "python";
         private const string DefaultTargetPackageDirectory = "__oryx_packages__";
 
-        private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
-        private readonly IPythonVersionProvider _pythonVersionProvider;
+        private readonly PhpScriptGeneratorOptions _pythonScriptGeneratorOptions;
+        private readonly IPhpVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
         private readonly ILogger<PhpPlatform> _logger;
-        private readonly PythonLanguageDetector _detector;
+        private readonly PhpLanguageDetector _detector;
 
         public PhpPlatform(
-            IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
-            IPythonVersionProvider pythonVersionProvider,
+            IOptions<PhpScriptGeneratorOptions> pythonScriptGeneratorOptions,
+            IPhpVersionProvider pythonVersionProvider,
             IEnvironment environment,
             ILogger<PhpPlatform> logger,
-            PythonLanguageDetector detector)
+            PhpLanguageDetector detector)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
@@ -42,9 +42,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             _detector = detector;
         }
 
-        public string Name => PythonName;
+        public string Name => PhpConstants.PhpName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
+        public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPhpVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
@@ -113,20 +113,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 disableCollectStatic = true;
             }
 
-            _logger.LogDependencies(
-                "Python",
-                pythonVersion,
-                context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName)
-                .Where(line => !line.TrimStart().StartsWith("#")));
+            //_logger.LogDependencies(
+            //    "PHP",
+            //    phpVersion,
+            //    context.SourceRepo.ReadAllLines(PhpConstants.RequirementsFileName)
+            //    .Where(line => !line.TrimStart().StartsWith("#")));
 
-            var scriptProps = new PythonBashBuildSnippetProperties(
-                virtualEnvironmentName: virtualEnvName,
-                virtualEnvironmentModule: virtualEnvModule,
-                virtualEnvironmentParameters: virtualEnvCopyParam,
-                packagesDirectory: packageDir,
-                disableCollectStatic: disableCollectStatic);
-            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
-
+            //var scriptProps = new PhpBashBuildSnippetProperties(
+            //    virtualEnvironmentName: virtualEnvName,
+            //    virtualEnvironmentModule: virtualEnvModule,
+            //    virtualEnvironmentParameters: virtualEnvCopyParam,
+            //    packagesDirectory: packageDir,
+            //    disableCollectStatic: disableCollectStatic);
+            //string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
+            string script = "";
             return new BuildScriptSnippet()
             {
                 BashBuildScriptSnippet = script,

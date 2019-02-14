@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, PythonPlatform>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
+                ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
             services.AddScoped<PythonLanguageDetector>();
             return services;
