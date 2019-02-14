@@ -99,8 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", "requirements.txt");
-            IOHelpers.CreateFile(sourceDir, "python-100.100.100", "runtime.txt");
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "python-100.100.100", PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act & Assert
