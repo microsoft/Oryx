@@ -9,24 +9,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpScriptGeneratorOptionsSetup : IConfigureOptions<PhpScriptGeneratorOptions>
     {
-        private readonly EnvironmentSettings _settings;
+        private readonly IEnvironment _env;
 
-        public PhpScriptGeneratorOptionsSetup(IEnvironmentSettingsProvider envSettingsProvider)
+        public PhpScriptGeneratorOptionsSetup(IEnvironment environment)
         {
-            envSettingsProvider.TryGetAndLoadSettings(out _settings);
+            _env = environment;
         }
 
         public void Configure(PhpScriptGeneratorOptions options)
         {
-            var defaultVersion = _environment.GetEnvironmentVariable(PhpConstants.DefaultVersion);
-            if (string.IsNullOrEmpty(defaultVersion))
+            var defaultVersion = _env.GetEnvironmentVariable(PhpConstants.DefaultPhpRuntimeVersionEnvVarName);
+            if (string.IsNullOrWhiteSpace(defaultVersion))
             {
-                defaultVersion = PythonConstants.PythonLtsVersion;
+                defaultVersion = PhpConstants.DefaultPhpRuntimeVersion;
             }
 
-            options.PythonDefaultVersion = defaultVersion;
-            options.InstalledPythonVersionsDir = InstalledPythonVersionsDir;
-            options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(PythonSupportedVersionsEnvVariable);
+            options.PhpDefaultVersion = defaultVersion;
+            options.InstalledPhpVersionsDir = PhpConstants.InstalledPhpVersionsDir;
+            options.SupportedPhpVersions = _env.GetEnvironmentVariableAsList(PhpConstants.SupportedVersionsEnvVarName);
         }
     }
 }
