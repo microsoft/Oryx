@@ -641,7 +641,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 // User would do this through app settings
-                .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local\"")
+                .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath}")
                 .AddCommand(startupFilePath)
                 .ToString();
@@ -669,7 +669,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await GetResponseDataAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<h1>it works! (Django Template)</h1>", data);
 
-                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/static/webpack_bundles/main-137f65fb0e0a8e523666.js");
+                    // Looks for the link to the webpack-generated file
+                    var linkStartIdx = data.IndexOf("src=\"/static/webpack_bundles/main-");
+                    Assert.NotEqual(-1, linkStartIdx);
+
+                    var linkdEndIx = data.IndexOf(".js", linkStartIdx);
+                    Assert.NotEqual(-1, linkdEndIx);
+
+                    // We remove 5 chars for `src="` and add 2 since we get the first char of ".js" but we want to include ".js in the string
+                    int length = linkdEndIx - linkStartIdx -2;
+                    var link = data.Substring(linkStartIdx + 5, length);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}{link}");
                     Assert.Contains("!function(e){var t={};function n(r){if(t[r])return t[r].exports", data);
                 });
         }
