@@ -29,9 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            // No files in source directory
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var repo = new CachedSourceRepo(); // No files in source repo
 
             // Act
             var result = detector.Detect(repo);
@@ -45,9 +43,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "foo.php content", "foo.php");
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var repo = new CachedSourceRepo();
+            repo.AddFile("foo.php content", "foo.php");
 
             // Act
             var result = detector.Detect(repo);
@@ -61,9 +58,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "{\"require\":{\"php\":\"0\"}}", PhpConstants.ComposerFileName);
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var repo = new CachedSourceRepo();
+            repo.AddFile("{\"require\":{\"php\":\"0\"}}", PhpConstants.ComposerFileName);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
@@ -73,36 +69,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData("foo")]
-        [InlineData("php")]
-        public void Detect_ReutrnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
-        {
-            // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", "requirements.txt");
-            IOHelpers.CreateFile(sourceDir, fileContent, "runtime.txt");
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
-
-            // Act
-            var result = detector.Detect(repo);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Theory]
         [InlineData("invalid json")]
         [InlineData("{\"data\": \"valid but meaningless\"}")]
         public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WithComposerFile(string composerFileContent)
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, composerFileContent, PhpConstants.ComposerFileName);
-            IOHelpers.CreateFile(sourceDir, "<?php echo true; ?>", "foo.php");
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var repo = new CachedSourceRepo();
+            repo.AddFile(composerFileContent, PhpConstants.ComposerFileName);
+            repo.AddFile("<?php echo true; ?>", "foo.php");
 
             // Act
             var result = detector.Detect(repo);
