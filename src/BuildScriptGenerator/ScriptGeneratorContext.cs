@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class ScriptGeneratorContext
+    public partial class ScriptGeneratorContext
     {
         public ISourceRepo SourceRepo { get; set; }
 
