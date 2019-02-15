@@ -49,75 +49,68 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
           ""license"": ""ISC""
         }";
 
-        private const string NpmInstallCommand = "php /path/to/composer.phar install";
-
         [Fact]
-        public void GeneratedScript_UsesYarnInstallAndRunsNpmBuild_IfYarnLockFileIsPresent_AndBuildNodeIsPresentUnderScripts()
+        public void GeneratedScript_UsesComposerInstall()
         {
             // Arrange
-            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetScriptGenerator(Common.PhpVersions.Php7Version);
             var repo = new CachedSourceRepo();
-            repo.AddFile(ComposerFileWithBuildScript, NodeConstants.ComposerFileFileName);
-            repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
+            repo.AddFile(ComposerFileWithBuildScript, PhpConstants.ComposerFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: YarnInstallCommand,
-                runBuildCommand: "yarn run build",
-                runBuildAzureCommand: "yarn run build:azure");
+            context.LanguageVersion = Common.PhpVersions.Php7Version;
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(PhpPlatform.ComposerInstallLine, snippet.BashBuildScriptSnippet);
         }
 
-        [Fact]
-        public void GeneratedScript_UsesNpmInstall_IfPackageLockJsonFileIsPresent()
-        {
-            // Arrange
-            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
-            var repo = new CachedSourceRepo();
-            repo.AddFile(ComposerFileWithNoNpmVersion, NodeConstants.ComposerFileFileName);
-            repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
-            var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: null,
-                runBuildAzureCommand: null);
+        //[Fact]
+        //public void GeneratedScript_UsesNpmInstall_IfPackageLockJsonFileIsPresent()
+        //{
+        //    // Arrange
+        //    var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+        //    var repo = new CachedSourceRepo();
+        //    repo.AddFile(ComposerFileWithNoNpmVersion, NodeConstants.ComposerFileFileName);
+        //    repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
+        //    var context = CreateScriptGeneratorContext(repo);
+        //    context.LanguageVersion = "8.2.1";
+        //    var expected = new NodeBashBuildSnippetProperties(
+        //        packageInstallCommand: NpmInstallCommand,
+        //        runBuildCommand: null,
+        //        runBuildAzureCommand: null);
 
-            // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+        //    // Act
+        //    var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
-            // Assert
-            Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
-        }
+        //    // Assert
+        //    Assert.NotNull(snippet);
+        //    Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+        //}
 
-        [Fact]
-        public void GeneratedScript_UsesNpmRunBuild_IfBuildNodeIsPresentUnderScripts()
-        {
-            // Arrange
-            var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
-            var repo = new CachedSourceRepo();
-            repo.AddFile(ComposerFileWithBuildScript, NodeConstants.ComposerFileFileName);
-            var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure");
+        //[Fact]
+        //public void GeneratedScript_UsesNpmRunBuild_IfBuildNodeIsPresentUnderScripts()
+        //{
+        //    // Arrange
+        //    var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
+        //    var repo = new CachedSourceRepo();
+        //    repo.AddFile(ComposerFileWithBuildScript, NodeConstants.ComposerFileFileName);
+        //    var context = CreateScriptGeneratorContext(repo);
+        //    context.LanguageVersion = "8.2.1";
+        //    var expected = new NodeBashBuildSnippetProperties(
+        //        packageInstallCommand: NpmInstallCommand,
+        //        runBuildCommand: "npm run build",
+        //        runBuildAzureCommand: "npm run build:azure");
 
-            // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+        //    // Act
+        //    var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
-            // Assert
-            Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
-        }
+        //    // Assert
+        //    Assert.NotNull(snippet);
+        //    Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+        //}
 
         private IProgrammingPlatform GetScriptGenerator(string defaultVersion = null)
         {
@@ -130,11 +123,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(scriptGeneratorOptions.Value);
 
-            return new PhpPlatform(
-                nodeScriptGeneratorOptions,
-                nodeVersionProvider,
-                NullLogger<NodePlatform>.Instance,
-                null);
+            return new PhpPlatform(scriptGeneratorOptions, phpVersionProvider, NullLogger<PhpPlatform>.Instance, null);
         }
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(

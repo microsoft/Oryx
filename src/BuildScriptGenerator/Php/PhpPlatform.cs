@@ -3,35 +3,30 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpPlatform : IProgrammingPlatform
     {
+        public const string ComposerInstallLine = "$php $COMPOSER_PHAR install";
+
         private readonly PhpScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPhpVersionProvider _pythonVersionProvider;
-        private readonly IEnvironment _environment;
         private readonly ILogger<PhpPlatform> _logger;
         private readonly PhpLanguageDetector _detector;
 
         public PhpPlatform(
             IOptions<PhpScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPhpVersionProvider pythonVersionProvider,
-            IEnvironment environment,
             ILogger<PhpPlatform> logger,
             PhpLanguageDetector detector)
         {
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
-            _environment = environment;
             _logger = logger;
             _detector = detector;
         }
@@ -62,16 +57,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             //    packagesDirectory: packageDir,
             //    disableCollectStatic: disableCollectStatic);
             //string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
-            string script = "";
+
             return new BuildScriptSnippet()
             {
-                BashBuildScriptSnippet = script,
+                BashBuildScriptSnippet = ComposerInstallLine,
             };
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabled(ScriptGeneratorContext ctx)
         {
-            return scriptGeneratorContext.EnablePhp;
+            return ctx.EnablePhp;
         }
 
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
@@ -85,7 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public void SetVersion(ScriptGeneratorContext context, string version)
         {
-            context.PythonVersion = version;
+            context.PhpVersion = version;
         }
     }
 }

@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Php
+namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public partial class ScriptGeneratorContext
     {
