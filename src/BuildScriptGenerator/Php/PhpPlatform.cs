@@ -16,12 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpPlatform : IProgrammingPlatform
     {
-        internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
-        internal const string TargetPackageDirectoryPropertyKey = "packagedir";
-
-        private const string PythonName = "python";
-        private const string DefaultTargetPackageDirectory = "__oryx_packages__";
-
         private readonly PhpScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPhpVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
@@ -53,65 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
         {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
-            {
-                virtualEnvName = string.Empty;
-            }
-
-            string packageDir = null;
-            if ((context.Properties == null ||
-                !context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir)) &&
-                string.IsNullOrEmpty(virtualEnvName))
-            {
-                // Only default if no virtual environment has been provided.
-                packageDir = DefaultTargetPackageDirectory;
-            }
-
-            if (!string.IsNullOrWhiteSpace(virtualEnvName) && !string.IsNullOrWhiteSpace(packageDir))
-            {
-                throw new InvalidUsageException(Labels.PythonBuildCantHaveVirtualEnvAndTargetPackageDirErrorMessage);
-            }
-
-            var virtualEnvModule = string.Empty;
-            var virtualEnvCopyParam = string.Empty;
-
-            var pythonVersion = context.PythonVersion;
-            _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
-
-            if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
-            {
-                switch (pythonVersion.Split('.')[0])
-                {
-                    case "2":
-                        virtualEnvModule = "virtualenv";
-                        break;
-
-                    case "3":
-                        virtualEnvModule = "venv";
-                        virtualEnvCopyParam = "--copies";
-                        break;
-
-                    default:
-                        string errorMessage = "Python version '" + pythonVersion + "' is not supported";
-                        _logger.LogError(errorMessage);
-                        throw new NotSupportedException(errorMessage);
-                }
-
-                _logger.LogDebug(
-                    "Using virtual environment {venv}, module {venvModule}",
-                    virtualEnvName,
-                    virtualEnvModule);
-            }
-
-            // Collect static is enabled by default, but users can opt-out of it
-            var disableCollectStatic = false;
-            var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
-                EnvironmentSettingsKeys.DisableCollectStatic);
-            if (string.Equals(disableCollectStaticEnvValue, "true", StringComparison.OrdinalIgnoreCase))
-            {
-                disableCollectStatic = true;
-            }
+            _logger.LogDebug("Selected PHP version: {phpVer}", context.PhpVersion);
 
             //_logger.LogDependencies(
             //    "PHP",
@@ -135,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
         {
-            return scriptGeneratorContext.EnablePython;
+            return scriptGeneratorContext.EnablePhp;
         }
 
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
@@ -143,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion["python"] = targetPlatformVersion;
+                toolsToVersion[PhpConstants.PhpName] = targetPlatformVersion;
             }
         }
 
