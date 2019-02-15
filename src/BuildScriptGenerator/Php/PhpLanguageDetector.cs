@@ -7,6 +7,7 @@ using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -16,10 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpLanguageDetector> _logger;
 
-        public PhpLanguageDetector(
-            IOptions<PhpScriptGeneratorOptions> options,
-            IPhpVersionProvider versionProvider,
-            ILogger<PhpLanguageDetector> logger)
+        public PhpLanguageDetector(IOptions<PhpScriptGeneratorOptions> options, IPhpVersionProvider versionProvider, ILogger<PhpLanguageDetector> logger)
         {
             _opts = options.Value;
             _versionProvider = versionProvider;
@@ -47,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 _logger.LogWarning(ex, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
             }
 
-            string runtimeVersion = ResolveVersionFromComposerSpec(composerFile?.require?.php) ?? _opts.PhpDefaultVersion;
+            string runtimeVersion = VerifyAndResolveVersion(composerFile?.require?.php?.Value as string);
             return new LanguageDetectorResult
             {
                 Language = PhpConstants.PhpName,
@@ -55,14 +53,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             };
         }
 
-        /// <summary>
-        /// Resolve a version specication string, like "^5.5 || ^7.0", to a single selection from the available versions.
-        /// </summary>
-        /// <param name="spec">`composer.json` version specification string</param>
-        /// <returns>Resolved PHP runtime version.</returns>
-        private string ResolveVersionFromComposerSpec([CanBeNull] string spec)
+        private string VerifyAndResolveVersion(string version)
         {
-            return null;
+            if (string.IsNullOrEmpty(version))
+            {
+                return _opts.PhpDefaultVersion;
+            }
+
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(version, _versionProvider.SupportedPhpVersions);
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            {
+                var exc = new UnsupportedVersionException($"Target PHP version '{version}' is unsupported. " +
+                    $"Supported versions are: {string.Join(", ", _versionProvider.SupportedPhpVersions)}");
+                _logger.LogError(exc, "Exception caught");
+                throw exc;
+            }
+
+            return maxSatisfyingVersion;
         }
     }
 }

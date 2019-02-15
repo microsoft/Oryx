@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsNull_IfSourceDirectory_IsEmpty()
+        public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
@@ -41,12 +41,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsTextFile_IsNotPresent()
+        public void Detect_ReutrnsNull_WhenComposerFileDoesNotExist()
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
+            IOHelpers.CreateFile(sourceDir, "foo.php content", "foo.php");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -57,56 +57,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
+        public void Detect_Throws_WhenUnsupportedPhpVersion_FoundInComposerFile()
         {
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            // No files with '.py' or no runtime.txt file
-            IOHelpers.CreateFile(sourceDir, "requirements.txt content", "requirements.txt");
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
-
-            // Act
-            var result = detector.Detect(repo);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void Detect_ReutrnsResult_WhenNoPyFileExists_ButRuntimeTextFileExists_HavingPythonVersionInIt()
-        {
-            // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            // No file with a '.py' extension
-            IOHelpers.CreateFile(sourceDir, "", "requirements.txt");
-            IOHelpers.CreateFile(sourceDir, $"php-{Common.PhpVersions.Php7Version}", "runtime.txt");
-            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
-
-            // Act
-            var result = detector.Detect(repo);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("php", result.Language);
-            Assert.Equal(Common.PhpVersions.Php7Version, result.LanguageVersion);
-        }
-
-        [Fact]
-        public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeTextfile()
-        {
-            // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", "requirements.txt");
-            IOHelpers.CreateFile(sourceDir, "python-100.100.100", "runtime.txt");
+            IOHelpers.CreateFile(sourceDir, "{\"require\":{\"php\":\"0\"}}", PhpConstants.ComposerFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                $"Target Python version '100.100.100' is unsupported. Supported versions are: {Common.PhpVersions.Php7Version}",
+                $"Target PHP version '0' is unsupported. Supported versions are: {Common.PhpVersions.Php7Version}",
                 exception.Message);
         }
 
