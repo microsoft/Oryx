@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -46,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <remarks>We keep the tool dependency tracking outside of the script iself to allow for
         /// scenarios where the environment already has the right tools configured and in the path,
         /// in which case no tool setup is needed.</remarks>
-        void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion);
+        void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, [NotNull] IDictionary<string, string> toolsToVersion);
 
         /// <summary>
         /// Tries generating a bash script based on the application in source directory.
