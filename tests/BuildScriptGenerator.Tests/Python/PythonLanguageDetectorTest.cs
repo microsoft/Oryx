@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsNull_IfSourceDirectory_IsEmpty()
+        public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsTextFile_IsNotPresent()
+        public void Detect_ReutrnsNull_WhenRequirementsFileDoesNotExist()
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files with '.py' or no runtime.txt file
-            IOHelpers.CreateFile(sourceDir, "requirements.txt content", "requirements.txt");
+            IOHelpers.CreateFile(sourceDir, "requirements.txt content", PythonConstants.RequirementsFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No file with a '.py' extension
-            IOHelpers.CreateFile(sourceDir, "", "requirements.txt");
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, $"python-{Common.PythonVersions.Python37Version}", "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", "requirements.txt");
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, fileContent, "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
