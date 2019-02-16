@@ -47,6 +47,7 @@ BuildAndTagStage python3.5-build
 BuildAndTagStage python3.6-build
 BuildAndTagStage python3.7-build
 BuildAndTagStage python
+BuildAndTagStage php73-build
 BuildAndTagStage buildscriptbuilder
 
 tags="$DOCKER_BUILD_IMAGES_REPO:latest"
