@@ -263,6 +263,13 @@ RUN set -ex \
  # Make sure the alias 'python' always refers to python2 by default.
  && ln -sf /opt/python/2/bin/python python
 
+FROM python AS php73-build
+ENV COMPOSER_VERSION=1.8.4
+COPY build/__php-versions.sh /
+COPY images/build/php /
+RUN chmod +x /php/*.sh
+RUN . /__php-versions.sh && PHP_VERSION=$PHP73_VERSION /php/build.sh
+
 FROM dotnet-install AS buildscriptbuilder
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
@@ -277,7 +284,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
-FROM python AS final
+FROM php73-build AS final
 WORKDIR /
 
 # Copy .NET Core related content
