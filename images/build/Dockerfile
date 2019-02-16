@@ -265,11 +265,10 @@ RUN set -ex \
 
 FROM python AS php73-build
 ENV COMPOSER_VERSION=1.8.4
-COPY images/build/php /
+COPY images/build/php/7.3-stretch-fpm /php
 COPY build/__php-versions.sh /php/
-WORKDIR /php/
 RUN chmod +x /php/build.sh
-RUN . __php-versions.sh && PHP_VERSION=$PHP73_VERSION /php/build.sh
+RUN . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION /php/build.sh
 
 FROM dotnet-install AS buildscriptbuilder
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
