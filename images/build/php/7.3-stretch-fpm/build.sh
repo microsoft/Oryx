@@ -48,7 +48,7 @@ PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 GPG_KEYS=(CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D)
 
 PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
-PHP_ASC_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
+PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
 PHP_SHA256="010b868b4456644ae227d05ad236c8b0a1f57dc6320e7e5ad75e86c5baf0a9a8"
 PHP_MD5=""
 
@@ -94,16 +94,16 @@ apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fe
 
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
-apt-get install -y --no-install-recommends
-	libcurl4-openssl-dev
-	libedit-dev
-	libsodium-dev
-	libsqlite3-dev
-	libssl-dev
-	libxml2-dev
-	zlib1g-dev
+apt-get install -y --no-install-recommends \
+	libcurl4-openssl-dev \
+	libedit-dev \
+	libsodium-dev \
+	libsqlite3-dev \
+	libssl-dev \
+	libxml2-dev \
+	zlib1g-dev \
 	${PHP_EXTRA_BUILD_DEPS:-}
-;
+
 ##<argon2>##
 sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
 {
@@ -120,12 +120,12 @@ apt-get install -y --no-install-recommends libargon2-dev;
 ##</argon2>##
 rm -rf /var/lib/apt/lists/*;
 
-export
-	CFLAGS="$PHP_CFLAGS"
-	CPPFLAGS="$PHP_CPPFLAGS"
+export \
+	CFLAGS="$PHP_CFLAGS" \
+	CPPFLAGS="$PHP_CPPFLAGS" \
 	LDFLAGS="$PHP_LDFLAGS"
-;
-./docker-php-source extract;
+
+/php/docker-php-source.sh extract;
 cd $PHP_SRC_DIR;
 gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)";
 debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)";
@@ -133,35 +133,33 @@ debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)";
 if [ ! -d /usr/include/curl ]; then
 	ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl;
 fi;
-./configure
-	--build="$gnuArch"
-	--prefix="$INSTALLATION_PREFIX"
-	--with-config-file-path="$PHP_INI_DIR"
-	--with-config-file-scan-dir="$PHP_INI_DIR/conf.d"
-	# make sure invalid --configure-flags are fatal errors intead of just warnings
-	--enable-option-checking=fatal
-	# https://github.com/docker-library/php/issues/439
-	--with-mhash
-	# --enable-ftp is included here because ftp_ssl_connect() needs ftp to be compiled statically (see https://github.com/docker-library/php/issues/236)
-	--enable-ftp
-# --enable-mbstring is included here because otherwise there's no way to get pecl to use it properly (see https://github.com/docker-library/php/issues/195)
-	--enable-mbstring
-# --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
-	--enable-mysqlnd
-# https://wiki.php.net/rfc/argon2_password_hash (7.2+)
-	--with-password-argon2
-# https://wiki.php.net/rfc/libsodium
-	--with-sodium=shared
-		--with-curl
-	--with-libedit
-	--with-openssl
-	--with-zlib
-	# bundled pcre does not support JIT on s390x
-# https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
-	$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit')
-	--with-libdir="lib/$debMultiarch"
+
+# --enable-option-checking: make sure invalid --configure-flags are fatal errors intead of just warnings
+# --with-mhash: https://github.com/docker-library/php/issues/439
+#
+#
+#
+
+./configure \
+		--build="$gnuArch" \
+		--prefix="$INSTALLATION_PREFIX" \
+		--with-config-file-path="$PHP_INI_DIR" \
+		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
+		--enable-option-checking=fatal \
+		--with-mhash \
+		--enable-ftp \
+		--enable-mbstring \
+		--enable-mysqlnd \
+		--with-password-argon2 \
+		--with-sodium=shared \
+		--with-curl \
+		--with-libedit \
+		--with-openssl \
+		--with-zlib \
+		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
+		--with-libdir="lib/$debMultiarch" \
 		${PHP_EXTRA_CONFIGURE_ARGS:-}
-;
+
 make -j "$(nproc)";
 make install;
 find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true;
@@ -171,19 +169,19 @@ make clean;
 cp -v php.ini-* "$PHP_INI_DIR/";
 
 cd /;
-./docker-php-source delete;
+/php/docker-php-source.sh delete;
 
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 apt-mark auto '.*' > /dev/null;
 [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark;
-find /usr/local -type f -executable -exec ldd '{}' ';'
-	| awk '/=>/ { print $(NF-1) }'
-	| sort -u
-	| xargs -r dpkg-query --search
-	| cut -d: -f1
-	| sort -u
-	| xargs -r apt-mark manual
-;
+find /usr/local -type f -executable -exec ldd '{}' ';' \
+	| awk '/=>/ { print $(NF-1) }' \
+	| sort -u \
+	| xargs -r dpkg-query --search \
+	| cut -d: -f1 \
+	| sort -u \
+	| xargs -r apt-mark manual \
+
 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false;
 
 php --version;
@@ -195,7 +193,7 @@ rm -rf /tmp/pear ~/.pearrc
 # TODO: install Composer, FPM
 
 # # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
-# RUN ./docker-php-ext-enable sodium
+# RUN /php/docker-php-ext-enable sodium
 
 # ENTRYPOINT ["./docker-php-entrypoint"]
 # ##<autogenerated>##
