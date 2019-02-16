@@ -8,6 +8,7 @@ set -ex
 
 PHP_VERSION='7.3.2'
 PHP_INI_DIR="/opt/php/ini/$PHP_VERSION"
+PHP_SRC_DIR="/usr/src/php"
 INSTALLATION_PREFIX="/opt/php/$PHP_VERSION"
 
 # prevent Debian's PHP packages from being installed
@@ -125,7 +126,7 @@ export
 	LDFLAGS="$PHP_LDFLAGS"
 ;
 ./docker-php-source extract;
-cd /usr/src/php;
+cd $PHP_SRC_DIR;
 gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)";
 debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)";
 # https://bugs.php.net/bug.php?id=74125
@@ -190,6 +191,8 @@ php --version;
 # https://github.com/docker-library/php/issues/443
 pecl update-channels;
 rm -rf /tmp/pear ~/.pearrc
+
+# TODO: install Composer, FPM
 
 # # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
 # RUN ./docker-php-ext-enable sodium
