@@ -2,8 +2,8 @@
 
 namespace Microsoft.Oryx.Common
 {
-	public static class FilePaths
-	{
-		public const string BuildIdFileName = ".oryx_build_id";
-	}
+    public static class FilePaths
+    {
+        public const string BuildIdFileName = ".oryx_build_id";
+    }
 }

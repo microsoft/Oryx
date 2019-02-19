@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     {
         public static string Camelize(this string str)
         {
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.ToLower()).Replace("-", "");
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.ToLower()).Replace("-", string.Empty);
         }
     }
 }
