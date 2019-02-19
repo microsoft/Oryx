@@ -65,14 +65,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 // Ignore any exceptions as we do not want them to bubble up to end user as this functionality
                 // is not required for the build to work.
-                _logger.LogError(ex, "An error occurred while trying to get commit id from the repository.");
+                _logger.LogError(ex, "An error occurred while trying to get commit ID from repo");
                 return null;
             }
 
             if (exitCode != 0)
             {
                 _logger.LogWarning(
-                    "Could not get commit id from the repository. " +
+                    "Could not get commit ID from repo. " +
                     "Exit code: {exitCode}, Output: {stdOut}, Error: {stdErr}",
                     exitCode,
                     output,
