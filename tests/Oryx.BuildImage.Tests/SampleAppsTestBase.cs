@@ -3,6 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Tests.Common;
+
 namespace Microsoft.Oryx.BuildImage.Tests
 {
     /// <summary>
@@ -10,6 +13,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
     /// </summary>
     public abstract class SampleAppsTestBase
     {
+        public static EnvironmentVariable CreateAppNameEnvVar(string sampleAppName) =>
+            new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, sampleAppName);
+
         public abstract void GeneratesScript_AndBuilds();
         public abstract void Builds_AndCopiesContentToOutputDirectory_Recursively();
         public abstract void Build_CopiesOutput_ToNestedOutputDirectory();
