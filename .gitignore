@@ -260,6 +260,13 @@ launchSettings.json
 
 # Node and .NET Core runtime images dockerfiles, that are auto generated
 images/runtime/node/*.*/
+!images/runtime/node/4.*/
+!images/runtime/node/6.*/
+!images/runtime/node/8.0/
+!images/runtime/node/8.1/
+!images/runtime/node/8.2/
+!images/runtime/node/8.8/
+!images/runtime/node/8.9/
 images/runtime/dotnetcore/*.*/
 # For .NET Core 2.2 we don't use a template, since its based in Alpine
 !images/runtime/dotnetcore/2.2/
