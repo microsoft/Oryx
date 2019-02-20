@@ -75,13 +75,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // This will be an App Service app name if Oryx was invoked by Kudu
             var appName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
             var buildOpId = logger.StartOperation(appName);
-            console.WriteLine("Build Operation ID: {0}", buildOpId);
 
-            console.WriteLine("Oryx Version      : {0}, Commit: {1}", Program.GetVersion(), Program.GetCommit());
+            var buildInfo = new DefinitionListFormatter();
+            buildInfo.AddDefinition("Build Operation ID", buildOpId);
+            buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
 
             var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var commitId = GetSourceRepoCommitId(console, sourceRepo, logger);
+            var commitId = GetSourceRepoCommitId(sourceRepo, logger);
+
+            if (!string.IsNullOrWhiteSpace(commitId))
+            {
+                buildInfo.AddDefinition("Repository Commit", commitId);
+            }
+
+            console.WriteLine(buildInfo.ToString());
 
             // Try writing the ID to a file in the source directory
             try
@@ -245,18 +253,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        private string GetSourceRepoCommitId(IConsole console, ISourceRepo repo, ILogger<BuildCommand> logger)
+        private string GetSourceRepoCommitId(ISourceRepo repo, ILogger<BuildCommand> logger)
         {
             string commitId;
             using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
             {
                 commitId = repo.GetGitCommitId();
                 timedEvent.AddProperty(nameof(commitId), commitId);
-                if (!string.IsNullOrWhiteSpace(commitId))
-                {
-                    // Spacing is meant to equalize the length to "Build Operation ID"
-                    console.WriteLine("Repository Commit : {0}", commitId);
-                }
             }
 
             return commitId;
