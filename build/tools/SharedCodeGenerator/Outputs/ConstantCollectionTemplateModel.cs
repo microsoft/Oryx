@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
 
 namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 {

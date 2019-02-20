@@ -16,6 +16,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
     {
         private static readonly Template OutputTemplate;
 
+        private ConstantCollection _collection;
+        private string _className;
+        private string _directory;
+        private string _namespace;
+
         static CSharpOutput()
         {
             var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -24,11 +29,6 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
                 OutputTemplate = Template.Parse(templateReader.ReadToEnd());
             }
         }
-
-        private ConstantCollection _collection;
-        private string _className;
-        private string _directory;
-        private string _namespace;
 
         public void Initialize(ConstantCollection constantCollection, Dictionary<string, string> typeInfo)
         {

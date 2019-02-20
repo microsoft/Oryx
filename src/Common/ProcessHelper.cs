@@ -67,8 +67,7 @@ namespace Microsoft.Oryx.Common.Utilities
                     var hasExited = process.WaitForExit((int)waitTimeForExit.Value.TotalMilliseconds);
                     if (!hasExited)
                     {
-                        throw new InvalidOperationException(
-                            $"The process with id '{process.Id}' didn't exit within the allocated time.");
+                        throw new InvalidOperationException($"Process {process.Id} didn't exit within the allotted time.");
                     }
 
                     if (redirectOutput || redirectError)

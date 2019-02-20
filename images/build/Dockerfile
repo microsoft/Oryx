@@ -1,4 +1,8 @@
+# Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+ARG BUILDSCRIPT_SOURCE=buildscriptbuilder
+ARG AGENTBUILD
 FROM buildpack-deps:stable AS main
+# End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -270,7 +274,24 @@ COPY build/__php-versions.sh /php/
 RUN chmod +x /php/build.sh
 RUN . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION /php/build.sh
 
+# This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
+COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
+COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
+COPY src/Common /usr/oryx/src/Common
+COPY build/FinalPublicKey.snk usr/oryx/build/
+COPY src/CommonFiles /usr/oryx/src/CommonFiles
+WORKDIR /usr/oryx/src
+ARG GIT_COMMIT=unspecified
+ARG AGENTBUILD=${AGENTBUILD}
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+RUN if [ -z "$AGENTBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release  BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; fi
+
+# This stage is only when building in devops agents
+FROM main AS copybuildscriptsymbol
+COPY symbols /opt/buildscriptgen/
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
 COPY src/Common /usr/oryx/src/Common
@@ -281,7 +302,12 @@ ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli
+
+# This stage copies oryx binaries from specific build stage, for local/dev it copies
+# from "buildscriptbuilder" and for devops it copies from "copybuildscriptsymbol"
+FROM ${BUILDSCRIPT_SOURCE} AS buildscriptbinaries
+ARG BUILDSCRIPT_SOURCE
+WORKDIR /usr/oryx/src
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM php73-build AS final
@@ -303,7 +329,7 @@ COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
 
 # Build script generator content
-COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
 COPY images/build/benv.sh /usr/local/bin/benv

@@ -296,29 +296,16 @@ namespace BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var serviceProvider = CreateServiceProvider(new TestProgrammingPlatform(), scriptOnly: false);
-            var outputBuilder = new StringBuilder();
-            var errorBuilder = new StringBuilder();
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
             // Act
-            var exitCode = buildCommand.Execute(
-                serviceProvider,
-                testConsole,
-                stdOutHandler: (sender, args) =>
-                {
-                    outputBuilder.AppendLine(args.Data);
-                },
-                stdErrHandler: (sender, args) =>
-                {
-                    errorBuilder.AppendLine(args.Data);
-                });
+            var exitCode = buildCommand.Execute(serviceProvider, testConsole);
 
             // Assert
             Assert.Equal(0, exitCode);
             Assert.Equal(string.Empty, testConsole.StdError);
-            Assert.Contains("Hello World", outputBuilder.ToString().Replace(Environment.NewLine, string.Empty));
-            Assert.Equal(string.Empty, errorBuilder.ToString().Replace(Environment.NewLine, string.Empty));
+            Assert.Contains("Hello World", testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
         }
 
         [Theory]

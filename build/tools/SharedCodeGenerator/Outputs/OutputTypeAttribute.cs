@@ -10,13 +10,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     [AttributeUsage(AttributeTargets.Class)]
     internal class OutputTypeAttribute : Attribute
     {
-        private readonly string _type;
-
         public OutputTypeAttribute(string type)
         {
-            _type = type;
+            Type = type;
         }
 
-        public string Type => _type;
+        public string Type { get; }
     }
 }
