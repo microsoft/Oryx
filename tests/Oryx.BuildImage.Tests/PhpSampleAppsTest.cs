@@ -1,11 +1,27 @@
-﻿using System;
+﻿using Microsoft.Oryx.Tests.Common;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    class PhpSampleAppsTest : SampleAppsTestBase
+    public class PhpSampleAppsTest : SampleAppsTestBase
     {
+        private readonly ITestOutputHelper _output;
+        private readonly string _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+        private readonly DockerCli _dockerCli = new DockerCli();
+
+        public PhpSampleAppsTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
+            DockerVolume.Create(Path.Combine(_hostSamplesDir, "php", sampleAppName));
+
         public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             throw new NotImplementedException();
@@ -41,9 +57,40 @@ namespace Microsoft.Oryx.BuildImage.Tests
             throw new NotImplementedException();
         }
 
+        [Fact]
         public override void GeneratesScript_AndBuilds()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var volume = CreateSampleAppVolume("templating");
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                CreateAppNameEnvVar("flask-app"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        result.Output);
+                },
+                result.GetDebugInfo());
         }
 
         public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()

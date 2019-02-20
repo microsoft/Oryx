@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpPlatform : IProgrammingPlatform
     {
-        public const string ComposerInstallLine = "$php $COMPOSER_PHAR install";
+        public const string ComposerInstallLine = "$php --version"; // "$php $COMPOSER_PHAR install";
 
         private readonly PhpScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPhpVersionProvider _pythonVersionProvider;
