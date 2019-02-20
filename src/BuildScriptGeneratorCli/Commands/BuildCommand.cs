@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
@@ -58,8 +59,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            // By default we do not want to direct the standard output and error and let users of this tool to do it
-            // themselves.
             return Execute(serviceProvider, console, stdOutHandler: null, stdErrHandler: null);
         }
 
@@ -141,6 +140,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 { "envVars", string.Join(",", GetEnvVarNames(serviceProvider.GetRequiredService<IEnvironment>())) },
             };
 
+            var buildScriptOutput = new StringBuilder();
+
+            DataReceivedEventHandler stdOutBaseHandler = (sender, args) =>
+            {
+                console.WriteLine(args.Data);
+                buildScriptOutput.AppendLine(args.Data);
+            };
+
+            DataReceivedEventHandler stdErrBaseHandler = (sender, args) =>
+            {
+                console.Error.WriteLine(args.Data);
+                buildScriptOutput.AppendLine(args.Data);
+            };
+
             // Run the generated script
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             int exitCode;
@@ -150,9 +163,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     buildScriptPath,
                     new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty },
                     workingDirectory: sourceRepo.RootPath,
-                    stdOutHandler,
-                    stdErrHandler);
+                    stdOutHandler == null ? stdOutBaseHandler : stdOutBaseHandler + stdOutHandler,
+                    stdErrHandler == null ? stdErrBaseHandler : stdErrBaseHandler + stdErrHandler);
             }
+
+            logger.LogDebug("Build script content:\n" + scriptContent);
+            logger.LogDebug("Build script output:\n" + buildScriptOutput.ToString());
 
             if (exitCode != Constants.ExitSuccess)
             {
