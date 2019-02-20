@@ -13,6 +13,8 @@ namespace Microsoft.Oryx.Common.Utilities
 {
     public static class ProcessHelper
     {
+        public const int ExitFailure = 1;
+
         public static (int exitCode, string output, string error) RunProcess(
             string fileName,
             IEnumerable<string> arguments,
@@ -154,11 +156,20 @@ namespace Microsoft.Oryx.Common.Utilities
             return process;
         }
 
-        public static void TrySetExecutableMode([CanBeNull] string path)
+        public static int TrySetExecutableMode([CanBeNull] string path, [CanBeNull] string workingDir = null)
         {
-            if (!string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                RunProcess("chmod", new string[] { "+rx", path }, System.IO.Path.GetDirectoryName(path), TimeSpan.FromSeconds(2)); // Ignoring errors
+                return ExitFailure;
+            }
+
+            try
+            {
+                return RunProcess("chmod", new string[] { "+rx", path }, workingDir ?? System.IO.Path.GetDirectoryName(path), null).exitCode;
+            }
+            catch
+            {
+                return ExitFailure;
             }
         }
     }

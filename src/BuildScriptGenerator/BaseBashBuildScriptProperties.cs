@@ -10,9 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class BaseBashBuildScriptProperties
     {
-        private string _preBuildScriptPath;
-        private string _postBuildScriptPath;
-
         /// <summary>
         /// Gets or sets the collection of build script snippets.
         /// </summary>
@@ -21,15 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Gets or sets the path to the pre build script.
         /// </summary>
-        public string PreBuildScriptPath
-        {
-            get => _preBuildScriptPath;
-            set
-            {
-                _preBuildScriptPath = value;
-                ProcessHelper.TrySetExecutableMode(value);
-            }
-        }
+        public string PreBuildScriptPath { get; set; }
 
         /// <summary>
         /// Gets or sets the argument to the benv command.
@@ -39,14 +28,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Gets or sets the path to the post build script.
         /// </summary>
-        public string PostBuildScriptPath
-        {
-            get => _postBuildScriptPath;
-            set
-            {
-                _postBuildScriptPath = value;
-                ProcessHelper.TrySetExecutableMode(value);
-            }
-        }
+        public string PostBuildScriptPath { get; set; }
     }
 }
