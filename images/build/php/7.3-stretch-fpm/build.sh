@@ -161,8 +161,9 @@ fi;
 		${PHP_EXTRA_CONFIGURE_ARGS:-}
 
 make -j "$(nproc)";
+find -type f -name '*.a' -delete;
 make install;
-find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true;
+find $INSTALLATION_PREFIX -type f -executable -exec strip --strip-all '{}' + || true;
 make clean;
 
 # https://github.com/docker-library/php/issues/692 (copy default example "php.ini" files somewhere easily discoverable)
@@ -174,7 +175,7 @@ cd /;
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 apt-mark auto '.*' > /dev/null;
 [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark;
-find /usr/local -type f -executable -exec ldd '{}' ';' \
+find $INSTALLATION_PREFIX -type f -executable -exec ldd '{}' ';' \
 	| awk '/=>/ { print $(NF-1) }' \
 	| sort -u \
 	| xargs -r dpkg-query --search \
@@ -184,10 +185,10 @@ find /usr/local -type f -executable -exec ldd '{}' ';' \
 
 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false;
 
-php --version;
+$INSTALLATION_PREFIX/bin/php --version;
 
 # https://github.com/docker-library/php/issues/443
-pecl update-channels;
+$INSTALLATION_PREFIX/bin/pecl update-channels;
 rm -rf /tmp/pear ~/.pearrc
 
 # TODO: install Composer, FPM
