@@ -17,18 +17,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         private static readonly string SampleAppName = "webfrontend";
 
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-        private readonly string _hostSamplesDir;
-
-        public NodeJSSampleAppsTest(ITestOutputHelper output)
-        {
-            _output = output;
-            _dockerCli = new DockerCli(new EnvironmentVariable[] { CreateAppNameEnvVar(SampleAppName) });
-            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-        }
+        private readonly DockerCli _dockerCli = new DockerCli(new EnvironmentVariable[] { CreateAppNameEnvVar(SampleAppName) });
 
         private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
+
+        public NodeJSSampleAppsTest(ITestOutputHelper output) : base(output)
+        {
+        }
 
         [Fact]
         public override void GeneratesScript_AndBuilds()
@@ -597,19 +592,6 @@ d
 a
 
 ");
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }

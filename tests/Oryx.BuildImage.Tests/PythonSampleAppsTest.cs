@@ -19,15 +19,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class PythonSampleAppsTest : SampleAppsTestBase
     {
         private const string PackagesDirectory = "__oryx_packages__";
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-        private readonly string _hostSamplesDir;
+        private readonly DockerCli _dockerCli = new DockerCli();
 
-        public PythonSampleAppsTest(ITestOutputHelper output)
+        public PythonSampleAppsTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
-            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -970,19 +965,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.Output);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }

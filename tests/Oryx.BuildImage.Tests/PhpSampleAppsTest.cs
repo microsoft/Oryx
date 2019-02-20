@@ -1,4 +1,5 @@
-﻿using Microsoft.Oryx.Tests.Common;
+﻿using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +12,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class PhpSampleAppsTest : SampleAppsTestBase
     {
         private readonly ITestOutputHelper _output;
-        private readonly string _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         private readonly DockerCli _dockerCli = new DockerCli();
 
-        public PhpSampleAppsTest(ITestOutputHelper output)
+        public PhpSampleAppsTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -71,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
+                CreateAppNameEnvVar("templating"),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -86,9 +85,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
-                        result.Output);
                 },
                 result.GetDebugInfo());
         }

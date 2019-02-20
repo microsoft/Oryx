@@ -5,6 +5,9 @@
 
 using Microsoft.Oryx.Common.Utilities;
 using Microsoft.Oryx.Tests.Common;
+using System;
+using System.IO;
+using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -13,8 +16,29 @@ namespace Microsoft.Oryx.BuildImage.Tests
     /// </summary>
     public abstract class SampleAppsTestBase
     {
+        private readonly ITestOutputHelper _output;
+        protected readonly string _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+
         public static EnvironmentVariable CreateAppNameEnvVar(string sampleAppName) =>
             new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, sampleAppName);
+
+        public SampleAppsTestBase(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        protected void RunAsserts(Action action, string message)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception)
+            {
+                _output.WriteLine(message);
+                throw;
+            }
+        }
 
         public abstract void GeneratesScript_AndBuilds();
         public abstract void Builds_AndCopiesContentToOutputDirectory_Recursively();
