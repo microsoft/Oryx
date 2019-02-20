@@ -33,8 +33,6 @@ apt-get update && apt-get install -y \
 
 mkdir -p "$PHP_INI_DIR/conf.d";
 
-PHP_EXTRA_CONFIGURE_ARGS='--enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi'
-
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
 # Enable optimization (-O2)
