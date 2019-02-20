@@ -13,6 +13,18 @@ source $REPO_DIR/build/__variables.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
+declare BUILDSCRIPT_SOURCE="buildscriptbuilder"
+
+# Check to see if the build is from azure devops agent or local dev env
+if [ -n "$AGENTBUILD" ]
+then
+# "agentbuild" will be true only for builds by azure devops agent
+    BUILDSCRIPT_SOURCE="copybuildscriptsymbol"
+else
+# locally we need to fake "symbols directory to get a successful "copybuildscriptsymbol" build stage
+    mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/symbols
+fi
+
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
@@ -45,6 +57,8 @@ BuildAndTagStage python3.6-build
 BuildAndTagStage python3.7-build
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
+BuildAndTagStage copybuildscriptsymbol
+BuildAndTagStage buildscriptbinaries
 
 tags="$DOCKER_BUILD_IMAGES_REPO:latest"
 
@@ -64,7 +78,7 @@ else
 fi
 
 echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
-docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY --build-arg AGENTBUILD=$AGENTBUILD --build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
 echo Building a base image for tests ...
@@ -105,4 +119,9 @@ echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
 if [ $DOCKER_SYSTEM_PRUNE = "true" ]
 then
 	docker system prune -f
+fi
+
+if [ -z "$AGENTBUILD" ]
+then
+	rm -rf symbols
 fi
