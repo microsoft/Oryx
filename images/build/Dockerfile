@@ -306,6 +306,9 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
+COPY images/build/benv.sh /usr/local/bin/benv
+RUN chmod +x /usr/local/bin/benv
+
 # Copy .NET Core related content
 ENV NUGET_XMLDOC_MODE=skip \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
@@ -320,13 +323,12 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
+COPY images/build/node-cache-packages.sh /tmp/
+RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
 
 # Build script generator content
 COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
-
-COPY images/build/benv.sh /usr/local/bin/benv
-RUN chmod +x /usr/local/bin/benv
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
