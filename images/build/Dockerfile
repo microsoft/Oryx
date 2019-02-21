@@ -267,12 +267,16 @@ RUN set -ex \
  # Make sure the alias 'python' always refers to python2 by default.
  && ln -sf /opt/python/2/bin/python python
 
-FROM python AS php73-build
-ENV COMPOSER_VERSION=1.8.4
-COPY images/build/php/7.3-stretch-fpm /php
+FROM debian:stretch-slim AS php-build-prereqs
+COPY images/build/php/7 /php
 COPY build/__php-versions.sh /php/
-RUN chmod +x /php/build.sh
-RUN . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION /php/build.sh
+RUN set -eux && chmod +x /php/*.sh && ls -la /php && /php/install-prereqs.sh
+
+FROM php-build-prereqs AS php72-build
+RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP72_VERSION GPG_KEYS=$PHP72_KEYS PHP_SHA256=$PHP72_TAR_SHA256 /php/build.sh
+
+FROM php-build-prereqs AS php73-build
+RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION GPG_KEYS=$PHP73_KEYS PHP_SHA256=$PHP73_TAR_SHA256 /php/build.sh
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
@@ -310,7 +314,7 @@ ARG BUILDSCRIPT_SOURCE
 WORKDIR /usr/oryx/src
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
-FROM php73-build AS final
+FROM python AS final
 WORKDIR /
 
 # Copy .NET Core related content
@@ -327,6 +331,12 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
+
+# Copy PHP versions
+COPY --from=php-build-prereqs /php/install-prereqs.sh /tmp/php/install-prereqs.sh
+RUN /tmp/php/install-prereqs.sh
+COPY --from=php72-build /opt /opt
+COPY --from=php73-build /opt /opt
 
 # Build script generator content
 COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
