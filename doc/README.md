@@ -10,6 +10,8 @@ system and how to configure or change them.
     * [Oryx configuration](./configuration.md#oryx-configuration)
     * [Azure Web Apps configuration](./configuration.md#azure-web-apps-configuration)
     * [Startup file](./configuration.md#startup-file)
+1. [Use](./use.md)
+    * [Dockerfile.oryx](./Dockerfile.oryx)
 1. [Runtimes](./runtimes)
     * [Node.js](./runtimes/nodejs.md)
     * [Python](./runtimes/python.md)
