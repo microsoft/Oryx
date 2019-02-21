@@ -154,6 +154,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 buildScriptOutput.AppendLine(args.Data);
             };
 
+            // Try make the pre-build & post-build scripts executable
+            ProcessHelper.TrySetExecutableMode(environmentSettings.PreBuildScriptPath);
+            ProcessHelper.TrySetExecutableMode(environmentSettings.PostBuildScriptPath);
+
             // Run the generated script
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             int exitCode;

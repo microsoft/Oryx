@@ -162,6 +162,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string script;
             string benvArgs = GetBenvArgs(toolsToVersion);
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
+
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),

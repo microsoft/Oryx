@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdOutHandler,
             DataReceivedEventHandler stdErrHandler)
         {
-            int exitCode = SetExecutePerimssionOnScript(scriptPath, workingDirectory, stdOutHandler, stdErrHandler);
+            int exitCode = ProcessHelper.TrySetExecutableMode(scriptPath, workingDirectory);
             if (exitCode != 0)
             {
                 _logger.LogError("Failed to set execute permission on script {scriptPath} ({exitCode})", scriptPath, exitCode);
@@ -52,22 +52,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            return exitCode;
-        }
-
-        protected virtual int SetExecutePerimssionOnScript(
-            string scriptPath,
-            string workingDirectory,
-            DataReceivedEventHandler stdOutHandler,
-            DataReceivedEventHandler stdErrHandler)
-        {
-            var exitCode = ProcessHelper.RunProcess(
-                "chmod",
-                arguments: new[] { "+x", scriptPath },
-                workingDirectory: workingDirectory,
-                standardOutputHandler: stdOutHandler,
-                standardErrorHandler: stdErrHandler,
-                waitTimeForExit: null); // Do not provide wait time as the caller can do this themselves.
             return exitCode;
         }
 
