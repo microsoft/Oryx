@@ -7,7 +7,7 @@
 set -eux
 
 INSTALLATION_PREFIX="/opt/php/$PHP_VERSION"
-PHP_INI_DIR="/opt/php/ini/$PHP_VERSION"
+PHP_INI_DIR="$INSTALLATION_PREFIX/ini"
 PHP_SRC_DIR="/usr/src/php"
 
 mkdir -p "$PHP_INI_DIR/conf.d";
