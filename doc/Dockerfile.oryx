@@ -1,3 +1,5 @@
+# specify with `--build-arg "runtime-version"`
+# available runtimes listed at https://hub.docker.com/u/oryxprod
 ARG RUNTIME=node-10.14
 
 FROM docker.io/oryxprod/build:latest as build
