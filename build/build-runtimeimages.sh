@@ -94,7 +94,7 @@ for dockerFile in $dockerFiles; do
     fi
 
     echo
-    docker build $noCache -f $dockerFile -t $tags $args $labels .
+    docker build $noCache -f $dockerFile -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $args $labels .
     
     # Retag build image with acr tags
     docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:latest"
