@@ -268,7 +268,7 @@ RUN set -ex \
  && ln -sf /opt/python/2/bin/python python
 
 FROM debian:stretch-slim AS php-build-prereqs
-COPY images/build/php/7 /php
+COPY images/build/php /php
 COPY build/__php-versions.sh /php/
 RUN set -eux && chmod +x /php/*.sh && ls -la /php && /php/install-prereqs.sh
 
