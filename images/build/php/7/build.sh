@@ -6,6 +6,7 @@
 
 set -eux
 
+PHP_MAJOR=${PHP_VERSION:0:1}
 INSTALLATION_PREFIX="/opt/php/$PHP_VERSION"
 PHP_INI_DIR="$INSTALLATION_PREFIX/ini"
 PHP_SRC_DIR="/usr/src/php"
@@ -66,17 +67,36 @@ fi;
 
 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
+versionDevReqs='libsodium-dev libssl-dev'
+if [ ${PHP_MAJOR} == '5' ]; then
+	versionDevReqs='libssl1.0-dev'
+fi
 
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
 apt-get install -y --no-install-recommends \
 	libcurl4-openssl-dev \
 	libedit-dev \
-	libsodium-dev \
 	libsqlite3-dev \
-	libssl-dev \
 	libxml2-dev \
-	zlib1g-dev;
+	zlib1g-dev \
+	$versionDevReqs;
+
+if [ ${PHP_MAJOR} == '7' ]; then
+	##<argon2>##
+	sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
+	{ \
+	    echo 'Package: *';
+	    echo 'Pin: release n=buster';
+	    echo 'Pin-Priority: -10';
+	    echo;
+	    echo 'Package: libargon2*';
+	    echo 'Pin: release n=buster';
+	    echo 'Pin-Priority: 990';
+	} > /etc/apt/preferences.d/argon2-buster;
+	apt-get update;
+	##</argon2>##
+fi
 
 rm -rf /var/lib/apt/lists/*;
 
@@ -94,6 +114,11 @@ if [ ! -d /usr/include/curl ]; then
 	ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl;
 fi;
 
+versionConfigureArgs=''
+if [ ${PHP_MAJOR} == '7' ]; then
+	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
+fi
+
 ./configure \
 		--build="$gnuArch" \
 		--prefix="$INSTALLATION_PREFIX" \
@@ -104,8 +129,7 @@ fi;
 		--enable-ftp \
 		--enable-mbstring \
 		--enable-mysqlnd \
-		--with-password-argon2 \
-		--with-sodium=shared \
+		$versionConfigureArgs \
 		--with-curl \
 		--with-libedit \
 		--with-openssl \
@@ -144,4 +168,6 @@ $INSTALLATION_PREFIX/bin/php --version;
 $INSTALLATION_PREFIX/bin/pecl update-channels;
 rm -rf /tmp/pear ~/.pearrc
 
-PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
+if [ ${PHP_MAJOR} == '7' ]; then
+	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
+fi
