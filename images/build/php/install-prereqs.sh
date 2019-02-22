@@ -25,5 +25,3 @@ apt-get update && apt-get install -y \
         curl \
         xz-utils \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
-
-apt-get install -y --no-install-recommends libargon2-dev libsodium-dev;

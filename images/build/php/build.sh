@@ -29,23 +29,17 @@ GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 
 
-fetchDeps='
-	wget
-';
+fetchDeps='wget';
 if ! command -v gpg > /dev/null; then
-	fetchDeps="$fetchDeps
-		dirmngr
-		gnupg
-	";
-fi;
+	fetchDeps="$fetchDeps dirmngr gnupg"
+fi
 
-apt-get install -y --no-install-recommends $fetchDeps;
-rm -rf /var/lib/apt/lists/*;
+apt-get install -y --no-install-recommends $fetchDeps
+rm -rf /var/lib/apt/lists/*
 
-mkdir -p /usr/src;
-cd /usr/src;
-
-wget -O php.tar.xz "$PHP_URL";
+mkdir -p /usr/src
+cd /usr/src
+wget -O php.tar.xz "$PHP_URL"
 
 if [ -n "$PHP_SHA256" ]; then
 	echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -;
@@ -95,6 +89,7 @@ if [ ${PHP_MAJOR} == '7' ]; then
 	    echo 'Pin-Priority: 990';
 	} > /etc/apt/preferences.d/argon2-buster;
 	apt-get update;
+	apt-get install -y --no-install-recommends libargon2-dev;
 	##</argon2>##
 fi
 
