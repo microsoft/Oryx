@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// the detection and build of all other platforms. If set to <c>true</c>, all other languages
         /// are disabled even if they are enabled by their specific flags.
         /// </summary>
-        public bool DisableMultiPlatformBuild { get; set; } = false;
+        public bool DisableMultiPlatformBuild { get; set; } = true;
 
         /// <summary>
         /// Gets or sets specific properties for the build script.

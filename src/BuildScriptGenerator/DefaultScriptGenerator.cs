@@ -77,22 +77,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 bool usePlatform = false;
-                var currPlatformMatch = !string.IsNullOrEmpty(context.Language) &&
+                var currPlatformMatchesProvided = !string.IsNullOrEmpty(context.Language) &&
                     string.Equals(context.Language, platform.Name, StringComparison.OrdinalIgnoreCase);
 
                 string targetVersionSpec = null;
-                if (currPlatformMatch)
+                if (currPlatformMatchesProvided)
                 {
                     providedLanguageFound = true;
                     targetVersionSpec = context.LanguageVersion;
                     usePlatform = true;
                 }
-                else if (context.DisableMultiPlatformBuild)
+                else if (context.DisableMultiPlatformBuild && !string.IsNullOrEmpty(context.Language))
                 {
+                    _logger.LogDebug("Multi platform build is disabled and platform was specified. Skipping language {skippedLang}", platform.Name);
                     continue;
                 }
 
-                if (!currPlatformMatch || string.IsNullOrEmpty(targetVersionSpec))
+                if (!currPlatformMatchesProvided || string.IsNullOrEmpty(targetVersionSpec))
                 {
                     _logger.LogDebug("Detecting platform using {langPlat}", platform.Name);
                     var detectionResult = platform.Detect(context.SourceRepo);
