@@ -44,8 +44,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("2.0", "Version  : 2.0.9")]
-        [InlineData("2.1", "Version: 2.1.6")]
-        [InlineData("2.2", "Version: 2.2.0")]
+        [InlineData("2.1", "Version: 2.1.8")]
+        [InlineData("2.2", "Version: 2.2.2")]
         public void DotnetVersionMatchesImageName(string version, string expectedOutput)
         {
             // Arrange & Act

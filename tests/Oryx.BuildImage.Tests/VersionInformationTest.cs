@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +31,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotnetAlias_UsesLtsVersion_ByDefault()
         {
             // Arrange
-            var expectedOutput = "2.1.502";
+            var expectedOutput = DotnetCoreConstants.DotnetCoreSdkVersion21;
 
             // Act
             var result = _dockerCli.Run(
@@ -50,15 +51,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("1", "1.1.11")]
-        [InlineData("1.1", "1.1.11")]
-        [InlineData("1.1.11", "1.1.11")]
-        [InlineData("2", "2.1.502")]
-        [InlineData("2.1", "2.1.502")]
-        [InlineData("lts", "2.1.502")]
-        [InlineData("2.1.502", "2.1.502")]
-        [InlineData("2.2", "2.2.100")]
-        [InlineData("2.2.100", "2.2.100")]
+        [InlineData("1", DotnetCoreConstants.DotnetCoreSdkVersion11)]
+        [InlineData("1.1", DotnetCoreConstants.DotnetCoreSdkVersion11)]
+        [InlineData("1.1.11", DotnetCoreConstants.DotnetCoreSdkVersion11)]
+        [InlineData("2", DotnetCoreConstants.DotnetCoreSdkVersion21)]
+        [InlineData("2.1", DotnetCoreConstants.DotnetCoreSdkVersion21)]
+        [InlineData("lts", DotnetCoreConstants.DotnetCoreSdkVersion21)]
+        [InlineData(DotnetCoreConstants.DotnetCoreSdkVersion21, DotnetCoreConstants.DotnetCoreSdkVersion21)]
+        [InlineData("2.2", DotnetCoreConstants.DotnetCoreSdkVersion22)]
+        [InlineData(DotnetCoreConstants.DotnetCoreSdkVersion22, DotnetCoreConstants.DotnetCoreSdkVersion22)]
         public void DotnetAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)
