@@ -1,4 +1,19 @@
 steps:
+- task: DownloadPipelineArtifact@0
+  displayName: 'Download Pipeline Artifact'
+  inputs:
+    pipelineId: 'Oryx-CI'
+    artifactName: 'drop-$(Build.BuildNumber)'
+    targetPath: '$(Build.SourcesDirectory)'
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'Schedule'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Set Build Context only for CI Builds'
+  inputs:
+    type: InlineScript
+    script: 'echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"'
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'Schedule'))
+
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
     then
@@ -7,6 +22,7 @@ steps:
       exit 1
     fi
   displayName: 'Validate pipeline run'
+  condition: ne(variables['Build.Reason'], 'Schedule')
 
 - checkout: self
   clean: true
@@ -15,7 +31,7 @@ steps:
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/build-solution.sh
-  condition: succeeded()
+  condition: ne(variables['Build.Reason'], 'Schedule')
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
@@ -76,6 +92,16 @@ steps:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+steps:
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Create File to Notify Integration Test has run successfully'
+  inputs:
+    type: InlineScript
+    script: 'echo "success">$(Build.SourcesDirectory)/artifacts/$(Build.BuildNumber).txt'
+  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+
 
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'

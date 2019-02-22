@@ -1,6 +1,6 @@
 # Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
 ARG BUILDSCRIPT_SOURCE=buildscriptbuilder
-ARG AGENTBUILD
+ARG SIGNBUILD
 FROM buildpack-deps:stable AS main
 # End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
 
@@ -273,11 +273,11 @@ COPY build/FinalPublicKey.snk usr/oryx/build/
 COPY src/CommonFiles /usr/oryx/src/CommonFiles
 WORKDIR /usr/oryx/src
 ARG GIT_COMMIT=unspecified
-ARG AGENTBUILD=${AGENTBUILD}
+ARG SIGNBUILD=${SIGNBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN if [ -z "$AGENTBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release  BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; fi
+RUN if [ -z "$SIGNBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release  BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; fi
 
 # This stage is only when building in devops agents
 FROM main AS copybuildscriptsymbol
