@@ -9,7 +9,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Common.Utilities;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

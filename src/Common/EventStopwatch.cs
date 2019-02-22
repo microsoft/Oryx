@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 
-namespace Microsoft.Extensions.Logging
+namespace Microsoft.Oryx.Common
 {
     public class EventStopwatch : IDisposable
     {

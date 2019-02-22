@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.NLogTarget;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Extensions.Logging
 {

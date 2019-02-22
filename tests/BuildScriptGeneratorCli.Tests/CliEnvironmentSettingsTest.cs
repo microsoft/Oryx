@@ -19,7 +19,7 @@ namespace BuildScriptGeneratorCli.Tests
                 yield return new object[] { "DISABLE_DOTNETCORE_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableDotNetCore) };
                 yield return new object[] { "DISABLE_PYTHON_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisablePython) };
                 yield return new object[] { "DISABLE_NODEJS_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableNodeJs) };
-                yield return new object[] { "DISABLE_MULTIPLATFORM_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableMultiPlatformBuild) };
+                yield return new object[] { "ENABLE_MULTIPLATFORM_BUILD", (Func<CliEnvironmentSettings, bool>)(s => !s.DisableMultiPlatformBuild) };
             }
         }
 

@@ -8,7 +8,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM microsoft/dotnet:2.2.0-aspnetcore-runtime-alpine
+FROM microsoft/dotnet:2.2.2-aspnetcore-runtime-alpine
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

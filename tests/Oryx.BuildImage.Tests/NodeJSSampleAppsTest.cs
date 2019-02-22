@@ -6,7 +6,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

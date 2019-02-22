@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
-using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Tests.Common
 {

@@ -119,7 +119,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var generator = CreateDefaultScriptGenerator(platform);
             var context = CreateScriptGeneratorContext(
                 suppliedLanguageName: null,
-                suppliedLanguageVersion: null);
+                suppliedLanguageVersion: null,
+                enableMultiPlatformBuild: true);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
@@ -217,7 +218,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(
                 "'unsupported' platform is not supported. Supported platforms are: test",
                 exception.Message);
-            Assert.True(detector.DetectInvoked);
+            Assert.False(detector.DetectInvoked);
         }
 
         [Fact]
@@ -270,6 +271,105 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 () => generator.TryGenerateBashScript(context, out var generatedScript));
             Assert.Equal("Could not detect the language from repo.", exception.Message);
             Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_CallsDetector_IfMultiPlatformIsOff_AndNoLangProvided()
+        {
+            // Arrange
+            var detector = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var platform = new TestProgrammingPlatform(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector);
+            var generator = CreateDefaultScriptGenerator(platform);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null,
+                enableMultiPlatformBuild: false);
+
+            // Act & Assert
+            var generateOutput = generator.TryGenerateBashScript(context, out var generatedScript);
+            Assert.True(generateOutput);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_DoesntCallDetector_IfMultiPlatformIsOff_AndLangProvided()
+        {
+            // Arrange
+            var detector = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var platform = new TestProgrammingPlatform(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector);
+
+            var detector2 = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test2",
+                detectedLanguageVersion: "1.0.0");
+            var platform2 = new TestProgrammingPlatform(
+                "test2",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector2);
+
+            var generator = CreateDefaultScriptGenerator(new[] { platform, platform2 });
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: "1.0.0",
+                enableMultiPlatformBuild: false);
+
+            // Act & Assert
+            var generateOutput = generator.TryGenerateBashScript(context, out var generatedScript);
+            Assert.True(generateOutput);
+            Assert.False(detector.DetectInvoked);
+            Assert.False(detector2.DetectInvoked);
+        }
+
+        [Fact]
+        public void TryGenerateScript_CallsDetector_IfMultiPlatformIsOn_AndLangProvided()
+        {
+            // Arrange
+            var detector = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var platform = new TestProgrammingPlatform(
+                "test",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector);
+
+            var detector2 = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test2",
+                detectedLanguageVersion: "1.0.0");
+            var platform2 = new TestProgrammingPlatform(
+                "test2",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector2);
+
+            var generator = CreateDefaultScriptGenerator(new[] { platform, platform2 });
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: "1.0.0",
+                enableMultiPlatformBuild: true);
+
+            // Act & Assert
+            var generateOutput = generator.TryGenerateBashScript(context, out var generatedScript);
+            Assert.True(generateOutput);
+            Assert.False(detector.DetectInvoked);
+            Assert.True(detector2.DetectInvoked);
         }
 
         [Fact]
@@ -456,13 +556,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         private static ScriptGeneratorContext CreateScriptGeneratorContext(
             string suppliedLanguageName = null,
-            string suppliedLanguageVersion = null)
+            string suppliedLanguageVersion = null,
+            bool enableMultiPlatformBuild = false)
         {
             return new ScriptGeneratorContext
             {
                 Language = suppliedLanguageName,
                 LanguageVersion = suppliedLanguageVersion,
                 SourceRepo = new TestSourceRepo(),
+                DisableMultiPlatformBuild = !enableMultiPlatformBuild
             };
         }
 

@@ -18,8 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
         public const string NetCoreApp22 = "netcoreapp2.2";
 
         public const string DotnetCoreSdkVersion11 = "1.1.11";
-        public const string DotnetCoreSdkVersion21 = "2.1.502";
-        public const string DotnetCoreSdkVersion22 = "2.2.100";
+        public const string DotnetCoreSdkVersion21 = "2.1.504";
+        public const string DotnetCoreSdkVersion22 = "2.2.104";
 
         public const string OryxOutputPublishDirectory = "oryx_publish_output";
 

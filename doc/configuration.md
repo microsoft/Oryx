@@ -14,7 +14,7 @@ PROJECT                          | repo-relative path to directory with `.csproj
 DISABLE\_DOTNETCORE\_BUILD       | if `true`, the system won't attempt to detect or build any .NET Core code in the repo. |
 DISABLE\_PYTHON\_BUILD           | if `true`, the system won't attempt to detect or build any Python code in the repo. |
 DISABLE\_NODEJS\_BUILD           | if `true`, the system won't attempt to detect or build any NodeJS code in the repo. |
-DISABLE\_MULTIPLATFORM\_BUILD    | if `true`, only the selected platform is used, e.g. in AppService language selection or `oryx build` command; no automatic detection or build for other platforms will be performed. |
+ENABLE\_MULTIPLATFORM\_BUILD     | if `true`, the system will automatically detect the platforms used in the repo and build them. If needed, each platform can be individually disabled using its own flag described above. |
 
 # Azure Web Apps configuration
 

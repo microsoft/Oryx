@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {

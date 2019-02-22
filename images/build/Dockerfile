@@ -65,12 +65,12 @@ RUN DOTNET_SDK_VER=1.1.11 \
     INSTALL_PACKAGES=false \
     /dotnetcore-install.sh
 
-RUN DOTNET_SDK_VER=2.1.502 \
-    DOTNET_SDK_SHA=366609243fcae4693218154a3f374822b5ceb77b7e1a3561dd0cc89755131fcaec04777e99ac041554d452b4862d2856926a1c213029fc80c7292959caf3aaf6 \
+RUN DOTNET_SDK_VER=2.1.504 \
+    DOTNET_SDK_SHA=93318A533DA67DF22CAE5C4BBB384ABD820B37D66E473DF08DA26231D0DF0D0420661E4E587CED0954EE77EB3AF532E52D0AB1DDD9528AA0EE74B4EA1C27702D \
     /dotnetcore-install.sh
 
-RUN DOTNET_SDK_VER=2.2.100 \
-    DOTNET_SDK_SHA=6bde1d0f186f068b1300d5a67e8aba56ff271b940bc0782c3a254dc0f67e7167d2fca12fc51eb3319d4ab4a91cbe5639e5104e9e0036adb8a27ca5711453a1c3 \
+RUN DOTNET_SDK_VER=2.2.104 \
+    DOTNET_SDK_SHA=FD03CC4ABEA849EE5E05A035E2888C71D8842E64389DD94D7301E0FCFC189CBED99FE84A6174B657FFE3D328FAA761972C061A339246F63C9BA8FA31EAD2A1B0 \
     /dotnetcore-install.sh
 
 RUN set -ex \
@@ -317,6 +317,9 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
+COPY images/build/benv.sh /usr/local/bin/benv
+RUN chmod +x /usr/local/bin/benv
+
 # Copy .NET Core related content
 ENV NUGET_XMLDOC_MODE=skip \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
@@ -331,6 +334,8 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
+COPY images/build/node-cache-packages.sh /tmp/
+RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
 
 # Copy PHP versions
 COPY --from=php-build-prereqs /php/install-prereqs.sh /tmp/php/install-prereqs.sh
@@ -341,9 +346,6 @@ COPY --from=php73-build /opt /opt
 # Build script generator content
 COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
-
-COPY images/build/benv.sh /usr/local/bin/benv
-RUN chmod +x /usr/local/bin/benv
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

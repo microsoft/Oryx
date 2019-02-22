@@ -8,7 +8,7 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Common;
 using NLog;
 using NLog.Config;
 using NLog.Extensions.Logging;
