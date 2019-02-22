@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Tests.Common
 {

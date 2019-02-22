@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common.Utilities;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System;
 using System.IO;
 using Xunit;
 
-namespace Microsoft.Oryx.Common.Utilities.Test
+namespace Microsoft.Oryx.Common.Test
 {
     public class OryxDirectoryStructureHelperTest : IClassFixture<TestTempDirTestFixture>
     {
