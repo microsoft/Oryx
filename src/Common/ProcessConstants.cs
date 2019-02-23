@@ -3,10 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.Common
 {
-    public static class Constants
+    public class ProcessConstants
     {
-        public const string GenericErrorMessage = "Oops... An unexpected error has occurred.";
+        public const int ExitSuccess = 0;
+
+        public const int ExitFailure = 1;
     }
 }

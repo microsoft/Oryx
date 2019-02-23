@@ -6,6 +6,7 @@
 using System.Linq;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -51,12 +52,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var commit = GetCommit();
                 console.WriteLine($"Version: {version}, Commit: {commit}");
 
-                return Constants.ExitSuccess;
+                return ProcessConstants.ExitSuccess;
             }
 
             app.ShowHelp();
 
-            return Constants.ExitSuccess;
+            return ProcessConstants.ExitSuccess;
         }
 
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);

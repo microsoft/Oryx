@@ -9,6 +9,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -42,12 +43,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {
-                return Constants.ExitFailure;
+                return ProcessConstants.ExitFailure;
             }
 
             console.WriteLine(generatedScript);
 
-            return Constants.ExitSuccess;
+            return ProcessConstants.ExitSuccess;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)

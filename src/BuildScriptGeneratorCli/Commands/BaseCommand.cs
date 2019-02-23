@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 _serviceProvider = GetServiceProvider();
                 if (!IsValidInput(_serviceProvider, console))
                 {
-                    return Constants.ExitFailure;
+                    return ProcessConstants.ExitFailure;
                 }
 
                 if (DebugMode)
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.Error.WriteLine(exc.ToString());
                 }
 
-                return Constants.ExitFailure;
+                return ProcessConstants.ExitFailure;
             }
             finally
             {
