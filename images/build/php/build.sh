@@ -34,7 +34,7 @@ if ! command -v gpg > /dev/null; then
 	fetchDeps="$fetchDeps dirmngr gnupg"
 fi
 
-apt-get install -y --no-install-recommends $fetchDeps
+apt-get update && apt-get install -y --no-install-recommends $fetchDeps
 rm -rf /var/lib/apt/lists/*
 
 mkdir -p /usr/src
@@ -61,7 +61,7 @@ fi;
 
 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
-versionDevReqs='libsodium-dev libssl-dev'
+versionDevReqs='libssl-dev'
 if [ ${PHP_MAJOR} == '5' ]; then
 	versionDevReqs='libssl1.0-dev'
 fi
@@ -75,23 +75,6 @@ apt-get install -y --no-install-recommends \
 	libxml2-dev \
 	zlib1g-dev \
 	$versionDevReqs;
-
-if [ ${PHP_MAJOR} == '7' ]; then
-	##<argon2>##
-	sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
-	{ \
-	    echo 'Package: *';
-	    echo 'Pin: release n=buster';
-	    echo 'Pin-Priority: -10';
-	    echo;
-	    echo 'Package: libargon2*';
-	    echo 'Pin: release n=buster';
-	    echo 'Pin-Priority: 990';
-	} > /etc/apt/preferences.d/argon2-buster;
-	apt-get update;
-	apt-get install -y --no-install-recommends libargon2-dev;
-	##</argon2>##
-fi
 
 rm -rf /var/lib/apt/lists/*;
 
