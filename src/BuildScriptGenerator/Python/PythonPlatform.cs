@@ -6,9 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -117,11 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 disableCollectStatic = true;
             }
 
-            _logger.LogDependencies(
-                "Python",
-                pythonVersion,
-                context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName)
-                .Where(line => !line.TrimStart().StartsWith("#")));
+            TryLogDependencies(pythonVersion, context.SourceRepo);
 
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
@@ -147,13 +141,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion["python"] = targetPlatformVersion;
+                toolsToVersion[PythonName] = targetPlatformVersion;
             }
         }
 
         public void SetVersion(ScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
+        }
+
+        private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
+        {
+            if (!repo.FileExists(PythonConstants.RequirementsFileName))
+            {
+                return;
+            }
+
+            try
+            {
+                var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
+                    .Where(line => !line.TrimStart().StartsWith("#"));
+                _logger.LogDependencies(PythonName, pythonVersion, deps);
+            }
+            catch (Exception exc)
+            {
+                _logger.LogWarning(exc, "Exception caught while logging dependencies");
+            }
         }
     }
 }

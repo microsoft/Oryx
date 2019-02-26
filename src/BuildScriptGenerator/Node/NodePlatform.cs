@@ -6,9 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -45,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
         {
-            var packageJson = GetPackageJsonObject(context.SourceRepo);
+            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
 
@@ -81,10 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 runBuildAzureCommand: runBuildAzureCommand);
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, scriptProps, _logger);
 
-            return new BuildScriptSnippet()
-            {
-                BashBuildScriptSnippet = script
-            };
+            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
 
         public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
@@ -101,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 toolsToVersion["node"] = targetPlatformVersion;
             }
 
-            var packageJson = GetPackageJsonObject(sourceRepo);
+            var packageJson = GetPackageJsonObject(sourceRepo, _logger);
             if (packageJson != null)
             {
                 var npmVersion = GetNpmVersion(packageJson);
@@ -115,6 +110,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public void SetVersion(ScriptGeneratorContext context, string version)
         {
             context.NodeVersion = version;
+        }
+
+        internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
+        {
+            dynamic packageJson = null;
+            try
+            {
+                var jsonContent = sourceRepo.ReadFile(NodeConstants.PackageJsonFileName);
+                packageJson = JsonConvert.DeserializeObject(jsonContent);
+            }
+            catch (Exception exc)
+            {
+                // Leave malformed package.json files for Node.js to handle.
+                // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
+                logger.LogWarning(exc, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
+            }
+
+            return packageJson;
         }
 
         private string GetNpmVersion(dynamic packageJson)
@@ -140,26 +153,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return npmVersion;
-        }
-
-        private dynamic GetPackageJsonObject(ISourceRepo sourceRepo)
-        {
-            dynamic packageJson = null;
-            try
-            {
-                var jsonContent = sourceRepo.ReadFile(NodeConstants.PackageJsonFileName);
-                packageJson = JsonConvert.DeserializeObject(jsonContent);
-            }
-            catch (Exception ex)
-            {
-                // We just ignore errors, so we leave malformed package.json
-                // files for node.js to handle, not us. This prevents us from
-                // erroring out when node itself might be able to tolerate some errors
-                // in the package.json file.
-                _logger.LogInformation(ex, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
-            }
-
-            return packageJson;
         }
     }
 }

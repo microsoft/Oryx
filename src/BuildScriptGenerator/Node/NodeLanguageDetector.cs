@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             if (isNodeApp)
             {
-                var packageJson = GetPackageJsonObject(sourceRepo);
+                var packageJson = NodePlatform.GetPackageJsonObject(sourceRepo, _logger);
                 var nodeVersion = DetectNodeVersion(packageJson);
 
                 return new LanguageDetectorResult
@@ -138,26 +138,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return nodeVersion;
-        }
-
-        private dynamic GetPackageJsonObject(ISourceRepo sourceRepo)
-        {
-            dynamic packageJson = null;
-            try
-            {
-                var jsonContent = sourceRepo.ReadFile(NodeConstants.PackageJsonFileName);
-                packageJson = JsonConvert.DeserializeObject(jsonContent);
-            }
-            catch (Exception ex)
-            {
-                // We just ignore errors, so we leave malformed package.json
-                // files for node.js to handle, not us. This prevents us from
-                // erroring out when node itself might be able to tolerate some errors
-                // in the package.json file.
-                _logger.LogError(ex, $"An error occurred while trying to deserialize {NodeConstants.PackageJsonFileName}");
-            }
-
-            return packageJson;
         }
     }
 }
