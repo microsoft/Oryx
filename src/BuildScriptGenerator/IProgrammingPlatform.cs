@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Adds the required tools and their versions to a map.
         /// </summary>
-        /// <param name="sourceRepo">The source repo for the application.</param>
+        /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="targetPlatformVersion">The target programming platform version that the application has requested.</param>
         /// <param name="toolsToVersion">The map from tools to their required versions.</param>
         /// <remarks>We keep the tool dependency tracking outside of the script iself to allow for
@@ -61,5 +61,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="scriptGeneratorContext">The script generator context.</param>
         /// <returns>true if the platform should be included, false otherwise.</returns>
         bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext);
+
+        /// <summary>
+        /// Checks if the source repository seems to have artifacts from a previous build.
+        /// </summary>
+        /// <param name="repo">Source repo to check</param>
+        /// <returns>true if the repo doesn't seem to have artifacts from a previous build, false otherwise</returns>
+        bool IsCleanRepo(ISourceRepo repo);
     }
 }

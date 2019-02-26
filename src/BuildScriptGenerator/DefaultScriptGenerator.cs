@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 if (!platform.IsEnabled(context))
                 {
-                    _logger.LogDebug("{lang} has been disabled.", platform.Name);
+                    _logger.LogDebug("{platformName} has been disabled", platform.Name);
                     continue;
                 }
 
@@ -95,11 +95,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (!currPlatformMatchesProvided || string.IsNullOrEmpty(targetVersionSpec))
                 {
-                    _logger.LogDebug("Detecting platform using {langPlat}", platform.Name);
+                    _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
                     var detectionResult = platform.Detect(context.SourceRepo);
                     if (detectionResult != null)
                     {
-                        _logger.LogDebug("Detected {lang} version {version} for app in repo", platform.Name, detectionResult.LanguageVersion);
+                        _logger.LogDebug("Detected {platformName} version {platformVersion} for app in repo", platform.Name, detectionResult.LanguageVersion);
                         usePlatform = true;
                         targetVersionSpec = detectionResult.LanguageVersion;
                         if (string.IsNullOrEmpty(targetVersionSpec))
@@ -113,6 +113,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
                     platform.SetVersion(context, targetVersion);
+
+                    string cleanOrNot = platform.IsCleanRepo(context.SourceRepo) ? "clean" : "not clean";
+                    _logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
+
                     var snippet = platform.GenerateBashBuildScriptSnippet(context);
                     if (snippet != null)
                     {
@@ -127,8 +131,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            // Even if a language was detected, we throw an error if the user provided an unsupported language
-            // as target.
+            // Even if a language was detected, we throw an error if the user provided an unsupported language as target.
             if (!string.IsNullOrEmpty(context.Language) && !providedLanguageFound)
             {
                 ThrowInvalidLanguageProvided(context);

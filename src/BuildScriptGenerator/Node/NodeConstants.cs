@@ -16,5 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string PackageInstallCommandTemplate = "{0} install";
         internal const string PkgMgrRunBuildCommandTemplate = "{0} run build";
         internal const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";
+        internal const string NodeModulesDirName = "node_modules";
     }
 }

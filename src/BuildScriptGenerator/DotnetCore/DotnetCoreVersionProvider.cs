@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
             _options = options.Value;
         }
 
-        public IEnumerable<string> SupportedVersions
+        public IEnumerable<string> SupportedDotNetCoreVersions
         {
             get
             {

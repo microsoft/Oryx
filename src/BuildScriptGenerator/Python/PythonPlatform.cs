@@ -131,6 +131,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            // TODO: support venvs
+            return !repo.DirExists(DefaultTargetPackageDirectory);
+        }
+
         public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnablePython;

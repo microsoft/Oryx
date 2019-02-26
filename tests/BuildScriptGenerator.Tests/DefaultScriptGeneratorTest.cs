@@ -661,18 +661,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
             {
-                if (_canGenerateScript.HasValue)
+                if (_canGenerateScript == true)
                 {
-                    if (_canGenerateScript.Value)
-                    {
-                        return new BuildScriptSnippet()
-                        {
-                            BashBuildScriptSnippet = _scriptContent
-                        };
-                    }
+                    return new BuildScriptSnippet { BashBuildScriptSnippet = _scriptContent };
                 }
 
                 return null;
+            }
+
+            public bool IsCleanRepo(ISourceRepo repo)
+            {
+                return true;
             }
 
             public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
@@ -694,6 +693,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             public string RootPath => string.Empty;
 
             public bool FileExists(params string[] paths)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool DirExists(params string[] paths)
             {
                 throw new NotImplementedException();
             }

@@ -297,7 +297,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             optionsSetup.Configure(options);
 
             return new DotnetCoreLanguageDetector(
-                new TestDotnetCoreVersionProvider(supportedVersions),
+                new TestVersionProvider(supportedVersions),
                 Options.Create(options),
                 new TestAspNetCoreWebAppProjectFileProvider(projectFile),
                 NullLogger<DotnetCoreLanguageDetector>.Instance);

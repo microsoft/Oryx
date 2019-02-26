@@ -29,6 +29,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return File.Exists(path);
         }
 
+        public bool DirExists(params string[] paths)
+        {
+            var path = ResolvePath(paths);
+            return Directory.Exists(path);
+        }
+
         public IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories)
         {
             var searchOption = searchSubDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;

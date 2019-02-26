@@ -82,6 +82,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
 
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            return !repo.DirExists(NodeConstants.NodeModulesDirName);
+        }
+
         public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableNodeJs;
