@@ -542,24 +542,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
         }
 
-        private DefaultScriptGenerator CreateDefaultScriptGenerator(
+        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
             IProgrammingPlatform generator)
         {
-            return new DefaultScriptGenerator(new[] { generator }, new TestEnvironmentSettingsProvider(), NullLogger<DefaultScriptGenerator>.Instance);
+            return new DefaultBuildScriptGenerator(new[] { generator }, new TestEnvironmentSettingsProvider(), NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
-        private DefaultScriptGenerator CreateDefaultScriptGenerator(
+        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
             IProgrammingPlatform[] generators)
         {
-            return new DefaultScriptGenerator(generators, new TestEnvironmentSettingsProvider(), NullLogger<DefaultScriptGenerator>.Instance);
+            return new DefaultBuildScriptGenerator(generators, new TestEnvironmentSettingsProvider(), NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
-        private static ScriptGeneratorContext CreateScriptGeneratorContext(
+        private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
             string suppliedLanguageName = null,
             string suppliedLanguageVersion = null,
             bool enableMultiPlatformBuild = false)
         {
-            return new ScriptGeneratorContext
+            return new BuildScriptGeneratorContext
             {
                 Language = suppliedLanguageName,
                 LanguageVersion = suppliedLanguageVersion,
@@ -659,23 +659,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 return _detector.Detect(sourceRepo);
             }
 
-            public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
+            public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
             {
-                if (_canGenerateScript.HasValue)
+                if (_canGenerateScript == true)
                 {
-                    if (_canGenerateScript.Value)
-                    {
-                        return new BuildScriptSnippet()
-                        {
-                            BashBuildScriptSnippet = _scriptContent
-                        };
-                    }
+                    return new BuildScriptSnippet { BashBuildScriptSnippet = _scriptContent };
                 }
 
                 return null;
             }
 
-            public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+            public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsCleanRepo(ISourceRepo repo)
+            {
+                return true;
+            }
+
+            public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
             {
                 return _enabled;
             }
@@ -684,7 +688,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
             }
 
-            public void SetVersion(ScriptGeneratorContext context, string version)
+            public void SetVersion(BuildScriptGeneratorContext context, string version)
             {
             }
         }
@@ -694,6 +698,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             public string RootPath => string.Empty;
 
             public bool FileExists(params string[] paths)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool DirExists(params string[] paths)
             {
                 throw new NotImplementedException();
             }

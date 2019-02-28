@@ -28,14 +28,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdErrHandler)
         {
             int exitCode = ProcessHelper.TrySetExecutableMode(scriptPath, workingDirectory);
-            if (exitCode != 0)
+            if (exitCode != ProcessConstants.ExitSuccess)
             {
                 _logger.LogError("Failed to set execute permission on script {scriptPath} ({exitCode})", scriptPath, exitCode);
                 return exitCode;
             }
 
             exitCode = ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
-            if (exitCode != 0)
+            if (exitCode != ProcessConstants.ExitSuccess)
             {
                 try
                 {

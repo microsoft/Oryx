@@ -4,9 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -30,7 +28,7 @@ namespace BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
-            var scriptCommand = new ScriptCommand
+            var scriptCommand = new BuildScriptCommand
             {
                 SourceDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
             };
@@ -50,7 +48,7 @@ namespace BuildScriptGeneratorCli.Tests
         public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
         {
             // Arrange
-            var scriptCommand = new ScriptCommand { SourceDir = string.Empty };
+            var scriptCommand = new BuildScriptCommand { SourceDir = string.Empty };
             var testConsole = new TestConsole();
 
             // Act
@@ -69,7 +67,7 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform(scriptContent),
                 scriptOnly: true);
-            var scriptCommand = new ScriptCommand();
+            var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
             // Act
@@ -90,7 +88,7 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform(scriptContentWithCRLF),
                 scriptOnly: true);
-            var scriptCommand = new ScriptCommand();
+            var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
             // Act
@@ -148,64 +146,6 @@ namespace BuildScriptGeneratorCli.Tests
             {
                 Directory.CreateDirectory(_tempDir);
                 return _tempDir;
-            }
-        }
-
-        private class TestProgrammingPlatform : IProgrammingPlatform
-        {
-            private readonly string _scriptContent;
-
-            public TestProgrammingPlatform()
-                : this(scriptContent: null)
-            {
-            }
-
-            public TestProgrammingPlatform(string scriptContent)
-            {
-                _scriptContent = scriptContent;
-            }
-
-            public string Name => "test";
-
-            public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
-
-            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
-            {
-                return new LanguageDetectorResult
-                {
-                    Language = Name,
-                    LanguageVersion = SupportedLanguageVersions.First()
-                };
-            }
-
-            public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
-            {
-                string script;
-                if (string.IsNullOrEmpty(_scriptContent))
-                {
-                    script = "#!/bin/bash" + Environment.NewLine + "echo Hello World" + Environment.NewLine;
-                }
-                else
-                {
-                    script = _scriptContent;
-                }
-                return new BuildScriptSnippet()
-                {
-                    BashBuildScriptSnippet = script
-                };
-            }
-
-            public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
-            {
-                return true;
-            }
-
-            public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
-            {
-            }
-
-            public void SetVersion(ScriptGeneratorContext context, string version)
-            {
             }
         }
 

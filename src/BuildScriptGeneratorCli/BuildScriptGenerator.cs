@@ -13,17 +13,17 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    internal class ScriptGenerator
+    internal class BuildScriptGenerator
     {
         private readonly IConsole _console;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ScriptGenerator> _logger;
+        private readonly ILogger<BuildScriptGenerator> _logger;
 
-        public ScriptGenerator(IConsole console, IServiceProvider serviceProvider)
+        public BuildScriptGenerator(IConsole console, IServiceProvider serviceProvider)
         {
             _console = console;
             _serviceProvider = serviceProvider;
-            _logger = _serviceProvider.GetRequiredService<ILogger<ScriptGenerator>>();
+            _logger = _serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
         }
 
         public bool TryGenerateScript(out string generatedScript)
@@ -33,11 +33,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 var options = _serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-                var scriptGenerator = _serviceProvider.GetRequiredService<IScriptGenerator>();
+                var scriptGenerator = _serviceProvider.GetRequiredService<IBuildScriptGenerator>();
                 var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
                 var environment = _serviceProvider.GetRequiredService<CliEnvironmentSettings>();
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
-                var scriptGeneratorContext = new ScriptGeneratorContext
+                var scriptGeneratorContext = new BuildScriptGeneratorContext
                 {
                     SourceRepo = sourceRepo,
                     Language = options.Language,

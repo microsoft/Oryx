@@ -9,11 +9,12 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("script", Description = "Generate build script to standard output.")]
-    internal class ScriptCommand : BaseCommand
+    internal class BuildScriptCommand : BaseCommand
     {
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
@@ -38,16 +39,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var scriptGenerator = new ScriptGenerator(console, serviceProvider);
+            var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
 
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {
-                return Constants.ExitFailure;
+                return ProcessConstants.ExitFailure;
             }
 
             console.WriteLine(generatedScript);
 
-            return Constants.ExitSuccess;
+            return ProcessConstants.ExitSuccess;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)

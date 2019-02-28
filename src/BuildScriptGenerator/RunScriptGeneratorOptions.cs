@@ -3,10 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public static class Constants
+    public class RunScriptGeneratorOptions
     {
-        public const string GenericErrorMessage = "Oops... An unexpected error has occurred.";
+        public ISourceRepo SourceRepo { get; set; }
+
+        public string SourcePath { get; set; }
+
+        public string UserStartupCommand { get; set; }
+
+        public string DefaultAppPath { get; set; }
     }
 }

@@ -15,23 +15,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Finds and resolves scripts generators based on user input and invokes one of them to generate a script.
     /// </summary>
-    internal class DefaultScriptGenerator : IScriptGenerator
+    internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
-        private readonly ILogger<DefaultScriptGenerator> _logger;
+        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
 
-        public DefaultScriptGenerator(
+        public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
-            ILogger<DefaultScriptGenerator> logger)
+            ILogger<DefaultBuildScriptGenerator> logger)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
-        public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
+        public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script)
         {
             script = null;
 
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return benvArgs;
         }
 
-        private List<BuildScriptSnippet> GetBuildSnippets(ScriptGeneratorContext context, Dictionary<string, string> toolsToVersion)
+        private List<BuildScriptSnippet> GetBuildSnippets(BuildScriptGeneratorContext context, Dictionary<string, string> toolsToVersion)
         {
             bool providedLanguageFound = false;
             var snippets = new List<BuildScriptSnippet>();
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 if (!platform.IsEnabled(context))
                 {
-                    _logger.LogDebug("{lang} has been disabled.", platform.Name);
+                    _logger.LogDebug("{platformName} has been disabled", platform.Name);
                     continue;
                 }
 
@@ -95,11 +95,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (!currPlatformMatchesProvided || string.IsNullOrEmpty(targetVersionSpec))
                 {
-                    _logger.LogDebug("Detecting platform using {langPlat}", platform.Name);
+                    _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
                     var detectionResult = platform.Detect(context.SourceRepo);
                     if (detectionResult != null)
                     {
-                        _logger.LogDebug("Detected {lang} version {version} for app in repo", platform.Name, detectionResult.LanguageVersion);
+                        _logger.LogDebug("Detected {platformName} version {platformVersion} for app in repo", platform.Name, detectionResult.LanguageVersion);
                         usePlatform = true;
                         targetVersionSpec = detectionResult.LanguageVersion;
                         if (string.IsNullOrEmpty(targetVersionSpec))
@@ -113,6 +113,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
                     platform.SetVersion(context, targetVersion);
+
+                    string cleanOrNot = platform.IsCleanRepo(context.SourceRepo) ? "clean" : "not clean";
+                    _logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
+
                     var snippet = platform.GenerateBashBuildScriptSnippet(context);
                     if (snippet != null)
                     {
@@ -127,8 +131,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            // Even if a language was detected, we throw an error if the user provided an unsupported language
-            // as target.
+            // Even if a language was detected, we throw an error if the user provided an unsupported language as target.
             if (!string.IsNullOrEmpty(context.Language) && !providedLanguageFound)
             {
                 ThrowInvalidLanguageProvided(context);
@@ -137,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return snippets;
         }
 
-        private void ThrowInvalidLanguageProvided(ScriptGeneratorContext context)
+        private void ThrowInvalidLanguageProvided(BuildScriptGeneratorContext context)
         {
             var languages = _programmingPlatforms.Select(sg => sg.Name);
             var exc = new UnsupportedLanguageException($"'{context.Language}' platform is not supported. " +
@@ -182,7 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Handles the error when no platform was found, logging information about the repo.
         /// </summary>
-        private void LogAndThrowNoPlatformFound(ScriptGeneratorContext context)
+        private void LogAndThrowNoPlatformFound(BuildScriptGeneratorContext context)
         {
             try
             {

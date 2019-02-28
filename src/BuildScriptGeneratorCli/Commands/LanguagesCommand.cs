@@ -10,6 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -75,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
             }
 
-            return Constants.ExitSuccess;
+            return ProcessConstants.ExitSuccess;
         }
 
         private IEnumerable<string> SortVersions(IEnumerable<string> versions)

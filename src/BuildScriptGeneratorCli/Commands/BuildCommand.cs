@@ -4,11 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -107,18 +105,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
             if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
             {
-                return Constants.ExitFailure;
+                return ProcessConstants.ExitFailure;
             }
 
             // Generate build script
             string scriptContent;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
-                var scriptGenerator = new ScriptGenerator(console, serviceProvider);
+                var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
                 if (!scriptGenerator.TryGenerateScript(out scriptContent))
                 {
                     stopwatch.AddProperty("failed", "true");
-                    return Constants.ExitFailure;
+                    return ProcessConstants.ExitFailure;
                 }
             }
 
@@ -174,13 +172,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             logger.LogDebug("Build script content:\n" + scriptContent);
             logger.LogDebug("Build script output:\n" + buildScriptOutput.ToString());
 
-            if (exitCode != Constants.ExitSuccess)
+            if (exitCode != ProcessConstants.ExitSuccess)
             {
                 logger.LogError("Build script exited with {exitCode}", exitCode);
                 return exitCode;
             }
 
-            return Constants.ExitSuccess;
+            return ProcessConstants.ExitSuccess;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)

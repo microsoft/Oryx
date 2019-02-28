@@ -6,13 +6,14 @@
 using System.Linq;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("oryx", Description = "Generates and runs build scripts for multiple languages.")]
     [Subcommand("build", typeof(BuildCommand))]
     [Subcommand("languages", typeof(LanguagesCommand))]
-    [Subcommand("script", typeof(ScriptCommand))]
+    [Subcommand("build-script", typeof(BuildScriptCommand))]
     internal class Program
     {
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]
@@ -51,12 +52,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var commit = GetCommit();
                 console.WriteLine($"Version: {version}, Commit: {commit}");
 
-                return Constants.ExitSuccess;
+                return ProcessConstants.ExitSuccess;
             }
 
             app.ShowHelp();
 
-            return Constants.ExitSuccess;
+            return ProcessConstants.ExitSuccess;
         }
 
         private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);

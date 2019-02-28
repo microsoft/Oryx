@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
             // No files in source directory
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
 
             // Act
             var result = detector.Detect(repo);
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "server.js");
 
             // Act
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "server.js");
 
             // Act
@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile("app.js content", "app.js");
 
             // Act
@@ -170,7 +170,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "app.js");
 
             // Act
@@ -187,7 +187,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
 
             // Act
@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
 
             // Act
@@ -226,7 +226,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithOnlyNpmVersion, NodeConstants.PackageJsonFileName);
 
             // Act
@@ -248,7 +248,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "500.500.500" },
                 supportedNpmVersions: new[] { "5.4.2" },
                 environment);
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
 
             // Act
@@ -270,7 +270,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" },
                 environment);
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, NodeConstants.PackageJsonFileName);
 
             // Act
@@ -289,7 +289,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
 
             // Act
@@ -308,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0" },
                 supportedNpmVersions: new[] { "5.4.2" });
-            var repo = new CachedSourceRepo();
+            var repo = new MemorySourceRepo();
             repo.AddFile(PakageJsonWithUnsupportedNodeVersion, NodeConstants.PackageJsonFileName);
 
             // Act & Assert
@@ -330,7 +330,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_IfIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
-            var sourceRepo = new CachedSourceRepo();
+            var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", iisStartupFileName);
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
@@ -355,7 +355,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_IfServerJs_AndIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
-            var sourceRepo = new CachedSourceRepo();
+            var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", "server.js");
             sourceRepo.AddFile("", iisStartupFileName);
             var detector = CreateNodeLanguageDetector(
@@ -386,9 +386,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             optionsSetup.Configure(options);
 
             return new NodeLanguageDetector(
-                new TestNodeVersionProvider(
-                    supportedNodeVersions: supportedNodeVersions,
-                    supportedNpmVersions: supportedNpmVersions),
+                new TestVersionProvider(supportedNodeVersions, supportedNpmVersions),
                 Options.Create(options),
                 NullLogger<NodeLanguageDetector>.Instance);
         }

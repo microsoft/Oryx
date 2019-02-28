@@ -6,9 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -43,9 +41,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            var packageJson = GetPackageJsonObject(context.SourceRepo);
+            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
 
@@ -79,15 +77,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
                 runBuildAzureCommand: runBuildAzureCommand);
-            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, scriptProps, _logger);
+            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, scriptProps, _logger);
 
-            return new BuildScriptSnippet()
-            {
-                BashBuildScriptSnippet = script
-            };
+            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            return !repo.DirExists(NodeConstants.NodeModulesDirName);
+        }
+
+        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableNodeJs;
         }
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 toolsToVersion["node"] = targetPlatformVersion;
             }
 
-            var packageJson = GetPackageJsonObject(sourceRepo);
+            var packageJson = GetPackageJsonObject(sourceRepo, _logger);
             if (packageJson != null)
             {
                 var npmVersion = GetNpmVersion(packageJson);
@@ -112,9 +112,103 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.NodeVersion = version;
+        }
+
+        public string GenerateBashRunScript(RunScriptGeneratorOptions options)
+        {
+            string startupCommand = null;
+
+            // Log how we detected the entrypoint command
+            var commandSource = string.Empty;
+            if (!string.IsNullOrWhiteSpace(options.UserStartupCommand))
+            {
+                startupCommand = options.UserStartupCommand.Trim();
+                _logger.LogInformation("Using user-provided startup command");
+                commandSource = "User";
+            }
+            else
+            {
+                var packageJson = GetPackageJsonObject(options.SourceRepo, _logger);
+                startupCommand = packageJson?.scripts?.start;
+                if (string.IsNullOrWhiteSpace(startupCommand))
+                {
+                    string mainJsFile = packageJson?.main;
+                    if (string.IsNullOrEmpty(mainJsFile))
+                    {
+                        var candidateFiles = new[] { "bin/www", "server.js", "app.js", "index.js", "hostingstart.js" };
+                        foreach (var file in candidateFiles)
+                        {
+                            if (options.SourceRepo.FileExists(file))
+                            {
+                                startupCommand = GetStartupCommandFromJsFile(options, file);
+                                _logger.LogInformation("Found startup candidate {nodeStartupFile}", file);
+                                commandSource = "CandidateFile";
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        startupCommand = GetStartupCommandFromJsFile(options, mainJsFile);
+                        commandSource = "PackageJsonMain";
+                    }
+                }
+                else
+                {
+                    if (options.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
+                    {
+                        commandSource = "PackageJsonStartYarn";
+                        startupCommand = NodeConstants.YarnStartCommand;
+                        _logger.LogInformation("Found startup command in package.json, and will use Yarn");
+                    }
+                    else
+                    {
+                        commandSource = "PackageJsonStartNpm";
+                        startupCommand = NodeConstants.NpmStartCommand;
+                        _logger.LogInformation("Found startup command in package.json, and will use npm");
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(startupCommand))
+            {
+                startupCommand = GetStartupCommandFromJsFile(options, options.DefaultAppPath);
+                commandSource = "DefaultApp";
+            }
+
+            _logger.LogInformation("Finalizing entrypoint script using {commandSource}", commandSource);
+            var templateValues = new NodeBashRunScriptProperties
+            {
+                AppDirectory = options.SourcePath,
+                StartupCommand = startupCommand
+            };
+            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
+            return script;
+        }
+
+        internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
+        {
+            dynamic packageJson = null;
+            try
+            {
+                packageJson = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, NodeConstants.PackageJsonFileName);
+            }
+            catch (Exception exc)
+            {
+                // Leave malformed package.json files for Node.js to handle.
+                // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
+                logger.LogWarning(exc, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
+            }
+
+            return packageJson;
+        }
+
+        private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)
+        {
+            return $"node {file}";
         }
 
         private string GetNpmVersion(dynamic packageJson)
@@ -140,24 +234,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return npmVersion;
-        }
-
-        private dynamic GetPackageJsonObject(ISourceRepo sourceRepo)
-        {
-            dynamic packageJson = null;
-            try
-            {
-                packageJson = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, NodeConstants.PackageJsonFileName);
-            }
-            catch (Exception ex)
-            {
-                // We just ignore errors, so we leave malformed package.json files for npm to handle,
-                // not us. This prevents us from erroring out when npm itself might be able to tolerate
-                // some errors in the package.json file.
-                _logger.LogWarning(ex, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
-            }
-
-            return packageJson;
         }
     }
 }

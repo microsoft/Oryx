@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             if (context.Properties == null ||
                 !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
@@ -115,11 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 disableCollectStatic = true;
             }
 
-            _logger.LogDependencies(
-                "Python",
-                pythonVersion,
-                context.SourceRepo.ReadAllLines(PythonConstants.RequirementsFileName)
-                .Where(line => !line.TrimStart().StartsWith("#")));
+            TryLogDependencies(pythonVersion, context.SourceRepo);
 
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
@@ -135,7 +131,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            // TODO: support venvs
+            return !repo.DirExists(DefaultTargetPackageDirectory);
+        }
+
+        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnablePython;
         }
@@ -145,13 +152,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion["python"] = targetPlatformVersion;
+                toolsToVersion[PythonName] = targetPlatformVersion;
             }
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
+        }
+
+        private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
+        {
+            if (!repo.FileExists(PythonConstants.RequirementsFileName))
+            {
+                return;
+            }
+
+            try
+            {
+                var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
+                    .Where(line => !line.TrimStart().StartsWith("#"));
+                _logger.LogDependencies(PythonName, pythonVersion, deps);
+            }
+            catch (Exception exc)
+            {
+                _logger.LogWarning(exc, "Exception caught while logging dependencies");
+            }
         }
     }
 }

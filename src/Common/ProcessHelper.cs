@@ -13,8 +13,6 @@ namespace Microsoft.Oryx.Common
 {
     public static class ProcessHelper
     {
-        public const int ExitFailure = 1;
-
         public static (int exitCode, string output, string error) RunProcess(
             string fileName,
             IEnumerable<string> arguments,
@@ -160,7 +158,7 @@ namespace Microsoft.Oryx.Common
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                return ExitFailure;
+                return ProcessConstants.ExitFailure;
             }
 
             try
@@ -169,7 +167,7 @@ namespace Microsoft.Oryx.Common
             }
             catch
             {
-                return ExitFailure;
+                return ProcessConstants.ExitFailure;
             }
         }
     }

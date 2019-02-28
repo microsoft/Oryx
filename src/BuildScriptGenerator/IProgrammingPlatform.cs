@@ -32,16 +32,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         LanguageDetectorResult Detect(ISourceRepo sourceRepo);
 
         /// <summary>
-        /// Sets the version of the platform in the <see cref="ScriptGeneratorContext"/>.
+        /// Sets the version of the platform in the <see cref="BuildScriptGeneratorContext"/>.
         /// </summary>
         /// <param name="context">The context to set the version into.</param>
         /// <param name="version">The platform version to be set.</param>
-        void SetVersion(ScriptGeneratorContext context, string version);
+        void SetVersion(BuildScriptGeneratorContext context, string version);
 
         /// <summary>
         /// Adds the required tools and their versions to a map.
         /// </summary>
-        /// <param name="sourceRepo">The source repo for the application.</param>
+        /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="targetPlatformVersion">The target programming platform version that the application has requested.</param>
         /// <param name="toolsToVersion">The map from tools to their required versions.</param>
         /// <remarks>We keep the tool dependency tracking outside of the script iself to allow for
@@ -52,15 +52,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Tries generating a bash script based on the application in source directory.
         /// </summary>
-        /// <param name="scriptGeneratorContext">The <see cref="ScriptGeneratorContext"/>.</param>
+        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
         /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful, <c>null</c> otherwise.</returns>
-        BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext);
+        BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
+
+        /// <summary>
+        /// Generate a bash script that can run the application.
+        /// </summary>
+        /// <param name="runScriptGeneratorOptions">Options to generate the run script with.</param>
+        /// <returns>The bash run script.</returns>
+        string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions);
 
         /// <summary>
         /// Checks if the programming platform should be included in a build script.
         /// </summary>
         /// <param name="scriptGeneratorContext">The script generator context.</param>
         /// <returns>true if the platform should be included, false otherwise.</returns>
-        bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext);
+        bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext);
+
+        /// <summary>
+        /// Checks if the source repository seems to have artifacts from a previous build.
+        /// </summary>
+        /// <param name="repo">Source repo to check</param>
+        /// <returns>true if the repo doesn't seem to have artifacts from a previous build, false otherwise</returns>
+        bool IsCleanRepo(ISourceRepo repo);
     }
 }

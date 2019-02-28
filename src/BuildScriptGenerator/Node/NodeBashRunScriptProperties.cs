@@ -2,11 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public static class Constants
+    internal class NodeBashRunScriptProperties
     {
-        public const string GenericErrorMessage = "Oops... An unexpected error has occurred.";
+        public string AppDirectory { get; set; }
+
+        public string StartupCommand { get; set; }
     }
 }

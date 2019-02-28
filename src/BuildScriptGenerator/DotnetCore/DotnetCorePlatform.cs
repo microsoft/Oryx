@@ -34,35 +34,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
 
         public string Name => DotnetCoreConstants.LanguageName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedVersions;
+        public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedDotNetCoreVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(scriptGeneratorContext.SourceRepo);
-            if (string.IsNullOrEmpty(projectFile))
+            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(scriptGeneratorContext.SourceRepo);
+            if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
             {
                 return null;
             }
 
-            var projectDir = new FileInfo(projectFile).Directory.FullName;
-            var publishDir = Path.Combine(projectDir, DotnetCoreConstants.OryxOutputPublishDirectory);
-            var scriptProps = new DotNetCoreBashBuildSnippetProperties(
-                publishDirectory: publishDir,
-                projectFile: projectFile);
-            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.DotNetCoreSnippet, scriptProps, _logger);
-
-            return new BuildScriptSnippet()
-            {
-                BashBuildScriptSnippet = script
-            };
+            var props = new DotNetCoreBashBuildSnippetProperties { ProjectFile = projectFile, PublishDirectory = publishDir };
+            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.DotNetCoreSnippet, props, _logger);
+            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            (_, string expectedPublishDir) = GetProjectFileAndPublishDir(repo);
+            return !repo.DirExists(expectedPublishDir);
+        }
+
+        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableDotNetCore;
         }
@@ -76,9 +79,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
             }
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.DotnetCoreVersion = version;
+        }
+
+        private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)
+        {
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(repo);
+            if (string.IsNullOrEmpty(projectFile))
+            {
+                return (null, null);
+            }
+
+            var publishDir = Path.Combine(new FileInfo(projectFile).Directory.FullName, DotnetCoreConstants.OryxOutputPublishDirectory);
+            return (projectFile, publishDir);
         }
     }
 }

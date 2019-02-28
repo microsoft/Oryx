@@ -4,20 +4,26 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    class TestNodeVersionProvider : INodeVersionProvider
+    class TestVersionProvider :
+        BuildScriptGenerator.Node.INodeVersionProvider,
+        BuildScriptGenerator.Python.IPythonVersionProvider,
+        BuildScriptGenerator.DotnetCore.IDotnetCoreVersionProvider
     {
-        public TestNodeVersionProvider(string[] supportedNodeVersions, string[] supportedNpmVersions)
+        public TestVersionProvider(string[] supportedVersions, string[] supportedNpmVersions = null)
         {
-            SupportedNodeVersions = supportedNodeVersions;
+            SupportedNodeVersions = SupportedPythonVersions = SupportedDotNetCoreVersions = supportedVersions;
             SupportedNpmVersions = supportedNpmVersions;
         }
 
         public IEnumerable<string> SupportedNodeVersions { get; }
 
         public IEnumerable<string> SupportedNpmVersions { get; }
+
+        public IEnumerable<string> SupportedPythonVersions { get; }
+
+        public IEnumerable<string> SupportedDotNetCoreVersions { get; }
     }
 }

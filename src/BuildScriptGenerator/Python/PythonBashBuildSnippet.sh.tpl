@@ -32,7 +32,6 @@ python_bin=python
 
 if [ -e "requirements.txt" ]
 then
-	# Indent the output as pip install prints the 'Successfully Installed...' message and then waits which can confuse an end user.
 	echo Running pip install...
 
 	$pip install --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT

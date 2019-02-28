@@ -594,17 +594,27 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:5000";
             var runAppScript = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath}")
                 .AddCommand(startupFilePath)
+                .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
+                .AddBuildCommand($"{appDir} -l=dotnet --language-version=2.2")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", "2.2" },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/dotnetcore-2.2",
                 portMapping,
                 "/bin/sh",
@@ -634,6 +644,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:8000";
 
             var buildScript = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand($"cd {appDir}")
                 .AddBuildCommand($"{appDir} -l python --language-version 3.7")
                 .ToString();
@@ -641,6 +652,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 // User would do this through app settings
+                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath}")
                 .AddCommand(startupFilePath)
