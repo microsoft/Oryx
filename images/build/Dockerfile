@@ -272,12 +272,19 @@ COPY images/build/php /php
 COPY build/__php-versions.sh /php/
 RUN set -eux && chmod +x /php/*.sh && ls -la /php && /php/install-prereqs.sh
 
+# Build PHP 5.6
 FROM php-build-prereqs AS php56-build
 RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP56_VERSION GPG_KEYS=$PHP56_KEYS PHP_SHA256=$PHP56_TAR_SHA256 /php/build.sh
 
+# Build PHP 7.0
+FROM php-build-prereqs AS php70-build
+RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP70_VERSION GPG_KEYS=$PHP70_KEYS PHP_SHA256=$PHP70_TAR_SHA256 /php/build.sh
+
+# Build PHP 7.2
 FROM php-build-prereqs AS php72-build
 RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP72_VERSION GPG_KEYS=$PHP72_KEYS PHP_SHA256=$PHP72_TAR_SHA256 /php/build.sh
 
+# Build PHP 7.3
 FROM php-build-prereqs AS php73-build
 RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION GPG_KEYS=$PHP73_KEYS PHP_SHA256=$PHP73_TAR_SHA256 /php/build.sh
 
@@ -344,6 +351,7 @@ RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
 COPY --from=php-build-prereqs /php/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN /tmp/php/install-prereqs.sh
 COPY --from=php56-build /opt /opt
+COPY --from=php70-build /opt /opt
 COPY --from=php72-build /opt /opt
 COPY --from=php73-build /opt /opt
 
