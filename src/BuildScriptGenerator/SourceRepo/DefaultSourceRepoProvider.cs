@@ -12,7 +12,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     internal class DefaultSourceRepoProvider : ISourceRepoProvider
     {
         private readonly ITempDirectoryProvider _tempDirectoryProvider;
-        private readonly BuildScriptGeneratorOptions _options;
+        private readonly string _sourceDirectory;
+        private readonly string _intermediateDirectory;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<DefaultSourceRepoProvider> _logger;
         private bool _copiedToIntermediateDirectory = false;
@@ -24,7 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             ILoggerFactory loggerFactory)
         {
             _tempDirectoryProvider = tempDirectoryProvider;
-            _options = options.Value;
+            var genOptions = options.Value;
+            _sourceDirectory = genOptions.SourceDir;
+            _intermediateDirectory = genOptions.IntermediateDir;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<DefaultSourceRepoProvider>();
         }
@@ -36,10 +39,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return _sourceRepo;
             }
 
-            if (string.IsNullOrEmpty(_options.IntermediateDir))
+            if (string.IsNullOrEmpty(_intermediateDirectory))
             {
                 _logger.LogDebug("Intermediate directory was not provided, so using source directory for build.");
-                _sourceRepo = new LocalSourceRepo(_options.SourceDir, _loggerFactory);
+                _sourceRepo = new LocalSourceRepo(_sourceDirectory, _loggerFactory);
                 return _sourceRepo;
             }
 
@@ -49,14 +52,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 _logger.LogDebug(
                     "Copying content from {srcDir} to {intermediateDir}",
-                    _options.SourceDir,
-                    _options.IntermediateDir);
+                    _sourceDirectory,
+                    _intermediateDirectory);
 
-                CopyDirectories(_options.SourceDir, _options.IntermediateDir, recursive: true);
+                CopyDirectories(_sourceDirectory, _intermediateDirectory, recursive: true);
                 _copiedToIntermediateDirectory = true;
             }
 
-            _sourceRepo = new LocalSourceRepo(_options.IntermediateDir, _loggerFactory);
+            _sourceRepo = new LocalSourceRepo(_intermediateDirectory, _loggerFactory);
             return _sourceRepo;
         }
 
@@ -98,14 +101,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private void PrepareIntermediateDirectory()
         {
-            if (Directory.Exists(_options.IntermediateDir))
+            if (Directory.Exists(_intermediateDirectory))
             {
-                _logger.LogWarning("Intermediate directory {intermediateDir} already exists; deleting it", _options.IntermediateDir);
-                Directory.Delete(_options.IntermediateDir, recursive: true);
+                _logger.LogWarning("Intermediate directory {intermediateDir} already exists; deleting it", _intermediateDirectory);
+                Directory.Delete(_intermediateDirectory, recursive: true);
             }
 
-            _logger.LogDebug("Creating intermediate directory at {intermediateDir}", _options.IntermediateDir);
-            Directory.CreateDirectory(_options.IntermediateDir);
+            _logger.LogDebug("Creating intermediate directory at {intermediateDir}", _intermediateDirectory);
+            Directory.CreateDirectory(_intermediateDirectory);
         }
     }
 }

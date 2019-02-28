@@ -3,14 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace BuildScriptGeneratorCli.Tests
 {
-    class TestProgrammingPlatform : IProgrammingPlatform
+    internal class TestProgrammingPlatform : IProgrammingPlatform
     {
         private const string DefaultScriptContent = "#!/bin/bash\necho Hello World\n";
         private readonly string _scriptContent;
@@ -38,10 +37,15 @@ namespace BuildScriptGeneratorCli.Tests
             };
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             string script = string.IsNullOrEmpty(_scriptContent) ? DefaultScriptContent : _scriptContent;
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
+        }
+
+        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        {
+            throw new System.NotImplementedException();
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
@@ -49,7 +53,7 @@ namespace BuildScriptGeneratorCli.Tests
             return true;
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return true;
         }
@@ -58,7 +62,7 @@ namespace BuildScriptGeneratorCli.Tests
         {
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
         }
     }

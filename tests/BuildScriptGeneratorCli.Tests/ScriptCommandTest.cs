@@ -28,7 +28,7 @@ namespace BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
-            var scriptCommand = new ScriptCommand
+            var scriptCommand = new BuildScriptCommand
             {
                 SourceDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
             };
@@ -48,7 +48,7 @@ namespace BuildScriptGeneratorCli.Tests
         public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
         {
             // Arrange
-            var scriptCommand = new ScriptCommand { SourceDir = string.Empty };
+            var scriptCommand = new BuildScriptCommand { SourceDir = string.Empty };
             var testConsole = new TestConsole();
 
             // Act
@@ -67,7 +67,7 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform(scriptContent),
                 scriptOnly: true);
-            var scriptCommand = new ScriptCommand();
+            var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
             // Act
@@ -88,7 +88,7 @@ namespace BuildScriptGeneratorCli.Tests
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform(scriptContentWithCRLF),
                 scriptOnly: true);
-            var scriptCommand = new ScriptCommand();
+            var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
             // Act

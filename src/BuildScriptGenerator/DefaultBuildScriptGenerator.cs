@@ -15,23 +15,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Finds and resolves scripts generators based on user input and invokes one of them to generate a script.
     /// </summary>
-    internal class DefaultScriptGenerator : IScriptGenerator
+    internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
-        private readonly ILogger<DefaultScriptGenerator> _logger;
+        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
 
-        public DefaultScriptGenerator(
+        public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
-            ILogger<DefaultScriptGenerator> logger)
+            ILogger<DefaultBuildScriptGenerator> logger)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
         }
 
-        public bool TryGenerateBashScript(ScriptGeneratorContext context, out string script)
+        public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script)
         {
             script = null;
 
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return benvArgs;
         }
 
-        private List<BuildScriptSnippet> GetBuildSnippets(ScriptGeneratorContext context, Dictionary<string, string> toolsToVersion)
+        private List<BuildScriptSnippet> GetBuildSnippets(BuildScriptGeneratorContext context, Dictionary<string, string> toolsToVersion)
         {
             bool providedLanguageFound = false;
             var snippets = new List<BuildScriptSnippet>();
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return snippets;
         }
 
-        private void ThrowInvalidLanguageProvided(ScriptGeneratorContext context)
+        private void ThrowInvalidLanguageProvided(BuildScriptGeneratorContext context)
         {
             var languages = _programmingPlatforms.Select(sg => sg.Name);
             var exc = new UnsupportedLanguageException($"'{context.Language}' platform is not supported. " +
@@ -185,7 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Handles the error when no platform was found, logging information about the repo.
         /// </summary>
-        private void LogAndThrowNoPlatformFound(ScriptGeneratorContext context)
+        private void LogAndThrowNoPlatformFound(BuildScriptGeneratorContext context)
         {
             try
             {

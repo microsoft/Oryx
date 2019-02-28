@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public static string Render(TemplateResource templateResource, object model, ILogger logger = null)
         {
-            var assembly = typeof(IScriptGenerator).Assembly;
+            var assembly = typeof(IBuildScriptGenerator).Assembly;
             using (var stream = assembly.GetManifestResourceStream(templateResource.Name))
             {
                 if (stream == null)
@@ -84,9 +84,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Python.PythonBashBuildSnippet.sh.tpl");
             }
 
-            public static TemplateResource NodeSnippet
+            public static TemplateResource NodeBuildSnippet
             {
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Node.NodeBashBuildSnippet.sh.tpl");
+            }
+
+            public static TemplateResource NodeRunScript
+            {
+                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Node.NodeBashRunScript.sh.tpl");
             }
 
             public static TemplateResource DotNetCoreSnippet

@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

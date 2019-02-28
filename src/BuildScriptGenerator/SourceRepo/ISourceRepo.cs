@@ -48,7 +48,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets a list of paths to files based on the specified <paramref name="searchPattern"/>.
         /// </summary>
         /// <param name="searchPattern">The search pattern of the file name.</param>
-        /// <param name="searchSubDirectories"></param>
+        /// <param name="searchSubDirectories">
+        /// true files from subdirectories should be included, false for only the files in the root.
+        /// </param>
         /// <returns>A collection of file paths.</returns>
         IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories);
 

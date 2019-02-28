@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns></returns>
         public ShellScriptBuilder AddScriptCommand(string argumentsString)
         {
-            return Append($"oryx script {argumentsString}");
+            return Append($"oryx build-script {argumentsString}");
         }
 
         public ShellScriptBuilder CreateDirectory(string directory)
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddFileDoesNotExistCheck(string file, bool isAppendSemiColon=false)
+        public ShellScriptBuilder AddFileDoesNotExistCheck(string file, bool isAppendSemiColon = false)
         {
             return Append(
                 $"if [ -f \"{file}\" ]; then " +
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi", isAppendSemiColon);
         }
 
-        public ShellScriptBuilder AddFileExistsCheck(string file, bool isAppendSemicolon=false)
+        public ShellScriptBuilder AddFileExistsCheck(string file, bool isAppendSemicolon = false)
         {
             return Append(
                 $"if [ ! -f \"{file}\" ]; then " +
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi", isAppendSemicolon);
         }
 
-        public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file, bool isAppendSemiColon=false)
+        public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file, bool isAppendSemiColon = false)
         {
             return Append(
                 $"grep '{searchString}' '{file}' && if [ $? -eq 1 ]; then " +
@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi", isAppendSemiColon);
         }
 
-        public ShellScriptBuilder AddStringNotExistsInFileCheck(string searchString, string file, bool isAppendSemiColon=false)
+        public ShellScriptBuilder AddStringNotExistsInFileCheck(string searchString, string file, bool isAppendSemiColon = false)
         {
             return Append(
                 $"grep '{searchString}' '{file}' && if [ $? -eq 0 ]; then " +
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 0; fi", isAppendSemiColon);
         }
 
-        private ShellScriptBuilder Append(string content, bool isAppendSemiColon=false)
+        private ShellScriptBuilder Append(string content, bool isAppendSemiColon = false)
         {
             // NOTE: do not use AppendLine as in the script must be in one line
             if (_contentPresent)
@@ -131,6 +131,7 @@ namespace Microsoft.Oryx.Tests.Common
             _contentPresent = true;
             return this;
         }
+
         public override string ToString()
         {
             return _scriptBuilder.ToString();

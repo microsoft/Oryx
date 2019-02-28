@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
-            var context = new ScriptGeneratorContext { SourceRepo = repo };
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);

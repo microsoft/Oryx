@@ -7,7 +7,10 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class ScriptGeneratorContext
+    /// <summary>
+    /// Options for the build script generation process.
+    /// </summary>
+    public class BuildScriptGeneratorContext
     {
         public ISourceRepo SourceRepo { get; set; }
 
@@ -19,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         /// <summary>
         /// Gets or sets the version of the programming language used in the repo.
-        /// If provided, the <see cref="ScriptGeneratorContext.Language"/> property should also be provided.
+        /// If provided, the <see cref="BuildScriptGeneratorContext.Language"/> property should also be provided.
         /// </summary>
         public string LanguageVersion { get; set; }
 

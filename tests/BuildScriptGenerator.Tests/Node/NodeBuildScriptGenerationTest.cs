@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
     /// <summary>
     /// Component tests for NodeJs support.
     /// </summary>
-    public class NodeScriptGeneratorTest
+    public class NodeBuildScriptGenerationTest
     {
         private const string PackageJsonWithBuildScript = @"{
           ""name"": ""mynodeapp"",
@@ -118,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -236,7 +236,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -259,7 +259,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -269,7 +269,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
             environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
 
-            var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1" }, new[] { "5.4.2",  "6.0.0" });
+            var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1" }, new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
@@ -282,12 +282,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 null);
         }
 
-        private static ScriptGeneratorContext CreateScriptGeneratorContext(
+        private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
             ISourceRepo sourceRepo,
             string languageName = null,
             string languageVersion = null)
         {
-            return new ScriptGeneratorContext
+            return new BuildScriptGeneratorContext
             {
                 Language = languageName,
                 LanguageVersion = languageVersion,

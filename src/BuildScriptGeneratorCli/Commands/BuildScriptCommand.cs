@@ -14,7 +14,7 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("script", Description = "Generate build script to standard output.")]
-    internal class ScriptCommand : BaseCommand
+    internal class BuildScriptCommand : BaseCommand
     {
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var scriptGenerator = new ScriptGenerator(console, serviceProvider);
+            var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
 
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {

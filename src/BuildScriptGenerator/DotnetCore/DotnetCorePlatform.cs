@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             (string projectFile, string publishDir) = GetProjectFileAndPublishDir(scriptGeneratorContext.SourceRepo);
             if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
@@ -60,7 +60,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
             return !repo.DirExists(expectedPublishDir);
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableDotNetCore;
         }
@@ -74,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
             }
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.DotnetCoreVersion = version;
         }

@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string scriptContent;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
-                var scriptGenerator = new ScriptGenerator(console, serviceProvider);
+                var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
                 if (!scriptGenerator.TryGenerateScript(out scriptContent))
                 {
                     stopwatch.AddProperty("failed", "true");

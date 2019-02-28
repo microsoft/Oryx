@@ -9,7 +9,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [Fact]
         public void RequiredTemplatesExist()
         {
-            var assembly = typeof(IScriptGenerator).Assembly;
+            var assembly = typeof(IBuildScriptGenerator).Assembly;
 
             string[] existingResources = assembly.GetManifestResourceNames();
             string[] requiredTemplates = {

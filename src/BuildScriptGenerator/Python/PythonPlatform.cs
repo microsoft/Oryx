@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             if (context.Properties == null ||
                 !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
@@ -137,7 +137,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return !repo.DirExists(DefaultTargetPackageDirectory);
         }
 
-        public bool IsEnabled(ScriptGeneratorContext scriptGeneratorContext)
+        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnablePython;
         }
@@ -151,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
         }
