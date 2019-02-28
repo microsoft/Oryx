@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(ScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             _logger.LogDebug("Selected PHP version: {phpVer}", context.PhpVersion);
 
@@ -58,15 +58,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             //    disableCollectStatic: disableCollectStatic);
             //string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
 
-            return new BuildScriptSnippet()
-            {
-                BashBuildScriptSnippet = ComposerInstallLine,
-            };
+            return new BuildScriptSnippet { BashBuildScriptSnippet = ComposerInstallLine };
         }
 
-        public bool IsEnabled(ScriptGeneratorContext ctx)
+        public bool IsEnabled(BuildScriptGeneratorContext ctx)
         {
             return ctx.EnablePhp;
+        }
+
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            return true;
+        }
+
+        public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
+        {
+            return "";
         }
 
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
@@ -78,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
         }
 
-        public void SetVersion(ScriptGeneratorContext context, string version)
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PhpVersion = version;
         }

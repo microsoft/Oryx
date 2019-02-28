@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var repo = new CachedSourceRepo(); // No files in source repo
+            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php73Version });
+            var repo = new MemorySourceRepo(); // No files in source repo
 
             // Act
             var result = detector.Detect(repo);
@@ -42,8 +42,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_ReutrnsNull_WhenComposerFileDoesNotExist()
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var repo = new CachedSourceRepo();
+            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php73Version });
+            var repo = new MemorySourceRepo();
             repo.AddFile("foo.php content", "foo.php");
 
             // Act
@@ -57,14 +57,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_Throws_WhenUnsupportedPhpVersion_FoundInComposerFile()
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var repo = new CachedSourceRepo();
+            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php73Version });
+            var repo = new MemorySourceRepo();
             repo.AddFile("{\"require\":{\"php\":\"0\"}}", PhpConstants.ComposerFileName);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                $"Target PHP version '0' is unsupported. Supported versions are: {Common.PhpVersions.Php7Version}",
+                $"Target PHP version '0' is unsupported. Supported versions are: {Common.PhpVersions.Php73Version}",
                 exception.Message);
         }
 
@@ -74,8 +74,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WithComposerFile(string composerFileContent)
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php7Version });
-            var repo = new CachedSourceRepo();
+            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { Common.PhpVersions.Php73Version });
+            var repo = new MemorySourceRepo();
             repo.AddFile(composerFileContent, PhpConstants.ComposerFileName);
             repo.AddFile("<?php echo true; ?>", "foo.php");
 
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PhpName, result.Language);
-            Assert.Equal(Common.PhpVersions.Php7Version, result.LanguageVersion);
+            Assert.Equal(Common.PhpVersions.Php73Version, result.LanguageVersion);
         }
 
         private PhpLanguageDetector CreatePhpLanguageDetector(string[] supportedPhpVersions)

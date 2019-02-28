@@ -53,11 +53,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void GeneratedScript_UsesComposerInstall()
         {
             // Arrange
-            var scriptGenerator = GetScriptGenerator(Common.PhpVersions.Php7Version);
-            var repo = new CachedSourceRepo();
+            var scriptGenerator = GetScriptGenerator(Common.PhpVersions.Php73Version);
+            var repo = new MemorySourceRepo();
             repo.AddFile(ComposerFileWithBuildScript, PhpConstants.ComposerFileName);
-            var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = Common.PhpVersions.Php7Version;
+            var context = CreateBuildScriptGeneratorContext(repo);
+            context.LanguageVersion = Common.PhpVersions.Php73Version;
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -72,10 +72,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         //{
         //    // Arrange
         //    var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
-        //    var repo = new CachedSourceRepo();
+        //    var repo = new MemorySourceRepo();
         //    repo.AddFile(ComposerFileWithNoNpmVersion, NodeConstants.ComposerFileFileName);
         //    repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
-        //    var context = CreateScriptGeneratorContext(repo);
+        //    var context = CreateBuildScriptGeneratorContext(repo);
         //    context.LanguageVersion = "8.2.1";
         //    var expected = new NodeBashBuildSnippetProperties(
         //        packageInstallCommand: NpmInstallCommand,
@@ -95,9 +95,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         //{
         //    // Arrange
         //    var scriptGenerator = GetScriptGenerator(defaultNpmVersion: "6.0.0");
-        //    var repo = new CachedSourceRepo();
+        //    var repo = new MemorySourceRepo();
         //    repo.AddFile(ComposerFileWithBuildScript, NodeConstants.ComposerFileFileName);
-        //    var context = CreateScriptGeneratorContext(repo);
+        //    var context = CreateBuildScriptGeneratorContext(repo);
         //    context.LanguageVersion = "8.2.1";
         //    var expected = new NodeBashBuildSnippetProperties(
         //        packageInstallCommand: NpmInstallCommand,
@@ -126,12 +126,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             return new PhpPlatform(scriptGeneratorOptions, phpVersionProvider, NullLogger<PhpPlatform>.Instance, null);
         }
 
-        private static ScriptGeneratorContext CreateScriptGeneratorContext(
+        private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(
             ISourceRepo sourceRepo,
             string languageName = null,
             string languageVersion = null)
         {
-            return new ScriptGeneratorContext
+            return new BuildScriptGeneratorContext
             {
                 Language = languageName,
                 LanguageVersion = languageVersion,

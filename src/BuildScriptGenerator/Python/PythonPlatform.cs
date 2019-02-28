@@ -152,7 +152,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[PythonName] = targetPlatformVersion;
+                toolsToVersion[PythonConstants.PythonName] = targetPlatformVersion;
             }
         }
 
@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                _logger.LogDependencies(PythonName, pythonVersion, deps);
+                _logger.LogDependencies(PythonConstants.PythonName, pythonVersion, deps);
             }
             catch (Exception exc)
             {
