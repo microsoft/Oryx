@@ -7,6 +7,7 @@
 set -eux
 
 PHP_MAJOR=${PHP_VERSION:0:1}
+PHP_MINOR=${PHP_VERSION:2:1}
 INSTALLATION_PREFIX="/opt/php/$PHP_VERSION"
 PHP_INI_DIR="$INSTALLATION_PREFIX/ini"
 PHP_SRC_DIR="/usr/src/php"
@@ -63,7 +64,7 @@ fi;
 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 versionDevReqs='libssl-dev'
-if [ ${PHP_MAJOR} == '5' ]; then
+if [ $PHP_MAJOR == '5' ]; then
 	versionDevReqs='libssl1.0-dev'
 fi
 
@@ -94,7 +95,7 @@ if [ ! -d /usr/include/curl ]; then
 fi;
 
 versionConfigureArgs=''
-if [ ${PHP_MAJOR} == '7' ]; then
+if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 fi
 
@@ -147,6 +148,6 @@ $INSTALLATION_PREFIX/bin/php --version;
 $INSTALLATION_PREFIX/bin/pecl update-channels;
 rm -rf /tmp/pear ~/.pearrc
 
-if [ ${PHP_MAJOR} == '7' ]; then
+if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
