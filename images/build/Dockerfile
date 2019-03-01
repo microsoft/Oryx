@@ -100,10 +100,12 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 8.9.4 \
  && ~/n/bin/n -d 8.11.2 \
  && ~/n/bin/n -d 8.12.0 \
+ && ~/n/bin/n -d 8.15.1 \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.1 \
+ && ~/n/bin/n -d 10.15.2 \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -ex \
@@ -124,9 +126,12 @@ COPY build/__node-versions.sh /tmp
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
- && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
-    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
-    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$GPG_KEY" \
+ && for i in {1..5}; do \
+      gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
+      gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
+      gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$GPG_KEY"; \
+      if [ $? -eq 0 ]; then break; fi \
+    done \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
@@ -152,14 +157,16 @@ RUN set -ex \
  && ln -s 8.9.4 /opt/nodejs/8.9 \
  && ln -s 8.11.2 /opt/nodejs/8.11 \
  && ln -s 8.12.0 /opt/nodejs/8.12 \
- && ln -s 8.12 /opt/nodejs/8 \
+ && ln -s 8.15.1 /opt/nodejs/8.15 \
+ && ln -s 8.15 /opt/nodejs/8 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
- && ln -s 10.14.1 /opt/nodejs/lts \
  && ln -s 10.14.1 /opt/nodejs/10.14 \
- && ln -s 10.14 /opt/nodejs/10
+ && ln -s 10.15.2 /opt/nodejs/10.15 \
+ && ln -s 10.15 /opt/nodejs/10 \
+ && ln -s 10 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
