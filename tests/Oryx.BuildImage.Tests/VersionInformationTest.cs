@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("1", DotnetCoreConstants.DotnetCoreSdkVersion11)]
         [InlineData("1.1", DotnetCoreConstants.DotnetCoreSdkVersion11)]
-        [InlineData("1.1.11", DotnetCoreConstants.DotnetCoreSdkVersion11)]
+        [InlineData("1.1.12", DotnetCoreConstants.DotnetCoreSdkVersion11)]
         [InlineData("2", DotnetCoreConstants.DotnetCoreSdkVersion21)]
         [InlineData("2.1", DotnetCoreConstants.DotnetCoreSdkVersion21)]
         [InlineData("lts", DotnetCoreConstants.DotnetCoreSdkVersion21)]
