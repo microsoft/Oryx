@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
         public const string NetCoreApp21 = "netcoreapp2.1";
         public const string NetCoreApp22 = "netcoreapp2.2";
 
-        public const string DotnetCoreSdkVersion11 = "1.1.11";
+        public const string DotnetCoreSdkVersion11 = "1.1.12";
         public const string DotnetCoreSdkVersion21 = "2.1.504";
         public const string DotnetCoreSdkVersion22 = "2.2.104";
 

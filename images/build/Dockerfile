@@ -59,7 +59,7 @@ RUN chmod +x /dotnetcore-install.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
-RUN DOTNET_SDK_VER=1.1.11 \
+RUN DOTNET_SDK_VER=1.1.12 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
