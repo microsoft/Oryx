@@ -119,6 +119,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions options)
         {
+            if (options.SourceRepo == null)
+            {
+                throw new ArgumentNullException(nameof(RunScriptGeneratorOptions.SourceRepo));
+            }
+
             string startupCommand = null;
 
             // Log how we detected the entrypoint command
@@ -182,8 +187,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _logger.LogInformation("Finalizing entrypoint script using {commandSource}", commandSource);
             var templateValues = new NodeBashRunScriptProperties
             {
-                AppDirectory = options.SourcePath,
-                StartupCommand = startupCommand
+                AppDirectory = options.SourceRepo.RootPath,
+                StartupCommand = startupCommand,
+                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion) ? null : $"node={options.PlatformVersion}"
             };
             var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
             return script;
@@ -209,7 +215,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)
         {
-            return $"node {file}";
+            var command = string.Empty;
+            if (!string.IsNullOrWhiteSpace(options.CustomServerCommand))
+            {
+                _logger.LogInformation("Using custom server command {nodeCommand}", options.CustomServerCommand);
+                command = $"{options.CustomServerCommand.Trim()} {file}";
+            }
+            else
+            {
+                switch (options.DebuggingMode)
+                {
+                    case DebuggingMode.Standard:
+                        _logger.LogInformation("Debugging in standard mode");
+                        command = $"node --inspect {file}";
+                        break;
+
+                    case DebuggingMode.Break:
+                        _logger.LogInformation("Debugging in break mode");
+                        command = $"node --inspect-brk {file}";
+                        break;
+
+                    case DebuggingMode.None:
+                        _logger.LogInformation("Running without debugging");
+                        command = $"node {file}";
+                        break;
+                }
+            }
+
+            return command;
         }
 
         private string GetNpmVersion(dynamic packageJson)

@@ -7,9 +7,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public interface IBuildScriptGenerator
     {
         /// <summary>
-        /// Tries generating a bash script based on the application in source directory.
+        /// Tries to generate a bash script to build an application.
         /// </summary>
-        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
+        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/> with parameters for the script.</param>
         /// <param name="script">The generated script if the operation was successful.</param>
         /// <returns><c>true</c> if the operation was successful, <c>false</c> otherwise.</returns>
         bool TryGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext, out string script);

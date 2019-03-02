@@ -11,7 +11,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal class LocalSourceRepo : ISourceRepo
+    public class LocalSourceRepo : ISourceRepo
     {
         private readonly ILogger<LocalSourceRepo> _logger;
 
