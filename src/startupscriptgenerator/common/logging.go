@@ -12,14 +12,13 @@ import (
 	"time"
 	"path"
 	"io/ioutil"
+	"startupscriptgenerator/common/consts"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts"
 )
 
 const SHUTDOWN_CLOSE_TIMEOUT time.Duration = 3 * time.Second
 const SHUTDOWN_EXIT_TIMEOUT time.Duration = 6 * time.Second
-const APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME string = "ORYX_AI_INSTRUMENTATION_KEY"
-const APP_SERVICE_APP_NAME_ENV_VAR_NAME string = "APPSETTING_WEBSITE_SITE_NAME"
 
 type Logger struct {
 	AiClient    appinsights.TelemetryClient
@@ -33,7 +32,7 @@ var buildOpId string
 
 func SetGlobalOperationId(appRootPath string) {
 	if buildOpId == "" {
-		rawId, err := ioutil.ReadFile(path.Join(appRootPath, BuildIdFileName))
+		rawId, err := ioutil.ReadFile(path.Join(appRootPath, consts.BuildIdFileName))
 		if err == nil { // Silently ignore errors
 			buildOpId = strings.TrimSpace(string(rawId))
 		}
@@ -41,11 +40,11 @@ func SetGlobalOperationId(appRootPath string) {
 }
 
 func GetLogger(name string) *Logger {
-	key := os.Getenv(APPLICATION_INSIGHTS_INSTRUMENTATION_KEY_ENV_VAR_NAME)
+	key := os.Getenv(consts.ApplicationInsightsInstrumentationKeyEnvVarName)
 	logger := Logger{
 		AiClient:    appinsights.NewTelemetryClient(key),
 		LoggerName:  name,
-		AppName:     os.Getenv(APP_SERVICE_APP_NAME_ENV_VAR_NAME),
+		AppName:     os.Getenv(consts.AppServiceAppNameEnvVarName),
 		OperationId: buildOpId,
 	}
 	return &logger

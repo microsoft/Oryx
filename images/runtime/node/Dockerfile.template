@@ -6,6 +6,7 @@ ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
+# GOPATH is set to "/go" in the base image, so no need to set it again
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM node:%NODE_BASE_IMAGE%

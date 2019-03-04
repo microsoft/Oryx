@@ -9,6 +9,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 {
     internal class ConstantCollection
     {
+        public const string NameSeparator = "-";
+
         public string SourcePath { get; set; }
 
         public string Name { get; set; }

@@ -1,3 +1,14 @@
+- name: ext-var-names
+  constants:
+    application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
+    app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
+    scm-commit-id-env-var-name: SCM_COMMIT_ID
+  outputs:
+    - type: csharp
+      directory: src/Common
+      namespace: Microsoft.Oryx.Common
+    - type: go
+      directory: src/startupscriptgenerator/common/consts
 - name: python-versions
   constants:
     python37-version: 3.7.2
@@ -16,7 +27,7 @@
       directory: src/Common
       namespace: Microsoft.Oryx.Common
     - type: go
-      directory: src/startupscriptgenerator/common
+      directory: src/startupscriptgenerator/common/consts
 - name: node-versions
   constants:
     yarn-version: 1.13.0
