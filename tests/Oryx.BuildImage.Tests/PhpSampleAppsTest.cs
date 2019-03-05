@@ -80,6 +80,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
                 },
                 result.GetDebugInfo());
         }

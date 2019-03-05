@@ -79,6 +79,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.BaseBashBuildScript.sh.tpl");
             }
 
+            public static TemplateResource PhpBuildSnippet
+            {
+                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Php.PhpBashBuildSnippet.sh.tpl");
+            }
+
             public static TemplateResource PythonSnippet
             {
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Python.PythonBashBuildSnippet.sh.tpl");
