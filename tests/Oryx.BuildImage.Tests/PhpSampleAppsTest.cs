@@ -73,12 +73,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 CreateAppNameEnvVar("templating"),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+                commandArguments: new[] { "-c", script });
 
             // Assert
             RunAsserts(
