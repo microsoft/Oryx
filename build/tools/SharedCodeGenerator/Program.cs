@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         public static string BuildAutogenDisclaimer(string inputFile)
         {
             inputFile = Path.GetFileName(inputFile);
-            return $"This file was auto-generated from '{inputFile}'. Changes may be overriden.";
+            return $"This file was auto-generated from '{inputFile}'. Changes may be overridden.";
         }
 
         private static int GenerateSharedCode(string inputPath, string outputBasePath)

@@ -13,7 +13,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("script", Description = "Generate build script to standard output.")]
+    [Command("build-script", Description = "Generate build script to standard output.")]
     internal class BuildScriptCommand : BaseCommand
     {
         [Argument(0, Description = "The source directory.")]

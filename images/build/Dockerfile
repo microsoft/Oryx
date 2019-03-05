@@ -100,10 +100,12 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 8.9.4 \
  && ~/n/bin/n -d 8.11.2 \
  && ~/n/bin/n -d 8.12.0 \
+ && ~/n/bin/n -d 8.15.1 \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.1 \
+ && ~/n/bin/n -d 10.15.2 \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -ex \
@@ -124,9 +126,12 @@ COPY build/__node-versions.sh /tmp
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
- && gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
-    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
-    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$GPG_KEY" \
+ && for i in {1..5}; do \
+      gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
+      gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
+      gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$GPG_KEY"; \
+      if [ $? -eq 0 ]; then break; fi \
+    done \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
@@ -152,14 +157,16 @@ RUN set -ex \
  && ln -s 8.9.4 /opt/nodejs/8.9 \
  && ln -s 8.11.2 /opt/nodejs/8.11 \
  && ln -s 8.12.0 /opt/nodejs/8.12 \
- && ln -s 8.12 /opt/nodejs/8 \
+ && ln -s 8.15.1 /opt/nodejs/8.15 \
+ && ln -s 8.15 /opt/nodejs/8 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
- && ln -s 10.14.1 /opt/nodejs/lts \
  && ln -s 10.14.1 /opt/nodejs/10.14 \
- && ln -s 10.14 /opt/nodejs/10
+ && ln -s 10.15.2 /opt/nodejs/10.15 \
+ && ln -s 10.15 /opt/nodejs/10 \
+ && ln -s 10 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -187,6 +194,9 @@ RUN set -ex \
 
 # Install Python build prerequisites
 FROM buildpack-deps:stable AS python-build-prereqs
+COPY build/__python-versions.sh /tmp/
+COPY images/build/python-build.sh /
+RUN chmod +x /python-build.sh
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       tk-dev \
@@ -195,42 +205,28 @@ RUN apt-get update \
 # Build Python 2.7
 FROM python-build-prereqs AS python2.7-build
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=2.7.15
 ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
-ENV PIP_VERSION=18.1
-COPY images/build/python-build.sh /
-RUN chmod +x /python-build.sh
-RUN /python-build.sh
+RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON27_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
 
 # Build Python 3.5
 FROM python-build-prereqs AS python3.5-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.5.6
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
-ENV PIP_VERSION=18.1
-COPY images/build/python-build.sh /
-RUN chmod +x /python-build.sh
-RUN /python-build.sh
+RUN . /tmp/__python-versions.sh && PIP_VERSION=$PIP_VERSION /python-build.sh
 
 # Build Python 3.6
 FROM python-build-prereqs AS python3.6-build
 WORKDIR /usr/src/python
 ENV PYTHON_VERSION=3.6.7
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-ENV PIP_VERSION=18.1
-COPY images/build/python-build.sh /
-RUN chmod +x /python-build.sh
-RUN /python-build.sh
+RUN . /tmp/__python-versions.sh && PIP_VERSION=$PIP_VERSION /python-build.sh
 
 # Build Python 3.7
 FROM python-build-prereqs AS python3.7-build
 WORKDIR /usr/src/python
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-ENV PIP_VERSION=18.1
-COPY build/__python-versions.sh /
-COPY images/build/python-build.sh /
-RUN chmod +x /python-build.sh
-RUN . /__python-versions.sh && PYTHON_VERSION=$PYTHON37_VERSION /python-build.sh
+RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON37_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
 
 FROM main AS python
 # It's not clear whether these are needed at runtime...
@@ -241,19 +237,19 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__python-versions.sh /
+COPY build/__python-versions.sh /tmp
 COPY --from=python2.7-build /opt /opt
 COPY --from=python3.5-build /opt /opt
 COPY --from=python3.6-build /opt /opt
 COPY --from=python3.7-build /opt /opt
-RUN . /__python-versions.sh && set -ex \
- && echo /opt/python/2.7.15/lib >> /etc/ld.so.conf.d/python.conf \
+RUN . /tmp/__python-versions.sh && set -ex \
+ && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.5.6/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/3.6.7/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-RUN . /__python-versions.sh && set -ex \
- && ln -s 2.7.15 /opt/python/2.7 \
+RUN . /tmp/__python-versions.sh && set -ex \
+ && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s 3.5.6 /opt/python/3.5 \
  && ln -s 3.6.7 /opt/python/3.6 \

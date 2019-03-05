@@ -262,6 +262,45 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
+        public async Task Node_CreateReactAppSample_singleImage()
+        {
+            // Arrange
+            var appName = "create-react-app-sample";
+            var nodeVersion = "10.14";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:3000";
+            var startupFile = "/tmp/startup.sh";
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs")
+                .AddCommand($"chmod +x {startupFile}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName: appName,
+                output: _output,
+                volume: volume,
+                buildCmd: "oryx",
+                buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                runtimeImageName: $"oryxdevms/build",
+                portMapping: portMapping,
+                runCmd: "/bin/sh",
+                runArgs: new[]
+                {
+                    "-c",
+                    runScript
+                },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("<title>React App</title>", data);
+                });
+        }
+
+        [Fact]
         public async Task Python27App()
         {
             // Arrange
@@ -689,7 +728,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     Assert.NotEqual(-1, linkdEndIx);
 
                     // We remove 5 chars for `src="` and add 2 since we get the first char of ".js" but we want to include ".js in the string
-                    int length = linkdEndIx - linkStartIdx -2;
+                    int length = linkdEndIx - linkStartIdx - 2;
                     var link = data.Substring(linkStartIdx + 5, length);
 
                     data = await GetResponseDataAsync($"http://localhost:{HostPort}{link}");

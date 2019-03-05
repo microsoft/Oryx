@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 
         private ConstantCollection _collection;
         private string _directory;
+        private string _package;
 
         static GoOutput()
         {
@@ -32,11 +33,12 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
         {
             _collection = constantCollection;
             _directory = typeInfo["directory"];
+            _package = typeInfo.GetValueOrDefault("package") ?? Path.GetFileName(_directory);
         }
 
         public string GetPath()
         {
-            return Path.Combine(_directory, _collection.Name.Replace("-", "_") + ".go");
+            return Path.Combine(_directory, _collection.Name.Replace(ConstantCollection.NameSeparator, "_") + ".go");
         }
 
         public string GetContent()
@@ -44,7 +46,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             var model = new ConstantCollectionTemplateModel
             {
                 AutogenDisclaimer = Program.BuildAutogenDisclaimer(_collection.SourcePath),
-                Namespace = Path.GetFileName(_directory), // "/path/to/project/package" => "package"
+                Namespace = _package,
                 Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value)
             };
             return OutputTemplate.Render(model, member => member.Name);

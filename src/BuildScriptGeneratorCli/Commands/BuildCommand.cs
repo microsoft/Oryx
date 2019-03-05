@@ -77,9 +77,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             buildInfo.AddDefinition("Build Operation ID", buildOpId);
             buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
 
-            var scriptExecutor = serviceProvider.GetRequiredService<IScriptExecutor>();
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var commitId = GetSourceRepoCommitId(sourceRepo, logger);
+            var commitId = GetSourceRepoCommitId(serviceProvider.GetRequiredService<IEnvironment>(), sourceRepo, logger);
 
             if (!string.IsNullOrWhiteSpace(commitId))
             {
@@ -161,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {
-                exitCode = scriptExecutor.ExecuteScript(
+                exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
                     new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty },
                     workingDirectory: sourceRepo.RootPath,
@@ -271,13 +270,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        private string GetSourceRepoCommitId(ISourceRepo repo, ILogger<BuildCommand> logger)
+        private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
         {
-            string commitId;
-            using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+            string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
+
+            if (string.IsNullOrEmpty(commitId))
             {
-                commitId = repo.GetGitCommitId();
-                timedEvent.AddProperty(nameof(commitId), commitId);
+                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+                {
+                    commitId = repo.GetGitCommitId();
+                    timedEvent.AddProperty(nameof(commitId), commitId);
+                }
             }
 
             return commitId;

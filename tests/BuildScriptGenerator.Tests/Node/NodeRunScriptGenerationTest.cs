@@ -55,6 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var options = new RunScriptGeneratorOptions();
+            options.SourceRepo = new MemorySourceRepo();
             options.UserStartupCommand = "abc.sh";
             var platform = GetPlatform();
 
@@ -119,6 +120,102 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(script);
             Assert.Contains("node server.js", script);
+        }
+
+        [Fact]
+        public void NodeStartIfMainJsFile_customServer()
+        {
+            // Arrange
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithMainScript, NodeConstants.PackageJsonFileName);
+            var options = new RunScriptGeneratorOptions();
+            options.SourceRepo = repo;
+            options.CustomServerCommand = "pm2 --test";
+            var platform = GetPlatform();
+
+            // Act
+            var script = platform.GenerateBashRunScript(options);
+
+            // Assert
+            Assert.NotNull(script);
+            Assert.Contains("pm2 --test server.js", script);
+        }
+
+        [Fact]
+        public void NodeStartIfMainJsFile_debugBrk()
+        {
+            // Arrange
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithMainScript, NodeConstants.PackageJsonFileName);
+            var options = new RunScriptGeneratorOptions();
+            options.SourceRepo = repo;
+            options.DebuggingMode = DebuggingMode.Break;
+            var platform = GetPlatform();
+
+            // Act
+            var script = platform.GenerateBashRunScript(options);
+
+            // Assert
+            Assert.NotNull(script);
+            Assert.Contains("node --inspect-brk server.js", script);
+        }
+
+        [Fact]
+        public void NodeStartIfMainJsFile_debug()
+        {
+            // Arrange
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithMainScript, NodeConstants.PackageJsonFileName);
+            var options = new RunScriptGeneratorOptions();
+            options.SourceRepo = repo;
+            options.DebuggingMode = DebuggingMode.Standard;
+            var platform = GetPlatform();
+
+            // Act
+            var script = platform.GenerateBashRunScript(options);
+
+            // Assert
+            Assert.NotNull(script);
+            Assert.Contains("node --inspect server.js", script);
+        }
+
+        [Fact]
+        public void NodeAddsBenv_IfPlatformVersionSupplied()
+        {
+            // Arrange
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithMainScript, NodeConstants.PackageJsonFileName);
+            var options = new RunScriptGeneratorOptions();
+            options.SourceRepo = repo;
+            options.DebuggingMode = DebuggingMode.Standard;
+            var platform = GetPlatform();
+
+            // Act
+            var script = platform.GenerateBashRunScript(options);
+
+            // Assert
+            Assert.NotNull(script);
+            Assert.DoesNotContain("source /usr/local/bin/benv", script);
+        }
+
+        [Fact]
+        public void NodeDoesNotAddsBenv_IfNoPlatformVersionSupplied()
+        {
+            // Arrange
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithMainScript, NodeConstants.PackageJsonFileName);
+            var options = new RunScriptGeneratorOptions();
+            options.SourceRepo = repo;
+            options.DebuggingMode = DebuggingMode.Standard;
+            options.PlatformVersion = "10.15";
+            var platform = GetPlatform();
+
+            // Act
+            var script = platform.GenerateBashRunScript(options);
+
+            // Assert
+            Assert.NotNull(script);
+            Assert.Contains("source /usr/local/bin/benv node=10.15", script);
         }
 
         [Theory]

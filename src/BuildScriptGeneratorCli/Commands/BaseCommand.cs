@@ -8,6 +8,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -20,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string LogFilePath { get; set; }
 
         [Option("--debug", Description = "Print stack traces for exceptions.")]
-        public bool DebugMode { get; set; }
+        public bool ShowStackTrace { get; set; }
 
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
@@ -34,19 +35,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return ProcessConstants.ExitFailure;
                 }
 
-                if (DebugMode)
+                if (ShowStackTrace)
                 {
                     console.WriteLine("Debug mode enabled");
                 }
 
                 return Execute(_serviceProvider, console);
             }
+            catch (InvalidUsageException e)
+            {
+                console.Error.WriteLine(e.Message);
+                return ProcessConstants.ExitFailure;
+            }
             catch (Exception exc)
             {
                 _serviceProvider?.GetRequiredService<ILogger<BaseCommand>>()?.LogError(exc, "Exception caught");
 
                 console.Error.WriteLine(Constants.GenericErrorMessage);
-                if (DebugMode)
+                if (ShowStackTrace)
                 {
                     console.Error.WriteLine("Exception.ToString():");
                     console.Error.WriteLine(exc.ToString());
