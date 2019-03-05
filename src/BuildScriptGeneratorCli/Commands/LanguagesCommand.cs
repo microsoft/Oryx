@@ -6,80 +6,86 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(
-        "languages",
-        Description = "Show the list of supported languages and other information like versions, properties etc.")]
+    [Command("languages", Description = "Show the list of supported platforms and other information like versions, properties etc.")]
     internal class LanguagesCommand : BaseCommand
     {
+        [Option("--json", Description = "Output the supported platform data in JSON format.")]
+        public bool OutputJson { get; set; }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            // Note: Ensure all these labels have equal lengths
-            var languageLabel =
-                "Language    : ";
-            var versionLabel =
-                "Versions    : ";
-            var propertiesLabel =
-                "Properties  : ";
-            var padding = new string(' ', languageLabel.Length);
-
             var logger = serviceProvider.GetRequiredService<ILogger<LanguagesCommand>>();
-            var scriptGenerators = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>();
-            scriptGenerators = scriptGenerators
-                .OrderBy(sg => sg.Name, StringComparer.OrdinalIgnoreCase);
+            var platformInfo = new List<PlatformResult>();
 
-            using (logger.LogTimedEvent("ListLanguages"))
+            using (logger.LogTimedEvent("ListPlatforms"))
             {
-                foreach (var scriptGenerator in scriptGenerators)
+                var availableIPlatforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>()
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                    .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase);
+
+                foreach (var iPlatform in availableIPlatforms)
                 {
-                    if (string.IsNullOrWhiteSpace(scriptGenerator.Name))
+                    var platform = new PlatformResult { Name = iPlatform.Name };
+
+                    if (iPlatform.SupportedLanguageVersions != null && iPlatform.SupportedLanguageVersions.Any())
                     {
-                        continue;
+                        platform.Versions = SortVersions(iPlatform.SupportedLanguageVersions);
                     }
 
-                    if (scriptGenerator.SupportedLanguageVersions != null && scriptGenerator.SupportedLanguageVersions.Any())
+                    var props = iPlatform.GetType().GetCustomAttributes(typeof(BuildPropertyAttribute), inherit: true).OfType<BuildPropertyAttribute>();
+                    if (props.Any())
                     {
-                        var sortedVersions = SortVersions(scriptGenerator.SupportedLanguageVersions);
-                        console.WriteLine($"{languageLabel}{scriptGenerator.Name}");
-                        console.WriteLine($"{versionLabel}{sortedVersions.First()}");
-                        console.Write(string.Join(Environment.NewLine, sortedVersions.Skip(1).Select(
-                            v => $"{padding}{v}")));
-                        console.WriteLine();
-                    }
-                    else
-                    {
-                        console.WriteLine($"{scriptGenerator.Name}");
+                        platform.Properties = new Dictionary<string, string>();
+                        foreach (var prop in props)
+                        {
+                            platform.Properties[prop.Name] = prop.Description;
+                        }
                     }
 
-                    // get properties
-                    var properties = scriptGenerator.GetType()
-                        .GetCustomAttributes(typeof(BuildPropertyAttribute), inherit: true)
-                        .OfType<BuildPropertyAttribute>();
-                    if (!properties.Any())
-                    {
-                        console.WriteLine();
-                        continue;
-                    }
-
-                    console.WriteLine($"{propertiesLabel}Name, Description");
-                    console.Write(string.Join(Environment.NewLine, properties.Select(
-                        p => $"{padding}{p.Name}, {p.Description}")));
-                    console.WriteLine();
-                    console.WriteLine();
+                    platformInfo.Add(platform);
                 }
             }
 
+            console.WriteLine(OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
             return ProcessConstants.ExitSuccess;
         }
 
-        private IEnumerable<string> SortVersions(IEnumerable<string> versions)
+        private string FormatResult(IList<PlatformResult> platforms)
+        {
+            var result = new StringBuilder();
+
+            foreach (PlatformResult platform in platforms)
+            {
+                var defs = new DefinitionListFormatter();
+                defs.AddDefinition("Platform", platform.Name);
+
+                if (platform.Versions != null && platform.Versions.Any())
+                {
+                    defs.AddDefinition("Versions", string.Join(Environment.NewLine, platform.Versions));
+                }
+
+                if (platform.Properties != null && platform.Properties.Any())
+                {
+                    defs.AddDefinition("Properties", string.Join(Environment.NewLine, platform.Properties.Select(prop => $"{prop.Key} - {prop.Value}")));
+                }
+
+                result.AppendLine(defs.ToString());
+            }
+
+            return result.ToString();
+        }
+
+        private IList<string> SortVersions(IEnumerable<string> versions)
         {
             var result = new List<SemVer.Version>();
             foreach (var version in versions)
@@ -90,13 +96,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
                 catch (ArgumentException)
                 {
-                    // ignore non semantic version based versions like 'latest' or 'lts'
+                    // Ignore non-SemVer strings (e.g. 'latest', 'lts')
                 }
             }
 
             result.Sort();
+            return result.Select(v => v.ToString()).ToList();
+        }
 
-            return result.Select(v => v.ToString());
+        private class PlatformResult
+        {
+            public string Name { get; set; }
+
+            public IList<string> Versions { get; set; }
+
+            public IDictionary<string, string> Properties { get; set; }
         }
     }
 }
