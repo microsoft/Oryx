@@ -56,6 +56,10 @@ BuildAndTagStage python3.5-build
 BuildAndTagStage python3.6-build
 BuildAndTagStage python3.7-build
 BuildAndTagStage python
+BuildAndTagStage php-build-prereqs
+BuildAndTagStage php56-build
+BuildAndTagStage php70-build
+BuildAndTagStage php72-build
 BuildAndTagStage php73-build
 BuildAndTagStage buildscriptbuilder
 BuildAndTagStage copybuildscriptsymbol
