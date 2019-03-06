@@ -589,6 +589,104 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Theory]
+        [InlineData("3.6")]
+        [InlineData("3.7")]
+        public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuild(string pythonVersion)
+        {
+            // Arrange
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:5000";
+            const string virtualEnvName = "antenv";
+
+            // Simulate apps that were built using package directory, and then virtual env
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -l python --language-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} -p virtualenv_name={virtualEnvName} -l python --language-version {pythonVersion}")
+                .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddDirectoryDoesNotExistCheck("__oryx_packages__")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                $"oryxdevms/python-{pythonVersion}",
+                portMapping,
+                "/bin/bash",
+                new[] { "-c", runScript },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Fact]
+        public async Task DjangoApp_Python36_virtualenv()
+        {
+            // Arrange
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:5000";
+            const string virtualEnvName = "antenv3.6";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.6" },
+                "oryxdevms/python-3.6",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
         [Fact]
         public async Task DjangoApp_Python36()
         {

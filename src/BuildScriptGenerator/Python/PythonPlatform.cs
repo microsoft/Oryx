@@ -9,8 +9,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -62,17 +60,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             string packageDir = null;
-            if ((context.Properties == null ||
-                !context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir)) &&
-                string.IsNullOrEmpty(virtualEnvName))
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir))
             {
-                // Only default if no virtual environment has been provided.
                 packageDir = DefaultTargetPackageDirectory;
-            }
-
-            if (!string.IsNullOrWhiteSpace(virtualEnvName) && !string.IsNullOrWhiteSpace(packageDir))
-            {
-                throw new InvalidUsageException(Labels.PythonBuildCantHaveVirtualEnvAndTargetPackageDirErrorMessage);
             }
 
             var virtualEnvModule = string.Empty;
