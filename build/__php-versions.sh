@@ -1,5 +1,7 @@
-# This file was auto-generated from 'build-constants.yaml'. Changes may be overriden.
+# This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
 
+COMPOSER_VERSION='1.8.4'
+COMPOSER_SHA384='48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5'
 PHP73_VERSION='7.3.2'
 PHP73_KEYS='CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D'
 PHP73_TAR_SHA256='010b868b4456644ae227d05ad236c8b0a1f57dc6320e7e5ad75e86c5baf0a9a8'

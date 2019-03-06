@@ -12,8 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpPlatform : IProgrammingPlatform
     {
-        public const string ComposerInstallLine = "$php --version"; // "$php $COMPOSER_PHAR install";
-
         private readonly PhpScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPhpVersionProvider _pythonVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
@@ -56,9 +54,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             //    virtualEnvironmentParameters: virtualEnvCopyParam,
             //    packagesDirectory: packageDir,
             //    disableCollectStatic: disableCollectStatic);
-            //string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
 
-            return new BuildScriptSnippet { BashBuildScriptSnippet = ComposerInstallLine };
+            string snippet = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PhpBuildSnippet, null, _logger);
+            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet };
         }
 
         public bool IsEnabled(BuildScriptGeneratorContext ctx)

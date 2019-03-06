@@ -283,6 +283,14 @@ RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP72_VERSION GPG_KEYS=
 # Build PHP 7.3
 FROM php-build-prereqs AS php73-build
 RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION GPG_KEYS=$PHP73_KEYS PHP_SHA256=$PHP73_TAR_SHA256 /php/build.sh
+# Install Composer so that it can be copied to the final image later
+RUN set -eux && . /php/__php-versions.sh && \
+    mkdir /opt/php-composer && \
+    export phpbin="/opt/php/$PHP73_VERSION/bin/php" && \
+    $phpbin -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    $phpbin -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSER_SHA384') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+    $phpbin composer-setup.php --version=$COMPOSER_VERSION --install-dir=/opt/php-composer && \
+    $phpbin -r "unlink('composer-setup.php');"
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
