@@ -23,7 +23,6 @@ steps:
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/build-solution.sh
-  condition: ne(variables['Build.Reason'], 'Schedule')
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
@@ -84,8 +83,6 @@ steps:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
-steps:
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
   displayName: 'Create File to Notify Integration Test has run successfully'
