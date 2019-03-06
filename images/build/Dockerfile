@@ -211,16 +211,14 @@ RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON27_VERSION PIP_VERSION=
 # Build Python 3.5
 FROM python-build-prereqs AS python3.5-build
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=3.5.6
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
-RUN . /tmp/__python-versions.sh && PIP_VERSION=$PIP_VERSION /python-build.sh
+RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON35_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
 
 # Build Python 3.6
 FROM python-build-prereqs AS python3.6-build
 WORKDIR /usr/src/python
-ENV PYTHON_VERSION=3.6.7
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-RUN . /tmp/__python-versions.sh && PIP_VERSION=$PIP_VERSION /python-build.sh
+RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON36_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
 
 # Build Python 3.7
 FROM python-build-prereqs AS python3.7-build
@@ -244,15 +242,15 @@ COPY --from=python3.6-build /opt /opt
 COPY --from=python3.7-build /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.5.6/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/3.6.7/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/$PYTHON35_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . /tmp/__python-versions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
- && ln -s 3.5.6 /opt/python/3.5 \
- && ln -s 3.6.7 /opt/python/3.6 \
+ && ln -s $PYTHON35_VERSION /opt/python/3.5 \
+ && ln -s $PYTHON36_VERSION /opt/python/3.6 \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3

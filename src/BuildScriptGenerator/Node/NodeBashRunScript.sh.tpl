@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+﻿#!/bin/bash
 
 {{ if ToolsVersions | IsNotBlank }}
 if [ -f /usr/local/bin/benv ]; then
@@ -8,5 +8,9 @@ fi
 
 # Enter the source directory to make sure the script runs where the user expects
 cd {{ AppDirectory }}
+
+# Add the app directory to the path in case the startup command is a user-provided script
+# and is located at the root.
+PATH=$PATH:{{ AppDirectory }}
 
 {{ StartupCommand }}

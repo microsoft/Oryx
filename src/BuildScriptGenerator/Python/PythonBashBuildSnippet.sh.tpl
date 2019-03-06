@@ -5,6 +5,13 @@ cd "$SOURCE_DIR"
 
 {{ if VirtualEnvironmentName | IsNotBlank }}
 
+{{ if PackagesDirectory | IsNotBlank }}
+if [ -d "{{ PackagesDirectory }}" ]
+then
+	rm -fr "{{ PackagesDirectory }}"
+fi
+{{ end }}
+
 VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
 VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
 VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}

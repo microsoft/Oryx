@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             // Arrange
             var appName = "create-react-app-sample";
-            var nodeVersion = "10.14";
+            var nodeVersion = "10";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
@@ -274,7 +274,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var startupFile = "/tmp/startup.sh";
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs")
+                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs --platform-version {nodeVersion}")
                 .AddCommand($"chmod +x {startupFile}")
                 .AddCommand(startupFile)
                 .ToString();
@@ -297,6 +297,54 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>React App</title>", data);
+                });
+        }
+
+        [Fact]
+        public async Task Node_expressApp_singleImage_customScript()
+        {
+            // Arrange
+            var appName = "linxnodeexpress";
+            var nodeVersion = "10";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            const int localPort = 8587;
+            var portMapping = $"{HostPort}:{localPort}";
+            var startupFile = $"./startup.sh";
+
+            // Create a custom startup command
+            const string customStartupScriptName = "customStart.sh";
+            File.WriteAllText(Path.Join(volume.MountedHostDir, customStartupScriptName),
+                "#!/bin/bash\n" +
+                $"PORT={localPort} node server.js\n");
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"chmod +x {customStartupScriptName}")
+                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
+                .AddCommand($"chmod +x {startupFile}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName: appName,
+                output: _output,
+                volume: volume,
+                buildCmd: "oryx",
+                buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                runtimeImageName: $"oryxdevms/build",
+                portMapping: portMapping,
+                runCmd: "/bin/sh",
+                runArgs: new[]
+                {
+                    "-c",
+                    runScript
+                },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Equal("Hello World from express!", data);
                 });
         }
 
@@ -518,6 +566,104 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "oryx",
                 new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.7" },
                 "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Theory]
+        [InlineData("3.6")]
+        [InlineData("3.7")]
+        public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuild(string pythonVersion)
+        {
+            // Arrange
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:5000";
+            const string virtualEnvName = "antenv";
+
+            // Simulate apps that were built using package directory, and then virtual env
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -l python --language-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} -p virtualenv_name={virtualEnvName} -l python --language-version {pythonVersion}")
+                .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddDirectoryDoesNotExistCheck("__oryx_packages__")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                $"oryxdevms/python-{pythonVersion}",
+                portMapping,
+                "/bin/bash",
+                new[] { "-c", runScript },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Fact]
+        public async Task DjangoApp_Python36_virtualenv()
+        {
+            // Arrange
+            var appName = "django-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:5000";
+            const string virtualEnvName = "antenv3.6";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -hostBind=:5000 -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.6" },
+                "oryxdevms/python-3.6",
                 portMapping,
                 "/bin/bash",
                 new[]
