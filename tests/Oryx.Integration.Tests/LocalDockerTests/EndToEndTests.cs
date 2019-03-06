@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             // Arrange
             var appName = "create-react-app-sample";
-            var nodeVersion = "10.14";
+            var nodeVersion = "10";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
@@ -274,7 +274,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var startupFile = "/tmp/startup.sh";
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs")
+                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs --platform-version {nodeVersion}")
                 .AddCommand($"chmod +x {startupFile}")
                 .AddCommand(startupFile)
                 .ToString();
@@ -297,6 +297,54 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>React App</title>", data);
+                });
+        }
+
+        [Fact]
+        public async Task Node_expressApp_singleImage_customScript()
+        {
+            // Arrange
+            var appName = "linxnodeexpress";
+            var nodeVersion = "10";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            const int localPort = 8587;
+            var portMapping = $"{HostPort}:{localPort}";
+            var startupFile = $"./startup.sh";
+
+            // Create a custom startup command
+            const string customStartupScriptName = "customStart.sh";
+            File.WriteAllText(Path.Join(volume.MountedHostDir, customStartupScriptName),
+                "#!/bin/bash\n" +
+                $"PORT={localPort} node server.js\n");
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"chmod +x {customStartupScriptName}")
+                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
+                .AddCommand($"chmod +x {startupFile}")
+                .AddCommand(startupFile)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName: appName,
+                output: _output,
+                volume: volume,
+                buildCmd: "oryx",
+                buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                runtimeImageName: $"oryxdevms/build",
+                portMapping: portMapping,
+                runCmd: "/bin/sh",
+                runArgs: new[]
+                {
+                    "-c",
+                    runScript
+                },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Equal("Hello World from express!", data);
                 });
         }
 
