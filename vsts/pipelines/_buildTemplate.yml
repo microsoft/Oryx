@@ -100,7 +100,7 @@ steps:
   inputs:
     type: InlineScript
     script: 'echo "success">$(Build.SourcesDirectory)/artifacts/$(Build.BuildNumber).txt'
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(),  eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 
 - task: CopyFiles@2

@@ -15,10 +15,10 @@ cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 declare BUILDSCRIPT_SOURCE="buildscriptbuilder"
 
-# Check to see if the build is from azure devops agent or local dev env
-if [ -n "$SIGNBUILD" ]
+# Check to see if the build is by scheduled ORYX-CI or other azure devops build
+if [ -n "$AGENTBUILD" ]
 then
-# "signbuild" will be true only for builds by azure devops agent
+# "AGENTBUILD" will be true only for builds by scheduled build of ORYX-CI
     BUILDSCRIPT_SOURCE="copybuildscriptsymbol"
 else
 # locally we need to fake "symbols directory to get a successful "copybuildscriptsymbol" build stage
@@ -79,7 +79,7 @@ else
 fi
 
 echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
-docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY --build-arg SIGNBUILD=$AGENTBUILD --build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY --build-arg AGENTBUILD=$AGENTBUILD --build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
 echo Building a base image for tests ...
@@ -122,7 +122,7 @@ then
 	docker system prune -f
 fi
 
-if [ -z "$SIGNBUILD" ]
+if [ -z "$AGENTBUILD" ]
 then
 	rm -rf symbols
 fi
