@@ -6,13 +6,13 @@ They represent the build pipelines for this repository.
     This is used for validating branches for which pull requests were sent.  
     In this pipeline both build and runtime images are built and tested but they are NOT pushed.  
 
--   'runtime.yml':  
-    Pipeline which builds, tests and pushes runtime images.  
-    This pipeline, by default, gets triggered for check-ins into 'master' branch.  
+-   'nightly.yml':  
+    Pipeline which builds and tests build and runtime images every night.  
 
--   'buildimage.yml':  
-    Pipeline which builds, tests and pushes build images.  
+-   'ci.yml':  
+    Pipeline which builds, tests and pushes build images and runtime images.  
     This pipeline, by default, gets triggered for check-ins into 'master' branch.  
+	Also it has a scheduled build for releasing signed binaries to images on Saturday mornings.  
 
 ## Scripts
 This folder contains scripts that are used in VSTS pipelines.
