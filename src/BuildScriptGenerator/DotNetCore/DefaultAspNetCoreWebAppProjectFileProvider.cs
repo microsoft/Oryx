@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DefaultAspNetCoreWebAppProjectFileProvider : IAspNetCoreWebAppProjectFileProvider
     {

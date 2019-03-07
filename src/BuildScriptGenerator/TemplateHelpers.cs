@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             public static TemplateResource DotNetCoreSnippet
             {
-                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.DotnetCore.DotNetCoreBashBuildSnippet.sh.tpl");
+                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.DotNetCore.DotNetCoreBashBuildSnippet.sh.tpl");
             }
 
             public string Name { get; private set; }

@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
     class TestVersionProvider :
         BuildScriptGenerator.Node.INodeVersionProvider,
         BuildScriptGenerator.Python.IPythonVersionProvider,
-        BuildScriptGenerator.DotnetCore.IDotnetCoreVersionProvider
+        BuildScriptGenerator.DotNetCore.IDotnetCoreVersionProvider
     {
         public TestVersionProvider(string[] supportedVersions, string[] supportedNpmVersions = null)
         {

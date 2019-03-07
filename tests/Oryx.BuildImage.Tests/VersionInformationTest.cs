@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotnetAlias_UsesLtsVersion_ByDefault()
         {
             // Arrange
-            var expectedOutput = DotnetCoreConstants.DotnetCoreSdkVersion21;
+            var expectedOutput = DotNetCoreVersions.DotNetCore21Version;
 
             // Act
             var result = _dockerCli.Run(
@@ -51,15 +51,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("1", DotnetCoreConstants.DotnetCoreSdkVersion11)]
-        [InlineData("1.1", DotnetCoreConstants.DotnetCoreSdkVersion11)]
-        [InlineData("1.1.12", DotnetCoreConstants.DotnetCoreSdkVersion11)]
-        [InlineData("2", DotnetCoreConstants.DotnetCoreSdkVersion21)]
-        [InlineData("2.1", DotnetCoreConstants.DotnetCoreSdkVersion21)]
-        [InlineData("lts", DotnetCoreConstants.DotnetCoreSdkVersion21)]
-        [InlineData(DotnetCoreConstants.DotnetCoreSdkVersion21, DotnetCoreConstants.DotnetCoreSdkVersion21)]
-        [InlineData("2.2", DotnetCoreConstants.DotnetCoreSdkVersion22)]
-        [InlineData(DotnetCoreConstants.DotnetCoreSdkVersion22, DotnetCoreConstants.DotnetCoreSdkVersion22)]
+        [InlineData("1", DotNetCoreVersions.DotNetCore11Version)]
+        [InlineData("1.1", DotNetCoreVersions.DotNetCore11Version)]
+        [InlineData("1.1.12", DotNetCoreVersions.DotNetCore11Version)]
+        [InlineData("2", DotNetCoreVersions.DotNetCore21Version)]
+        [InlineData("2.1", DotNetCoreVersions.DotNetCore21Version)]
+        [InlineData("lts", DotNetCoreVersions.DotNetCore21Version)]
+        [InlineData(DotNetCoreVersions.DotNetCore21Version, DotNetCoreVersions.DotNetCore21Version)]
+        [InlineData("2.2", DotNetCoreVersions.DotNetCore22Version)]
+        [InlineData(DotNetCoreVersions.DotNetCore22Version, DotNetCoreVersions.DotNetCore22Version)]
         public void DotnetAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)

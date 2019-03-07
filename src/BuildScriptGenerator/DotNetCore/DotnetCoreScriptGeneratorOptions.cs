@@ -5,7 +5,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotnetCoreScriptGeneratorOptions
     {

@@ -8,7 +8,7 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;

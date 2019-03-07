@@ -54,23 +54,27 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
+COPY build/__dot-net-core-versions.sh /tmp
 COPY images/build/dotnetcore-install.sh /
 RUN chmod +x /dotnetcore-install.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
-RUN DOTNET_SDK_VER=1.1.12 \
+RUN . /tmp/__dot-net-core-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_11_VERSION \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
     /dotnetcore-install.sh
 
-RUN DOTNET_SDK_VER=2.1.504 \
-    DOTNET_SDK_SHA=93318A533DA67DF22CAE5C4BBB384ABD820B37D66E473DF08DA26231D0DF0D0420661E4E587CED0954EE77EB3AF532E52D0AB1DDD9528AA0EE74B4EA1C27702D \
+RUN . /tmp/__dot-net-core-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_21_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_21_SHA512 \
     /dotnetcore-install.sh
 
-RUN DOTNET_SDK_VER=2.2.104 \
-    DOTNET_SDK_SHA=FD03CC4ABEA849EE5E05A035E2888C71D8842E64389DD94D7301E0FCFC189CBED99FE84A6174B657FFE3D328FAA761972C061A339246F63C9BA8FA31EAD2A1B0 \
+RUN . /tmp/__dot-net-core-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_22_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_22_SHA512 \
     /dotnetcore-install.sh
 
 RUN set -ex \

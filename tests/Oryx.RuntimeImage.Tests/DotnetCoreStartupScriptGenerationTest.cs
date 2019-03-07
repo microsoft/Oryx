@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

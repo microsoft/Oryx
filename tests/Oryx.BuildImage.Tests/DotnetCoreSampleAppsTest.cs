@@ -6,7 +6,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotnetCoreConstants.DotnetCoreSdkVersion11, result.Output);
+                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore11Version, result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotnetCoreConstants.DotnetCoreSdkVersion11, result.Output);
+                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore11Version, result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotnetCoreConstants.DotnetCoreSdkVersion21, result.Output);
+                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore21Version, result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -170,7 +170,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotnetCoreConstants.DotnetCoreSdkVersion21, result.Output);
+                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore21Version, result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotnetCoreConstants.DotnetCoreSdkVersion22, result.Output);
+                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore22Version, result.Output);
                 },
                 result.GetDebugInfo());
         }
@@ -241,7 +241,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotnetCoreConstants.DotnetCoreSdkVersion22, result.Output);
+                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore22Version, result.Output);
                 },
                 result.GetDebugInfo());
         }
