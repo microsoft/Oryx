@@ -6,7 +6,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {

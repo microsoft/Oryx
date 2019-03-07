@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
     /// .NET Core platform.

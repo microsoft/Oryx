@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
     /// Represents an abstraction which probes the source repository

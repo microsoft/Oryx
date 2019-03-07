@@ -3,15 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
-    /// Abstraction listing the supported .NET Core versions.
+    /// Build script template for DotnetCore in Bash.
     /// </summary>
-    public interface IDotnetCoreVersionProvider
+    public class DotNetCoreBashBuildSnippetProperties
     {
-        IEnumerable<string> SupportedDotNetCoreVersions { get; }
+        public string ProjectFile { get; set; }
+
+        public string PublishDirectory { get; set; }
     }
 }

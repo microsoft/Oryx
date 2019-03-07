@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotnetCore
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotnetCoreVersionProvider : IDotnetCoreVersionProvider
     {

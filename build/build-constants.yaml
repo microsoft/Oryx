@@ -9,6 +9,20 @@
       namespace: Microsoft.Oryx.Common
     - type: go
       directory: src/startupscriptgenerator/common/consts
+- name: dot-net-core-versions
+  constants:
+    dot-net-core-11-version: 1.1.12
+    dot-net-core-21-version: 2.1.504
+    dot-net-core-21-sha512: 93318A533DA67DF22CAE5C4BBB384ABD820B37D66E473DF08DA26231D0DF0D0420661E4E587CED0954EE77EB3AF532E52D0AB1DDD9528AA0EE74B4EA1C27702D
+    dot-net-core-22-version: 2.2.104
+    dot-net-core-22-sha512: FD03CC4ABEA849EE5E05A035E2888C71D8842E64389DD94D7301E0FCFC189CBED99FE84A6174B657FFE3D328FAA761972C061A339246F63C9BA8FA31EAD2A1B0
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/DotNetCore
+      namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+    - type: shell
+      directory: build
+      file-name-prefix: __
 - name: python-versions
   constants:
     pip-version: 19.0.3

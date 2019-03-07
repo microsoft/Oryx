@@ -6,7 +6,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

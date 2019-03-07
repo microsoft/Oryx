@@ -21,7 +21,7 @@ curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz
 if [ "$DOTNET_SDK_SHA" != "" ]
 then
     echo
-    echo "Verifying SHA ..."
+    echo "Verifying archive hash..."
     echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c -
 fi
 tar -xzf dotnet.tar.gz -C $DOTNET_DIR

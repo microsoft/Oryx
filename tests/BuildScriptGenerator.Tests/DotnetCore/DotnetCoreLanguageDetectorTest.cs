@@ -5,7 +5,7 @@
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.DotnetCore;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Moq;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11
+                    DotNetCoreVersions.DotNetCore11Version
                 },
                 projectFile: null);
 
@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11
+                    DotNetCoreVersions.DotNetCore11Version
                 },
                 projectFile);
 
@@ -120,9 +120,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11,
-                    DotnetCoreConstants.DotnetCoreSdkVersion21,
-                    DotnetCoreConstants.DotnetCoreSdkVersion22
+                    DotNetCoreVersions.DotNetCore11Version,
+                    DotNetCoreVersions.DotNetCore21Version,
+                    DotNetCoreVersions.DotNetCore22Version
                 },
                 projectFile);
 
@@ -150,9 +150,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11,
-                    DotnetCoreConstants.DotnetCoreSdkVersion21,
-                    DotnetCoreConstants.DotnetCoreSdkVersion22
+                    DotNetCoreVersions.DotNetCore11Version,
+                    DotNetCoreVersions.DotNetCore21Version,
+                    DotNetCoreVersions.DotNetCore22Version
                 },
                 projectFile);
 
@@ -183,9 +183,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11,
-                    DotnetCoreConstants.DotnetCoreSdkVersion21,
-                    DotnetCoreConstants.DotnetCoreSdkVersion22
+                    DotNetCoreVersions.DotNetCore11Version,
+                    DotNetCoreVersions.DotNetCore21Version,
+                    DotNetCoreVersions.DotNetCore22Version
                 },
                 projectFile);
 
@@ -223,9 +223,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11,
-                    DotnetCoreConstants.DotnetCoreSdkVersion21,
-                    DotnetCoreConstants.DotnetCoreSdkVersion22
+                    DotNetCoreVersions.DotNetCore11Version,
+                    DotNetCoreVersions.DotNetCore21Version,
+                    DotNetCoreVersions.DotNetCore22Version
                 },
                 projectFile);
 
@@ -262,9 +262,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var detector = CreateDotnetCoreLanguageDetector(
                 supportedVersions: new[]
                 {
-                    DotnetCoreConstants.DotnetCoreSdkVersion11,
-                    DotnetCoreConstants.DotnetCoreSdkVersion21,
-                    DotnetCoreConstants.DotnetCoreSdkVersion22
+                    DotNetCoreVersions.DotNetCore11Version,
+                    DotNetCoreVersions.DotNetCore21Version,
+                    DotNetCoreVersions.DotNetCore22Version
                 },
                 projectFile);
 
