@@ -126,7 +126,7 @@ RUN set -ex \
         fi; \
     done
 
-COPY build/__node-versions.sh /tmp/
+COPY build/__node-versions.sh /tmp
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -198,7 +198,7 @@ RUN set -ex \
 
 # Install Python build prerequisites
 FROM buildpack-deps:stable AS python-build-prereqs
-COPY build/__python-versions.sh /tmp/
+COPY build/__python-versions.sh /tmp
 COPY images/build/python-build.sh /
 RUN chmod +x /python-build.sh
 RUN apt-get update \
@@ -239,7 +239,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__python-versions.sh /tmp/
+COPY build/__python-versions.sh /tmp
 COPY --from=python2.7-build /opt /opt
 COPY --from=python3.5-build /opt /opt
 COPY --from=python3.6-build /opt /opt
@@ -351,7 +351,7 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
-COPY images/build/node-cache-packages.sh /tmp/
+COPY images/build/node-cache-packages.sh /tmp
 RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
 
 # Copy PHP versions
