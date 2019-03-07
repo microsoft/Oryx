@@ -38,6 +38,11 @@ namespace Microsoft.Extensions.Logging
             GetTelemetryClient().TrackEvent(eventName, props);
         }
 
+        public static void LogTrace(this ILogger logger, string message, IDictionary<string, string> props = null)
+        {
+            GetTelemetryClient().TrackTrace(message, props);
+        }
+
         public static string StartOperation(this ILogger logger, string name)
         {
             var op = GetTelemetryClient().StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);

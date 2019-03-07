@@ -189,8 +189,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             try
             {
-                var diretoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(context.SourceRepo.RootPath);
-                _logger.LogDebug("Source repo structure {repoDir}", diretoryStructureData);
+                var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(context.SourceRepo.RootPath);
+                _logger.LogTrace("logDirectoryStructure", new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
             }
             catch (Exception ex)
             {

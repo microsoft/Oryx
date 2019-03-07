@@ -39,8 +39,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 try
                 {
-                    var diretoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(workingDirectory);
-                    _logger.LogDebug("Working directory structure {repoDir}", diretoryStructureData);
+                    var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(workingDirectory);
+                    _logger.LogTrace("logDirectoryStructure", new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
                 }
                 catch (Exception ex)
                 {
