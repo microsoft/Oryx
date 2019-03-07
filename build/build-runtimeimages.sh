@@ -36,18 +36,23 @@ function getTagName()
     return 0
 }
 
-# Node and .NET Core images are created from a template
+
 echo
-echo Generating Dockerfiles for Node runtime images ...
+echo "Generating Dockerfiles for Node runtime images..."
 $REPO_DIR/images/runtime/node/generateDockerfiles.sh
 
 echo
-echo Generating Dockerfiles for .NET Core runtime images ...
+echo "Generating Dockerfiles for .NET Core runtime images..."
 $REPO_DIR/images/runtime/dotnetcore/generateDockerfiles.sh
 
 echo
-echo Generating Dockerfiles for Python runtime images ...
+echo "Generating Dockerfiles for Python runtime images..."
 $REPO_DIR/images/runtime/python/generateDockerfiles.sh
+
+echo
+echo "Generating Dockerfiles for PHP runtime images..."
+$REPO_DIR/images/runtime/php/generate-dockerfiles.sh
+
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
