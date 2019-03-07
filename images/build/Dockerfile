@@ -296,6 +296,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 
 # This stage copies oryx binaries from specific build stage, for local/dev it copies
 # from "buildscriptbuilder" and for devops it copies from "copybuildscriptsymbol"
+# https://github.com/moby/moby/issues/34482
 FROM ${BUILDSCRIPT_SOURCE} AS buildscriptbinaries
 ARG BUILDSCRIPT_SOURCE
 WORKDIR /usr/oryx/src
