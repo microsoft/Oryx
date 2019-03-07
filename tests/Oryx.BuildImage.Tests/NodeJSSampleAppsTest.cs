@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             @"var http = require('http'); var server = http.createServer(function(req, res) { res.writeHead(200); res.end('Hi oryx');}); server.listen(8080);";
 
             //following is the directory structure of the source repo in the test
-            //temp
+            //tmp
             //  app1
             //    idea.js
             //    1.log
@@ -203,7 +203,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return script;
         }
 
-        [Fact]
+        [Fact (Skip = "structured data is not logged as custom dimension in file, 801985")]
         public void ErrorDetectingNode_FailedExitCode_StringContentFound()
         {
             var appDir = "/tmp/app1";
@@ -235,11 +235,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(0, result.ExitCode);
+                    Assert.Contains("Could not detect the language from repo", result.Error);
                 },
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985")]
         public void ErrorDetectingNode_FailedExitCode_StringContentNotFound()
         {
             var appDir = "/tmp/app1";
