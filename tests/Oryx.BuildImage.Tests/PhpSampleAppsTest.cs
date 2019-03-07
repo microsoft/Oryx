@@ -60,7 +60,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public override void GeneratesScript_AndBuilds()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("templating");
+            var appName = "twig-example";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -70,7 +71,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar("templating"),
+                CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments: new[] { "-c", script });
