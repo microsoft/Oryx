@@ -52,10 +52,11 @@ fi;
 if [ -n "$PHP_ASC_URL" ]; then
 	wget -O php.tar.xz.asc "$PHP_ASC_URL";
 	export GNUPGHOME="$(mktemp -d)";
-	# TODO: add 5 retries
-	for key in $GPG_KEYS; do
-		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key";
-	done;
+	for i in {1..5}; do
+		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${GPG_KEYS[0]}" || \
+		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${GPG_KEYS[1]}";
+		if [ $? -eq 0 ]; then break; fi
+    done
 	gpg --batch --verify php.tar.xz.asc php.tar.xz;
 	command -v gpgconf > /dev/null && gpgconf --kill all;
 	rm -rf "$GNUPGHOME";
