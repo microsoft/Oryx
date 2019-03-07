@@ -122,7 +122,7 @@ RUN set -ex \
         fi; \
     done
 
-COPY build/__node-versions.sh /tmp
+COPY build/__node-versions.sh /tmp/
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -235,7 +235,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__python-versions.sh /tmp
+COPY build/__python-versions.sh /tmp/
 COPY --from=python2.7-build /opt /opt
 COPY --from=python3.5-build /opt /opt
 COPY --from=python3.6-build /opt /opt
