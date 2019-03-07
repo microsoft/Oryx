@@ -19,7 +19,7 @@ function getTagName()
 {
     if [ ! $# -eq 1 ]
     then
-        echo "Expected to get a path to a directory containing a docker file, but didn``t get any."
+        echo "Expected to get a path to a directory containing a docker file, but did not get any."
         return 1
     fi
 
