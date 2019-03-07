@@ -14,7 +14,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule() {
 	gen := PythonStartupScriptGenerator{
 		BindHost: "",
 	}
-	//Act
+	// Act
 	command := gen.getCommandFromModule("module.py", "")
 	fmt.Println(command)
 	// Output:
@@ -26,7 +26,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath() {
 	gen := PythonStartupScriptGenerator{
 		BindHost: "",
 	}
-	//Act
+	// Act
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:
@@ -38,7 +38,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHo
 	gen := PythonStartupScriptGenerator{
 		BindHost: "1.2.3.4",
 	}
-	//Act
+	// Act
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:
