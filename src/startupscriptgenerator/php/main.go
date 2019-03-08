@@ -14,6 +14,7 @@ func main() {
 	common.PrintVersionInfo()
 
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
+	startupCmdPtr := flag.String("startupCommand", "apache2-foreground", "Command that will be executed to start the application server up.")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 
@@ -23,6 +24,7 @@ func main() {
 
 	entrypointGenerator := PhpStartupScriptGenerator{
 		SourcePath: fullAppPath,
+		StartupCmd: startupCmdPtr,
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()
