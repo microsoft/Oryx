@@ -11,12 +11,20 @@ import (
 
 func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript_SourcePathIsExported() {
 	// Arrange
-	gen := PhpStartupScriptGenerator{
-		SourcePath: "abc",
-	}
+	gen := PhpStartupScriptGenerator { SourcePath: "abc", StartupCmd: "", }
 	// Act
 	command := gen.GenerateEntrypointScript()
 	fmt.Println(command)
 	// Output:
 	// export APACHE_DOCUMENT_ROOT='abc'
+}
+
+func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript_StartupCommandIsUsed() {
+	// Arrange
+	gen := PhpStartupScriptGenerator { SourcePath: "", StartupCmd: "somecmd", }
+	// Act
+	command := gen.GenerateEntrypointScript()
+	fmt.Println(command)
+	// Output:
+	// somecmd
 }

@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(PhpPlatform.ComposerInstallLine, snippet.BashBuildScriptSnippet);
+            Assert.Contains("$composer install", snippet.BashBuildScriptSnippet);
         }
 
         //[Fact]
