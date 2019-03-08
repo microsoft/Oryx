@@ -68,7 +68,7 @@
 
   <ItemGroup>
     <Content Remove="BaseBashBuildScript.sh.tpl" />
-    <Content Remove="DotnetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <Content Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <Content Remove="Node\NodeBashBuildSnippet.sh.tpl" />
     <Content Remove="Node\NodeBashRunScript.sh.tpl" />
     <Content Remove="Php\PhpBashBuildSnippet.sh.tpl" />
@@ -77,7 +77,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" />
-    <EmbeddedResource Include="DotnetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashRunScript.sh.tpl" />
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
