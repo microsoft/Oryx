@@ -1,4 +1,9 @@
-﻿using Microsoft.Oryx.Common;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
@@ -82,6 +87,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
+                    Assert.Contains($"Installing twig/twig", result.Output);
                 },
                 result.GetDebugInfo());
         }
