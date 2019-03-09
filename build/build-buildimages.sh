@@ -29,6 +29,7 @@ fi
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
 	ctxArgs="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+	echo "build context: "$ctxArgs
 fi
 
 function BuildAndTagStage()
