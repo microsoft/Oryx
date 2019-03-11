@@ -40,23 +40,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
-                    Assert.Contains($"Installing twig/twig", result.Output);
+                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
+                    Assert.Contains($"Installing twig/twig", result.Error); // Composer prints its messages to STDERR
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void GeneratesScript_AndBuilds_WordPress()
+        public void GeneratesScript_AndBuilds_WithoutComposerFile()
         {
             // Arrange
-            var appName = "wordpress";
+            var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand($"unzip {appDir}")
-                .AddBuildCommand($"{appDir}/wordpress -o {appOutputDir}")
+                .AddCommand($"rm {appDir}/composer.json")
+                .AddBuildCommand($"{appOutputDir} --language php --language-version {PhpVersions.Php73Version}")
                 .ToString();
 
             // Act
@@ -66,8 +66,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
-                    Assert.Contains($"Installing twig/twig", result.Output);
+                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
+                    Assert.Contains($"not running composer install", result.Output);
                 },
                 result.GetDebugInfo());
         }

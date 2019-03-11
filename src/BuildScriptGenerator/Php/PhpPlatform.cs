@@ -44,25 +44,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);
+            bool composerFileExists = false;
 
-            try
+            if (ctx.SourceRepo.FileExists(PhpConstants.ComposerFileName))
             {
-                dynamic composerFile = SourceRepoFileHelpers.ReadJsonObjectFromFile(ctx.SourceRepo, PhpConstants.ComposerFileName);
-                if (composerFile?.require != null)
+                composerFileExists = true;
+
+                try
                 {
-                    Newtonsoft.Json.Linq.JObject deps = composerFile?.require;
-                    var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                    _logger.LogDependencies(this.Name, ctx.PhpVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+                    dynamic composerFile = SourceRepoFileHelpers.ReadJsonObjectFromFile(ctx.SourceRepo, PhpConstants.ComposerFileName);
+                    if (composerFile?.require != null)
+                    {
+                        Newtonsoft.Json.Linq.JObject deps = composerFile?.require;
+                        var depSpecs = deps.ToObject<IDictionary<string, string>>();
+                        _logger.LogDependencies(this.Name, ctx.PhpVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+                    }
+                }
+                catch (Exception exc)
+                {
+                    // Leave malformed composer.json files for Composer to handle.
+                    // This prevents Oryx from erroring out when Composer itself might be able to tolerate the file.
+                    _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
                 }
             }
-            catch (Exception exc)
-            {
-                // Leave malformed composer.json files for Composer to handle.
-                // This prevents Oryx from erroring out when Composer itself might be able to tolerate the file.
-                _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
-            }
 
-            string snippet = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PhpBuildSnippet, null, _logger);
+            var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
+            string snippet = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PhpBuildSnippet, props, _logger);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet };
         }
 
