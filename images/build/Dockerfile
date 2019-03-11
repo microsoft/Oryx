@@ -300,6 +300,10 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 FROM ${BUILDSCRIPT_SOURCE} AS buildscriptbinaries
 ARG BUILDSCRIPT_SOURCE
 WORKDIR /usr/oryx/src
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM python AS final

@@ -21,6 +21,56 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             _dockerCli = new DockerCli();
         }
 
+        [SkippableTheory]
+        [InlineData("4.4")]
+        [InlineData("4.5")]
+        [InlineData("4.8")]
+        [InlineData("6.2")]
+        [InlineData("6.6")]
+        [InlineData("6.9")]
+        [InlineData("6.10")]
+        [InlineData("6.11")]
+        [InlineData("8.0")]
+        [InlineData("8.1")]
+        [InlineData("8.2")]
+        [InlineData("8.8")]
+        [InlineData("8.9")]
+        [InlineData("8.11")]
+        [InlineData("8.12")]
+        [InlineData("9.4")]
+        [InlineData("10.1")]
+        [InlineData("10.10")]
+        [InlineData("10.12")]
+        [InlineData("10.14")]
+        public void NodeRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        {
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
+            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
+            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
+
+            // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
+            // or locally, locally we need to skip this test
+            Skip.If(string.IsNullOrEmpty(agentOS));
+            // Act
+            var result = _dockerCli.Run(
+                "oryxdevms/node-" + version + ":latest",
+                commandToExecuteOnRun: "oryx",
+                commandArguments: new[] { "--version" });
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.NotNull(result.Error);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.Error);
+                    Assert.Contains(gitCommitID, result.Error);
+                    Assert.Contains(expectedOryxVersion, result.Error);
+                },
+                result.GetDebugInfo());
+        }
+
         [Theory]
         [InlineData("4.4", "4.4.7")]
         [InlineData("4.5", "4.5.0")]

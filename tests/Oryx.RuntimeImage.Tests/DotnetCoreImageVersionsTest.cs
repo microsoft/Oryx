@@ -21,6 +21,42 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             _dockerCli = new DockerCli();
         }
 
+        [SkippableTheory]
+        [InlineData("1.0")]
+        [InlineData("1.1")]
+        [InlineData("2.0")]
+        [InlineData("2.1")]
+        [InlineData("2.2")]
+        public void DotnetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        {
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
+            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
+            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
+
+            // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
+            // or locally, locally we need to skip this test
+            Skip.If(string.IsNullOrEmpty(agentOS));
+            // Act
+            var result = _dockerCli.Run(
+                "oryxdevms/dotnetcore-" + version + ":latest",
+                commandToExecuteOnRun: "oryx",
+                commandArguments: new[] { "--version" });
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.NotNull(result.Error);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.Error);
+                    Assert.Contains(gitCommitID, result.Error);
+                    Assert.Contains(expectedOryxVersion, result.Error);
+                
+                },
+                result.GetDebugInfo());
+        }
+
         [Theory]
         [InlineData("1.0", "Version  : 1.0.1")]
         [InlineData("1.1", "Version  : 1.1.11")]
