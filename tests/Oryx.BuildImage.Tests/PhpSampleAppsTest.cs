@@ -14,9 +14,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class PhpSampleAppsTest : SampleAppsTestBase
     {
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli = new DockerCli();
-
         public PhpSampleAppsTest(ITestOutputHelper output) : base(output)
         {
         }
@@ -24,46 +21,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.Create(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
-        public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Build_CopiesOutput_ToNestedOutputDirectory()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
-        {
-            throw new NotImplementedException();
-        }
-
         [Fact]
-        public override void GeneratesScript_AndBuilds()
+        public void GeneratesScript_AndBuilds_TwigExample()
         {
             // Arrange
-            var appName = "twig-example";
+            var appName = "wordpress";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
@@ -90,14 +52,35 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
+        [Fact]
+        public void GeneratesScript_AndBuilds_WordPress()
         {
-            throw new NotImplementedException();
-        }
+            // Arrange
+            var appName = "wordpress";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
 
-        public override void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
-        {
-            throw new NotImplementedException();
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                CreateAppNameEnvVar(appName),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments: new[] { "-c", script });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
+                    Assert.Contains($"Installing twig/twig", result.Output);
+                },
+                result.GetDebugInfo());
         }
     }
 }
