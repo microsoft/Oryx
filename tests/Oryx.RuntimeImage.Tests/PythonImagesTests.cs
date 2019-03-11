@@ -10,15 +10,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class PythonImagesTest
+    public class PythonImagesTest : TestBase
     {
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-
-        public PythonImagesTest(ITestOutputHelper output)
+        public PythonImagesTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
         }
 
         [SkippableTheory]
@@ -99,19 +94,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }
