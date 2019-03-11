@@ -3,10 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -38,22 +41,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
-            _logger.LogDebug("Selected PHP version: {phpVer}", context.PhpVersion);
+            _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);
 
-            //_logger.LogDependencies(
-            //    "PHP",
-            //    phpVersion,
-            //    context.SourceRepo.ReadAllLines(PhpConstants.RequirementsFileName)
-            //    .Where(line => !line.TrimStart().StartsWith("#")));
-
-            //var scriptProps = new PhpBashBuildSnippetProperties(
-            //    virtualEnvironmentName: virtualEnvName,
-            //    virtualEnvironmentModule: virtualEnvModule,
-            //    virtualEnvironmentParameters: virtualEnvCopyParam,
-            //    packagesDirectory: packageDir,
-            //    disableCollectStatic: disableCollectStatic);
+            try
+            {
+                dynamic composerFile = SourceRepoFileHelpers.ReadJsonObjectFromFile(ctx.SourceRepo, PhpConstants.ComposerFileName);
+                if (composerFile?.require != null)
+                {
+                    Newtonsoft.Json.Linq.JObject deps = composerFile?.require;
+                    var depSpecs = deps.ToObject<IDictionary<string, string>>();
+                    _logger.LogDependencies(this.Name, ctx.PhpVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+                }
+            }
+            catch (Exception exc)
+            {
+                // Leave malformed composer.json files for Composer to handle.
+                // This prevents Oryx from erroring out when Composer itself might be able to tolerate the file.
+                _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
+            }
 
             string snippet = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PhpBuildSnippet, null, _logger);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet };
@@ -71,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
         {
-            return "";
+            return string.Empty;
         }
 
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
