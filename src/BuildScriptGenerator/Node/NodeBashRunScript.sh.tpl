@@ -9,6 +9,8 @@ fi
 # Enter the source directory to make sure the script runs where the user expects
 cd {{ AppDirectory }}
 
+export PORT={{ BindPort }}
+
 # Add the app directory to the path in case the startup command is a user-provided script
 # and is located at the root.
 PATH=$PATH:{{ AppDirectory }}

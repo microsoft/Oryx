@@ -22,6 +22,7 @@ func main() {
 		"publishedOutputPath",
 		"",
 		"The path to the published output of the application that is going to be run, e.g. '/home/site/wwwroot/'.")
+	bindPortPtr := flag.String("bindPort", "8080", "[Optional] Port where the application will bind to.")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",
 		"",
@@ -50,6 +51,7 @@ func main() {
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
 		SourcePath:          fullSourcePath,
 		PublishedOutputPath: fullPublishedOutputPath,
+		BindPort:            *bindPortPtr,
 		UserStartupCommand:  *userStartupCommandPtr,
 		DefaultAppFilePath:  fullDefaultAppFilePath,
 	}

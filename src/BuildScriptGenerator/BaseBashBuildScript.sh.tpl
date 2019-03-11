@@ -48,8 +48,9 @@ fi
 {{ if PreBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd $SOURCE_DIR
-echo "Executing pre-build script ..."
+echo "{{ PreBuildScriptPrologue }}"
 "{{ PreBuildScriptPath }}"
+echo "{{ PreBuildScriptEpilogue }}"
 {{ end }}
 
 {{ for Snippet in BuildScriptSnippets }}
@@ -71,8 +72,9 @@ fi
 {{ if PostBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the post-build script runs from there
 cd $SOURCE_DIR
-echo "Executing post-build script ..."
+echo "{{ PostBuildScriptPrologue }}"
 "{{ PostBuildScriptPath }}"
+echo "{{ PostBuildScriptEpilogue }}"
 {{ end }}
 
 echo

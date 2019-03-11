@@ -43,6 +43,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string PlatformVersion { get; set; }
 
         /// <summary>
+        /// Gets to sets the port where the application will bind to.
+        /// </summary>
+        public int BindPort { get; set; }
+
+        /// <summary>
         /// Gets or sets the user's custom startup command.
         /// </summary>
         public string UserStartupCommand { get; set; }

@@ -9,6 +9,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class BaseBashBuildScriptProperties
     {
+        public const string PreBuildScriptPrologue = "Executing pre-build script...";
+        public const string PreBuildScriptEpilogue = "Finished executing pre-build script.";
+
+        public const string PostBuildScriptPrologue = "Executing post-build script...";
+        public const string PostBuildScriptEpilogue = "Finished executing post-build script.";
+
         /// <summary>
         /// Gets or sets the collection of build script snippets.
         /// </summary>

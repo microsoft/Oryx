@@ -12,7 +12,6 @@ set -e
 YARN_CACHE_DIR=/usr/local/share/yarn-cache
 echo "Caching packages for Yarn. Cache location is $YARN_CACHE_DIR"
 mkdir -p  $YARN_CACHE_DIR
-
 source /usr/local/bin/benv
 
 yarn config set cache-folder "$YARN_CACHE_DIR"
@@ -73,6 +72,9 @@ for pkg in \
     yarn add $pkg > /dev/null 2> /dev/null
     echo "Package $pkg installed. Folder size: $(du -sh $YARN_CACHE_DIR | cut -f -1)"
 done;
+
+# Open up the cache so other users can consume it.
+chmod -R 777 $YARN_CACHE_DIR
 
 echo "Caching done. Total cache size: $(du -sh $YARN_CACHE_DIR | cut -f -1)"
 rm -fr $TEMP_APP_DIR

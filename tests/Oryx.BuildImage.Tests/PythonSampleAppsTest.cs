@@ -953,7 +953,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 });
 
             // Assert
-
             RunAsserts(
                 () =>
                 {

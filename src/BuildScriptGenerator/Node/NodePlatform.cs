@@ -189,7 +189,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 AppDirectory = options.SourceRepo.RootPath,
                 StartupCommand = startupCommand,
-                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion) ? null : $"node={options.PlatformVersion}"
+                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion) ? null : $"node={options.PlatformVersion}",
+                BindPort = options.BindPort
             };
             var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
             return script;

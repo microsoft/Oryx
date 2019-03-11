@@ -17,21 +17,27 @@ type PythonStartupScriptGenerator struct {
 	UserStartupCommand     string
 	DefaultAppPath         string
 	DefaultAppModule       string
-	BindHost               string
+	BindPort               string
 	VirtualEnvironmentName string
 	PackageDirectory       string
 }
+
+const DefaultHost = "0.0.0.0"
 
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
-
+	
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
+	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
+	
+	// Make the Port value available as environment variable so that
+	// a user's startup command can use it, if needed
+	scriptBuilder.WriteString("export PORT=" + gen.BindPort + "\n\n")
 
 	packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
 	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
@@ -155,8 +161,8 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 // Produces the gunicorn command to run the app
 func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, appDir string) string {
 	args := ""
-	if gen.BindHost != "" {
-		args += "--bind=" + gen.BindHost
+	if gen.BindPort != "" {
+		args += "--bind=" + DefaultHost + ":" + gen.BindPort
 	}
 	if appDir != "" {
 		if args != "" {
@@ -169,5 +175,4 @@ func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, app
 	} else {
 		return "gunicorn " + module
 	}
-
 }
