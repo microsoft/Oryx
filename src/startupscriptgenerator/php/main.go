@@ -24,7 +24,7 @@ func main() {
 
 	entrypointGenerator := PhpStartupScriptGenerator{
 		SourcePath: fullAppPath,
-		StartupCmd: startupCmdPtr,
+		StartupCmd: *startupCmdPtr,
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()
