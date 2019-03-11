@@ -10,15 +10,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class NodeImagesTest
+    public class NodeImagesTest : TestBase
     {
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-
-        public NodeImagesTest(ITestOutputHelper output)
+        public NodeImagesTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
         }
 
         [SkippableTheory]
@@ -49,7 +44,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
-            // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
+            // We can't always rely on git commit ID as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
@@ -110,19 +105,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Equal(expectedNodeVersion, actualOutput);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }

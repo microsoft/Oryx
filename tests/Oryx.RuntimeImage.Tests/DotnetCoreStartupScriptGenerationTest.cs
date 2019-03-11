@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class DotnetCoreStartupScriptGenerationTest
+    public class DotnetCoreStartupScriptGenerationTest : TestBase
     {
         private const string DotnetCoreRuntimeImageName = "oryxdevms/dotnetcore-2.2";
 
@@ -33,13 +33,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             @"<ItemGroup><PackageReference Include=""Microsoft.AspNetCore.App"" /></ItemGroup>" +
             "</Project>";
 
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-
-        public DotnetCoreStartupScriptGenerationTest(ITestOutputHelper output)
+        public DotnetCoreStartupScriptGenerationTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
         }
 
         [Fact]
@@ -489,19 +484,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Contains(expectedStartupCommand, result.Output);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }
