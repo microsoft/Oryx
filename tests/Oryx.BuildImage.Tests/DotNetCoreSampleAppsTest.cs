@@ -14,17 +14,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class DotnetCoreSampleAppsTest
+    public class DotNetCoreSampleAppsTest : SampleAppsTestBase
     {
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-        private readonly string _hostSamplesDir;
-
-        public DotnetCoreSampleAppsTest(ITestOutputHelper output)
+        public DotNetCoreSampleAppsTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
-            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
         
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -304,19 +297,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Matches(@"Post-build script: /opt/dotnet/2.1.\d+", result.Output);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }
