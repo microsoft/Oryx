@@ -8,6 +8,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public string AppDirectory { get; set; }
 
+        public int BindPort { get; set; }
+
         public string StartupCommand { get; set; }
 
         public string ToolsVersions { get; set; }

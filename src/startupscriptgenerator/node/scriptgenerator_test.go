@@ -21,6 +21,7 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	gen := &NodeStartupScriptGenerator{
 		SourcePath:         "output",
 		UserStartupCommand: "abc",
+		BindPort: "8080",
 	}
 	command := gen.GenerateEntrypointScript()
 	fmt.Println(command)
@@ -29,6 +30,9 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	//
 	// # Enter the source directory to make sure the script runs where the user expects
 	// cd output
+	//
+	// export PORT=8080
+	//
 	// abc
 }
 

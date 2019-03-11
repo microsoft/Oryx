@@ -12,7 +12,7 @@ import (
 func ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule() {
 	// Arrange
 	gen := PythonStartupScriptGenerator{
-		BindHost: "",
+		BindPort: "",
 	}
 	//Act
 	command := gen.getCommandFromModule("module.py", "")
@@ -24,7 +24,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule() {
 func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath() {
 	// Arrange
 	gen := PythonStartupScriptGenerator{
-		BindHost: "",
+		BindPort: "",
 	}
 	//Act
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
@@ -36,11 +36,11 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath() {
 func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHost() {
 	// Arrange
 	gen := PythonStartupScriptGenerator{
-		BindHost: "1.2.3.4",
+		BindPort: "12345",
 	}
 	//Act
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:
-	// GUNICORN_CMD_ARGS="--bind=1.2.3.4 --chdir=/a/b/c" gunicorn module.py
+	// GUNICORN_CMD_ARGS="--bind=0.0.0.0:12345 --chdir=/a/b/c" gunicorn module.py
 }

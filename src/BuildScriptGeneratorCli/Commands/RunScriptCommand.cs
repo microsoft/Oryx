@@ -37,6 +37,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string AppPath { get; set; } = ".";
 
         [Option(
+            "--bindPort",
+            CommandOptionType.SingleValue,
+            Description = "[Optional] Port where the application will bind to.")]
+        public int BindPort { get; set; } = 8080;
+
+        [Option(
             "--userStartupCommand",
             CommandOptionType.SingleValue,
             Description = "[Optional] Command that will be executed to start the application up.")]
@@ -93,7 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 DefaultAppPath = defaultAppFullPath,
                 SourceRepo = sourceRepo,
                 UserStartupCommand = UserStartupCommand,
-                PlatformVersion = PlatformVersion
+                PlatformVersion = PlatformVersion,
+                BindPort = BindPort,
             };
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
             var script = runScriptGenerator.GenerateBashScript(PlatformName, options);

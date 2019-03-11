@@ -18,6 +18,7 @@ type NodeStartupScriptGenerator struct {
 	SourcePath                      string
 	UserStartupCommand              string
 	DefaultAppJsFilePath            string
+	BindPort						string
 	CustomStartCommand              string
 	RemoteDebugging                 bool
 	RemoteDebuggingBreakBeforeStart bool
@@ -44,8 +45,11 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
+	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
 
+	// Expose the port so that a custom command can use it if needed
+	scriptBuilder.WriteString("export PORT=" + gen.BindPort + "\n\n")
+	
 	commandSource := ""
 
 	// If user passed a custom startup command, it should take precedence above all other options
