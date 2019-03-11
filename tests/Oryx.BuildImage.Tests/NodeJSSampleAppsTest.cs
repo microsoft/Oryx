@@ -17,11 +17,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         private static readonly string SampleAppName = "webfrontend";
 
-        private readonly DockerCli _dockerCli;
-
-        public NodeJSSampleAppsTest(ITestOutputHelper output) : base(output)
+        public NodeJSSampleAppsTest(ITestOutputHelper output) :
+            base(output, new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) }))
         {
-            _dockerCli = new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) });
         }
 
         private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));

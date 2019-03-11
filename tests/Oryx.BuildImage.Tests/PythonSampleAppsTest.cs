@@ -18,11 +18,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class PythonSampleAppsTest : SampleAppsTestBase
     {
         private const string PackagesDirectory = "__oryx_packages__";
-        private readonly DockerCli _dockerCli;
 
         public PythonSampleAppsTest(ITestOutputHelper output) : base(output)
         {
-            _dockerCli = new DockerCli();
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>

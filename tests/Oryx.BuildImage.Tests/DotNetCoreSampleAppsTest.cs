@@ -14,13 +14,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class DotnetCoreSampleAppsTest : SampleAppsTestBase
+    public class DotNetCoreSampleAppsTest : SampleAppsTestBase
     {
-        private readonly DockerCli _dockerCli;
-
-        public DotnetCoreSampleAppsTest(ITestOutputHelper output) : base(output)
+        public DotNetCoreSampleAppsTest(ITestOutputHelper output) : base(output)
         {
-            _dockerCli = new DockerCli();
         }
         
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
