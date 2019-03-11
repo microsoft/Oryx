@@ -1,22 +1,20 @@
-﻿using Microsoft.Oryx.Common;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.RuntimeImage.Tests
+namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class PhpImageTest
+    public class PhpImageTest : TestBase
     {
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-
-        public PhpImageTest(ITestOutputHelper output)
+        public PhpImageTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
         }
 
         [Theory]
@@ -36,19 +34,6 @@ namespace Oryx.RuntimeImage.Tests
                     Assert.Contains("PHP " + expectedPhpVersion, result.Output);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }
