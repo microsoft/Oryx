@@ -624,7 +624,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             // Create a custom startup command
             const string customStartupScriptName = "customStartup.sh";
-            File.WriteAllText(Path.Join(appDir, customStartupScriptName),
+            File.WriteAllText(Path.Join(volume.MountedHostDir, customStartupScriptName),
                 "#!/bin/bash\n" +
                 $"PORT={ContainerPort} node server.js\n");
 
