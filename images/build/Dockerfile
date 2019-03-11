@@ -14,6 +14,7 @@ RUN apt-get update \
         git \
         jq \
         make \
+        unzip \
         # The tools in this package are used when installing packages for Python
         build-essential \
         # Required for Microsoft SQL Server

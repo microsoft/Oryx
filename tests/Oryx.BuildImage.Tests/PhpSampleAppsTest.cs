@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_TwigExample()
         {
             // Arrange
-            var appName = "wordpress";
+            var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
@@ -34,16 +34,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments: new[] { "-c", script });
+            var result = _dockerCli.Run(Settings.BuildImageName, CreateAppNameEnvVar(appName), volume, "/bin/bash", new[] { "-c", script });
 
             // Assert
-            RunAsserts(
-                () =>
+            RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
@@ -61,20 +55,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddCommand($"unzip {appDir}")
+                .AddBuildCommand($"{appDir}/wordpress -o {appOutputDir}")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments: new[] { "-c", script });
+            var result = _dockerCli.Run(Settings.BuildImageName, CreateAppNameEnvVar(appName), volume, "/bin/bash", new[] { "-c", script });
 
             // Assert
-            RunAsserts(
-                () =>
+            RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains($"PHP Version: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
