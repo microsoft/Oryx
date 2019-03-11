@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddBuildCommand($"{appOutputDir} --language php --language-version {PhpVersions.Php73Version}")
+                .AddBuildCommand($"{appDir} --language php --language-version {PhpVersions.Php73Version}")
                 .ToString();
 
             // Act
