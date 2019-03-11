@@ -22,6 +22,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Command("build", Description = "Generate and run build scripts.")]
     internal class BuildCommand : BaseCommand
     {
+        // Beginning and ending markers for build script output spans that should be time measured
+        private readonly TextSpan[] _measurableStdOutSpans =
+        {
+            new TextSpan("RunPreBuildScript",  BaseBashBuildScriptProperties.PreBuildScriptPrologue,  BaseBashBuildScriptProperties.PreBuildScriptEpilogue),
+            new TextSpan("RunPostBuildScript", BaseBashBuildScriptProperties.PostBuildScriptPrologue, BaseBashBuildScriptProperties.PostBuildScriptEpilogue)
+        };
+
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
 
@@ -138,15 +145,29 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             };
 
             var buildScriptOutput = new StringBuilder();
+            var stdOutEventLogger = new TextSpanEventLogger(logger, _measurableStdOutSpans);
 
             DataReceivedEventHandler stdOutBaseHandler = (sender, args) =>
             {
-                console.WriteLine(args.Data);
-                buildScriptOutput.AppendLine(args.Data);
+                string line = args.Data;
+                if (line == null)
+                {
+                    return;
+                }
+
+                console.WriteLine(line);
+                buildScriptOutput.AppendLine(line);
+                stdOutEventLogger.CheckString(line);
             };
 
             DataReceivedEventHandler stdErrBaseHandler = (sender, args) =>
             {
+                string line = args.Data;
+                if (line == null)
+                {
+                    return;
+                }
+
                 console.Error.WriteLine(args.Data);
                 buildScriptOutput.AppendLine(args.Data);
             };
