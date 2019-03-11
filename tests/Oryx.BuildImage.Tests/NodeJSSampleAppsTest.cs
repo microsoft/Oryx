@@ -17,21 +17,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         private static readonly string SampleAppName = "webfrontend";
 
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-        private readonly string _hostSamplesDir;
-
-        public NodeJSSampleAppsTest(ITestOutputHelper output)
+        public NodeJSSampleAppsTest(ITestOutputHelper output) :
+            base(output, new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) }))
         {
-            _output = output;
-            _dockerCli = new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) });
-            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
 
         private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
 
         [Fact]
-        public override void GeneratesScript_AndBuilds()
+        public void GeneratesScript_AndBuilds()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -64,7 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
+        public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -104,7 +98,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Build_CopiesOutput_ToNestedOutputDirectory()
+        public void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -137,7 +131,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
+        public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -275,7 +269,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
+        public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Arrange
             // Here 'createServerFoooo' is a non-existing function in 'http' library
@@ -311,7 +305,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
+        public void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -344,7 +338,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
+        public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -420,7 +414,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
+        public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -454,7 +448,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
+        public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -486,7 +480,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
+        public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -598,19 +592,6 @@ d
 a
 
 ");
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }

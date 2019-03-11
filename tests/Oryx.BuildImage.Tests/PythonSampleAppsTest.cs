@@ -18,15 +18,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class PythonSampleAppsTest : SampleAppsTestBase
     {
         private const string PackagesDirectory = "__oryx_packages__";
-        private readonly ITestOutputHelper _output;
-        private readonly DockerCli _dockerCli;
-        private readonly string _hostSamplesDir;
 
-        public PythonSampleAppsTest(ITestOutputHelper output)
+        public PythonSampleAppsTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-            _dockerCli = new DockerCli();
-            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -36,7 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, sampleAppName);
 
         [Fact]
-        public override void GeneratesScript_AndBuilds()
+        public void GeneratesScript_AndBuilds()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -73,7 +67,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Builds_AndCopiesContentToOutputDirectory_Recursively()
+        public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -114,7 +108,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Build_CopiesOutput_ToNestedOutputDirectory()
+        public void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -148,7 +142,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
+        public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -181,7 +175,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
+        public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -215,7 +209,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
+        public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -256,7 +250,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
+        public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Try building a Python 2.7 app with 3.7 version. This should fail as there are major API changes between these versions
 
@@ -298,7 +292,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
+        public void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -335,7 +329,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
+        public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -457,7 +451,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public override void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
+        public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
@@ -971,19 +965,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.Output);
                 },
                 result.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                _output.WriteLine(message);
-                throw;
-            }
         }
     }
 }
