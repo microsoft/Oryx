@@ -18,46 +18,32 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PhpEndToEndTests : IDisposable
+    public class PhpEndToEndTests : IClassFixture<TestTempDirTestFixture>
     {
         private const int HostPort = 8000;
         private const string RunScriptPath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
+        private readonly string _hostTempDir;
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly IList<string> _downloadedPaths = new List<string>();
 
-        public PhpEndToEndTests(ITestOutputHelper output)
+        public PhpEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _hostTempDir = fixture.RootDirPath;
         }
-
-        public void Dispose()
-        {
-            foreach (string path in _downloadedPaths)
-            {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-                else if (Directory.Exists(path))
-                {
-                    Directory.Delete(path, true);
-                }
-            }
-        }
-
+        
         [Theory]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
-        [InlineData(PhpVersions.Php70Version)]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
         // Twig does not support PHP < 7
         public async Task TwigExample(string phpVersion)
         {
             // Arrange
-            phpVersion = RemovePatchVersion(phpVersion);
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.Create(hostDir);
@@ -84,28 +70,23 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
-        [InlineData(PhpVersions.Php70Version)]
-        [InlineData(PhpVersions.Php56Version)]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
         public async Task WordPress51(string phpVersion)
         {
             // Arrange
-            phpVersion = RemovePatchVersion(phpVersion);
-
-            var wpDir = Path.Combine(Path.GetTempPath(), "wordpress-5.1");
-            Directory.CreateDirectory(wpDir);
-            _downloadedPaths.Add(wpDir);
-
+            string hostDir;
             using (var webClient = new WebClient())
             {
-                var wpZipPath = Path.Combine(wpDir, "wp.zip");
+                var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
                 webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
-                ZipFile.ExtractToDirectory(wpZipPath, wpDir); // The ZIP already contains a `wordpress` folder
+                ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir); // The ZIP already contains a `wordpress` folder
+                hostDir = Path.Combine(_hostTempDir, "wordpress");
             }
 
             var appName = "wordpress";
-            var hostDir = Path.Combine(Path.GetTempPath(), "wordpress");
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:80";
@@ -127,12 +108,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>WordPress &rsaquo; Setup Configuration File</title>", data);
                 });
-        }
-
-        private static string RemovePatchVersion(string fullVersion)
-        {
-            var lastDot = fullVersion.LastIndexOf('.');
-            return fullVersion.Substring(0, lastDot);
         }
     }
 }
