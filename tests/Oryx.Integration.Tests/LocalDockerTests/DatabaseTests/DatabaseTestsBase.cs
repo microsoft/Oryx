@@ -46,11 +46,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             string language,
             string languageVersion,
             string samplePath,
-            string databaseServerContainerName)
+            string databaseServerContainerName,
+            int containerPort = 8000)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:8000";
+            var portMapping = $"{HostPort}:{containerPort}";
             var entrypointScript = "./start.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -89,10 +90,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 async () =>
                 {
                     var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
-
-                    // Python samples are appending newline character at the end of their response.
-                    data = data.TrimEnd('\n');
-
+                    data = data.TrimEnd('\n'); // Python samples append line feeds at the ends of their responses
                     Assert.Equal(expectedOutput, data);
                 });
         }
