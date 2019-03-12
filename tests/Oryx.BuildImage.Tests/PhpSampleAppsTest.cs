@@ -53,7 +53,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
                 .AddBuildCommand($"{appDir} --language php --language-version {PhpVersions.Php73Version}")

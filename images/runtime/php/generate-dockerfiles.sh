@@ -9,6 +9,7 @@ set -e
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
 declare -r IMAGE_NAME_PLACEHOLDER="%PHP_BASE_IMAGE%"
+declare -r PHP_VERSION_PLACEHOLDER="%PHP_VERSION%"
 . $DIR/../../../build/__php-versions.sh
 declare -r VERSION_ARRAY=($PHP73_VERSION $PHP72_VERSION $PHP70_VERSION $PHP56_VERSION)
 
@@ -26,4 +27,5 @@ do
 
 	# Replace placeholders
 	sed -i "s|$IMAGE_NAME_PLACEHOLDER|$PHP_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+	sed -i "s|$PHP_VERSION_PLACEHOLDER|$PHP_VERSION|g" "$TARGET_DOCKERFILE"
 done
