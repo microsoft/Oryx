@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.Tests.Common
                 await RunAssertsAsync(
                     () =>
                     {
-                        // An exception could have occurred when a docker process failed to start.
+                        // An exception could have occurred when a Docker process failed to start.
                         Assert.Null(runResult.Exception);
                         Assert.False(runResult.Process.HasExited);
                         return Task.CompletedTask;
