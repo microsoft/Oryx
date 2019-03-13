@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,21 @@ namespace Microsoft.Oryx.Common
 
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
 
-        public void AddDefinition(string title, string value)
+        public void AddDefinition([CanBeNull] string title, [CanBeNull] string value)
         {
             if (isValidTitle(title))
             {
-                _rows.Add(new Tuple<string, string>(title, value));
+                _rows.Add(CreateDefTuple(title, value));
             }
         }
 
-        public void AddDefinitions(IDictionary<string, string> values)
+        public void AddDefinitions([CanBeNull] IDictionary<string, string> values)
         {
             if (values != null)
             {
-                _rows.AddRange(values.Where(pair => isValidTitle(pair.Key)).Select(pair => Tuple.Create(pair.Key, pair.Value)));
+                _rows.AddRange(values
+                    .Where(pair => isValidTitle(pair.Key))
+                    .Select(pair => CreateDefTuple(pair.Key, pair.Value)));
             }
         }
 
@@ -62,6 +65,11 @@ namespace Microsoft.Oryx.Common
             }
 
             return result.ToString();
+        }
+
+        private Tuple<string, string> CreateDefTuple(string title, [CanBeNull] string value)
+        {
+            return Tuple.Create(title, value ?? string.Empty);
         }
     }
 }
