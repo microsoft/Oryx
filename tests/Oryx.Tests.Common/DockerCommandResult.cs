@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.Tests.Common
             StdOut = output;
             StdErr = error;
         }
+        
 
         public override bool HasExited { get => true; }
 
