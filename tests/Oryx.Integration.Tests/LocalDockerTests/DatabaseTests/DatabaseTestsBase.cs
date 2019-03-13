@@ -75,18 +75,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
+                "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
-                new List<EnvironmentVariable>() { new EnvironmentVariable(Constants.DatabaseUserPwdEnvVar, Constants.DatabaseUserPwd) },
+                new List<EnvironmentVariable>()
+                {
+                    new EnvironmentVariable(Constants.DbHostEnvVarName, Constants.InternalDbLinkName),
+                    new EnvironmentVariable(Constants.DbUserEnvVarName, Constants.DatabaseUserName),
+                    new EnvironmentVariable(Constants.DbPassEnvVarName, Constants.DatabaseUserPwd),
+                    new EnvironmentVariable(Constants.DbNameEnvVarName, Constants.DatabaseName)
+                },
                 portMapping,
                 link,
-                "/bin/sh",
-                new[]
-                {
-                        "-c",
-                        script
-                },
+                "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
                     var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");

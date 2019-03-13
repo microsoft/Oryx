@@ -1,5 +1,5 @@
 <?php
-$mysqli = new mysqli('dbserver', getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE'));
+$mysqli = new mysqli(getenv('DATABASE_HOST'), getenv('DATABASE_USERNAME'), getenv('DATABASE_PASSWORD'), getenv('DATABASE_NANE'));
 if (mysqli_connect_errno())
 {
 	printf("Connect failed: %s\n", mysqli_connect_error());
