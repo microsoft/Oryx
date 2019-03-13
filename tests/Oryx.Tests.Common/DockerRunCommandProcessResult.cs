@@ -3,14 +3,19 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class DockerRunCommandProcessResult
+    public class DockerRunCommandProcessResult : IDockerResult
     {
+        private readonly StringBuilder _stdOutBuilder;
+        private readonly StringBuilder _stdErrBuilder;
+
         public DockerRunCommandProcessResult(
             string containerName,
             Process process,
@@ -20,36 +25,58 @@ namespace Microsoft.Oryx.Tests.Common
             string executedCommand)
         {
             ContainerName = containerName;
-            Process = process;
             Exception = exception;
-            StdOutput = stdOutput;
-            StdError = stdError;
+            Process = process;
             ExecutedCommand = executedCommand;
+            _stdOutBuilder = stdOutput;
+            _stdErrBuilder = stdError;
         }
 
         public string ContainerName { get; }
         public Process Process { get; }
         public Exception Exception { get; }
-        public StringBuilder StdOutput { get; }
-        public StringBuilder StdError { get; }
         public string ExecutedCommand { get; }
 
-        public string GetDebugInfo()
+        public int ExitCode
+        {
+            get
+            {
+                return Process.ExitCode;
+            }
+        }
+
+        public string StdOut
+        {
+            get
+            {
+                return _stdOutBuilder.ToString();
+            }
+        }
+
+        public string StdErr
+        {
+            get
+            {
+                return _stdErrBuilder.ToString();
+            }
+        }
+
+        public string GetDebugInfo(IDictionary<string, string> extraDefs = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine("Debugging Information:");
             sb.AppendLine("----------------------");
-            sb.AppendLine($"Executed command: {ExecutedCommand}");
 
-            if (Process.HasExited)
-            {
-                sb.AppendLine($"Exit code: {Process.ExitCode}");
-            }
+            var infoFormatter = new DefinitionListFormatter();
+            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
+            if (Process.HasExited) infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
+            infoFormatter.AddDefinition("StdOut", StdOut);
+            infoFormatter.AddDefinition("StdErr", StdErr);
+            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
+            infoFormatter.AddDefinitions(extraDefs);
+            sb.AppendLine(infoFormatter.ToString());
 
-            sb.AppendLine($"StdOutput: {StdOutput.ToString()}");
-            sb.AppendLine($"StdError: {StdError.ToString()}");
-            sb.AppendLine($"Exception: {Exception?.Message}");
             return sb.ToString();
         }
     }
