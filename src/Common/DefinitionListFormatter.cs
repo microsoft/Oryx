@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     /// <summary>
     /// Prints an ordered list of definitions with equal padding for headings.
     /// </summary>
-    internal class DefinitionListFormatter
+    public class DefinitionListFormatter
     {
         private const string HeadingSuffix = ": ";
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
