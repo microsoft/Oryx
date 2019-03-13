@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Oryx.Common;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -80,7 +81,7 @@ namespace Microsoft.Oryx.Tests.Common
                    Assert.True(buildAppResult.IsSuccess);
                    return Task.CompletedTask;
                },
-               buildAppResult.GetDebugInfo());
+               buildAppResult);
 
             // Run
             DockerRunCommandProcessResult runResult = null;
@@ -105,7 +106,7 @@ namespace Microsoft.Oryx.Tests.Common
                         Assert.False(runResult.Process.HasExited);
                         return Task.CompletedTask;
                     },
-                    runResult.GetDebugInfo());
+                    runResult);
 
                 for (var i = 0; i < MaxRetryCount; i++)
                 {
@@ -120,7 +121,7 @@ namespace Microsoft.Oryx.Tests.Common
                                 Assert.False(runResult.Process.HasExited);
                                 await assertAction();
                             },
-                            runResult.GetDebugInfo());
+                            runResult);
 
                         break;
                     }
@@ -128,7 +129,7 @@ namespace Microsoft.Oryx.Tests.Common
                     {
                         if (i == MaxRetryCount - 1)
                         {
-                            output.WriteLine(runResult.GetDebugInfo());
+                            output.WriteLine(runResult);
                             throw;
                         }
                     }
@@ -143,15 +144,20 @@ namespace Microsoft.Oryx.Tests.Common
                 }
             }
 
-            async Task RunAssertsAsync(Func<Task> action, string message)
+            async Task RunAssertsAsync(Func<Task> action, DockerRunCommandProcessResult runResult)
             {
                 try
                 {
                     await action();
                 }
+                catch (EqualException exc)
+                {
+                    output.WriteLine(runResult.GetDebugInfo(new Dictionary<string, string> { { "Actual value", exc.Actual } }));
+                    throw;
+                }
                 catch (Exception)
                 {
-                    output.WriteLine(message);
+                    output.WriteLine(runResult.GetDebugInfo());
                     throw;
                 }
             }
