@@ -156,7 +156,11 @@ namespace Microsoft.Oryx.Tests.Common
             }
             catch (EqualException exc)
             {
-                output.WriteLine(res.GetDebugInfo(new Dictionary<string, string> { { "Actual value", exc.Actual } }));
+                output.WriteLine(res.GetDebugInfo(new Dictionary<string, string>
+                {
+                    { "Actual value", exc.Actual },
+                    { "Expected value", exc.Expected },
+                }));
                 throw;
             }
             catch (Exception)
