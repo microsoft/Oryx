@@ -21,7 +21,7 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	gen := &NodeStartupScriptGenerator{
 		SourcePath:         "output",
 		UserStartupCommand: "abc",
-		BindPort: "8080",
+		BindPort:           "8080",
 	}
 	command := gen.GenerateEntrypointScript()
 	fmt.Println(command)
@@ -32,6 +32,16 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	// cd output
 	//
 	// export PORT=8080
+	//
+	// if [ -f node_modules.zip ]; then
+	//     echo "Found 'node_modules.zip', will extract its contents as node modules."
+	//     echo "Removing existing modules directory..."
+	//     rm -fr /node_modules
+	//     mkdir -p /node_modules
+	//     echo "Extracting modules..."
+	//     tar -xzf node_modules.zip -C /
+	//     echo "Done."
+	// fi
 	//
 	// abc
 }
