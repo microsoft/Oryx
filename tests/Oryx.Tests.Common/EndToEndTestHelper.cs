@@ -81,7 +81,8 @@ namespace Microsoft.Oryx.Tests.Common
                    Assert.True(buildAppResult.IsSuccess);
                    return Task.CompletedTask;
                },
-               buildAppResult);
+               buildAppResult,
+               output);
 
             // Run
             DockerRunCommandProcessResult runResult = null;
@@ -106,7 +107,8 @@ namespace Microsoft.Oryx.Tests.Common
                         Assert.False(runResult.Process.HasExited);
                         return Task.CompletedTask;
                     },
-                    runResult);
+                    runResult,
+                    output);
 
                 for (var i = 0; i < MaxRetryCount; i++)
                 {
@@ -121,7 +123,8 @@ namespace Microsoft.Oryx.Tests.Common
                                 Assert.False(runResult.Process.HasExited);
                                 await assertAction();
                             },
-                            runResult);
+                            runResult,
+                            output);
 
                         break;
                     }
@@ -129,7 +132,7 @@ namespace Microsoft.Oryx.Tests.Common
                     {
                         if (i == MaxRetryCount - 1)
                         {
-                            output.WriteLine(runResult);
+                            output.WriteLine(runResult.GetDebugInfo());
                             throw;
                         }
                     }
@@ -143,23 +146,23 @@ namespace Microsoft.Oryx.Tests.Common
                     dockerCli.StopContainer(runResult.ContainerName);
                 }
             }
+        }
 
-            async Task RunAssertsAsync(Func<Task> action, DockerRunCommandProcessResult runResult)
+        private static async Task RunAssertsAsync(Func<Task> action, DockerResultBase res, ITestOutputHelper output)
+        {
+            try
             {
-                try
-                {
-                    await action();
-                }
-                catch (EqualException exc)
-                {
-                    output.WriteLine(runResult.GetDebugInfo(new Dictionary<string, string> { { "Actual value", exc.Actual } }));
-                    throw;
-                }
-                catch (Exception)
-                {
-                    output.WriteLine(runResult.GetDebugInfo());
-                    throw;
-                }
+                await action();
+            }
+            catch (EqualException exc)
+            {
+                output.WriteLine(res.GetDebugInfo(new Dictionary<string, string> { { "Actual value", exc.Actual } }));
+                throw;
+            }
+            catch (Exception)
+            {
+                output.WriteLine(res.GetDebugInfo());
+                throw;
             }
         }
     }
