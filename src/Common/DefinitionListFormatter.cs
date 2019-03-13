@@ -18,13 +18,11 @@ namespace Microsoft.Oryx.Common
     {
         private const string HeadingSuffix = ": ";
 
-        private readonly Predicate<string> isValidTitle = title => !string.IsNullOrWhiteSpace(title);
-
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
 
         public void AddDefinition([CanBeNull] string title, [CanBeNull] string value)
         {
-            if (isValidTitle(title))
+            if (!string.IsNullOrWhiteSpace(title))
             {
                 _rows.Add(CreateDefTuple(title, value));
             }
@@ -35,7 +33,7 @@ namespace Microsoft.Oryx.Common
             if (values != null)
             {
                 _rows.AddRange(values
-                    .Where(pair => isValidTitle(pair.Key))
+                    .Where(pair => !string.IsNullOrWhiteSpace(pair.Key))
                     .Select(pair => CreateDefTuple(pair.Key, pair.Value)));
             }
         }
