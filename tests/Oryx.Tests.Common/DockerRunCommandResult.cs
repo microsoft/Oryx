@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -44,11 +45,15 @@ namespace Microsoft.Oryx.Tests.Common
             sb.AppendLine();
             sb.AppendLine("Debugging Information:");
             sb.AppendLine("----------------------");
-            sb.AppendLine($"Executed command: {ExecutedCommand}");
-            sb.AppendLine($"Exit code: {ExitCode}");
-            sb.AppendLine($"StdOutput: {Output}");
-            sb.AppendLine($"StdError: {Error}");
-            sb.AppendLine($"Exception: {Exception?.Message}");
+
+            var infoFormatter = new DefinitionListFormatter();
+            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
+            infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
+            infoFormatter.AddDefinition("StdOut", Output);
+            infoFormatter.AddDefinition("StdErr", Error);
+            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
+            sb.AppendLine(infoFormatter.ToString());
+
             sb.AppendLine();
             sb.AppendLine("Use the following commands to investigate the failed container:");
             sb.AppendLine($"docker logs {ContainerName}");

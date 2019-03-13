@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+namespace Microsoft.Oryx.Common
 {
     /// <summary>
     /// Prints an ordered list of definitions with equal padding for headings.
