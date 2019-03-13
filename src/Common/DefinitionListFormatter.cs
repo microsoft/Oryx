@@ -57,8 +57,7 @@ namespace Microsoft.Oryx.Common
                 result.AppendLine(lines[0]);
                 foreach (string line in lines.Skip(1))
                 {
-                    result.Append(new string(' ', headingWidth + HeadingSuffix.Length));
-                    result.AppendLine(line);
+                    result.Append(new string(' ', headingWidth + HeadingSuffix.Length)).AppendLine(line);
                 }
             }
 
