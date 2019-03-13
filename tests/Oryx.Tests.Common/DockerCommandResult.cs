@@ -3,8 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -47,29 +49,31 @@ namespace Microsoft.Oryx.Tests.Common
 
         protected string ExecutedCommand { get; }
 
-        public virtual string GetDebugInfo()
+        public virtual string GetDebugInfo(IDictionary<string, string> extraDefs = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine("Debugging Information:");
             sb.AppendLine("----------------------");
-            sb.AppendLine($"Executed command: {ExecutedCommand}");
-            sb.AppendLine($"Exit code: {ExitCode}");
-            sb.AppendLine($"StdOutput: {Output}");
-            sb.AppendLine($"StdError: {Error}");
-            sb.AppendLine($"Exception: {Exception?.Message}");
+
+            var infoFormatter = new DefinitionListFormatter();
+            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
+            infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
+            infoFormatter.AddDefinition("StdOut", Output);
+            infoFormatter.AddDefinition("StdErr", Error);
+            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
+            infoFormatter.AddDefinitions(extraDefs);
+            sb.AppendLine(infoFormatter.ToString());
+
             return sb.ToString();
         }
 
         public override string ToString()
         {
-            return $"ExitCode: {ExitCode}" +
-                Environment.NewLine +
-                $"Exception: {Exception}" +
-                Environment.NewLine +
-                $"StdOutput: {Output}" +
-                Environment.NewLine +
-                $"StdError: {Error}";
+            return $"ExitCode: {ExitCode}" + Environment.NewLine +
+                $"Exception: {Exception}" + Environment.NewLine +
+                $"StdOut: {Output}" + Environment.NewLine +
+                $"StdErr: {Error}";
         }
     }
 }
