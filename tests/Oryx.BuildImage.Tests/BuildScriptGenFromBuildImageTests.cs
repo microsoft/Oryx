@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 Assert.True(result.IsSuccess);
                 // Help text must be shown
-                Assert.Contains("Generates and runs build scripts for multiple languages.", result.Output);
+                Assert.Contains("Generates and runs build scripts for multiple languages.", result.StdOut);
             },
             result.GetDebugInfo());
         }

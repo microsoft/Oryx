@@ -9,48 +9,35 @@ using System.Text;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class DockerRunCommandProcessResult
+    public class DockerRunCommandProcessResult : DockerResultBase
     {
+        private readonly StringBuilder _stdOutBuilder;
+        private readonly StringBuilder _stdErrBuilder;
+
         public DockerRunCommandProcessResult(
             string containerName,
             Process process,
             Exception exception,
             StringBuilder stdOutput,
             StringBuilder stdError,
-            string executedCommand)
+            string executedCommand) : base(exception, executedCommand)
         {
             ContainerName = containerName;
             Process = process;
-            Exception = exception;
-            StdOutput = stdOutput;
-            StdError = stdError;
-            ExecutedCommand = executedCommand;
+            _stdOutBuilder = stdOutput;
+            _stdErrBuilder = stdError;
         }
 
         public string ContainerName { get; }
+
         public Process Process { get; }
-        public Exception Exception { get; }
-        public StringBuilder StdOutput { get; }
-        public StringBuilder StdError { get; }
-        public string ExecutedCommand { get; }
 
-        public string GetDebugInfo()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine("Debugging Information:");
-            sb.AppendLine("----------------------");
-            sb.AppendLine($"Executed command: {ExecutedCommand}");
+        public override bool HasExited { get => Process.HasExited; }
 
-            if (Process.HasExited)
-            {
-                sb.AppendLine($"Exit code: {Process.ExitCode}");
-            }
+        public override int ExitCode { get => Process.ExitCode; }
 
-            sb.AppendLine($"StdOutput: {StdOutput.ToString()}");
-            sb.AppendLine($"StdError: {StdError.ToString()}");
-            sb.AppendLine($"Exception: {Exception?.Message}");
-            return sb.ToString();
-        }
+        public override string StdOut { get => _stdOutBuilder.ToString(); }
+
+        public override string StdErr { get => _stdErrBuilder.ToString(); }
     }
 }

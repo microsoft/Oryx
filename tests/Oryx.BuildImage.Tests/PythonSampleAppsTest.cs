@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -286,7 +286,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains("Missing parentheses in call to 'print'", result.Output);
+                    Assert.Contains("Missing parentheses in call to 'print'", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -323,7 +323,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         $"Python Version: /opt/python/{Settings.Python36Version}/bin/python3",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -405,7 +405,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "The 'python' version '4.0.1' is not supported. Supported versions are: " +
                     $"{Settings.Python27Version}, {Settings.Python35Version}, {Settings.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
-                    Assert.Contains(errorMessage, result.Error);
+                    Assert.Contains(errorMessage, result.StdErr);
                 },
                 result.GetDebugInfo());
         }
@@ -518,7 +518,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -555,7 +555,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -705,10 +705,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         "Executing the pre-build script from a standalone script!",
-                        result.Output);
+                        result.StdOut);
                     Assert.Contains(
                         "Executing the post-build script from a standalone script!",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -774,10 +774,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         "Executing the pre-build script from a standalone script!",
-                        result.Output);
+                        result.StdOut);
                     Assert.Contains(
                         "Executing the post-build script from a standalone script!",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -855,10 +855,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         $"From pre-build script: {values}",
-                        result.Output);
+                        result.StdOut);
                     Assert.Contains(
                         $"From post-build script: {values}",
-                        result.Output);
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -893,7 +893,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("'collectstatic' exited with exit code 1.", result.Output);
+                    Assert.Contains("'collectstatic' exited with exit code 1.", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -959,10 +959,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.Output);
-                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.Output);
-                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.Output);
-                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
