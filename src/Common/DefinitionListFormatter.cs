@@ -20,11 +20,12 @@ namespace Microsoft.Oryx.Common
 
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
 
-        public void AddDefinition([CanBeNull] string title, [CanBeNull] string value)
+        public void AddDefinition(string title, string value)
         {
-            if (!string.IsNullOrWhiteSpace(title))
+            var tuple = CreateDefTuple(title, value);
+            if (tuple != null)
             {
-                _rows.Add(CreateDefTuple(title, value));
+                _rows.Add(tuple);
             }
         }
 
@@ -33,8 +34,8 @@ namespace Microsoft.Oryx.Common
             if (values != null)
             {
                 _rows.AddRange(values
-                    .Where(pair => !string.IsNullOrWhiteSpace(pair.Key))
-                    .Select(pair => CreateDefTuple(pair.Key, pair.Value)));
+                    .Select(pair => CreateDefTuple(pair.Key, pair.Value))
+                    .Where(tuple => tuple != null));
             }
         }
 
@@ -52,7 +53,7 @@ namespace Microsoft.Oryx.Common
                     continue;
                 }
 
-                string[] lines = row.Item2.Split(Environment.NewLine);
+                string[] lines = row.Item2.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
                 result.AppendLine(lines[0]);
                 foreach (string line in lines.Skip(1))
@@ -64,9 +65,15 @@ namespace Microsoft.Oryx.Common
             return result.ToString();
         }
 
-        private Tuple<string, string> CreateDefTuple(string title, [CanBeNull] string value)
+        [CanBeNull]
+        private Tuple<string, string> CreateDefTuple([CanBeNull] string title, [CanBeNull] string value)
         {
-            return Tuple.Create(title, value ?? string.Empty);
+            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            return Tuple.Create(title, value);
         }
     }
 }
