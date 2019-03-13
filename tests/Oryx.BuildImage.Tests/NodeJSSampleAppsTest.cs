@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(0, result.ExitCode);
-                    Assert.Contains("Could not detect the language from repo", result.Error);
+                    Assert.Contains("Could not detect the language from repo", result.StdErr);
                 },
                 result.GetDebugInfo());
         }
@@ -569,10 +569,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.Output);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.Output);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.Output);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.Output);
+                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

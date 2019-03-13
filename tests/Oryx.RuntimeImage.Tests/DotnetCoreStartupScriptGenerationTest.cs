@@ -70,8 +70,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -109,8 +109,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -148,8 +148,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -187,8 +187,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -224,7 +224,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -299,8 +299,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -400,8 +400,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -440,8 +440,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedWorkingDir, result.Output);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -481,7 +481,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedStartupCommand, result.Output);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
         }

@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 commandToExecuteOnRun: "oryx",
                 commandArguments: new[] { "--version" });
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -158,7 +158,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Error.ReplaceNewLine();
+            var actualOutput = result.StdErr.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -181,7 +181,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 commandArguments: new[] { "--version" });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -236,7 +236,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -273,7 +273,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             // Assert
             // NOTE: Python2 version writes out information to StdErr unlike Python3 versions
-            var actualOutput = result.Error.ReplaceNewLine();
+            var actualOutput = result.StdErr.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -309,7 +309,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 });
 
             // Assert
-            var actualOutput = result.Error.ReplaceNewLine();
+            var actualOutput = result.StdErr.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
@@ -350,7 +350,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 });
 
             // Assert
-            var actualOutput = result.Output.ReplaceNewLine();
+            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {

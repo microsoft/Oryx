@@ -10,30 +10,26 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class DockerCommandResult
+    public class DockerCommandResult : IDockerResult
     {
-        public DockerCommandResult(
-            int exitCode,
-            Exception exception,
-            string output,
-            string error,
-            string executedCommand)
+        public DockerCommandResult(int exitCode, Exception exception, string output, string error, string executedCommand)
         {
-            ExitCode = exitCode;
             Exception = exception;
-            Output = output;
-            Error = error;
-
             ExecutedCommand = executedCommand;
+            ExitCode = exitCode;
+            StdOut = output;
+            StdErr = error;
         }
 
         public int ExitCode { get; }
 
         public Exception Exception { get; }
 
-        public string Output { get; }
+        public string ExecutedCommand { get; }
 
-        public string Error { get; }
+        public string StdOut { get; }
+
+        public string StdErr { get; }
 
         public bool IsSuccess
         {
@@ -47,8 +43,6 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        protected string ExecutedCommand { get; }
-
         public virtual string GetDebugInfo(IDictionary<string, string> extraDefs = null)
         {
             var sb = new StringBuilder();
@@ -59,8 +53,8 @@ namespace Microsoft.Oryx.Tests.Common
             var infoFormatter = new DefinitionListFormatter();
             infoFormatter.AddDefinition("Executed command", ExecutedCommand);
             infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
-            infoFormatter.AddDefinition("StdOut", Output);
-            infoFormatter.AddDefinition("StdErr", Error);
+            infoFormatter.AddDefinition("StdOut", StdOut);
+            infoFormatter.AddDefinition("StdErr", StdErr);
             infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
             infoFormatter.AddDefinitions(extraDefs);
             sb.AppendLine(infoFormatter.ToString());
@@ -72,8 +66,8 @@ namespace Microsoft.Oryx.Tests.Common
         {
             return $"ExitCode: {ExitCode}" + Environment.NewLine +
                 $"Exception: {Exception}" + Environment.NewLine +
-                $"StdOut: {Output}" + Environment.NewLine +
-                $"StdErr: {Error}";
+                $"StdOut: {StdOut}" + Environment.NewLine +
+                $"StdErr: {StdErr}";
         }
     }
 }
