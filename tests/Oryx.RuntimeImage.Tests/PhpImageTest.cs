@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("PHP " + expectedPhpVersion, result.Output);
+                    Assert.Contains("PHP " + expectedPhpVersion, result.StdOut);
                 },
                 result.GetDebugInfo());
         }

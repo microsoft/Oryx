@@ -40,8 +40,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
-                    Assert.Contains($"Installing twig/twig", result.Error); // Composer prints its messages to STDERR
+                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.StdOut);
+                    Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
                 },
                 result.GetDebugInfo());
         }
@@ -65,8 +65,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.Output);
-                    Assert.Contains($"not running composer install", result.Output);
+                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.StdOut);
+                    Assert.Contains($"not running composer install", result.StdErr);
                 },
                 result.GetDebugInfo());
         }
