@@ -31,36 +31,26 @@ namespace Microsoft.Oryx.Tests.Common
 
         private List<DockerVolume> Volumes { get; }
 
-        public override string GetDebugInfo()
+        public override string GetDebugInfo(IDictionary<string, string> extraDefs = null)
         {
-            var volumeList = string.Empty;
-            if (Volumes?.Count > 0)
-            {
-                volumeList = string.Join(
-                    " ",
-                    Volumes.Select(kvp => $"-v {kvp.MountedHostDir}:/{kvp.ContainerDir.TrimStart('/')}"));
-            }
-
             var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine("Debugging Information:");
-            sb.AppendLine("----------------------");
 
-            var infoFormatter = new DefinitionListFormatter();
-            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
-            infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
-            infoFormatter.AddDefinition("StdOut", Output);
-            infoFormatter.AddDefinition("StdErr", Error);
-            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
-            sb.AppendLine(infoFormatter.ToString());
-
+            sb.AppendLine(base.GetDebugInfo(extraDefs));
             sb.AppendLine();
+
             sb.AppendLine("Use the following commands to investigate the failed container:");
             sb.AppendLine($"docker logs {ContainerName}");
             sb.AppendLine();
             sb.AppendLine($"docker commit {ContainerName} investigate_{ContainerName}");
             sb.AppendLine();
+
+            var volumeList = string.Empty;
+            if (Volumes?.Count > 0)
+            {
+                volumeList = string.Join(" ", Volumes.Select(kvp => $"-v {kvp.MountedHostDir}:/{kvp.ContainerDir.TrimStart('/')}"));
+            }
             sb.AppendLine($"docker run -it {volumeList} investigate_{ContainerName} /bin/bash");
+
             return sb.ToString();
         }
     }

@@ -16,11 +16,25 @@ namespace Microsoft.Oryx.Common
     public class DefinitionListFormatter
     {
         private const string HeadingSuffix = ": ";
+
+        private readonly Predicate<string> isValidTitle = title => !string.IsNullOrWhiteSpace(title);
+
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
 
         public void AddDefinition(string title, string value)
         {
-            _rows.Add(new Tuple<string, string>(title, value));
+            if (isValidTitle(title))
+            {
+                _rows.Add(new Tuple<string, string>(title, value));
+            }
+        }
+
+        public void AddDefinitions(IDictionary<string, string> values)
+        {
+            if (values != null)
+            {
+                _rows.AddRange(values.Where(pair => isValidTitle(pair.Key)).Select(pair => Tuple.Create(pair.Key, pair.Value)));
+            }
         }
 
         public override string ToString()
