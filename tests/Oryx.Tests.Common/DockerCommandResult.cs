@@ -13,23 +13,21 @@ namespace Microsoft.Oryx.Tests.Common
     public class DockerCommandResult : IDockerResult
     {
         public DockerCommandResult(int exitCode, Exception exception, string output, string error, string executedCommand)
+            : base(exception, executedCommand)
         {
-            Exception = exception;
-            ExecutedCommand = executedCommand;
             ExitCode = exitCode;
             StdOut = output;
             StdErr = error;
         }
+        
 
-        public int ExitCode { get; }
+        public override bool HasExited { get => true; }
 
-        public Exception Exception { get; }
+        public override int ExitCode { get; }
 
-        public string ExecutedCommand { get; }
+        public override string StdOut { get; }
 
-        public string StdOut { get; }
-
-        public string StdErr { get; }
+        public override string StdErr { get; }
 
         public bool IsSuccess
         {
@@ -41,25 +39,6 @@ namespace Microsoft.Oryx.Tests.Common
                 }
                 return true;
             }
-        }
-
-        public virtual string GetDebugInfo(IDictionary<string, string> extraDefs = null)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine("Debugging Information:");
-            sb.AppendLine("----------------------");
-
-            var infoFormatter = new DefinitionListFormatter();
-            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
-            infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
-            infoFormatter.AddDefinition("StdOut", StdOut);
-            infoFormatter.AddDefinition("StdErr", StdErr);
-            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
-            infoFormatter.AddDefinitions(extraDefs);
-            sb.AppendLine(infoFormatter.ToString());
-
-            return sb.ToString();
         }
 
         public override string ToString()

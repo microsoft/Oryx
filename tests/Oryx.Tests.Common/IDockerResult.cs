@@ -3,23 +3,53 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    interface IDockerResult
+    public abstract class IDockerResult
     {
-        Exception Exception { get; }
+        public IDockerResult(Exception exc, string executedCmd)
+        {
+            Exception = exc;
+            ExecutedCommand = executedCmd;
+        }
 
-        string ExecutedCommand { get; }
+        public Exception Exception { get; }
 
-        int ExitCode { get; }
+        public string ExecutedCommand { get; }
 
-        string StdOut { get; }
+        public abstract bool HasExited { get; }
 
-        string StdErr { get; }
+        public abstract int ExitCode { get; }
 
-        string GetDebugInfo(IDictionary<string, string> extraDefs = null);
+        public abstract string StdOut { get; }
+
+        public abstract string StdErr { get; }
+
+        public virtual string GetDebugInfo(IDictionary<string, string> extraDefs = null)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine();
+            sb.AppendLine("Debugging Information:");
+            sb.AppendLine("----------------------");
+
+            var infoFormatter = new DefinitionListFormatter();
+
+            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
+            if (HasExited) infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
+            infoFormatter.AddDefinition("StdOut", StdOut);
+            infoFormatter.AddDefinition("StdErr", StdErr);
+            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
+            infoFormatter.AddDefinitions(extraDefs);
+
+            sb.AppendLine(infoFormatter.ToString());
+
+            return sb.ToString();
+        }
     }
 }

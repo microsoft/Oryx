@@ -22,62 +22,24 @@ namespace Microsoft.Oryx.Tests.Common
             Exception exception,
             StringBuilder stdOutput,
             StringBuilder stdError,
-            string executedCommand)
+            string executedCommand) : base(exception, executedCommand)
         {
             ContainerName = containerName;
-            Exception = exception;
             Process = process;
-            ExecutedCommand = executedCommand;
             _stdOutBuilder = stdOutput;
             _stdErrBuilder = stdError;
         }
 
         public string ContainerName { get; }
+
         public Process Process { get; }
-        public Exception Exception { get; }
-        public string ExecutedCommand { get; }
 
-        public int ExitCode
-        {
-            get
-            {
-                return Process.ExitCode;
-            }
-        }
+        public override bool HasExited { get => Process.HasExited; }
 
-        public string StdOut
-        {
-            get
-            {
-                return _stdOutBuilder.ToString();
-            }
-        }
+        public override int ExitCode { get => Process.ExitCode; }
 
-        public string StdErr
-        {
-            get
-            {
-                return _stdErrBuilder.ToString();
-            }
-        }
+        public override string StdOut { get => _stdOutBuilder.ToString(); }
 
-        public string GetDebugInfo(IDictionary<string, string> extraDefs = null)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine("Debugging Information:");
-            sb.AppendLine("----------------------");
-
-            var infoFormatter = new DefinitionListFormatter();
-            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
-            if (Process.HasExited) infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
-            infoFormatter.AddDefinition("StdOut", StdOut);
-            infoFormatter.AddDefinition("StdErr", StdErr);
-            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
-            infoFormatter.AddDefinitions(extraDefs);
-            sb.AppendLine(infoFormatter.ToString());
-
-            return sb.ToString();
-        }
+        public override string StdErr { get => _stdErrBuilder.ToString(); }
     }
 }
