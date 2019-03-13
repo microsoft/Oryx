@@ -38,7 +38,6 @@ RUN apt-get update \
         libpng-dev \
         libjpeg-dev \
         libpq-dev \
-        libmcrypt-dev \
         libldap2-dev \
         libldb-dev \
         libicu-dev \
@@ -92,14 +91,11 @@ RUN apt-get update \
         xsl \
     && docker-php-ext-enable imagick
 
-# Install PHP 7 specific extensions
-RUN if [ `echo "$PHP_VERSION" | head -c1` == "7" ]; then \
-		pecl install mcrypt-1.0.1 \
-		&& pecl install sqlsrv pdo_sqlsrv \
-		&& echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-		&& echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini \
-		&& docker-php-ext-install mcrypt \
-		&& docker-php-ext-enable mcrypt; \
+# Install the Microsoft SQL Server PDO driver on supported versions only (https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac)
+RUN if [[ $PHP_VERSION == "7.1.*" || $PHP_VERSION == "7.2.*" || $PHP_VERSION == "7.3.*" ]]; then \
+		pecl install sqlsrv pdo_sqlsrv && \
+		echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini && \
+		echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini \
 	fi
 
 # Install ODBC extension
