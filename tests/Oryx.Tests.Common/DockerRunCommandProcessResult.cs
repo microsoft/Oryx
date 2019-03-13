@@ -3,15 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class DockerRunCommandProcessResult : IDockerResult
+    public class DockerRunCommandProcessResult : DockerResultBase
     {
         private readonly StringBuilder _stdOutBuilder;
         private readonly StringBuilder _stdErrBuilder;

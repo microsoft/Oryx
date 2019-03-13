@@ -3,14 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
 using System;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class DockerCommandResult : IDockerResult
+    public class DockerCommandResult : DockerResultBase
     {
         public DockerCommandResult(int exitCode, Exception exception, string output, string error, string executedCommand)
             : base(exception, executedCommand)

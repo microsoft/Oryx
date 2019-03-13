@@ -10,9 +10,9 @@ using System.Text;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public abstract class IDockerResult
+    public abstract class DockerResultBase
     {
-        public IDockerResult(Exception exc, string executedCmd)
+        public DockerResultBase(Exception exc, string executedCmd)
         {
             Exception = exc;
             ExecutedCommand = executedCmd;
