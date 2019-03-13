@@ -18,15 +18,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected const string expectedOutput = "[{\"Name\":\"Car\"},{\"Name\":\"Television\"},{\"Name\":\"Table\"}]";
 
+        protected readonly ITestOutputHelper _output;
+
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, int hostPort)
         {
-            OutputHelper = outputHelper;
+            _output = outputHelper;
             HostPort = hostPort;
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
-
-        protected ITestOutputHelper OutputHelper { get; }
 
         protected int HostPort { get; }
 
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             }
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                OutputHelper,
+                _output,
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             }
             catch (Exception)
             {
-                OutputHelper.WriteLine(message);
+                _output.WriteLine(message);
                 throw;
             }
         }
