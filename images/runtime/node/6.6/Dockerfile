@@ -52,5 +52,10 @@ FROM node-original-image AS oryx
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 
+# All users need access to node_modules at the root, as this is the location
+# for packages valid for all apps.
+RUN mkdir -p /node_modules \
+ && chmod 777 /node_modules
+
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx

@@ -18,7 +18,7 @@ type NodeStartupScriptGenerator struct {
 	SourcePath                      string
 	UserStartupCommand              string
 	DefaultAppJsFilePath            string
-	BindPort						string
+	BindPort                        string
 	CustomStartCommand              string
 	RemoteDebugging                 bool
 	RemoteDebuggingBreakBeforeStart bool
@@ -49,7 +49,23 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	// Expose the port so that a custom command can use it if needed
 	scriptBuilder.WriteString("export PORT=" + gen.BindPort + "\n\n")
-	
+
+	// If a file called node_modules.zip is found, we consider it to be
+	// the zipped contents of the app's node_modules folder. We unzip it
+	// at the root level, so node runtime can still find it, and
+	// it is not persisted in a shared network volume where the app is.
+	const nodeModules string = "node_modules"
+	const nodeModulesFile string = nodeModules + ".zip"
+	scriptBuilder.WriteString("if [ -f " + nodeModulesFile + " ]; then\n")
+	scriptBuilder.WriteString("    echo \"Found '" + nodeModulesFile + "', will extract its contents as node modules.\"\n")
+	scriptBuilder.WriteString("    echo \"Removing existing modules directory...\"\n")
+	scriptBuilder.WriteString("    rm -fr /" + nodeModules + "\n")
+	scriptBuilder.WriteString("    mkdir -p /" + nodeModules + "\n")
+	scriptBuilder.WriteString("    echo \"Extracting modules...\"\n")
+	scriptBuilder.WriteString("    tar -xzf " + nodeModulesFile + " -C /\n")
+	scriptBuilder.WriteString("    echo \"Done.\"\n")
+	scriptBuilder.WriteString("fi\n\n")
+
 	commandSource := ""
 
 	// If user passed a custom startup command, it should take precedence above all other options
@@ -140,7 +156,7 @@ func (gen *NodeStartupScriptGenerator) getDefaultAppStartCommand() string {
 func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePath string) string {
 	logger := common.GetLogger("node.scriptgenerator.getStartupCommandFromJsFile")
 	defer logger.Shutdown()
-	
+
 	var commandBuilder strings.Builder
 	if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
 		logger.LogInformation("Remote debugging on")
