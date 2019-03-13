@@ -5,20 +5,20 @@ can apply minor adjustments and still utilize the automatic build process. The f
 
 > NOTE: In Azure Web Apps, these variables are set as App Settings [App Settings][].
 
-Setting name                     | Description                                                    | Example
----------------------------------|----------------------------------------------------------------|------------
-DISABLE\_COLLECTSTATIC           | Disable running `collecstatic` when building Python applications. Valid values are `true` or `false`. |
-PRE\_BUILD\_SCRIPT\_PATH         | repo-relative path to a shell script to be run before build    | scripts/prebuild.sh
-POST\_BUILD\_SCRIPT\_PATH        | repo-relative path to a shell script to be run after build     | scripts/postbuild.sh
-PROJECT                          | repo-relative path to directory with `.csproj` file for build  | src/WebApp1/WebApp1.csproj
-DISABLE\_DOTNETCORE\_BUILD       | if `true`, the system won't attempt to detect or build any .NET Core code in the repo. |
-DISABLE\_PYTHON\_BUILD           | if `true`, the system won't attempt to detect or build any Python code in the repo. |
-DISABLE\_NODEJS\_BUILD           | if `true`, the system won't attempt to detect or build any NodeJS code in the repo. |
-ENABLE\_MULTIPLATFORM\_BUILD     | if `true`, the system will automatically detect the platforms used in the repo and build them. If needed, each platform can be individually disabled using its own flag described above. |
+Setting name                     | Description                                                    | Default | Example
+---------------------------------|----------------------------------------------------------------|---------|----------------
+PRE\_BUILD\_SCRIPT\_PATH         | repo-relative path to a shell script to be run before build    | ""      | scripts/prebuild.sh
+POST\_BUILD\_SCRIPT\_PATH        | repo-relative path to a shell script to be run after build     | ""      | scripts/postbuild.sh
+DISABLE\_COLLECTSTATIC           | Disable running `collecstatic` when building Django apps.      | `false` | `true`, `false`
+PROJECT                          | repo-relative path to directory with `.csproj` file for build  | ""      | src/WebApp1/WebApp1.csproj
+ENABLE\_MULTIPLATFORM\_BUILD     | apply more than one toolset if repo indicates it               | `false` | `true`, `false`
+DISABLE\_DOTNETCORE\_BUILD       | do not apply .NET Core build even if repo indicates it         | `false` | `true`, `false`
+DISABLE\_PYTHON\_BUILD           | do not apply Python build even if repo indicates it            | `false` | `true`, `false`
+DISABLE\_NODEJS\_BUILD           | do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
 
-# Azure Web Apps configuration
+# Azure App Service configuration
 
-Within Azure Web Apps, Oryx's environment variables are set via [App
+Within Azure App Service, Oryx's environment variables are set via [App
 Settings][].
 
 List and modify these App Settings with the [az CLI][] using the following
@@ -43,10 +43,10 @@ az webapp config appsettings set \
 
 App Service adds the following settings that govern build:
 
-Setting name                     | Description                                                    | Example
----------------------------------|----------------------------------------------------------------|------------
-ENABLE\_ORYX\_BUILD              | if `true`, use the Oryx build system instead of the legacy Kudu system | 
-COMMAND                          | provide an alternate build-and-run script. Bypasses automatic build completely. | "repo/path/to/script.sh"
+Setting name                        | Description                                                    | Example
+------------------------------------|----------------------------------------------------------------|------------
+COMMAND                             | provide an alternate build-and-run script. Bypasses automatic build completely. | "repo/path/to/script.sh"
+ENABLE\_ORYX\_BUILD                 | if `true`, use the Oryx build system instead of the legacy Kudu system | 
 SCM\_DO\_BUILD\_DURING\_DEPLOYMENT` | if `false`, bypass automatic build |
 
 ## Startup file
