@@ -90,8 +90,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 async () =>
                 {
                     var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    data = data.TrimEnd('\n'); // Python samples append line feeds at the ends of their responses
-                    Assert.Equal(expectedOutput, data);
+                    Assert.Equal(expectedOutput, data, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }
 
