@@ -3,42 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.DatabaseTests
 {
-    public class MySqlDatabaseSetupFixture : IDisposable
+    class MySqlDatabaseSetupFixture : DbContainerFixtureBase
     {
-        private readonly DockerCli _dockerCli;
-
-        public MySqlDatabaseSetupFixture()
-        {
-            _dockerCli = new DockerCli();
-
-            var runResult = StartDatabaseContainer();
-            DatabaseServerContainerName = runResult.ContainerName;
-
-            // Wait for the database server to be up
-            Thread.Sleep(TimeSpan.FromMinutes(1));
-
-            InsertSampleData(runResult.ContainerName);
-        }
-
-        public string DatabaseServerContainerName { get; }
-
-        public void Dispose()
-        {
-            if (!string.IsNullOrEmpty(DatabaseServerContainerName))
-            {
-                _dockerCli.StopContainer(DatabaseServerContainerName);
-            }
-        }
-
-        private DockerRunCommandResult StartDatabaseContainer()
+        protected override DockerRunCommandResult RunDbServerContainer()
         {
             var runDatabaseContainerResult = _dockerCli.Run(
                 Settings.MySqlDbImageName,
@@ -66,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             return runDatabaseContainerResult;
         }
 
-        private void InsertSampleData(string databaseServerContainerName)
+        protected override void InsertSampleData()
         {
 
             // Setup user, database
@@ -81,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var setupDatabaseResult = _dockerCli.Exec(
-                databaseServerContainerName,
+                DbServerContainerName,
                 "/bin/sh",
                 new[]
                 {
@@ -95,19 +68,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                    Assert.True(setupDatabaseResult.IsSuccess);
                },
                setupDatabaseResult.GetDebugInfo());
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine(message);
-                throw;
-            }
         }
     }
 }
