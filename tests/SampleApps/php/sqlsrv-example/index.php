@@ -1,7 +1,7 @@
 <?php
 $dbhost = getenv('DATABASE_HOST');
 $dbname = getenv('DATABASE_USERNAME');
-$pdo = new PDO("sqlsrv:server=$dbhost;Database=$dbname", 'sa' /* getenv('DATABASE_USERNAME') */, getenv('DATABASE_PASSWORD'));
+$pdo = new PDO("sqlsrv:server=$dbhost;Database=$dbname", getenv('DATABASE_USERNAME'), getenv('DATABASE_PASSWORD'));
 
 $query = $pdo->query("SELECT Name FROM Products");
 
