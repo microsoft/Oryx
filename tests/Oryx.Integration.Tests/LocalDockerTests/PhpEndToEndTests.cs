@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         [InlineData("7.2")]
         [InlineData("7.0")]
         [InlineData("5.6")]
-        public async Task GraphicsExtensions(string phpVersion)
+        public async Task ImagickExample(string phpVersion)
         {
             // Arrange
             var appName = "image-examples";
@@ -136,13 +136,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "/bin/sh", new[] { "-c", runScript },
                 async () =>
                 {
-                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/imagick.php");
+                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Equal("64x64", imagickOutput);
-
-                    string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/gd_info.php");
-                    JObject gdInfo = JsonConvert.DeserializeObject<JObject>(gdInfoOutput);
-                    Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
-                    Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
                 });
         }
     }

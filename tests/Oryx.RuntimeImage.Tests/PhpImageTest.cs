@@ -5,6 +5,8 @@
 
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using Xunit;
 using Xunit.Abstractions;
@@ -34,6 +36,24 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Contains("PHP " + expectedPhpVersion, result.StdOut);
                 },
                 result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public void GraphicsExtension_Gd_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run("oryxdevms/php-" + imageTag + ":latest", "php", new[] { "-r", "echo json_encode(gd_info());" });
+
+            // Assert
+            JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);
+            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Read Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }
     }
 }
