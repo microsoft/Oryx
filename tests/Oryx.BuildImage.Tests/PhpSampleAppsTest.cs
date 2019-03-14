@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.StdOut);
-                    Assert.Contains($"not running composer install", result.StdErr);
+                    Assert.Contains($"not running composer install", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
