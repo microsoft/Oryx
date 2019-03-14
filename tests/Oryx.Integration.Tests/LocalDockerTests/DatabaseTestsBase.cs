@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 async () =>
                 {
                     var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    Assert.Equal(_dbFixture.GetSampleDataAsJson(), data, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+                    Assert.Equal(_dbFixture.GetSampleDataAsJson(), data.Trim(), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }
 
