@@ -20,10 +20,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         public const string DbServerPasswordEnvVarName = "DATABASE_PASSWORD";
         public const string DbServerDatabaseEnvVarName = "DATABASE_NAME";
 
-        protected readonly IList<KeyValuePair<string, string>> SampleData = new List<KeyValuePair<string, string>> {
-            KeyValuePair.Create("name", "Car"),
-            KeyValuePair.Create("name", "Camera"),
-            KeyValuePair.Create("name", "Computer")
+        protected readonly IList<ProductRecord> SampleData = new List<ProductRecord> {
+            new ProductRecord { Name = "Car" },
+            new ProductRecord { Name = "Camera" },
+            new ProductRecord { Name = "Computer" }
         };
 
         protected readonly DockerCli _dockerCli = new DockerCli();
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             var sb = new StringBuilder($"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
             foreach (var record in SampleData)
             {
-                sb.Append($" INSERT INTO Products VALUES('{record.Value}');");
+                sb.Append($" INSERT INTO Products VALUES('{record.Name}');");
             }
             return sb.ToString();
         }
@@ -94,5 +94,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 throw;
             }
         }
+    }
+
+    public class ProductRecord
+    {
+        public string Name;
     }
 }

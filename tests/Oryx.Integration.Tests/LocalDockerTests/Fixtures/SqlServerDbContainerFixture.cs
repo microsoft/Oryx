@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
             foreach (var product in SampleData)
             {
-                dbSetupScript.AddCommand($"echo \"INSERT INTO Products VALUES ('{product.Value}');\" >> {dbSetupSql}");
+                dbSetupScript.AddCommand($"echo \"INSERT INTO Products VALUES ('{product.Name}');\" >> {dbSetupSql}");
             }
 
             dbSetupScript
