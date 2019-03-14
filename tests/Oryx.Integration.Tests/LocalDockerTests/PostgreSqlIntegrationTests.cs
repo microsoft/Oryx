@@ -10,14 +10,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PostgresIntegrationTests : DatabaseTestsBase, IClassFixture<PostgresDatabaseSetupFixture>
+    public class PostgresIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgresDatabaseSetupFixture>
     {
         private const int hostPort = 8087;
-        private readonly PostgresDatabaseSetupFixture _postgresDatabaseSetupFixture;
+        private readonly Fixtures.PostgresDatabaseSetupFixture _postgresDatabaseSetupFixture;
 
         public PostgresIntegrationTests(
             ITestOutputHelper output,
-            PostgresDatabaseSetupFixture postgresDatabaseSetupFixture)
+            Fixtures.PostgresDatabaseSetupFixture postgresDatabaseSetupFixture)
             : base(output, hostPort)
         {
             _postgresDatabaseSetupFixture = postgresDatabaseSetupFixture;
@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "nodejs",
                 "10.14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-postgres"),
-                _postgresDatabaseSetupFixture.DatabaseServerContainerName);
+                _postgresDatabaseSetupFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "postgres-sample"),
-                _postgresDatabaseSetupFixture.DatabaseServerContainerName);
+                _postgresDatabaseSetupFixture.DbServerContainerName);
         }
     }
 }
