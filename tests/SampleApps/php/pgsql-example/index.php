@@ -12,7 +12,7 @@ if (!$query)
 	die('Query error');
 
 $rows = [];
-while ($row = pg_fetch_assoc($result))
+while ($row = pg_fetch_assoc($query))
 	$rows[] = $row;
 
 pg_free_result($query);
