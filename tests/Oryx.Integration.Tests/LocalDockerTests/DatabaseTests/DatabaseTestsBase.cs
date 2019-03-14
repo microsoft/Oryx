@@ -50,11 +50,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:8000";
+            var containerPort = 8000;
+            var portMapping = $"{HostPort}:{containerPort}";
             var entrypointScript = "./start.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {entrypointScript}")
+                .AddCommand($"oryx -appPath {appDir} -output {entrypointScript} -bindPort {containerPort}")
                 .AddCommand(entrypointScript)
                 .ToString();
 

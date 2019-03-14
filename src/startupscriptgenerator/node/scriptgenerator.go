@@ -36,6 +36,8 @@ type packageJsonScripts struct {
 	Start string `json:"start"`
 }
 
+const DefaultBindPort = "8080"
+
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
@@ -47,8 +49,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
 
-	// Expose the port so that a custom command can use it if needed
-	scriptBuilder.WriteString("export PORT=" + gen.BindPort + "\n\n")
+	// Expose the port so that a custom command can use it if needed.
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
 	// If a file called node_modules.zip is found, we consider it to be
 	// the zipped contents of the app's node_modules folder. We unzip it
