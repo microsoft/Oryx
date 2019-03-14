@@ -10,14 +10,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class MssqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<MSSqlServerDatabaseSetupFixture>
+    public class MssqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MSSqlServerDatabaseSetupFixture>
     {
         private const int hostPort = 8085;
-        private readonly MSSqlServerDatabaseSetupFixture _msSqlServerDatabaseSetupFixture;
+        private readonly Fixtures.MSSqlServerDatabaseSetupFixture _msSqlServerDatabaseSetupFixture;
 
         public MssqlServerIntegrationTests(
             ITestOutputHelper output,
-            MSSqlServerDatabaseSetupFixture msSqlServerDatabaseSetupFixture)
+            Fixtures.MSSqlServerDatabaseSetupFixture msSqlServerDatabaseSetupFixture)
             : base(output, hostPort)
         {
             _msSqlServerDatabaseSetupFixture = msSqlServerDatabaseSetupFixture;

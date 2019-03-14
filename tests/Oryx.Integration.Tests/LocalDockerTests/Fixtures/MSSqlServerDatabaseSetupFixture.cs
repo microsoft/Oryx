@@ -9,9 +9,9 @@ using System.Threading;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.DatabaseTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    class MSSqlServerDatabaseSetupFixture : DbContainerFixtureBase
+    public class MSSqlServerDatabaseSetupFixture : DbContainerFixtureBase
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {

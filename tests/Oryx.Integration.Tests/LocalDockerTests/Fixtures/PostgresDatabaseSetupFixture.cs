@@ -7,27 +7,26 @@ using System.Collections.Generic;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.DatabaseTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    class MySqlDatabaseSetupFixture : DbContainerFixtureBase
+    public class PostgresDatabaseSetupFixture : DbContainerFixtureBase
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {
             var runDatabaseContainerResult = _dockerCli.Run(
-                Settings.MySqlDbImageName,
-                environmentVariables: new List<EnvironmentVariable>
-                {
-                        new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
-                        new EnvironmentVariable("MYSQL_DATABASE", Constants.DatabaseName),
-                        new EnvironmentVariable("MYSQL_USER", Constants.DatabaseUserName),
-                        new EnvironmentVariable("MYSQL_PASSWORD", Constants.DatabaseUserPwd),
-                },
-                volumes: null,
-                portMapping: null,
-                link: null,
-                runContainerInBackground: true,
-                command: null,
-                commandArguments: null);
+                    Settings.PostgresDbImageName,
+                    environmentVariables: new List<EnvironmentVariable>
+                    {
+                        new EnvironmentVariable("POSTGRES_DB", Constants.DatabaseName),
+                        new EnvironmentVariable("POSTGRES_USER", Constants.DatabaseUserName),
+                        new EnvironmentVariable("POSTGRES_PASSWORD", Constants.DatabaseUserPwd),
+                    },
+                    volumes: null,
+                    portMapping: null,
+                    link: null,
+                    runContainerInBackground: true,
+                    command: null,
+                    commandArguments: null);
 
             RunAsserts(
                () =>
@@ -45,12 +44,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.DatabaseTests
             // Setup user, database
             var dbSetupSql = "/tmp/databaseSetup.sql";
             var databaseSetupScript = new ShellScriptBuilder()
+                .AddCommand($"echo \"PGPASSWORD={Constants.DatabaseUserPwd}\" > {dbSetupSql}")
                 .AddCommand($"echo \"USE {Constants.DatabaseName};\" > {dbSetupSql}")
                 .AddCommand($"echo \"CREATE TABLE Products (Name varchar(50) NOT NULL);\" >> {dbSetupSql}")
                 .AddCommand($"echo \"INSERT INTO Products VALUES('Car');\" >> {dbSetupSql}")
                 .AddCommand($"echo \"INSERT INTO Products VALUES('Television');\" >> {dbSetupSql}")
                 .AddCommand($"echo \"INSERT INTO Products VALUES('Table');\" >> {dbSetupSql}")
-                .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {dbSetupSql}")
+                .AddCommand($"psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {dbSetupSql}")
                 .ToString();
 
             var setupDatabaseResult = _dockerCli.Exec(

@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.DatabaseTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    abstract class DbContainerFixtureBase : IDisposable
+    public abstract class DbContainerFixtureBase : IDisposable
     {
         protected readonly DockerCli _dockerCli = new DockerCli();
 
