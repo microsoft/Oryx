@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    public class MSSqlServerDatabaseSetupFixture : DbContainerFixtureBase
+    public class SqlServerDbContainerFixture : DbContainerFixtureBase
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {
