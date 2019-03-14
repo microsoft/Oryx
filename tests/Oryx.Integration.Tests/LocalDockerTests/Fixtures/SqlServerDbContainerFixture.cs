@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 .ToString();
 
             DockerCommandResult setupDatabaseResult;
-            var maxRetries = 10;
+            var maxRetries = 5;
             do
             {
                 // Wait for the database server to be up
