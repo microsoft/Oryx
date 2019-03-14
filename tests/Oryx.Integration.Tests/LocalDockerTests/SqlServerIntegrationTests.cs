@@ -13,14 +13,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     public class SqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.SqlServerDbContainerFixture>
     {
         private const int hostPort = 8085;
-        private readonly Fixtures.SqlServerDbContainerFixture _msSqlServerDatabaseSetupFixture;
+        private readonly Fixtures.SqlServerDbContainerFixture _dbFixture;
 
-        public SqlServerIntegrationTests(
-            ITestOutputHelper output,
-            Fixtures.SqlServerDbContainerFixture msSqlServerDatabaseSetupFixture)
+        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture)
             : base(output, hostPort)
         {
-            _msSqlServerDatabaseSetupFixture = msSqlServerDatabaseSetupFixture;
+            _dbFixture = dbFixture;
         }
 
         [Fact]
@@ -30,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "nodejs",
                 "10.14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-mssql"),
-                _msSqlServerDatabaseSetupFixture.DbServerContainerName);
+                _dbFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -40,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"),
-                _msSqlServerDatabaseSetupFixture.DbServerContainerName);
+                _dbFixture.DbServerContainerName);
         }
     }
 }

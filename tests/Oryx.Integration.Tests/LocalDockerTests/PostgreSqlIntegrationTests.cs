@@ -13,14 +13,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
         private const int hostPort = 8087;
-        private readonly Fixtures.PostgreSqlDbContainerFixture _postgresDatabaseSetupFixture;
+        private readonly Fixtures.PostgreSqlDbContainerFixture _dbFixture;
 
-        public PostgreSqlIntegrationTests(
-            ITestOutputHelper output,
-            Fixtures.PostgreSqlDbContainerFixture postgresDatabaseSetupFixture)
+        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture)
             : base(output, hostPort)
         {
-            _postgresDatabaseSetupFixture = postgresDatabaseSetupFixture;
+            _dbFixture = dbFixture;
         }
 
         [Fact]
@@ -30,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "nodejs",
                 "10.14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-postgres"),
-                _postgresDatabaseSetupFixture.DbServerContainerName);
+                _dbFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -40,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "postgres-sample"),
-                _postgresDatabaseSetupFixture.DbServerContainerName);
+                _dbFixture.DbServerContainerName);
         }
     }
 }

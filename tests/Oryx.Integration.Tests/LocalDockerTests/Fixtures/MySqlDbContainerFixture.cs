@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    public class MySqlDatabaseSetupFixture : DbContainerFixtureBase
+    public class MySqlDbContainerFixture : DbContainerFixtureBase
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {
