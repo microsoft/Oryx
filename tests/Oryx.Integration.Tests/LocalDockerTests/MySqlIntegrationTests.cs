@@ -13,12 +13,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     public class MySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
         private const int hostPort = 8086;
-        private readonly Fixtures.MySqlDbContainerFixture _dbFixture;
 
-        public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture dbFixture)
-            : base(output, hostPort)
+        public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture dbFixture) : base(output, dbFixture, hostPort)
         {
-            _dbFixture = dbFixture;
         }
 
         [Fact]
