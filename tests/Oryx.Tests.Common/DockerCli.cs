@@ -211,23 +211,15 @@ namespace Microsoft.Oryx.Tests.Common
             return result.StdOut.Trim();
         }
 
-        public DockerCommandResult Logs(string containerName)
+        public string GetContainerLogs(string containerName)
         {
             if (string.IsNullOrEmpty(containerName))
             {
                 throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
             }
 
-            var arguments = PrepareArguments();
-            return ExecuteCommand(arguments);
-
-            IEnumerable<string> PrepareArguments()
-            {
-                var args = new List<string>();
-                args.Add("logs");
-                args.Add(containerName);
-                return args;
-            }
+            var result = ExecuteCommand(new[] { "logs", containerName });
+            return result.StdOut;
         }
 
         public DockerCommandResult Exec(string containerName, string command, string[] commandArgs)

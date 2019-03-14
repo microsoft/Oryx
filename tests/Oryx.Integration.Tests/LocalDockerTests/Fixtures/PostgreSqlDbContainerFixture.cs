@@ -3,8 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Oryx.Tests.Common;
+using Polly;
 using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -36,6 +38,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                runDatabaseContainerResult.GetDebugInfo());
 
             return runDatabaseContainerResult;
+        }
+
+        protected override void WaitUntilDbServerIsUp()
+        {
+            // Try 30 times at most, with a constant 2s in between attempts
+            var retry = Policy.HandleResult(false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
+            retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName).Contains("database system is ready to accept connections"));
         }
 
         protected override void InsertSampleData()

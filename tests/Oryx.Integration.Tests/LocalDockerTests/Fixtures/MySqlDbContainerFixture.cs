@@ -5,8 +5,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Oryx.Tests.Common;
+using Polly;
 using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -35,16 +35,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             return runDatabaseContainerResult;
         }
 
-        protected override bool WaitUntilDbServerIsUp()
+        protected override void WaitUntilDbServerIsUp()
         {
-            string status;
-            do
+            // Try 30 times at most, with a constant 2s in between attempts
+            var retry = Policy.HandleResult(false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
+            retry.Execute(() =>
             {
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-                status = _dockerCli.GetContainerStatus(DbServerContainerName);
-            } while (status.Contains("starting"));
-
-            return status.Contains("healthy");
+                string status = _dockerCli.GetContainerStatus(DbServerContainerName);
+                return status.Contains("healthy") && !status.Contains("starting");
+            });
         }
 
         protected override void InsertSampleData()
