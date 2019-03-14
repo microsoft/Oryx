@@ -53,11 +53,17 @@ The startup command can be set manually as described in
 
 # Version support
 
+.NET Core follows a [release support policy][] which includes Long-Term Support
+(LTS) and Current releases.  Oryx will support LTS releases supported by the
+.NET Core project and the Current release. Releases no longer supported by the
+upstream project will eventually be removed from Oryx; even while they remain
+we may be constrained in the support we can provide once upstream support ends.
+
 We will provide notification twelve months prior to removing a release line;
 subscribe to [Azure Updates][] to stay updated!
 
 We will release updated versions of supported release lines at least
-once every 3 months. Previous minor versions will remain available
-as long as the release is available.
+once every 3 months.
 
+[release support policy]: https://dotnet.microsoft.com/platform/support/policy/dotnet-core
 [Azure Updates]: https://azure.microsoft.com/updates/
