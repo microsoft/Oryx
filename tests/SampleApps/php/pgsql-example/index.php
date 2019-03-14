@@ -13,7 +13,7 @@ if (!$query)
 
 $rows = [];
 while ($row = pg_fetch_assoc($query))
-	$rows[] = $row;
+	$rows[] = ['Name' => $row['name']];
 
 pg_free_result($query);
 pg_close($db);
