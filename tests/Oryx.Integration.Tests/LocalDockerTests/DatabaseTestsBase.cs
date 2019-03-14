@@ -25,13 +25,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, [CanBeNull] Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
         {
             _dbFixture = dbFixture;
-            OutputHelper = outputHelper;
+            _output = outputHelper;
             HostPort = hostPort;
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
 
-        protected ITestOutputHelper OutputHelper { get; }
+        protected ITestOutputHelper _output { get; }
 
         protected int HostPort { get; }
 
@@ -77,28 +77,17 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             }
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                OutputHelper,
+                _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
+                "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture?.GetCredentialsAsEnvVars(),
-                portMapping,
-                link,
-                "/bin/sh",
-                new[]
-                {
-                        "-c",
-                        script
-                },
+                portMapping, link,
+                "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
                     var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
-
-                    // Python samples are appending newline character at the end of their response.
-                    data = data.TrimEnd('\n');
-
-                    Assert.Equal(expectedOutput, data);
+                    Assert.Equal(_dbFixture.GetSampleDataAsJson(), data, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }
 
@@ -110,7 +99,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             }
             catch (Exception)
             {
-                OutputHelper.WriteLine(message);
+                _output.WriteLine(message);
                 throw;
             }
         }
