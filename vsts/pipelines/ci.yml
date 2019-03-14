@@ -34,7 +34,7 @@ jobs:
   steps:
     - script: |
     echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-    echo "##vso[task.setvariable variable=TestBuildImages]true"
+    echo "##vso[task.setvariable variable=TestBuildImages;]true"
     echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
     echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
     echo "##vso[task.setvariable variable=TestIntegration;]true"
