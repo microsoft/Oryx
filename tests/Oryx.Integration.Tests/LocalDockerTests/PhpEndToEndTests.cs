@@ -6,13 +6,13 @@
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -140,9 +140,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     Assert.Equal("64x64", imagickOutput);
 
                     string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/gd_info.php");
-                    dynamic gdInfo = JsonConvert.DeserializeObject(gdInfoOutput);
-                    Assert.True(gdInfo["JPEG Support"]);
-                    Assert.True(gdInfo["PNG Support"]);
+                    JObject gdInfo = JsonConvert.DeserializeObject<JObject>(gdInfoOutput);
+                    Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
+                    Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
                 });
         }
     }
