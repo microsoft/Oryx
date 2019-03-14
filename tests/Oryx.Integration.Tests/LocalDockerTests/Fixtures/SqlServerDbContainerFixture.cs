@@ -13,6 +13,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
     public class SqlServerDbContainerFixture : DbContainerFixtureBase
     {
+        private const string DatabaseUsername = "sa";
+
+        public override List<EnvironmentVariable> GetCredentialsAsEnvVars()
+        {
+            return new List<EnvironmentVariable>
+            {
+                new EnvironmentVariable(DbServerHostnameEnvVarName, Constants.InternalDbLinkName),
+                new EnvironmentVariable(DbServerUsernameEnvVarName, DatabaseUsername),
+                new EnvironmentVariable(DbServerPasswordEnvVarName, Constants.DatabaseUserPwd),
+                new EnvironmentVariable(DbServerDatabaseEnvVarName, Constants.DatabaseName),
+            };
+        }
+
         protected override DockerRunCommandResult RunDbServerContainer()
         {
             var runDatabaseContainerResult = _dockerCli.Run(
@@ -54,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 .AddCommand($"echo \"INSERT INTO Products VALUES ('Television');\" >> {dbSetupSql}")
                 .AddCommand($"echo \"INSERT INTO Products VALUES ('Table');\" >> {dbSetupSql}")
                 .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
+                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} - P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
                 .ToString();
 
             DockerCommandResult setupDatabaseResult;

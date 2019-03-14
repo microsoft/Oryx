@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,8 +19,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected const string expectedOutput = "[{\"Name\":\"Car\"},{\"Name\":\"Television\"},{\"Name\":\"Table\"}]";
 
-        protected DatabaseTestsBase(ITestOutputHelper outputHelper, int hostPort)
+        [CanBeNull]
+        protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
+
+        protected DatabaseTestsBase(ITestOutputHelper outputHelper, [CanBeNull] Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
         {
+            _dbFixture = dbFixture;
             OutputHelper = outputHelper;
             HostPort = hostPort;
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
@@ -77,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "oryx",
                 new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
-                new List<EnvironmentVariable>() { new EnvironmentVariable(Constants.DatabaseUserPwdEnvVar, Constants.DatabaseUserPwd) },
+                _dbFixture?.GetCredentialsAsEnvVars(),
                 portMapping,
                 link,
                 "/bin/sh",
