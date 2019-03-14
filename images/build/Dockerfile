@@ -282,16 +282,6 @@ RUN if [ -z "$AGENTBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscrip
 # This stage is only when building in devops agents
 FROM main AS copybuildscriptsymbol
 COPY symbols /opt/buildscriptgen/
-COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
-COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
-COPY src/Common /usr/oryx/src/Common
-COPY build/FinalPublicKey.snk usr/oryx/build/
-COPY src/CommonFiles /usr/oryx/src/CommonFiles
-WORKDIR /usr/oryx/src
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
 
 # This stage copies oryx binaries from specific build stage, for local/dev it copies
 # from "buildscriptbuilder" and for devops it copies from "copybuildscriptsymbol"

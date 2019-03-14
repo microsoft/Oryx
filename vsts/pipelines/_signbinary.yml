@@ -6,25 +6,25 @@ steps:
    Write-Host "##vso[task.setvariable variable=SignType]real"
    Write-Host "##vso[task.setvariable variable=AGENTBUILD]true"
   displayName: 'Set sign binary variable'
-  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.6.2'
   inputs:
     versionSpec: 4.6.2
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
   displayName: 'Install Signing Plugin'
   inputs:
     signType: '$(SignType)'
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: Oryx.sln
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish linux'
@@ -36,7 +36,7 @@ steps:
     arguments: '-c $(BuildConfiguration) -r linux-x64'
     zipAfterPublish: false
     modifyOutputPath: false
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
@@ -44,7 +44,7 @@ steps:
     solution: 'src/BuildScriptGeneratorCli/Oryx_sign.signproj'
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/symbols'
@@ -53,11 +53,11 @@ steps:
     Contents: '**\*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/symbols'
     CleanTargetFolder: true
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
   inputs:
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.ArtifactStagingDirectory)'
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
