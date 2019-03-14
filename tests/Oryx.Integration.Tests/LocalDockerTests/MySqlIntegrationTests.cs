@@ -10,12 +10,12 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class MySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDatabaseSetupFixture>
+    public class MySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
         private const int hostPort = 8086;
-        private readonly Fixtures.MySqlDatabaseSetupFixture _mySqlDatabaseSetupFixture;
+        private readonly Fixtures.MySqlDbContainerFixture _mySqlDatabaseSetupFixture;
 
-        public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDatabaseSetupFixture mySqlDatabaseSetupFixture)
+        public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture mySqlDatabaseSetupFixture)
             : base(output, hostPort)
         {
             _mySqlDatabaseSetupFixture = mySqlDatabaseSetupFixture;
