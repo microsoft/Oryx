@@ -200,6 +200,17 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
+        public string GetContainerStatus(string containerName)
+        {
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
+            }
+
+            var result = ExecuteCommand(new[] { "ps", "--filter", $"name={containerName}", "--format", "{{.Status}}" });
+            return result.StdOut.Trim();
+        }
+
         public DockerCommandResult Logs(string containerName)
         {
             if (string.IsNullOrEmpty(containerName))

@@ -3,7 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -29,14 +31,20 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 command: null,
                 commandArguments: null);
 
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(runDatabaseContainerResult.IsSuccess);
-               },
-               runDatabaseContainerResult.GetDebugInfo());
-
+            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
             return runDatabaseContainerResult;
+        }
+
+        protected override bool WaitUntilDbServerIsUp()
+        {
+            string status;
+            do
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+                status = _dockerCli.GetContainerStatus(DbServerContainerName);
+            } while (status.Contains("starting"));
+
+            return status.Contains("healthy");
         }
 
         protected override void InsertSampleData()
