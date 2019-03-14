@@ -159,6 +159,9 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		command = "dotnet \"" + startupFileName + "\"\n"
 	} else {
 		logger.LogCritical("Using the explicit user provided startup command.")
+		logger.LogInformation("adding execution permission if needed ...");
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("permission added %t", isPermissionAdded)
 	}
 
 	return command, publishOutputDir
