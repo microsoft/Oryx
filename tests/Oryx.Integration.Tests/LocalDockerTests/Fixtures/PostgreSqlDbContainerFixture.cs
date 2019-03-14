@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    public class PostgresDatabaseSetupFixture : DbContainerFixtureBase
+    public class PostgreSqlDbContainerFixture : DbContainerFixtureBase
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {

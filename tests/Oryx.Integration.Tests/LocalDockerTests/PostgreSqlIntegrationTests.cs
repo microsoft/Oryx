@@ -10,14 +10,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PostgresIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgresDatabaseSetupFixture>
+    public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
         private const int hostPort = 8087;
-        private readonly Fixtures.PostgresDatabaseSetupFixture _postgresDatabaseSetupFixture;
+        private readonly Fixtures.PostgreSqlDbContainerFixture _postgresDatabaseSetupFixture;
 
-        public PostgresIntegrationTests(
+        public PostgreSqlIntegrationTests(
             ITestOutputHelper output,
-            Fixtures.PostgresDatabaseSetupFixture postgresDatabaseSetupFixture)
+            Fixtures.PostgreSqlDbContainerFixture postgresDatabaseSetupFixture)
             : base(output, hostPort)
         {
             _postgresDatabaseSetupFixture = postgresDatabaseSetupFixture;
