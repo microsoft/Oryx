@@ -37,5 +37,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 Path.Combine(HostSamplesDir, "python", "postgres-sample"),
                 _dbFixture.DbServerContainerName);
         }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public async Task PhpApp(string phpVersion)
+        {
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), _dbFixture.DbServerContainerName, 80);
+        }
     }
 }
