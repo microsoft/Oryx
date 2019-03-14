@@ -40,34 +40,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override void InsertSampleData()
         {
-
-            // Setup user, database
-            var dbSetupSql = "/tmp/databaseSetup.sql";
-            var databaseSetupScript = new ShellScriptBuilder()
-                .AddCommand($"echo \"PGPASSWORD={Constants.DatabaseUserPwd}\" > {dbSetupSql}")
-                .AddCommand($"echo \"USE {Constants.DatabaseName};\" > {dbSetupSql}")
-                .AddCommand($"echo \"CREATE TABLE Products (Name varchar(50) NOT NULL);\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Car');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Television');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Table');\" >> {dbSetupSql}")
-                .AddCommand($"psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {dbSetupSql}")
+            var sqlFile = "/tmp/setup.sql";
+            var dbSetupScript = new ShellScriptBuilder()
+                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                .AddCommand($"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(
-                DbServerContainerName,
-                "/bin/sh",
-                new[]
-                {
-                        "-c",
-                        databaseSetupScript
-                });
-
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(setupDatabaseResult.IsSuccess);
-               },
-               setupDatabaseResult.GetDebugInfo());
+            var setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(setupDatabaseResult.IsSuccess), setupDatabaseResult.GetDebugInfo());
         }
     }
 }

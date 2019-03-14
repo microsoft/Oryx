@@ -41,33 +41,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override void InsertSampleData()
         {
-
-            // Setup user, database
-            var dbSetupSql = "/tmp/databaseSetup.sql";
-            var databaseSetupScript = new ShellScriptBuilder()
-                .AddCommand($"echo \"USE {Constants.DatabaseName};\" > {dbSetupSql}")
-                .AddCommand($"echo \"CREATE TABLE Products (Name varchar(50) NOT NULL);\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Car');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Television');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Table');\" >> {dbSetupSql}")
-                .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {dbSetupSql}")
+            var sqlFile = "/tmp/setup.sql";
+            var dbSetupScript = new ShellScriptBuilder()
+                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                // No space after the '-p' on purpose: https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password
+                .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {sqlFile}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(
-                DbServerContainerName,
-                "/bin/sh",
-                new[]
-                {
-                        "-c",
-                        databaseSetupScript
-                });
-
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(setupDatabaseResult.IsSuccess);
-               },
-               setupDatabaseResult.GetDebugInfo());
+            var setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(setupDatabaseResult.IsSuccess), setupDatabaseResult.GetDebugInfo());
         }
     }
 }

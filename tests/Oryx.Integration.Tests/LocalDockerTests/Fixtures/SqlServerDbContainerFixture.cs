@@ -52,23 +52,31 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             return runDatabaseContainerResult;
         }
 
+        protected override string GetSampleDataInsertionSql()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void InsertSampleData()
         {
             // Setup user, database
             var dbSetupSql = "/tmp/databaseSetup.sql";
-            var databaseSetupScript = new ShellScriptBuilder()
+            var dbSetupScript = new ShellScriptBuilder()
                 .AddCommand($"echo \"CREATE DATABASE {Constants.DatabaseName};\" >> {dbSetupSql}")
                 .AddCommand($"echo GO >> {dbSetupSql}")
                 .AddCommand($"echo \"Use {Constants.DatabaseName};\" >> {dbSetupSql}")
                 .AddCommand($"echo GO >> {dbSetupSql}")
                 .AddCommand($"echo \"CREATE TABLE Products (Name nvarchar(50));\" >> {dbSetupSql}")
+                .AddCommand($"echo GO >> {dbSetupSql}");
+
+            foreach (var product in SampleData)
+            {
+                dbSetupScript.AddCommand($"echo \"INSERT INTO Products VALUES ('{product.Value}');\" >> {dbSetupSql}");
+            }
+
+            dbSetupScript
                 .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES ('Car');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES ('Television');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES ('Table');\" >> {dbSetupSql}")
-                .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} - P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
-                .ToString();
+                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} - P {Constants.DatabaseUserPwd} -i {dbSetupSql}");
 
             DockerCommandResult setupDatabaseResult;
             var maxRetries = 10;
@@ -76,15 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             {
                 // Wait for the database server to be up
                 Thread.Sleep(TimeSpan.FromSeconds(30));
-
-                setupDatabaseResult = _dockerCli.Exec(
-                    DbServerContainerName,
-                    "/bin/sh",
-                    new[]
-                    {
-                        "-c",
-                        databaseSetupScript
-                    });
+                setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript.ToString() });
                 maxRetries--;
             } while (maxRetries > 0 && setupDatabaseResult.IsSuccess == false);
 

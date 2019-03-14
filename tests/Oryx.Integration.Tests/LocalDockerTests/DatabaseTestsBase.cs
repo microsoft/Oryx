@@ -17,8 +17,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class DatabaseTestsBase
     {
-        protected const string expectedOutput = "[{\"Name\":\"Car\"},{\"Name\":\"Television\"},{\"Name\":\"Table\"}]";
-
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)

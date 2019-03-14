@@ -5,8 +5,10 @@
 
 using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -17,6 +19,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         public const string DbServerUsernameEnvVarName = "DATABASE_USERNAME";
         public const string DbServerPasswordEnvVarName = "DATABASE_PASSWORD";
         public const string DbServerDatabaseEnvVarName = "DATABASE_NAME";
+
+        protected readonly IList<KeyValuePair<string, string>> SampleData = new List<KeyValuePair<string, string>> {
+            KeyValuePair.Create("name", "Car"),
+            KeyValuePair.Create("name", "Camera"),
+            KeyValuePair.Create("name", "Computer")
+        };
 
         protected readonly DockerCli _dockerCli = new DockerCli();
 
@@ -49,12 +57,27 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             };
         }
 
+        public string GetSampleDataAsJson()
+        {
+            return JsonConvert.SerializeObject(SampleData);
+        }
+
         protected abstract DockerRunCommandResult RunDbServerContainer();
 
         protected virtual void WaitUntilDbServerIsUp()
         {
             // TODO: get rid of Sleep
             Thread.Sleep(TimeSpan.FromMinutes(1));
+        }
+
+        protected virtual string GetSampleDataInsertionSql()
+        {
+            var sb = new StringBuilder($"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
+            foreach (var record in SampleData)
+            {
+                sb.Append($" INSERT INTO Products VALUES('{record.Value}');");
+            }
+            return sb.ToString();
         }
 
         protected abstract void InsertSampleData();
