@@ -92,17 +92,19 @@ RUN apt-get update \
         xsl \
     && docker-php-ext-enable imagick
 
-# Install the Microsoft SQL Server PDO driver on supported versions only (https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac)
-RUN set -eux && \
+# Install the Microsoft SQL Server PDO driver on supported versions only.
+#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
+#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+RUN set -eux; \
     if [[ $PHP_VERSION == 7.1.* || $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* ]]; then \
+        apt-get update && apt-get install -y gnupg2 apt-transport-https && \
+        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
+        curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
+        apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev; \
 		pecl install sqlsrv pdo_sqlsrv && \
 		echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini && \
 		echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
 	fi
-
-# Install ODBC extension
-RUN apt-get update \
-  && apt-get install unixodbc-dev
 
 RUN set -x \
     && docker-php-source extract \
