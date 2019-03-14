@@ -197,7 +197,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return script;
         }
 
-        [Fact (Skip = "structured data is not logged as custom dimension in file, 801985")]
+        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985")]
         public void ErrorDetectingNode_FailedExitCode_StringContentFound()
         {
             var appDir = "/tmp/app1";
@@ -479,14 +479,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "Work item 819489 - output folder as a subdirectory of source is not yet supported.)")]
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -500,7 +500,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    script
+                    buildScript
                 });
 
             // Assert

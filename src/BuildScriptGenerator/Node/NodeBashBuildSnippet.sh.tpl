@@ -15,6 +15,12 @@ fi
 
 {{ PackageInstallCommand }}
 
+# TODO Using this to test the change, until we have the final PR checked in.
+if [ "$ENABLE_NODE_MODULES_ZIP" == "true" ]; then
+	echo "Compressing node_modules folder..."
+	tar -czf node_modules.zip node_modules/
+fi
+
 {{ NpmRunBuildCommand }}
 
 {{ NpmRunBuildAzureCommand }}

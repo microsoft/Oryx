@@ -3,25 +3,56 @@ set -e
 
 SOURCE_DIR=$1
 DESTINATION_DIR=$2
+INTERMEDIATE_DIR=$3
 
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
     exit 1
 fi
 
+# Get full file paths to source and destination directories
+cd $SOURCE_DIR
+SOURCE_DIR=$(pwd -P)
+
 if [ -z "$DESTINATION_DIR" ]
 then
     DESTINATION_DIR="$SOURCE_DIR"
 fi
 
-# Get full file paths to source and destination directories
-cd $SOURCE_DIR
-SOURCE_DIR=$(pwd -P)
-
 if [ -d "$DESTINATION_DIR" ]
 then
     cd $DESTINATION_DIR
     DESTINATION_DIR=$(pwd -P)
+fi
+
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
+then
+	if [ -d "$DESTINATION_DIR" ]
+	then
+		echo
+		echo Destination directory already exists. Deleting it ...
+		rm -rf "$DESTINATION_DIR"
+	fi
+fi
+
+if [ ! -z "$INTERMEDIATE_DIR" ]
+then
+	echo "Using intermediate directory '$INTERMEDIATE_DIR'."
+	if [ ! -d "$INTERMEDIATE_DIR" ]
+	then
+		echo "Intermediate directory doesn't exist, creating it...'"
+		mkdir -p "$INTERMEDIATE_DIR"		
+	fi
+
+	cd "$INTERMEDIATE_DIR"
+	INTERMEDIATE_DIR=$(pwd -P)
+	cd "$SOURCE_DIR"
+	# TODO make the exclusion list be dynamic, from a list provided by the languages
+	echo
+	echo "Copying files to the intermediate directory..."
+	rsync --delete -rt --exclude node_modules.zip --exclude node_modules --exclude .git . "$INTERMEDIATE_DIR"
+	echo "Finished copying files to intermediate directory."
+	SOURCE_DIR="$INTERMEDIATE_DIR"
 fi
 
 echo
@@ -34,16 +65,6 @@ if [ -f /usr/local/bin/benv ]; then
 	source /usr/local/bin/benv {{ BenvArgs }}
 fi
 {{ end }}
-
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
-then
-	if [ -d "$DESTINATION_DIR" ]
-	then
-		echo
-		echo Destination directory already exists. Deleting it ...
-		rm -rf "$DESTINATION_DIR"
-	fi
-fi
 
 {{ if PreBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
@@ -59,14 +80,17 @@ echo "{{ PreBuildScriptEpilogue }}"
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	appTempDir=`mktemp -d`
 	cd "$SOURCE_DIR"
-	# Use temporary directory in case the destination directory is a subfolder of $SOURCE
-	cp -rf `ls -A | grep -v ".git" || echo .` "$appTempDir"
 	mkdir -p "$DESTINATION_DIR"
-	cd "$appTempDir"
-	echo "Copying files to destination, '$DESTINATION_DIR'"
-	cp -rf . "$DESTINATION_DIR"
+	echo
+	echo "Copying files to destination directory, '$DESTINATION_DIR'"
+	# TODO make the exclusion list dynamic, provided by each language
+	if [ "$ENABLE_NODE_MODULES_ZIP" == "true" ]; then
+		rsync -rtE --links --exclude node_modules --exclude .git . "$DESTINATION_DIR"
+	else
+		rsync -rtE --links --exclude .git . "$DESTINATION_DIR"
+	fi
+	echo "Finished copying files to destination directory."
 fi
 
 {{ if PostBuildScriptPath | IsNotBlank }}
