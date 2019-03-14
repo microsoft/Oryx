@@ -5,6 +5,7 @@
 
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,7 +49,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:80";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                portMapping,
+                $"{HostPort}:80",
                 "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
@@ -89,7 +89,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appName = "wordpress";
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:80";
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
@@ -101,12 +100,49 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                portMapping,
+                $"{HostPort}:80",
                 "/bin/sh", new[] { "-c", runScript },
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>WordPress &rsaquo; Setup Configuration File</title>", data);
+                });
+        }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public async Task GraphicsExtensions(string phpVersion)
+        {
+            // Arrange
+            var appName = "image-examples";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName, _output, volume,
+                "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
+                $"oryxdevms/php-{phpVersion}",
+                $"{HostPort}:80",
+                "/bin/sh", new[] { "-c", runScript },
+                async () =>
+                {
+                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/imagick.php");
+                    Assert.Equal("64x64", imagickOutput);
+
+                    string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/gd_info.php");
+                    dynamic gdInfo = JsonConvert.DeserializeObject(gdInfoOutput);
+                    Assert.True(gdInfo["JPEG Support"]);
+                    Assert.True(gdInfo["PNG Support"]);
                 });
         }
     }
