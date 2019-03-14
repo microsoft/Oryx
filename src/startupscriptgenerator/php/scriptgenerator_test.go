@@ -19,6 +19,6 @@ func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript() {
 	// #!/bin/sh
 	// # Enter the source directory to make sure the script runs where the user expects
 	// cd abc
-	// export APACHE_DOCUMENT_ROOT=''
+	// export APACHE_DOCUMENT_ROOT='abc'
 	// somecmd
 }
