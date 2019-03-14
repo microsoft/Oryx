@@ -3,16 +3,21 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
     public abstract class DbContainerFixtureBase : IDisposable
     {
+        public const string DbServerHostnameEnvVarName = "DATABASE_HOSTNAME";
+        public const string DbServerUsernameEnvVarName = "DATABASE_USERNAME";
+        public const string DbServerPasswordEnvVarName = "DATABASE_PASSWORD";
+        public const string DbServerDatabaseEnvVarName = "DATABASE_NAME";
+
         protected readonly DockerCli _dockerCli = new DockerCli();
 
         public DbContainerFixtureBase()
@@ -34,6 +39,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             {
                 _dockerCli.StopContainer(DbServerContainerName);
             }
+        }
+
+        [NotNull]
+        public virtual List<EnvironmentVariable> GetCredentialsAsEnvVars()
+        {
+            return new List<EnvironmentVariable>
+            {
+                new EnvironmentVariable(DbServerHostnameEnvVarName, Constants.InternalDbLinkName),
+                new EnvironmentVariable(DbServerUsernameEnvVarName, Constants.DatabaseUserName),
+                new EnvironmentVariable(DbServerPasswordEnvVarName, Constants.DatabaseUserPwd),
+                new EnvironmentVariable(DbServerDatabaseEnvVarName, Constants.DatabaseName),
+            };
         }
 
         protected abstract DockerRunCommandResult RunDbServerContainer();
