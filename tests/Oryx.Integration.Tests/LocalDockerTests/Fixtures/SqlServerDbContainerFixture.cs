@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 .AddCommand($"echo \"INSERT INTO Products VALUES ('Television');\" >> {dbSetupSql}")
                 .AddCommand($"echo \"INSERT INTO Products VALUES ('Table');\" >> {dbSetupSql}")
                 .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} - P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
+                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
                 .ToString();
 
             DockerCommandResult setupDatabaseResult;
@@ -76,22 +76,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             {
                 // Wait for the database server to be up
                 Thread.Sleep(TimeSpan.FromSeconds(30));
-
-                setupDatabaseResult = _dockerCli.Exec(
-                    DbServerContainerName,
-                    "/bin/sh",
-                    new[]
-                    {
-                        "-c",
-                        databaseSetupScript
-                    });
+                setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", databaseSetupScript });
                 maxRetries--;
             } while (maxRetries > 0 && setupDatabaseResult.IsSuccess == false);
 
             if (setupDatabaseResult.IsSuccess == false)
             {
                 Console.WriteLine(setupDatabaseResult.GetDebugInfo());
-                throw new Exception("Couldn't setup MS SQL Server on time");
+                throw new Exception("Couldn't setup SQL Server in time.");
             }
         }
     }
