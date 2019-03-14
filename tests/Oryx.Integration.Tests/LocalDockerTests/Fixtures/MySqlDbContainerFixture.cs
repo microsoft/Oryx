@@ -17,10 +17,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 Settings.MySqlDbImageName,
                 environmentVariables: new List<EnvironmentVariable>
                 {
-                        new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
-                        new EnvironmentVariable("MYSQL_DATABASE", Constants.DatabaseName),
-                        new EnvironmentVariable("MYSQL_USER", Constants.DatabaseUserName),
-                        new EnvironmentVariable("MYSQL_PASSWORD", Constants.DatabaseUserPwd),
+                    new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
+                    new EnvironmentVariable("MYSQL_DATABASE", Constants.DatabaseName),
+                    new EnvironmentVariable("MYSQL_USER", Constants.DatabaseUserName),
+                    new EnvironmentVariable("MYSQL_PASSWORD", Constants.DatabaseUserPwd),
                 },
                 volumes: null,
                 portMapping: null,
