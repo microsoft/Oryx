@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} - P {Constants.DatabaseUserPwd} -i {dbSetupSql}");
 
             DockerCommandResult setupDatabaseResult;
-            var maxRetries = 10;
+            var maxRetries = 3;
             do
             {
                 // Wait for the database server to be up
