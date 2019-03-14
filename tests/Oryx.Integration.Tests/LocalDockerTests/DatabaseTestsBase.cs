@@ -19,10 +19,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected const string expectedOutput = "[{\"Name\":\"Car\"},{\"Name\":\"Television\"},{\"Name\":\"Table\"}]";
 
-        [CanBeNull]
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
 
-        protected DatabaseTestsBase(ITestOutputHelper outputHelper, [CanBeNull] Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
+        protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
         {
             _dbFixture = dbFixture;
             _output = outputHelper;
@@ -81,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
-                _dbFixture?.GetCredentialsAsEnvVars(),
+                _dbFixture.GetCredentialsAsEnvVars(),
                 portMapping, link,
                 "/bin/sh", new[] { "-c", script },
                 async () =>
