@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "nodejs",
                 "10.14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-mssql"),
-                _msSqlServerDatabaseSetupFixture.DatabaseServerContainerName);
+                _msSqlServerDatabaseSetupFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"),
-                _msSqlServerDatabaseSetupFixture.DatabaseServerContainerName);
+                _msSqlServerDatabaseSetupFixture.DbServerContainerName);
         }
     }
 }

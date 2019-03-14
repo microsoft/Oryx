@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "nodejs",
                 "10.14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-postgres"),
-                _postgresDatabaseSetupFixture.DatabaseServerContainerName);
+                _postgresDatabaseSetupFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "postgres-sample"),
-                _postgresDatabaseSetupFixture.DatabaseServerContainerName);
+                _postgresDatabaseSetupFixture.DbServerContainerName);
         }
     }
 }

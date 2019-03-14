@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "nodejs",
                 "10.14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
-                _mySqlDatabaseSetupFixture.DatabaseServerContainerName);
+                _mySqlDatabaseSetupFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "mysql-pymysql-sample"),
-                _mySqlDatabaseSetupFixture.DatabaseServerContainerName);
+                _mySqlDatabaseSetupFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "mysql-mysqlconnector-sample"),
-                _mySqlDatabaseSetupFixture.DatabaseServerContainerName);
+                _mySqlDatabaseSetupFixture.DbServerContainerName);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", "mysql-mysqlclient-sample"),
-                _mySqlDatabaseSetupFixture.DatabaseServerContainerName);
+                _mySqlDatabaseSetupFixture.DbServerContainerName);
         }
     }
 }
