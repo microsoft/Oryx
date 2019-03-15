@@ -27,10 +27,10 @@ fi
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	if [ -d "$DESTINATION_DIR" ]
+	if [ "$(ls -A $DESTINATION_DIR)" ]
 	then
 		echo
-		echo "Destination directory is not empty. Deleting it's contents ..."
+		echo "Destination directory is not empty. Deleting its contents ..."
 		rm -rf "$DESTINATION_DIR"/*
 	fi
 fi
@@ -41,7 +41,7 @@ then
 	if [ ! -d "$INTERMEDIATE_DIR" ]
 	then
 		echo
-		echo "Intermediate directory doesn't exist, creating it...'"
+		echo "Intermediate directory doesn't exist, creating it ...'"
 		mkdir -p "$INTERMEDIATE_DIR"		
 	fi
 
@@ -87,7 +87,7 @@ then
 	cd "$SOURCE_DIR"
 	mkdir -p "$DESTINATION_DIR"
 	echo
-	echo "Copying files to destination directory, '$DESTINATION_DIR'"
+	echo "Copying files to destination directory '$DESTINATION_DIR' ..."
 	excludedDirectories=""
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
 	excludedDirectories+=" --exclude {{ excludedDir }}"

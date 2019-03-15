@@ -115,6 +115,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.WriteLine($"Script written to '{OutputPath}'");
             }
 
+            // Try making the script executable
+            ProcessHelper.TrySetExecutableMode(OutputPath);
+
             return ProcessConstants.ExitSuccess;
         }
     }
