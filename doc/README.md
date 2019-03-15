@@ -3,6 +3,7 @@ system and how to configure or change them.
 
 # Contents
 
+1. [Architecture](./architecture.md)
 1. [Build](./base_images.md#build)
 1. [Run](./base_images.md#run)
     * [Azure Web Apps runtimes and versions](./base_images.md#azure-web-apps-runtimes-and-versions)
@@ -12,6 +13,7 @@ system and how to configure or change them.
     * [Startup file](./configuration.md#startup-file)
 1. [Use](./use.md)
     * [Dockerfile.oryx](./Dockerfile.oryx)
-1. [Runtimes](./runtimes)
+1. [Runtime details](./runtimes)
     * [Node.js](./runtimes/nodejs.md)
     * [Python](./runtimes/python.md)
+    * [.NET Core](./runtimes/dotnetcore.md)

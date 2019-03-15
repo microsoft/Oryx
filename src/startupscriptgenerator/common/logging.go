@@ -7,12 +7,13 @@ package common
 
 import (
 	"fmt"
-	"strings"
-	"os"
-	"time"
-	"path"
 	"io/ioutil"
+	"os"
+	"path"
 	"startupscriptgenerator/common/consts"
+	"strings"
+	"time"
+
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts"
 )

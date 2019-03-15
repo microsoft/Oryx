@@ -37,16 +37,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var toolsToVersion = new Dictionary<string, string>();
             List<BuildScriptSnippet> snippets;
+            var directoriesToExcludeFromCopyToIntermediateDir = new List<string>();
+            var directoriesToExcludeFromCopyToBuildOutputDir = new List<string>();
 
             using (var timedEvent = _logger.LogTimedEvent("GetBuildSnippets"))
             {
-                snippets = GetBuildSnippets(context, toolsToVersion);
+                snippets = GetBuildSnippets(
+                    context,
+                    toolsToVersion,
+                    directoriesToExcludeFromCopyToIntermediateDir,
+                    directoriesToExcludeFromCopyToBuildOutputDir);
                 timedEvent.SetProperties(toolsToVersion);
             }
 
             if (snippets.Any())
             {
-                script = BuildScriptFromSnippets(snippets, toolsToVersion);
+                // By default exclude these irrespective of platform
+                directoriesToExcludeFromCopyToIntermediateDir.Add(".git");
+                directoriesToExcludeFromCopyToBuildOutputDir.Add(".git");
+
+                script = BuildScriptFromSnippets(
+                    snippets,
+                    toolsToVersion,
+                    directoriesToExcludeFromCopyToIntermediateDir,
+                    directoriesToExcludeFromCopyToBuildOutputDir);
                 return true;
             }
             else
@@ -63,7 +77,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return benvArgs;
         }
 
-        private List<BuildScriptSnippet> GetBuildSnippets(BuildScriptGeneratorContext context, Dictionary<string, string> toolsToVersion)
+        private List<BuildScriptSnippet> GetBuildSnippets(
+            BuildScriptGeneratorContext context,
+            Dictionary<string, string> toolsToVersion,
+            List<string> directoriesToExcludeFromCopyToIntermediateDir,
+            List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
         {
             bool providedLanguageFound = false;
             var snippets = new List<BuildScriptSnippet>();
@@ -111,6 +129,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (usePlatform)
                 {
+                    var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir();
+                    if (excludedDirs.Any())
+                    {
+                        directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
+                    }
+                    excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir();
+                    if (excludedDirs.Any())
+                    {
+                        directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
+                    }
+
                     string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
                     platform.SetVersion(context, targetVersion);
 
@@ -161,7 +190,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Builds the full build script from the list of snippets for each platform.
         /// </summary>
         /// <returns>Finalized build script as a string.</returns>
-        private string BuildScriptFromSnippets(List<BuildScriptSnippet> snippets, Dictionary<string, string> toolsToVersion)
+        private string BuildScriptFromSnippets(
+            List<BuildScriptSnippet> snippets,
+            Dictionary<string, string> toolsToVersion,
+            List<string> directoriesToExcludeFromCopyToIntermediateDir,
+            List<string> directoriesToExcludeFromCopyToBuildOutputDir)
         {
             string script;
             string benvArgs = GetBenvArgs(toolsToVersion);
@@ -172,7 +205,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
-                PostBuildScriptPath = environmentSettings?.PostBuildScriptPath
+                PostBuildScriptPath = environmentSettings?.PostBuildScriptPath,
+                DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
+                DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildScriptPath);

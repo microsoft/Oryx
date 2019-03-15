@@ -183,7 +183,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
-                    new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty },
+                    new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty, options.IntermediateDir ?? string.Empty },
                     workingDirectory: sourceRepo.RootPath,
                     stdOutHandler == null ? stdOutBaseHandler : stdOutBaseHandler + stdOutHandler,
                     stdErrHandler == null ? stdErrBaseHandler : stdErrBaseHandler + stdErrHandler);
@@ -229,17 +229,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     logger.LogError("Intermediate directory {intermediateDir} cannot be a child of {srcDir}", options.IntermediateDir, options.SourceDir);
                     console.Error.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
-                        $"sub-directory of source directory '{options.SourceDir}'.");
-                    return false;
-                }
-
-                // If intermediate folder is provided, we assume user doesn't want to modify it. In this case,
-                // we do not want the output folder to be part of source directory.
-                if (!string.IsNullOrEmpty(options.DestinationDir) && IsSubDirectory(options.DestinationDir, options.SourceDir))
-                {
-                    logger.LogError("Destination directory {dstDir} cannot be a child of {srcDir}", options.DestinationDir, options.SourceDir);
-                    console.Error.WriteLine(
-                        $"Destination directory '{options.DestinationDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");
                     return false;
                 }

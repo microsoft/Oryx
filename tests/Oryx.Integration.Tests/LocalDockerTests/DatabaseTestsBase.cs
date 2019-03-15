@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     public class DatabaseTestsBase
     {
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
+        protected readonly ITestOutputHelper _output;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
         {
@@ -27,8 +28,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
-
-        protected ITestOutputHelper _output { get; }
 
         protected int HostPort { get; }
 
@@ -52,11 +51,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:8000";
-            var entrypointScript = "./start.sh";
+            var containerPort = 8000;
+            var portMapping = $"{HostPort}:{containerPort}";
+            var entrypointScript = "./run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {entrypointScript}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {containerPort}")
                 .AddCommand(entrypointScript)
                 .ToString();
 
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
-                volume,
+                new List<DockerVolume> { volume },
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),

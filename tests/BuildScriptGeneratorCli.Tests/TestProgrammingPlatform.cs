@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -46,6 +47,16 @@ namespace BuildScriptGeneratorCli.Tests
         public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
         {
             throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        {
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        {
+            return Array.Empty<string>();
         }
 
         public bool IsCleanRepo(ISourceRepo repo)

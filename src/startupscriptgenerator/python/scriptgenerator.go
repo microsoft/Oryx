@@ -23,6 +23,7 @@ type PythonStartupScriptGenerator struct {
 }
 
 const DefaultHost = "0.0.0.0"
+const DefaultBindPort = "80"
 
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
@@ -35,9 +36,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
 	
-	// Make the Port value available as environment variable so that
-	// a user's startup command can use it, if needed
-	scriptBuilder.WriteString("export PORT=" + gen.BindPort + "\n\n")
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
 	packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
 	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
@@ -97,6 +96,10 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			command = gen.getCommandFromModule(appModule, appDirectory)
 		}
 	}
+
+	logger.LogInformation("adding execution permission if needed ...");
+	isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+	logger.LogInformation("permission added %t", isPermissionAdded)
 
 	scriptBuilder.WriteString(command + "\n")
 

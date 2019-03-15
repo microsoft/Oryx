@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -304,39 +303,6 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Equal(0, exitCode);
             Assert.Equal(string.Empty, testConsole.StdError);
             Assert.Contains("Hello World", testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("subdir1")]
-        [InlineData("subdir1", "subdir2")]
-        public void IsValid_IsFalse_IfDestinationDir_IsSubDirectory_OfSourceDir_AndIntermediateDirIsProvided(params string[] paths)
-        {
-            // Arrange
-            var sourceDir = CreateNewDir();
-            var intDir = CreateNewDir();
-            var subPaths = Path.Combine(paths);
-            var destinationDir = Path.Combine(sourceDir, subPaths);
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = sourceDir;
-                    o.IntermediateDir = intDir;
-                    o.DestinationDir = destinationDir;
-                })
-                .Build();
-            var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
-
-            // Assert
-            Assert.False(isValid);
-            Assert.Contains(
-                $"Destination directory '{destinationDir}' cannot be a " +
-                $"sub-directory of source directory '{sourceDir}'.",
-                testConsole.StdError);
         }
 
         [Theory]
