@@ -49,10 +49,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override void WaitUntilDbServerIsUp()
         {
-            // Seems to be a common way of waiting for SQL Server:
-            // https://github.com/twright-msft/mssql-node-docker-demo-app/blob/master/import-data.sh
-            // TODO: remove constant sleep
-            Thread.Sleep(TimeSpan.FromSeconds(90));
+            // Try 30 times at most, with a constant 3s in between attempts
+            var retry = Policy.HandleResult(false).WaitAndRetry(30, i => TimeSpan.FromSeconds(3));
+            retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName).Contains("SQL Server is now ready for client connections"));
         }
 
         protected override void InsertSampleData()
