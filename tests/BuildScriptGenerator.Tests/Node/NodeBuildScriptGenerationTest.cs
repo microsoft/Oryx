@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }";
 
         private const string NpmInstallCommand = "npm install";
-        private const string YarnInstallCommand = "yarn install";
+        private const string YarnInstallCommand = "yarn install --prefer-offline";
 
         [Fact]
         public void GeneratedScript_HasNpmVersion_SpecifiedInPackageJson()

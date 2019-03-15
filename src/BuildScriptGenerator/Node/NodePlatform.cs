@@ -47,10 +47,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
 
-            string packageManagerCmd = context.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ? NodeConstants.YarnCommand : NodeConstants.NpmCommand;
-            _logger.LogInformation("Using {packageManager}", packageManagerCmd);
+            string packageManagerCmd = null;
+            string packageInstallCommand = null;
 
-            var packageInstallCommand = string.Format(NodeConstants.PackageInstallCommandTemplate, packageManagerCmd);
+            if (context.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
+            {
+                packageManagerCmd = NodeConstants.YarnCommand;
+                packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+            }
+            else
+            {
+                packageManagerCmd = NodeConstants.NpmCommand;
+                packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+            }
+
+            _logger.LogInformation("Using {packageManager}", packageManagerCmd);
 
             var scriptsNode = packageJson?.scripts;
             if (scriptsNode != null)
