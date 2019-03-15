@@ -44,9 +44,9 @@ func WriteScript(filePath string, command string) {
 	ioutil.WriteFile(filePath, []byte(command), 0755)
 }
 
-// Add given permission to a file
-func AddPermission(filePath string, permission int) bool {
-	err := os.Chmod(filePath, os.FileMode(permission))
+// Try to add a permission to a file
+func TryAddPermission(filePath string, permission os.FileMode) bool {
+	err := os.Chmod(filePath, permission)
 	if err != nil {
 		return false
 	}
@@ -60,7 +60,10 @@ func ParseCommandAndAddExecutionPermission(commandString string, sourcePath stri
 		panic(err)
 	} else {
 		if FileExists(absoluteFilePath) {
-			return AddPermission(absoluteFilePath, 0755)
+			return TryAddPermission(absoluteFilePath, 0755)
+		}
+		if FileExists(commandString) {
+			return TryAddPermission(commandString, 0755)
 		}
 		return false
 	}
