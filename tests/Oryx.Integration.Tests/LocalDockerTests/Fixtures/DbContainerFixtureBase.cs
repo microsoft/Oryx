@@ -64,11 +64,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected abstract DockerRunCommandResult RunDbServerContainer();
 
-        protected virtual void WaitUntilDbServerIsUp()
-        {
-            // TODO: get rid of Sleep
-            Thread.Sleep(TimeSpan.FromMinutes(1));
-        }
+        protected abstract void WaitUntilDbServerIsUp();
 
         protected virtual string GetSampleDataInsertionSql()
         {
