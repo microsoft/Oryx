@@ -674,6 +674,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 throw new NotImplementedException();
             }
 
+            public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+            {
+                return Array.Empty<string>();
+            }
+
+            public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+            {
+                return Array.Empty<string>();
+            }
+
             public bool IsCleanRepo(ISourceRepo repo)
             {
                 return true;

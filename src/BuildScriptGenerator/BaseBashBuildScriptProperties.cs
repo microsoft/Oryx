@@ -34,5 +34,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the path to the post build script.
         /// </summary>
         public string PostBuildScriptPath { get; set; }
+
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
+
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToIntermediateDir { get; set; }
     }
 }

@@ -75,5 +75,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="repo">Source repo to check</param>
         /// <returns>true if the repo doesn't seem to have artifacts from a previous build, false otherwise</returns>
         bool IsCleanRepo(ISourceRepo repo);
+
+        /// <summary>
+        /// Gets list of directories which need to be excluded from being copied to the output directory.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir();
+
+        /// <summary>
+        /// Gets list of directories which need to be excluded from being copied to an intermediate directory, if used.
+        /// </summary>
+        /// <returns>List of directories</returns>
+        IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir();
     }
 }

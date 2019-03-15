@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -111,14 +112,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
-                runBuildAzureCommand: null);
+                runBuildAzureCommand: null,
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -134,14 +138,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
-                runBuildAzureCommand: null);
+                runBuildAzureCommand: null,
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -157,14 +164,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
-                runBuildAzureCommand: null);
+                runBuildAzureCommand: null,
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -181,14 +191,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: null,
-                runBuildAzureCommand: null);
+                runBuildAzureCommand: null,
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -205,14 +218,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: "yarn run build",
-                runBuildAzureCommand: "yarn run build:azure");
+                runBuildAzureCommand: "yarn run build:azure",
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -229,14 +245,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
-                runBuildAzureCommand: null);
+                runBuildAzureCommand: null,
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -252,22 +271,83 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure");
+                runBuildAzureCommand: "npm run build:azure",
+                zipNodeModulesDir: false);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected), snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        private IProgrammingPlatform GetNodePlatformInstance(string defaultNodeVersion = null, string defaultNpmVersion = null)
+        [Fact]
+        public void GeneratedScript_ZipsNodeModules_IfZipNodeModulesEnvironmentVariable_IsTrue()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0", zipNodeModules: "true");
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                zipNodeModulesDir: true);
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("echo Zipping 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_DoesNotZipNodeModules_IfZipNodeModulesEnvironmentVariable_False()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0", zipNodeModules: "false");
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                zipNodeModulesDir: false);
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.DoesNotContain("echo Zipping 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        private IProgrammingPlatform GetNodePlatformInstance(
+            string defaultNodeVersion = null, 
+            string defaultNpmVersion = null,
+            string zipNodeModules = null)
         {
             var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
             environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
+            environment.Variables[NodeScriptGeneratorOptionsSetup.ZipNodeModules] = zipNodeModules;
 
             var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1" }, new[] { "5.4.2", "6.0.0" });
 
@@ -281,7 +361,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 null);
         }
-
+                
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
             ISourceRepo sourceRepo,
             string languageName = null,
@@ -291,7 +371,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             {
                 Language = languageName,
                 LanguageVersion = languageVersion,
-                SourceRepo = sourceRepo
+                SourceRepo = sourceRepo,
+                Properties = new Dictionary<string, string>()
             };
         }
     }

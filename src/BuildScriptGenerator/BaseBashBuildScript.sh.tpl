@@ -30,8 +30,8 @@ then
 	if [ -d "$DESTINATION_DIR" ]
 	then
 		echo
-		echo Destination directory already exists. Deleting it ...
-		rm -rf "$DESTINATION_DIR"
+		echo "Destination directory is not empty. Deleting it's contents ..."
+		rm -rf "$DESTINATION_DIR"/*
 	fi
 fi
 
@@ -40,6 +40,7 @@ then
 	echo "Using intermediate directory '$INTERMEDIATE_DIR'."
 	if [ ! -d "$INTERMEDIATE_DIR" ]
 	then
+		echo
 		echo "Intermediate directory doesn't exist, creating it...'"
 		mkdir -p "$INTERMEDIATE_DIR"		
 	fi
@@ -47,10 +48,13 @@ then
 	cd "$INTERMEDIATE_DIR"
 	INTERMEDIATE_DIR=$(pwd -P)
 	cd "$SOURCE_DIR"
-	# TODO make the exclusion list be dynamic, from a list provided by the languages
 	echo
 	echo "Copying files to the intermediate directory..."
-	rsync --delete -rt --exclude node_modules.zip --exclude node_modules --exclude .git . "$INTERMEDIATE_DIR"
+	excludedDirectories=""
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToIntermediateDir }}
+	excludedDirectories+=" --exclude {{ excludedDir }}"
+	{{ end }}
+	rsync --delete -rt $excludedDirectories . "$INTERMEDIATE_DIR"
 	echo "Finished copying files to intermediate directory."
 	SOURCE_DIR="$INTERMEDIATE_DIR"
 fi
@@ -84,12 +88,11 @@ then
 	mkdir -p "$DESTINATION_DIR"
 	echo
 	echo "Copying files to destination directory, '$DESTINATION_DIR'"
-	# TODO make the exclusion list dynamic, provided by each language
-	if [ "$ENABLE_NODE_MODULES_ZIP" == "true" ]; then
-		rsync -rtE --links --exclude node_modules --exclude .git . "$DESTINATION_DIR"
-	else
-		rsync -rtE --links --exclude .git . "$DESTINATION_DIR"
-	fi
+	excludedDirectories=""
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+	excludedDirectories+=" --exclude {{ excludedDir }}"
+	{{ end }}
+	rsync -rtE --links $excludedDirectories . "$DESTINATION_DIR"
 	echo "Finished copying files to destination directory."
 fi
 

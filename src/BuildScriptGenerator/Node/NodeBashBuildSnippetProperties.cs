@@ -13,11 +13,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public NodeBashBuildSnippetProperties(
             string packageInstallCommand,
             string runBuildCommand,
-            string runBuildAzureCommand)
+            string runBuildAzureCommand,
+            bool zipNodeModulesDir)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
             NpmRunBuildAzureCommand = runBuildAzureCommand;
+            ZipNodeModulesDir = zipNodeModulesDir;
         }
 
         public string PackageInstallCommand { get; set; }
@@ -25,5 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string NpmRunBuildCommand { get; set; }
 
         public string NpmRunBuildAzureCommand { get; set; }
+
+        public bool ZipNodeModulesDir { get; set; }
     }
 }

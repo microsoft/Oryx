@@ -138,5 +138,27 @@ namespace Microsoft.Oryx.Tests.Common
                 commandToExecuteOnRun,
                 commandArguments);
         }
+
+        public static DockerRunCommandResult Run(
+            this DockerCli dockerCli,
+            string imageId,
+            List<EnvironmentVariable> environmentVariables,
+            List<DockerVolume> volumes,
+            string portMapping,
+            string link,
+            bool runContainerInBackground,
+            string commandToExecuteOnRun,
+            string[] commandArguments)
+        {
+            return dockerCli.Run(
+                imageId,
+                environmentVariables,
+                volumes,
+                portMapping,
+                link,
+                runContainerInBackground,
+                commandToExecuteOnRun,
+                commandArguments);
+        }
     }
 }

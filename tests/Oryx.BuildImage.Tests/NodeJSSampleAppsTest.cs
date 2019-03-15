@@ -578,20 +578,116 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void TestRegex()
+        public void BuildsNodeApp_AndZipsNodeModules_IfZipNodeModulesIsTrue_UsingLegacyEnvironmentVariableName()
         {
-            Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", @"
-a
-d
-d
-d
-d
-d
-Pre-build script: /opt/nodejs/6.11.0/bin/node
-d
-a
+            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like 
+            //  "tar: node_modules/form-data: file changed as we read it"
+            // related to zipping files on a folder which is volume mounted.
 
-");
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_NODE_MODULES_ZIP=true")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsNodeApp_AndZipsNodeModules_IfZipNodeModulesIsTrue()
+        {
+            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like 
+            //  "tar: node_modules/form-data: file changed as we read it"
+            // related to zipping files on a folder which is volume mounted.
+
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsNodeApp_AndDoesNotZipNodeModules_IfZipNodeModulesIsFalse()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
         }
     }
 }

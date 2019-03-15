@@ -87,7 +87,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
-                runBuildAzureCommand: runBuildAzureCommand);
+                runBuildAzureCommand: runBuildAzureCommand,
+                zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules);
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, scriptProps, _logger);
 
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
@@ -205,6 +206,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
             var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
             return script;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        {
+            var dirs = new List<string>();
+            if (_nodeScriptGeneratorOptions.ZipNodeModules)
+            {
+                dirs.Add(NodeConstants.NodeModulesDirName);
+            }
+            else
+            {
+                dirs.Add(NodeConstants.NodeModulesZippedFileName);
+            }
+
+            return dirs;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        {
+            return new[] { NodeConstants.NodeModulesDirName, NodeConstants.NodeModulesZippedFileName };
         }
 
         internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
