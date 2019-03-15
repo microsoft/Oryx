@@ -14,6 +14,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
     public class DotnetCoreStartupScriptGenerationTest : TestBase
     {
         private const string DotnetCoreRuntimeImageName = "oryxdevms/dotnetcore-2.2";
+        private const string ScriptLocation = "./run.sh";
 
         private const string RegularProjectFileContent =
             @"<Project Sdk=""Microsoft.NET.Sdk.Web"">" +
@@ -45,14 +46,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet \"webapp.dll\"";
             var expectedWorkingDir = $"cd \"{appOutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
                 .AddCommand($"mkdir -p {appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/webapp.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -84,14 +84,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet \"Foo.dll\"";
             var expectedWorkingDir = $"cd \"{appOutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo '{ProjectFileWithExplicitAssemblyName}' > {appDir}/webapp.csproj")
                 .AddCommand($"mkdir -p {appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/Foo.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -123,14 +122,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet \"webapp.dll\"";
             var expectedWorkingDir = $"cd \"{appOutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
                 .AddCommand($"mkdir -p {appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/webapp.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -publishedOutputPath {appOutputDir} -output {scriptLocation}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir} -publishedOutputPath {appOutputDir}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -162,14 +160,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet \"webapp.dll\"";
             var expectedWorkingDir = $"cd \"{appOutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo '{ProjectFileWithMultiplePropertyGroups}' > {appDir}/webapp.csproj")
                 .AddCommand($"mkdir -p {appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/webapp.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -201,12 +198,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var defaultWebAppFile = "/tmp/defaultwebapp.dll";
             var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo > /tmp/defaultwebapp.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation} -defaultAppFilePath {defaultWebAppFile}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir} -defaultAppFilePath {defaultWebAppFile}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -237,13 +233,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var defaultWebAppFile = "/tmp/defaultwebapp.dll";
             var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}") // no publish directory
                 .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
                 .AddCommand($"echo > /tmp/defaultwebapp.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation} -defaultAppFilePath {defaultWebAppFile}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir} -defaultAppFilePath {defaultWebAppFile}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -274,14 +269,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet foo.dll";
             var expectedWorkingDir = $"cd \"{appOutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
                 .AddCommand($"mkdir -p {appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/webapp.dll")
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation} -userStartupCommand \"{expectedStartupCommand}\"")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {appDir} -userStartupCommand \"{expectedStartupCommand}\"")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -340,7 +334,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}") // no .csproj file
-                .AddCommand($"oryx -sourcePath {appDir} -output {scriptLocation} -defaultAppFilePath /tmp/doesnotexist.dll")
+                .AddCommand($"oryx -sourcePath {appDir} -defaultAppFilePath /tmp/doesnotexist.dll")
                 .ToString();
 
             // Act
@@ -372,7 +366,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var webApp1OutputDir = $"{webApp1Dir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet \"webapp1.dll\"";
             var expectedWorkingDir = $"cd \"{webApp1OutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"export PROJECT=src/Apps/WebApp1/webapp1.csproj")
                 .AddCommand($"mkdir -p {webApp1Dir}")
@@ -381,8 +374,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"echo '{RegularProjectFileContent}' > {webApp2Dir}/webapp2.csproj")
                 .AddCommand($"mkdir -p {webApp1OutputDir}")
                 .AddCommand($"echo > {webApp1OutputDir}/webapp1.dll")
-                .AddCommand($"oryx -sourcePath {repoDir} -output {scriptLocation}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {repoDir}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -415,14 +408,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var webAppOutputDir = $"{webAppDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var expectedStartupCommand = $"dotnet \"webapp.dll\"";
             var expectedWorkingDir = $"cd \"{webAppOutputDir}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {webAppDir}")
                 .AddCommand($"echo '{RegularProjectFileContent}' > {webAppDir}/webapp.csproj")
                 .AddCommand($"mkdir -p {webAppOutputDir}")
                 .AddCommand($"echo > {webAppOutputDir}/webapp.dll")
-                .AddCommand($"oryx -sourcePath {repoDir} -output {scriptLocation}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {repoDir}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act
@@ -462,8 +454,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"echo '{RegularProjectFileContent}' > {webApp1Dir}/webapp1.csproj")
                 .AddCommand($"echo '{RegularProjectFileContent}' > {webApp2Dir}/webapp2.csproj")
                 .AddCommand($"echo > {defaultWebAppFile}")
-                .AddCommand($"oryx -sourcePath {repoDir} -output {scriptLocation} -defaultAppFilePath {defaultWebAppFile}")
-                .AddCommand($"cat {scriptLocation}")
+                .AddCommand($"oryx -sourcePath {repoDir} -defaultAppFilePath {defaultWebAppFile}")
+                .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
             // Act

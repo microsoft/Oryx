@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         private const int HostPort = 8000;
         private const int ContainerPort = 3000;
-        private const string startupFilePath = "/tmp/startup.sh";
+        private const string startupFilePath = "/run.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"export PORT={ContainerPort}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath}")
+                .AddCommand($"oryx -appPath {appDir}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -212,11 +212,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
-                .AddCommand(startupFile)
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -251,11 +250,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
-                .AddCommand(startupFile)
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -327,12 +325,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFile = "./run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand($"npm rebuild node-sass") //remove this once workitem 762584 is done
-                .AddCommand(startupFile)
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -368,11 +365,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
-                .AddCommand(startupFile)
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -406,12 +402,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFile = "/tmp/startup.sh";
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --output {startupFile} --platform nodejs --platform-version {nodeVersion} --bindPort {ContainerPort}")
-                .AddCommand($"chmod +x {startupFile}")
-                .AddCommand(startupFile)
+                .AddCommand($"oryx run-script --appPath {appDir} -platform nodejs --platform-version {nodeVersion} --bindPort {ContainerPort}")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -445,7 +439,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFile = $"./run.sh";
 
             // Create a custom startup command
             const string customStartupScriptName = "customStart.sh";
@@ -456,9 +449,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"chmod -x {customStartupScriptName}")
-                .AddCommand($"chmod -x {customStartupScriptName}")
                 .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
-                .AddCommand(startupFile)
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -493,7 +485,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             const int localPort = 8080;
             var portMapping = $"{HostPort}:{localPort}";
-            var startupFile = $"./run.sh";
 
             // Create a custom startup command
             const string customStartupScriptCommand = "'npm start'";
@@ -501,7 +492,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
-                .AddCommand(startupFile)
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -571,15 +562,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
-            var startupFile = "/tmp/startup.sh";
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
-                .AddCommand(startupFile)
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand(startupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -614,7 +604,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -650,7 +640,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -686,7 +676,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -732,7 +722,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             const string virtualEnvName = "antenv";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -788,7 +778,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddDirectoryDoesNotExistCheck("__oryx_packages__")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -830,7 +820,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             const string virtualEnvName = "antenv3.6";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -875,7 +865,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -920,7 +910,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -1031,7 +1021,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -1089,7 +1079,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 // User would do this through app settings
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
