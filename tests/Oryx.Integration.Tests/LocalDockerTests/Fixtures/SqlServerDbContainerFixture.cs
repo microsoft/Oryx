@@ -9,33 +9,24 @@ using System.Threading;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
-    public class MSSqlServerDatabaseSetupFixture : IDisposable
+    public class SqlServerDbContainerFixture : DbContainerFixtureBase
     {
-        private readonly DockerCli _dockerCli;
+        private const string DatabaseUsername = "sa";
 
-        public MSSqlServerDatabaseSetupFixture()
+        public override List<EnvironmentVariable> GetCredentialsAsEnvVars()
         {
-            _dockerCli = new DockerCli();
-
-            var runResult = StartDatabaseContainer();
-            DatabaseServerContainerName = runResult.ContainerName;
-
-            InsertSampleData(runResult.ContainerName);
-        }
-
-        public string DatabaseServerContainerName { get; }
-
-        public void Dispose()
-        {
-            if (!string.IsNullOrEmpty(DatabaseServerContainerName))
+            return new List<EnvironmentVariable>
             {
-                _dockerCli.StopContainer(DatabaseServerContainerName);
-            }
+                new EnvironmentVariable(DbServerHostnameEnvVarName, Constants.InternalDbLinkName),
+                new EnvironmentVariable(DbServerUsernameEnvVarName, DatabaseUsername),
+                new EnvironmentVariable(DbServerPasswordEnvVarName, Constants.DatabaseUserPwd),
+                new EnvironmentVariable(DbServerDatabaseEnvVarName, Constants.DatabaseName),
+            };
         }
 
-        private DockerRunCommandResult StartDatabaseContainer()
+        protected override DockerRunCommandResult RunDbServerContainer()
         {
             var runDatabaseContainerResult = _dockerCli.Run(
                     Settings.MicrosoftSQLServerImageName,
@@ -61,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             return runDatabaseContainerResult;
         }
 
-        private void InsertSampleData(string databaseServerContainerName)
+        protected override void InsertSampleData()
         {
             // Setup user, database
             var dbSetupSql = "/tmp/databaseSetup.sql";
@@ -76,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand($"echo \"INSERT INTO Products VALUES ('Television');\" >> {dbSetupSql}")
                 .AddCommand($"echo \"INSERT INTO Products VALUES ('Table');\" >> {dbSetupSql}")
                 .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
+                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} - P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
                 .ToString();
 
             DockerCommandResult setupDatabaseResult;
@@ -87,7 +78,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 Thread.Sleep(TimeSpan.FromSeconds(30));
 
                 setupDatabaseResult = _dockerCli.Exec(
-                    databaseServerContainerName,
+                    DbServerContainerName,
                     "/bin/sh",
                     new[]
                     {
@@ -101,19 +92,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             {
                 Console.WriteLine(setupDatabaseResult.GetDebugInfo());
                 throw new Exception("Couldn't setup MS SQL Server on time");
-            }
-        }
-
-        private void RunAsserts(Action action, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine(message);
-                throw;
             }
         }
     }
