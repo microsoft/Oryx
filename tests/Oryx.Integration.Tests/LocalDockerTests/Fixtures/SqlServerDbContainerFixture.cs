@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         {
             const string sqlFile = "/tmp/setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
-                .CreateFile(sqlFile, $"CREATE DATABASE {Constants.DatabaseName}; {GetSampleDataInsertionSql()} GO")
+                .CreateFile(sqlFile, $"CREATE DATABASE {Constants.DatabaseName}; GO; {GetSampleDataInsertionSql()} GO")
                 .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd} -i {sqlFile}")
                 .ToString();
 
