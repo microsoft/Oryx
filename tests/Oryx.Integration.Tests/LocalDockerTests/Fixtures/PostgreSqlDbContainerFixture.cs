@@ -30,13 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                     command: null,
                     commandArguments: null);
 
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(runDatabaseContainerResult.IsSuccess);
-               },
-               runDatabaseContainerResult.GetDebugInfo());
-
+            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
             return runDatabaseContainerResult;
         }
 
@@ -49,14 +43,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override void InsertSampleData()
         {
-            var sqlFile = "/tmp/setup.sql";
+            const string sqlFile = "/tmp/setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
                 .AddCommand($"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
-            RunAsserts(() => Assert.True(setupDatabaseResult.IsSuccess), setupDatabaseResult.GetDebugInfo());
+            var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
     }
 }

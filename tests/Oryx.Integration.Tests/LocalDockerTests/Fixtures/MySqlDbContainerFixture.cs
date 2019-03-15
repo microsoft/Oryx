@@ -48,15 +48,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override void InsertSampleData()
         {
-            var sqlFile = "/tmp/setup.sql";
+            const string sqlFile = "/tmp/setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
                 // No space after the '-p' on purpose: https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password
                 .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {sqlFile}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
-            RunAsserts(() => Assert.True(setupDatabaseResult.IsSuccess), setupDatabaseResult.GetDebugInfo());
+            var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
     }
 }
