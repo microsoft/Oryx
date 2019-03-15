@@ -10,7 +10,7 @@ jobs:
   - template: _securityChecks.yml
 
 - job: Job_2
-  displayName: Build and Sign Oryx
+  displayName: Build and Sign Oryx Binaries
   condition: succeeded()
   pool:
     name: VSEng-MicroBuildVS2017
