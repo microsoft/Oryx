@@ -69,7 +69,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	// We just warn the user and don't error out, since we still can run the default website.
 	scriptBuilder.WriteString("  echo \"WARNING: Could not find packages folder or virtual environment.\"\n")
 	scriptBuilder.WriteString("fi\n")
-	command := gen.UserStartupCommand
+	command := common.PrependPath(gen.UserStartupCommand, gen.SourcePath)
 	if command == "" {
 		appDirectory := gen.SourcePath
 		appModule = gen.getDjangoStartupModule()

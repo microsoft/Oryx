@@ -124,7 +124,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		}
 	}
 
-	command := gen.UserStartupCommand
+	command := common.PrependPath(gen.UserStartupCommand, gen.SourcePath)
 	if command == "" {
 		projDetails := gen.getProjectDetailsAndCache()
 		if projDetails.FullPath == "" {

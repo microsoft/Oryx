@@ -71,7 +71,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	commandSource := ""
 
 	// If user passed a custom startup command, it should take precedence above all other options
-	startupCommand := strings.TrimSpace(gen.UserStartupCommand)
+	startupCommand := common.PrependPath(strings.TrimSpace(gen.UserStartupCommand), gen.SourcePath)
 	if startupCommand == "" {
 		logger.LogVerbose("No user-supplied startup command found")
 
