@@ -3,8 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Oryx.Tests.Common;
+using Polly;
 using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -17,10 +19,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 Settings.MySqlDbImageName,
                 environmentVariables: new List<EnvironmentVariable>
                 {
-                        new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
-                        new EnvironmentVariable("MYSQL_DATABASE", Constants.DatabaseName),
-                        new EnvironmentVariable("MYSQL_USER", Constants.DatabaseUserName),
-                        new EnvironmentVariable("MYSQL_PASSWORD", Constants.DatabaseUserPwd),
+                    new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
+                    new EnvironmentVariable("MYSQL_DATABASE", Constants.DatabaseName),
+                    new EnvironmentVariable("MYSQL_USER", Constants.DatabaseUserName),
+                    new EnvironmentVariable("MYSQL_PASSWORD", Constants.DatabaseUserPwd),
                 },
                 volumes: null,
                 portMapping: null,
@@ -29,45 +31,33 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 command: null,
                 commandArguments: null);
 
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(runDatabaseContainerResult.IsSuccess);
-               },
-               runDatabaseContainerResult.GetDebugInfo());
-
+            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
             return runDatabaseContainerResult;
+        }
+
+        protected override void WaitUntilDbServerIsUp()
+        {
+            // Try 30 times at most, with a constant 2s in between attempts
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
+            retry.Execute(() =>
+            {
+                // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
+                string status = _dockerCli.GetContainerStatus(DbServerContainerName);
+                return status.Contains("healthy") && !status.Contains("starting");
+            });
         }
 
         protected override void InsertSampleData()
         {
-
-            // Setup user, database
-            var dbSetupSql = "/tmp/databaseSetup.sql";
-            var databaseSetupScript = new ShellScriptBuilder()
-                .AddCommand($"echo \"USE {Constants.DatabaseName};\" > {dbSetupSql}")
-                .AddCommand($"echo \"CREATE TABLE Products (Name varchar(50) NOT NULL);\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Car');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Television');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Table');\" >> {dbSetupSql}")
-                .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {dbSetupSql}")
+            const string sqlFile = "/tmp/setup.sql";
+            var dbSetupScript = new ShellScriptBuilder()
+                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                // No space after the '-p' on purpose: https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password
+                .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {sqlFile}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(
-                DbServerContainerName,
-                "/bin/sh",
-                new[]
-                {
-                        "-c",
-                        databaseSetupScript
-                });
-
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(setupDatabaseResult.IsSuccess);
-               },
-               setupDatabaseResult.GetDebugInfo());
+            var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
     }
 }
