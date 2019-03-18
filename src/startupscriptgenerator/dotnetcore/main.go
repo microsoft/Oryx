@@ -22,7 +22,7 @@ func main() {
 		"publishedOutputPath",
 		"",
 		"The path to the published output of the application that is going to be run, e.g. '/home/site/wwwroot/'.")
-	bindPortPtr := flag.String("bindPort", "8080", "[Optional] Port where the application will bind to.")
+	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",
 		"",

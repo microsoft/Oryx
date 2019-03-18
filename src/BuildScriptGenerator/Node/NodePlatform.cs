@@ -47,10 +47,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
 
-            string packageManagerCmd = context.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ? NodeConstants.YarnCommand : NodeConstants.NpmCommand;
-            _logger.LogInformation("Using {packageManager}", packageManagerCmd);
+            string packageManagerCmd = null;
+            string packageInstallCommand = null;
 
-            var packageInstallCommand = string.Format(NodeConstants.PackageInstallCommandTemplate, packageManagerCmd);
+            if (context.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
+            {
+                packageManagerCmd = NodeConstants.YarnCommand;
+                packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+            }
+            else
+            {
+                packageManagerCmd = NodeConstants.NpmCommand;
+                packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+            }
+
+            _logger.LogInformation("Using {packageManager}", packageManagerCmd);
 
             var scriptsNode = packageJson?.scripts;
             if (scriptsNode != null)
@@ -76,7 +87,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
-                runBuildAzureCommand: runBuildAzureCommand);
+                runBuildAzureCommand: runBuildAzureCommand,
+                zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules);
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, scriptProps, _logger);
 
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
@@ -194,6 +206,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
             var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
             return script;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        {
+            var dirs = new List<string>();
+            if (_nodeScriptGeneratorOptions.ZipNodeModules)
+            {
+                dirs.Add(NodeConstants.NodeModulesDirName);
+            }
+            else
+            {
+                dirs.Add(NodeConstants.NodeModulesZippedFileName);
+            }
+
+            return dirs;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        {
+            return new[] { NodeConstants.NodeModulesDirName, NodeConstants.NodeModulesZippedFileName };
         }
 
         internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)

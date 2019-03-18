@@ -19,7 +19,7 @@ func main() {
 	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application, e.g. 'application:app'.")
 	virtualEnvironmentNamePtr := flag.String("virtualEnvName", "", "Name of the virtual environment for the app")
 	packagesFolderPtr := flag.String("packagedir", "__oryx_packages__", "Directory where the python packages were installed, if no virtual environment was used.")
-	bindPortPtr := flag.String("bindPort", "8000", "[Optional] Port where the application will bind to. The host would be 0.0.0.0")
+	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 

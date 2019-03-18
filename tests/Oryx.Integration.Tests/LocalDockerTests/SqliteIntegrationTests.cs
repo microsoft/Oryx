@@ -14,7 +14,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         private const int hostPort = 8088;
 
+<<<<<<< HEAD:tests/Oryx.Integration.Tests/LocalDockerTests/SqliteIntegrationTests.cs
         public SqliteIntegrationTests(ITestOutputHelper output) : base(output, null, hostPort)
+=======
+        public SqliteIntegrationTests(ITestOutputHelper output) : base(output, dbFixture: null, hostPort)
+>>>>>>> master:tests/Oryx.Integration.Tests/LocalDockerTests/SqliteIntegrationTests.cs
         {
         }
 

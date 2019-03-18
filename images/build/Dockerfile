@@ -50,8 +50,7 @@ RUN apt-get update \
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
 	NUGET_XMLDOC_MODE=skip \
-    ASPNETCORE_URLS=http://+:80 \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
@@ -338,6 +337,9 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM python AS final
 WORKDIR /
+
+# Install rsync
+RUN apt update && apt install rsync --yes
 
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv

@@ -50,6 +50,7 @@ type packageReference struct {
 
 const ProjectEnvironmentVariableName = "PROJECT"
 const OryxPublishOutputDirectory = "oryx_publish_output"
+const DefaultBindPort = "8080"
 
 var _retrievedProjectDetails = false
 var _projDetails projectDetails = projectDetails{}
@@ -70,8 +71,9 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	command, publishOutputDir := gen.getStartupCommand()
 
 	// Expose the port so that a custom command can use it if needed
-	scriptBuilder.WriteString("export PORT=" + gen.BindPort + "\n\n")
-	
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "ASPNETCORE_URLS", "http://*:" + gen.BindPort, "http://*:" + DefaultBindPort)
+
 	if command != "" {
 		logger.LogInformation("Successfully generated startup command.")
 		scriptBuilder.WriteString("cd \"" + publishOutputDir + "\"\n\n")
@@ -159,6 +161,9 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		command = "dotnet \"" + startupFileName + "\"\n"
 	} else {
 		logger.LogCritical("Using the explicit user provided startup command.")
+		logger.LogInformation("adding execution permission if needed ...");
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("permission added %t", isPermissionAdded)
 	}
 
 	return command, publishOutputDir

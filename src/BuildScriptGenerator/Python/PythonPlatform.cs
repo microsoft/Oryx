@@ -13,8 +13,12 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    [BuildProperty(VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
-    [BuildProperty(TargetPackageDirectoryPropertyKey, "Directory to download the packages to, if no virtual environment is provided. Default: '" + DefaultTargetPackageDirectory + "'")]
+    [BuildProperty(
+        VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
+    [BuildProperty(
+        TargetPackageDirectoryPropertyKey,
+        "Directory to download the packages to, if no virtual environment is provided. Default: '" +
+        DefaultTargetPackageDirectory + "'")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
@@ -169,6 +173,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 _logger.LogWarning(exc, "Exception caught while logging dependencies");
             }
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        {
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        {
+            return Array.Empty<string>();
         }
     }
 }

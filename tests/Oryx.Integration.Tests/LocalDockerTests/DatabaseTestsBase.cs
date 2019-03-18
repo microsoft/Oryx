@@ -19,13 +19,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected const string expectedOutput = "[{\"Name\":\"Car\"},{\"Name\":\"Television\"},{\"Name\":\"Table\"}]";
 
-        [CanBeNull]
+        protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
 
-        [NotNull]
-        protected readonly ITestOutputHelper _output;
-
-        protected DatabaseTestsBase(ITestOutputHelper outputHelper, [CanBeNull] Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
+        protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
         {
             _output = outputHelper;
             _dbFixture = dbFixture;
@@ -60,10 +57,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{containerPort}";
-            var entrypointScript = "./start.sh";
+            var entrypointScript = "./run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -output {entrypointScript}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {containerPort}")
                 .AddCommand(entrypointScript)
                 .ToString();
 
@@ -82,10 +79,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
-                volume,
+                new List<DockerVolume> { volume },
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
-                _dbFixture?.GetCredentialsAsEnvVars(),
+                _dbFixture.GetCredentialsAsEnvVars(),
                 portMapping,
                 link,
                 "/bin/sh", new[] { "-c", script },

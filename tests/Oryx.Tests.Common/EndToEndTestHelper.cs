@@ -33,12 +33,40 @@ namespace Microsoft.Oryx.Tests.Common
             Func<Task> assertAction)
         {
             return BuildRunAndAssertAppAsync(
+                appName,
                 output,
-                volume,
+                new List<DockerVolume> { volume },
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
-                new List<EnvironmentVariable>() { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName) },
+                portMapping,
+                runCmd,
+                runArgs,
+                assertAction);
+        }
+
+        public static Task BuildRunAndAssertAppAsync(
+            string appName,
+            ITestOutputHelper output,
+            List<DockerVolume> volumes,
+            string buildCmd,
+            string[] buildArgs,
+            string runtimeImageName,
+            string portMapping,
+            string runCmd,
+            string[] runArgs,
+            Func<Task> assertAction)
+        {
+            return BuildRunAndAssertAppAsync(
+                output,
+                volumes,
+                buildCmd,
+                buildArgs,
+                runtimeImageName,
+                new List<EnvironmentVariable>()
+                {
+                    new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName)
+                },
                 portMapping,
                 link: null,
                 runCmd,
@@ -55,7 +83,7 @@ namespace Microsoft.Oryx.Tests.Common
         //  4.  A func supplied by the user is retried to the max of 10 retries between a delay of 1 second.
         public static async Task BuildRunAndAssertAppAsync(
             ITestOutputHelper output,
-            DockerVolume volume,
+            List<DockerVolume> volumes,
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
@@ -71,7 +99,11 @@ namespace Microsoft.Oryx.Tests.Common
             // Build
             var buildAppResult = dockerCli.Run(
                 Settings.BuildImageName,
-                volume,
+                environmentVariables: null,
+                volumes: volumes,
+                portMapping: null,
+                link: null,
+                runContainerInBackground: false,
                 commandToExecuteOnRun: buildCmd,
                 commandArguments: buildArgs);
 
@@ -93,7 +125,7 @@ namespace Microsoft.Oryx.Tests.Common
                 runResult = dockerCli.RunAndDoNotWaitForProcessExit(
                     runtimeImageName,
                     environmentVariables,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: volumes,
                     portMapping,
                     link,
                     runCmd,
