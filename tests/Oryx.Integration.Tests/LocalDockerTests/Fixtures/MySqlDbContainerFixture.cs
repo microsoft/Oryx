@@ -38,9 +38,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         protected override void WaitUntilDbServerIsUp()
         {
             // Try 30 times at most, with a constant 2s in between attempts
-            var retry = Policy.HandleResult(false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
             retry.Execute(() =>
             {
+                // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
                 string status = _dockerCli.GetContainerStatus(DbServerContainerName);
                 return status.Contains("healthy") && !status.Contains("starting");
             });
