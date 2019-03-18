@@ -16,9 +16,5 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public const string DatabaseName = "oryxdb";
         public const string DatabaseUserName = "oryxuser";
         public static readonly string DatabaseUserPwd = System.Guid.NewGuid().ToString();
-        public const string DbHostEnvVarName = "DATABASE_HOST";
-        public const string DbUserEnvVarName = "DATABASE_USERNAME";
-        public const string DbPassEnvVarName = "DATABASE_PASSWORD";
-        public const string DbNameEnvVarName = "DATABASE_NAME";
     }
 }

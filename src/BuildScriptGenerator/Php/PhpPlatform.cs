@@ -101,5 +101,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             context.PhpVersion = version;
         }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        {
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        {
+            return Array.Empty<string>();
+        }
     }
 }
