@@ -265,7 +265,7 @@ RUN set -ex \
  # Make sure the alias 'python' always refers to python2 by default.
  && ln -sf /opt/python/2/bin/python python
 
-FROM debian:stretch-slim AS php-build-prereqs
+FROM buildpack-deps:stable AS php-build-prereqs
 COPY images/build/php /php
 COPY build/__php-versions.sh /php/
 RUN set -eux && chmod +x /php/*.sh && ls -la /php && /php/install-prereqs.sh
