@@ -17,8 +17,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class DatabaseTestsBase
     {
-        protected const string expectedOutput = "[{\"Name\":\"Car\"},{\"Name\":\"Television\"},{\"Name\":\"Table\"}]";
-
         protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
 
@@ -30,8 +28,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
-
-        protected ITestOutputHelper OutputHelper { get; }
 
         protected int HostPort { get; }
 
@@ -83,13 +79,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),
-                portMapping,
-                link,
+                portMapping, link,
                 "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
                     var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    Assert.Equal(expectedOutput, data, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+                    Assert.Equal(_dbFixture.GetSampleDataAsJson(), data.Trim(), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }
 

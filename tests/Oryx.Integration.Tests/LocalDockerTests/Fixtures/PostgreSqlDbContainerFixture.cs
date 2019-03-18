@@ -3,8 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Oryx.Tests.Common;
+using Polly;
 using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -28,46 +30,27 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                     command: null,
                     commandArguments: null);
 
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(runDatabaseContainerResult.IsSuccess);
-               },
-               runDatabaseContainerResult.GetDebugInfo());
-
+            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
             return runDatabaseContainerResult;
+        }
+
+        protected override void WaitUntilDbServerIsUp()
+        {
+            // Try 30 times at most, with a constant 2s in between attempts
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
+            retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName).Contains("database system is ready to accept connections"));
         }
 
         protected override void InsertSampleData()
         {
-
-            // Setup user, database
-            var dbSetupSql = "/tmp/databaseSetup.sql";
-            var databaseSetupScript = new ShellScriptBuilder()
-                .AddCommand($"echo \"PGPASSWORD={Constants.DatabaseUserPwd}\" > {dbSetupSql}")
-                .AddCommand($"echo \"USE {Constants.DatabaseName};\" > {dbSetupSql}")
-                .AddCommand($"echo \"CREATE TABLE Products (Name varchar(50) NOT NULL);\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Car');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Television');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES('Table');\" >> {dbSetupSql}")
-                .AddCommand($"psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {dbSetupSql}")
+            const string sqlFile = "/tmp/setup.sql";
+            var dbSetupScript = new ShellScriptBuilder()
+                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                .AddCommand($"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")
                 .ToString();
 
-            var setupDatabaseResult = _dockerCli.Exec(
-                DbServerContainerName,
-                "/bin/sh",
-                new[]
-                {
-                        "-c",
-                        databaseSetupScript
-                });
-
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(setupDatabaseResult.IsSuccess);
-               },
-               setupDatabaseResult.GetDebugInfo());
+            var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
     }
 }

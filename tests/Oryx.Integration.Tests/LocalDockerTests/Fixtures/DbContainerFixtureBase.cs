@@ -5,8 +5,10 @@
 
 using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -18,16 +20,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         public const string DbServerPasswordEnvVarName = "DATABASE_PASSWORD";
         public const string DbServerDatabaseEnvVarName = "DATABASE_NAME";
 
+        protected readonly IList<ProductRecord> SampleData = new List<ProductRecord> {
+            new ProductRecord { Name = "Car" },
+            new ProductRecord { Name = "Camera" },
+            new ProductRecord { Name = "Computer" }
+        };
+
         protected readonly DockerCli _dockerCli = new DockerCli();
 
         public DbContainerFixtureBase()
         {
             DbServerContainerName = RunDbServerContainer().ContainerName;
-
-            // Wait for the database server to be up
-            // TODO: get rid of Sleep
-            Thread.Sleep(TimeSpan.FromMinutes(1));
-
+            WaitUntilDbServerIsUp();
             InsertSampleData();
         }
 
@@ -53,7 +57,24 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             };
         }
 
+        public string GetSampleDataAsJson()
+        {
+            return JsonConvert.SerializeObject(SampleData);
+        }
+
         protected abstract DockerRunCommandResult RunDbServerContainer();
+
+        protected abstract void WaitUntilDbServerIsUp();
+
+        protected virtual string GetSampleDataInsertionSql()
+        {
+            var sb = new StringBuilder($"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
+            foreach (var record in SampleData)
+            {
+                sb.Append($" INSERT INTO Products VALUES('{record.Name}');");
+            }
+            return sb.ToString();
+        }
 
         protected abstract void InsertSampleData();
 
@@ -69,5 +90,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 throw;
             }
         }
+    }
+
+    public class ProductRecord
+    {
+        public string Name;
     }
 }

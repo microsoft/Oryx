@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Oryx.Tests.Common;
+using Polly;
 using Xunit;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
@@ -42,49 +43,27 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                     command: null,
                     commandArguments: null);
 
-            RunAsserts(
-               () =>
-               {
-                   Assert.True(runDatabaseContainerResult.IsSuccess);
-               },
-               runDatabaseContainerResult.GetDebugInfo());
-
+            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
             return runDatabaseContainerResult;
+        }
+
+        protected override void WaitUntilDbServerIsUp()
+        {
+            // Try 30 times at most, with a constant 3s in between attempts
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(3));
+            retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName).Contains("SQL Server is now ready for client connections"));
         }
 
         protected override void InsertSampleData()
         {
-            // Setup user, database
-            var dbSetupSql = "/tmp/databaseSetup.sql";
-            var databaseSetupScript = new ShellScriptBuilder()
-                .AddCommand($"echo \"CREATE DATABASE {Constants.DatabaseName};\" >> {dbSetupSql}")
-                .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"echo \"Use {Constants.DatabaseName};\" >> {dbSetupSql}")
-                .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"echo \"CREATE TABLE Products (Name nvarchar(50));\" >> {dbSetupSql}")
-                .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES ('Car');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES ('Television');\" >> {dbSetupSql}")
-                .AddCommand($"echo \"INSERT INTO Products VALUES ('Table');\" >> {dbSetupSql}")
-                .AddCommand($"echo GO >> {dbSetupSql}")
-                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd} -i {dbSetupSql}")
+            const string sqlFile = "/tmp/setup.sql";
+            var dbSetupScript = new ShellScriptBuilder()
+                .CreateFile(sqlFile, $"CREATE DATABASE {Constants.DatabaseName}; GO; {GetSampleDataInsertionSql()} GO")
+                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd} -i {sqlFile}")
                 .ToString();
 
-            DockerCommandResult setupDatabaseResult;
-            var maxRetries = 5;
-            do
-            {
-                // Wait for the database server to be up
-                Thread.Sleep(TimeSpan.FromSeconds(30));
-                setupDatabaseResult = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", databaseSetupScript });
-                maxRetries--;
-            } while (maxRetries > 0 && setupDatabaseResult.IsSuccess == false);
-
-            if (setupDatabaseResult.IsSuccess == false)
-            {
-                Console.WriteLine(setupDatabaseResult.GetDebugInfo());
-                throw new Exception("Couldn't setup SQL Server in time.");
-            }
+            var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
     }
 }
