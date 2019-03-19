@@ -68,3 +68,10 @@ func ParseCommandAndAddExecutionPermission(commandString string, sourcePath stri
 		return false
 	}
 }
+
+func ExtendPathForCommand(command string, sourcePath string) string {
+	if command == "" {
+		return command
+	}
+	return "PATH=\"$PATH:" + sourcePath + "\" " + command
+}

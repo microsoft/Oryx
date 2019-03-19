@@ -95,11 +95,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			logger.LogInformation("Generating command for appModule='%s'", appModule)
 			command = gen.getCommandFromModule(appModule, appDirectory)
 		}
+	} else {
+		logger.LogInformation("adding execution permission if needed ...");
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("permission added %t", isPermissionAdded)
+		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
-
-	logger.LogInformation("adding execution permission if needed ...");
-	isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
-	logger.LogInformation("permission added %t", isPermissionAdded)
 
 	scriptBuilder.WriteString(command + "\n")
 
