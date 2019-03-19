@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
-
+        
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
         {
             _output = outputHelper;

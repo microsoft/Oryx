@@ -66,7 +66,7 @@ Change the runtime type and version with the following script:
 ```bash
 app_name="your_app_name"
 app_group="your_app_group"
-web_id=$(az webapp get \
+web_id=$(az webapp show \
     --name "$app_name" \
     --resource-group "$app_group" \
     --output tsv --query id)
