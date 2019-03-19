@@ -195,40 +195,6 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-# Install Python build prerequisites
-FROM buildpack-deps:stable AS python-build-prereqs
-COPY build/__python-versions.sh /tmp/
-COPY images/build/python-build.sh /
-RUN chmod +x /python-build.sh
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-      tk-dev \
-      uuid-dev
-
-# Build Python 2.7
-FROM python-build-prereqs AS python2.7-build
-WORKDIR /usr/src/python
-ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON27_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
-# Build Python 3.5
-FROM python-build-prereqs AS python3.5-build
-WORKDIR /usr/src/python
-ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON35_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
-# Build Python 3.6
-FROM python-build-prereqs AS python3.6-build
-WORKDIR /usr/src/python
-ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON36_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
-# Build Python 3.7
-FROM python-build-prereqs AS python3.7-build
-WORKDIR /usr/src/python
-ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON37_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
