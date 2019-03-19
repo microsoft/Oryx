@@ -16,7 +16,7 @@ steps:
   displayName: Build prerequisites
   inputs:
     command: build
-    dockerFile: images/build/python/build-prereqs/Dockerfile
+    dockerFile: images/build/python/prereqs/Dockerfile
     imageName: python-build-prereqs
 - task: Docker@1
   displayName: Build Python 2.7
