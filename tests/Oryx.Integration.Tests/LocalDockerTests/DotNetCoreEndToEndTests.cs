@@ -5,6 +5,7 @@
 
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
@@ -21,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         private const string NetCoreApp21WebApp = "NetCoreApp21WebApp";
         private const string NetCoreApp22WebApp = "NetCoreApp22WebApp";
         private const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
-        private const string StartupFilePath = "./run.sh";
+        private const string DefaultStartupFilePath = "./run.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
@@ -45,7 +46,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -81,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -114,10 +115,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFilePath = "/tmp/run.sh";
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
-                .AddCommand(startupFilePath)
+                .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -192,7 +192,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -publishedOutputPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -229,10 +229,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFilePath = "/tmp/run.sh";
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
-                .AddCommand(startupFilePath)
+                .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -255,7 +254,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     Assert.Contains("Hello World!", data);
                 });
         }
-        
+
         [Fact]
         public async Task DotNetCoreStartupScript_UsesPortEnvironmentVariableValue()
         {
@@ -265,11 +264,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var startupFilePath = "/tmp/run.sh";
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
-                .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath}")
-                .AddCommand(startupFilePath)
+                .AddCommand($"oryx -sourcePath {appDir}")
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -305,7 +303,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -341,7 +339,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -384,7 +382,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 $"cp {appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{NetCoreApp21WebApp}.runtimeconfig.json " +
                 $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/foo.runtimeconfig.json")
                 .AddCommand($"oryx -sourcePath {appDir} -output {startupFilePath} -userStartupCommand {startupCommand} -bindPort {ContainerPort}")
-                .AddCommand($"export ASPNETCORE_URLS=http://*:{ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -427,8 +424,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx -sourcePath {repoDir} -bindPort {ContainerPort}")
-                .AddCommand($"export ASPNETCORE_URLS=http://*:{ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -474,8 +470,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx -sourcePath {repoDir} -bindPort {ContainerPort}")
-                .AddCommand($"export ASPNETCORE_URLS=http://*:{ContainerPort}")
-                .AddCommand(StartupFilePath)
+                .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -501,6 +496,64 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World! from WebApp1", data);
                 });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_MultiLanguageApp_ReactAndDotNet()
+        {
+            // Arrange
+            var appName = "dotnetreact";
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
+                .AddBuildCommand($"{appDir} -l=dotnet --language-version=2.2")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                "oryxdevms/dotnetcore-2.2",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runAppScript
+                },
+                async () =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("src=\"/static/js/main", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{HostPort}/static/js/main.df777a6e.js");
+                    Assert.Contains("!function(e){function t(o){if(n[o])return", data);
+                });
+        }
+
+        // The following method is used to avoid following exception from HttpClient when trying to read a response:
+        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
+        // see the documentation for the Encoding.RegisterProvider method.
+        private async Task<string> GetResponseDataAsync(string url)
+        {
+            var bytes = await _httpClient.GetByteArrayAsync(url);
+            return Encoding.UTF8.GetString(bytes);
         }
     }
 }
