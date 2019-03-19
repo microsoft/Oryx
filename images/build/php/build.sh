@@ -6,6 +6,8 @@
 
 set -eux
 
+START_TIME=`date +%s`
+
 PHP_MAJOR=${PHP_VERSION:0:1}
 PHP_MINOR=${PHP_VERSION:2:1}
 INSTALLATION_PREFIX="/opt/php/$PHP_VERSION"
@@ -152,3 +154,8 @@ rm -rf /tmp/pear ~/.pearrc
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
+
+END_TIME=`date +%s`
+
+ELAPSED_TIME=$((END_TIME-START_TIME))
+echo "Elapsed PHP $PHP_VERSION build time: $ELAPSED_TIME"
