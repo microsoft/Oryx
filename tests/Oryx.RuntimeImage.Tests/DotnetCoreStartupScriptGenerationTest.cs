@@ -487,7 +487,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
-                .AddCommand("oryx -userStartupCommand entry.sh -publishedOutputPath " + appPath)
+                .AddCommand("oryx -userStartupCommand entry.sh -sourcePath " + appPath + " -publishedOutputPath " + appPath)
                 .AddCommand(". ./run.sh") // Source the default output path
                 .ToString();
 
