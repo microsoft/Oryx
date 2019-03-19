@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -97,7 +98,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Fact]
-        public void ScriptGenerator_WorksWithEntryScriptsAtAppRoot()
+        public void GeneratedScript_CanRunStartupScriptsFromAppRoot()
         {
             // Arrange
             var appPath = "/tmp/app";
@@ -105,19 +106,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", "echo entered > /tmp/test.txt")
                 .AddCommand("oryx -userStartupCommand entry.sh -publishedOutputPath " + appPath)
-                .AddCommand("./run.sh") // Default output path
+                .AddCommand("./run.sh || cat ./run.sh") // Default output path
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run("oryxdevms/dotnetcore-2.2:latest", "/bin/sh", new[] { "-c", script });
+            var result = _dockerCli.Run("oryxdevms/python-3.7", "/bin/sh", new[] { "-c", script });
             
             // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
     }
 }

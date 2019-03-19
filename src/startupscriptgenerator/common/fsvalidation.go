@@ -70,8 +70,8 @@ func ParseCommandAndAddExecutionPermission(commandString string, sourcePath stri
 }
 
 func PrependPath(command string, sourcePath string) string {
-	if command == nil || command == "" {
+	if command == "" {
 		return command
 	}
-	return "PATH=$PATH:" + sourcePath + " " + command
+	return "PATH=\"$PATH:" + sourcePath + "\" " + command
 }
