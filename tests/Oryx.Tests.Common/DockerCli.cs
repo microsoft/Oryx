@@ -200,23 +200,26 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public DockerCommandResult Logs(string containerName)
+        public string GetContainerStatus(string containerName)
         {
             if (string.IsNullOrEmpty(containerName))
             {
                 throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
             }
 
-            var arguments = PrepareArguments();
-            return ExecuteCommand(arguments);
+            var result = ExecuteCommand(new[] { "ps", "--filter", $"name={containerName}", "--format", "{{.Status}}" });
+            return result.StdOut.Trim();
+        }
 
-            IEnumerable<string> PrepareArguments()
+        public string GetContainerLogs(string containerName)
+        {
+            if (string.IsNullOrEmpty(containerName))
             {
-                var args = new List<string>();
-                args.Add("logs");
-                args.Add(containerName);
-                return args;
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
             }
+
+            var result = ExecuteCommand(new[] { "logs", containerName });
+            return result.StdOut;
         }
 
         public DockerCommandResult Exec(string containerName, string command, string[] commandArgs)

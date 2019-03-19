@@ -72,7 +72,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
-	common.SetEnvironmentVariableInScript(&scriptBuilder, "ASPNETCORE_URLS", "http://*:" + gen.BindPort, "http://*:" + DefaultBindPort)
+	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
 
 	if command != "" {
 		logger.LogInformation("Successfully generated startup command.")
