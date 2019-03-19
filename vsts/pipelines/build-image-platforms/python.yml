@@ -1,0 +1,30 @@
+- task: Docker@1
+  displayName: Build prerequisites
+  inputs:
+    command: build
+    dockerFile: images/build/python/build-prereqs/Dockerfile
+    imageName: python-build-prereqs
+- task: Docker@1
+  displayName: Build Python 2.7
+  inputs:
+    command: build
+    dockerFile: images/build/python/2.7/Dockerfile
+    imageName: python27-build
+- task: Docker@1
+  displayName: Build Python 3.5
+  inputs:
+    command: build
+    dockerFile: images/build/python/3.5/Dockerfile
+    imageName: python35-build
+- task: Docker@1
+  displayName: Build Python 3.6
+  inputs:
+    command: build
+    dockerFile: images/build/python/3.6/Dockerfile
+    imageName: python36-build
+- task: Docker@1
+  displayName: Build Python 3.7
+  inputs:
+    command: build
+    dockerFile: images/build/python/3.7/Dockerfile
+    imageName: python37-build
