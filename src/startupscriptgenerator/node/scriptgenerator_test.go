@@ -43,7 +43,7 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	//     echo "Done."
 	// fi
 	//
-	// abc
+	// PATH="$PATH:output" abc
 }
 
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
