@@ -69,7 +69,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	// We just warn the user and don't error out, since we still can run the default website.
 	scriptBuilder.WriteString("  echo \"WARNING: Could not find packages folder or virtual environment.\"\n")
 	scriptBuilder.WriteString("fi\n")
-	command := common.PrependPath(gen.UserStartupCommand, gen.SourcePath)
+	command := gen.UserStartupCommand
 	if command == "" {
 		appDirectory := gen.SourcePath
 		appModule = gen.getDjangoStartupModule()
@@ -95,11 +95,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			logger.LogInformation("Generating command for appModule='%s'", appModule)
 			command = gen.getCommandFromModule(appModule, appDirectory)
 		}
+	} else {
+		logger.LogInformation("adding execution permission if needed ...");
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("permission added %t", isPermissionAdded)
+		command = common.PrependPath(command, gen.SourcePath)
 	}
-
-	logger.LogInformation("adding execution permission if needed ...");
-	isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
-	logger.LogInformation("permission added %t", isPermissionAdded)
 
 	scriptBuilder.WriteString(command + "\n")
 

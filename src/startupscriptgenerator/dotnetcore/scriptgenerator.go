@@ -124,7 +124,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		}
 	}
 
-	command := common.PrependPath(gen.UserStartupCommand, gen.SourcePath)
+	command := gen.UserStartupCommand
 	if command == "" {
 		projDetails := gen.getProjectDetailsAndCache()
 		if projDetails.FullPath == "" {
@@ -164,6 +164,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		logger.LogInformation("adding execution permission if needed ...");
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
 		logger.LogInformation("permission added %t", isPermissionAdded)
+		command = common.PrependPathVar(command, common.PrependPath)
 	}
 
 	return command, publishOutputDir
