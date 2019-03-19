@@ -17,6 +17,8 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/prereqs/Dockerfile
+    useDefaultContext: false
+    buildContext: $(Build.Repository.LocalPath)
     imageName: python-build-prereqs
 - task: Docker@1
   displayName: Build Python 2.7
@@ -24,21 +26,25 @@ steps:
     command: build
     dockerFile: images/build/python/2.7/Dockerfile
     imageName: python27-build
+    includeLatestTag: true
 - task: Docker@1
   displayName: Build Python 3.5
   inputs:
     command: build
     dockerFile: images/build/python/3.5/Dockerfile
     imageName: python35-build
+    includeLatestTag: true
 - task: Docker@1
   displayName: Build Python 3.6
   inputs:
     command: build
     dockerFile: images/build/python/3.6/Dockerfile
     imageName: python36-build
+    includeLatestTag: true
 - task: Docker@1
   displayName: Build Python 3.7
   inputs:
     command: build
     dockerFile: images/build/python/3.7/Dockerfile
     imageName: python37-build
+    includeLatestTag: true
