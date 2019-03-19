@@ -1,3 +1,16 @@
+queue:
+  name: OryxLinux
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - images/build/python
+    - build/
+    - vsts/
+
 - task: Docker@1
   displayName: Build prerequisites
   inputs:
