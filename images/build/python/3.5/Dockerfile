@@ -2,4 +2,4 @@
 FROM python-build-prereqs
 WORKDIR /usr/src/python
 ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON35_VERSION PIP_VERSION=$PIP_VERSION /build.sh
+RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON35_VERSION PIP_VERSION=$PIP_VERSION /tmp/build.sh
