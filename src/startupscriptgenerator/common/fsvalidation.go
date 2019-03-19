@@ -69,7 +69,7 @@ func ParseCommandAndAddExecutionPermission(commandString string, sourcePath stri
 	}
 }
 
-func PrependPathVar(command string, sourcePath string) string {
+func ExtendPathForCommand(command string, sourcePath string) string {
 	if command == "" {
 		return command
 	}

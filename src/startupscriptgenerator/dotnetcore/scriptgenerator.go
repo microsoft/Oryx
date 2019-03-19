@@ -164,7 +164,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		logger.LogInformation("adding execution permission if needed ...");
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
 		logger.LogInformation("permission added %t", isPermissionAdded)
-		command = common.PrependPathVar(command, gen.SourcePath)
+		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
 
 	return command, publishOutputDir
