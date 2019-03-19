@@ -101,19 +101,20 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void GeneratedScript_CanRunStartupScriptsFromAppRoot()
         {
             // Arrange
+            const int exitCodeSentinel = 222;
             var appPath = "/tmp/app";
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
-                .CreateFile(appPath + "/entry.sh", "echo entered > /tmp/test.txt")
+                .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
                 .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
-                .AddCommand("./run.sh") // Default output path
+                .AddCommand(". ./run.sh") // Source the default output path
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run("oryxdevms/python-3.7", "/bin/sh", new[] { "-c", script });
+            var res = _dockerCli.Run("oryxdevms/python-3.7", "/bin/sh", new[] { "-c", script });
             
             // Assert
-            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
+            RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
         }
     }
 }
