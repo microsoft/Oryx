@@ -58,7 +58,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	// it is not persisted in a shared network volume where the app is.
 	const nodeModules string = "node_modules"
 	const nodeModulesFile string = nodeModules + ".tar.gz"
-	scriptBuilder.WriteString("if [ -f " + nodeModulesFile + " ] && [ ! \"$ORYX_DISABLE_NODE_MODULES_EXTRACT\" == \"true\" ]; then\n")
+	scriptBuilder.WriteString("if [ -f " + nodeModulesFile + " ] && [ ! \"$ORYX_DISABLE_NODE_MODULES_EXTRACTION\" == \"true\" ]; then\n")
 	scriptBuilder.WriteString("    echo \"Found '" + nodeModulesFile + "', will extract its contents as node modules.\"\n")
 	scriptBuilder.WriteString("    echo \"Removing existing modules directory...\"\n")
 	scriptBuilder.WriteString("    rm -fr /" + nodeModules + "\n")
