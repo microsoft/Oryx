@@ -580,7 +580,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact]
         public void BuildsNodeApp_AndZipsNodeModules_IfZipNodeModulesIsTrue_UsingLegacyEnvironmentVariableName()
         {
-            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like 
+            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
             //  "tar: node_modules/form-data: file changed as we read it"
             // related to zipping files on a folder which is volume mounted.
 
@@ -591,7 +591,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand("export ENABLE_NODE_MODULES_ZIP=true")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
+                .AddFileExistsCheck($"{appOutputDir}/node_modules.tar.gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -619,7 +619,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact]
         public void BuildsNodeApp_AndZipsNodeModules_IfZipNodeModulesIsTrue()
         {
-            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like 
+            // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
             //  "tar: node_modules/form-data: file changed as we read it"
             // related to zipping files on a folder which is volume mounted.
 
@@ -630,7 +630,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
+                .AddFileExistsCheck($"{appOutputDir}/node_modules.tar.gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .ToString();
 

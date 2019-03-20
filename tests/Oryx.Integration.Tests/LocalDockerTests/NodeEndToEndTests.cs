@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var containerPort = "80";
             var portMapping = $"{HostPort}:{containerPort}";
-            var script = new ShellScriptBuilder()
+            var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {containerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -82,7 +82,68 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    script
+                    runAppScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules_WithoutExtracting()
+        {
+            // NOTE:
+            // 1. Use intermediate directory(which here is local to container) to avoid errors like
+            //      "tar: node_modules/form-data: file changed as we read it"
+            //    related to zipping files on a folder which is volume mounted.
+            // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
+
+            // Arrange
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var nodeVersion = "10.14";
+            var appName = "webfrontend";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var containerPort = "80";
+            var portMapping = $"{HostPort}:{containerPort}";
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand("export ORYX_DISABLE_NODE_MODULES_EXTRACTION=true")
+                .AddCommand($"cd {appOutputDir}")
+                .AddCommand("mkdir -p node_modules")
+                .AddCommand("tar -xzf node_modules.tar.gz -C node_modules")
+                .AddCommand($"oryx -bindPort {containerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .AddDirectoryDoesNotExistCheck("/node_modules")
+                .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runAppScript
                 },
                 async () =>
                 {
