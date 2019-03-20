@@ -1,7 +1,5 @@
 ﻿echo "PHP executable: $php"
 
-cd "$SOURCE_DIR"
-
 {{ if ComposerFileExists }}
 declare -r composer='/opt/php-composer/composer.phar'
 echo "Composer archive: $composer"
