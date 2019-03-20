@@ -205,15 +205,15 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=python27-build /opt /opt
-COPY --from=python35-build /opt /opt
-COPY --from=python36-build /opt /opt
-COPY --from=python37-build /opt /opt
+COPY --from=oryxdevmcr.azurecr.io/python27-build /opt /opt
+COPY --from=oryxdevmcr.azurecr.io/python35-build /opt /opt
+COPY --from=oryxdevmcr.azurecr.io/python36-build /opt /opt
+COPY --from=oryxdevmcr.azurecr.io/python37-build /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
- && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/$PYTHON35_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON35_VERSION" ] && echo /opt/python/$PYTHON35_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . /tmp/__python-versions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \

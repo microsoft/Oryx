@@ -23,7 +23,7 @@ steps:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
 - task: ShellScript@2
-  displayName: 'Build build images'
+  displayName: 'Build build image'
   inputs:
     scriptPath: ./build/build-buildimages.sh
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
