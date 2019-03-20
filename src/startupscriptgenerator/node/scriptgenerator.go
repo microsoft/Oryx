@@ -57,14 +57,14 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	// at the root level, so node runtime can still find it, and
 	// it is not persisted in a shared network volume where the app is.
 	const nodeModules string = "node_modules"
-	const nodeModulesFile string = nodeModules + ".zip"
-	scriptBuilder.WriteString("if [ -f " + nodeModulesFile + " ]; then\n")
+	const nodeModulesFile string = nodeModules + ".tar.gz"
+	scriptBuilder.WriteString("if [ -f " + nodeModulesFile + " ] && [ ! \"$ORYX_DISABLE_NODE_MODULES_EXTRACTION\" == \"true\" ]; then\n")
 	scriptBuilder.WriteString("    echo \"Found '" + nodeModulesFile + "', will extract its contents as node modules.\"\n")
 	scriptBuilder.WriteString("    echo \"Removing existing modules directory...\"\n")
 	scriptBuilder.WriteString("    rm -fr /" + nodeModules + "\n")
 	scriptBuilder.WriteString("    mkdir -p /" + nodeModules + "\n")
 	scriptBuilder.WriteString("    echo \"Extracting modules...\"\n")
-	scriptBuilder.WriteString("    tar -xzf " + nodeModulesFile + " -C /\n")
+	scriptBuilder.WriteString("    tar -xzf " + nodeModulesFile + " -C /" + nodeModules + "\n")
 	scriptBuilder.WriteString("    echo \"Done.\"\n")
 	scriptBuilder.WriteString("fi\n\n")
 
@@ -104,8 +104,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		}
 	} else {
 		commandSource = "User"
-		logger.LogInformation("adding execution permission if needed ...");
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("adding execution permission if needed ...")
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
 		logger.LogInformation("permission added %t", isPermissionAdded)
 		logger.LogInformation("User-supplied startup command: '%s'", gen.UserStartupCommand)
 		startupCommand = common.ExtendPathForCommand(startupCommand, gen.SourcePath)
