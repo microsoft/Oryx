@@ -56,9 +56,9 @@ if [ -n "$PHP_ASC_URL" ]; then
 	export GNUPGHOME="$(mktemp -d)";
 	for i in {1..5}; do
 		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${GPG_KEYS[0]}" || \
-		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${GPG_KEYS[1]}";
+			gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${GPG_KEYS[1]}";
 		if [ $? -eq 0 ]; then break; fi
-    done
+	done
 	gpg --batch --verify php.tar.xz.asc php.tar.xz;
 	command -v gpgconf > /dev/null && gpgconf --kill all;
 	rm -rf "$GNUPGHOME";
