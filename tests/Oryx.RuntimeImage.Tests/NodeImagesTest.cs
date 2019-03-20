@@ -106,5 +106,25 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void GeneratedScript_CanRunStartupScriptsFromAppRoot()
+        {
+            // Arrange
+            const int exitCodeSentinel = 222;
+            var appPath = "/tmp/app";
+            var script = new ShellScriptBuilder()
+                .CreateDirectory(appPath)
+                .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
+                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
+                .AddCommand(". ./run.sh") // Source the default output path
+                .ToString();
+
+            // Act
+            var res = _dockerCli.Run("oryxdevms/node-10.14", "/bin/sh", new[] { "-c", script });
+            
+            // Assert
+            RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
+        }
     }
 }
