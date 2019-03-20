@@ -1,3 +1,7 @@
+variables:
+  ascName: OryxMCR
+  acrName: oryxdevmcr.azurecr.io
+
 steps:
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
@@ -21,6 +25,13 @@ steps:
   displayName: 'Component Detection - OSS Compliance'
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
 
 - task: ShellScript@2
   displayName: 'Build build image'
@@ -117,8 +128,8 @@ steps:
 - task: Docker@1
   displayName: 'Push Build image to ACR'
   inputs:
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
@@ -138,8 +149,8 @@ steps:
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
   inputs:
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
