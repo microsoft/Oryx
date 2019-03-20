@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Common
                     continue;
                 }
 
-                string[] lines = row.Item2.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                string[] lines = row.Item2.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 result.AppendLine(lines[0]);
                 foreach (string line in lines.Skip(1))
