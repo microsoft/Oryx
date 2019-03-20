@@ -131,7 +131,7 @@ benv-resolve() {
   fi
 
   # Resolve PHP versions
-  if [ "$name" == "php" -o "${name::7}" == "php_" ] && [ "${value::1}" != "/" ]; then
+  if [ "$name" == "php" -o "${name::4}" == "php_" ] && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/php/$value" ]; then
       echo >&2 benv: php version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/php
@@ -142,7 +142,7 @@ benv-resolve() {
       export PATH="$DIR:$PATH"
       export php="$DIR/php"
     else
-      eval export php_${name:7}=\"$DIR/php\"
+      eval export php_${name:4}=\"$DIR/php\"
     fi
     return 0
   fi
