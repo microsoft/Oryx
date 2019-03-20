@@ -1,3 +1,7 @@
+variables:
+  ascName: OryxMCR
+  acrName: oryxdevmcr.azurecr.io
+
 queue:
   name: OryxLinux
 
@@ -26,14 +30,15 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/2.7/Dockerfile
+    azureContainerRegistry: $(acrName)
     imageName: python27-build
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 2.7
   inputs:
     command: push
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
     imageName: python27-build
 
 - task: Docker@1
@@ -41,14 +46,15 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/3.5/Dockerfile
+    azureContainerRegistry: $(acrName)
     imageName: python35-build
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 3.5
   inputs:
     command: push
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
     imageName: python35-build
 
 - task: Docker@1
@@ -56,14 +62,15 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/3.6/Dockerfile
+    azureContainerRegistry: $(acrName)
     imageName: python36-build
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 3.6
   inputs:
     command: push
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
     imageName: python36-build
 
 - task: Docker@1
@@ -71,12 +78,13 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/3.7/Dockerfile
+    azureContainerRegistry: $(acrName)
     imageName: python37-build
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 3.7
   inputs:
     command: push
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
     imageName: python37-build
