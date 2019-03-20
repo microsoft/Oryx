@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var containerPort = "80";
             var portMapping = $"{HostPort}:{containerPort}";
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand("export ORYX_DISABLE_NODE_MODULES_EXTRACT=true")
+                .AddCommand("export ORYX_DISABLE_NODE_MODULES_EXTRACTION=true")
                 .AddCommand($"cd {appOutputDir}")
                 .AddCommand("mkdir -p node_modules")
                 .AddCommand("tar -xzf node_modules.tar.gz -C node_modules")
