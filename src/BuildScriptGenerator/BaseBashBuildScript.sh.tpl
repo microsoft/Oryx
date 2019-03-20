@@ -72,13 +72,15 @@ fi
 
 {{ if PreBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
-cd $SOURCE_DIR
+cd "$SOURCE_DIR"
 echo "{{ PreBuildScriptPrologue }}"
 "{{ PreBuildScriptPath }}"
 echo "{{ PreBuildScriptEpilogue }}"
 {{ end }}
 
 {{ for Snippet in BuildScriptSnippets }}
+# Makes sure every snipped starts in the context of the source directory.
+cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
 

@@ -38,7 +38,11 @@ if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	echo
 	echo Zipping 'node_modules' folder ...
-	rm -f "node_modules.zip"
-	tar -zcf node_modules.zip node_modules
+	rm -f "node_modules.tar.gz"
+	if [ -d node_modules ]
+	then
+		cd node_modules
+		tar -zcf ../node_modules.tar.gz .
+	fi
 fi
 {{ end }}
