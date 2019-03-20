@@ -30,6 +30,7 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/2.7/Dockerfile
+    azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
     imageName: python27-build
     includeLatestTag: true
@@ -46,6 +47,7 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/3.5/Dockerfile
+    azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
     imageName: python35-build
     includeLatestTag: true
@@ -62,6 +64,7 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/3.6/Dockerfile
+    azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
     imageName: python36-build
     includeLatestTag: true
@@ -78,6 +81,7 @@ steps:
   inputs:
     command: build
     dockerFile: images/build/python/3.7/Dockerfile
+    azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
     imageName: python37-build
     includeLatestTag: true
