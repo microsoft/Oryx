@@ -1,12 +1,6 @@
 #!/bin/bash
-# --------------------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT license.
-# --------------------------------------------------------------------------------------------
 
 set -eux
-
-START_TIME=`date +%s`
 
 PHP_MAJOR=${PHP_VERSION:0:1}
 PHP_MINOR=${PHP_VERSION:2:1}
@@ -30,7 +24,6 @@ PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
 PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
-
 
 fetchDeps='wget';
 if ! command -v gpg > /dev/null; then
@@ -155,8 +148,3 @@ rm -rf /tmp/pear ~/.pearrc
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
-
-END_TIME=`date +%s`
-
-ELAPSED_TIME=$((END_TIME-START_TIME))
-echo "Elapsed PHP $PHP_VERSION build time: $ELAPSED_TIME"
