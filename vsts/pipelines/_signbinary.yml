@@ -12,19 +12,19 @@ steps:
   displayName: 'Use NuGet 4.6.2'
   inputs:
     versionSpec: 4.6.2
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
 
 - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
   displayName: 'Install Signing Plugin'
   inputs:
     signType: '$(SignType)'
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: Oryx.sln
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish linux'
@@ -36,7 +36,7 @@ steps:
     arguments: '-c $(BuildConfiguration) -r linux-x64'
     zipAfterPublish: false
     modifyOutputPath: false
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
 
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
@@ -44,7 +44,7 @@ steps:
     solution: 'src/BuildScriptGeneratorCli/Oryx_sign.signproj'
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/symbols'
@@ -53,11 +53,11 @@ steps:
     Contents: '**\*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/symbols'
     CleanTargetFolder: true
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
   inputs:
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.ArtifactStagingDirectory)'
-  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+  condition: and(succeeded(), eq(variables['AGENTBUILD'], 'true'), eq(variables['SignType'], 'real'))
