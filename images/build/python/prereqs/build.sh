@@ -10,7 +10,7 @@ wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
 
 # Try getting the keys 5 times at most
-for (( i=0; i<5; i++ )); do
+for i in {1..5}; do
     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys $GPG_KEY || \
     gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys $GPG_KEY || \
     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys $GPG_KEY  || \
