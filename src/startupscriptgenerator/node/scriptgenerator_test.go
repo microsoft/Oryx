@@ -33,13 +33,13 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	//
 	// export PORT=8080
 	//
-	// if [ -f node_modules.zip ]; then
-	//     echo "Found 'node_modules.zip', will extract its contents as node modules."
+	// if [ -f node_modules.tar.gz ] && [ ! "$ORYX_DISABLE_NODE_MODULES_EXTRACTION" == "true" ]; then
+	//     echo "Found 'node_modules.tar.gz', will extract its contents as node modules."
 	//     echo "Removing existing modules directory..."
 	//     rm -fr /node_modules
 	//     mkdir -p /node_modules
 	//     echo "Extracting modules..."
-	//     tar -xzf node_modules.zip -C /
+	//     tar -xzf node_modules.tar.gz -C /node_modules
 	//     echo "Done."
 	// fi
 	//
