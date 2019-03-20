@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
                 try
                 {
-                    dynamic composerFile = SourceRepoFileHelpers.ReadJsonObjectFromFile(ctx.SourceRepo, PhpConstants.ComposerFileName);
+                    dynamic composerFile = ctx.SourceRepo.ReadJsonObjectFromFile(PhpConstants.ComposerFileName);
                     if (composerFile?.require != null)
                     {
                         Newtonsoft.Json.Linq.JObject deps = composerFile?.require;

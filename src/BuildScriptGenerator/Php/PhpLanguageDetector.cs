@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -35,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             dynamic composerFile = null;
             try
             {
-                composerFile = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, PhpConstants.ComposerFileName);
+                composerFile = sourceRepo.ReadJsonObjectFromFile(PhpConstants.ComposerFileName);
             }
             catch (Exception ex)
             {

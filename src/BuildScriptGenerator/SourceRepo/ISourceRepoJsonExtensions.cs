@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.SourceRepo
 {
-    internal static class SourceRepoFileHelpers
+    public static class ISourceRepoJsonExtensions
     {
-        internal static dynamic ReadJsonObjectFromFile(ISourceRepo sourceRepo, string fileName)
+        public static dynamic ReadJsonObjectFromFile(this ISourceRepo sourceRepo, string fileName)
         {
             var jsonContent = sourceRepo.ReadFile(fileName);
             return JsonConvert.DeserializeObject(jsonContent);

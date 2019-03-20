@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -233,7 +233,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = null;
             try
             {
-                packageJson = SourceRepo.SourceRepoFileHelpers.ReadJsonObjectFromFile(sourceRepo, NodeConstants.PackageJsonFileName);
+                packageJson = sourceRepo.ReadJsonObjectFromFile(NodeConstants.PackageJsonFileName);
             }
             catch (Exception exc)
             {
