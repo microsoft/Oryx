@@ -41,6 +41,7 @@ then
 	rm -f "node_modules.tar.gz"
 	if [ -d node_modules ]
 	then
+		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules
 		tar -zcf ../node_modules.tar.gz .
 	fi

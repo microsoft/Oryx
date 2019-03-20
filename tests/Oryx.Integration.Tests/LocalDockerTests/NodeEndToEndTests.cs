@@ -113,8 +113,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{containerPort}";
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_DISABLE_NODE_MODULES_EXTRACT=true")
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {containerPort}")
+                .AddCommand($"cd {appOutputDir}")
+                .AddCommand("mkdir -p node_modules")
+                .AddCommand("tar -xzf node_modules.tar.gz -C node_modules")
+                .AddCommand($"oryx -bindPort {containerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryDoesNotExistCheck("/node_modules")
                 .ToString();
@@ -145,6 +147,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Say It Again", data);
                 });
         }
 

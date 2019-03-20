@@ -79,7 +79,7 @@ echo "{{ PreBuildScriptEpilogue }}"
 {{ end }}
 
 {{ for Snippet in BuildScriptSnippets }}
-# Makes sure every snipped starts in the context of the source directory.
+# Makes sure every snippet starts in the context of the source directory.
 cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}

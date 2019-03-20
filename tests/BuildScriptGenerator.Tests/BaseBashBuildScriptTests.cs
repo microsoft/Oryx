@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.Contains(
                 script1 +
-                "\n\n# Makes sure every snipped starts in the context of the source directory.\ncd \"$SOURCE_DIR\"\n" +
+                "\n\n# Makes sure every snippet starts in the context of the source directory.\ncd \"$SOURCE_DIR\"\n" +
                 script2,
                 script); // The template engine uses UNIX-style line endings
             Assert.DoesNotContain("Executing pre-build script", script);
