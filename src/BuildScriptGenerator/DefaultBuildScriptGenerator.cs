@@ -107,7 +107,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
                 else if (context.DisableMultiPlatformBuild && !string.IsNullOrEmpty(context.Language))
                 {
-                    _logger.LogDebug("Multi platform build is disabled and platform was specified. Skipping language {skippedLang}", platform.Name);
+                    _logger.LogDebug(
+                        "Multi platform build is disabled and platform was specified. " +
+                        "Skipping language {skippedLang}",
+                        platform.Name);
                     continue;
                 }
 
@@ -117,24 +120,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var detectionResult = platform.Detect(context.SourceRepo);
                     if (detectionResult != null)
                     {
-                        _logger.LogDebug("Detected {platformName} version {platformVersion} for app in repo", platform.Name, detectionResult.LanguageVersion);
+                        _logger.LogDebug(
+                            "Detected {platformName} version {platformVersion} for app in repo",
+                            platform.Name,
+                            detectionResult.LanguageVersion);
                         usePlatform = true;
                         targetVersionSpec = detectionResult.LanguageVersion;
                         if (string.IsNullOrEmpty(targetVersionSpec))
                         {
-                            throw new UnsupportedVersionException($"Couldn't detect a version for the platform '{platform.Name}' in the repo.");
+                            throw new UnsupportedVersionException(
+                                $"Couldn't detect a version for the platform '{platform.Name}' in the repo.");
                         }
                     }
                 }
 
                 if (usePlatform)
                 {
-                    var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir();
+                    var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
                     if (excludedDirs.Any())
                     {
                         directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
                     }
-                    excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir();
+
+                    excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
                     if (excludedDirs.Any())
                     {
                         directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
@@ -160,7 +168,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            // Even if a language was detected, we throw an error if the user provided an unsupported language as target.
+            // Even if a language was detected, we throw an error if the user provided
+            // an unsupported language as target.
             if (!string.IsNullOrEmpty(context.Language) && !providedLanguageFound)
             {
                 ThrowInvalidLanguageProvided(context);
@@ -213,7 +222,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildScriptPath);
             LogScriptIfGiven("post-build", buildScriptProps.PostBuildScriptPath);
 
-            script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, buildScriptProps, _logger);
+            script = TemplateHelpers.Render(
+                TemplateHelpers.TemplateResource.BaseBashScript,
+                buildScriptProps,
+                _logger);
             return script;
         }
 
@@ -224,8 +236,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             try
             {
-                var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(context.SourceRepo.RootPath);
-                _logger.LogTrace("logDirectoryStructure", new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
+                var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(
+                    context.SourceRepo.RootPath);
+                _logger.LogTrace(
+                    "logDirectoryStructure",
+                    new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
             }
             catch (Exception ex)
             {
