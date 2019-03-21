@@ -32,7 +32,7 @@ steps:
     dockerFile: images/build/python/2.7/Dockerfile
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/2.7
+    imageName: public/oryx/python-build-2.7
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 2.7
@@ -40,7 +40,7 @@ steps:
     command: push
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/2.7
+    imageName: public/oryx/python-build-2.7
 
 - task: Docker@1
   displayName: Build Python 3.5
@@ -49,7 +49,7 @@ steps:
     dockerFile: images/build/python/3.5/Dockerfile
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/3.5
+    imageName: public/oryx/python-build-3.5
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 3.5
@@ -57,7 +57,7 @@ steps:
     command: push
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/3.5
+    imageName: public/oryx/python-build-3.5
 
 - task: Docker@1
   displayName: Build Python 3.6
@@ -66,7 +66,7 @@ steps:
     dockerFile: images/build/python/3.6/Dockerfile
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/3.6
+    imageName: public/oryx/python-build-3.6
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 3.6
@@ -74,7 +74,7 @@ steps:
     command: push
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/3.6
+    imageName: public/oryx/python-build-3.6
 
 - task: Docker@1
   displayName: Build Python 3.7
@@ -83,7 +83,7 @@ steps:
     dockerFile: images/build/python/3.7/Dockerfile
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/3.7
+    imageName: public/oryx/python-build-3.7
     includeLatestTag: true
 - task: Docker@1
   displayName: Push Python 3.7
@@ -91,4 +91,4 @@ steps:
     command: push
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build/3.7
+    imageName: public/oryx/python-build-3.7
