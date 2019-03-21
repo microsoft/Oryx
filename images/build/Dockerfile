@@ -280,11 +280,11 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN if [ -z "$AGENTBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release  BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; fi
 
 # This stage is only when building in devops agents
-FROM main AS copybuildscriptsymbol
-COPY symbols /opt/buildscriptgen/
+FROM main AS copybuildscriptbinaries
+COPY binaries /opt/buildscriptgen/
 
 # This stage copies oryx binaries from specific build stage, for local/dev it copies
-# from "buildscriptbuilder" and for devops it copies from "copybuildscriptsymbol"
+# from "buildscriptbuilder" and for devops it copies from "copybuildscriptbinaries"
 # https://github.com/moby/moby/issues/34482
 FROM ${BUILDSCRIPT_SOURCE} AS buildscriptbinaries
 ARG BUILDSCRIPT_SOURCE

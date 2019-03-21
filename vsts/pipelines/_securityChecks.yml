@@ -12,11 +12,6 @@ steps:
     zipAfterPublish: false
     modifyOutputPath: false
 
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection'
-  inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
   displayName: 'Run CredScan'
   inputs:
