@@ -14,11 +14,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageInstallCommand,
             string runBuildCommand,
             string runBuildAzureCommand,
+            bool hasProductionOnlyDependencies,
+            string productionOnlyPackageInstallCommand,
             bool zipNodeModulesDir)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
             NpmRunBuildAzureCommand = runBuildAzureCommand;
+            HasProductionOnlyDependencies = hasProductionOnlyDependencies;
+            ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand;
             ZipNodeModulesDir = zipNodeModulesDir;
         }
 
@@ -27,6 +31,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string NpmRunBuildCommand { get; set; }
 
         public string NpmRunBuildAzureCommand { get; set; }
+
+        public bool HasProductionOnlyDependencies { get; set; }
+
+        public string ProductionOnlyPackageInstallCommand { get; set; }
 
         public bool ZipNodeModulesDir { get; set; }
     }

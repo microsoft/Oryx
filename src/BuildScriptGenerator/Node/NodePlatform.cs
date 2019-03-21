@@ -13,8 +13,13 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    [BuildProperty(
+        ZipNodeModulesDirPropertyKey,
+        "Flag to indicate if 'node_modules' folder need to be in zipped form in the output folder. Default is 'false'.")]
     internal class NodePlatform : IProgrammingPlatform
     {
+        internal const string ZipNodeModulesDirPropertyKey = "zip_nodemodules_dir";
+
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
@@ -63,6 +68,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
 
+            var hasProductionOnlyDependencies = false;
+            if (packageJson?.devDependencies != null)
+            {
+                // If development time dependencies are present we want to avoid copying them to improve performance
+                hasProductionOnlyDependencies = true;
+            }
+
+            var productionOnlyPackageInstallCommand = string.Format(
+                NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
+
             var scriptsNode = packageJson?.scripts;
             if (scriptsNode != null)
             {
@@ -88,6 +103,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
                 runBuildAzureCommand: runBuildAzureCommand,
+                hasProductionOnlyDependencies: hasProductionOnlyDependencies,
+                productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
                 zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules);
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, scriptProps, _logger);
 
@@ -211,6 +228,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
         {
             var dirs = new List<string>();
+            dirs.Add(NodeConstants.AllNodeModulesDirName);
+            dirs.Add(NodeConstants.ProdNodeModulesDirName);
             if (_nodeScriptGeneratorOptions.ZipNodeModules)
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
@@ -225,7 +244,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
         {
-            return new[] { NodeConstants.NodeModulesDirName, NodeConstants.NodeModulesZippedFileName };
+            return new[]
+            {
+                NodeConstants.AllNodeModulesDirName,
+                NodeConstants.ProdNodeModulesDirName,
+                NodeConstants.NodeModulesDirName,
+                NodeConstants.NodeModulesZippedFileName
+            };
         }
 
         internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
