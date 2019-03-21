@@ -3,6 +3,14 @@ parameters:
   acrName: oryxdevmcr.azurecr.io
 
 steps:
+- task: DownloadPipelineArtifact@0
+  displayName: 'Download Pipeline Artifact'
+  inputs:
+    pipelineId: 'Oryx-CI'
+    artifactName: 'drop-$(Build.BuildNumber)'
+    targetPath: '$(Build.SourcesDirectory)'
+  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
     then
@@ -19,7 +27,6 @@ steps:
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/build-solution.sh
-  condition: succeeded()
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
@@ -87,6 +94,14 @@ steps:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Create File to Notify Integration Test has run successfully'
+  inputs:
+    type: InlineScript
+    script: 'echo "success">$(Build.SourcesDirectory)/artifacts/$(Build.BuildNumber).txt'
+  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+
 
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'

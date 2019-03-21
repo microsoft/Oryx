@@ -10,6 +10,7 @@ steps:
     projects: '$(Build.SourcesDirectory)\src\**\*.csproj'
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
+    modifyOutputPath: false
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
   displayName: 'Run CredScan'
