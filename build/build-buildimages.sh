@@ -14,15 +14,17 @@ source $REPO_DIR/build/__variables.sh
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 declare BUILDSCRIPT_SOURCE="buildscriptbuilder"
+declare BUILD_SIGNED=""
 
-# Check to see if the build is from azure devops agent or local dev env
-if [ -n "$AGENTBUILD" ]
+# Check to see if the build is by scheduled ORYX-CI or other azure devops build
+if [ "$SignType" == "real" ] || [ "$SignType" == "Real" ]
 then
-# "agentbuild" will be true only for builds by azure devops agent
-    BUILDSCRIPT_SOURCE="copybuildscriptsymbol"
+# "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
+    BUILDSCRIPT_SOURCE="copybuildscriptbinaries"
+	BUILD_SIGNED="true"
 else
-# locally we need to fake "symbols directory to get a successful "copybuildscriptsymbol" build stage
-    mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/symbols
+# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
+    mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
 # Avoid causing cache invalidation with the following check
@@ -58,7 +60,7 @@ BuildAndTagStage python3.6-build
 BuildAndTagStage python3.7-build
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
-BuildAndTagStage copybuildscriptsymbol
+BuildAndTagStage copybuildscriptbinaries
 BuildAndTagStage buildscriptbinaries
 
 tags="$DOCKER_BUILD_IMAGES_REPO:latest"
@@ -79,7 +81,7 @@ else
 fi
 
 echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
-docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY --build-arg AGENTBUILD=$AGENTBUILD --build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY --build-arg AGENTBUILD=$BUILD_SIGNED --build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
 echo Building a base image for tests ...
@@ -122,7 +124,7 @@ then
 	docker system prune -f
 fi
 
-if [ -z "$AGENTBUILD" ]
+if [ -z "$BUILD_SIGNED" ]
 then
-	rm -rf symbols
+	rm -rf binaries
 fi
