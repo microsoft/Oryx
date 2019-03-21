@@ -35,6 +35,14 @@ steps:
     imageName: public/oryx/python-build-2.7
     includeLatestTag: true
 - task: Docker@1
+  displayName: Tag Python 2.7
+  inputs:
+    command: tag
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
+    imageName: $(acrName)/public/oryx/python-build-2.7:latest
+    arguments: $(acrName)/public/oryx/python-build-2.7:$(Build.BuildId)
+- task: Docker@1
   displayName: Push Python 2.7
   inputs:
     command: push
@@ -51,6 +59,14 @@ steps:
     azureContainerRegistry: $(acrName)
     imageName: public/oryx/python-build-3.5
     includeLatestTag: true
+- task: Docker@1
+  displayName: Tag Python 3.5
+  inputs:
+    command: tag
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
+    imageName: $(acrName)/public/oryx/python-build-3.5:latest
+    arguments: $(acrName)/public/oryx/python-build-3.5:$(Build.BuildId)
 - task: Docker@1
   displayName: Push Python 3.5
   inputs:
@@ -69,6 +85,14 @@ steps:
     imageName: public/oryx/python-build-3.6
     includeLatestTag: true
 - task: Docker@1
+  displayName: Tag Python 3.6
+  inputs:
+    command: tag
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
+    imageName: $(acrName)/public/oryx/python-build-3.6:latest
+    arguments: $(acrName)/public/oryx/python-build-3.6:$(Build.BuildId)
+- task: Docker@1
   displayName: Push Python 3.6
   inputs:
     command: push
@@ -85,6 +109,14 @@ steps:
     azureContainerRegistry: $(acrName)
     imageName: public/oryx/python-build-3.7
     includeLatestTag: true
+- task: Docker@1
+  displayName: Tag Python 3.7
+  inputs:
+    command: tag
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
+    imageName: $(acrName)/public/oryx/python-build-3.7:latest
+    arguments: $(acrName)/public/oryx/python-build-3.7:$(Build.BuildId)
 - task: Docker@1
   displayName: Push Python 3.7
   inputs:
