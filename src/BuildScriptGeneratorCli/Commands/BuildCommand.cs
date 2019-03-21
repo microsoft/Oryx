@@ -80,13 +80,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var appName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
             var buildOpId = logger.StartOperation(appName);
 
+            console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
+            console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
+            console.WriteLine();
+
             var buildInfo = new DefinitionListFormatter();
-            buildInfo.AddDefinition("Build Operation ID", buildOpId);
             buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
+            buildInfo.AddDefinition("Build Operation ID", buildOpId);
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
             var commitId = GetSourceRepoCommitId(serviceProvider.GetRequiredService<IEnvironment>(), sourceRepo, logger);
-
             if (!string.IsNullOrWhiteSpace(commitId))
             {
                 buildInfo.AddDefinition("Repository Commit", commitId);
