@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .CreateDirectory($"{appDir}/{subDir}")
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
                 // Execute command
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 // Check the output directory for the sub directory
                 .AddFileExistsCheck($"{appOutputDir}/{subDir}/file1.txt")
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output/subdir1";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {nestedOutputDir}")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .ToString();
 
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .CreateFile($"{appOutputDir}/hi.txt", "hi")
                 .CreateDirectory($"{appOutputDir}/blah")
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var logFile = "/tmp/directory.log";
 
             var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --log-file {logFile}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --log-file {logFile}")
                 .AddStringNotExistsInFileCheck("app4", logFile, true)
                 .AddStringNotExistsInFileCheck("3.log", logFile)
                 .ToString();
@@ -279,7 +279,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appDir)
                 .CreateFile($"{appDir}/server.js", serverJsWithErrors)
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .ToString();
 
             // Act
@@ -312,7 +312,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l nodejs --language-version 8.2.1")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -l nodejs --language-version 8.2.1")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -422,7 +422,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var intermediateDir = "/tmp/app-intermediate";
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -i {intermediateDir}")
+                .AddBuildCommand($"{appDir} -i {intermediateDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -487,7 +487,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -664,7 +664,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();

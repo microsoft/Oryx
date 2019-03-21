@@ -113,6 +113,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
+                hasProductionOnlyDependencies: false,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -139,6 +143,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
+                hasProductionOnlyDependencies: false,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -165,6 +173,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
+                hasProductionOnlyDependencies: false,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -192,6 +204,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
+                hasProductionOnlyDependencies: false,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    YarnInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -219,6 +235,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: YarnInstallCommand,
                 runBuildCommand: "yarn run build",
                 runBuildAzureCommand: "yarn run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    YarnInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -246,6 +266,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
+                hasProductionOnlyDependencies: false,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -272,6 +296,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -298,6 +326,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: true);
 
             // Act
@@ -305,7 +337,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -325,6 +357,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
                 zipNodeModulesDir: false);
 
             // Act
@@ -332,7 +368,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.DoesNotContain("echo Zipping 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -340,7 +375,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         private IProgrammingPlatform GetNodePlatformInstance(
-            string defaultNodeVersion = null, 
+            string defaultNodeVersion = null,
             string defaultNpmVersion = null,
             string zipNodeModules = null)
         {
@@ -361,7 +396,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 null);
         }
-                
+
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
             ISourceRepo sourceRepo,
             string languageName = null,
