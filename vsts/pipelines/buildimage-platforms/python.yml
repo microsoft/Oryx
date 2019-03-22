@@ -16,111 +16,16 @@ trigger:
     - vsts/
 
 steps:
-- task: Docker@1
-  displayName: Build prerequisites
+- task: ShellScript@2
+  displayName: Build base images
   inputs:
-    command: build
-    dockerFile: images/build/python/prereqs/Dockerfile
-    useDefaultContext: false
-    buildContext: $(Build.Repository.LocalPath)
-    imageName: python-build-prereqs
+    scriptPath: ./build/build-buildimage-bases.sh
 
 - task: Docker@1
-  displayName: Build Python 2.7
-  inputs:
-    command: build
-    dockerFile: images/build/python/2.7/Dockerfile
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-2.7
-    includeLatestTag: true
-- task: Docker@1
-  displayName: Tag Python 2.7
-  inputs:
-    command: tag
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: $(acrName)/public/oryx/python-build-2.7:latest
-    arguments: $(acrName)/public/oryx/python-build-2.7:$(Build.BuildNumber)
-- task: Docker@1
-  displayName: Push Python 2.7
+  displayName: Push built images to dev ACR
   inputs:
     command: push
     azureSubscriptionEndpoint: $(ascName)
     azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-2.7
-
-- task: Docker@1
-  displayName: Build Python 3.5
-  inputs:
-    command: build
-    dockerFile: images/build/python/3.5/Dockerfile
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-3.5
-    includeLatestTag: true
-- task: Docker@1
-  displayName: Tag Python 3.5
-  inputs:
-    command: tag
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: $(acrName)/public/oryx/python-build-3.5:latest
-    arguments: $(acrName)/public/oryx/python-build-3.5:$(Build.BuildNumber)
-- task: Docker@1
-  displayName: Push Python 3.5
-  inputs:
-    command: push
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-3.5
-
-- task: Docker@1
-  displayName: Build Python 3.6
-  inputs:
-    command: build
-    dockerFile: images/build/python/3.6/Dockerfile
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-3.6
-    includeLatestTag: true
-- task: Docker@1
-  displayName: Tag Python 3.6
-  inputs:
-    command: tag
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: $(acrName)/public/oryx/python-build-3.6:latest
-    arguments: $(acrName)/public/oryx/python-build-3.6:$(Build.BuildNumber)
-- task: Docker@1
-  displayName: Push Python 3.6
-  inputs:
-    command: push
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-3.6
-
-- task: Docker@1
-  displayName: Build Python 3.7
-  inputs:
-    command: build
-    dockerFile: images/build/python/3.7/Dockerfile
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-3.7
-    includeLatestTag: true
-- task: Docker@1
-  displayName: Tag Python 3.7
-  inputs:
-    command: tag
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: $(acrName)/public/oryx/python-build-3.7:latest
-    arguments: $(acrName)/public/oryx/python-build-3.7:$(Build.BuildNumber)
-- task: Docker@1
-  displayName: Push Python 3.7
-  inputs:
-    command: push
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    imageName: public/oryx/python-build-3.7
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
