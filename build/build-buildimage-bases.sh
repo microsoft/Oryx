@@ -35,6 +35,6 @@ echo "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FI
 
 
 echo
-echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
+echo "List of images built (from '$BUILD_IMAGE_BASES_ARTIFACTS_FILE'):"
 cat $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 echo
