@@ -10,7 +10,7 @@
 
 set -e
 
-source $__REPO_DIR/build/__variables.sh
+source __variables.sh
 
 # Clean artifacts
 mkdir -p `dirname $BUILD_IMAGE_BASES_ARTIFACTS_FILE`
