@@ -15,7 +15,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
 # Clean artifacts
-touch $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+mkdir -p `dirname $BUILD_IMAGE_BASES_ARTIFACTS_FILE`
 > $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 # Build Python
