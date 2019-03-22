@@ -5,7 +5,7 @@ steps:
     pipelineId: 'Oryx-CI'
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.SourcesDirectory)'
-  condition: and(succeeded(), eq(variables['Build.DefinitionName'], 'Oryx-CI'), eq(variables['Build.Reason'], 'Schedule'))
+  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'))
 
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
