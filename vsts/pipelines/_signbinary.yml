@@ -46,11 +46,11 @@ steps:
   condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
 - task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/symbols'
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/binaries'
   inputs:
     SourceFolder: 'src/BuildScriptGeneratorCli/bin/$(BuildConfiguration)/linux-x64/publish'
     Contents: '**\*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/symbols'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
     CleanTargetFolder: true
   condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
