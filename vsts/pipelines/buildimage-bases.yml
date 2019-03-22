@@ -32,7 +32,7 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
 
 - task: CopyFiles@2
-  displayName: 'Copy artifacts from source repo to agent artifacts folder'
+  displayName: Copy artifacts to staging directory
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/artifacts'
     contents: '**/*.*'
@@ -41,5 +41,6 @@ steps:
   condition: true
 
 - task: PublishBuildArtifacts@1
+  displayName: Publish build artifacts
   inputs:
     pathtoPublish: $(Build.ArtifactStagingDirectory)
