@@ -8,31 +8,29 @@
 # In Azure DevOps, this is taken care of by the pipelines defined in vsts/pipelines/buildimage-platforms.
 #
 
-set -eux
+set -e
 
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-
-source $REPO_DIR/build/__variables.sh
+source $__REPO_DIR/build/__variables.sh
 
 # Clean artifacts
 mkdir -p `dirname $BUILD_IMAGE_BASES_ARTIFACTS_FILE`
 > $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 # Build Python
-docker build -f $REPO_DIR/images/build/python/prereqs/Dockerfile -t "python-build-prereqs" $REPO_DIR
+docker build -f $__REPO_DIR/images/build/python/prereqs/Dockerfile -t "python-build-prereqs" $__REPO_DIR
 
 declare -r PYTHON_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/python-build"
 
-docker build -f $REPO_DIR/images/build/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" $REPO_DIR
+docker build -f $__REPO_DIR/images/build/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" $__REPO_DIR
 echo "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $REPO_DIR/images/build/python/3.5/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" $REPO_DIR
+docker build -f $__REPO_DIR/images/build/python/3.5/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" $__REPO_DIR
 echo "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $REPO_DIR/images/build/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" $REPO_DIR
+docker build -f $__REPO_DIR/images/build/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" $__REPO_DIR
 echo "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $REPO_DIR/images/build/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" $REPO_DIR
+docker build -f $__REPO_DIR/images/build/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" $__REPO_DIR
 echo "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 
