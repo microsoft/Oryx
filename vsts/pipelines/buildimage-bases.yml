@@ -22,15 +22,6 @@ steps:
   inputs:
     scriptPath: ./build/build-buildimage-bases.sh
 
-- task: Docker@1
-  displayName: Push built images to dev ACR
-  inputs:
-    command: push
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
-
 - task: CopyFiles@2
   displayName: Copy artifacts to staging directory
   inputs:
@@ -39,6 +30,15 @@ steps:
     targetFolder: $(Build.ArtifactStagingDirectory)
     overWrite: true
   condition: true
+
+- task: Docker@1
+  displayName: Push built images to dev ACR
+  inputs:
+    command: push
+    azureSubscriptionEndpoint: $(ascName)
+    azureContainerRegistry: $(acrName)
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
 
 - task: PublishBuildArtifacts@1
   displayName: Publish build artifacts
