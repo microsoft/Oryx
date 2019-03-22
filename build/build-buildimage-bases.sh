@@ -14,20 +14,25 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 source $REPO_DIR/build/__variables.sh
 
+# Clean artifacts
+> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
 # Build Python
 docker build -f $REPO_DIR/images/build/python/prereqs/Dockerfile -t "python-build-prereqs" $REPO_DIR
 
-docker build -f $REPO_DIR/images/build/python/2.7/Dockerfile -t "$ACR_DEV_NAME/public/oryx/python-build-2.7:$BUILD_NUMBER" $REPO_DIR
-echo "$ACR_DEV_NAME/public/oryx/python-build-2.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+declare -r PYTHON_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/python-build"
 
-docker build -f $REPO_DIR/images/build/python/3.5/Dockerfile -t "$ACR_DEV_NAME/public/oryx/python-build-3.5:$BUILD_NUMBER" $REPO_DIR
-echo "$ACR_DEV_NAME/public/oryx/python-build-3.5:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $REPO_DIR/images/build/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" $REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $REPO_DIR/images/build/python/3.6/Dockerfile -t "$ACR_DEV_NAME/public/oryx/python-build-3.6:$BUILD_NUMBER" $REPO_DIR
-echo "$ACR_DEV_NAME/public/oryx/python-build-3.6:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $REPO_DIR/images/build/python/3.5/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" $REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $REPO_DIR/images/build/python/3.7/Dockerfile -t "$ACR_DEV_NAME/public/oryx/python-build-3.7:$BUILD_NUMBER" $REPO_DIR
-echo "$ACR_DEV_NAME/public/oryx/python-build-3.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $REPO_DIR/images/build/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" $REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $REPO_DIR/images/build/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" $REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 
 echo
