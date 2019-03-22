@@ -205,10 +205,10 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=oryxdevmcr.azurecr.io/python27-build /opt /opt
-COPY --from=oryxdevmcr.azurecr.io/python35-build /opt /opt
-COPY --from=oryxdevmcr.azurecr.io/python36-build /opt /opt
-COPY --from=oryxdevmcr.azurecr.io/python37-build /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-2.7:20190322.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-3.5:20190322.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-3.6:20190322.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-3.7:20190322.1 /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON35_VERSION" ] && echo /opt/python/$PYTHON35_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
