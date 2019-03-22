@@ -8,7 +8,7 @@
 # In Azure DevOps, this is taken care of by the pipelines defined in vsts/pipelines/buildimage-platforms.
 #
 
-set -e
+set -eux
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
