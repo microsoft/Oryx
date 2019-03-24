@@ -53,11 +53,6 @@ function BuildAndTagStage()
 # is not removed.
 BuildAndTagStage node-install
 BuildAndTagStage dotnet-install
-BuildAndTagStage python-build-prereqs
-BuildAndTagStage python2.7-build
-BuildAndTagStage python3.5-build
-BuildAndTagStage python3.6-build
-BuildAndTagStage python3.7-build
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 BuildAndTagStage copybuildscriptbinaries
