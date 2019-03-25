@@ -1,3 +1,7 @@
+parameters:
+  ascName: OryxMCR
+  acrName: oryxdevmcr.azurecr.io
+
 steps:
 - task: DownloadPipelineArtifact@0
   displayName: 'Download Pipeline Artifact'
@@ -29,8 +33,15 @@ steps:
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
 - task: ShellScript@2
-  displayName: 'Build build images'
+  displayName: 'Build build image'
   inputs:
     scriptPath: ./build/build-buildimages.sh
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
@@ -48,7 +59,7 @@ steps:
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Test the startup command generators'
+  displayName: 'Test startup script generators'
   inputs:
     scriptPath: ./build/test-startupscriptgenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
@@ -132,8 +143,8 @@ steps:
 - task: Docker@1
   displayName: 'Push Build image to ACR'
   inputs:
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
@@ -153,8 +164,8 @@ steps:
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
   inputs:
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'

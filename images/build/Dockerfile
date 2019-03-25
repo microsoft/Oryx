@@ -195,40 +195,6 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-# Install Python build prerequisites
-FROM buildpack-deps:stable AS python-build-prereqs
-COPY build/__python-versions.sh /tmp/
-COPY images/build/python-build.sh /
-RUN chmod +x /python-build.sh
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-      tk-dev \
-      uuid-dev
-
-# Build Python 2.7
-FROM python-build-prereqs AS python2.7-build
-WORKDIR /usr/src/python
-ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON27_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
-# Build Python 3.5
-FROM python-build-prereqs AS python3.5-build
-WORKDIR /usr/src/python
-ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON35_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
-# Build Python 3.6
-FROM python-build-prereqs AS python3.6-build
-WORKDIR /usr/src/python
-ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON36_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
-# Build Python 3.7
-FROM python-build-prereqs AS python3.7-build
-WORKDIR /usr/src/python
-ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-RUN . /tmp/__python-versions.sh && PYTHON_VERSION=$PYTHON37_VERSION PIP_VERSION=$PIP_VERSION /python-build.sh
-
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -239,15 +205,15 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=python2.7-build /opt /opt
-COPY --from=python3.5-build /opt /opt
-COPY --from=python3.6-build /opt /opt
-COPY --from=python3.7-build /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-2.7:20190322.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-3.5:20190322.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-3.6:20190322.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-3.7:20190322.1 /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
- && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/$PYTHON35_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON35_VERSION" ] && echo /opt/python/$PYTHON35_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . /tmp/__python-versions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
@@ -261,7 +227,7 @@ RUN set -ex \
  && cd /usr/local/bin \
  && cp -sn /opt/python/2/bin/* . \
  && cp -sn /opt/python/3/bin/* . \
- # Make sure the alias 'python' always refers to python2 by default.
+ # Make sure the alias 'python' always refers to Python 2 by default
  && ln -sf /opt/python/2/bin/python python
 
 # This stage is used only when building locally

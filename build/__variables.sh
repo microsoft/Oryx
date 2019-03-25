@@ -19,6 +19,7 @@ declare -r TESTS_SRC_DIR="$__REPO_DIR/tests"
 
 declare -r ARTIFACTS_DIR="$__REPO_DIR/artifacts"
 declare -r BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images.txt"
+declare -r BUILD_IMAGE_BASES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-image-bases.txt"
 declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.txt"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
 declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr.txt"
@@ -26,8 +27,9 @@ declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-imag
 declare -r DOCKER_BUILD_IMAGES_REPO="oryxdevms/build"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO="oryxdevms"
-declare -r ACR_BUILD_IMAGES_REPO="oryxdevmcr.azurecr.io/public/oryx/build"
-declare -r ACR_RUNTIME_IMAGES_REPO="oryxdevmcr.azurecr.io/public/oryx"
+declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
+declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
+declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_DEV_NAME/public/oryx"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
