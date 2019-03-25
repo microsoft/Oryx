@@ -290,7 +290,7 @@ RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
 
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
-RUN /tmp/php/install-prereqs.sh
+RUN chmod +x /tmp/php/install-prereqs.sh && /tmp/php/install-prereqs.sh
 COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190325.6 /opt /opt
 COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190325.6 /opt /opt
 COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190325.6 /opt /opt
