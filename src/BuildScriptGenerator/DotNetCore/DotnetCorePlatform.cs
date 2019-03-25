@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -95,13 +94,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            return Array.Empty<string>();
+            var dirs = new List<string>();
+            dirs.Add("obj");
+            dirs.Add("bin");
+            return dirs;
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            return Array.Empty<string>();
+            var dirs = new List<string>();
+            dirs.Add("obj");
+            dirs.Add("bin");
+            dirs.Add(DotnetCoreConstants.OryxOutputPublishDirectory);
+            return dirs;
         }
 
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)

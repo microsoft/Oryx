@@ -225,6 +225,50 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
+        public async Task CanBuildAndRun_NetCore21WebApp_WhenUsingExplicitPublishOutputDirectory_ZippingAllOutput()
+        {
+            // Arrange
+            var dotnetcoreVersion = "2.1";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand("export ORYX_ZIP_ALL_OUTPUT=true")
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -sourcePath {appDir} -publishedOutputPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
         public async Task CanBuildAndRun_NetCore22WebApp()
         {
             // Arrange

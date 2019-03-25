@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     /// <summary>
@@ -16,7 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string runBuildAzureCommand,
             bool hasProductionOnlyDependencies,
             string productionOnlyPackageInstallCommand,
-            bool zipNodeModulesDir)
+            bool zipNodeModulesDir,
+            IEnumerable<string> directoriesToExcludeFromCopyToBuildOutputDir)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
@@ -24,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             HasProductionOnlyDependencies = hasProductionOnlyDependencies;
             ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand;
             ZipNodeModulesDir = zipNodeModulesDir;
+            DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir;
         }
 
         public string PackageInstallCommand { get; set; }
@@ -37,5 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string ProductionOnlyPackageInstallCommand { get; set; }
 
         public bool ZipNodeModulesDir { get; set; }
+
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
     }
 }

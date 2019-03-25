@@ -2,6 +2,8 @@ declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
 echo "Python Version: $python"
 
+zippedOutputFileName=oryx_output.tar.gz
+
 {{ if VirtualEnvironmentName | IsNotBlank }}
 
 {{ if PackagesDirectory | IsNotBlank }}
@@ -14,14 +16,13 @@ fi
 VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
 VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
 VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}
-zippedVirtualEnvName="$VIRTUALENVIRONMENTNAME.tar.gz"
 
 echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
-echo Creating virtual environment ...
+echo Creating virtual environment...
 $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
 
-echo Activating virtual environment ...
+echo Activating virtual environment...
 source $VIRTUALENVIRONMENTNAME/bin/activate
 
 if [ -e "requirements.txt" ]
@@ -68,42 +69,45 @@ echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 
 echo Done running pip install.
 
-
 {{ if !DisableCollectStatic }}
-
 if [ -e "$SOURCE_DIR/manage.py" ]
 then
 	if grep -iq "Django" "$SOURCE_DIR/requirements.txt"
 	then
 		echo
 		echo Content in source directory is a Django app
-		echo Running 'collectstatic' ...
+		echo Running 'collectstatic'...
 		$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
 		echo "'collectstatic' exited with exit code $EXIT_CODE."
 	fi
 fi
-
 {{ end }}
 
-if [ -f "$zippedVirtualEnvName" ]
-then
-	echo
-	echo "File '$zippedVirtualEnvName' already exists under '$SOURCE_DIR'. Deleting it..."
-	rm -f "$zippedVirtualEnvName"
-fi
-
-{{ if VirtualEnvironmentName | IsNotBlank }}
-{{ if ZipVirtualEnvDir }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	if [ -d "$VIRTUALENVIRONMENTNAME" ]
+	mkdir -p "$DESTINATION_DIR"
+
+	excludedDirectories=""
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+	excludedDirectories+=" --exclude={{ excludedDir }}"
+	{{ end }}
+	
+	if [ "$ORYX_ZIP_ALL_OUTPUT" == "true" ]
 	then
+		if [ "$(ls -A $DESTINATION_DIR)" ]
+		then
+			echo
+			echo "Destination directory is not empty. Deleting its contents..."
+			rm -rf "$DESTINATION_DIR"/*
+		fi
+
+		touch $zippedOutputFileName
+		tar $excludedDirectories --exclude=$zippedOutputFileName -zcf $zippedOutputFileName .
+		cp -f $zippedOutputFileName "$DESTINATION_DIR/$zippedOutputFileName"
+	else
 		echo
-		echo "Zipping existing '$VIRTUALENVIRONMENTNAME' folder..."
-		# Make the contents of the '$VIRTUALENVIRONMENTNAME' folder appear in the zip file, not the folder itself
-		cd "$VIRTUALENVIRONMENTNAME"
-		tar -zcf ../$zippedVirtualEnvName .
+		echo "Copying files to destination directory '$DESTINATION_DIR'..."
+		rsync -rtE --links $excludedDirectories . "$DESTINATION_DIR"
+		echo "Finished copying files to destination directory."
 	fi
 fi
-{{ end }}
-{{ end }}

@@ -280,3 +280,4 @@ bin/
 src/github.com/
 src/startupscriptgenerator/vendor/
 src/golang.org/
+.oryx_build_id

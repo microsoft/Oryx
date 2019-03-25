@@ -8,10 +8,10 @@ then
     yarn config set cache-folder $YARN_CACHE_DIR
 fi
 
-zippedModulesFileName=node_modules.tar.gz
 allModulesDirName=__oryx_all_node_modules
 prodModulesDirName=__oryx_prod_node_modules
 copyOnlyProdModulesToOutput=false
+zippedOutputFileName=oryx_output.tar.gz
 
 # We want separate folders for prod modules only when the package.json has separate dependencies
 hasProductionOnlyDependencies="{{ HasProductionOnlyDependencies }}"
@@ -96,26 +96,39 @@ then
 	# to be synced with destination directory
 	mv node_modules $allModulesDirName
 
-	# Rename the folder having prod modules to be the one which we want to be present in output directory		
+	# Rename the folder having prod modules to be the one which we want to be present in output directory	
 	mv $prodModulesDirName node_modules
 fi
 
-{{ if ZipNodeModulesDir }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	if [ -f $zippedModulesFileName ]; then
-		echo
-		echo "File '$zippedModulesFileName' already exists under '$SOURCE_DIR'. Deleting it ..."
-		rm -f $zippedModulesFileName
-	fi
+	mkdir -p "$DESTINATION_DIR"
+	
+	excludedDirectories=""
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+	excludedDirectories+=" --exclude={{ excludedDir }}"
+	{{ end }}
 
-	if [ -d node_modules ]
+	cd "$SOURCE_DIR"
+	if [ "$ORYX_ZIP_ALL_OUTPUT" == "true" ]
 	then
+		if [ "$(ls -A $DESTINATION_DIR)" ]
+		then
+			echo
+			echo "Destination directory is not empty. Deleting its contents..."
+			rm -rf "$DESTINATION_DIR"/*
+		fi
+		
 		echo
-		echo Zipping existing 'node_modules' folder ...
-		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
-		cd node_modules
-		tar -zcf ../$zippedModulesFileName .
+		echo "Zipping the contents before copy to '$DESTINATION_DIR'..."
+		echo
+		touch $zippedOutputFileName
+		tar $excludedDirectories --exclude=$zippedOutputFileName -zcf $zippedOutputFileName .
+		cp -f $zippedOutputFileName "$DESTINATION_DIR/$zippedOutputFileName"
+	else
+		echo
+		echo "Copying files to destination directory '$DESTINATION_DIR'..."
+		rsync --delete -rtE --links $excludedDirectories . "$DESTINATION_DIR"
+		echo "Finished copying files to destination directory."
 	fi
 fi
-{{ end }}

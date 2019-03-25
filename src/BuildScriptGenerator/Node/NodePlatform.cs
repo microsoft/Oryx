@@ -105,13 +105,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
+            var exlcudedDirs = GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
+
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
                 runBuildAzureCommand: runBuildAzureCommand,
                 hasProductionOnlyDependencies: hasProductionOnlyDependencies,
                 productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
-                zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules);
+                zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules,
+                directoriesToExcludeFromCopyToBuildOutputDir: exlcudedDirs);
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,
                 scriptProps,

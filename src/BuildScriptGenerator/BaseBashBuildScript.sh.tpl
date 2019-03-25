@@ -25,16 +25,6 @@ then
     DESTINATION_DIR=$(pwd -P)
 fi
 
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
-then
-	if [ -d "$DESTINATION_DIR" ] && [ "$(ls -A $DESTINATION_DIR)" ]
-	then
-		echo
-		echo "Destination directory is not empty. Deleting its contents..."
-		rm -rf "$DESTINATION_DIR"/*
-	fi
-fi
-
 if [ ! -z "$INTERMEDIATE_DIR" ]
 then
 	echo "Using intermediate directory '$INTERMEDIATE_DIR'."
@@ -83,20 +73,6 @@ echo "{{ PreBuildScriptEpilogue }}"
 cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
-
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
-then
-	cd "$SOURCE_DIR"
-	mkdir -p "$DESTINATION_DIR"
-	echo
-	echo "Copying files to destination directory '$DESTINATION_DIR'..."
-	excludedDirectories=""
-	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
-	excludedDirectories+=" --exclude {{ excludedDir }}"
-	{{ end }}
-	rsync -rtE --links $excludedDirectories . "$DESTINATION_DIR"
-	echo "Finished copying files to destination directory."
-fi
 
 {{ if PostBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the post-build script runs from there

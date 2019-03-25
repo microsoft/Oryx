@@ -108,12 +108,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             TryLogDependencies(pythonVersion, context.SourceRepo);
 
+            var exlcudedDirs = GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
+
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
                 disableCollectStatic: disableCollectStatic,
+                directoriesToExcludeFromCopyToBuildOutputDir: exlcudedDirs,
                 zipVirtualEnvDir: _pythonScriptGeneratorOptions.ZipVirtualEnvDir);
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.PythonSnippet,
@@ -163,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             BuildScriptGeneratorContext context)
         {
             var virtualEnvName = GetVirutalEnvironmentName(context);
-            if (!string.IsNullOrEmpty(virtualEnvName))
+            if (string.IsNullOrEmpty(virtualEnvName))
             {
                 if (_pythonScriptGeneratorOptions.ZipVirtualEnvDir)
                 {
@@ -174,8 +177,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     return new List<string> { $"{virtualEnvName}.{PythonConstants.ZipFileExtension}" };
                 }
             }
-
-            return Array.Empty<string>();
+            else
+            {
+                return new List<string> { DefaultTargetPackageDirectory };
+            }
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
