@@ -26,12 +26,12 @@ echo "Release notes will be placed in $OUTPUT_FILE"
 # First, we look for the latest tag that was pushed. Since our builds numbers are lexicographically ordered,
 # YYYYMMDD.P, we just take the latest value that starts with a `2` to avoid other tags that might be in the repo.
 # Optimistic note: yes, this script will break in year 3000, but we can fix it then.
-LAST_TAG=$(git tag --list 2* | sort -r | head -n 1)
+LAST_TAG=$(git tag --sort=committerdate | tail -n 1)
 
 if [ -z "$LAST_TAG" ]; then
     echo "Couldn't find a base tag, will output the entire file"
     # Ignore the lines starting with [//] which we're using as comments.
-    cat ../CHANGELOG.md | grep -v -e '^\[//\]' > $OUTPUT_FILE
+    cat $CHANGELOG_FILE | grep -v -e '^\[//\]' > $OUTPUT_FILE
 else
     echo "Getting the diff from latest tag, $LAST_TAG"
     # Get the diff for the changelog file
