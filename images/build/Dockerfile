@@ -289,12 +289,12 @@ COPY images/build/node-cache-packages.sh /tmp
 RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
 
 # Copy PHP versions
-COPY --from=php-build-prereqs /php/install-prereqs.sh /tmp/php/install-prereqs.sh
+COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN /tmp/php/install-prereqs.sh
-COPY --from=php56-build /opt /opt
-COPY --from=php70-build /opt /opt
-COPY --from=php72-build /opt /opt
-COPY --from=php73-build /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190325.6 /opt /opt
 
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
