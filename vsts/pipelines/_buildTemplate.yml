@@ -1,4 +1,16 @@
+parameters:
+  ascName: OryxMCR
+  acrName: oryxdevmcr.azurecr.io
+
 steps:
+- task: DownloadPipelineArtifact@0
+  displayName: 'Download Pipeline Artifact'
+  inputs:
+    pipelineId: 'Oryx-CI'
+    artifactName: 'drop-$(Build.BuildNumber)'
+    targetPath: '$(Build.SourcesDirectory)'
+  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'))
+
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
     then
@@ -15,15 +27,21 @@ steps:
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/build-solution.sh
-  condition: succeeded()
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
 - task: ShellScript@2
-  displayName: 'Build build images'
+  displayName: 'Build build image'
   inputs:
     scriptPath: ./build/build-buildimages.sh
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
@@ -41,7 +59,7 @@ steps:
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Test the startup command generators'
+  displayName: 'Test startup script generators'
   inputs:
     scriptPath: ./build/test-startupscriptgenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
@@ -76,6 +94,14 @@ steps:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Create File to Notify Integration Test has run successfully'
+  inputs:
+    type: InlineScript
+    script: 'echo "success">$(Build.SourcesDirectory)/artifacts/$(Build.BuildNumber).txt'
+  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+
 
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
@@ -117,8 +143,8 @@ steps:
 - task: Docker@1
   displayName: 'Push Build image to ACR'
   inputs:
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
@@ -138,8 +164,8 @@ steps:
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
   inputs:
-    azureSubscriptionEndpoint: OryxMCR
-    azureContainerRegistry: oryxdevmcr.azurecr.io
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'

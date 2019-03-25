@@ -65,7 +65,7 @@ fi
 dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
 if [ -z "$dockerFiles" ]
 then
-    echo "Couldn't find any docker files under '$RUNTIME_IMAGES_SRC_DIR' and its sub-directories."
+    echo "Couldn't find any Dockerfiles under '$RUNTIME_IMAGES_SRC_DIR' and its sub-directories."
     exit 1
 fi
 
