@@ -54,11 +54,6 @@ function BuildAndTagStage()
 BuildAndTagStage node-install
 BuildAndTagStage dotnet-install
 BuildAndTagStage python
-BuildAndTagStage php-build-prereqs
-BuildAndTagStage php56-build
-BuildAndTagStage php70-build
-BuildAndTagStage php72-build
-BuildAndTagStage php73-build
 BuildAndTagStage buildscriptbuilder
 BuildAndTagStage copybuildscriptbinaries
 BuildAndTagStage buildscriptbinaries
