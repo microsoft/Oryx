@@ -4,8 +4,9 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 #
-# This script can be used to build the base platforms locally, before building the build image.
-# In Azure DevOps, this is taken care of by the pipelines defined in vsts/pipelines/buildimage-platforms.
+# This script builds some base images that are needed for the build image:
+# - Python binaries
+# - PHP binaries
 #
 
 set -e
