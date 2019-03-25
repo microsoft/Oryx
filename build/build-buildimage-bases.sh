@@ -34,6 +34,24 @@ docker build -f $__REPO_DIR/images/build/python/3.7/Dockerfile -t "$PYTHON_IMAGE
 echo "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 
+# Build PHP
+docker build -f $__REPO_DIR/images/build/php/prereqs/Dockerfile -t "php-build-prereqs" $__REPO_DIR
+
+declare -r PHP_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/php-build"
+
+docker build -f $__REPO_DIR/images/build/php/5.6/Dockerfile -t "$PHP_IMAGE_PREFIX-5.6:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-5.6:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $__REPO_DIR/images/build/php/7.0/Dockerfile -t "$PHP_IMAGE_PREFIX-7.0:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-7.0:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $__REPO_DIR/images/build/php/7.2/Dockerfile -t "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $__REPO_DIR/images/build/php/7.3/Dockerfile -t "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+
 echo
 echo "List of images built (from '$BUILD_IMAGE_BASES_ARTIFACTS_FILE'):"
 cat $BUILD_IMAGE_BASES_ARTIFACTS_FILE
