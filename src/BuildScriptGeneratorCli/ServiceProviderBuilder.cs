@@ -66,10 +66,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var config = new LoggingConfiguration();
 
-            var aiKey = Environment.GetEnvironmentVariable(LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
+            var aiKey = Environment.GetEnvironmentVariable(
+                LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(aiKey))
             {
-                var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget() { Name = "ai", InstrumentationKey = aiKey };
+                var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
+                {
+                    Name = "ai",
+                    InstrumentationKey = aiKey
+                };
                 config.AddTarget(aiTarget);
                 config.AddRuleForAllLevels(aiTarget);
             }
@@ -83,7 +88,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 // Default layout: "${longdate}|${level:uppercase=true}|${logger}|${message}"
-                var fileTarget = new NLog.Targets.FileTarget("file") { FileName = Path.GetFullPath(logPath), Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}${exception:format=ToString}" };
+                var fileTarget = new NLog.Targets.FileTarget("file")
+                {
+                    FileName = Path.GetFullPath(logPath),
+                    Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}${exception:format=ToString}"
+                };
                 config.AddTarget(fileTarget);
                 config.AddRuleForAllLevels(fileTarget);
             }

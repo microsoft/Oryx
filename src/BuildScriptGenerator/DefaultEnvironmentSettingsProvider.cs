@@ -150,7 +150,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (!string.IsNullOrEmpty(environmentSettings.PostBuildScriptPath))
             {
-                environmentSettings.PostBuildScriptPath = GetScriptAbsolutePath(environmentSettings.PostBuildScriptPath);
+                environmentSettings.PostBuildScriptPath = GetScriptAbsolutePath(
+                    environmentSettings.PostBuildScriptPath);
             }
 
             return environmentSettings;

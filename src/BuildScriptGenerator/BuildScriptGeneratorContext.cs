@@ -39,19 +39,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IDictionary<string, string> Properties { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the detection and build of NodeJs code in the repo should be enabled.
+        /// Gets or sets a value indicating whether the detection and build of NodeJs
+        /// code in the repo should be enabled.
         /// Defaults to true.
         /// </summary>
         public bool EnableNodeJs { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the detection and build of Python code in the repo should be enabled.
+        /// Gets or sets a value indicating whether the detection and build of Python
+        /// code in the repo should be enabled.
         /// Defaults to true.
         /// </summary>
         public bool EnablePython { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the detection and build of .NET core code in the repo should be enabled.
+        /// Gets or sets a value indicating whether the detection and build of .NET core
+        /// code in the repo should be enabled.
         /// Defaults to true.
         /// </summary>
         public bool EnableDotNetCore { get; set; } = true;

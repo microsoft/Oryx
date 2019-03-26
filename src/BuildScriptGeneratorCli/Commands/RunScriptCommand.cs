@@ -51,13 +51,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             "--defaultApp",
             CommandOptionType.SingleValue,
-            Description = "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/startup/default-static-site.js'.")]
+            Description = "[Optional] Path to a default file that will be executed if the entrypoint" +
+            " is not found. Ex: '/opt/startup/default-static-site.js'.")]
         public string DefaultApp { get; set; }
 
         [Option(
             "--serverCmd",
             CommandOptionType.SingleValue,
-            Description = "[Optional] Command to start the server, if different than the default, e.g. 'pm2 start --no-daemon'.")]
+            Description = "[Optional] Command to start the server, if different than the default," +
+            " e.g. 'pm2 start --no-daemon'.")]
         public string ServerCmd { get; set; }
 
         [Option(

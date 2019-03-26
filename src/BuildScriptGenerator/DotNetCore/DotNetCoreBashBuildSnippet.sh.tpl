@@ -20,6 +20,6 @@ echo
 dotnet restore "{{ ProjectFile }}"
 
 echo
-echo "Publishing to directory $outputDir ..."
+echo "Publishing to directory $outputDir..."
 echo
 dotnet publish "{{ ProjectFile }}" -c Release -o "$outputDir"

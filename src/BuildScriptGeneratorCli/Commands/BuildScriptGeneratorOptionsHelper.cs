@@ -23,7 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             bool scriptOnly,
             string[] properties)
         {
-            options.SourceDir = string.IsNullOrEmpty(sourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(sourceDir);
+            options.SourceDir = string.IsNullOrEmpty(sourceDir)
+                ? Directory.GetCurrentDirectory() : Path.GetFullPath(sourceDir);
             options.Language = language;
             options.LanguageVersion = languageVersion;
 

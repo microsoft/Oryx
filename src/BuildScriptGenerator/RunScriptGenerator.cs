@@ -22,7 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions options)
         {
             var targetPlatform = _programmingPlatforms.Where(
-                p => string.Equals(p.Name, targetPlatformName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                p => string.Equals(
+                    p.Name,
+                    targetPlatformName,
+                    StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
             if (targetPlatform == null)
             {

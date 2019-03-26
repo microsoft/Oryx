@@ -15,7 +15,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     [BuildProperty(
         ZipNodeModulesDirPropertyKey,
-        "Flag to indicate if 'node_modules' folder need to be in zipped form in the output folder. Default is 'false'.")]
+        "Flag to indicate if 'node_modules' folder need to be in zipped form in the output folder. " +
+        "Default is 'false'.")]
     internal class NodePlatform : IProgrammingPlatform
     {
         internal const string ZipNodeModulesDirPropertyKey = "zip_nodemodules_dir";
@@ -88,7 +89,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                 if (scriptsNode["build:azure"] != null)
                 {
-                    runBuildAzureCommand = string.Format(NodeConstants.PkgMgrRunBuildAzureCommandTemplate, packageManagerCmd);
+                    runBuildAzureCommand = string.Format(
+                        NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
+                        packageManagerCmd);
                 }
             }
 
@@ -96,7 +99,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
                 var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(context.Language, context.NodeVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+                _logger.LogDependencies(
+                    context.Language,
+                    context.NodeVersion,
+                    depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
             var scriptProps = new NodeBashBuildSnippetProperties(
@@ -106,7 +112,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 hasProductionOnlyDependencies: hasProductionOnlyDependencies,
                 productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
                 zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules);
-            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, scriptProps, _logger);
+            string script = TemplateHelpers.Render(
+                TemplateHelpers.TemplateResource.NodeBuildSnippet,
+                scriptProps,
+                _logger);
 
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
@@ -121,10 +130,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return scriptGeneratorContext.EnableNodeJs;
         }
 
-        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
-            Debug.Assert(sourceRepo != null, $"{nameof(sourceRepo)} must not be null since Node needs access to the repository");
+            Debug.Assert(
+                sourceRepo != null,
+                $"{nameof(sourceRepo)} must not be null since Node needs access to the repository");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
                 toolsToVersion["node"] = targetPlatformVersion;
@@ -172,7 +186,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     string mainJsFile = packageJson?.main;
                     if (string.IsNullOrEmpty(mainJsFile))
                     {
-                        var candidateFiles = new[] { "bin/www", "server.js", "app.js", "index.js", "hostingstart.js" };
+                        var candidateFiles = new[]
+                        {
+                            "bin/www",
+                            "server.js",
+                            "app.js",
+                            "index.js",
+                            "hostingstart.js"
+                        };
                         foreach (var file in candidateFiles)
                         {
                             if (options.SourceRepo.FileExists(file))
@@ -218,14 +239,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 AppDirectory = options.SourceRepo.RootPath,
                 StartupCommand = startupCommand,
-                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion) ? null : $"node={options.PlatformVersion}",
+                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion)
+                ? null : $"node={options.PlatformVersion}",
                 BindPort = options.BindPort
             };
             var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
             return script;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
         {
             var dirs = new List<string>();
             dirs.Add(NodeConstants.AllNodeModulesDirName);
@@ -242,7 +265,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return dirs;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return new[]
             {
@@ -265,7 +289,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 // Leave malformed package.json files for Node.js to handle.
                 // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
-                logger.LogWarning(exc, $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
+                logger.LogWarning(
+                    exc,
+                    $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
             }
 
             return packageJson;
@@ -320,7 +346,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     supportedNpmVersions);
                 if (string.IsNullOrWhiteSpace(npmVersion))
                 {
-                    _logger.LogWarning("User requested npm version {npmVersion} but it wasn't resolved", npmVersionRange);
+                    _logger.LogWarning(
+                        "User requested npm version {npmVersion} but it wasn't resolved",
+                        npmVersionRange);
                     return null;
                 }
             }
