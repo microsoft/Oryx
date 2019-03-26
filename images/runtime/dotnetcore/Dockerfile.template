@@ -16,7 +16,7 @@ FROM %DOTNETCORE_BASE_IMAGE%
 # a version of `curl` that has known issues.
 # We manually update it here so we can still depend on the original images.
 # This command should be removed once support for deprecated .NET core images is halted.
-RUN apt update && apt install curl --yes
+RUN apt-get update && apt-get install curl --yes
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
