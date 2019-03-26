@@ -19,21 +19,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         [Fact]
         public async Task NodeApp_MicrosoftSqlServerDB()
         {
-            await RunTestAsync(
-                "nodejs",
-                "10.14",
-                Path.Combine(HostSamplesDir, "nodejs", "node-mssql"),
-                _dbFixture.DbServerContainerName);
+            await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mssql"));
         }
 
         [Fact]
         public async Task Python37App_MicrosoftSqlServerDB()
         {
-            await RunTestAsync(
-                "python",
-                "3.7",
-                Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"),
-                _dbFixture.DbServerContainerName);
+            await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"));
         }
     }
 }
