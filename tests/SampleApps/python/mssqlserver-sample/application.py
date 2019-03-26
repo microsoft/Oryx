@@ -6,11 +6,10 @@ app = Flask(__name__)
 
 class Database:
     def listProductNames(self):
-        host = "dbserver"
-        databaseName = "oryxdb"
-        user = "sa"
+        host = os.getenv('DATABASE_HOSTNAME')
+        databaseName = os.getenv('DATABASE_NAME')
+        user = os.getenv('DATABASE_USERNAME')
         password = os.getenv('DATABASE_PASSWORD')
-
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+host+';DATABASE='+databaseName+';UID='+user+';PWD='+ password)
         try:
             c = conn.cursor()
