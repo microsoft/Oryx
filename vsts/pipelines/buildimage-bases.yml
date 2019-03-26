@@ -12,6 +12,7 @@ trigger:
   paths:
     include:
     - images/build/python
+    - images/build/yarn-cache
     - build/
     - vsts/
 

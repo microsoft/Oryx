@@ -4,7 +4,7 @@ set -e
 declare -r __REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # VSTS environment variables
-declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
+declare -r BUILD_NUMBER="${BUILD_BUILDNUMBER:-latest}"
 declare -r BUILD_CONFIGURATION="${BUILDCONFIGURATION:-Debug}"
 
 declare -r BUILD_BUILDIMAGES_USING_NOCACHE="$BUILD_BUILDIMAGES_USING_NOCACHE"
