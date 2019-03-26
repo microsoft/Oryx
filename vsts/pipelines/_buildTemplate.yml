@@ -178,6 +178,12 @@ steps:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
+- task: ShellScript@2
+  displayName: 'Generate release notes'
+  inputs:
+    scriptPath: ./vsts/scripts/generate-release-notes.sh
+  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
+
 - task: ArchiveFiles@2
   displayName: 'Archive docker files and scripts for Oryx build and runtime images'
   inputs:
