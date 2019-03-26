@@ -18,13 +18,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly ITestOutputHelper _output;
+        private readonly Random _rand = new Random();
         protected readonly int _appPort;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _dbFixture = dbFixture;
             _output = outputHelper;
-            _appPort = 8080 + new Random().Next(100);
+            _appPort = 8080 + _rand.Next(100);
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
