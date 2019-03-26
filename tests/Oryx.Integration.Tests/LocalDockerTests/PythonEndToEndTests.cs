@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -233,21 +235,37 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appName = "django-app";
             var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             const string virtualEnvName = "antenv";
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l python --language-version " +
+                $"3.7 -p virtualenv_name={virtualEnvName}")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .ToString();
+
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.7" },
+                new List<DockerVolume> { volume, appOutputDirVolume },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 portMapping,
                 "/bin/bash",

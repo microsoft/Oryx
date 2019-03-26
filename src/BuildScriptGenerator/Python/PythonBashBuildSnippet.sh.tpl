@@ -1,7 +1,6 @@
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
 echo "Python Version: $python"
-cd "$SOURCE_DIR"
 
 {{ if VirtualEnvironmentName | IsNotBlank }}
 
@@ -15,6 +14,7 @@ fi
 VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
 VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
 VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}
+zippedVirtualEnvName="$VIRTUALENVIRONMENTNAME.tar.gz"
 
 echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
@@ -83,4 +83,25 @@ then
 	fi
 fi
 
+{{ end }}
+
+{{ if VirtualEnvironmentName | IsNotBlank }}
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
+then
+	if [ -f "$zippedVirtualEnvName" ]
+	then
+		echo
+		echo "File '$zippedVirtualEnvName' already exists under '$SOURCE_DIR'. Deleting it..."
+		rm -f "$zippedVirtualEnvName"
+	fi
+
+	if [ -d "$VIRTUALENVIRONMENTNAME" ]
+	then
+		echo
+		echo "Zipping existing '$VIRTUALENVIRONMENTNAME' folder..."
+		# Make the contents of the '$VIRTUALENVIRONMENTNAME' folder appear in the zip file, not the folder itself
+		cd "$VIRTUALENVIRONMENTNAME"
+		tar -zcf ../$zippedVirtualEnvName .
+	fi
+fi
 {{ end }}

@@ -16,7 +16,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("languages", Description = "Show the list of supported platforms and other information like versions, properties etc.")]
+    [Command(
+        "languages",
+        Description = "Show the list of supported platforms and other information like versions, properties etc.")]
     internal class LanguagesCommand : BaseCommand
     {
         [Option("--json", Description = "Output the supported platform data in JSON format.")]
@@ -42,7 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         platform.Versions = SortVersions(iPlatform.SupportedLanguageVersions);
                     }
 
-                    var props = iPlatform.GetType().GetCustomAttributes(typeof(BuildPropertyAttribute), inherit: true).OfType<BuildPropertyAttribute>();
+                    var props = iPlatform.GetType().GetCustomAttributes(
+                        typeof(BuildPropertyAttribute),
+                        inherit: true).OfType<BuildPropertyAttribute>();
                     if (props.Any())
                     {
                         platform.Properties = new Dictionary<string, string>();
@@ -76,7 +80,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (platform.Properties != null && platform.Properties.Any())
                 {
-                    defs.AddDefinition("Properties", string.Join(Environment.NewLine, platform.Properties.Select(prop => $"{prop.Key} - {prop.Value}")));
+                    defs.AddDefinition(
+                        "Properties",
+                        string.Join(
+                            Environment.NewLine,
+                            platform.Properties.Select(prop => $"{prop.Key} - {prop.Value}")));
                 }
 
                 result.AppendLine(defs.ToString());

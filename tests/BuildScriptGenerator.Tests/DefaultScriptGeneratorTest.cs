@@ -659,7 +659,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 return _detector.Detect(sourceRepo);
             }
 
-            public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+            public BuildScriptSnippet GenerateBashBuildScriptSnippet(
+                BuildScriptGeneratorContext scriptGeneratorContext)
             {
                 if (_canGenerateScript == true)
                 {
@@ -674,12 +675,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 throw new NotImplementedException();
             }
 
-            public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+            public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+                BuildScriptGeneratorContext scriptGeneratorContext)
             {
                 return Array.Empty<string>();
             }
 
-            public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+            public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+                BuildScriptGeneratorContext scriptGeneratorContext)
             {
                 return Array.Empty<string>();
             }
@@ -694,7 +697,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 return _enabled;
             }
 
-            public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+            public void SetRequiredTools(
+                ISourceRepo sourceRepo,
+                string targetPlatformVersion,
+                IDictionary<string, string> toolsToVersion)
             {
             }
 

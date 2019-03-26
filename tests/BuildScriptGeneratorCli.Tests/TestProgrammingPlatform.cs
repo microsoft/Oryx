@@ -49,12 +49,14 @@ namespace BuildScriptGeneratorCli.Tests
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return Array.Empty<string>();
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return Array.Empty<string>();
         }
@@ -69,7 +71,10 @@ namespace BuildScriptGeneratorCli.Tests
             return true;
         }
 
-        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion)
         {
         }
 

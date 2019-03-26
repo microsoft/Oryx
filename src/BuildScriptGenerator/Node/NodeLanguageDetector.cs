@@ -3,11 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -57,7 +55,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                _logger.LogDebug($"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}/{NodeConstants.YarnLockFileName} in repo");
+                _logger.LogDebug(
+                    $"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}" +
+                    $"/{NodeConstants.YarnLockFileName} in repo");
             }
 
             if (!isNodeApp)
@@ -81,7 +81,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     {
                         if (sourceRepo.FileExists(iisStartupFile))
                         {
-                            _logger.LogDebug("App in repo is not a Node.js app as it has the file {iisStartupFile}", iisStartupFile);
+                            _logger.LogDebug(
+                                "App in repo is not a Node.js app as it has the file {iisStartupFile}",
+                                iisStartupFile);
                             return null;
                         }
                     }
@@ -90,7 +92,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
                 else
                 {
-                    _logger.LogDebug("Could not find typical Node.js files in repo"); // No point in logging the actual file list, as it's constant
+                    // No point in logging the actual file list, as it's constant
+                    _logger.LogDebug("Could not find typical Node.js files in repo");
                 }
             }
 
@@ -130,7 +133,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                 if (string.IsNullOrWhiteSpace(nodeVersion))
                 {
-                    var exc = new UnsupportedVersionException($"Target Node.js version '{nodeVersionRange}' is unsupported. " +
+                    var exc = new UnsupportedVersionException(
+                        $"Target Node.js version '{nodeVersionRange}' is unsupported. " +
                         $"Supported versions are: {string.Join(", ", _nodeVersionProvider.SupportedNodeVersions)}");
                     _logger.LogError(exc, "Exception caught");
                     throw exc;
