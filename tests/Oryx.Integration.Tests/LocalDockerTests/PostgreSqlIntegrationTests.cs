@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
         }
 
-        [Fact(Skip = "#823483: Skip failing DB tests for now")]
+        [Fact]
         public async Task NodeApp_PostgresDB()
         {
             await RunTestAsync(
@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 _dbFixture.DbServerContainerName);
         }
 
-        [Fact(Skip = "#823483: Skip failing DB tests for now")]
+        [Fact]
         public async Task Python37App_PostgreSqlDB()
         {
             await RunTestAsync(
