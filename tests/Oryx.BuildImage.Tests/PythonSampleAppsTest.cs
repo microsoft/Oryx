@@ -494,8 +494,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}")
+                .AddFileExistsCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();
 
             // Act

@@ -46,7 +46,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var sourceDir = new DirectoryInfo(sourceDirectory);
             if (!sourceDir.Exists)
             {
-                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirectory);
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: " + sourceDirectory);
             }
 
             // If the destination directory doesn't exist, create it.

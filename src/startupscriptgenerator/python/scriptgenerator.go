@@ -38,6 +38,16 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
+	zippedVirtualEnvName := gen.VirtualEnvironmentName + ".tar.gz"
+	scriptBuilder.WriteString("if [ -f " + zippedVirtualEnvName + " ]; then\n")
+	scriptBuilder.WriteString("    echo \"Found '" + zippedVirtualEnvName + "', will extract its contents.\"\n")
+	scriptBuilder.WriteString("    rm -fr /" + gen.VirtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("    mkdir -p " + gen.VirtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("    echo \"Extracting...\"\n")
+	scriptBuilder.WriteString("    tar -xzf " + zippedVirtualEnvName + " -C " + gen.VirtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("    echo \"Done.\"\n\n")
+	scriptBuilder.WriteString("fi\n\n")
+
 	packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
 	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
 		"ORYX_PACKAGES_PATH=" + packagedDir + "\n" +

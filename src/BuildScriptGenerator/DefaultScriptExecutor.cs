@@ -30,7 +30,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             int exitCode = ProcessHelper.TrySetExecutableMode(scriptPath, workingDirectory);
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                _logger.LogError("Failed to set execute permission on script {scriptPath} ({exitCode})", scriptPath, exitCode);
+                _logger.LogError(
+                    "Failed to set execute permission on script {scriptPath} ({exitCode})",
+                    scriptPath,
+                    exitCode);
                 return exitCode;
             }
 
@@ -40,7 +43,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 try
                 {
                     var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(workingDirectory);
-                    _logger.LogTrace("logDirectoryStructure", new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
+                    _logger.LogTrace(
+                        "logDirectoryStructure",
+                        new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
                 }
                 catch (Exception ex)
                 {
@@ -63,7 +68,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdErrHandler)
         {
             int exitCode;
-            using (var timedEvent = _logger.LogTimedEvent("ExecuteScript", new Dictionary<string, string> { { "scriptPath", scriptPath } }))
+            using (var timedEvent = _logger.LogTimedEvent(
+                "ExecuteScript",
+                new Dictionary<string, string> { { "scriptPath", scriptPath } }))
             {
                 exitCode = ProcessHelper.RunProcess(
                     scriptPath,

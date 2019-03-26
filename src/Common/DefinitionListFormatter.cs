@@ -33,7 +33,9 @@ namespace Microsoft.Oryx.Common
         {
             if (values != null)
             {
-                _rows.AddRange(values.Where(pair => isValidTitle(pair.Key)).Select(pair => Tuple.Create(pair.Key, pair.Value)));
+                _rows
+                    .AddRange(values.Where(pair => isValidTitle(pair.Key))
+                    .Select(pair => Tuple.Create(pair.Key, pair.Value)));
             }
         }
 

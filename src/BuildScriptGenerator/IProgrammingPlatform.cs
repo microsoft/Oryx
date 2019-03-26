@@ -41,18 +41,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Adds the required tools and their versions to a map.
         /// </summary>
         /// <param name="sourceRepo">Source repo for the application.</param>
-        /// <param name="targetPlatformVersion">The target programming platform version that the application has requested.</param>
+        /// <param name="targetPlatformVersion">
+        /// The target programming platform version that the application has requested.
+        /// </param>
         /// <param name="toolsToVersion">The map from tools to their required versions.</param>
         /// <remarks>We keep the tool dependency tracking outside of the script iself to allow for
         /// scenarios where the environment already has the right tools configured and in the path,
         /// in which case no tool setup is needed.</remarks>
-        void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion);
+        void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion);
 
         /// <summary>
         /// Tries generating a bash script based on the application in source directory.
         /// </summary>
         /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
-        /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful, <c>null</c> otherwise.</returns>
+        /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful,
+        /// <c>null</c> otherwise.</returns>
         BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
 
         /// <summary>
@@ -80,12 +86,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets list of directories which need to be excluded from being copied to the output directory.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir();
+        IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext);
 
         /// <summary>
         /// Gets list of directories which need to be excluded from being copied to an intermediate directory, if used.
         /// </summary>
         /// <returns>List of directories</returns>
-        IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir();
+        IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext);
     }
 }
