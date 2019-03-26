@@ -4,6 +4,6 @@
 # that must be copied to the build image.
 FROM node:lts
 COPY node-cache-packages.sh /tmp/
-RUN chmod +x /tmp/node-cache-packages.sh \ 
- && /tmp/node-cache-packages.sh \
- && rm /tmp/node-cache-packages.sh
+RUN chmod +x /tmp/node-cache-packages.sh
+RUN /tmp/node-cache-packages.sh
+RUN rm /tmp/node-cache-packages.sh
