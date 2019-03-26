@@ -4,6 +4,10 @@ import os
 
 app = Flask(__name__)
 
+@app.errorhandler(Exception)
+def exception_handler(exc):
+    return repr(exc)
+
 class Database:
     def listProductNames(self):
         host = os.getenv('DATABASE_HOSTNAME')
@@ -24,9 +28,6 @@ def listProducts():
     db = Database()
     rows = db.listProductNames()
     payload = []
-    content = {}
     for row in rows:
-        content = {'Name': row[0]}
-        payload.append(content)
-        content = {}
+        payload.append({'Name': row[0]})
     return jsonify(payload)
