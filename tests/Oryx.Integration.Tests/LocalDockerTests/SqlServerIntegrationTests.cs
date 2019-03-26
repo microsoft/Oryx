@@ -12,9 +12,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class SqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.SqlServerDbContainerFixture>
     {
-        private const int hostPort = 8085;
-
-        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture) : base(output, dbFixture, hostPort)
+        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture) : base(output, dbFixture)
         {
         }
 

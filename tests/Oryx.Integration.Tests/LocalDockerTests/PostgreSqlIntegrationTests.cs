@@ -12,9 +12,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
-        private const int hostPort = 8087;
-
-        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture) : base(output, dbFixture, hostPort)
+        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture) : base(output, dbFixture)
         {
         }
 

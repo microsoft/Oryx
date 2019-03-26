@@ -8,28 +8,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class DatabaseTestsBase
+    public abstract class DatabaseTestsBase
     {
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly ITestOutputHelper _output;
+        protected readonly int _appPort;
 
-        protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
+        protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _dbFixture = dbFixture;
             _output = outputHelper;
-            HostPort = hostPort;
+            _appPort = 8080 + new Random().Next(100);
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
-
-        protected int HostPort { get; }
 
         protected string HostSamplesDir { get; }
 
@@ -52,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
             var containerPort = 8000;
-            var portMapping = $"{HostPort}:{containerPort}";
+            var portMapping = $"{_appPort}:{containerPort}";
             var entrypointScript = "./run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -83,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
-                    var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await HttpClient.GetStringAsync($"http://localhost:{_appPort}/");
                     Assert.Equal(_dbFixture.GetSampleDataAsJson(), data.Trim(), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }
