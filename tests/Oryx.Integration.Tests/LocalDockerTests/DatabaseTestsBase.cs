@@ -34,19 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         protected HttpClient HttpClient { get; }
 
-        protected Task RunTestAsync(
-            string language,
-            string languageVersion,
-            string samplePath)
-        {
-            return RunTestAsync(language, languageVersion, samplePath, databaseServerContainerName: null);
-        }
-
-        protected async Task RunTestAsync(
-            string language,
-            string languageVersion,
-            string samplePath,
-            string databaseServerContainerName)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
@@ -64,13 +52,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             {
                 runtimeImageName = $"oryxdevms/node-{languageVersion}";
             }
-
-            // For SqlLite scenarios where there is no database container, there wouldn't be any link
-            string link = null;
-            if (!string.IsNullOrEmpty(databaseServerContainerName))
-            {
-                link = $"{databaseServerContainerName}:{Constants.InternalDbLinkName}";
-            }
+            
+            string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
