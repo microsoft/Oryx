@@ -13,6 +13,8 @@ set -e
 
 source __variables.sh
 
+IMAGE_TAG="${BUILD_NUMBER:-latest}"
+
 # Clean artifacts
 mkdir -p `dirname $BUILD_IMAGE_BASES_ARTIFACTS_FILE`
 > $BUILD_IMAGE_BASES_ARTIFACTS_FILE
@@ -22,18 +24,24 @@ docker build -f $__REPO_DIR/images/build/python/prereqs/Dockerfile -t "python-bu
 
 declare -r PYTHON_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/python-build"
 
-docker build -f $__REPO_DIR/images/build/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" $__REPO_DIR
-echo "$PYTHON_IMAGE_PREFIX-2.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $__REPO_DIR/images/build/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG" $__REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $__REPO_DIR/images/build/python/3.5/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" $__REPO_DIR
-echo "$PYTHON_IMAGE_PREFIX-3.5:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $__REPO_DIR/images/build/python/3.5/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.5:$IMAGE_TAG" $__REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-3.5:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $__REPO_DIR/images/build/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" $__REPO_DIR
-echo "$PYTHON_IMAGE_PREFIX-3.6:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $__REPO_DIR/images/build/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG" $__REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $__REPO_DIR/images/build/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" $__REPO_DIR
-echo "$PYTHON_IMAGE_PREFIX-3.7:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+docker build -f $__REPO_DIR/images/build/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG" $__REPO_DIR
+echo "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
+# Build Yarn cache
+YARN_CACHE_IMAGE_BASE="$ACR_DEV_NAME/public/oryx/build-yarn-cache"
+YARN_CACHE_IMAGE_NAME=$YARN_CACHE_IMAGE_BASE:$IMAGE_TAG
+
+docker build $__REPO_DIR/images/build/yarn-cache -t $YARN_CACHE_IMAGE_NAME
+echo $YARN_CACHE_IMAGE_NAME >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 # Build PHP
 docker build -f $__REPO_DIR/images/build/php/prereqs/Dockerfile -t "php-build-prereqs" $__REPO_DIR

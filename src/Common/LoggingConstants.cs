@@ -9,7 +9,8 @@ namespace Microsoft.Oryx.Common
 {
     public static class LoggingConstants
     {
-        public const string ApplicationInsightsInstrumentationKeyEnvironmentVariableName = "ORYX_AI_INSTRUMENTATION_KEY";
+        public const string ApplicationInsightsInstrumentationKeyEnvironmentVariableName
+            = "ORYX_AI_INSTRUMENTATION_KEY";
 
         public const string AppServiceAppNameEnvironmentVariableName = "APPSETTING_WEBSITE_SITE_NAME";
 

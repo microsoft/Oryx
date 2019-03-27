@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public static class EndToEndTestHelper
     {
-        private const int MaxRetryCount = 20;
+        private const int MaxRetryCount = 10;
         private const int DelayBetweenRetriesInSeconds = 6;
 
         public static Task BuildRunAndAssertAppAsync(

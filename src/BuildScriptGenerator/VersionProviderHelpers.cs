@@ -22,7 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IEnumerable<DirectoryInfo> versionDirectories;
             try
             {
-                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions).Select(versionDir => new DirectoryInfo(versionDir));
+                versionDirectories = Directory.EnumerateDirectories(
+                    versionsDir,
+                    "*",
+                    listOptions).Select(versionDir => new DirectoryInfo(versionDir));
             }
             catch (IOException)
             {

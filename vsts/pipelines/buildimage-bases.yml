@@ -13,6 +13,7 @@ trigger:
     include:
     - images/build/python
     - images/build/php
+    - images/build/yarn-cache
     - build/
     - vsts/
 

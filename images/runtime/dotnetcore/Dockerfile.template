@@ -11,12 +11,12 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 FROM %DOTNETCORE_BASE_IMAGE%
 
-
 # Older .NET core versions, which have reached end of life and therefore are no longer updated, use
 # a version of `curl` that has known issues.
 # We manually update it here so we can still depend on the original images.
 # This command should be removed once support for deprecated .NET core images is halted.
-RUN apt update && apt install curl --yes
+RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
+RUN apt-get update && apt-get install curl --yes
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

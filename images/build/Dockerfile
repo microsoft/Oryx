@@ -285,8 +285,7 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
-COPY images/build/node-cache-packages.sh /tmp
-RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh

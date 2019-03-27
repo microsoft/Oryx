@@ -40,10 +40,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (string.IsNullOrEmpty(runtimeVersion))
             {
-                var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories: false);
+                var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern,
+                    searchSubDirectories: false);
                 if (files == null || !files.Any())
                 {
-                    _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileNamePattern}' do not exist in source repo root");
+                    _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileNamePattern}' do not exist " +
+                        "in source repo root");
                     return null;
                 }
             }
@@ -71,8 +73,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
                 if (string.IsNullOrEmpty(maxSatisfyingVersion))
                 {
-                    var exc = new UnsupportedVersionException($"Target Python version '{version}' is unsupported. " +
-                        $"Supported versions are: {string.Join(", ", _pythonVersionProvider.SupportedPythonVersions)}");
+                    var exc = new UnsupportedVersionException(
+                        $"Target Python version '{version}' is unsupported. Supported versions are:" +
+                        $" {string.Join(", ", _pythonVersionProvider.SupportedPythonVersions)}");
                     _logger.LogError(exc, "Exception caught");
                     throw exc;
                 }
@@ -96,7 +99,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     var hasPythonVersion = content.StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase);
                     if (!hasPythonVersion)
                     {
-                        _logger.LogDebug("Prefix {verPrefix} was not found in file {rtFileName}", versionPrefix, PythonConstants.RuntimeFileName);
+                        _logger.LogDebug(
+                            "Prefix {verPrefix} was not found in file {rtFileName}",
+                            versionPrefix,
+                            PythonConstants.RuntimeFileName);
                         return null;
                     }
 
@@ -106,12 +112,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(ex, "An error occurred while reading file {rtFileName}", PythonConstants.RuntimeFileName);
+                    _logger.LogError(
+                        ex,
+                        "An error occurred while reading file {rtFileName}",
+                        PythonConstants.RuntimeFileName);
                 }
             }
             else
             {
-                _logger.LogDebug("Could not find file '{rtFileName}' in source repo", PythonConstants.RuntimeFileName);
+                _logger.LogDebug(
+                    "Could not find file '{rtFileName}' in source repo",
+                    PythonConstants.RuntimeFileName);
             }
 
             return null;

@@ -25,8 +25,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         // Beginning and ending markers for build script output spans that should be time measured
         private readonly TextSpan[] _measurableStdOutSpans =
         {
-            new TextSpan("RunPreBuildScript",  BaseBashBuildScriptProperties.PreBuildScriptPrologue,  BaseBashBuildScriptProperties.PreBuildScriptEpilogue),
-            new TextSpan("RunPostBuildScript", BaseBashBuildScriptProperties.PostBuildScriptPrologue, BaseBashBuildScriptProperties.PostBuildScriptEpilogue)
+            new TextSpan(
+                "RunPreBuildScript",
+                BaseBashBuildScriptProperties.PreBuildScriptPrologue,
+                BaseBashBuildScriptProperties.PreBuildScriptEpilogue),
+            new TextSpan(
+                "RunPostBuildScript",
+                BaseBashBuildScriptProperties.PostBuildScriptPrologue,
+                BaseBashBuildScriptProperties.PostBuildScriptEpilogue)
         };
 
         [Argument(0, Description = "The source directory.")]
@@ -77,7 +83,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
 
             // This will be an App Service app name if Oryx was invoked by Kudu
-            var appName = Environment.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
+            var appName = Environment.GetEnvironmentVariable(
+                LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
             var buildOpId = logger.StartOperation(appName);
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
@@ -89,7 +96,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             buildInfo.AddDefinition("Build Operation ID", buildOpId);
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var commitId = GetSourceRepoCommitId(serviceProvider.GetRequiredService<IEnvironment>(), sourceRepo, logger);
+            var commitId = GetSourceRepoCommitId(
+                serviceProvider.GetRequiredService<IEnvironment>(),
+                sourceRepo,
+                logger);
             if (!string.IsNullOrWhiteSpace(commitId))
             {
                 buildInfo.AddDefinition("Repository Commit", commitId);
@@ -101,7 +111,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 using (logger.LogTimedEvent("WriteBuildIdFile"))
-                using (var idFileWriter = new StreamWriter(Path.Combine(sourceRepo.RootPath, Common.FilePaths.BuildIdFileName)))
+                using (var idFileWriter = new StreamWriter(
+                    Path.Combine(sourceRepo.RootPath, Common.FilePaths.BuildIdFileName)))
                 {
                     idFileWriter.Write(buildOpId);
                 }
@@ -141,7 +152,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 { "oryxVersion", Program.GetVersion() },
                 { "oryxCommitId", Program.GetCommit() },
-                { "oryxCommandLine", string.Join(' ', serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs()) },
+                {
+                    "oryxCommandLine",
+                    string.Join(
+                        ' ',
+                        serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs())
+                },
                 { nameof(commitId), commitId },
                 { "scriptPath", buildScriptPath },
                 { "envVars", string.Join(",", GetEnvVarNames(serviceProvider.GetRequiredService<IEnvironment>())) },
@@ -186,7 +202,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
-                    new[] { sourceRepo.RootPath, options.DestinationDir ?? string.Empty, options.IntermediateDir ?? string.Empty },
+                    new[]
+                    {
+                        sourceRepo.RootPath,
+                        options.DestinationDir ?? string.Empty,
+                        options.IntermediateDir ?? string.Empty
+                    },
                     workingDirectory: sourceRepo.RootPath,
                     stdOutHandler == null ? stdOutBaseHandler : stdOutBaseHandler + stdOutHandler,
                     stdErrHandler == null ? stdErrBaseHandler : stdErrBaseHandler + stdErrHandler);
@@ -229,7 +250,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 // Intermediate directory cannot be a sub-directory of the source directory
                 if (IsSubDirectory(options.IntermediateDir, options.SourceDir))
                 {
-                    logger.LogError("Intermediate directory {intermediateDir} cannot be a child of {srcDir}", options.IntermediateDir, options.SourceDir);
+                    logger.LogError(
+                        "Intermediate directory {intermediateDir} cannot be a child of {srcDir}",
+                        options.IntermediateDir,
+                        options.SourceDir);
                     console.Error.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");

@@ -8,51 +8,38 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class DatabaseTestsBase
+    public abstract class DatabaseTestsBase
     {
         protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
-        
-        protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture, int hostPort)
+        private static readonly Random _rand = new Random();
+        protected readonly int _appPort;
+
+        protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _output = outputHelper;
             _dbFixture = dbFixture;
-            HostPort = hostPort;
+            _appPort = 8080 + _rand.Next(100);
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
         }
-
-        protected int HostPort { get; }
 
         protected string HostSamplesDir { get; }
 
         protected HttpClient HttpClient { get; }
 
-        protected Task RunTestAsync(
-            string language,
-            string languageVersion,
-            string samplePath)
-        {
-            return RunTestAsync(language, languageVersion, samplePath, databaseServerContainerName: null);
-        }
-
-        protected async Task RunTestAsync(
-            string language,
-            string languageVersion,
-            string samplePath,
-            string databaseServerContainerName,
-            int containerPort = 8000)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{containerPort}";
+            var containerPort = 8000;
+            var portMapping = $"{_appPort}:{containerPort}";
             var entrypointScript = "./run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -65,13 +52,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             {
                 runtimeImageName = $"oryxdevms/node-{languageVersion}";
             }
-
-            // For SqlLite scenarios where there is no database container, there wouldn't be any link
-            string link = null;
-            if (!string.IsNullOrEmpty(databaseServerContainerName))
-            {
-                link = $"{databaseServerContainerName}:{Constants.InternalDbLinkName}";
-            }
+            
+            string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
@@ -83,7 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
-                    var data = await HttpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await HttpClient.GetStringAsync($"http://localhost:{_appPort}/");
                     Assert.Equal(_dbFixture.GetSampleDataAsJson(), data.Trim(), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }

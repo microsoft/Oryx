@@ -17,7 +17,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private IServiceProvider _serviceProvider = null;
 
-        [Option("--log-file <file>", CommandOptionType.SingleValue, Description = "The file to which the log will be written to.")]
+        [Option(
+            "--log-file <file>",
+            CommandOptionType.SingleValue,
+            Description = "The file to which the log will be written.")]
         public string LogFilePath { get; set; }
 
         [Option("--debug", Description = "Print stack traces for exceptions.")]

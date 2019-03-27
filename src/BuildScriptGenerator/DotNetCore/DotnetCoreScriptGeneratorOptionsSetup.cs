@@ -29,7 +29,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             options.DefaultVersion = defaultVersion;
             options.InstalledVersionsDir = InstalledVersionsDir;
-            options.SupportedVersions = _environment.GetEnvironmentVariableAsList(EnvironmentSettingsKeys.DotnetCoreSupportedVersions);
+            options.SupportedVersions = _environment.GetEnvironmentVariableAsList(
+                EnvironmentSettingsKeys.DotnetCoreSupportedVersions);
             options.Project = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.Project);
         }
     }

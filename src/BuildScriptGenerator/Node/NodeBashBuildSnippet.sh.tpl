@@ -15,7 +15,9 @@ copyOnlyProdModulesToOutput=false
 
 # We want separate folders for prod modules only when the package.json has separate dependencies
 hasProductionOnlyDependencies="{{ HasProductionOnlyDependencies }}"
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ] && [ "$ORYX_COPY_ONLY_PROD_MODULES_TO_OUTPUT" == "true" ] && [ "$hasProductionOnlyDependencies" == "true" ]
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ] && \
+   [ "$ORYX_COPY_ONLY_PROD_MODULES_TO_OUTPUT" == "true" ] && \
+   [ "$hasProductionOnlyDependencies" == "true" ]
 then
 	copyOnlyProdModulesToOutput=true
 fi

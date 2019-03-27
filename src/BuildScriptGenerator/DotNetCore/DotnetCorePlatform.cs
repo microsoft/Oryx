@@ -50,7 +50,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            var props = new DotNetCoreBashBuildSnippetProperties { ProjectFile = projectFile, PublishDirectory = publishDir };
+            var props = new DotNetCoreBashBuildSnippetProperties
+            {
+                ProjectFile = projectFile,
+                PublishDirectory = publishDir
+            };
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.DotNetCoreSnippet, props, _logger);
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
@@ -71,7 +75,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return scriptGeneratorContext.EnableDotNetCore;
         }
 
-        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
@@ -85,6 +92,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             context.DotnetCoreVersion = version;
         }
 
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return Array.Empty<string>();
+        }
+
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)
         {
             var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(repo);
@@ -93,18 +112,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return (null, null);
             }
 
-            var publishDir = Path.Combine(new FileInfo(projectFile).Directory.FullName, DotnetCoreConstants.OryxOutputPublishDirectory);
+            var publishDir = Path.Combine(
+                new FileInfo(projectFile).Directory.FullName,
+                DotnetCoreConstants.OryxOutputPublishDirectory);
             return (projectFile, publishDir);
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
-        {
-            return Array.Empty<string>();
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
-        {
-            return Array.Empty<string>();
         }
     }
 }
