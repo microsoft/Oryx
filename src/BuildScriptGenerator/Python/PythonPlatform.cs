@@ -113,7 +113,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
-                disableCollectStatic: disableCollectStatic);
+                disableCollectStatic: disableCollectStatic,
+                zipVirtualEnvDir: _pythonScriptGeneratorOptions.ZipVirtualEnvDir);
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.PythonSnippet,
                 scriptProps,
@@ -162,7 +163,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvName = GetVirutalEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))
             {
-                return new List<string> { virtualEnvName };
+                if (_pythonScriptGeneratorOptions.ZipVirtualEnvDir)
+                {
+                    return new List<string> { virtualEnvName };
+                }
+                else
+                {
+                    return new List<string> { $"{virtualEnvName}.{PythonConstants.ZipFileExtension}" };
+                }
             }
 
             return Array.Empty<string>();
@@ -177,7 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvName = GetVirutalEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))
             {
-                excludeDirs.Add($"{virtualEnvName}.tar.gz");
+                excludeDirs.Add($"{virtualEnvName}.{PythonConstants.ZipFileExtension}");
             }
 
             return excludeDirs;

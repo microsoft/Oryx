@@ -15,5 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string PythonSupportedVersionsEnvVarName = "PYTHON_SUPPORTED_VERSIONS";
         internal const string PythonLtsVersion = Common.PythonVersions.Python37Version;
         internal const string InstalledPythonVersionsDir = "/opt/python/";
+        internal const string ZipFileExtension = "tar.gz";
     }
 }

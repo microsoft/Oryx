@@ -483,7 +483,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void GeneratesScript_AndBuilds_UsingCustomVirtualEnvironmentName()
+        public void Build_DoesNotZipVirtualEnv_ByDefault()
         {
             // Arrange
             var virtualEnvironmentName = "myenv";
@@ -492,8 +492,87 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                CreateAppNameEnvVar("flask-app"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ZipsVirtualEnv_IfZipVirtualEnvDir_EnvironmentVariable_IsTrue()
+        {
+            // Arrange
+            var virtualEnvironmentName = "myenv";
+            var volume = CreateSampleAppVolume("flask-app");
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                CreateAppNameEnvVar("flask-app"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ZipsVirtualEnv_IfZipVirtualEnvDir_EnvironmentVariable_IsFalse()
+        {
+            // Arrange
+            var virtualEnvironmentName = "myenv";
+            var volume = CreateSampleAppVolume("flask-app");
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=false")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();
 
             // Act
