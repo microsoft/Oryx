@@ -38,13 +38,16 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	zippedVirtualEnvName := gen.VirtualEnvironmentName + ".tar.gz"
-	scriptBuilder.WriteString("if [ -f " + zippedVirtualEnvName + " ]; then\n")
-	scriptBuilder.WriteString("    echo \"Found '" + zippedVirtualEnvName + "', will extract its contents.\"\n")
-	scriptBuilder.WriteString("    rm -fr /" + gen.VirtualEnvironmentName + "\n")
-	scriptBuilder.WriteString("    mkdir -p " + gen.VirtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("virtualEnvDir=\"" + filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName) + "\"\n");
+	scriptBuilder.WriteString("virtualEnvName=\"" + gen.VirtualEnvironmentName + "\"\n");
+	scriptBuilder.WriteString("zippedVirtualEnvName=\"$virtualEnvName.tar.gz\"\n");
+	scriptBuilder.WriteString("if [ -f \"$zippedVirtualEnvName\" ] && [ \"$ORYX_DISABLE_VIRTUALENV_EXTRACTION\" != \"true\" ]; then\n")
+	scriptBuilder.WriteString("	   virtualEnvDir=\"/$virtualEnvName\"\n");
+	scriptBuilder.WriteString("    echo \"Found '$zippedVirtualEnvName', will extract its contents.\"\n")
+	scriptBuilder.WriteString("    rm -rf \"$virtualEnvDir\"\n")
+	scriptBuilder.WriteString("    mkdir -p \"$virtualEnvDir\"\n")
 	scriptBuilder.WriteString("    echo \"Extracting...\"\n")
-	scriptBuilder.WriteString("    tar -xzf " + zippedVirtualEnvName + " -C " + gen.VirtualEnvironmentName + "\n")
+	scriptBuilder.WriteString("    tar -xzf \"$zippedVirtualEnvName\" -C \"$virtualEnvDir\"\n")
 	scriptBuilder.WriteString("    echo \"Done.\"\n\n")
 	scriptBuilder.WriteString("fi\n\n")
 
@@ -61,14 +64,14 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	// If the build was created with an earlier version of the build image that created virtual environments,
 	// we still use it for backwards compatibility.
 	if gen.VirtualEnvironmentName != "" {
-		scriptBuilder.WriteString("elif [ -d " + gen.VirtualEnvironmentName + " ]; then\n")
+		scriptBuilder.WriteString("elif [ -d \"$virtualEnvDir\" ]; then\n")
 		// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
 		// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
 		// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
 		// the libraries are not found.
 		scriptBuilder.WriteString("  PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
-		scriptBuilder.WriteString("  echo \"Using packages from virtual environment " + gen.VirtualEnvironmentName + ".\"\n")
-		virtualEnvFolder := filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName, "lib", "python$PYTHON_VERSION", "site-packages")
+		scriptBuilder.WriteString("  echo \"Using packages from virtual environment '$virtualEnvName' located at '$virtualEnvDir'.\"\n")
+		virtualEnvFolder := "\"$virtualEnvDir/lib/python$PYTHON_VERSION/site-packages\""
 		scriptBuilder.WriteString("  export PYTHONPATH=$PYTHONPATH:" + virtualEnvFolder + "\n")
 	}
 

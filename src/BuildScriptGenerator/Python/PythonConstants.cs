@@ -11,5 +11,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string RequirementsFileName = "requirements.txt";
         internal const string RuntimeFileName = "runtime.txt";
         internal const string PythonFileExtension = "*.py";
+        internal const string ZipFileExtension = "tar.gz";
     }
 }

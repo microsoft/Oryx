@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         internal const string PythonLtsVersion = Common.PythonVersions.Python37Version;
         internal const string InstalledPythonVersionsDir = "/opt/python/";
+        internal const string ZipVirtualEnvDir = "ORYX_ZIP_VIRTUALENV_DIR";
 
         private readonly IEnvironment _environment;
 
@@ -37,6 +38,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             options.InstalledPythonVersionsDir = InstalledPythonVersionsDir;
             options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(
                 PythonSupportedVersionsEnvVariable);
+
+            bool.TryParse(_environment.GetEnvironmentVariable(ZipVirtualEnvDir), out var zipVirtualEnvDir);
+            options.ZipVirtualEnvDir = zipVirtualEnvDir;
         }
     }
 }
