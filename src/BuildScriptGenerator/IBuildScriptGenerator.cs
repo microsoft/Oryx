@@ -14,5 +14,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="script">The generated script if the operation was successful.</param>
         /// <returns><c>true</c> if the operation was successful, <c>false</c> otherwise.</returns>
         bool TryGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext, out string script);
+
+        /// <summary>
+        /// Determines whether a build script can be generated for the given application.
+        /// </summary>
+        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/> with parameters for the script.</param>
+        /// <returns><c>true</c> if appropriate generators exist, <c>false</c> otherwise.</returns>
+        bool CanGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext);
     }
 }
