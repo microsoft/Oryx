@@ -184,6 +184,95 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnv()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var virtualEnvName = "antenv";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}" },
+                "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndZippedVirtualEnv()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var virtualEnvName = "antenv";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/output -p virtualenv_name={virtualEnvName}")
+                .AddDirectoryDoesNotExistCheck($"/tmp/output/{virtualEnvName}")
+                .AddFileExistsCheck($"/tmp/output/{virtualEnvName}.tar.gz")
+                .AddCommand($"cp -rf /tmp/output/* {appOutputDir}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
         public async Task CanBuildAndRun_DjangoApp_DoingCollectStaticByDefault()
         {
             // Arrange
@@ -245,14 +334,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l python --language-version " +
-                $"3.7 -p virtualenv_name={virtualEnvName}")
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l python --language-version 3.7 " +
+                $"-p virtualenv_name={virtualEnvName}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
