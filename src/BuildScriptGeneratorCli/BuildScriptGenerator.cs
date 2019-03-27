@@ -19,6 +19,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<BuildScriptGenerator> _logger;
 
+        public static BuildScriptGeneratorContext CreateContext(
+            BuildScriptGeneratorOptions options,
+            CliEnvironmentSettings envSettings,
+            ISourceRepo sourceRepo)
+        {
+            return new BuildScriptGeneratorContext
+            {
+                SourceRepo = sourceRepo,
+                Language = options.Language,
+                LanguageVersion = options.LanguageVersion,
+                Properties = options.Properties,
+                EnableDotNetCore = !envSettings.DisableDotNetCore,
+                EnableNodeJs = !envSettings.DisableNodeJs,
+                EnablePython = !envSettings.DisablePython,
+                DisableMultiPlatformBuild = envSettings.DisableMultiPlatformBuild
+            };
+        }
+
         public BuildScriptGenerator(IConsole console, IServiceProvider serviceProvider)
         {
             _console = console;
@@ -37,17 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
                 var environment = _serviceProvider.GetRequiredService<CliEnvironmentSettings>();
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
-                var scriptGeneratorContext = new BuildScriptGeneratorContext
-                {
-                    SourceRepo = sourceRepo,
-                    Language = options.Language,
-                    LanguageVersion = options.LanguageVersion,
-                    Properties = options.Properties,
-                    EnableDotNetCore = !environment.DisableDotNetCore,
-                    EnableNodeJs = !environment.DisableNodeJs,
-                    EnablePython = !environment.DisablePython,
-                    DisableMultiPlatformBuild = environment.DisableMultiPlatformBuild
-                };
+                var scriptGeneratorContext = CreateContext(options, environment, sourceRepo);
 
                 // Try generating a script
                 if (!scriptGenerator.TryGenerateBashScript(scriptGeneratorContext, out generatedScript))

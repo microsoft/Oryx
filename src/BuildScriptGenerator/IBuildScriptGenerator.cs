@@ -3,6 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public interface IBuildScriptGenerator
@@ -16,10 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         bool TryGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext, out string script);
 
         /// <summary>
-        /// Determines whether a build script can be generated for the given application.
+        /// Determines which platforms can be used to build the given application.
         /// </summary>
-        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/> with parameters for the script.</param>
-        /// <returns><c>true</c> if appropriate generators exist, <c>false</c> otherwise.</returns>
-        bool CanGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext);
+        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/> with parameters for check.</param>
+        /// <returns>a list of platform and version pairs.</returns>
+        IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext scriptGeneratorContext);
     }
 }

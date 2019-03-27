@@ -70,12 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        public bool CanGenerateBashScript(BuildScriptGeneratorContext ctx)
-        {
-            return GetUsablePlatforms(ctx).Any();
-        }
-
-        private IList<Tuple<IProgrammingPlatform, string>> GetUsablePlatforms(BuildScriptGeneratorContext ctx)
+        public IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
         {
             bool providedLanguageFound = false;
             var resultPlatforms = new List<Tuple<IProgrammingPlatform, string>>();
@@ -152,7 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var snippets = new List<BuildScriptSnippet>();
 
-            var platformsToUse = GetUsablePlatforms(context);
+            var platformsToUse = GetCompatiblePlatforms(context);
             foreach (Tuple<IProgrammingPlatform, string> platformAndVersion in platformsToUse)
             {
                 var (platform, targetVersionSpec) = platformAndVersion;
