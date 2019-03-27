@@ -16,7 +16,10 @@ namespace Microsoft.Oryx.Common
         private readonly Stopwatch stopwatch;
         private IDictionary<string, string> eventProps;
 
-        public EventStopwatch(TelemetryClient telemetryClient, string eventName, IDictionary<string, string> eventProperties)
+        public EventStopwatch(
+            TelemetryClient telemetryClient,
+            string eventName,
+            IDictionary<string, string> eventProperties)
         {
             this.client = telemetryClient;
             this.eventName = eventName;
@@ -37,7 +40,10 @@ namespace Microsoft.Oryx.Common
         public void Dispose()
         {
             this.stopwatch.Stop();
-            this.client?.TrackEvent(this.eventName, this.eventProps, new Dictionary<string, double> { { "processingTime", stopwatch.Elapsed.TotalMilliseconds } });
+            this.client?.TrackEvent(
+                this.eventName,
+                this.eventProps,
+                new Dictionary<string, double> { { "processingTime", stopwatch.Elapsed.TotalMilliseconds } });
         }
     }
 }

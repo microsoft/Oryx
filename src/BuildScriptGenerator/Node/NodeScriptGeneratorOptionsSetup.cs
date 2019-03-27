@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -37,7 +38,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             options.NpmDefaultVersion = _environment.GetEnvironmentVariable(NpmDefaultVersion);
             options.InstalledNodeVersionsDir = InstalledNodeVersionsDir;
             options.InstalledNpmVersionsDir = InstalledNpmVersionsDir;
-            options.SupportedNodeVersions = _environment.GetEnvironmentVariableAsList(NodeSupportedVersionsEnvVariable);
+            options.SupportedNodeVersions = _environment.GetEnvironmentVariableAsList(
+                NodeSupportedVersionsEnvVariable);
             options.SupportedNpmVersions = _environment.GetEnvironmentVariableAsList(NpmSupportedVersionsEnvVariable);
 
             var zipNodeModulesEnvVariableValue = _environment.GetEnvironmentVariable(LegacyZipNodeModules);

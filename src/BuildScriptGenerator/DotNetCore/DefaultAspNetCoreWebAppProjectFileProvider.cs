@@ -79,7 +79,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (!projectFiles.Any())
                 {
                     _logger.LogDebug(
-                        $"Could not find any files with extension '{DotnetCoreConstants.ProjectFileExtensionName}' in repo.");
+                        "Could not find any files with extension " +
+                        $"'{DotnetCoreConstants.ProjectFileExtensionName}' in repo.");
                     return null;
                 }
 

@@ -57,11 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
-            {
-                virtualEnvName = string.Empty;
-            }
+            var virtualEnvName = GetVirutalEnvironmentName(context);
 
             string packageDir = null;
             if (context.Properties == null ||
@@ -118,7 +114,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
                 disableCollectStatic: disableCollectStatic);
-            string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, scriptProps, _logger);
+            string script = TemplateHelpers.Render(
+                TemplateHelpers.TemplateResource.PythonSnippet,
+                scriptProps,
+                _logger);
 
             return new BuildScriptSnippet()
             {
@@ -142,7 +141,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return scriptGeneratorContext.EnablePython;
         }
 
-        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
@@ -154,6 +156,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext context)
+        {
+            var virtualEnvName = GetVirutalEnvironmentName(context);
+            if (!string.IsNullOrEmpty(virtualEnvName))
+            {
+                return new List<string> { virtualEnvName };
+            }
+
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext context)
+        {
+            var excludeDirs = new List<string>();
+            excludeDirs.Add(DefaultTargetPackageDirectory);
+
+            var virtualEnvName = GetVirutalEnvironmentName(context);
+            if (!string.IsNullOrEmpty(virtualEnvName))
+            {
+                excludeDirs.Add($"{virtualEnvName}.tar.gz");
+            }
+
+            return excludeDirs;
         }
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
@@ -175,14 +204,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        private string GetVirutalEnvironmentName(BuildScriptGeneratorContext context)
         {
-            return Array.Empty<string>();
-        }
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
+            {
+                virtualEnvName = string.Empty;
+            }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
-        {
-            return Array.Empty<string>();
+            return virtualEnvName;
         }
     }
 }

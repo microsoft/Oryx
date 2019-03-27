@@ -30,7 +30,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 using (TextReader tplReader = new StreamReader(stream))
-                using (logger?.LogTimedEvent("RenderTemplate", new Dictionary<string, string> { { "templateName", templateResource.Name } }))
+                using (logger?.LogTimedEvent(
+                    "RenderTemplate",
+                    new Dictionary<string, string> { { "templateName", templateResource.Name } }))
                 {
                     return RenderString(tplReader.ReadToEnd(), model);
                 }
@@ -53,7 +55,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             // Injects the function IsNullOrWhiteSpace so that it's available for use in templates.
-            // Further reading: https://github.com/lunet-io/scriban/blob/master/doc/runtime.md#the-stack-of-scriptobject
+            // Further reading:
+            // https://github.com/lunet-io/scriban/blob/master/doc/runtime.md#the-stack-of-scriptobject
             ctx.BuiltinObject.Import(typeof(TemplateFunctions), renamer: NoOpRenamer);
 
             return Template.Parse(templateBody).Render(ctx).Replace("\r\n", "\n");
@@ -81,7 +84,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             public static TemplateResource PythonSnippet
             {
-                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Python.PythonBashBuildSnippet.sh.tpl");
+                get => new TemplateResource(
+                    "Microsoft.Oryx.BuildScriptGenerator.Python.PythonBashBuildSnippet.sh.tpl");
             }
 
             public static TemplateResource NodeBuildSnippet
@@ -96,7 +100,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             public static TemplateResource DotNetCoreSnippet
             {
-                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.DotNetCore.DotNetCoreBashBuildSnippet.sh.tpl");
+                get => new TemplateResource(
+                    "Microsoft.Oryx.BuildScriptGenerator.DotNetCore.DotNetCoreBashBuildSnippet.sh.tpl");
             }
 
             public string Name { get; private set; }

@@ -35,7 +35,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             options.PythonDefaultVersion = defaultVersion;
             options.InstalledPythonVersionsDir = InstalledPythonVersionsDir;
-            options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(PythonSupportedVersionsEnvVariable);
+            options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(
+                PythonSupportedVersionsEnvVariable);
         }
     }
 }
