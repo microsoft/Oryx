@@ -12,30 +12,20 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
-        private const int hostPort = 8087;
-
-        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture) : base(output, dbFixture, hostPort)
+        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture) : base(output, dbFixture)
         {
         }
 
-        [Fact(Skip = "#823483: Skip failing DB tests for now")]
-        public async Task NodeApp_PostgresDB()
+        [Fact]
+        public async Task NodeApp_PostgreSqlDB()
         {
-            await RunTestAsync(
-                "nodejs",
-                "10.14",
-                Path.Combine(HostSamplesDir, "nodejs", "node-postgres"),
-                _dbFixture.DbServerContainerName);
+            await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-postgres"));
         }
 
-        [Fact(Skip = "#823483: Skip failing DB tests for now")]
+        [Fact]
         public async Task Python37App_PostgreSqlDB()
         {
-            await RunTestAsync(
-                "python",
-                "3.7",
-                Path.Combine(HostSamplesDir, "python", "postgres-sample"),
-                _dbFixture.DbServerContainerName);
+            await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "postgres-sample"));
         }
     }
 }

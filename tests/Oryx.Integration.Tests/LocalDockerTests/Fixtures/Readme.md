@@ -6,4 +6,3 @@
 3. All the samples used in these tests ONLY read data. Since the objective is to just make sure an app is able
    to connect to database, we want to keep things simple. If we introduced 'write' operation too, then sharing
    a database instance across multiple tests is error-prone.
-4. All the samples used in the database tests listen on port 8000 internally and port 9095 externally.

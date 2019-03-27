@@ -4,13 +4,16 @@ import os
 
 app = Flask(__name__)
 
+@app.errorhandler(Exception)
+def exception_handler(exc):
+    return repr(exc)
+
 class Database:
     def listProductNames(self):
-        host = "dbserver"
-        databaseName = "oryxdb"
-        user = "sa"
+        host = os.getenv('DATABASE_HOSTNAME')
+        databaseName = os.getenv('DATABASE_NAME')
+        user = os.getenv('DATABASE_USERNAME')
         password = os.getenv('DATABASE_PASSWORD')
-
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+host+';DATABASE='+databaseName+';UID='+user+';PWD='+ password)
         try:
             c = conn.cursor()
@@ -25,9 +28,6 @@ def listProducts():
     db = Database()
     rows = db.listProductNames()
     payload = []
-    content = {}
     for row in rows:
-        content = {'Name': row[0]}
-        payload.append(content)
-        content = {}
+        payload.append({'Name': row[0]})
     return jsonify(payload)
