@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         [InlineData("5.6")]
         public async Task PhpApp_UsingMysqli(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "mysqli-example"), _dbFixture.DbServerContainerName, 80);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "mysqli-example"), 80);
         }
     }
 }

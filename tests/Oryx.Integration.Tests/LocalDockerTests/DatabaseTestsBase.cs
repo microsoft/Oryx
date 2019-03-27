@@ -34,11 +34,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         protected HttpClient HttpClient { get; }
 
-        protected async Task RunTestAsync(string language, string languageVersion, string samplePath)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath, int containerPort = 8000)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var containerPort = 8000;
             var portMapping = $"{_appPort}:{containerPort}";
             var entrypointScript = "./run.sh";
             var script = new ShellScriptBuilder()

@@ -102,12 +102,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             context.PhpVersion = version;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir()
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir()
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();
         }

@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         // pdo_sqlsrv only supports PHP >= 7.1
         public async Task PhpApp_UsingPdo(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), _dbFixture.DbServerContainerName, 80);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), 80);
         }
     }
 }
