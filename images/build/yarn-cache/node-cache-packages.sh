@@ -9,10 +9,9 @@
 # than npm.
 set -e
 
-YARN_CACHE_DIR=/usr/local/share/yarn-cache
+YARN_CACHE_DIR="${1:-/usr/local/share/yarn-cache}"
 echo "Caching packages for Yarn. Cache location is $YARN_CACHE_DIR"
 mkdir -p  $YARN_CACHE_DIR
-source /usr/local/bin/benv
 
 yarn config set cache-folder "$YARN_CACHE_DIR"
 
