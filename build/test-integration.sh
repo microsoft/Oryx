@@ -6,7 +6,8 @@
 
 set -e
 
-source __variables.sh
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+source $REPO_DIR/build/__variables.sh
 
 if [ -z "$STORAGEACCOUNTKEY" ]; then # If STORAGEACCOUNTKEY is unset or empty
 	export STORAGEACCOUNTKEY=`az.cmd storage account keys list -n oryxautomation | grep key1 | awk '{print $NF}'`

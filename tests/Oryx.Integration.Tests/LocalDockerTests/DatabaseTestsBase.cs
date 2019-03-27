@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     {
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly ITestOutputHelper _output;
-        private readonly Random _rand = new Random();
+        private static readonly Random _rand = new Random();
         protected readonly int _appPort;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
