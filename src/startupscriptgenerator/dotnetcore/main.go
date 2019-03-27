@@ -8,6 +8,7 @@ package main
 import (
 	"flag"
 	"log"
+	"os/exec"
 	"startupscriptgenerator/common"
 )
 
@@ -31,7 +32,13 @@ func main() {
 	defaultAppFilePathPtr := flag.String(
 		"defaultAppFilePath",
 		"",
-		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
+		"[Optional] Path to a default dll that will be executed if the entrypoint is not found." +
+		" Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
+	copyOutputToDifferentDirAndRunPtr := flag.String(
+		"copyOutputToDifferentDirAndRun",
+		"true",
+		"Flag which determines if the application should run after copying the supplied 'publishedOutputPath' " +
+		"content to a different directory and run from there. Default is true.")
 	flag.Parse()
 
 	fullSourcePath := common.GetValidatedFullPath(*sourcePathPtr)
@@ -46,6 +53,30 @@ func main() {
 	fullDefaultAppFilePath := ""
 	if *defaultAppFilePathPtr != "" {
 		fullDefaultAppFilePath = common.GetValidatedFullPath(*defaultAppFilePathPtr)
+	}
+
+	if (*copyOutputToDifferentDirAndRunPtr == "true") {
+		srcFolder := fullPublishedOutputPath
+		if (srcFolder == "") {
+			// The output folder is a sub-directory of this source directory
+			srcFolder = fullSourcePath
+		}
+
+		destFolder := "/tmp/output"
+		println("Copying content from '" + srcFolder + "' to '"+ destFolder + "'...")
+		cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
+		err := cpCmd.Run()
+		if err != nil {
+			panic(err)
+		}
+
+		// Update the variables so the downstream code uses these updated paths
+		if (fullPublishedOutputPath != "") {
+			// if a publish output is given, we would have copied only that one to local folder
+			fullPublishedOutputPath = destFolder
+		} else {
+			fullSourcePath = destFolder
+		}
 	}
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
