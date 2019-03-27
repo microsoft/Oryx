@@ -75,13 +75,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return GetUsablePlatforms(ctx).Any();
         }
 
-        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
-        {
-            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
-            var benvArgs = string.Join(' ', listOfBenvArgs);
-            return benvArgs;
-        }
-
         private IList<Tuple<IProgrammingPlatform, string>> GetUsablePlatforms(BuildScriptGeneratorContext ctx)
         {
             bool providedLanguageFound = false;
@@ -213,6 +206,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 _logger.LogInformation("Using {type} script from {scriptPath}", type, scriptPath);
             }
+        }
+
+        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
+        {
+            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
+            var benvArgs = string.Join(' ', listOfBenvArgs);
+            return benvArgs;
         }
 
         /// <summary>
