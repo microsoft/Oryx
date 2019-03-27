@@ -10,6 +10,7 @@ import (
 	"log"
 	"os/exec"
 	"startupscriptgenerator/common"
+	"strings"
 )
 
 func main() {
@@ -62,10 +63,28 @@ func main() {
 			srcFolder = fullSourcePath
 		}
 
+		scriptPath := "/tmp/test.sh"
 		destFolder := "/tmp/output"
-		println("Copying content from '" + srcFolder + "' to '"+ destFolder + "'...")
-		cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
-		err := cpCmd.Run()
+		zipFileName := "oryx_output.tar.gz"
+
+		scriptBuilder := strings.Builder{}
+		scriptBuilder.WriteString("#!/bin/sh\n")
+		scriptBuilder.WriteString("set -e\n\n")
+		scriptBuilder.WriteString("if [ -d \"" + destFolder + "\" ]; then\n")
+		scriptBuilder.WriteString("    rm -rf \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("fi\n")
+		scriptBuilder.WriteString("cp -rf \"" + srcFolder + "\" \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("cd \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("if [ -f \"" + zipFileName + "\" ]; then\n")
+		scriptBuilder.WriteString("    echo \"Found '" + zipFileName + "', will extract its contents.\"\n")
+		scriptBuilder.WriteString("    echo \"Extracting...\"\n")
+		scriptBuilder.WriteString("    tar -xzf " + zipFileName + "\n")
+		scriptBuilder.WriteString("    echo \"Done.\"\n")
+		scriptBuilder.WriteString("fi\n\n")
+
+		common.WriteScript(scriptPath, scriptBuilder.String())
+		scriptCmd := exec.Command("/bin/sh", "-c", scriptPath)
+		err := scriptCmd.Run()
 		if err != nil {
 			panic(err)
 		}
