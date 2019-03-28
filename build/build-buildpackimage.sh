@@ -11,4 +11,4 @@ source $REPO_DIR/build/__variables.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
-docker build -f "$BUILDPACK_IMAGE_DOCKERFILE" -t $DOCKER_BUILDPACK_IMAGE_REPO:latest .
+docker build --build-arg BUILD_NUMBER='0.2.0' -f "$BUILDPACK_IMAGE_DOCKERFILE" -t $DOCKER_BUILDPACK_IMAGE_REPO:latest .
