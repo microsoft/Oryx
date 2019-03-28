@@ -30,9 +30,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return null;
         }
 
-        public string GetEnvironmentVariable(string name)
+        public string GetEnvironmentVariable(string name, string defaultValue = null)
         {
-            return Environment.GetEnvironmentVariable(name);
+            return Environment.GetEnvironmentVariable(name) ?? defaultValue;
         }
 
         public IList<string> GetEnvironmentVariableAsList(string name)
