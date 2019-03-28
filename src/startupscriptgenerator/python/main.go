@@ -7,7 +7,9 @@ package main
 
 import (
 	"flag"
+	"os/exec"
 	"startupscriptgenerator/common"
+	"strings"
 )
 
 func main() {
@@ -21,12 +23,49 @@ func main() {
 	packagesFolderPtr := flag.String("packagedir", "__oryx_packages__", "Directory where the python packages were installed, if no virtual environment was used.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
+	copyOutputToDifferentDirAndRunPtr := flag.String(
+		"copyOutputToDifferentDirAndRun",
+		"true",
+		"Flag which determines if the application should run after copying the supplied 'publishedOutputPath' "+
+			"content to a different directory and run from there. Default is true.")
 	flag.Parse()
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
 	common.SetGlobalOperationId(fullAppPath)
+
+	if *copyOutputToDifferentDirAndRunPtr == "true" {
+		srcFolder := fullAppPath
+		scriptPath := "/tmp/test.sh"
+		destFolder := "/tmp/output"
+		zipFileName := "oryx_output.tar.gz"
+
+		scriptBuilder := strings.Builder{}
+		scriptBuilder.WriteString("#!/bin/sh\n")
+		scriptBuilder.WriteString("set -e\n\n")
+		scriptBuilder.WriteString("if [ -d \"" + destFolder + "\" ]; then\n")
+		scriptBuilder.WriteString("    rm -rf \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("fi\n")
+		scriptBuilder.WriteString("cp -rf \"" + srcFolder + "\" \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("cd \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("if [ -f \"" + zipFileName + "\" ]; then\n")
+		scriptBuilder.WriteString("    echo \"Found '" + zipFileName + "', will extract its contents.\"\n")
+		scriptBuilder.WriteString("    echo \"Extracting...\"\n")
+		scriptBuilder.WriteString("    tar -xzf " + zipFileName + "\n")
+		scriptBuilder.WriteString("    echo \"Done.\"\n")
+		scriptBuilder.WriteString("fi\n\n")
+
+		common.WriteScript(scriptPath, scriptBuilder.String())
+		scriptCmd := exec.Command("/bin/sh", "-c", scriptPath)
+		err := scriptCmd.Run()
+		if err != nil {
+			panic(err)
+		}
+
+		// Update the variables so the downstream code uses these updated paths
+		fullAppPath = destFolder
+	}
 
 	entrypointGenerator := PythonStartupScriptGenerator{
 		SourcePath:             fullAppPath,

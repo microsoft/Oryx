@@ -8,6 +8,7 @@ package main
 import (
 	"flag"
 	"os"
+	"os/exec"
 	"startupscriptgenerator/common"
 	"strconv"
 	"strings"
@@ -26,6 +27,11 @@ func main() {
 	remoteDebugIp := flag.String("debugHost", "", "The IP address where the debugger will listen to, e.g. '0.0.0.0' or '127.0.0.1")
 	remoteDebugPort := flag.String("debugPort", "", "The port the debugger will listen to.")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
+	copyOutputToDifferentDirAndRunPtr := flag.String(
+		"copyOutputToDifferentDirAndRun",
+		"true",
+		"Flag which determines if the application should run after copying the supplied 'publishedOutputPath' "+
+			"content to a different directory and run from there. Default is true.")
 	flag.Parse()
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
@@ -34,12 +40,44 @@ func main() {
 
 	common.SetGlobalOperationId(fullAppPath)
 
+	if *copyOutputToDifferentDirAndRunPtr == "true" {
+		srcFolder := fullAppPath
+		scriptPath := "/tmp/test.sh"
+		destFolder := "/tmp/output"
+		zipFileName := "oryx_output.tar.gz"
+
+		scriptBuilder := strings.Builder{}
+		scriptBuilder.WriteString("#!/bin/sh\n")
+		scriptBuilder.WriteString("set -e\n\n")
+		scriptBuilder.WriteString("if [ -d \"" + destFolder + "\" ]; then\n")
+		scriptBuilder.WriteString("    rm -rf \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("fi\n")
+		scriptBuilder.WriteString("cp -rf \"" + srcFolder + "\" \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("cd \"" + destFolder + "\"\n")
+		scriptBuilder.WriteString("if [ -f \"" + zipFileName + "\" ]; then\n")
+		scriptBuilder.WriteString("    echo \"Found '" + zipFileName + "', will extract its contents.\"\n")
+		scriptBuilder.WriteString("    echo \"Extracting...\"\n")
+		scriptBuilder.WriteString("    tar -xzf " + zipFileName + "\n")
+		scriptBuilder.WriteString("    echo \"Done.\"\n")
+		scriptBuilder.WriteString("fi\n\n")
+
+		common.WriteScript(scriptPath, scriptBuilder.String())
+		scriptCmd := exec.Command("/bin/sh", "-c", scriptPath)
+		err := scriptCmd.Run()
+		if err != nil {
+			panic(err)
+		}
+
+		// Update the variables so the downstream code uses these updated paths
+		fullAppPath = destFolder
+	}
+
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,
 		UserStartupCommand:              *userStartupCommandPtr,
 		DefaultAppJsFilePath:            defaultAppFullPAth,
 		CustomStartCommand:              *customStartCommandPtr,
-		BindPort:						 *bindPortPtr,
+		BindPort:                        *bindPortPtr,
 		RemoteDebugging:                 *remoteDebugEnabledPtr,
 		RemoteDebuggingBreakBeforeStart: *remoteDebugBrkEnabledPtr,
 		RemoteDebuggingIp:               *remoteDebugIp,
