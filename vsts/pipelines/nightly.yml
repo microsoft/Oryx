@@ -47,7 +47,12 @@ jobs:
   dependsOn: 
     - Job_2
     - Job_3
-  condition: succeeded()
+  condition: |
+    and
+    (
+      in(dependencies.Job_2.result, 'Succeeded', 'SucceededWithIssues'),
+      in(dependencies.Job_3.result, 'Succeeded', 'SucceededWithIssues')
+    )
   pool:
     name: OryxLinux
   steps:
