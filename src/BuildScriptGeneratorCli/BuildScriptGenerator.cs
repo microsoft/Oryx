@@ -19,6 +19,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<BuildScriptGenerator> _logger;
 
+        public BuildScriptGenerator(IConsole console, IServiceProvider serviceProvider)
+        {
+            _console = console;
+            _serviceProvider = serviceProvider;
+            _logger = _serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
+        }
+
         public static BuildScriptGeneratorContext CreateContext(
             BuildScriptGeneratorOptions options,
             CliEnvironmentSettings envSettings,
@@ -35,13 +42,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 EnablePython = !envSettings.DisablePython,
                 DisableMultiPlatformBuild = envSettings.DisableMultiPlatformBuild
             };
-        }
-
-        public BuildScriptGenerator(IConsole console, IServiceProvider serviceProvider)
-        {
-            _console = console;
-            _serviceProvider = serviceProvider;
-            _logger = _serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
         }
 
         public bool TryGenerateScript(out string generatedScript)
