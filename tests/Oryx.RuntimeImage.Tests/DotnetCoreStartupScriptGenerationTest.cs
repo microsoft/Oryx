@@ -77,6 +77,87 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Fact]
+        public void GeneratesScript_UsingCurrentDirectoryAsSourcePath_AndDefaultPublishOutputDirectory()
+        {
+            // Arrange
+            var appDir = "/app";
+            var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var expectedStartupCommand = $"dotnet \"webapp.dll\"";
+            var expectedWorkingDir = $"cd \"{appOutputDir}\"";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
+                .AddCommand($"mkdir -p {appOutputDir}")
+                .AddCommand($"echo > {appOutputDir}/webapp.dll")
+                // NOTE: Do NOT supply a sourcePath to the oryx command
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx")
+                .AddCommand($"cat {ScriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        // This is not a common scenario
+        [Fact]
+        public void GeneratesScript_UsingCurrentDirectoryAsSourcePath_AndSupplyingDefaultPublishOutputDirectory()
+        {
+            // Arrange
+            var appDir = "/app";
+            var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var expectedStartupCommand = $"dotnet \"webapp.dll\"";
+            var expectedWorkingDir = $"cd \"{appOutputDir}\"";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
+                .AddCommand($"mkdir -p {appOutputDir}")
+                .AddCommand($"echo > {appOutputDir}/webapp.dll")
+                // NOTE: Do NOT supply a sourcePath to the oryx command
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -publishedOutputPath {appOutputDir}")
+                .AddCommand($"cat {ScriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void GeneratesScript_UsingExplicitAssemblyName()
         {
             // Arrange
@@ -152,6 +233,48 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        // AppService scenario
+        [Fact]
+        public void GeneratesScript_UsingExplicitOutputDirectory_AndOutputDirectoryIsCurrentDirectory()
+        {
+            // Arrange
+            var appDir = "/app";
+            var appOutputDir = "/tmp/foo";
+            var expectedStartupCommand = $"dotnet \"webapp.dll\"";
+            var expectedWorkingDir = $"cd \"{appOutputDir}\"";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/webapp.csproj")
+                .AddCommand($"mkdir -p {appOutputDir}")
+                .AddCommand($"echo > {appOutputDir}/webapp.dll")
+                // NOTE: Make sure the current directory is the output directory itself and do NOT supply the 
+                // 'publishedOutputPath' argument.
+                .AddCommand($"cd {appOutputDir}")
+                .AddCommand($"oryx -sourcePath {appDir}")
+                .AddCommand($"cat {ScriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public void GeneratesScript_ForPorjectFile_HavingMultiplePropertyGroups()
         {
@@ -195,7 +318,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange
             var appDir = "/app";
-            var appOutputDir = $"/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var defaultWebAppFile = "/tmp/defaultwebapp.dll";
             var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
             var script = new ShellScriptBuilder()
