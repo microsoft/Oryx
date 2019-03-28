@@ -7,6 +7,8 @@
 set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+source $REPO_DIR/build/__variables.sh
 
-cd $REPO_DIR/src/BuildScriptGeneratorCli
-dotnet publish BuildScriptGeneratorCli.csproj -c Release -o $1
+cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
+
+docker build -f "$BUILDPACK_IMAGE_DOCKERFILE" -t $DOCKER_BUILDPACK_IMAGE_REPO:latest .
