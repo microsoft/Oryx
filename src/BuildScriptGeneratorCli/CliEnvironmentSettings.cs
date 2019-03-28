@@ -12,6 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private const string DisableDotNetCoreEnvVarName = "DISABLE_DOTNETCORE_BUILD";
         private const string DisablePythonEnvVarName = "DISABLE_PYTHON_BUILD";
+        private const string DisablePhpEnvVarName = "DISABLE_PHP_BUILD";
         private const string DisableNodeJsEnvVarName = "DISABLE_NODEJS_BUILD";
         private const string EnableMultiPlatformBuildEnvVarName = "ENABLE_MULTIPLATFORM_BUILD";
 
@@ -27,6 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public bool DisableNodeJs => IsEnvVariableTrue(DisableNodeJsEnvVarName);
 
         public bool DisablePython => IsEnvVariableTrue(DisablePythonEnvVarName);
+
+        public bool DisablePhp => IsEnvVariableTrue(DisablePhpEnvVarName);
 
         /// <summary>
         /// Gets a value indicating whether multi-platform builds must be disabled.

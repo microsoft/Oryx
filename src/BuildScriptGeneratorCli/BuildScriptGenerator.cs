@@ -46,6 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     EnableDotNetCore = !environment.DisableDotNetCore,
                     EnableNodeJs = !environment.DisableNodeJs,
                     EnablePython = !environment.DisablePython,
+                    EnablePhp = !environment.DisablePhp,
                     DisableMultiPlatformBuild = environment.DisableMultiPlatformBuild
                 };
 
