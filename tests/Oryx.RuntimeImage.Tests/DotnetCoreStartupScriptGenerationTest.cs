@@ -331,7 +331,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange
             var appDir = "/app";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}") // no .csproj file
                 .AddCommand($"oryx -sourcePath {appDir} -defaultAppFilePath /tmp/doesnotexist.dll")
@@ -447,7 +446,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var webApp2Dir = $"{repoDir}/src/Apps/WebApp2";
             var defaultWebAppFile = "/tmp/defaultwebapp.dll";
             var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {webApp1Dir}")
                 .AddCommand($"mkdir -p {webApp2Dir}")
