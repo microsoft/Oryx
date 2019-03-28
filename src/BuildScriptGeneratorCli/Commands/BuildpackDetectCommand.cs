@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
@@ -20,6 +21,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
+
+        internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
+        {
+            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+
+            if (!Directory.Exists(SourceDir))
+            {
+                logger.LogError("Could not find the source directory {srcDir}", SourceDir);
+                console.Error.WriteLine($"Error: Could not find the source directory '{SourceDir}'.");
+                return false;
+            }
+
+            return true;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {

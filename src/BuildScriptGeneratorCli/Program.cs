@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand("languages", typeof(LanguagesCommand))]
     [Subcommand("build-script", typeof(BuildScriptCommand))]
     [Subcommand("run-script", typeof(RunScriptCommand))]
+    [Subcommand("buildpack-detect", typeof(BuildpackDetectCommand))]
     internal class Program
     {
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]
