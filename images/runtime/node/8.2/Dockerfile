@@ -80,8 +80,8 @@ CMD [ "node" ]
 
 FROM node-original-image as oryx
 
-RUN  if command -v apt; then \
-       apt update && apt upgrade --yes; \
+RUN  if command -v apt-get; then \
+       apt-get update && apt-get upgrade --yes; \
      fi;
 
 # Bake Application Insights key from pipeline variable into final image
