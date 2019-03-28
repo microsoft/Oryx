@@ -1,16 +1,65 @@
-queue:
-  name: OryxLinux
+resources:
+- repo: self
+  fetchDepth: 15
+jobs:
+- job: Job_1
+  displayName: Security
+  condition: succeeded()
+  pool:
+    name: Hosted VS2017
+  steps:
+  - template: _securityChecks.yml
+
+- job: Job_2
+  displayName: Build and Test Build Image
+  condition: succeeded()
+  pool:
+    name: OryxLinux
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=TestBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+    displayName: 'Set variables'
+      
+  - template: _buildParallel.yml
+
+- job: Job_3
+  displayName: Build and Test Runtime Images
+  condition: succeeded()
+  pool:
+    name: OryxLinux
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+    displayName: 'Set variables'
+      
+  - template: _buildParallel.yml
+
+- job: Job_4
+  displayName: Run Integration Tests
+  dependsOn: 
+    - Job_2
+    - Job_3
+  condition: succeeded()
+  pool:
+    name: OryxLinux
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+      
+  - template: _buildParallel.yml
 
 trigger: none
-
-steps:
-- script: |
-    echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-    echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
-    echo "##vso[task.setvariable variable=TestIntegration;]true"
-    echo "##vso[task.setvariable variable=PushBuildImages;]false"
-    echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-    echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-  displayName: 'Set variables'
-    
-- template: _buildTemplate.yml

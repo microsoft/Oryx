@@ -1,4 +1,4 @@
-FROM oryxdevms/build:latest
+FROM oryxdevmcr.azurecr.io/public/oryx/build:latest
 
 # Following is a pattern that AppService currently uses
 RUN groupadd -g 1002 oryx_group
