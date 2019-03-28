@@ -48,7 +48,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -57,15 +60,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 NetCoreApp11WebApp,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -84,7 +91,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -93,15 +103,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -119,7 +133,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -128,15 +145,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 NetCoreApp21WebApp,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -155,7 +176,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -164,15 +188,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -191,10 +219,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var buildImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                 .ToString();
-            var runtimeImageScript = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -publishedOutputPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -207,7 +235,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    buildImageScript
+                    buildScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
@@ -215,7 +243,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -234,11 +262,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var buildImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_ALL_OUTPUT=true")
                 .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                 .ToString();
-            var runtimeImageScript = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -publishedOutputPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -251,7 +279,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    buildImageScript
+                    buildScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
@@ -259,7 +287,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -277,7 +305,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -286,15 +317,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 NetCoreApp22WebApp,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -312,7 +347,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
                 .AddCommand($"oryx -sourcePath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
@@ -322,15 +360,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 NetCoreApp22WebApp,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -348,7 +390,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -358,15 +403,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 NetCoreApp22WebApp,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -385,7 +434,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -394,15 +446,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -422,7 +478,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var startupFilePath = "/tmp/run.sh";
             var startupCommand = "\"dotnet foo.dll\"";
-            var runtimeImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"cp {appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{NetCoreApp21WebApp}.dll " +
                 $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/foo.dll")
@@ -437,15 +496,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 NetCoreApp21WebApp,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -465,11 +528,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var repoDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
-            var buildImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx build {repoDir}") // Do not specify language and version
                 .ToString();
-            var runtimeImageScript = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx -sourcePath {repoDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -483,7 +546,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    buildImageScript
+                    buildScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
@@ -491,7 +554,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -511,11 +574,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var repoDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
-            var buildImageScript = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx build {repoDir} -l dotnet --language-version {dotnetcoreVersion}")
                 .ToString();
-            var runtimeImageScript = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx -sourcePath {repoDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -529,7 +592,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    buildImageScript
+                    buildScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
@@ -537,7 +600,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runtimeImageScript
+                    runScript
                 },
                 async () =>
                 {
@@ -546,7 +609,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Skipped multi-platform builds temporarily")]
         public async Task CanBuildAndRun_MultiLanguageApp_ReactAndDotNet()
         {
             // Arrange
@@ -555,7 +618,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var runAppScript = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
@@ -583,7 +646,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runAppScript
+                    runScript
                 },
                 async () =>
                 {
