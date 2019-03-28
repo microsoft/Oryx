@@ -85,16 +85,17 @@ fi
 
 {{ end }}
 
+if [ -f "$zippedVirtualEnvName" ]
+then
+	echo
+	echo "File '$zippedVirtualEnvName' already exists under '$SOURCE_DIR'. Deleting it..."
+	rm -f "$zippedVirtualEnvName"
+fi
+
 {{ if VirtualEnvironmentName | IsNotBlank }}
+{{ if ZipVirtualEnvDir }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	if [ -f "$zippedVirtualEnvName" ]
-	then
-		echo
-		echo "File '$zippedVirtualEnvName' already exists under '$SOURCE_DIR'. Deleting it..."
-		rm -f "$zippedVirtualEnvName"
-	fi
-
 	if [ -d "$VIRTUALENVIRONMENTNAME" ]
 	then
 		echo
@@ -104,4 +105,5 @@ then
 		tar -zcf ../$zippedVirtualEnvName .
 	fi
 fi
+{{ end }}
 {{ end }}

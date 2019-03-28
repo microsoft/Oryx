@@ -284,8 +284,7 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
-COPY images/build/node-cache-packages.sh /tmp/
-RUN /tmp/node-cache-packages.sh && rm /tmp/node-cache-packages.sh
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage

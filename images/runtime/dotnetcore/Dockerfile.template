@@ -11,7 +11,6 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 FROM %DOTNETCORE_BASE_IMAGE%
 
-
 # Older .NET core versions, which have reached end of life and therefore are no longer updated, use
 # a version of `curl` that has known issues.
 # We manually update it here so we can still depend on the original images.

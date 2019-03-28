@@ -49,17 +49,21 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override void WaitUntilDbServerIsUp()
         {
+            var interval = TimeSpan.FromSeconds(3);
             // Try 30 times at most, with a constant 3s in between attempts
-            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(3));
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => interval);
             retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName).Contains("SQL Server is now ready for client connections"));
+            Thread.Sleep(interval);
         }
 
         protected override void InsertSampleData()
         {
             const string sqlFile = "/tmp/setup.sql";
+            string baseSqlCmd = $"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd}";
             var dbSetupScript = new ShellScriptBuilder()
-                .CreateFile(sqlFile, $"CREATE DATABASE {Constants.DatabaseName}; GO; {GetSampleDataInsertionSql()} GO")
-                .AddCommand($"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd} -i {sqlFile}")
+                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                .AddCommand($"{baseSqlCmd} -Q \"CREATE DATABASE {Constants.DatabaseName};\"")
+                .AddCommand($"{baseSqlCmd} -i {sqlFile}")
                 .ToString();
 
             var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
