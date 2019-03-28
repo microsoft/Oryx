@@ -1,0 +1,4 @@
+id = "com.microsoft.oryx.buildpack"
+version = "0.0.1"
+name = "Microsoft Oryx Buildpack"
+stacks = ["packs/v3"]
