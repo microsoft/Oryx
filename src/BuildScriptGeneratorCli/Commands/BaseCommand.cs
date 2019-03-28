@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 _serviceProvider = GetServiceProvider();
+                _serviceProvider?.GetRequiredService<ILogger<BaseCommand>>()?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
                 if (!IsValidInput(_serviceProvider, console))
                 {
                     return ProcessConstants.ExitFailure;
