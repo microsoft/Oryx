@@ -1,5 +1,5 @@
-﻿echo "PHP executable:"
-which php
+﻿phpBin=`which php`
+echo "PHP executable: $phpBin"
 
 {{ if ComposerFileExists }}
 declare -r composer='/opt/php-composer/composer.phar'
