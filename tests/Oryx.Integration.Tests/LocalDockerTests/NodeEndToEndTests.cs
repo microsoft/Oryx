@@ -44,7 +44,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -54,12 +55,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var containerPort = "80";
             var portMapping = $"{HostPort}:{containerPort}";
-            var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {containerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
@@ -82,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runAppScript
+                    runScript
                 },
                 async () =>
                 {
@@ -101,7 +100,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var containerPort = "80";
             var portMapping = $"{HostPort}:{containerPort}";
-            var runAppScript = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_DISABLE_NODE_MODULES_EXTRACTION=true")
                 .AddCommand($"cd {appOutputDir}")
                 .AddCommand("mkdir -p node_modules")
@@ -120,7 +120,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryDoesNotExistCheck("/node_modules")
                 .ToString();
-
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
@@ -143,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    runAppScript
+                    runScript
                 },
                 async () =>
                 {
@@ -162,7 +161,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -171,13 +171,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
-            var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}";
+            var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l " +
+                $"nodejs --language-version {nodeVersion}";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
                 .AddCommand(buildCommand)
@@ -202,7 +201,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -221,7 +220,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -230,13 +230,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
-            var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}";
+            var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out" +
+                $" -l nodejs --language-version {nodeVersion}";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
                 .AddCommand(buildCommand)
@@ -261,7 +260,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -281,8 +280,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -291,15 +292,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -318,8 +323,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
                 .AddCommand($"oryx -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
@@ -329,15 +336,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -356,8 +367,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -367,15 +380,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -395,8 +412,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             var startupFilePath = "/tmp/startup.sh";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
@@ -405,15 +424,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -433,8 +456,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -443,15 +468,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -470,8 +499,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -480,15 +511,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -507,8 +542,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
             var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand($"npm rebuild node-sass") //remove this once workitem 762584 is done
                 .AddCommand(DefaultStartupFilePath)
@@ -518,8 +555,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
@@ -547,8 +588,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -557,15 +600,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -584,9 +631,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --bindPort {ContainerPort}")
+                .AddCommand(
+                $"oryx run-script --appPath {appDir} --platform nodejs " +
+                $"--platform-version {nodeVersion} --bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -594,8 +645,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName: appName,
                 output: _output,
                 volume: volume,
-                buildCmd: "oryx",
-                buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                buildCmd: "/bin/bash",
+                buildArgs: new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 runtimeImageName: $"oryxdevms/build",
                 portMapping: portMapping,
                 runCmd: "/bin/sh",
@@ -627,11 +682,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             File.WriteAllText(Path.Join(volume.MountedHostDir, customStartupScriptName),
                 "#!/bin/bash\n" +
                 $"PORT={ContainerPort} node server.js\n");
-
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"chmod -x ./{customStartupScriptName}")
-                .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
+                .AddCommand(
+                $"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion}" +
+                $" --userStartupCommand {customStartupScriptName} --debug")
                 .AddCommand($"./{customStartupScriptName}")
                 .ToString();
 
@@ -639,8 +698,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName: appName,
                 output: _output,
                 volume: volume,
-                buildCmd: "oryx",
-                buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                buildCmd: "/bin/bash",
+                buildArgs: new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 runtimeImageName: $"oryxdevms/build",
                 portMapping: portMapping,
                 runCmd: "/bin/sh",
@@ -670,10 +733,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             // Create a custom startup command
             const string customStartupScriptCommand = "'npm start'";
-
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
+                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
+                .AddCommand(
+                $"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion}" +
+                $" --userStartupCommand {customStartupScriptCommand} --debug")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -681,8 +747,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName: appName,
                 output: _output,
                 volume: volume,
-                buildCmd: "oryx",
-                buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                buildCmd: "/bin/bash",
+                buildArgs: new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 runtimeImageName: $"oryxdevms/build",
                 portMapping: portMapping,
                 runCmd: "/bin/sh",
