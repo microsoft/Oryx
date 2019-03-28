@@ -28,13 +28,13 @@ namespace Microsoft.Oryx.Tests.Common
             return null;
         }
 
-        public string GetEnvironmentVariable(string name)
+        public string GetEnvironmentVariable(string name, string defaultValue = null)
         {
             if (Variables.TryGetValue(name, out var value))
             {
                 return value;
             }
-            return null;
+            return defaultValue;
         }
 
         public IList<string> GetEnvironmentVariableAsList(string name)

@@ -36,6 +36,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
+        internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
+        {
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
+                options, SourceDir, null, null, null, null, scriptOnly: false, null);
+        }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildpackDetectCommand>>();
@@ -47,9 +53,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var ctx = BuildScriptGenerator.CreateContext(options, env, repo);
             var compatPlats = generator.GetCompatiblePlatforms(ctx);
-            if (compatPlats.Any())
+
+            if (compatPlats != null && compatPlats.Any())
             {
-                console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Item1}={pair.Item2}")));
+                console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Item1.Name}={pair.Item2}")));
                 return ProcessConstants.ExitSuccess;
             }
 
