@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
@@ -16,7 +17,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string PythonSupportedVersionsEnvVariable = "PYTHON_SUPPORTED_VERSIONS";
 
         internal const string PythonLtsVersion = Common.PythonVersions.Python37Version;
-        internal const string InstalledPythonVersionsDir = "/opt/python/";
         internal const string ZipVirtualEnvDir = "ORYX_ZIP_VIRTUALENV_DIR";
 
         private readonly IEnvironment _environment;
@@ -35,7 +35,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             options.PythonDefaultVersion = defaultVersion;
-            options.InstalledPythonVersionsDir = InstalledPythonVersionsDir;
+            options.InstalledPythonVersionsDir = Path.Combine(
+                _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PlatformsDir, Constants.DefaultPlatformsDir),
+                "python");
             options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(
                 PythonSupportedVersionsEnvVariable);
 
