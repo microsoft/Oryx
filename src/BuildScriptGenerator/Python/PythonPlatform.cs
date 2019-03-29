@@ -12,8 +12,12 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    [BuildProperty(VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
-    [BuildProperty(ZipVenvDirPropertyKey, "If provided, the virtual environment folder will be zipped to the output folder.")]
+    [BuildProperty(
+        VirtualEnvironmentNamePropertyKey,
+        "If provided, will create a virtual environment with the given name.")]
+    [BuildProperty(
+        ZipVenvDirPropertyKey,
+        "If provided, the virtual environment folder will be zipped to the output folder.")]
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
         "Directory to download the packages to, if no virtual environment is provided. Default: '" +
@@ -115,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
                 disableCollectStatic: disableCollectStatic,
-                zipVirtualEnvDir: _pythonScriptGeneratorOptions.ZipVirtualEnvDir);
+                zipVirtualEnvDir: ShouldZipVenvDir(context));
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.PythonSnippet,
                 scriptProps,
@@ -160,13 +164,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             context.PythonVersion = version;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext context)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext context)
         {
             var virtualEnvName = GetVirutalEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))
             {
-                if (_pythonScriptGeneratorOptions.ZipVirtualEnvDir)
+                if (ShouldZipVenvDir(context))
                 {
                     return new List<string> { virtualEnvName };
                 }
@@ -215,13 +218,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private string GetVirutalEnvironmentName(BuildScriptGeneratorContext context)
         {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
-            {
-                virtualEnvName = string.Empty;
-            }
-
+            string virtualEnvName = string.Empty;
+            context.Properties?.TryGetValue(VirtualEnvironmentNamePropertyKey, out virtualEnvName);
             return virtualEnvName;
+        }
+
+        private bool ShouldZipVenvDir(BuildScriptGeneratorContext context)
+        {
+            // Build property takes precedence over env var
+            return context.Properties?.ContainsKey(VirtualEnvironmentNamePropertyKey) == true ||
+                _pythonScriptGeneratorOptions.ZipVirtualEnvDir;
         }
     }
 }
