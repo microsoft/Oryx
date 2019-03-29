@@ -19,6 +19,10 @@ func PathExists(path string) bool {
 
 func FileExists(path string) bool {
 	fi, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+
 	if err != nil {
 		return false
 	}
