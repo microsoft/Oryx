@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    // TODO: is this used anywhere?
     [BuildProperty(
         ZipNodeModulesDirPropertyKey, "If provided, the 'node_modules' folder will be zipped to the output folder.")]
     internal class NodePlatform : IProgrammingPlatform
