@@ -14,9 +14,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     [BuildProperty(
-        ZipNodeModulesDirPropertyKey,
-        "Flag to indicate if 'node_modules' folder need to be in zipped form in the output folder. " +
-        "Default is 'false'.")]
+        ZipNodeModulesDirPropertyKey, "If provided, the 'node_modules' folder will be zipped to the output folder.")]
     internal class NodePlatform : IProgrammingPlatform
     {
         internal const string ZipNodeModulesDirPropertyKey = "zip_nodemodules_dir";
