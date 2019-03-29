@@ -222,7 +222,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private bool ShouldZipVenvDir(BuildScriptGeneratorContext context)
         {
             // Build property takes precedence over env var
-            return context.Properties?.ContainsKey(VirtualEnvironmentNamePropertyKey) == true ||
+            return context.Properties?.ContainsKey(ZipVenvDirPropertyKey) == true ||
                 _pythonScriptGeneratorOptions.ZipVirtualEnvDir;
         }
     }
