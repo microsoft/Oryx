@@ -12,14 +12,15 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    [BuildProperty(
-        VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
+    [BuildProperty(VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
+    [BuildProperty(ZipVenvDirPropertyKey, "If provided, the virtual environment folder will be zipped to the output folder.")]
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
         "Directory to download the packages to, if no virtual environment is provided. Default: '" +
         DefaultTargetPackageDirectory + "'")]
     internal class PythonPlatform : IProgrammingPlatform
     {
+        internal const string ZipVenvDirPropertyKey = "zip_venv_dir";
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
 
