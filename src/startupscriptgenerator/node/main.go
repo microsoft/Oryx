@@ -50,6 +50,7 @@ func main() {
 		RemoteDebuggingIp:               *remoteDebugIp,
 		RemoteDebuggingPort:             *remoteDebugPort,
 		UseLegacyDebugger:               useLegacyDebugger,
+		SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 	}
 	script := gen.GenerateEntrypointScript()
 	common.WriteScript(*outputPathPtr, script)
