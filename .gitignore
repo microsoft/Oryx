@@ -279,3 +279,4 @@ bin/
 # Go packages from github
 src/github.com/
 src/startupscriptgenerator/vendor/
+src/golang.org/

@@ -53,7 +53,9 @@ const OryxPublishOutputDirectory = "oryx_publish_output"
 const DefaultBindPort = "8080"
 
 var _retrievedProjectDetails = false
+var _gotStartupFileName = false
 var _projDetails projectDetails = projectDetails{}
+var _startupFileName = ""
 
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
@@ -64,11 +66,11 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 		gen.SourcePath,
 		gen.PublishedOutputPath)
 
+	command, publishOutputDir := gen.getStartupCommand()
+
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("set -e\n\n")
-
-	command, publishOutputDir := gen.getStartupCommand()
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -102,51 +104,43 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 	// as we want to generate a script which does a 'cd' to this directory and run the user startup command
 	publishOutputDir := gen.PublishedOutputPath
 	if publishOutputDir == "" {
-		projDetails := gen.getProjectDetailsAndCache()
-		if projDetails.FullPath == "" {
-			return "", ""
-		}
 
-		publishOutputDir = filepath.Join(projDetails.Directory, OryxPublishOutputDirectory)
+		// Check if current directory is indeed the output directory (Example, like in AppService's case)
+		currentDir := common.GetValidatedFullPath(".")
 
-		logger.LogInformation(
-			"Published output directory not supplied. Checking for default oryx publish output directory at '%s'",
-			publishOutputDir)
-
-		if _, err := os.Stat(publishOutputDir); os.IsNotExist(err) {
-			logger.LogError(
-				"Could not find oryx publish output directory at '%s'. Error: %s",
-				publishOutputDir,
-				err.Error())
-			return "", ""
+		startupFileName := gen.getStartupDllFileName()
+		startupFileFullPath := filepath.Join(currentDir, startupFileName)
+		if common.FileExists(startupFileFullPath) {
+			logger.LogInformation("Found publish output directory '%s'", currentDir)
+			publishOutputDir = currentDir
 		} else {
-			logger.LogInformation("Successfully found oryx publish output directory.")
+			projDetails := gen.getProjectDetailsAndCache()
+			if projDetails.FullPath == "" {
+				logger.LogError("Could not find the project file.")
+				return "", ""
+			}
+
+			publishOutputDir = filepath.Join(projDetails.Directory, OryxPublishOutputDirectory)
+
+			logger.LogInformation(
+				"Published output directory not supplied. Checking for default oryx publish output directory at '%s'",
+				publishOutputDir)
+
+			if _, err := os.Stat(publishOutputDir); os.IsNotExist(err) {
+				logger.LogError(
+					"Could not find oryx publish output directory at '%s'. Error: %s",
+					publishOutputDir,
+					err.Error())
+				return "", ""
+			} else {
+				logger.LogInformation("Successfully found oryx publish output directory.")
+			}
 		}
 	}
 
 	command := gen.UserStartupCommand
 	if command == "" {
-		projDetails := gen.getProjectDetailsAndCache()
-		if projDetails.FullPath == "" {
-			return "", ""
-		}
-
-		// Since an application's published output can contain many .dll files,
-		// find the name of the .dll which has the entry point to the application.
-		// Resolution logic:
-		// If the .csproj file has an explicitly AssemblyName property element, then use that value to get the name of the .dll
-		// else
-		// Use the .csproj file name (excluding the .csproj extension name) as the name of the .dll
-
-		assemblyName := getAssemblyNameFromProjectFile(projDetails)
-
-		startupFileName := ""
-		if assemblyName == "" {
-			projectName := getFileNameWithoutExtension(projDetails.Name)
-			startupFileName = projectName + ".dll"
-		} else {
-			startupFileName = assemblyName + ".dll"
-		}
+		startupFileName := gen.getStartupDllFileName()
 
 		// Check if the startup file is indeed present
 		startupFileFullPath := filepath.Join(publishOutputDir, startupFileName)
@@ -161,8 +155,8 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		command = "dotnet \"" + startupFileName + "\"\n"
 	} else {
 		logger.LogCritical("Using the explicit user provided startup command.")
-		logger.LogInformation("adding execution permission if needed ...");
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("adding execution permission if needed ...")
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
 		logger.LogInformation("permission added %t", isPermissionAdded)
 		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
@@ -170,6 +164,38 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 	return command, publishOutputDir
 }
 
+func (gen *DotnetCoreStartupScriptGenerator) getStartupDllFileName() string {
+	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupDllFileName")
+
+	if _gotStartupFileName {
+		return _startupFileName
+	}
+
+	projDetails := gen.getProjectDetailsAndCache()
+	if projDetails.FullPath == "" {
+		logger.LogError("Could not find the project file.")
+		return ""
+	}
+
+	// Since an application's published output can contain many .dll files,
+	// find the name of the .dll which has the entry point to the application.
+	// Resolution logic:
+	// If the .csproj file has an explicitly AssemblyName property element,
+	// then use that value to get the name of the .dll
+	// else
+	// Use the .csproj file name (excluding the .csproj extension name) as the name of the .dll
+	assemblyName := getAssemblyNameFromProjectFile(projDetails)
+	startupFileName := ""
+	if assemblyName == "" {
+		projectName := getFileNameWithoutExtension(projDetails.Name)
+		startupFileName = projectName + ".dll"
+	} else {
+		startupFileName = assemblyName + ".dll"
+	}
+	_startupFileName = startupFileName
+	_gotStartupFileName = true
+	return _startupFileName
+}
 func (gen *DotnetCoreStartupScriptGenerator) getProjectDetailsAndCache() projectDetails {
 	if _retrievedProjectDetails {
 		return _projDetails
