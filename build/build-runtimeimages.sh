@@ -120,8 +120,8 @@ for dockerFile in $dockerFiles; do
     # add new content
     echo
     echo "Updating artifacts file with the built runtime image information..."
-	echo "$runtimeImageTagName:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
-	echo "$runtimeImageACRTagName:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "$runtimeImageTagName:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "$runtimeImageACRTagName:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 
     if [ -n "$BUILD_NUMBER" ]
     then
