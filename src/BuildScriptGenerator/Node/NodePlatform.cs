@@ -274,12 +274,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dirs.Add(NodeConstants.ProdNodeModulesDirName);
             if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
             {
-                dirs.Add(compressedFileName);
+                dirs.Add(NodeConstants.NodeModulesDirName);
             }
             else
             {
-                dirs.Add(NodeConstants.NodeModulesZippedFileName);
-                dirs.Add(NodeConstants.NodeModulesTarGzFileName);
+                dirs.Add(compressedFileName);
             }
 
             return dirs;
