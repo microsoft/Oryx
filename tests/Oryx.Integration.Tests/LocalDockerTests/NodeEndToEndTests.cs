@@ -122,8 +122,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 

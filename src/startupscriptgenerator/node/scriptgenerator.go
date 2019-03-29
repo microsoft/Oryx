@@ -25,6 +25,7 @@ type NodeStartupScriptGenerator struct {
 	RemoteDebuggingIp               string
 	RemoteDebuggingPort             string
 	UseLegacyDebugger               bool //used for node versions < 7.7
+	SkipNodeModulesExtraction       bool
 }
 
 type packageJson struct {
@@ -52,22 +53,28 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	// If a file called node_modules.zip is found, we consider it to be
-	// the zipped contents of the app's node_modules folder. We unzip it
-	// at the root level, so node runtime can still find it, and
-	// it is not persisted in a shared network volume where the app is.
-	const nodeModules string = "node_modules"
-	const nodeModulesFile string = nodeModules + ".tar.gz"
-	scriptBuilder.WriteString("if [ -f " + nodeModulesFile + " ] && [ ! \"$ORYX_DISABLE_NODE_MODULES_EXTRACTION\" == \"true\" ]; then\n")
-	scriptBuilder.WriteString("    echo \"Found '" + nodeModulesFile + "', will extract its contents as node modules.\"\n")
-	scriptBuilder.WriteString("    echo \"Removing existing modules directory...\"\n")
-	scriptBuilder.WriteString("    rm -fr /" + nodeModules + "\n")
-	scriptBuilder.WriteString("    mkdir -p /" + nodeModules + "\n")
-	scriptBuilder.WriteString("    echo \"Extracting modules...\"\n")
-	scriptBuilder.WriteString("    tar -xzf " + nodeModulesFile + " -C /" + nodeModules + "\n")
-	scriptBuilder.WriteString("    echo \"Done.\"\n")
-	scriptBuilder.WriteString("fi\n\n")
-
+	if !SkipNodeModulesExtraction {
+		const oryxManifestFile string = "oryx-manifest.toml"
+		scriptBuilder.WriteString("if [ -f " + oryxManifestFile + " ]; then\n")
+		scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "', checking if node_modules was compressed...\"\n")
+		scriptBuilder.WriteString("    source " + oryxManifestFile + "\n")
+		scriptBuilder.WriteString("	   if [ ${compressedNodeModulesFile: -4} == \".zip\" ]; then\n")
+		scriptBuilder.WriteString("	   	   echo \"Found zip-based node_modules.\"\n")
+		scriptBuilder.WriteString("	       extractionCommand=\"unzip $compressedNodeModulesFile -d /node_modules\"\n")
+		scriptBuilder.WriteString("	   elif [ ${compressedNodeModulesFile: -7} == \".tar.gz\" ]\n")
+		scriptBuilder.WriteString("	       echo \"Found tar.gz based node_modules.\"\n")
+		scriptBuilder.WriteString("	       extractionCommand=\"tar -xzf $compressedNodeModulesFile -C /node_modules\"\n")
+		scriptBuilder.WriteString("	   fi\n")
+		scriptBuilder.WriteString("    if [ ! -z $extractionCommand ]; then\n")
+		scriptBuilder.WriteString("        echo \"Removing existing modules directory...\"\n")
+		scriptBuilder.WriteString("        rm -fr /nodeModules\n")
+		scriptBuilder.WriteString("        mkdir -p /nodeModules\n")
+		scriptBuilder.WriteString("        echo \"Extracting modules...\"\n")
+		scriptBuilder.WriteString("        $extractionCommand\n")
+		scriptBuilder.WriteString("    fi\n")
+		scriptBuilder.WriteString("    echo \"Done.\"\n")
+		scriptBuilder.WriteString("fi\n\n")
+	}
 	commandSource := ""
 
 	// If user passed a custom startup command, it should take precedence above all other options

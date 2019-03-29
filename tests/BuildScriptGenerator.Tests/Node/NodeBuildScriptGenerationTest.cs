@@ -117,7 +117,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -147,7 +148,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -177,7 +179,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -208,7 +211,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -239,7 +243,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -270,7 +275,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -300,7 +306,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -314,14 +321,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void GeneratedScript_ZipsNodeModules_IfZipNodeModulesEnvironmentVariable_IsTrue()
+        public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsTarGz()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0", zipNodeModules: "true");
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+            context.Properties["compress_node_modules"] = "tar-gz";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -330,7 +338,74 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: true);
+                compressedNodeModulesFileName: "node_modules.tar.gz",
+                compressNodeModulesCommand: "tar -zcf");
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsNull()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            context.Properties["compress_node_modules"] = null;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: "node_modules.tar.gz",
+                compressNodeModulesCommand: "tar -zcf");
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsZip()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            context.Properties["compress_node_modules"] = "zip";
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: "node_modules.zip",
+                compressNodeModulesCommand: "zip -r");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -348,7 +423,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_DoesNotZipNodeModules_IfZipNodeModulesEnvironmentVariable_False()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0", zipNodeModules: "false");
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
@@ -361,7 +436,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                zipNodeModulesDir: false);
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -376,13 +452,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private IProgrammingPlatform GetNodePlatformInstance(
             string defaultNodeVersion = null,
-            string defaultNpmVersion = null,
-            string zipNodeModules = null)
+            string defaultNpmVersion = null)
         {
             var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
             environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
-            environment.Variables[NodeScriptGeneratorOptionsSetup.ZipNodeModules] = zipNodeModules;
 
             var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1" }, new[] { "5.4.2", "6.0.0" });
 

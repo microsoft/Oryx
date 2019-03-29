@@ -8,7 +8,7 @@ then
     yarn config set cache-folder $YARN_CACHE_DIR
 fi
 
-zippedModulesFileName=node_modules.tar.gz
+zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=__oryx_all_node_modules
 prodModulesDirName=__oryx_prod_node_modules
 copyOnlyProdModulesToOutput=false
@@ -100,7 +100,7 @@ then
 	mv $prodModulesDirName node_modules
 fi
 
-{{ if ZipNodeModulesDir }}
+{{ if CompressNodeModulesCommand | IsNotBlank }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	if [ -f $zippedModulesFileName ]; then
@@ -115,7 +115,7 @@ then
 		echo Zipping existing 'node_modules' folder ...
 		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules
-		tar -zcf ../$zippedModulesFileName .
+		{{ CompressNodeModulesCommand}} ../$zippedModulesFileName .
 	fi
 fi
 {{ end }}
