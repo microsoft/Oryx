@@ -216,8 +216,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private string GetVirutalEnvironmentName(BuildScriptGeneratorContext context)
         {
-            string virtualEnvName = string.Empty;
-            context.Properties?.TryGetValue(VirtualEnvironmentNamePropertyKey, out virtualEnvName);
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
+            {
+                virtualEnvName = string.Empty;
+            }
+
             return virtualEnvName;
         }
 
