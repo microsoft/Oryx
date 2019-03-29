@@ -64,6 +64,17 @@ steps:
     scriptPath: ./build/test-startupscriptgenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Print Git Commit'
+  inputs:
+    type: InlineScript
+    script: |
+     echo 'Hello World'
+     echo $(Build.SourceVersion)
+     echo $(Build.SourceVersionMessage)
+     echo $(Build.SourceBranchName)
+  condition: true
+
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
