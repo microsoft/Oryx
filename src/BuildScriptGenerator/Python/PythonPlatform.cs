@@ -13,11 +13,9 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     [BuildProperty(
-        VirtualEnvironmentNamePropertyKey,
-        "If provided, will create a virtual environment with the given name.")]
+        VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
     [BuildProperty(
-        ZipVenvDirPropertyKey,
-        "If provided, the virtual environment folder will be zipped to the output folder.")]
+        ZipVenvDirPropertyKey, "If provided, the virtual environment folder will be zipped to the output folder.")]
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
         "Directory to download the packages to, if no virtual environment is provided. Default: '" +
