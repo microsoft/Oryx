@@ -53,7 +53,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	if !SkipNodeModulesExtraction {
+	if !gen.SkipNodeModulesExtraction {
 		const oryxManifestFile string = "oryx-manifest.toml"
 		scriptBuilder.WriteString("if [ -f " + oryxManifestFile + " ]; then\n")
 		scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "', checking if node_modules was compressed...\"\n")

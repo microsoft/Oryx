@@ -34,8 +34,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        [Fact]
-        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules()
+        [Theory]
+        [InlineData("tar-gz")]
+        [InlineData("zip")]
+        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules(string compressFormat)
         {
             // NOTE:
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
@@ -61,8 +63,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
@@ -178,10 +179,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
-                .AddCommand(buildCommand)
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
-                .AddCommand(buildCommand)
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
@@ -237,10 +236,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
-                .AddCommand(buildCommand)
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
-                .AddCommand(buildCommand)
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 

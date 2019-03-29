@@ -661,7 +661,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
