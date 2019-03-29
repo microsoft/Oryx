@@ -164,20 +164,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext context)
         {
-            var virtualEnvName = GetVirutalEnvironmentName(context);
-            if (!string.IsNullOrEmpty(virtualEnvName))
+            var venvName = GetVirutalEnvironmentName(context);
+            if (string.IsNullOrEmpty(venvName))
             {
-                if (ShouldZipVenvDir(context))
-                {
-                    return new List<string> { virtualEnvName };
-                }
-                else
-                {
-                    return new List<string> { $"{virtualEnvName}.{PythonConstants.ZipFileExtension}" };
-                }
+                return Array.Empty<string>();
             }
 
-            return Array.Empty<string>();
+            string dir = ShouldZipVenvDir(context) ? venvName : $"{venvName}.{PythonConstants.ZipFileExtension}";
+            return new string[] { dir };
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
