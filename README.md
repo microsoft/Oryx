@@ -69,29 +69,29 @@ run.sh, by default in the same folder as the compiled artifact.
 To build and run an app from a repo, follow these approximate steps. An example
 script follows.
 
-1. Mount the repo as a volume in Oryx's `mcr.microsoft.com/oryx/build` container.
+1. Mount the repo as a volume in Oryx's `docker.io/oryxprod/build` container.
 1. Run `oryx build ...` within the repo directory to build a runnable artifact.
 1. Mount the output directory from build in an appropriate Oryx "run"
-   container, such as `mcr.microsoft.com/oryx/node-10.14`.
+   container, such as `docker.io/oryxprod/node-10.14`.
 1. Run `oryx ...` within the "run" container to write a startup script.
-1. Run the generated startup script, by default `./run.sh`.
+1. Run the generated startup script, by default `/run.sh`.
 
 ```bash
 # Run these from the root of the repo.
 # build
 docker run --volume $(pwd):/repo \
-    'mcr.microsoft.com/oryx/build:latest' \
-    'oryx build /repo --output /repo/out'
+    'docker.io/oryxprod/build:latest' \
+    oryx build /repo --output /repo
 
 # run
-# include `-p port:port` and `-e KEY=value`
-# to open ports and set environment variables
+
+# the -p/--publish and -e/--env flags specify and open a host port
 docker run --detach --rm \
-    --volume $(pwd)/out:/app \
-    # -p 80:80 \
-    # -e MYKEY=value \
-    'mcr.microsoft.com/oryx/node-10.14:latest' \
-    sh -c 'oryx -appPath /app && /app/run.sh'
+    --volume $(pwd):/app \
+    --env PORT=8080 \
+    --publish 8080:8080 \
+    'docker.io/oryxprod/node-10.14:latest' \
+    sh -c 'oryx -appPath /app && /run.sh'
 ```
 
 # Contributing
