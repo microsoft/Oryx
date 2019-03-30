@@ -212,7 +212,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                configureYarnCache: true);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -244,7 +245,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                configureYarnCache: true);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
