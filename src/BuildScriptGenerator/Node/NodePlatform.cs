@@ -18,9 +18,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         "Indicates how and if 'node_modules' folder should be compressed into a single file in the output folder. " +
         "Options are '" + ZipNodeModulesOption + "', and '" + TarGzNodeModulesOption + "'. Default is to not compress. " +
         "If this option is used, when running the app the node_modules folder must be extracted from this file.")]
+    [BuildProperty(
+        PruneDevDependencies,
+        "When using different intermediate and output folders, only the prod dependencies are copied to the output. " +
+        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
+
     internal class NodePlatform : IProgrammingPlatform
     {
         internal const string ZipNodeModulesDirPropertyKey = "compress_node_modules";
+        internal const string PruneDevDependencies = "prune_dev_dependencies";
         internal const string ZipNodeModulesOption = "zip";
         internal const string TarGzNodeModulesOption = "tar-gz";
 
@@ -119,6 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 buildProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
             }
 
+            bool pruneDevDependencies = ShouldPruneDevDependencies(context);
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
@@ -127,7 +134,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
                 compressNodeModulesCommand: compressNodeModulesCommand,
                 compressedNodeModulesFileName: compressedNodeModulesFileName,
-                configureYarnCache: configureYarnCache);
+                configureYarnCache: configureYarnCache,
+                pruneDevDependencies: pruneDevDependencies);
 
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,
@@ -319,6 +327,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return packageJson;
+        }
+
+        private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
+        {
+            bool ret = false;
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(PruneDevDependencies, out string value))
+            {
+                if (string.IsNullOrWhiteSpace(value) || string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ret = true;
+                }
+            }
+
+            return ret;
         }
 
         private static bool GetNodeModulesPackOptions(BuildScriptGeneratorContext context, out string compressNodeModulesCommand, out string compressedNodeModulesFileName)
