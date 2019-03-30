@@ -1,3 +1,4 @@
+{{ if ConfigureYarnCache }}
 # Yarn config is per user, and since the build might run with a non-root account, we make sure
 # the yarn cache is set on every build.
 YARN_CACHE_DIR=/usr/local/share/yarn-cache
@@ -7,6 +8,7 @@ then
     echo "Configuring Yarn cache folder..."
     yarn config set cache-folder $YARN_CACHE_DIR
 fi
+{{ end }}
 
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=__oryx_all_node_modules

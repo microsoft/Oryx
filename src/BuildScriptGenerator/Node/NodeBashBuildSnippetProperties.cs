@@ -17,7 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool hasProductionOnlyDependencies,
             string productionOnlyPackageInstallCommand,
             string compressNodeModulesCommand,
-            string compressedNodeModulesFileName)
+            string compressedNodeModulesFileName,
+            bool configureYarnCache = false)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
@@ -41,5 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string CompressNodeModulesCommand { get; set; }
 
         public string CompressedNodeModulesFileName { get; set; }
+
+        public bool ConfigureYarnCache { get; set; }
     }
 }

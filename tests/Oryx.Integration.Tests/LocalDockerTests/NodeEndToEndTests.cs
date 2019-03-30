@@ -177,7 +177,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
-            var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
@@ -234,7 +233,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
-            var buildCommand = $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")

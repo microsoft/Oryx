@@ -113,7 +113,7 @@ rm -f "$DESTINATION_DIR/$MANIFEST_FILE"
 {{ if BuildProperties != empty }}
 echo "Creating a manifest file..."
 {{ for prop in BuildProperties }}
-echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> $MANIFEST_FILE
+echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$DESTINATION_DIR/$MANIFEST_FILE"
 {{ end }}
 echo "Manifest file created."
 {{ end }}

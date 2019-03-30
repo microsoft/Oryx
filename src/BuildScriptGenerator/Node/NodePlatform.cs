@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
-
+            bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
 
@@ -64,6 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+                configureYarnCache = true;
             }
             else
             {
@@ -125,7 +126,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 hasProductionOnlyDependencies: hasProductionOnlyDependencies,
                 productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
                 compressNodeModulesCommand: compressNodeModulesCommand,
-                compressedNodeModulesFileName: compressedNodeModulesFileName);
+                compressedNodeModulesFileName: compressedNodeModulesFileName,
+                configureYarnCache: configureYarnCache);
 
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,
@@ -272,11 +274,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var dirs = new List<string>();
             dirs.Add(NodeConstants.AllNodeModulesDirName);
             dirs.Add(NodeConstants.ProdNodeModulesDirName);
+
+            // If the node modules folder is being packaged in a file, we don't copy it to the output
             if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }
-            else
+            else if (!string.IsNullOrWhiteSpace(compressedFileName))
             {
                 dirs.Add(compressedFileName);
             }
