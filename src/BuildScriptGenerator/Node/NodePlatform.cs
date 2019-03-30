@@ -22,7 +22,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         PruneDevDependenciesPropertyKey,
         "When using different intermediate and output folders, only the prod dependencies are copied to the output. " +
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
-
     internal class NodePlatform : IProgrammingPlatform
     {
         internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
