@@ -14,19 +14,19 @@ using Newtonsoft.Json;
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     [BuildProperty(
-        ZipNodeModulesDirPropertyKey,
+        CompressNodeModulesPropertyKey,
         "Indicates how and if 'node_modules' folder should be compressed into a single file in the output folder. " +
         "Options are '" + ZipNodeModulesOption + "', and '" + TarGzNodeModulesOption + "'. Default is to not compress. " +
         "If this option is used, when running the app the node_modules folder must be extracted from this file.")]
     [BuildProperty(
-        PruneDevDependencies,
+        PruneDevDependenciesPropertyKey,
         "When using different intermediate and output folders, only the prod dependencies are copied to the output. " +
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
 
     internal class NodePlatform : IProgrammingPlatform
     {
-        internal const string ZipNodeModulesDirPropertyKey = "compress_node_modules";
-        internal const string PruneDevDependencies = "prune_dev_dependencies";
+        internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
+        internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
         internal const string ZipNodeModulesOption = "zip";
         internal const string TarGzNodeModulesOption = "tar-gz";
 
@@ -333,7 +333,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             bool ret = false;
             if (context.Properties != null &&
-                context.Properties.TryGetValue(PruneDevDependencies, out string value))
+                context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
             {
                 if (string.IsNullOrWhiteSpace(value) || string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -344,17 +344,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return ret;
         }
 
-        private static bool GetNodeModulesPackOptions(BuildScriptGeneratorContext context, out string compressNodeModulesCommand, out string compressedNodeModulesFileName)
+        private static bool GetNodeModulesPackOptions(
+            BuildScriptGeneratorContext context,
+            out string compressNodeModulesCommand,
+            out string compressedNodeModulesFileName)
         {
             var isNodeModulesPackaged = false;
             compressNodeModulesCommand = null;
             compressedNodeModulesFileName = null;
             if (context.Properties != null &&
-                context.Properties.TryGetValue(ZipNodeModulesDirPropertyKey, out string compressNodeModulesOption))
+                context.Properties.TryGetValue(CompressNodeModulesPropertyKey, out string compressNodeModulesOption))
             {
                 // default to tar.gz if the property was provided with no value.
                 if (string.IsNullOrEmpty(compressNodeModulesOption) ||
-                    string.Equals(compressNodeModulesOption, TarGzNodeModulesOption, StringComparison.InvariantCulture))
+                    string.Equals(compressNodeModulesOption, TarGzNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesTarGzFileName;
                     compressNodeModulesCommand = $"tar -zcf";

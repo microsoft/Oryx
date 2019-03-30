@@ -118,7 +118,7 @@ then
 		echo Zipping existing 'node_modules' folder ...
 		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules
-		{{ CompressNodeModulesCommand}} ../$zippedModulesFileName .
+		{{ CompressNodeModulesCommand }} ../$zippedModulesFileName .
 	fi
 fi
 {{ end }}

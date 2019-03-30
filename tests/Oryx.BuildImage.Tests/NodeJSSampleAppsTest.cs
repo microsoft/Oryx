@@ -630,6 +630,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=zip")
                 .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddStringExistsInFileCheck("compressedNodeModulesFile=node_modules.zip", $"{appOutputDir}/oryx-manifest.toml")
                 .ToString();
 
             // Act
