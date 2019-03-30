@@ -26,7 +26,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// Gets or sets the list of supported npm versions.
         /// </summary>
         public IList<string> SupportedNpmVersions { get; set; }
-
-        public bool ZipNodeModules { get; set; }
     }
 }

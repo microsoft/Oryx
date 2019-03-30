@@ -106,5 +106,18 @@ echo "{{ PostBuildScriptPrologue }}"
 echo "{{ PostBuildScriptEpilogue }}"
 {{ end }}
 
+{{ if ManifestFileName | IsNotBlank }}
+MANIFEST_FILE={{ ManifestFileName }}
+echo "Removing existing manifest file"
+rm -f "$DESTINATION_DIR/$MANIFEST_FILE"
+{{ if BuildProperties != empty }}
+echo "Creating a manifest file..."
+{{ for prop in BuildProperties }}
+echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$DESTINATION_DIR/$MANIFEST_FILE"
+{{ end }}
+echo "Manifest file created."
+{{ end }}
+{{ end }}
+
 echo
 echo Done.

@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public static class Constants
     {
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
-
         public const string BuildEnvironmentFileName = "build.env";
+        internal const string ManifestFileName = "oryx-manifest.toml";
     }
 }

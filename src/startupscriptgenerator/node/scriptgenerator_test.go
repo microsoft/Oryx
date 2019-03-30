@@ -33,13 +33,23 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	//
 	// export PORT=8080
 	//
-	// if [ -f node_modules.tar.gz ] && [ ! "$ORYX_DISABLE_NODE_MODULES_EXTRACTION" == "true" ]; then
-	//     echo "Found 'node_modules.tar.gz', will extract its contents as node modules."
-	//     echo "Removing existing modules directory..."
-	//     rm -fr /node_modules
-	//     mkdir -p /node_modules
-	//     echo "Extracting modules..."
-	//     tar -xzf node_modules.tar.gz -C /node_modules
+	// if [ -f oryx-manifest.toml ]; then
+	//     echo "Found 'oryx-manifest.toml', checking if node_modules was compressed..."
+	//     source oryx-manifest.toml
+	//     if [ ${compressedNodeModulesFile: -4} == ".zip" ]; then
+	//         echo "Found zip-based node_modules."
+	//         extractionCommand="unzip -q $compressedNodeModulesFile -d /node_modules"
+	//     elif [ ${compressedNodeModulesFile: -7} == ".tar.gz" ]; then
+	//         echo "Found tar.gz based node_modules."
+	//         extractionCommand="tar -xzf $compressedNodeModulesFile -C /node_modules"
+	//     fi
+	//     if [ ! -z "$extractionCommand" ]; then
+	//         echo "Removing existing modules directory..."
+	//         rm -fr /nodeModules
+	//         mkdir -p /nodeModules
+	//         echo "Extracting modules..."
+	//         $extractionCommand
+	//     fi
 	//     echo "Done."
 	// fi
 	//
