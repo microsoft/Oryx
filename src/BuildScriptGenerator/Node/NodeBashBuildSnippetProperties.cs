@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand;
             CompressNodeModulesCommand = compressNodeModulesCommand;
             CompressedNodeModulesFileName = compressedNodeModulesFileName;
+            ConfigureYarnCache = configureYarnCache;
             PruneDevDependencies = pruneDevDependencies;
         }
 
