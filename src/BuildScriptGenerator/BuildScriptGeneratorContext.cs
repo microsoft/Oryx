@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Options for the build script generation process.
     /// </summary>
-    public class BuildScriptGeneratorContext
+    public partial class BuildScriptGeneratorContext
     {
         public ISourceRepo SourceRepo { get; set; }
 

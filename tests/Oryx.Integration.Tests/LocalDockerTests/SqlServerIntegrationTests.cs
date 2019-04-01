@@ -27,5 +27,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"));
         }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        // pdo_sqlsrv only supports PHP >= 7.1
+        public async Task PhpApp_UsingPdo(string phpVersion)
+        {
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), 80);
+        }
     }
 }

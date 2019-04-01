@@ -25,11 +25,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsNull_IfSourceDirectory_IsEmpty()
+        public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files in source directory
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
@@ -41,12 +41,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsTextFile_IsNotPresent()
+        public void Detect_ReutrnsNull_WhenRequirementsFileDoesNotExist()
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
-            CreateFile(sourceDir, "foo.py content", "foo.py");
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -61,9 +61,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files with '.py' or no runtime.txt file
-            CreateFile(sourceDir, "requirements.txt content", "requirements.txt");
+            IOHelpers.CreateFile(sourceDir, "requirements.txt content", PythonConstants.RequirementsFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -78,10 +78,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No file with a '.py' extension
-            CreateFile(sourceDir, "", "requirements.txt");
-            CreateFile(sourceDir, $"python-{Common.PythonVersions.Python37Version}", "runtime.txt");
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, $"python-{Common.PythonVersions.Python37Version}", "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -94,13 +94,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeTextfile()
+        public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeFile()
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
-            CreateFile(sourceDir, "", "requirements.txt");
-            CreateFile(sourceDir, "python-100.100.100", "runtime.txt");
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "python-100.100.100", PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act & Assert
@@ -118,9 +118,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
-            CreateFile(sourceDir, "", "requirements.txt");
-            CreateFile(sourceDir, fileContent, "runtime.txt");
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, fileContent, "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -135,9 +135,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var detector = CreatePythonLanguageDetector(supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
-            var sourceDir = CreateNewDir();
-            CreateFile(sourceDir, "content", "requirements.txt");
-            CreateFile(sourceDir, "foo.py content", "foo.py");
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "content", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act
@@ -147,16 +147,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.NotNull(result);
             Assert.Equal("python", result.Language);
             Assert.Equal(Common.PythonVersions.Python37Version, result.LanguageVersion);
-        }
-
-        private string CreateNewDir()
-        {
-            return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
-        }
-
-        private void CreateFile(string sourceDir, string fileContent, params string[] filePaths)
-        {
-            File.WriteAllText(Path.Combine(sourceDir, Path.Combine(filePaths)), fileContent);
         }
 
         private PythonLanguageDetector CreatePythonLanguageDetector(string[] supportedPythonVersions)

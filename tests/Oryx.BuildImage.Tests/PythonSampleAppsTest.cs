@@ -26,9 +26,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", sampleAppName));
 
-        private EnvironmentVariable CreateAppNameEnvVar(string sampleAppName) =>
-            new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, sampleAppName);
-
         [Fact]
         public void GeneratesScript_AndBuilds()
         {

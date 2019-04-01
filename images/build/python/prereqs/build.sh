@@ -15,6 +15,7 @@ for i in {1..5}; do
     gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys $GPG_KEY || \
     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys $GPG_KEY  || \
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY;
+
     if [ $? -eq 0 ]; then break; fi
 done
     

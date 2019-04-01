@@ -4,8 +4,9 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 #
-# This script can be used to build the base platforms locally, before building the build image.
-# In Azure DevOps, this is taken care of by the pipelines defined in vsts/pipelines/buildimage-platforms.
+# This script builds some base images that are needed for the build image:
+# - Python binaries
+# - PHP binaries
 #
 
 set -e
@@ -41,6 +42,24 @@ YARN_CACHE_IMAGE_NAME=$YARN_CACHE_IMAGE_BASE:$IMAGE_TAG
 
 docker build $__REPO_DIR/images/build/yarn-cache -t $YARN_CACHE_IMAGE_NAME
 echo $YARN_CACHE_IMAGE_NAME >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+# Build PHP
+docker build -f $__REPO_DIR/images/build/php/prereqs/Dockerfile -t "php-build-prereqs" $__REPO_DIR
+
+declare -r PHP_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/php-build"
+
+docker build -f $__REPO_DIR/images/build/php/5.6/Dockerfile -t "$PHP_IMAGE_PREFIX-5.6:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-5.6:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $__REPO_DIR/images/build/php/7.0/Dockerfile -t "$PHP_IMAGE_PREFIX-7.0:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-7.0:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $__REPO_DIR/images/build/php/7.2/Dockerfile -t "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
+docker build -f $__REPO_DIR/images/build/php/7.3/Dockerfile -t "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" $__REPO_DIR
+echo "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
+
 
 echo
 echo "List of images built (from '$BUILD_IMAGE_BASES_ARTIFACTS_FILE'):"

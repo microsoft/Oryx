@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,7 +27,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
 
-        private const string PythonName = "python";
         private const string DefaultTargetPackageDirectory = "__oryx_packages__";
 
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _detector = detector;
         }
 
-        public string Name => PythonName;
+        public string Name => PythonConstants.PythonName;
 
         public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
 
@@ -145,15 +145,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return scriptGeneratorContext.EnablePython;
         }
 
-        public void SetRequiredTools(
-            ISourceRepo sourceRepo,
-            string targetPlatformVersion,
-            IDictionary<string, string> toolsToVersion)
+        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion,
+            [NotNull] IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[PythonName] = targetPlatformVersion;
+                toolsToVersion[PythonConstants.PythonName] = targetPlatformVersion;
             }
         }
 
@@ -200,7 +198,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                _logger.LogDependencies(PythonName, pythonVersion, deps);
+                _logger.LogDependencies(PythonConstants.PythonName, pythonVersion, deps);
             }
             catch (Exception exc)
             {
