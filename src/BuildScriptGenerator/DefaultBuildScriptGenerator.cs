@@ -224,6 +224,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string benvArgs = GetBenvArgs(toolsToVersion);
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
+            Dictionary<string, string> buildProperties = snippets
+                .Where(s => s.BuildProperties != null)
+                .SelectMany(s => s.BuildProperties)
+                .ToDictionary(p => p.Key, p => p.Value);
+
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
@@ -232,6 +237,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PostBuildScriptPath = environmentSettings?.PostBuildScriptPath,
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
+                ManifestFileName = Constants.ManifestFileName,
+                BuildProperties = buildProperties
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildScriptPath);

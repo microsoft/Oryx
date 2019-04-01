@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -14,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class DotnetCoreEndToEndTests
+    public class DotnetCoreEndToEndTests : IClassFixture<TestTempDirTestFixture>
     {
         private const int HostPort = 8081;
         private const int ContainerPort = 3000;
@@ -27,12 +29,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
         private readonly HttpClient _httpClient;
+        private readonly string _tempRootDir;
 
-        public DotnetCoreEndToEndTests(ITestOutputHelper output)
+        public DotnetCoreEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _httpClient = new HttpClient();
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
         [Fact]
@@ -544,6 +548,57 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
                     data = await GetResponseDataAsync($"http://localhost:{HostPort}/static/js/main.df777a6e.js");
                     Assert.Contains("!function(e){function t(o){if(n[o])return", data);
+                });
+        }
+
+        // This is AppService scenario where the 'current' directory is the output directory itself which has the 
+        // startup dll file and NO explicit output directory is specified.
+        [Fact(Skip = "Bug 832951")]
+        public async Task CanRunApp_WhenTheRootDirectoryHasStartupDllFile()
+        {
+            // Arrange
+            var dotnetcoreVersion = "2.1";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
+            var appVolume = DockerVolume.Create(hostDir);
+            var appDir = appVolume.ContainerDir;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .ToString();
+            var runtimeScript = new ShellScriptBuilder()
+                // Make sure to have the published output directory as the 'current' directory and do NOT supply
+                // the output directory explicitly.
+                .AddCommand($"cd {appOutputDir}")
+                .AddCommand($"oryx -sourcePath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                new List<DockerVolume> { appVolume, appOutputDirVolume },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
                 });
         }
 

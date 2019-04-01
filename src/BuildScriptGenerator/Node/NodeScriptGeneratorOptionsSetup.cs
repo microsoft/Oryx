@@ -15,7 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NodeSupportedVersionsEnvVariable = "NODE_SUPPORTED_VERSIONS";
         internal const string NpmSupportedVersionsEnvVariable = "NPM_SUPPORTED_VERSIONS";
         internal const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
-        internal const string ZipNodeModules = "ORYX_ZIP_NODE_MODULES";
         internal const string NodeLtsVersion = "8.11.2";
 
         private readonly IEnvironment _environment;
@@ -46,13 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             options.SupportedNpmVersions = _environment.GetEnvironmentVariableAsList(NpmSupportedVersionsEnvVariable);
 
             var zipNodeModulesEnvVariableValue = _environment.GetEnvironmentVariable(LegacyZipNodeModules);
-            if (string.IsNullOrEmpty(zipNodeModulesEnvVariableValue))
-            {
-                zipNodeModulesEnvVariableValue = _environment.GetEnvironmentVariable(ZipNodeModules);
-            }
-
             bool.TryParse(zipNodeModulesEnvVariableValue, out var zipNodeModules);
-            options.ZipNodeModules = zipNodeModules;
         }
     }
 }

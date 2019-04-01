@@ -277,3 +277,4 @@ pkg/
 # Go packages from GitHub
 src/github.com/
 src/startupscriptgenerator/vendor/
+src/golang.org/

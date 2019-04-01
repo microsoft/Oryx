@@ -38,5 +38,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
 
         public IEnumerable<string> DirectoriesToExcludeFromCopyToIntermediateDir { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of properties for the build. Those properties are stored in a
+        /// manifest file that can be used when running the app.
+        /// </summary>
+        public IDictionary<string, string> BuildProperties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the manifest file.
+        /// </summary>
+        public string ManifestFileName { get; set; }
     }
 }
