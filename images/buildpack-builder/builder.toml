@@ -1,6 +1,6 @@
 [[buildpacks]]
   id = "com.microsoft.oryx.buildpack"
-  uri = "oryx"
+  uri = "oryx-buildpack"
 
 [[groups]]
   [[groups.buildpacks]]
