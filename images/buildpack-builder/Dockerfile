@@ -8,19 +8,19 @@
 
 FROM mcr.microsoft.com/oryx/build:latest
 
+# Configure non-root user
+RUN groupadd -g 1002 oryx_group && \
+	useradd -u 1001 -g oryx_group oryx_user && \
+	chown -R oryx_user:oryx_group /tmp && \
+	mkdir -p /home/oryx_user && \
+	chmod -R 777 /home/oryx_user
+
 WORKDIR /tmp
 
 # Install pack
 RUN wget -nv https://github.com/buildpack/pack/releases/download/v0.0.9/pack-0.0.9-linux.tar.gz && \
 	tar -xvf pack-0.0.9-linux.tar.gz && \
-	mv pack /usr/local/bin && ls -la /buildpacks
-
-# Configure non-root user
-RUN groupadd -g 1002 oryx_group
-RUN useradd -u 1001 -g oryx_group oryx_user
-RUN chown -R oryx_user:oryx_group /tmp
-RUN mkdir -p /home/oryx_user
-RUN chmod -R 777 /home/oryx_user
+	mv pack /usr/local/bin
 
 LABEL io.buildpacks.stack.id=com.microsoft.oryx.stack
 
@@ -36,4 +36,5 @@ RUN pack add-stack com.microsoft.oryx.stack -b mcr.microsoft.com/oryx/build -r m
 
 COPY images/buildpack/builder.toml builder.toml
 COPY images/buildpack/oryx oryx
+VOLUME /var/run/docker.sock /var/run/docker.sock
 RUN pack create-builder oryxdevms/buildpack-builder --builder-config builder.toml
