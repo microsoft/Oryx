@@ -14,7 +14,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services
                 .AddNodeScriptGeneratorServices()
                 .AddPythonScriptGeneratorServices()
-                .AddDotnetCoreScriptGeneratorServices();
+                .AddDotnetCoreScriptGeneratorServices()
+                .AddPhpScriptGeneratorServices();
 
             services.AddSingleton<IBuildScriptGenerator, DefaultBuildScriptGenerator>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();

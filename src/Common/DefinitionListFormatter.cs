@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.Common
 {
@@ -17,25 +18,24 @@ namespace Microsoft.Oryx.Common
     {
         private const string HeadingSuffix = ": ";
 
-        private readonly Predicate<string> isValidTitle = title => !string.IsNullOrWhiteSpace(title);
-
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
 
         public void AddDefinition(string title, string value)
         {
-            if (isValidTitle(title))
+            var tuple = CreateDefTuple(title, value);
+            if (tuple != null)
             {
-                _rows.Add(new Tuple<string, string>(title, value));
+                _rows.Add(tuple);
             }
         }
 
-        public void AddDefinitions(IDictionary<string, string> values)
+        public void AddDefinitions([CanBeNull] IDictionary<string, string> values)
         {
             if (values != null)
             {
-                _rows
-                    .AddRange(values.Where(pair => isValidTitle(pair.Key))
-                    .Select(pair => Tuple.Create(pair.Key, pair.Value)));
+                _rows.AddRange(values
+                    .Select(pair => CreateDefTuple(pair.Key, pair.Value))
+                    .Where(tuple => tuple != null));
             }
         }
 
@@ -53,17 +53,27 @@ namespace Microsoft.Oryx.Common
                     continue;
                 }
 
-                string[] lines = row.Item2.Split(Environment.NewLine);
+                string[] lines = row.Item2.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 result.AppendLine(lines[0]);
                 foreach (string line in lines.Skip(1))
                 {
-                    result.Append(new string(' ', headingWidth + HeadingSuffix.Length));
-                    result.AppendLine(line);
+                    result.Append(new string(' ', headingWidth + HeadingSuffix.Length)).AppendLine(line);
                 }
             }
 
             return result.ToString();
+        }
+
+        [CanBeNull]
+        private Tuple<string, string> CreateDefTuple([CanBeNull] string title, [CanBeNull] string value)
+        {
+            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            return Tuple.Create(title, value);
         }
     }
 }

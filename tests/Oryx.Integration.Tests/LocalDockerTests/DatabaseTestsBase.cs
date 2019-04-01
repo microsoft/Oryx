@@ -16,15 +16,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public abstract class DatabaseTestsBase
     {
-        protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly ITestOutputHelper _output;
+        protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         private static readonly Random _rand = new Random();
         protected readonly int _appPort;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
-            _dbFixture = dbFixture;
             _output = outputHelper;
+            _dbFixture = dbFixture;
             _appPort = 8080 + _rand.Next(100);
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             HttpClient = new HttpClient();
@@ -34,11 +34,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         protected HttpClient HttpClient { get; }
 
-        protected async Task RunTestAsync(string language, string languageVersion, string samplePath)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath, int containerPort = 8000)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var containerPort = 8000;
             var portMapping = $"{_appPort}:{containerPort}";
             var entrypointScript = "./run.sh";
             var script = new ShellScriptBuilder()

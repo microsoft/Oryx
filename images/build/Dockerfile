@@ -14,6 +14,7 @@ RUN apt-get update \
         git \
         jq \
         make \
+        unzip \
         # The tools in this package are used when installing packages for Python
         build-essential \
         # Required for Microsoft SQL Server
@@ -284,6 +285,14 @@ RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
 COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+
+# Copy PHP versions
+COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
+RUN . /tmp/php/install-prereqs.sh
+COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190325.6 /opt /opt
 
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage

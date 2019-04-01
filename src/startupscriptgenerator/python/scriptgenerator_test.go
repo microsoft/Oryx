@@ -14,7 +14,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule() {
 	gen := PythonStartupScriptGenerator{
 		BindPort: "",
 	}
-	//Act
+	// Act
 	command := gen.getCommandFromModule("module.py", "")
 	fmt.Println(command)
 	// Output:
@@ -26,7 +26,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath() {
 	gen := PythonStartupScriptGenerator{
 		BindPort: "",
 	}
-	//Act
+	// Act
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:
@@ -38,7 +38,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHo
 	gen := PythonStartupScriptGenerator{
 		BindPort: "12345",
 	}
-	//Act
+	// Act
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:

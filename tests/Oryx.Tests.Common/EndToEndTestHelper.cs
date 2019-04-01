@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Oryx.Common;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -112,7 +113,8 @@ namespace Microsoft.Oryx.Tests.Common
                    Assert.True(buildAppResult.IsSuccess);
                    return Task.CompletedTask;
                },
-               buildAppResult.GetDebugInfo());
+               buildAppResult,
+               output);
 
             // Run
             DockerRunCommandProcessResult runResult = null;
@@ -132,12 +134,13 @@ namespace Microsoft.Oryx.Tests.Common
                 await RunAssertsAsync(
                     () =>
                     {
-                        // An exception could have occurred when a docker process failed to start.
+                        // An exception could have occurred when a Docker process failed to start.
                         Assert.Null(runResult.Exception);
                         Assert.False(runResult.Process.HasExited);
                         return Task.CompletedTask;
                     },
-                    runResult.GetDebugInfo());
+                    runResult,
+                    output);
 
                 for (var i = 0; i < MaxRetryCount; i++)
                 {
@@ -152,7 +155,8 @@ namespace Microsoft.Oryx.Tests.Common
                                 Assert.False(runResult.Process.HasExited);
                                 await assertAction();
                             },
-                            runResult.GetDebugInfo());
+                            runResult,
+                            output);
 
                         break;
                     }
@@ -174,18 +178,27 @@ namespace Microsoft.Oryx.Tests.Common
                     dockerCli.StopContainer(runResult.ContainerName);
                 }
             }
+        }
 
-            async Task RunAssertsAsync(Func<Task> action, string message)
+        private static async Task RunAssertsAsync(Func<Task> action, DockerResultBase res, ITestOutputHelper output)
+        {
+            try
             {
-                try
+                await action();
+            }
+            catch (EqualException exc)
+            {
+                output.WriteLine(res.GetDebugInfo(new Dictionary<string, string>
                 {
-                    await action();
-                }
-                catch (Exception)
-                {
-                    output.WriteLine(message);
-                    throw;
-                }
+                    { "Actual value", exc.Actual },
+                    { "Expected value", exc.Expected },
+                }));
+                throw;
+            }
+            catch (Exception)
+            {
+                output.WriteLine(res.GetDebugInfo());
+                throw;
             }
         }
     }

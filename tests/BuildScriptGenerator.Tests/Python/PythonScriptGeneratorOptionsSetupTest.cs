@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var environment = new TestEnvironment();
-            environment.Variables[PythonScriptGeneratorOptionsSetup.PythonDefaultVersion] = "10.10.10";
+            environment.Variables[PythonConstants.PythonDefaultVersionEnvVarName] = "10.10.10";
             var optionsSetup = new PythonScriptGeneratorOptionsSetup(environment);
             var options = new PythonScriptGeneratorOptions();
 
