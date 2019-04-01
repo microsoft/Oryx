@@ -25,12 +25,13 @@ RUN mkdir -p /home/oryx_user
 RUN chmod -R 777 /home/oryx_user
 
 LABEL io.buildpacks.stack.id=com.microsoft.oryx.stack
-ENV CNB_STACK_ID=com.microsoft.oryx.stack
+
+ENV PACK_STACK_ID=com.microsoft.oryx.stack
+ENV  CNB_STACK_ID=com.microsoft.oryx.stack
+
 ENV PACK_USER_ID=1001 PACK_GROUP_ID=1002
 ENV  CNB_USER_ID=1001  CNB_GROUP_ID=1002
 
 RUN pack add-stack com.microsoft.oryx.stack -b oryxdevms/buildpack -r oryxdevms/buildpack && \
 	pack set-default-stack com.microsoft.oryx.stack && \
 	pack delete-stack io.buildpacks.stacks.bionic
-
-ENTRYPOINT ["/usr/local/bin/pack"]
