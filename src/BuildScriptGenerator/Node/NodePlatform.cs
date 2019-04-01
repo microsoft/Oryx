@@ -365,7 +365,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 else if (string.Equals(compressNodeModulesOption, ZipNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesZippedFileName;
-                    compressNodeModulesCommand = $"zip -r";
+                    compressNodeModulesCommand = $"zip -q -r";
                     isNodeModulesPackaged = true;
                 }
             }
