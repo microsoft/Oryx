@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string PythonSupportedVersionsEnvVariable = "PYTHON_SUPPORTED_VERSIONS";
 
         internal const string PythonLtsVersion = Common.PythonVersions.Python37Version;
+
         internal const string ZipVirtualEnvDir = "ORYX_ZIP_VIRTUALENV_DIR";
 
         private readonly IEnvironment _environment;
@@ -28,18 +29,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public void Configure(PythonScriptGeneratorOptions options)
         {
-            var defaultVersion = _environment.GetEnvironmentVariable(PythonDefaultVersion);
+            var defaultVersion = _environment.GetEnvironmentVariable(PythonConstants.PythonDefaultVersionEnvVarName);
             if (string.IsNullOrEmpty(defaultVersion))
             {
-                defaultVersion = PythonLtsVersion;
+                defaultVersion = PythonConstants.PythonLtsVersion;
             }
 
             options.PythonDefaultVersion = defaultVersion;
             options.InstalledPythonVersionsDir = Path.Combine(
                 _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PlatformsDir, Constants.DefaultPlatformsDir),
                 "python");
+            // Providing the supported versions through an environment variable allows us to use the tool in
+            // other environments, e.g. our local machines for debugging.
             options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(
-                PythonSupportedVersionsEnvVariable);
+                PythonConstants.PythonSupportedVersionsEnvVarName);
 
             bool.TryParse(_environment.GetEnvironmentVariable(ZipVirtualEnvDir), out var zipVirtualEnvDir);
             options.ZipVirtualEnvDir = zipVirtualEnvDir;

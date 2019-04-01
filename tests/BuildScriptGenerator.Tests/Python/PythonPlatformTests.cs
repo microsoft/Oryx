@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         private PythonPlatform CreatePlatformInstance(string defaultVersion = null)
         {
             var testEnv = new TestEnvironment();
-            testEnv.Variables[PythonScriptGeneratorOptionsSetup.PythonDefaultVersion] = defaultVersion;
+            testEnv.Variables[PythonConstants.PythonDefaultVersionEnvVarName] = defaultVersion;
 
             var nodeVersionProvider = new TestVersionProvider(new[] { Common.PythonVersions.Python37Version });
 

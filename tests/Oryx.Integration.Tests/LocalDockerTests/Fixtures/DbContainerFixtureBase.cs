@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
     public abstract class DbContainerFixtureBase : IDisposable
     {
-        public const string DbServerHostnameEnvVarName = "DATABASE_HOSTNAME";
+        public const string DbServerHostnameEnvVarName = "DATABASE_HOST";
         public const string DbServerUsernameEnvVarName = "DATABASE_USERNAME";
         public const string DbServerPasswordEnvVarName = "DATABASE_PASSWORD";
         public const string DbServerDatabaseEnvVarName = "DATABASE_NAME";

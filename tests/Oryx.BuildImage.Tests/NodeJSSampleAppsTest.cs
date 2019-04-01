@@ -17,12 +17,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         private static readonly string SampleAppName = "webfrontend";
 
+        private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
+
         public NodeJSSampleAppsTest(ITestOutputHelper output) :
             base(output, new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) }))
         {
         }
-
-        private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
 
         [Fact]
         public void GeneratesScript_AndBuilds()

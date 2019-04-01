@@ -12,6 +12,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     [OutputType("shell")]
     internal class ShellOutput : IOutputFile
     {
+        private const string NewLine = "\n";
         private ConstantCollection _collection;
         private string _directory;
         private string _fileNamePrefix;
@@ -31,12 +32,12 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
         public string GetContent()
         {
             StringBuilder body = new StringBuilder();
-            body.AppendLine("# " + Program.BuildAutogenDisclaimer(_collection.SourcePath));
-            body.AppendLine();
+            body.Append("# " + Program.BuildAutogenDisclaimer(_collection.SourcePath) + NewLine); // Can't use AppendLine becuase it appends \r\n
+            body.Append(NewLine);
             foreach (var constant in _collection.Constants)
             {
                 string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
-                body.AppendLine($"{name}='{constant.Value}'");
+                body.Append($"{name}='{constant.Value}'{NewLine}");
             }
 
             return body.ToString();

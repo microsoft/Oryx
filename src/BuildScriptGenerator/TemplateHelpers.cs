@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private static readonly MemberRenamerDelegate NoOpRenamer = member => member.Name;
 
-        public static string Render(TemplateResource templateResource, object model, ILogger logger = null)
+        public static string Render(TemplateResource templateResource, [CanBeNull] object model, ILogger logger = null)
         {
             var assembly = typeof(IBuildScriptGenerator).Assembly;
             using (var stream = assembly.GetManifestResourceStream(templateResource.Name))
@@ -80,6 +80,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             public static TemplateResource BaseBashScript
             {
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.BaseBashBuildScript.sh.tpl");
+            }
+
+            public static TemplateResource PhpBuildSnippet
+            {
+                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Php.PhpBashBuildSnippet.sh.tpl");
             }
 
             public static TemplateResource PythonSnippet

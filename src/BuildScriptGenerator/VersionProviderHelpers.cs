@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
                 catch (ArgumentException)
                 {
-                    // ignore non semantic version based versions like 'latest' or 'lts'
+                    // Ignore non-Semantic-Versioning based strings like 'latest' or 'lts'
                 }
             }
 

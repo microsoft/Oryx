@@ -9,18 +9,27 @@ while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep '^python_')
 [ -n "$python" ] && set -- "python=$python" "$@"
+
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep '^php_')
+[ -n "$php" ] && set -- "php=$php" "$@"
+
 while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep '^npm_')
 [ -n "$npm" ] && set -- "npm=$npm" "$@"
+
 while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep '^node_')
 [ -n "$node" ] && set -- "node=$node" "$@"
+
 while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep '^dotnet_')
 [ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
+
 unset benvvar # Remove all traces of this part of the script
 
 benv-versions() {
@@ -117,6 +126,23 @@ benv-resolve() {
       if [ -e "$DIR/virtualenv" ]; then
         eval export virtualenv_${name:7}=$DIR/virtualenv
       fi
+    fi
+    return 0
+  fi
+
+  # Resolve PHP versions
+  if [ "$name" == "php" -o "${name::4}" == "php_" ] && [ "${value::1}" != "/" ]; then
+    if [ ! -d "/opt/php/$value" ]; then
+      echo >&2 benv: php version \'$value\' not found\; choose one of:
+      benv-versions >&2 /opt/php
+      return 1
+    fi
+    local DIR="/opt/php/$value/bin"
+    if [ "$name" == "php" ]; then
+      export PATH="$DIR:$PATH"
+      export php="$DIR/php"
+    else
+      eval export php_${name:4}=\"$DIR/php\"
     fi
     return 0
   fi

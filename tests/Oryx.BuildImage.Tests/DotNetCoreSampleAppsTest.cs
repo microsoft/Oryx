@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
-
         [Fact]
         public void Builds_NetCore11App_UsingNetCore11_DotnetSdkVersion()
         {
@@ -40,7 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -75,7 +74,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -111,7 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -146,7 +145,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -182,7 +181,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -217,7 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:
@@ -279,7 +278,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(
                 Settings.BuildImageName,
-                CreateAppNameEnvVar(appName),
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
                 volume,
                 commandToExecuteOnRun: "/bin/bash",
                 commandArguments:

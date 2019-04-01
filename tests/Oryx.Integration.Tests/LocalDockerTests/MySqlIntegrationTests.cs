@@ -30,5 +30,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", sampleAppName));
         }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public async Task PhpApp_UsingMysqli(string phpVersion)
+        {
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "mysqli-example"), 80);
+        }
     }
 }
