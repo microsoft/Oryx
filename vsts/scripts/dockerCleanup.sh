@@ -38,19 +38,28 @@ docker images
 #
 # **NOTE**
 # - We still keep the tags of the following pattern because we still need some cache so that next builds are faster
-#	a. oryxdevms/build:latest
-#	b. oryxdevms/python-<major.minor>:latest
-#	b. oryxdevms/node-<major.minor>:latest
-#	b. oryxdevms/dotnetcore-<major.minor>:latest
+#	a. oryx/build:latest
+#	b. oryx/python-<major.minor>:latest
+#	c. oryx/node-<major.minor>:latest
+#	d. oryx/dotnetcore-<major.minor>:latest
 # - We should untag these images only after they have been pushed to a remote repository.
+# Untag images with DockerHub related tags
+UntagImages "oryxdevms/*:latest"
 UntagImages "oryxdevms/*:*.*"
-UntagImages "oryxtests/*:latest"
 UntagImages "oryxprod/*:latest"
 UntagImages "oryxprod/*:*.*"
+
+# Untag images with Dev ACR related tags
 UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:*.*"
+
+# Untag images with Staging ACR related tags
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:*.*"
+
+# Untag older support images that are used to build Oryx build image
+# NOTE: Keep these around for a while so that they get untag across ALL the build agents
+UntagImages "mcr.microsoft.com/oryx/python-build-2.7:20190322.0"
 
 echo
 echo "Updated list of docker images:"

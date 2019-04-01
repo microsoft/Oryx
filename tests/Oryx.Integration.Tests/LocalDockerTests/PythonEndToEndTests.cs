@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "python", "--language-version", "2.7" },
-                "oryxdevms/python-2.7",
+                "oryx/python-2.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "python", "--language-version", "2.7", "-p", $"virtualenv_name={virtualEnvName}" },
-                "oryxdevms/python-2.7",
+                "oryx/python-2.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -168,7 +168,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
-                "oryxdevms/python-3.6",
+                "oryx/python-3.6",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -205,7 +205,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}" },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -257,7 +257,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -293,7 +293,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -355,7 +355,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -411,7 +411,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                $"oryxdevms/python-{pythonVersion}",
+                $"oryx/python-{pythonVersion}",
                 portMapping,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -453,7 +453,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.6" },
-                "oryxdevms/python-3.6",
+                "oryx/python-3.6",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -498,7 +498,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
-                "oryxdevms/python-3.6",
+                "oryx/python-3.6",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -543,7 +543,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -580,7 +580,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -617,7 +617,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
@@ -667,7 +667,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryx/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]

@@ -148,10 +148,10 @@ namespace Microsoft.Oryx.Integration.Tests.AksTests
         }
 
         [Theory, Trait("E2E", "AKS")]
-        [InlineData("linxnodeexpress", "oryxdevms/node-4.4:latest", "nodejs", "4.4.7")]
-        [InlineData("webfrontend", "oryxdevms/node-8.1:latest", "nodejs", "8.1")]
-        [InlineData("soundcloud-ngrx", "oryxdevms/node-8.11:latest", "nodejs", "8.11")]
-        //[InlineData("flask-app", "oryxdevms/python-3.7.0:latest", "python", "3.7")]
+        [InlineData("linxnodeexpress", "oryx/node-4.4:latest", "nodejs", "4.4.7")]
+        [InlineData("webfrontend", "oryx/node-8.1:latest", "nodejs", "8.1")]
+        [InlineData("soundcloud-ngrx", "oryx/node-8.11:latest", "nodejs", "8.11")]
+        //[InlineData("flask-app", "oryx/python-3.7.0:latest", "python", "3.7")]
         public async Task CanBuildAndRunSampleApp(string appName, string runtimeImage, string language, string languageVersion)
         {
             V1Deployment runtimeDeployment = null;

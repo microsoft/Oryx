@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -209,7 +209,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -244,7 +244,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -280,7 +280,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -316,7 +316,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -352,7 +352,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -395,7 +395,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "dotnet", "--language-version", dotnetcoreVersion },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -441,7 +441,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -487,7 +487,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -533,7 +533,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/dotnetcore-2.2",
+                "oryx/dotnetcore-2.2",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -588,7 +588,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryx/dotnetcore-{dotnetcoreVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]

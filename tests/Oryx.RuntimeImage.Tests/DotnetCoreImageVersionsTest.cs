@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Skip.If(string.IsNullOrEmpty(agentOS));
             // Act
             var result = _dockerCli.Run(
-                "oryxdevms/dotnetcore-" + version + ":latest",
+                "oryx/dotnetcore-" + version + ":latest",
                 commandToExecuteOnRun: "oryx",
                 commandArguments: new[] { "--version" });
             // Assert
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/dotnetcore-" + version + ":latest",
+                "oryx/dotnetcore-" + version + ":latest",
                 commandToExecuteOnRun: "dotnet",
                 commandArguments: new[] { "--version" });
 
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/dotnetcore-" + version + ":latest",
+                "oryx/dotnetcore-" + version + ":latest",
                 commandToExecuteOnRun: "dotnet",
                 commandArguments: new[] { "--info" });
 

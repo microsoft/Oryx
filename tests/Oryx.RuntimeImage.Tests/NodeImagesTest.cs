@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Skip.If(string.IsNullOrEmpty(agentOS));
             // Act
             var result = _dockerCli.Run(
-                "oryxdevms/node-" + version + ":latest",
+                "oryx/node-" + version + ":latest",
                 commandToExecuteOnRun: "oryx",
                 commandArguments: new[] { "--version" });
             // Assert
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(
-                "oryxdevms/node-" + nodeTag + ":latest",
+                "oryx/node-" + nodeTag + ":latest",
                 commandToExecuteOnRun: "node",
                 commandArguments: new[] { "--version" });
 
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             // Act
-            var res = _dockerCli.Run("oryxdevms/node-10.14", "/bin/sh", new[] { "-c", script });
+            var res = _dockerCli.Run("oryx/node-10.14", "/bin/sh", new[] { "-c", script });
             
             // Assert
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());

@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
-                $"oryxdevms/php-{phpVersion}",
+                $"oryx/php-{phpVersion}",
                 $"{HostPort}:80",
                 "/bin/sh", new[] { "-c", script },
                 async () =>
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
-                $"oryxdevms/php-{phpVersion}",
+                $"oryx/php-{phpVersion}",
                 $"{HostPort}:80",
                 "/bin/sh", new[] { "-c", runScript },
                 async () =>
@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
-                $"oryxdevms/php-{phpVersion}",
+                $"oryx/php-{phpVersion}",
                 $"{HostPort}:80",
                 "/bin/sh", new[] { "-c", runScript },
                 async () =>

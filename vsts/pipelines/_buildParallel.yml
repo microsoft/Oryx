@@ -89,7 +89,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pullandretag.sh
-    args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt
+    args: $(System.ArtifactsDirectory)/drop/images/acr-build-images.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
@@ -97,7 +97,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pullandretag.sh
-    args: $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+    args: $(System.ArtifactsDirectory)/drop/images/acr-runtime-images.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: AzureKeyVault@1
@@ -158,7 +158,7 @@ steps:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: oryx
     action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/dockerhub-build-images.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
@@ -170,7 +170,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/acr-build-images.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
@@ -181,7 +181,7 @@ steps:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: oryx
     action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/dockerhub-runtime-images.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
@@ -193,7 +193,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/acr-runtime-images.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))

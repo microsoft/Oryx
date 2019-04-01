@@ -19,11 +19,11 @@ declare BUILD_SIGNED=""
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
 if [ "$SignType" == "real" ] || [ "$SignType" == "Real" ]
 then
-# "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
+	# "SignType" will be real only for scheduled and/or manual builds of ORYX-CI
     BUILDSCRIPT_SOURCE="copybuildscriptbinaries"
 	BUILD_SIGNED="true"
 else
-# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
+	# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
     mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
@@ -31,18 +31,17 @@ fi
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
 	ctxArgs="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
-	echo "build context: "$ctxArgs
 fi
 
 function BuildAndTagStage()
 {
 	local stageName="$1"
-	local stageTagName="oryxdevms/$1"
+	local stageTagName="oryx/$1"
 
 	echo
 	echo
 	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build --target $stageName -t $stageTagName $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --target $stageName -t $stageTagName $ctxArgs -f "$BUILD_IMAGE_DOCKERFILE" .
 }
 
 # Tag stages to avoid creating dangling images.
@@ -58,59 +57,47 @@ BuildAndTagStage buildscriptbuilder
 BuildAndTagStage copybuildscriptbinaries
 BuildAndTagStage buildscriptbinaries
 
-tags="$DOCKER_BUILD_IMAGES_REPO:latest"
-
-if [ -n "$BUILD_NUMBER" ]
-then
-    tags="$tags -t $DOCKER_BUILD_IMAGES_REPO:$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
-fi
-
-if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]
-then
-	echo
-	echo "Building build image(s) with NO cache..."
-	noCache="--no-cache"
-else
-	echo
-	echo "Building build image(s)..."
-fi
-
-echo "Application Insights instrumentation key: $APPLICATION_INSIGHTS_INSTRUMENTATION_KEY"
-docker build $noCache -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY --build-arg AGENTBUILD=$BUILD_SIGNED --build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+localBuildImageTag="$LOCAL_BUILD_IMAGE_REPO:latest"
+docker build -t $localBuildImageTag \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE \
+	$ctxArgs -f "$BUILD_IMAGE_DOCKERFILE" .
 
 echo
 echo Building a base image for tests ...
 # Do not write this image tag to the artifacts file as we do not intend to push it
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
-# Retag build image with acr tags
-docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:latest"
-
+# Retag build image with DockerHub and ACR tags
 if [ -n "$BUILD_NUMBER" ]
 then
-    docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+	uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+
+	echo
+	echo "Retagging image '$localBuildImageTag' with DockerHub and ACR related tags..."
+	docker tag "$localBuildImageTag" "$DOCKERHUB_BUILD_IMAGE_REPO:latest"
+	docker tag "$localBuildImageTag" "$DOCKERHUB_BUILD_IMAGE_REPO:$uniqueTag"
+	docker tag "$localBuildImageTag" "$ACR_BUILD_IMAGE_REPO:latest"
+	docker tag "$localBuildImageTag" "$ACR_BUILD_IMAGE_REPO:$uniqueTag"
+
+	# Write the list of images that were built to artifacts folder
+	echo
+	echo "Writing the list of build images built to artifacts folder..."
+	mkdir -p "$ARTIFACTS_DIR/images"
+
+	# Write image list to artifacts file
+	echo "$DOCKERHUB_BUILD_IMAGE_REPO:latest" >> $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$DOCKERHUB_BUILD_IMAGE_REPO:$uniqueTag" >> $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$ACR_BUILD_IMAGE_REPO:latest" > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$ACR_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
+	echo
+	echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
+	cat $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
+	cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 fi
-
-# Write the list of images that were built to artifacts folder
-echo
-echo "Writing the list of build images built to artifacts folder..."
-mkdir -p "$ARTIFACTS_DIR/images"
-
-# Write image list to artifacts file
-echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
-echo "$ACR_BUILD_IMAGES_REPO:latest" > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-if [ -n "$BUILD_NUMBER" ]
-then
-	echo "$DOCKER_BUILD_IMAGES_REPO:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "$ACR_BUILD_IMAGES_REPO:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-fi
-
-echo
-echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
-cat $BUILD_IMAGES_ARTIFACTS_FILE
-echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
-cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"

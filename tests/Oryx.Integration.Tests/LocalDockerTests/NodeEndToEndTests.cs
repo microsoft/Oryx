@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -136,7 +136,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -192,7 +192,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -248,7 +248,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -286,7 +286,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -324,7 +324,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -362,7 +362,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -400,7 +400,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -438,7 +438,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -475,7 +475,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -513,7 +513,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -552,7 +552,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryx/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
                 new[]
@@ -589,7 +589,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume: volume,
                 buildCmd: "oryx",
                 buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: Settings.BuildImageName,
                 portMapping: portMapping,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -634,7 +634,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume: volume,
                 buildCmd: "oryx",
                 buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: Settings.BuildImageName,
                 portMapping: portMapping,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -676,7 +676,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 volume: volume,
                 buildCmd: "oryx",
                 buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: Settings.BuildImageName,
                 portMapping: portMapping,
                 runCmd: "/bin/sh",
                 runArgs: new[]

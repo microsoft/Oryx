@@ -46,10 +46,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = $"oryxdevms/{language}-{languageVersion}";
+            var runtimeImageName = $"oryx/{language}-{languageVersion}";
             if (string.Equals(language, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = $"oryxdevms/node-{languageVersion}";
+                runtimeImageName = $"oryx/node-{languageVersion}";
             }
             
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";

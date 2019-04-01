@@ -27,5 +27,5 @@ echo
 if [ -d "$mountedDirs" ]; then
     echo
     echo "Cleaning up files created by test containers ..."
-    docker run -v $mountedDirs:/tempDirs oryxdevms/build /bin/bash -c "rm -rf /tempDirs/* && ls /tempDirs"
+    docker run -v $mountedDirs:/tempDirs oryx/build /bin/bash -c "rm -rf /tempDirs/* && ls /tempDirs"
 fi

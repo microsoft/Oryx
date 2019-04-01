@@ -36,7 +36,6 @@ function getTagName()
     return 0
 }
 
-
 echo
 echo "Generating Dockerfiles for Node runtime images..."
 $REPO_DIR/images/runtime/node/generateDockerfiles.sh
@@ -53,6 +52,12 @@ echo
 echo "Generating Dockerfiles for PHP runtime images..."
 $REPO_DIR/images/runtime/php/generate-dockerfiles.sh
 
+dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
+if [ -z "$dockerFiles" ]
+then
+    echo "Couldn't find any Dockerfiles under '$RUNTIME_IMAGES_SRC_DIR' and its sub-directories."
+    exit 1
+fi
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
@@ -62,13 +67,6 @@ then
 	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
 fi
 
-dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
-if [ -z "$dockerFiles" ]
-then
-    echo "Couldn't find any Dockerfiles under '$RUNTIME_IMAGES_SRC_DIR' and its sub-directories."
-    exit 1
-fi
-
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
 
@@ -76,68 +74,61 @@ clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
-    runtimeImageTagName="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
-    runtimeImageACRTagName="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
-
-    tags=$runtimeImageTagName:latest
-    acrTag=$runtimeImageACRTagName:latest
-
-    if [ -n "$BUILD_NUMBER" ]
-    then
-        tags="$tags -t $runtimeImageTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
-    fi
+    localImageTagName="$LOCAL_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result:latest"
     
     echo
-    echo "Building image '$runtimeImageTagName' for docker file located at '$dockerFile'..."
+    echo "Building image '$localImageTagName' for docker file located at '$dockerFile'..."
     
     cd $REPO_DIR
 
-    if [ -n "$BUILD_RUNTIMEIMAGES_USING_NOCACHE" ]
-    then
-        echo "Building image '$runtimeImageTagName' with NO cache..."
-        noCache="--no-cache"
-    fi
-
     echo
-    docker build $noCache -f $dockerFile -t $tags --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $args $labels .
+    docker build -f $dockerFile -t $localImageTagName \
+        --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+        $args $labels .
     
-    # Retag build image with acr tags
-    docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:latest"
-
+    # Retag build image with DockerHub & ACR tags
     if [ -n "$BUILD_NUMBER" ]
     then
-        docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
-    fi
+        uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
-    if [ $clearedOutput = "false" ]
-    then
-        # clear existing contents of the file, if any
-        > $RUNTIME_IMAGES_ARTIFACTS_FILE
-        > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
-        clearedOutput=true
-    fi
+        dockerHubRuntimeImageTagNameRepo="$DOCKERHUB_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
+        acrRuntimeImageTagNameRepo="$ACR_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
 
-    # add new content
-    echo
-    echo "Updating artifacts file with the built runtime image information..."
-    echo "$runtimeImageTagName:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
-    echo "$runtimeImageACRTagName:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        docker tag "$localImageTagName" "$dockerHubRuntimeImageTagNameRepo:latest"
+        docker tag "$localImageTagName" "$dockerHubRuntimeImageTagNameRepo:$uniqueTag"
+        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:latest"
+        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
 
-    if [ -n "$BUILD_NUMBER" ]
-    then
-    	echo "$runtimeImageTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
-        echo "$runtimeImageACRTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        if [ $clearedOutput == "false" ]
+        then
+            # clear existing contents of the file, if any
+            > $DOCKERHUB_RUNTIME_IMAGES_ARTIFACTS_FILE
+            > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+            clearedOutput=true
+        fi
+
+        # add new content
+        echo
+        echo "Updating artifacts file with the built runtime image information..."
+    	echo "$dockerHubRuntimeImageTagNameRepo:latest" >> $DOCKERHUB_RUNTIME_IMAGES_ARTIFACTS_FILE
+    	echo "$dockerHubRuntimeImageTagNameRepo:$uniqueTag" >> $DOCKERHUB_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo:$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
 done
 
-echo
-echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
-cat $RUNTIME_IMAGES_ARTIFACTS_FILE
-echo
-echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
-cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+if [ -n "$BUILD_NUMBER" ]
+then
+    echo
+    echo "List of images built (from '$DOCKERHUB_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
+    cat $DOCKERHUB_RUNTIME_IMAGES_ARTIFACTS_FILE
+    
+    echo
+    echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
+    cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+fi
 
 echo
 echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"

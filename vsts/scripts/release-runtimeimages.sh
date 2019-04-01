@@ -11,6 +11,6 @@ while read sourceImage; do
   docker pull "$sourceImage"
   newtag=$(echo "$sourceImage" | sed -r 's/oryxdevms/oryxprod/')
   echo "$newtag"
-  docker tag "$sourceImage" "$newtag"
-  docker push "$newtag"
-done <"$(System.DefaultWorkingDirectory)/_Oryx-Runtime/drop/images/runtime-images.txt"
+  docker tag "$sourceImage" "$newtag"``
+  docker push "$newtag"``
+done <"$(System.DefaultWorkingDirectory)/_Oryx-Runtime/drop/images/dockerhub-runtime-images.txt"

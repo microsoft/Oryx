@@ -136,7 +136,7 @@ steps:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: oryx
     action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/dockerhub-build-images.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
@@ -147,7 +147,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/acr-build-images.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
@@ -157,7 +157,7 @@ steps:
     containerregistrytype: 'Container Registry'
     dockerRegistryConnection: oryx
     action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/dockerhub-runtime-images.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
@@ -168,7 +168,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/acr-runtime-images.txt'
     includeLatestTag: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 

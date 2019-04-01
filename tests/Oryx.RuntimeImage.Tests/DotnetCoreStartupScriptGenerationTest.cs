@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 {
     public class DotnetCoreStartupScriptGenerationTest : TestBase
     {
-        private const string DotnetCoreRuntimeImageName = "oryxdevms/dotnetcore-2.2";
+        private const string DotnetCoreRuntimeImageName = "oryx/dotnetcore-2.2";
         private const string ScriptLocation = "./run.sh";
 
         private const string RegularProjectFileContent =
@@ -453,7 +453,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange
             var appDir = "/app";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir}") // no .csproj file
                 .AddCommand($"oryx -sourcePath {appDir} -defaultAppFilePath /tmp/doesnotexist.dll")
@@ -569,7 +568,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var webApp2Dir = $"{repoDir}/src/Apps/WebApp2";
             var defaultWebAppFile = "/tmp/defaultwebapp.dll";
             var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
-            var scriptLocation = "/tmp/run.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {webApp1Dir}")
                 .AddCommand($"mkdir -p {webApp2Dir}")
@@ -614,7 +612,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             // Act
-            var res = _dockerCli.Run("oryxdevms/dotnetcore-2.2", "/bin/sh", new[] { "-c", script });
+            var res = _dockerCli.Run(DotnetCoreRuntimeImageName, "/bin/sh", new[] { "-c", script });
             
             // Assert
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());

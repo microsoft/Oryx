@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Skip.If(string.IsNullOrEmpty(agentOS));
             // Act
             var result = _dockerCli.Run(
-                "oryxdevms/python-" + version + ":latest",
+                "oryx/python-" + version + ":latest",
                 commandToExecuteOnRun: "oryx",
                 commandArguments: new[] { "--version" });
             // Assert
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/python-" + pythonVersion + ":latest",
+                "oryx/python-" + pythonVersion + ":latest",
                 commandToExecuteOnRun: "python",
                 commandArguments: new[] { "--version" });
 
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Arrange & Act
             var result = _dockerCli.Run(
-                "oryxdevms/python-" + pythonVersion + ":latest",
+                "oryx/python-" + pythonVersion + ":latest",
                 commandToExecuteOnRun: "python",
                 commandArguments: new[] { "--version" });
 
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             // Act
-            var res = _dockerCli.Run("oryxdevms/python-3.7", "/bin/sh", new[] { "-c", script });
+            var res = _dockerCli.Run("oryx/python-3.7", "/bin/sh", new[] { "-c", script });
             
             // Assert
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());

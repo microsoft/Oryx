@@ -11,7 +11,10 @@
 
 set -e
 
-source __variables.sh
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+
+# Load all variables
+source $REPO_DIR/build/__variables.sh
 
 IMAGE_TAG="${BUILD_NUMBER:-latest}"
 
@@ -59,7 +62,6 @@ echo "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
 docker build -f $__REPO_DIR/images/build/php/7.3/Dockerfile -t "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" $__REPO_DIR
 echo "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
-
 
 echo
 echo "List of images built (from '$BUILD_IMAGE_BASES_ARTIFACTS_FILE'):"
