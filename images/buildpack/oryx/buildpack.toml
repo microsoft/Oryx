@@ -4,4 +4,4 @@ version = "0.0.1"
 name = "Microsoft Oryx Buildpack"
 
 [[stacks]]
-id = ["com.microsoft.stacks.oryx"]
+id = ["com.microsoft.oryx.stack"]

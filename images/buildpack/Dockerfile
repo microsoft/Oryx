@@ -8,8 +8,6 @@
 
 FROM mcr.microsoft.com/oryx/build:latest
 
-COPY images/buildpack /buildpacks/oryx/latest
-
 WORKDIR /tmp
 
 # Install pack
@@ -32,6 +30,10 @@ ENV  CNB_STACK_ID=com.microsoft.oryx.stack
 ENV PACK_USER_ID=1001 PACK_GROUP_ID=1002
 ENV  CNB_USER_ID=1001  CNB_GROUP_ID=1002
 
-RUN pack add-stack com.microsoft.oryx.stack -b oryxdevms/buildpack -r oryxdevms/buildpack && \
+RUN pack add-stack com.microsoft.oryx.stack -b mcr.microsoft.com/oryx/build -r mcr.microsoft.com/oryx/build && \
 	pack set-default-stack com.microsoft.oryx.stack && \
 	pack delete-stack io.buildpacks.stacks.bionic
+
+COPY images/buildpack/builder.toml builder.toml
+COPY images/buildpack/oryx oryx
+RUN pack create-builder oryxdevms/buildpack-builder --builder-config builder.toml
