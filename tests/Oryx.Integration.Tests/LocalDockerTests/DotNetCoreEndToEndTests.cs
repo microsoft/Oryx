@@ -553,7 +553,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         // This is AppService scenario where the 'current' directory is the output directory itself which has the 
         // startup dll file and NO explicit output directory is specified.
-        [Fact(Skip = "Bug 832951")]
+        [Fact]
         public async Task CanRunApp_WhenTheRootDirectoryHasStartupDllFile()
         {
             // Arrange
@@ -567,7 +567,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
             var runtimeScript = new ShellScriptBuilder()
                 // Make sure to have the published output directory as the 'current' directory and do NOT supply
