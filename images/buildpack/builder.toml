@@ -1,0 +1,8 @@
+[[buildpacks]]
+  id = "com.microsoft.oryx.buildpack"
+  uri = "https://example.org/buildpacks/buildpack-2.tgz"
+
+[[groups]]
+  [[groups.buildpacks]]
+    id = "com.microsoft.oryx.buildpack"
+    version = "0.0.1"
