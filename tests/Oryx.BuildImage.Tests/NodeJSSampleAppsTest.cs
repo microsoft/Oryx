@@ -578,7 +578,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void BuildsNodeApp_AndZipsNodeModules_IfZipNodeModulesIsTrue_UsingLegacyEnvironmentVariableName()
+        public void BuildsNodeApp_AndZipsNodeModules_WithTarGz_IfZipNodeModulesIsTarGz()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
             //  "tar: node_modules/form-data: file changed as we read it"
@@ -589,8 +589,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddCommand("export ENABLE_NODE_MODULES_ZIP=true")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=tar-gz")
                 .AddFileExistsCheck($"{appOutputDir}/node_modules.tar.gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -617,7 +616,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void BuildsNodeApp_AndZipsNodeModules_IfZipNodeModulesIsTrue()
+        public void BuildsNodeApp_AndZipsNodeModules_IfCompressNodeModulesIsZip()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
             //  "tar: node_modules/form-data: file changed as we read it"
@@ -627,11 +626,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
-            var script = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=true")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/node_modules.tar.gz")
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=zip")
+                .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddStringExistsInFileCheck("compressedNodeModulesFile=\"node_modules.zip\"", $"{appOutputDir}/oryx-manifest.toml")
                 .ToString();
 
             // Act
@@ -643,7 +642,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 new[]
                 {
                     "-c",
-                    script
+                    buildScript
                 });
 
             // Assert
@@ -663,7 +662,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddCommand("export ORYX_ZIP_NODE_MODULES=false")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")

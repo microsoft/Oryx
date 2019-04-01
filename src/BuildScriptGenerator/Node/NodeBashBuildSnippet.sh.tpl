@@ -1,3 +1,4 @@
+{{ if ConfigureYarnCache }}
 # Yarn config is per user, and since the build might run with a non-root account, we make sure
 # the yarn cache is set on every build.
 YARN_CACHE_DIR=/usr/local/share/yarn-cache
@@ -7,16 +8,18 @@ then
     echo "Configuring Yarn cache folder..."
     yarn config set cache-folder $YARN_CACHE_DIR
 fi
+{{ end }}
 
-zippedModulesFileName=node_modules.tar.gz
+zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=__oryx_all_node_modules
 prodModulesDirName=__oryx_prod_node_modules
 copyOnlyProdModulesToOutput=false
 
+PruneDevDependencies={{ PruneDevDependencies }}
 # We want separate folders for prod modules only when the package.json has separate dependencies
 hasProductionOnlyDependencies="{{ HasProductionOnlyDependencies }}"
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ] && \
-   [ "$ORYX_COPY_ONLY_PROD_MODULES_TO_OUTPUT" == "true" ] && \
+   [ "$PruneDevDependencies" == "true" ] && \
    [ "$hasProductionOnlyDependencies" == "true" ]
 then
 	copyOnlyProdModulesToOutput=true
@@ -100,7 +103,7 @@ then
 	mv $prodModulesDirName node_modules
 fi
 
-{{ if ZipNodeModulesDir }}
+{{ if CompressNodeModulesCommand | IsNotBlank }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	if [ -f $zippedModulesFileName ]; then
@@ -115,7 +118,7 @@ then
 		echo Zipping existing 'node_modules' folder ...
 		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules
-		tar -zcf ../$zippedModulesFileName .
+		{{ CompressNodeModulesCommand }} ../$zippedModulesFileName .
 	fi
 fi
 {{ end }}

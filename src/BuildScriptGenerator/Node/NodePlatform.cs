@@ -14,12 +14,20 @@ using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     [BuildProperty(
-        ZipNodeModulesDirPropertyKey,
-        "Flag to indicate if 'node_modules' folder need to be in zipped form in the output folder. " +
-        "Default is 'false'.")]
+        CompressNodeModulesPropertyKey,
+        "Indicates how and if 'node_modules' folder should be compressed into a single file in the output folder. " +
+        "Options are '" + ZipNodeModulesOption + "', and '" + TarGzNodeModulesOption + "'. Default is to not compress. " +
+        "If this option is used, when running the app the node_modules folder must be extracted from this file.")]
+    [BuildProperty(
+        PruneDevDependenciesPropertyKey,
+        "When using different intermediate and output folders, only the prod dependencies are copied to the output. " +
+        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class NodePlatform : IProgrammingPlatform
     {
-        internal const string ZipNodeModulesDirPropertyKey = "zip_nodemodules_dir";
+        internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
+        internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
+        internal const string ZipNodeModulesOption = "zip";
+        internal const string TarGzNodeModulesOption = "tar-gz";
 
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
@@ -49,10 +57,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            var buildProperties = new Dictionary<string, string>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
-
+            bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
 
@@ -60,6 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+                configureYarnCache = true;
             }
             else
             {
@@ -105,19 +115,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     depSpecs.Select(kv => kv.Key + kv.Value));
             }
 
+            string compressNodeModulesCommand = null;
+            string compressedNodeModulesFileName = null;
+            GetNodeModulesPackOptions(context, out compressNodeModulesCommand, out compressedNodeModulesFileName);
+
+            if (!string.IsNullOrWhiteSpace(compressedNodeModulesFileName))
+            {
+                buildProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
+            }
+
+            bool pruneDevDependencies = ShouldPruneDevDependencies(context);
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
                 runBuildAzureCommand: runBuildAzureCommand,
                 hasProductionOnlyDependencies: hasProductionOnlyDependencies,
                 productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
-                zipNodeModulesDir: _nodeScriptGeneratorOptions.ZipNodeModules);
+                compressNodeModulesCommand: compressNodeModulesCommand,
+                compressedNodeModulesFileName: compressedNodeModulesFileName,
+                configureYarnCache: configureYarnCache,
+                pruneDevDependencies: pruneDevDependencies);
+
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,
                 scriptProps,
                 _logger);
 
-            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+                BuildProperties = buildProperties
+            };
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
@@ -253,13 +281,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var dirs = new List<string>();
             dirs.Add(NodeConstants.AllNodeModulesDirName);
             dirs.Add(NodeConstants.ProdNodeModulesDirName);
-            if (_nodeScriptGeneratorOptions.ZipNodeModules)
+
+            // If the node modules folder is being packaged in a file, we don't copy it to the output
+            if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }
-            else
+            else if (!string.IsNullOrWhiteSpace(compressedFileName))
             {
-                dirs.Add(NodeConstants.NodeModulesZippedFileName);
+                dirs.Add(compressedFileName);
             }
 
             return dirs;
@@ -273,7 +303,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.AllNodeModulesDirName,
                 NodeConstants.ProdNodeModulesDirName,
                 NodeConstants.NodeModulesDirName,
-                NodeConstants.NodeModulesZippedFileName
+                NodeConstants.NodeModulesZippedFileName,
+                NodeConstants.NodeModulesTarGzFileName
             };
         }
 
@@ -294,6 +325,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return packageJson;
+        }
+
+        private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
+        {
+            bool ret = false;
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
+            {
+                if (string.IsNullOrWhiteSpace(value) || string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ret = true;
+                }
+            }
+
+            return ret;
+        }
+
+        private static bool GetNodeModulesPackOptions(
+            BuildScriptGeneratorContext context,
+            out string compressNodeModulesCommand,
+            out string compressedNodeModulesFileName)
+        {
+            var isNodeModulesPackaged = false;
+            compressNodeModulesCommand = null;
+            compressedNodeModulesFileName = null;
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(CompressNodeModulesPropertyKey, out string compressNodeModulesOption))
+            {
+                // default to tar.gz if the property was provided with no value.
+                if (string.IsNullOrEmpty(compressNodeModulesOption) ||
+                    string.Equals(compressNodeModulesOption, TarGzNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    compressedNodeModulesFileName = NodeConstants.NodeModulesTarGzFileName;
+                    compressNodeModulesCommand = $"tar -zcf";
+                    isNodeModulesPackaged = true;
+                }
+                else if (string.Equals(compressNodeModulesOption, ZipNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    compressedNodeModulesFileName = NodeConstants.NodeModulesZippedFileName;
+                    compressNodeModulesCommand = $"zip -r";
+                    isNodeModulesPackaged = true;
+                }
+            }
+
+            return isNodeModulesPackaged;
         }
 
         private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)

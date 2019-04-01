@@ -26,6 +26,11 @@ func main() {
 	remoteDebugIp := flag.String("debugHost", "", "The IP address where the debugger will listen to, e.g. '0.0.0.0' or '127.0.0.1")
 	remoteDebugPort := flag.String("debugPort", "", "The port the debugger will listen to.")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
+	skipNodeModulesExtraction := flag.Bool(
+		"skipNodeModulesExtraction",
+		false,
+		"Disables the extraction of node_modules file. If used, some external tool will have to extract it - "+
+			"otherwise the application might not work.")
 	flag.Parse()
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
@@ -39,12 +44,13 @@ func main() {
 		UserStartupCommand:              *userStartupCommandPtr,
 		DefaultAppJsFilePath:            defaultAppFullPAth,
 		CustomStartCommand:              *customStartCommandPtr,
-		BindPort:						 *bindPortPtr,
+		BindPort:                        *bindPortPtr,
 		RemoteDebugging:                 *remoteDebugEnabledPtr,
 		RemoteDebuggingBreakBeforeStart: *remoteDebugBrkEnabledPtr,
 		RemoteDebuggingIp:               *remoteDebugIp,
 		RemoteDebuggingPort:             *remoteDebugPort,
 		UseLegacyDebugger:               useLegacyDebugger,
+		SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 	}
 	script := gen.GenerateEntrypointScript()
 	common.WriteScript(*outputPathPtr, script)

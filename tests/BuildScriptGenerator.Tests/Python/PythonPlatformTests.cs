@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
@@ -32,7 +33,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        private IProgrammingPlatform CreatePlatformInstance(string defaultVersion = null)
+        [Fact]
+        public void ConsidersZipVenvBuildProperty()
+        {
+            // Arrange
+            var scriptGenerator = CreatePlatformInstance();
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            var venvName = "bla";
+            var context = new BuildScriptGeneratorContext {
+                SourceRepo = repo,
+                Properties = new Dictionary<string, string> {
+                    { "virtualenv_name", venvName },
+                    { "zip_venv_dir", "true" }
+                }
+            };
+
+            // Act
+            var excludedDirs = scriptGenerator.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
+
+            // Assert
+            Assert.NotNull(excludedDirs);
+            Assert.Contains(venvName, excludedDirs);
+        }
+
+        private PythonPlatform CreatePlatformInstance(string defaultVersion = null)
         {
             var testEnv = new TestEnvironment();
             testEnv.Variables[PythonConstants.PythonDefaultVersionEnvVarName] = defaultVersion;

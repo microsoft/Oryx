@@ -28,6 +28,7 @@ RUN apt-get update \
         # Required for ts
         moreutils \
         rsync \
+        zip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core

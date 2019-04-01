@@ -23,6 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string AllNodeModulesDirName = "__oryx_all_node_modules";
         internal const string ProdNodeModulesDirName = "__oryx_prod_node_modules";
         internal const string NodeModulesDirName = "node_modules";
-        internal const string NodeModulesZippedFileName = "node_modules.tar.gz";
+        internal const string NodeModulesZippedFileName = "node_modules.zip";
+        internal const string NodeModulesTarGzFileName = "node_modules.tar.gz";
+        internal const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
     }
 }

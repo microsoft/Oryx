@@ -553,7 +553,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         // This is AppService scenario where the 'current' directory is the output directory itself which has the 
         // startup dll file and NO explicit output directory is specified.
-        [Fact]
+        [Fact(Skip = "Bug 832951")]
         public async Task CanRunApp_WhenTheRootDirectoryHasStartupDllFile()
         {
             // Arrange
