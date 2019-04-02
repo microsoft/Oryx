@@ -77,13 +77,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task WordPress51(string phpVersion)
         {
             // Arrange
-            string hostDir;
-            using (var webClient = new WebClient())
+            string hostDir = Path.Combine(_hostTempDir, "wordpress");
+            if (!Directory.Exists(hostDir))
             {
-                var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
-                webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
-                ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir); // The ZIP already contains a `wordpress` folder
-                hostDir = Path.Combine(_hostTempDir, "wordpress");
+                using (var webClient = new WebClient())
+                {
+                    var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
+                    webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
+                    ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir); // The ZIP already contains a `wordpress` folder
+                }
             }
 
             var appName = "wordpress";
