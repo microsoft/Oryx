@@ -54,6 +54,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsts", "vsts", "{D7D9E386-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D}"
 	ProjectSection(SolutionItems) = preProject
+		vsts\pipelines\_buildParallel.yml = vsts\pipelines\_buildParallel.yml
 		vsts\pipelines\_buildTemplate.yml = vsts\pipelines\_buildTemplate.yml
 		vsts\pipelines\buildimage.yml = vsts\pipelines\buildimage.yml
 		vsts\pipelines\nightly.yml = vsts\pipelines\nightly.yml
@@ -70,6 +71,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885C6A7-0C9A-406C-89E9-D06A3A03C52D}"
 	ProjectSection(SolutionItems) = preProject
+		vsts\scripts\dockerArtifactsRemoval.sh = vsts\scripts\dockerArtifactsRemoval.sh
 		vsts\scripts\dockerCleanup.sh = vsts\scripts\dockerCleanup.sh
 		vsts\scripts\release-runtimeimages.sh = vsts\scripts\release-runtimeimages.sh
 	EndProjectSection

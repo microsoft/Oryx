@@ -231,9 +231,15 @@ steps:
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Clean up docker artifacts'
+  displayName: 'Clean up docker containers and images'
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
+  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Clean up docker artifacts from mounted directory'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2

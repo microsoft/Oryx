@@ -10,7 +10,7 @@ declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"
 echo
 echo "Stop running containers:"
 echo
-docker ps -q | docker stop
+docker stop $(docker ps -a -q)
 
 function UntagImages() {
 	local imagePattern=$1
@@ -81,8 +81,8 @@ fi
 # this causes problems in build image where we try to install packages and stuff and we run into permission problems.
 # Since that is too intrusive and error prone, this hack allows us to not worry about those permission issues.
 mountedDirs="/tmp/OryxTestsMountedDirs"
-if [ -d "$mountedDirs" ]; then
-	echo
-	echo "Cleaning up files created by tests' docker containers ..."
-	docker run -v $mountedDirs:/tempDirs oryxdevms/build /bin/bash -c "rm -rf /tempDirs/* && ls /tempDirs"
-fi
+#if [ -d "$mountedDirs" ]; then
+#	echo
+#	echo "Cleaning up files created by tests' docker containers ..."
+#	docker run -v $mountedDirs:/tempDirs oryxdevms/build /bin/bash -c "rm -rf /tempDirs/* && ls /tempDirs"
+#fi
