@@ -140,7 +140,7 @@ cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
-if [ $DOCKER_SYSTEM_PRUNE = "true" ]
+if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
 then
 	docker system prune -f
 fi
