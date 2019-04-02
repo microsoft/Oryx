@@ -47,12 +47,6 @@ jobs:
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImage
-  condition: |
-    and
-    (
-      in(dependencies.Job_2.result, 'Succeeded', 'SucceededWithIssues'),
-      in(dependencies.Job_3.result, 'Succeeded', 'SucceededWithIssues')
-    )
   pool:
     name: OryxLinux
   steps:
