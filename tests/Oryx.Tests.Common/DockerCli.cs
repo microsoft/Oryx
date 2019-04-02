@@ -282,7 +282,9 @@ namespace Microsoft.Oryx.Tests.Common
             args.Add($"{newVar.Key}={newVar.Value}");
         }
 
-        private static void AddEnvVarArgs([NotNull] List<string> args, [CanBeNull] IEnumerable<EnvironmentVariable> newVars)
+        private static void AddEnvVarArgs(
+            [NotNull] List<string> args,
+            [CanBeNull] IEnumerable<EnvironmentVariable> newVars)
         {
             if (newVars == null)
             {
@@ -311,6 +313,15 @@ namespace Microsoft.Oryx.Tests.Common
             args.Add("--name");
             args.Add(containerName);
 
+            // By default we want to remove containers that are created when running tests.
+            var removeContainers = Environment.GetEnvironmentVariable(
+                Settings.RemoveTestContainersEnvironmentVariableName);
+            if (string.IsNullOrEmpty(removeContainers)
+                || !string.Equals(removeContainers, "false", StringComparison.OrdinalIgnoreCase))
+            {
+                args.Add("--rm");
+            }
+
             if (runContainerInBackground)
             {
                 args.Add("-d");
@@ -323,14 +334,22 @@ namespace Microsoft.Oryx.Tests.Common
                 "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(aiKeyOverride))
             {
-                AddEnvVarArg(args, new EnvironmentVariable(LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName, aiKeyOverride));
+                AddEnvVarArg(
+                    args,
+                    new EnvironmentVariable(
+                        LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName,
+                        aiKeyOverride));
             }
 
             var appServiceAppName = Environment.GetEnvironmentVariable(
                 LoggingConstants.AppServiceAppNameEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(appServiceAppName))
             {
-                AddEnvVarArg(args, new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appServiceAppName));
+                AddEnvVarArg(
+                    args,
+                    new EnvironmentVariable(
+                        LoggingConstants.AppServiceAppNameEnvironmentVariableName,
+                        appServiceAppName));
             }
 
             if (volumes?.Count > 0)
