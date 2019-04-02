@@ -8,6 +8,7 @@ declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-true}"
 
 mountedDirs="/tmp/OryxTestsMountedDirs"
+docker ps -a -q
 docker volume ls
 
 echo
