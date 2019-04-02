@@ -302,8 +302,10 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-LABEL io.buildpacks.stack.id=com.microsoft.oryx.stack
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
+
+# Allows the resulting image to be used in a Buildpacks Stack
+LABEL io.buildpacks.stack.id=com.microsoft.oryx.stack
 
 ENTRYPOINT [ "benv" ]
