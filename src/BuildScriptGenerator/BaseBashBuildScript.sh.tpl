@@ -31,7 +31,10 @@ then
 	then
 		echo
 		echo "Destination directory is not empty. Deleting its contents..."
+		START_TIME=$SECONDS
 		rm -rf "$DESTINATION_DIR"/*
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
 fi
 
@@ -50,12 +53,14 @@ then
 	cd "$SOURCE_DIR"
 	echo
 	echo "Copying files to the intermediate directory..."
+	START_TIME=$SECONDS
 	excludedDirectories=""
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToIntermediateDir }}
 	excludedDirectories+=" --exclude {{ excludedDir }}"
 	{{ end }}
 	rsync --delete -rt $excludedDirectories . "$INTERMEDIATE_DIR"
-	echo "Finished copying files to intermediate directory."
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
 	SOURCE_DIR="$INTERMEDIATE_DIR"
 fi
 
@@ -90,12 +95,14 @@ then
 	mkdir -p "$DESTINATION_DIR"
 	echo
 	echo "Copying files to destination directory '$DESTINATION_DIR'..."
+	START_TIME=$SECONDS
 	excludedDirectories=""
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
 	excludedDirectories+=" --exclude {{ excludedDir }}"
 	{{ end }}
 	rsync -rtE --links $excludedDirectories . "$DESTINATION_DIR"
-	echo "Finished copying files to destination directory."
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
 fi
 
 {{ if PostBuildScriptPath | IsNotBlank }}
@@ -108,6 +115,7 @@ echo "{{ PostBuildScriptEpilogue }}"
 
 {{ if ManifestFileName | IsNotBlank }}
 MANIFEST_FILE={{ ManifestFileName }}
+echo
 echo "Removing existing manifest file"
 rm -f "$DESTINATION_DIR/$MANIFEST_FILE"
 {{ if BuildProperties != empty }}
