@@ -400,7 +400,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     string errorMessage =
                     "The 'python' version '4.0.1' is not supported. Supported versions are: " +
-                    $"{Settings.Python27Version}, {Settings.Python35Version}, {Settings.Python36Version}, {PythonVersions.Python37Version}";
+                    $"{Settings.Python27Version}, {Settings.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.StdErr);
                 },
