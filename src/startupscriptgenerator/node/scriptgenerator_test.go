@@ -45,8 +45,8 @@ func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupComma
 	//     fi
 	//     if [ ! -z "$extractionCommand" ]; then
 	//         echo "Removing existing modules directory..."
-	//         rm -fr /nodeModules
-	//         mkdir -p /nodeModules
+	//         rm -fr /node_modules
+	//         mkdir -p /node_modules
 	//         echo "Extracting modules..."
 	//         $extractionCommand
 	//     fi
