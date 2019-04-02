@@ -64,17 +64,6 @@ steps:
     scriptPath: ./build/test-startupscriptgenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Print Git Commit'
-  inputs:
-    type: InlineScript
-    script: |
-     echo 'Hello World'
-     echo $(Build.SourceVersion)
-     echo $(Build.SourceVersionMessage)
-     echo $(Build.SourceBranchName)
-  condition: true
-
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
@@ -96,17 +85,6 @@ steps:
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Shell Script'
-  inputs:
-    type: InlineScript
-    script: |
-     echo 'Hello World'
-     ls -l $(System.ArtifactsDirectory)
-     ls - l $(System.ArtifactsDirectory)/drop
-     ls -l $(System.ArtifactsDirectory)/drop/images
-  condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
   displayName: 'Pull and Retag recently built oryx build image'
   inputs:
     type: FilePath
@@ -121,16 +99,6 @@ steps:
     scriptPath: ./vsts/scripts/pullandretag.sh
     args: $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Creating oryxtests images to mock appservice environment'
-  inputs:
-    type: InlineScript
-    script: |
-     echo 'Hello World'
-     echo $(Build.SourcesDirectory)
-     docker build -t oryxtests/build -f "$(Build.SourcesDirectory)/tests/images/build/Dockerfile" .
-     docker build -t oryxdevms/build -f "$(Build.SourcesDirectory)/tests/images/build/Dockerfile" .
 
 - task: AzureKeyVault@1
   displayName: 'Fetch storage account key from vault'

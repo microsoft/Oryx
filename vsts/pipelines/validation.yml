@@ -2,7 +2,7 @@ resources:
 - repo: self
   fetchDepth: 15
 jobs:
-- job: Job_1
+- job: Job_Security
   displayName: Security
   condition: succeeded()
   pool:
@@ -10,7 +10,7 @@ jobs:
   steps:
   - template: _securityChecks.yml
 
-- job: Job_2
+- job: Job_BuildImage
   displayName: Build and Test Oryx Build Image
   condition: succeeded()
   pool:
@@ -27,7 +27,7 @@ jobs:
       
   - template: _buildParallel.yml
 
-- job: Job_3
+- job: Job_RuntimeImage
   displayName: Build and Test Oryx Runtime Image
   condition: succeeded()
   pool:

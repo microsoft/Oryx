@@ -2,7 +2,7 @@ resources:
 - repo: self
   fetchDepth: 15
 jobs:
-- job: Job_1
+- job: Job_Security
   displayName: Security
   condition: succeeded()
   pool:
@@ -10,7 +10,7 @@ jobs:
   steps:
   - template: _securityChecks.yml
 
-- job: Job_2
+- job: Job_BuildImage
   displayName: Build and Test Build Image
   condition: succeeded()
   pool:
@@ -26,7 +26,7 @@ jobs:
       
   - template: _buildParallel.yml
 
-- job: Job_3
+- job: Job_RuntimeImage
   displayName: Build and Test Runtime Images
   condition: succeeded()
   pool:
@@ -42,11 +42,11 @@ jobs:
       
   - template: _buildParallel.yml
 
-- job: Job_4
+- job: Job_IntegrationTest
   displayName: Run Integration Tests
   dependsOn: 
-    - Job_2
-    - Job_3
+    - Job_BuildImage
+    - Job_RuntimeImage
   condition: |
     and
     (
