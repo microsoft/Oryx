@@ -14,7 +14,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class VersionInformationTest
     {
         private const string Python27VersionInfo = "Python " + Settings.Python27Version;
-        private const string Python35VersionInfo = "Python " + Settings.Python35Version;
         private const string Python36VersionInfo = "Python " + Settings.Python36Version;
         private const string Python37VersionInfo = "Python " + Common.PythonVersions.Python37Version;
 
@@ -322,8 +321,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("latest", Python37VersionInfo)]
         [InlineData("3", Python37VersionInfo)]
-        [InlineData("3.5", Python35VersionInfo)]
-        [InlineData(Settings.Python35Version, Python35VersionInfo)]
         [InlineData("3.6", Python36VersionInfo)]
         [InlineData(Settings.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
