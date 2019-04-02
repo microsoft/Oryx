@@ -62,14 +62,17 @@ then
 	fi
 
 	echo
-	echo "Installing production dependencies in '$prodDependencies'..."
+	echo "Installing production dependencies in '$prodModulesDirName'..."
 	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
 	echo
 	{{ ProductionOnlyPackageInstallCommand }}
 
 	echo
-	echo "Copying production dependencies from '$prodDependencies' to '$SOURCE_DIR'..."
+	echo "Copying production dependencies from '$prodModulesDirName' to '$SOURCE_DIR'..."
+	START_TIME=$SECONDS
 	rsync -rtE --links node_modules "$SOURCE_DIR"
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
 fi
 
 cd "$SOURCE_DIR"
@@ -116,9 +119,12 @@ then
 	then
 		echo
 		echo Zipping existing 'node_modules' folder ...
+		START_TIME=$SECONDS
 		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules
 		{{ CompressNodeModulesCommand }} ../$zippedModulesFileName .
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
 fi
 {{ end }}
