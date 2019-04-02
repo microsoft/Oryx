@@ -5,9 +5,10 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	packPlatform='macos';
 elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
-	packPlatform='windows';
+	echo 'ERROR: `pack create-builder` is not implemented on Windows.'
+	exit 1
 else
-	echo 'Could not detect compatible pack binary platform.'
+	echo 'ERROR: Could not detect compatible pack binary platform.'
 	exit 1
 fi
 
