@@ -26,7 +26,14 @@ source $VIRTUALENVIRONMENTNAME/bin/activate
 
 if [ -e "requirements.txt" ]
 then
+	echo
+	echo "Upgrading pip..."
+	START_TIME=$SECONDS
 	pip install --upgrade pip
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
+
+	echo "Running pip install..."
 	pip install --prefer-binary -r requirements.txt | ts $TS_FMT
 else
 	echo $REQS_NOT_FOUND_MSG
@@ -39,10 +46,13 @@ python_bin=python
 
 if [ -e "requirements.txt" ]
 then
+	echo
 	echo Running pip install...
-
+	START_TIME=$SECONDS
 	$pip install --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
 	pipInstallExitCode=${PIPESTATUS[0]}
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
 
 	if [[ $pipInstallExitCode != 0 ]]
 	then
@@ -78,8 +88,11 @@ then
 		echo
 		echo Content in source directory is a Django app
 		echo Running 'collectstatic' ...
+		START_TIME=$SECONDS
 		$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
 		echo "'collectstatic' exited with exit code $EXIT_CODE."
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
 fi
 
@@ -100,9 +113,12 @@ then
 	then
 		echo
 		echo "Zipping existing '$VIRTUALENVIRONMENTNAME' folder..."
+		START_TIME=$SECONDS
 		# Make the contents of the '$VIRTUALENVIRONMENTNAME' folder appear in the zip file, not the folder itself
 		cd "$VIRTUALENVIRONMENTNAME"
 		tar -zcf ../$zippedVirtualEnvName .
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
 fi
 {{ end }}
