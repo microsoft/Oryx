@@ -11,3 +11,6 @@ platformDir=$2
 planPath=$3
 
 echo "# bin/build invoked with args: $layersDir $platformDir $planPath"
+echo "# Build plan from stdin:"
+cat -
+echo "# End of build plan"
