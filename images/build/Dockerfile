@@ -243,7 +243,9 @@ ARG AGENTBUILD=${AGENTBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN if [ -z "$AGENTBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release  BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; fi
+RUN if [ -z "$AGENTBUILD" ]; then \
+        dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
+    fi
 
 # This stage is only when building in devops agents
 FROM main AS copybuildscriptbinaries
@@ -304,8 +306,5 @@ ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-
-# Allows the resulting image to be used in a Buildpacks Stack
-LABEL io.buildpacks.stack.id=com.microsoft.oryx.stack
 
 ENTRYPOINT [ "benv" ]

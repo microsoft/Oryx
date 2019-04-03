@@ -12,7 +12,8 @@ declare -r BUILD_RUNTIMEIMAGES_USING_NOCACHE="$BUILD_RUNTIMEIMAGES_USING_NOCACHE
 
 declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$__REPO_DIR/"
 declare -r BUILD_IMAGES_DOCKERFILE="$__REPO_DIR/images/build/Dockerfile"
-declare -r PACK_IMAGE_DOCKERFILE="$__REPO_DIR/images/buildpack-builder/Dockerfile"
+declare -r BUILDER_BASE_IMAGE_DOCKERFILE="$__REPO_DIR/images/buildpack-builder/builder-base.Dockerfile"
+declare -r PACK_IMAGE_DOCKERFILE="$__REPO_DIR/images/buildpack-builder/pack-runner.Dockerfile"
 declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$__REPO_DIR/tests/images/build/Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$__REPO_DIR/images/runtime"
 declare -r SOURCES_SRC_DIR="$__REPO_DIR/src"
@@ -28,6 +29,7 @@ declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-imag
 declare -r DOCKER_DEV_REPO_BASE='oryxdevms'
 declare -r DOCKER_BUILD_IMAGES_REPO="$DOCKER_DEV_REPO_BASE/build"
 declare -r DOCKER_PACK_IMAGE_REPO="$DOCKER_DEV_REPO_BASE/pack"
+declare -r DOCKER_BUILDER_BASE_IMAGE_REPO="$DOCKER_DEV_REPO_BASE/builder-base"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO=$DOCKER_DEV_REPO_BASE
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"

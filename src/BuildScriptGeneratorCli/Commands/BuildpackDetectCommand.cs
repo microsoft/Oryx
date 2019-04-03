@@ -5,7 +5,6 @@
 
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,22 +15,37 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("buildpack-detect", Description = "Determines whether Oryx can be applied as a buildpack to an app.")]
+    [Command("buildpack-detect", Description = "Determines whether Oryx can be applied as a buildpack to " +
+        "an app in the current working directory.")]
     internal class BuildpackDetectCommand : BaseCommand
     {
-        [Argument(0, Description = "The source directory.")]
-        public string SourceDir { get; set; }
+        // Imitates the command line arguments that a buildpack's `bin/detect` would expect.
+
+        [Argument(0, Description = "Platform directory.")]
+        public string PlatformDir { get; set; }
+
+        [Argument(1, Description = "Build plan path.")]
+        public string PlanPath { get; set; }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
 
+            if (!File.Exists(PlanPath))
+            {
+                logger.LogError("Could not find build plan file {planPath}", PlanPath);
+                console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
+                return false;
+            }
+
+            /*
             if (!Directory.Exists(SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", SourceDir);
                 console.Error.WriteLine($"Error: Could not find the source directory '{SourceDir}'.");
                 return false;
             }
+            */
 
             return true;
         }
@@ -39,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options, SourceDir, null, null, null, null, scriptOnly: false, null);
+                options, Directory.GetCurrentDirectory(), null, null, null, null, scriptOnly: false, null);
         }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
@@ -62,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitSuccess;
             }
 
-            return 100;
+            return 100; // CodeDetectFail in buildpack/lifecycle/detector.go
         }
     }
 }
