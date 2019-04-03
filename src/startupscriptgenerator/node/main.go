@@ -39,6 +39,17 @@ func main() {
 
 	common.SetGlobalOperationId(fullAppPath)
 
+	buildManifest := common.GetBuildManifest(fullAppPath)
+	if buildManifest.ZipAllOutput == "true" {
+		srcFolder := fullAppPath
+		destFolder := "/tmp/output"
+
+		common.ExtractZippedOutput(srcFolder, destFolder)
+
+		// Update the variables so the downstream code uses these updated paths
+		fullAppPath = destFolder
+	}
+
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,
 		UserStartupCommand:              *userStartupCommandPtr,

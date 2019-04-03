@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -491,7 +492,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvironmentName}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();
 
@@ -530,7 +533,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvironmentName}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();
@@ -553,9 +558,45 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
-                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ZipsVirtualEnv_IfZipVirtualEnvDir_Property_IsTrue()
+        {
+            // Arrange
+            var virtualEnvironmentName = "myenv";
+            var volume = CreateSampleAppVolume("flask-app");
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvironmentName} " +
+                $"-p {PythonConstants.ZipVenvDirPropertyKey}")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}")
+                .AddFileExistsCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                CreateAppNameEnvVar("flask-app"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
         }
@@ -570,7 +611,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=false")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvironmentName}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();

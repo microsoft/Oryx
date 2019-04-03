@@ -14,21 +14,21 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     [BuildProperty(
-        VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
+        PythonConstants.VirtualEnvironmentNamePropertyKey,
+        "If provided, will create a virtual environment with the given name.")]
     [BuildProperty(
-        ZipVenvDirPropertyKey, "If provided, the virtual environment folder will be zipped to the output folder.")]
+        PythonConstants.ZipVenvDirPropertyKey,
+        "If provided, the virtual environment folder will be zipped to the output folder.")]
     [BuildProperty(
-        TargetPackageDirectoryPropertyKey,
+        PythonConstants.TargetPackageDirectoryPropertyKey,
         "Directory to download the packages to, if no virtual environment is provided. Default: '" +
-        DefaultTargetPackageDirectory + "'")]
+        PythonConstants.DefaultTargetPackageDirectory + "'")]
+    [BuildProperty(
+        Constants.ZipAllOutputBuildPropertyKey,
+        "Zips entire output content and puts the file in the destination directory." +
+        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
-        internal const string ZipVenvDirPropertyKey = "zip_venv_dir";
-        internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
-        internal const string TargetPackageDirectoryPropertyKey = "packagedir";
-
-        private const string DefaultTargetPackageDirectory = "__oryx_packages__";
-
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
@@ -60,13 +60,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            var buildProperties = new Dictionary<string, string>();
             var virtualEnvName = GetVirutalEnvironmentName(context);
 
             string packageDir = null;
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir))
+            if (context.Properties == null || !context.Properties.TryGetValue(
+                PythonConstants.TargetPackageDirectoryPropertyKey,
+                out packageDir))
             {
-                packageDir = DefaultTargetPackageDirectory;
+                packageDir = PythonConstants.DefaultTargetPackageDirectory;
             }
 
             var virtualEnvModule = string.Empty;
@@ -111,13 +113,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             TryLogDependencies(pythonVersion, context.SourceRepo);
 
+            var exlcudedDirs = GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
+            var zipAllOutput = ShouldZipAllOutput(context);
+
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
                 disableCollectStatic: disableCollectStatic,
-                zipVirtualEnvDir: ShouldZipVenvDir(context));
+                zipVirtualEnvDir: ShouldZipVenvDir(context),
+                directoriesToExcludeFromCopyToBuildOutputDir: exlcudedDirs,
+                zipAllOutput: zipAllOutput);
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.PythonSnippet,
                 scriptProps,
@@ -132,7 +139,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public bool IsCleanRepo(ISourceRepo repo)
         {
             // TODO: support venvs
-            return !repo.DirExists(DefaultTargetPackageDirectory);
+            return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
@@ -145,7 +152,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return scriptGeneratorContext.EnablePython;
         }
 
-        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion,
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
             [NotNull] IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
@@ -162,21 +171,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext context)
         {
-            var venvName = GetVirutalEnvironmentName(context);
-            if (string.IsNullOrEmpty(venvName))
+            var zipAllOutput = ShouldZipAllOutput(context);
+            if (!zipAllOutput)
             {
-                return Array.Empty<string>();
+                var venvName = GetVirutalEnvironmentName(context);
+                if (string.IsNullOrEmpty(venvName))
+                {
+                    return Array.Empty<string>();
+                }
+
+                string dir = ShouldZipVenvDir(context) ? venvName : $"{venvName}.{PythonConstants.ZipFileExtension}";
+                return new string[] { dir };
             }
 
-            string dir = ShouldZipVenvDir(context) ? venvName : $"{venvName}.{PythonConstants.ZipFileExtension}";
-            return new string[] { dir };
+            return Array.Empty<string>();
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext context)
         {
             var excludeDirs = new List<string>();
-            excludeDirs.Add(DefaultTargetPackageDirectory);
+            excludeDirs.Add(PythonConstants.DefaultTargetPackageDirectory);
 
             var virtualEnvName = GetVirutalEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))
@@ -185,6 +200,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return excludeDirs;
+        }
+
+        private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
+        {
+            return BuildPropertiesHelper.IsTrue(
+                Constants.ZipAllOutputBuildPropertyKey,
+                context,
+                valueIsRequired: false);
         }
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
@@ -209,7 +232,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private string GetVirutalEnvironmentName(BuildScriptGeneratorContext context)
         {
             if (context.Properties == null ||
-                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
+                !context.Properties.TryGetValue(
+                    PythonConstants.VirtualEnvironmentNamePropertyKey,
+                    out var virtualEnvName))
             {
                 virtualEnvName = string.Empty;
             }
@@ -220,7 +245,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private bool ShouldZipVenvDir(BuildScriptGeneratorContext context)
         {
             // Build property takes precedence over env var
-            return context.Properties?.ContainsKey(ZipVenvDirPropertyKey) == true ||
+            return context.Properties?.ContainsKey(PythonConstants.ZipVenvDirPropertyKey) == true ||
                 _pythonScriptGeneratorOptions.ZipVirtualEnvDir;
         }
     }

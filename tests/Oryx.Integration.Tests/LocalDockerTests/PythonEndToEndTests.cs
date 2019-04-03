@@ -6,12 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
@@ -42,7 +42,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l python --language-version 2.7")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
                 .AddCommand(startupFile)
@@ -52,15 +55,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "2.7" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-2.7",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -79,7 +86,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -l python --language-version 2.7 " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
@@ -92,15 +104,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "2.7", "-p", $"virtualenv_name={virtualEnvName}" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-2.7",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -118,9 +134,69 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
+            var virtualEnvName = "myenv37";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(
+                $"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                "oryxdevms/python-3.7",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_ByZippingAllOutput()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var virtualEnvName = "myenv";
+            var tempOutputDir = "/tmp/out";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {tempOutputDir} -l python " +
+                $"--language-version 3.7 -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
+                .AddFileExistsCheck($"{tempOutputDir}/{ScriptGenerator.Constants.ZippedOutputFileName}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -136,7 +212,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -154,44 +230,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
+            var virtualEnvName = "myenv";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -l python --language-version 3.6 " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
                 .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
-                "oryxdevms/python-3.6",
-                portMapping,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async () =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
-        [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnv()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var virtualEnvName = "antenv";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.Create(hostDir);
-            var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
@@ -201,15 +246,62 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                "oryxdevms/python-3.6",
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndOryxPackagesDirectory()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l python --language-version 3.6")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -232,12 +324,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
+            var tempOutputDir = "/tmp/out";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/output -p virtualenv_name={virtualEnvName}")
-                .AddDirectoryDoesNotExistCheck($"/tmp/output/{virtualEnvName}")
-                .AddFileExistsCheck($"/tmp/output/{virtualEnvName}.tar.gz")
-                .AddCommand($"cp -rf /tmp/output/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
+                .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.tar.gz")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -279,7 +374,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l python --language-version 3.6")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -289,15 +387,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -329,12 +431,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             const string virtualEnvName = "antenv";
-
+            var tempOutputDir = "/tmp/out";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l python --language-version 3.7 " +
-                $"-p virtualenv_name={virtualEnvName}")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} -l python --language-version 3.7 " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
 
             var script = new ShellScriptBuilder()
@@ -393,12 +495,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // Simulate apps that were built using package directory, and then virtual env
             var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -l python --language-version {pythonVersion}")
-                .AddBuildCommand($"{appDir} -p virtualenv_name={virtualEnvName} -l python --language-version {pythonVersion}")
+                .AddBuildCommand(
+                $"{appDir} -p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName} " +
+                $"-l python --language-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddDirectoryDoesNotExistCheck("__oryx_packages__")
+                .AddDirectoryDoesNotExistCheck(PythonConstants.DefaultTargetPackageDirectory)
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -439,7 +543,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             const string virtualEnvName = "antenv3.6";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -l python --language-version 3.6 " +
+                $"-p {PythonConstants.VirtualEnvironmentNamePropertyKey}={virtualEnvName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
@@ -449,15 +558,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.6" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.6",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -630,7 +743,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Disabled multi-platform builds temporarily")]
         public async Task CanBuildAndRun_MultiPlatformApp_HavingReactAndDjango()
         {
             // Arrange
@@ -685,7 +798,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var linkdEndIx = data.IndexOf(".js", linkStartIdx);
                     Assert.NotEqual(-1, linkdEndIx);
 
-                    // We remove 5 chars for `src="` and add 2 since we get the first char of ".js" but we want to include ".js in the string
+                    // We remove 5 chars for `src="` and add 2 since we get the first char of ".js" 
+                    // but we want to include ".js in the string
                     int length = linkdEndIx - linkStartIdx - 2;
                     var link = data.Substring(linkStartIdx + 5, length);
 

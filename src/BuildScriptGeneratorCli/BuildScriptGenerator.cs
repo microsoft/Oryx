@@ -47,7 +47,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     EnableNodeJs = !environment.DisableNodeJs,
                     EnablePython = !environment.DisablePython,
                     EnablePhp = !environment.DisablePhp,
-                    DisableMultiPlatformBuild = environment.DisableMultiPlatformBuild
+
+                    // Temporarily disable multi-platform builds
+                    DisableMultiPlatformBuild = true
                 };
 
                 // Try generating a script

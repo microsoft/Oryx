@@ -6,12 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
@@ -33,8 +33,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        [InlineData("tar-gz")]
-        [InlineData("zip")]
+        [InlineData(NodeConstants.TarGzNodeModulesOption)]
+        [InlineData(NodeConstants.ZipNodeModulesOption)]
         public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules(string compressFormat)
         {
             // NOTE:
@@ -59,10 +59,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {containerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
+            var tempOutputDir = "/tmp/out";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules={compressFormat}")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} " +
+                $"-l nodejs --language-version {nodeVersion} " +
+                $"-p {NodeConstants.CompressNodeModulesPropertyKey}={compressFormat}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -113,15 +116,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appOutputDir}")
                 .AddCommand("mkdir -p node_modules")
-                .AddCommand("tar -xzf node_modules.tar.gz -C node_modules")
+                .AddCommand($"tar -xzf {NodeConstants.NodeModulesTarGzFileName} -C node_modules")
                 .AddCommand($"oryx -bindPort {containerPort} -skipNodeModulesExtraction")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryDoesNotExistCheck("/node_modules")
                 .ToString();
-
+            var tempOutputDir = "/tmp/out";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} " +
+                $"-l nodejs --language-version {nodeVersion} " +
+                $"-p {NodeConstants.CompressNodeModulesPropertyKey}={NodeConstants.TarGzNodeModulesOption}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -173,11 +179,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
+            var tempOutputDir = "/tmp/out";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} " +
+                $"-l nodejs --language-version {nodeVersion} " +
+                $"-p {NodeConstants.CompressNodeModulesPropertyKey}={NodeConstants.TarGzNodeModulesOption}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} -l nodejs --language-version {nodeVersion}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -229,11 +239,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
+            var tempOutputDir = "/tmp/out";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} -l nodejs --language-version {nodeVersion}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} " +
+                $"-l nodejs --language-version {nodeVersion} " +
+                $"-p {NodeConstants.CompressNodeModulesPropertyKey}={NodeConstants.TarGzNodeModulesOption}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -291,6 +305,59 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 {
                     "-c",
                     script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_NodeApp_WhenEntireOutputIsZipped()
+        {
+            // Arrange
+            var nodeVersion = "10.14";
+            var appName = "webfrontend";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var tempOutputDir = "/tmp/out";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {tempOutputDir} -l nodejs " +
+                $"--language-version {nodeVersion} -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
+                .AddFileExistsCheck($"{tempOutputDir}/{ScriptGenerator.Constants.ZippedOutputFileName}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume, appOutputDirVolume },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
                 },
                 async () =>
                 {

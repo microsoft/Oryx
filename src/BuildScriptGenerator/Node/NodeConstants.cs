@@ -26,5 +26,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NodeModulesZippedFileName = "node_modules.zip";
         internal const string NodeModulesTarGzFileName = "node_modules.tar.gz";
         internal const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
+        internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
+        internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
+        internal const string ZipNodeModulesOption = "zip";
+        internal const string TarGzNodeModulesOption = "tar-gz";
     }
 }

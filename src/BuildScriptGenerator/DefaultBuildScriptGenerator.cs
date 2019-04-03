@@ -38,15 +38,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var toolsToVersion = new Dictionary<string, string>();
             List<BuildScriptSnippet> snippets;
             var directoriesToExcludeFromCopyToIntermediateDir = new List<string>();
-            var directoriesToExcludeFromCopyToBuildOutputDir = new List<string>();
 
             using (var timedEvent = _logger.LogTimedEvent("GetBuildSnippets"))
             {
                 snippets = GetBuildSnippets(
                     context,
                     toolsToVersion,
-                    directoriesToExcludeFromCopyToIntermediateDir,
-                    directoriesToExcludeFromCopyToBuildOutputDir);
+                    directoriesToExcludeFromCopyToIntermediateDir);
                 timedEvent.SetProperties(toolsToVersion);
             }
 
@@ -54,13 +52,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 // By default exclude these irrespective of platform
                 directoriesToExcludeFromCopyToIntermediateDir.Add(".git");
-                directoriesToExcludeFromCopyToBuildOutputDir.Add(".git");
 
                 script = BuildScriptFromSnippets(
                     snippets,
                     toolsToVersion,
-                    directoriesToExcludeFromCopyToIntermediateDir,
-                    directoriesToExcludeFromCopyToBuildOutputDir);
+                    directoriesToExcludeFromCopyToIntermediateDir);
                 return true;
             }
             else
@@ -80,8 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private List<BuildScriptSnippet> GetBuildSnippets(
             BuildScriptGeneratorContext context,
             Dictionary<string, string> toolsToVersion,
-            List<string> directoriesToExcludeFromCopyToIntermediateDir,
-            List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
+            List<string> directoriesToExcludeFromCopyToIntermediateDir)
         {
             bool providedLanguageFound = false;
             var snippets = new List<BuildScriptSnippet>();
@@ -142,12 +137,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
                     }
 
-                    excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
-                    if (excludedDirs.Any())
-                    {
-                        directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
-                    }
-
                     string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
                     platform.SetVersion(context, targetVersion);
 
@@ -202,8 +191,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private string BuildScriptFromSnippets(
             List<BuildScriptSnippet> snippets,
             Dictionary<string, string> toolsToVersion,
-            List<string> directoriesToExcludeFromCopyToIntermediateDir,
-            List<string> directoriesToExcludeFromCopyToBuildOutputDir)
+            List<string> directoriesToExcludeFromCopyToIntermediateDir)
         {
             string script;
             string benvArgs = GetBenvArgs(toolsToVersion);
@@ -221,7 +209,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
                 PostBuildScriptPath = environmentSettings?.PostBuildScriptPath,
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
-                DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
                 ManifestFileName = Constants.ManifestFileName,
                 BuildProperties = buildProperties
             };

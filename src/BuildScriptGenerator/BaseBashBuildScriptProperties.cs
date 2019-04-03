@@ -35,8 +35,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public string PostBuildScriptPath { get; set; }
 
-        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
-
         public IEnumerable<string> DirectoriesToExcludeFromCopyToIntermediateDir { get; set; }
 
         /// <summary>

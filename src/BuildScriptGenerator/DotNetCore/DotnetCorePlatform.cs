@@ -3,17 +3,19 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    /// <summary>
-    /// .NET Core platform.
-    /// </summary>
+    [BuildProperty(
+        Constants.ZipAllOutputBuildPropertyKey,
+        "Zips entire output content and puts the file in the destination directory." +
+        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class DotnetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotnetCoreVersionProvider _versionProvider;
@@ -42,21 +44,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(scriptGeneratorContext.SourceRepo);
+            var buildProperties = new Dictionary<string, string>();
+            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context.SourceRepo);
             if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
             {
                 return null;
             }
 
+            string startupFileName = null;
+            var projectFileContent = context.SourceRepo.ReadFile(projectFile);
+            var projFileDoc = XDocument.Load(new StringReader(projectFileContent));
+            var assemblyNameElement = projFileDoc.XPathSelectElement("/Project/PropertyGroup/AssemblyName");
+            if (assemblyNameElement == null)
+            {
+                var name = Path.GetFileNameWithoutExtension(projectFile);
+                startupFileName = $"{name}.dll";
+            }
+            else
+            {
+                startupFileName = $"{assemblyNameElement.Value}.dll";
+            }
+
+            buildProperties[DotnetCoreConstants.StartupFileName] = startupFileName;
+            buildProperties[DotnetCoreConstants.PublishDir] = publishDir;
+            buildProperties[DotnetCoreConstants.ProjectFile] = projectFile;
+
+            bool zipAllOutput = ShouldZipAllOutput(context);
+            buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = zipAllOutput.ToString().ToLowerInvariant();
+
             var props = new DotNetCoreBashBuildSnippetProperties
             {
                 ProjectFile = projectFile,
-                PublishDirectory = publishDir
+                PublishDirectory = publishDir,
+                ZipAllOutput = zipAllOutput
             };
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.DotNetCoreSnippet, props, _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
+            return new BuildScriptSnippet { BashBuildScriptSnippet = script, BuildProperties = buildProperties };
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
@@ -95,13 +120,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            return Array.Empty<string>();
+            var dirs = new List<string>();
+            dirs.Add("obj");
+            dirs.Add("bin");
+            return dirs;
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            return Array.Empty<string>();
+            var dirs = new List<string>();
+            dirs.Add("obj");
+            dirs.Add("bin");
+            dirs.Add(DotnetCoreConstants.OryxOutputPublishDirectory);
+            return dirs;
+        }
+
+        private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
+        {
+            return BuildPropertiesHelper.IsTrue(
+                Constants.ZipAllOutputBuildPropertyKey,
+                context,
+                valueIsRequired: false);
         }
 
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)

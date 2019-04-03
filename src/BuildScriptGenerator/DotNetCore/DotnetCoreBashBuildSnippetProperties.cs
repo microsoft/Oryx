@@ -13,5 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string ProjectFile { get; set; }
 
         public string PublishDirectory { get; set; }
+
+        public bool ZipAllOutput { get; set; }
     }
 }

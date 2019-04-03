@@ -8,6 +8,7 @@ package main
 import (
 	"flag"
 	"log"
+	"path/filepath"
 	"startupscriptgenerator/common"
 )
 
@@ -18,6 +19,10 @@ func main() {
 		"sourcePath",
 		".",
 		"The path to the application that is being deployed, e.g. '/home/site/repository/src/ShoppingWebApp/'.")
+	intermediatePathPtr := flag.String(
+		"intermediatePath",
+		"",
+		"The path to the directory where the output is copied and run from there.")
 	publishedOutputPathPtr := flag.String(
 		"publishedOutputPath",
 		"",
@@ -31,12 +36,20 @@ func main() {
 	defaultAppFilePathPtr := flag.String(
 		"defaultAppFilePath",
 		"",
-		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
+		"[Optional] Path to a default dll that will be executed if the entrypoint is not found."+
+			" Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
 	flag.Parse()
 
 	fullSourcePath := common.GetValidatedFullPath(*sourcePathPtr)
 
 	common.SetGlobalOperationId(fullSourcePath)
+
+	fullIntermediatePath := ""
+	if *intermediatePathPtr == "" {
+		fullIntermediatePath = "/tmp/output"
+	} else {
+		fullIntermediatePath = common.GetValidatedFullPath(*intermediatePathPtr)
+	}
 
 	fullPublishedOutputPath := ""
 	if *publishedOutputPathPtr != "" {
@@ -47,6 +60,19 @@ func main() {
 	if *defaultAppFilePathPtr != "" {
 		fullDefaultAppFilePath = common.GetValidatedFullPath(*defaultAppFilePathPtr)
 	}
+
+	srcFolder := fullPublishedOutputPath
+	if srcFolder == "" {
+		// The output folder is a sub-directory of this source directory
+		srcFolder = filepath.Join(fullSourcePath, "oryx_publish_output")
+	}
+	buildManifest := common.GetBuildManifest(srcFolder)
+	if buildManifest.ZipAllOutput == "true" {
+		common.ExtractZippedOutput(srcFolder, fullIntermediatePath)
+	} else {
+		common.CopyOutputToIntermediateDir(srcFolder, fullIntermediatePath)
+	}
+	fullPublishedOutputPath = fullIntermediatePath
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
 		SourcePath:          fullSourcePath,

@@ -49,11 +49,6 @@ echo
 echo "Generating Dockerfiles for Python runtime images..."
 $REPO_DIR/images/runtime/python/generateDockerfiles.sh
 
-echo
-echo "Generating Dockerfiles for PHP runtime images..."
-$REPO_DIR/images/runtime/php/generate-dockerfiles.sh
-
-
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 # Avoid causing cache invalidation with the following check

@@ -14,6 +14,7 @@ zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=__oryx_all_node_modules
 prodModulesDirName=__oryx_prod_node_modules
 copyOnlyProdModulesToOutput=false
+zippedOutputFileName=oryx_output.tar.gz
 
 PruneDevDependencies={{ PruneDevDependencies }}
 # We want separate folders for prod modules only when the package.json has separate dependencies
@@ -106,25 +107,69 @@ then
 	mv $prodModulesDirName node_modules
 fi
 
-{{ if CompressNodeModulesCommand | IsNotBlank }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	if [ -f $zippedModulesFileName ]; then
-		echo
-		echo "File '$zippedModulesFileName' already exists under '$SOURCE_DIR'. Deleting it ..."
-		rm -f $zippedModulesFileName
-	fi
+	excludedDirectories=""
+	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+	excludedDirectories+=" --exclude {{ excludedDir }}"
+	{{ end }}
 
-	if [ -d node_modules ]
+	if [ -d "$DESTINATION_DIR" ] && [ "$(ls -A $DESTINATION_DIR)" ]
 	then
 		echo
-		echo Zipping existing 'node_modules' folder ...
+		echo "Destination directory is not empty. Deleting its contents..."
 		START_TIME=$SECONDS
-		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
-		cd node_modules
-		{{ CompressNodeModulesCommand }} ../$zippedModulesFileName .
+		rm -rf "$DESTINATION_DIR"/*
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
+
+	mkdir -p "$DESTINATION_DIR"
+	{{ if ZipAllOutput }}
+		if [ -f "$DESTINATION_DIR/$zippedOutputFileName" ]
+		then
+			echo
+			echo "Deleting existing file '$DESTINATION_DIR/$zippedOutputFileName'..."
+			rm -f "$DESTINATION_DIR/$zippedOutputFileName"
+		fi
+
+		echo
+		echo "Zipping the contents before copy to '$DESTINATION_DIR'..."
+		echo
+		START_TIME=$SECONDS
+		cd "$SOURCE_DIR"
+		touch "$zippedOutputFileName"
+		tar $excludedDirectories --exclude=$zippedOutputFileName -zcf $zippedOutputFileName .
+		cp -f $zippedOutputFileName "$DESTINATION_DIR/$zippedOutputFileName"
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
+	{{ else }}
+		{{ if CompressNodeModulesCommand | IsNotBlank }}
+			if [ -f $zippedModulesFileName ]; then
+				echo
+				echo "File '$zippedModulesFileName' already exists under '$SOURCE_DIR'. Deleting it ..."
+				rm -f $zippedModulesFileName
+			fi
+
+			if [ -d node_modules ]
+			then
+				echo
+				echo Zipping existing 'node_modules' folder ...
+				START_TIME=$SECONDS
+				# Make the contents of the node_modules folder appear in the zip file, not the folder itself
+				cd node_modules
+				{{ CompressNodeModulesCommand }} ../$zippedModulesFileName .
+				ELAPSED_TIME=$(($SECONDS - $START_TIME))
+				echo "Done in $ELAPSED_TIME sec(s)."
+			fi
+		{{ end }}
+
+		echo
+		echo "Copying files to destination directory '$DESTINATION_DIR'..."
+		START_TIME=$SECONDS
+		cd "$SOURCE_DIR"
+		rsync --delete -rtE --links $excludedDirectories . "$DESTINATION_DIR"
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
+	{{ end }}
 fi
-{{ end }}

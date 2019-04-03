@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     /// <summary>
@@ -18,8 +20,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string productionOnlyPackageInstallCommand,
             string compressNodeModulesCommand,
             string compressedNodeModulesFileName,
+            IEnumerable<string> directoriesToExcludeFromCopyToBuildOutputDir,
             bool configureYarnCache = false,
-            bool pruneDevDependencies = false)
+            bool pruneDevDependencies = false,
+            bool zipAllOutput = false)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
@@ -30,6 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             CompressedNodeModulesFileName = compressedNodeModulesFileName;
             ConfigureYarnCache = configureYarnCache;
             PruneDevDependencies = pruneDevDependencies;
+            DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir;
+            ZipAllOutput = zipAllOutput;
         }
 
         public string PackageInstallCommand { get; set; }
@@ -49,5 +55,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public bool ConfigureYarnCache { get; set; }
 
         public bool PruneDevDependencies { get; set; }
+
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
+
+        public bool ZipAllOutput { get; set; }
     }
 }

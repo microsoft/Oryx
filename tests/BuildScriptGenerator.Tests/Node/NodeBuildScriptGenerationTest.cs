@@ -118,7 +118,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -149,7 +154,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -180,7 +190,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -213,7 +228,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     YarnInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                configureYarnCache: true);
+                configureYarnCache: true,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -246,7 +266,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     YarnInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                configureYarnCache: true);
+                configureYarnCache: true,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -278,7 +303,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -309,7 +339,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -331,7 +366,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            context.Properties["compress_node_modules"] = "tar-gz";
+            context.Properties[NodeConstants.CompressNodeModulesPropertyKey] = NodeConstants.TarGzNodeModulesOption;
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -340,15 +375,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: "node_modules.tar.gz",
-                compressNodeModulesCommand: "tar -zcf");
+                compressedNodeModulesFileName: NodeConstants.NodeModulesTarGzFileName,
+                compressNodeModulesCommand: "tar -zcf",
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName,
+                    NodeConstants.NodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -364,7 +404,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            context.Properties["compress_node_modules"] = null;
+            context.Properties[NodeConstants.CompressNodeModulesPropertyKey] = null;
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -373,15 +413,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: "node_modules.tar.gz",
-                compressNodeModulesCommand: "tar -zcf");
+                compressedNodeModulesFileName: NodeConstants.NodeModulesTarGzFileName,
+                compressNodeModulesCommand: "tar -zcf",
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName,
+                    NodeConstants.NodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -397,7 +442,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            context.Properties["compress_node_modules"] = "zip";
+            context.Properties[NodeConstants.CompressNodeModulesPropertyKey] = "zip";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -406,15 +451,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 productionOnlyPackageInstallCommand: string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: "node_modules.zip",
-                compressNodeModulesCommand: "zip -q -r");
+                compressedNodeModulesFileName: NodeConstants.NodeModulesZippedFileName,
+                compressNodeModulesCommand: "zip -q -r",
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName,
+                    NodeConstants.NodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
@@ -439,7 +489,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                compressNodeModulesCommand: null,
+                directoriesToExcludeFromCopyToBuildOutputDir: new[]
+                {
+                    NodeConstants.AllNodeModulesDirName,
+                    NodeConstants.ProdNodeModulesDirName
+                });
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);

@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     /// <summary>
@@ -16,7 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string virtualEnvironmentParameters,
             string packagesDirectory,
             bool disableCollectStatic,
-            bool zipVirtualEnvDir)
+            bool zipVirtualEnvDir,
+            IEnumerable<string> directoriesToExcludeFromCopyToBuildOutputDir,
+            bool zipAllOutput)
         {
             VirtualEnvironmentName = virtualEnvironmentName;
             VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -24,6 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             PackagesDirectory = packagesDirectory;
             DisableCollectStatic = disableCollectStatic;
             ZipVirtualEnvDir = zipVirtualEnvDir;
+            DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir;
+            ZipAllOutput = zipAllOutput;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -40,5 +46,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public bool DisableCollectStatic { get; set; }
 
         public bool ZipVirtualEnvDir { get; set; }
+
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
+
+        public bool ZipAllOutput { get; set; }
     }
 }
