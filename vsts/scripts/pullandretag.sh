@@ -15,7 +15,7 @@ while read sourceImage; do
     # Trim the build number tag and append the '':latest' to end of it
     newtag="${sourceImage%:*}:latest"
 
-    # Replace the ACR registry tag with a tag that the tests know about
+    # Replace the ACR registry repository name with a name that the tests know about
     newtag=$(echo "$newtag" | sed 's,oryxdevmcr.azurecr.io/public/oryx,oryxdevms,g')
 
     echo
