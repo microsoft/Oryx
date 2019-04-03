@@ -1,3 +1,8 @@
+[stack]
+  id = "com.microsoft.oryx.stack"
+  build-image = "oryxdevms/builder-base"
+  run-image =	"oryxdevms/builder-base"
+
 [[buildpacks]]
   id = "com.microsoft.oryx.buildpack"
   uri = "oryx-buildpack"

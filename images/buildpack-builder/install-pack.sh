@@ -1,5 +1,7 @@
 #!/bin/bash
 
+declare -r PACK_VERSION='0.1.0'
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	packPlatform='linux';
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -12,9 +14,6 @@ else
 	exit 1
 fi
 
-wget -nv "https://github.com/buildpack/pack/releases/download/v0.0.9/pack-0.0.9-$packPlatform.tar.gz"
-tar -xvf "pack-0.0.9-$packPlatform.tar.gz"
-# `/tmp/pack` is now available for use
-
-./pack add-stack com.microsoft.oryx.stack -b oryxdevms/builder-base -r oryxdevms/builder-base
-./pack set-default-stack com.microsoft.oryx.stack
+wget -nv "https://github.com/buildpack/pack/releases/download/v$PACK_VERSION/pack-v$PACK_VERSION-$packPlatform.tgz"
+tar -xvf "pack-v$PACK_VERSION-$packPlatform.tgz"
+# `./pack` is now available for use

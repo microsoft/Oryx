@@ -21,10 +21,11 @@ $REPO_DIR/images/buildpack-builder/install-pack.sh
 builderName="$DOCKER_DEV_REPO_BASE/buildpack-builder"
 ./pack create-builder $builderName \
 	--builder-config $REPO_DIR/images/buildpack-builder/builder.toml \
-	--stack com.microsoft.oryx.stack \
 	--no-pull
 
-rm -rf ~/.pack # Removes local settings added by install-pack.sh
+# Remove pack everything that was added by it
+rm -f   ./pack 
+rm -rf ~/.pack
 
 # Build an image that runs `pack`
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"

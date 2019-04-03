@@ -9,9 +9,8 @@ RUN groupadd -g 1002 oryx_group && \
 	mkdir -p /home/oryx_user && \
 	chmod -R 777 /home/oryx_user
 
-ENV PACK_USER_ID=1001 PACK_GROUP_ID=1002
-ENV  CNB_USER_ID=1001  CNB_GROUP_ID=1002
+ENV CNB_USER_ID=1001 CNB_GROUP_ID=1002
 
-COPY --from=packs/samples:v3alpha2 /lifecycle /lifecycle
+COPY --from=packs/samples:rc /lifecycle /lifecycle
 
-RUN mkdir /platform
+# RUN mkdir /platform
