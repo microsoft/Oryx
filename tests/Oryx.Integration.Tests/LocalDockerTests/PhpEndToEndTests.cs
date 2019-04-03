@@ -19,7 +19,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PhpEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = 8000;
         private const string RunScriptPath = "/tmp/startup.sh";
@@ -27,7 +27,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
         private readonly string _hostTempDir;
-        private readonly HttpClient _httpClient = new HttpClient();
         private readonly IList<string> _downloadedPaths = new List<string>();
 
         public PhpEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture fixture)

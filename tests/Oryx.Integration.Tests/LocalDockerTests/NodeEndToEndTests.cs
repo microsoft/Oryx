@@ -15,22 +15,19 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class NodeEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
-        private static readonly Random _rand = new Random();
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
-        private readonly HttpClient _httpClient;
         private readonly string _tempRootDir;
 
         public NodeEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _httpClient = new HttpClient();
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
@@ -689,20 +686,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Equal("Hello World from express!", data);
                 });
-        }
-
-        private static int GetRandomHostPort()
-        {
-            return _rand.Next(8000, 9000);
-        }
-
-        // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
-        // see the documentation for the Encoding.RegisterProvider method.
-        private async Task<string> GetResponseDataAsync(string url)
-        {
-            var bytes = await _httpClient.GetByteArrayAsync(url);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }

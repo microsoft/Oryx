@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class DotnetCoreEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class DotnetCoreEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = 8081;
         private const int ContainerPort = 3000;
@@ -28,14 +28,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
-        private readonly HttpClient _httpClient;
         private readonly string _tempRootDir;
 
         public DotnetCoreEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _httpClient = new HttpClient();
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
@@ -601,15 +599,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
-        }
-
-        // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
-        // see the documentation for the Encoding.RegisterProvider method.
-        private async Task<string> GetResponseDataAsync(string url)
-        {
-            var bytes = await _httpClient.GetByteArrayAsync(url);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }
