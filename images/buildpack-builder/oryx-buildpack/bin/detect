@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
+# usage: bin/detect <platform-dir> <plan-path>
 set -eo pipefail
 
 echo "# Running 'oryx buildpack-detect $1 $2' in '`pwd`'..."
