@@ -12,5 +12,3 @@ RUN groupadd -g 1002 oryx_group && \
 ENV CNB_USER_ID=1001 CNB_GROUP_ID=1002
 
 COPY --from=packs/samples:rc /lifecycle /lifecycle
-
-# RUN mkdir /platform
