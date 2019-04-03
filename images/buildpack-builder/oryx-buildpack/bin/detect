@@ -2,4 +2,6 @@
 
 set -eo pipefail
 
-exec oryx buildpack-detect $1
+echo "# Running 'oryx buildpack-detect $1 $2' in '`pwd`'..."
+
+exec oryx buildpack-detect $1 $2

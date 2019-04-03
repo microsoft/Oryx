@@ -56,7 +56,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (compatPlats != null && compatPlats.Any())
             {
-                console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Item1.Name}={pair.Item2}")));
+                console.WriteLine("# Detected platforms:");
+                console.WriteLine(string.Join(' ',
+                    compatPlats.Select(pair => $"{pair.Item1.Name}=\"{pair.Item2}\"")));
                 return ProcessConstants.ExitSuccess;
             }
 
