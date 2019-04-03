@@ -20,6 +20,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
       echo "##vso[task.setvariable variable=TestBuildImages;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
     displayName: 'Set variables'
       
   - template: _buildParallel.yml
@@ -34,6 +35,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
     displayName: 'Set variables'
       
   - template: _buildParallel.yml
