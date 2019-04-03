@@ -14,7 +14,7 @@ if [ -z "$STORAGEACCOUNTKEY" ]; then # If STORAGEACCOUNTKEY is unset or empty
 fi
 
 echo
-echo "Building and running tests..."
+echo "Pulling Oryx images and Running integration tests..."
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"
 # Run non-AKS tests temporarily

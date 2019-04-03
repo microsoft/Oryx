@@ -84,7 +84,7 @@ for dockerFile in $dockerFiles; do
 
     if [ -n "$BUILD_NUMBER" ]
     then
-        tags="$tags -t $runtimeImageTagName:$BUILD_NUMBER"
+        tags="$tags -t $runtimeImageTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
     fi
     
     echo
@@ -106,7 +106,7 @@ for dockerFile in $dockerFiles; do
 
     if [ -n "$BUILD_NUMBER" ]
     then
-        docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:$BUILD_NUMBER"
+        docker tag "$runtimeImageTagName:latest" "$runtimeImageACRTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
     fi
 
     if [ $clearedOutput = "false" ]
@@ -122,10 +122,11 @@ for dockerFile in $dockerFiles; do
     echo "Updating artifacts file with the built runtime image information..."
     echo "$runtimeImageTagName:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
     echo "$runtimeImageACRTagName:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+
     if [ -n "$BUILD_NUMBER" ]
     then
-    	echo "$runtimeImageTagName:$BUILD_NUMBER" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
-        echo "$runtimeImageACRTagName:$BUILD_NUMBER" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    	echo "$runtimeImageTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$runtimeImageACRTagName:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR

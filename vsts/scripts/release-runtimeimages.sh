@@ -1,3 +1,9 @@
+#!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
+
 # This script to be copied and used from runtime images release definition; not to be run locally.
 
 while read sourceImage; do
