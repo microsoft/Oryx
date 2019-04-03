@@ -17,9 +17,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class NodeEndToEndTests : IClassFixture<TestTempDirTestFixture>
     {
-        private const int HostPort = 8000;
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
+        private static readonly Random _rand = new Random();
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var containerPort = "80";
-            var portMapping = $"{HostPort}:{containerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{containerPort}";
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {containerPort}")
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var containerPort = "80";
-            var portMapping = $"{HostPort}:{containerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{containerPort}";
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appOutputDir}")
                 .AddCommand("mkdir -p node_modules")
@@ -146,7 +146,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -225,7 +225,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -258,7 +258,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -273,7 +273,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -296,7 +296,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -310,7 +310,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"export PORT={ContainerPort}")
@@ -334,7 +334,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -348,7 +348,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"export PORT=9095")
@@ -372,7 +372,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -386,7 +386,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var startupFilePath = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -410,7 +410,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -425,7 +425,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -448,7 +448,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("{\"message\":\"Hello World!\"}", data);
                 });
         }
@@ -462,7 +462,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -485,7 +485,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("Welcome to Express", data);
                 });
         }
@@ -499,7 +499,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -523,9 +523,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var response = await _httpClient.GetAsync($"http://localhost:{HostPort}/");
+                    var response = await _httpClient.GetAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.True(response.IsSuccessStatusCode);
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("<title>SoundCloud • Angular2 NgRx</title>", data);
                 });
         }
@@ -539,7 +539,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -562,7 +562,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("<title>React App</title>", data);
                 });
         }
@@ -576,7 +576,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --bindPort {ContainerPort}")
@@ -599,7 +599,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 assertAction: async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Contains("<title>React App</title>", data);
                 });
         }
@@ -613,7 +613,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
+            var portMapping = $"{GetRandomHostPort()}:{ContainerPort}";
 
             // Create a custom startup command
             const string customStartupScriptName = "customStartup.sh";
@@ -644,7 +644,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 assertAction: async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Equal("Hello World from express!", data);
                 });
         }
@@ -659,7 +659,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             const int localPort = 8080;
-            var portMapping = $"{HostPort}:{localPort}";
+            var portMapping = $"{GetRandomHostPort()}:{localPort}";
 
             // Create a custom startup command
             const string customStartupScriptCommand = "'npm start'";
@@ -686,9 +686,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 },
                 assertAction: async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{GetRandomHostPort()}/");
                     Assert.Equal("Hello World from express!", data);
                 });
+        }
+
+        private static int GetRandomHostPort()
+        {
+            return _rand.Next(8000, 9000);
         }
 
         // The following method is used to avoid following exception from HttpClient when trying to read a response:
