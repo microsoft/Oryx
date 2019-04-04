@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task ImagickExample(string phpVersion)
         {
             // Arrange
-            var appName = "image-examples";
+            var appName = "imagick-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
