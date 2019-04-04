@@ -100,6 +100,13 @@ steps:
     args: $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Create images having restricted permissions for testing build and runtime images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/build-testimage.sh
+  condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
 - task: AzureKeyVault@1
   displayName: 'Fetch storage account key from vault'
   inputs:
