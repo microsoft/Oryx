@@ -12,7 +12,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
-        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture) : base(output, dbFixture)
+        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture)
+            : base(output, dbFixture)
         {
         }
 
@@ -35,7 +36,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         [InlineData("5.6")]
         public async Task PhpApp(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), 80, specifyBindPortFlag: false);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), 80,
+                specifyBindPortFlag: false);
         }
     }
 }

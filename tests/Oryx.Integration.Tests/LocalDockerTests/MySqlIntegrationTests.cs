@@ -12,7 +12,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class MySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
-        public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture dbFixture) : base(output, dbFixture)
+        public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture dbFixture)
+            : base(output, dbFixture)
         {
         }
 
@@ -38,7 +39,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         [InlineData("5.6")]
         public async Task PhpApp_UsingMysqli(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "mysqli-example"), 80, specifyBindPortFlag: false);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "mysqli-example"), 80,
+                specifyBindPortFlag: false);
         }
     }
 }

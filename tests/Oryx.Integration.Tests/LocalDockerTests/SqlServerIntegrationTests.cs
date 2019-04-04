@@ -12,7 +12,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class SqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.SqlServerDbContainerFixture>
     {
-        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture) : base(output, dbFixture)
+        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture)
+            : base(output, dbFixture)
         {
         }
 
@@ -34,7 +35,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         // pdo_sqlsrv only supports PHP >= 7.1
         public async Task PhpApp_UsingPdo(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), 80, specifyBindPortFlag: false);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), 80,
+                specifyBindPortFlag: false);
         }
     }
 }

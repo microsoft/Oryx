@@ -34,7 +34,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         protected HttpClient HttpClient { get; }
 
-        protected async Task RunTestAsync(string language, string languageVersion, string samplePath, int containerPort = 8000, bool specifyBindPortFlag = true)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath,
+            int containerPort = 8000, bool specifyBindPortFlag = true)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
