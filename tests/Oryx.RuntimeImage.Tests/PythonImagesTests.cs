@@ -2,9 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-
 using System;
-using System.Collections.Generic;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -29,7 +27,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
-            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
             // Act
@@ -51,7 +49,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.6", "Python " + Settings.Python36Version)]
+        [InlineData("3.6", "Python " + Common.PythonVersions.Python36Version)]
         [InlineData("3.7", "Python " + Common.PythonVersions.Python37Version)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
@@ -76,7 +74,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void Python2MatchesImageName()
         {
             string pythonVersion = "2.7";
-            string expectedOutput = "Python " + Settings.Python27Version;
+            string expectedOutput = "Python " + Common.PythonVersions.Python27Version;
 
             // Arrange & Act
             var result = _dockerCli.Run(
@@ -90,7 +88,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    //bugs.python.org >> issue18338 weird but true, earlier than python 3.4 
+                    //bugs.python.org >> issue18338 weird but true, earlier than python 3.4
                     // sends python --version output to STDERR
                     Assert.Equal(expectedOutput, actualOutput);
                 },
@@ -112,7 +110,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Act
             var res = _dockerCli.Run("oryxdevms/python-3.7", "/bin/sh", new[] { "-c", script });
-            
+
             // Assert
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
         }

@@ -7,6 +7,6 @@ namespace Microsoft.Oryx.Common
         public const string PipVersion = "19.0.3";
         public const string Python27Version = "2.7.16";
         public const string Python36Version = "3.6.8";
-        public const string Python37Version = "3.7.2";
+        public const string Python37Version = "3.7.3";
     }
 }
