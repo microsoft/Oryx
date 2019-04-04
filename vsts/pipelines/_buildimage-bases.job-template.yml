@@ -1,34 +1,39 @@
 parameters:
-  imageDir: ''
+  name: ''
   displayName: ''
+  imageDir: ''
 
-steps:
 
-- task: ShellScript@2
-  displayName: Build images
-  inputs:
-    scriptPath: ./build/build-buildimage-bases.sh
-    args: ${{ parameters.imageDir }}
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName }}
+  steps:
 
-- task: CopyFiles@2
-  displayName: Copy artifacts to staging directory
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
-    contents: '**/*.*'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    overWrite: true
-  condition: true
+  - task: ShellScript@2
+    displayName: Build images
+    inputs:
+      scriptPath: ./build/build-buildimage-bases.sh
+      args: ${{ parameters.imageDir }}
 
-- task: Docker@1
-  displayName: Push built images to dev ACR
-  inputs:
-    command: push
-    azureSubscriptionEndpoint: $(ascName)
-    azureContainerRegistry: $(acrName)
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
+  - task: CopyFiles@2
+    displayName: Copy artifacts to staging directory
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/artifacts'
+      contents: '**/*.*'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+      overWrite: true
+    condition: true
 
-- task: PublishBuildArtifacts@1
-  displayName: Publish build artifacts
-  inputs:
-    pathtoPublish: $(Build.ArtifactStagingDirectory)
+  - task: Docker@1
+    displayName: Push built images to dev ACR
+    inputs:
+      command: push
+      azureSubscriptionEndpoint: $(ascName)
+      azureContainerRegistry: $(acrName)
+      pushMultipleImages: true
+      imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish build artifacts
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
