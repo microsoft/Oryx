@@ -8,9 +8,10 @@ declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
 echo
-echo "Stop running containers:"
+echo "Kill all running containers and delete all stopped containers"
 echo
-docker stop $(docker ps -a -q)
+docker kill $(docker ps -q)
+docker rm $(docker ps -a -q)
 
 function UntagImages() {
 	local imagePattern=$1
