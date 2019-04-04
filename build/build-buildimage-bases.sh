@@ -14,6 +14,7 @@ set -e
 
 source __variables.sh
 
+IMAGE_DIR_TO_BUILD=$1
 IMAGE_TAG="${BUILD_NUMBER:-latest}"
 BUILD_IMAGE_PREFIX="$__REPO_DIR/images/build"
 
@@ -21,7 +22,7 @@ BUILD_IMAGE_PREFIX="$__REPO_DIR/images/build"
 mkdir -p `dirname $BUILD_IMAGE_BASES_ARTIFACTS_FILE`
 > $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-case $1 in
+case $IMAGE_DIR_TO_BUILD in
 	'python')
 		echo "Building Python base images"
 		echo
