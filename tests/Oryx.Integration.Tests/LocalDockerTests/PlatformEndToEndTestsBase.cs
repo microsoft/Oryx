@@ -14,13 +14,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public abstract class PlatformEndToEndTestsBase : IClassFixture<TestTempDirTestFixture>
     {
-        private static readonly Random _rand = new Random();
         protected readonly HttpClient _httpClient = new HttpClient();
-
-        protected static int GetRandomHostPort()
-        {
-            return _rand.Next(8000, 9000);
-        }
 
         // The following method is used to avoid following exception from HttpClient when trying to read a response:
         // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,

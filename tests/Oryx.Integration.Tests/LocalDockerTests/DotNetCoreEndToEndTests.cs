@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
@@ -16,9 +14,9 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class DotnetCoreEndToEndTests : PlatformEndToEndTestsBase
+    public class DotNetCoreEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8081;
+        private const int HostPort = Constants.DotNetCoreEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string NetCoreApp11WebApp = "NetCoreApp11WebApp";
         private const string NetCoreApp21WebApp = "NetCoreApp21WebApp";
@@ -30,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         private readonly string _hostSamplesDir;
         private readonly string _tempRootDir;
 
-        public DotnetCoreEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public DotNetCoreEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");

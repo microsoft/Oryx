@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PythonEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8001;
+        private const int HostPort = Constants.PythonEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
 

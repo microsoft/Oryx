@@ -3,16 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,7 +16,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8000;
+        private const int HostPort = Constants.PhpEndToEndTestsPort;
         private const string RunScriptPath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
