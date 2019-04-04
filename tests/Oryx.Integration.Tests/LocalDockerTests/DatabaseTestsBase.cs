@@ -34,15 +34,16 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         protected HttpClient HttpClient { get; }
 
-        protected async Task RunTestAsync(string language, string languageVersion, string samplePath, int containerPort = 8000)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath, int containerPort = 8000, bool specifyBindPortFlag = true)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
             var portMapping = $"{_appPort}:{containerPort}";
             var entrypointScript = "./run.sh";
+            var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {containerPort}")
+                .AddCommand($"oryx -appPath {appDir} {bindPortFlag}")
                 .AddCommand(entrypointScript)
                 .ToString();
 

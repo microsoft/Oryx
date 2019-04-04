@@ -16,13 +16,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact]
         public async Task NodeApp_PostgreSqlDB()
         {
             await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-postgres"));
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact]
         public async Task Python37App_PostgreSqlDB()
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "postgres-sample"));
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         [InlineData("5.6")]
         public async Task PhpApp(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), 80);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), 80, specifyBindPortFlag: false);
         }
     }
 }

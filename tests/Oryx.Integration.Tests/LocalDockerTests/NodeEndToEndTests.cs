@@ -15,22 +15,20 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class NodeEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8000;
+        private const int HostPort = Constants.NodeEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
-        private readonly HttpClient _httpClient;
         private readonly string _tempRootDir;
 
         public NodeEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _httpClient = new HttpClient();
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
@@ -398,16 +396,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "oryx", new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    script
-                },
+                "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
@@ -689,15 +681,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Equal("Hello World from express!", data);
                 });
-        }
-
-        // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
-        // see the documentation for the Encoding.RegisterProvider method.
-        private async Task<string> GetResponseDataAsync(string url)
-        {
-            var bytes = await _httpClient.GetByteArrayAsync(url);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }
