@@ -15,12 +15,12 @@ trigger:
     - images/build/php
     - images/build/yarn-cache
     - build/
-    - vsts/
 
 steps:
 
 - task: ShellScript@2
   displayName: Build base images
+  timeoutInMinutes: 100
   inputs:
     scriptPath: ./build/build-buildimage-bases.sh
 

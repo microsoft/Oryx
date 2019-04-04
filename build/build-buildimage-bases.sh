@@ -27,9 +27,6 @@ declare -r PYTHON_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/python-build"
 docker build -f $__REPO_DIR/images/build/python/2.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG" $__REPO_DIR
 echo "$PYTHON_IMAGE_PREFIX-2.7:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
-docker build -f $__REPO_DIR/images/build/python/3.5/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.5:$IMAGE_TAG" $__REPO_DIR
-echo "$PYTHON_IMAGE_PREFIX-3.5:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
-
 docker build -f $__REPO_DIR/images/build/python/3.6/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG" $__REPO_DIR
 echo "$PYTHON_IMAGE_PREFIX-3.6:$IMAGE_TAG" >> $BUILD_IMAGE_BASES_ARTIFACTS_FILE
 
