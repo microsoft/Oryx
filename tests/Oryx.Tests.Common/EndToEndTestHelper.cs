@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
             finally
             {
-                if (runResult != null && runResult.Exception == null)
+                if (runResult != null)
                 {
                     // Stop the container so that shared resources (like ports) are disposed.
                     dockerCli.StopContainer(runResult.ContainerName);

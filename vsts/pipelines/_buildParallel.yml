@@ -161,7 +161,7 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'), eq(variables['PushToDockerHub'], 'true'))
 
 - task: Docker@1
   displayName: 'Push Build image to ACR'
@@ -184,7 +184,7 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
+  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'), eq(variables['PushToDockerHub'], 'true'))
 
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
