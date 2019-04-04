@@ -2,21 +2,6 @@ variables:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
 
-queue:
-  name: OryxLinux
-
-trigger:
-  branches:
-    include:
-    - master
-  paths:
-    include:
-    - images/build/python
-    - images/build/php
-    - images/build/yarn-cache
-    - build/
-    - vsts/
-
 jobs:
 
 - job: Job_Python
@@ -36,3 +21,15 @@ jobs:
   template: _buildimage-bases.job-template.yml
   parameters:
     imageDir: yarn-cache
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - images/build/python
+    - images/build/php
+    - images/build/yarn-cache
+    - build/
+    - vsts/
