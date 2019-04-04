@@ -101,10 +101,10 @@ steps:
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Create images having restricted permissions for testing build and runtime images'
+  displayName: 'Build a build image for tests'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/build-testimage.sh
+    scriptPath: ./build/build-testimage.sh
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: AzureKeyVault@1
