@@ -16,6 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NpmSupportedVersionsEnvVariable = "NPM_SUPPORTED_VERSIONS";
         internal const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
         internal const string NodeLtsVersion = "8.11.2";
+        internal const string InstalledNodeVersionsDir = "/opt/nodejs/"; // TODO: remove hard-coded paths
+        internal const string InstalledNpmVersionsDir = "/opt/npm/";
 
         private readonly IEnvironment _environment;
 
@@ -35,10 +37,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             options.NodeJsDefaultVersion = defaultVersion;
             options.NpmDefaultVersion = _environment.GetEnvironmentVariable(NpmDefaultVersion);
 
-            var platformsBaseDir = _environment.GetEnvironmentVariable(
-                EnvironmentSettingsKeys.PlatformsDir, Constants.DefaultPlatformsDir);
-            options.InstalledNodeVersionsDir = Path.Combine(platformsBaseDir, "nodejs");
-            options.InstalledNpmVersionsDir = Path.Combine(platformsBaseDir, "npm");
+            options.InstalledNodeVersionsDir = InstalledNodeVersionsDir;
+            options.InstalledNpmVersionsDir = InstalledNpmVersionsDir;
 
             options.SupportedNodeVersions = _environment.GetEnvironmentVariableAsList(
                 NodeSupportedVersionsEnvVariable);

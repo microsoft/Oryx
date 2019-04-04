@@ -9,7 +9,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
         public const string BuildEnvironmentFileName = "build.env";
-        public const string DefaultPlatformsDir = "/opt";
         internal const string ManifestFileName = "oryx-manifest.toml";
     }
 }
