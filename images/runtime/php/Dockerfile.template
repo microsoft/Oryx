@@ -13,17 +13,6 @@ FROM php:%PHP_BASE_IMAGE%
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION %PHP_VERSION%
 
-# Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-
-# COPY images/runtime/python/install-dependencies.sh /tmp/scripts/install-dependencies.sh
-# RUN /tmp/scripts/install-dependencies.sh
-# RUN rm -rf /tmp/scripts
-
-COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
-RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
-
 RUN a2enmod rewrite expires include deflate
 
 ENV APACHE_RUN_USER www-data
@@ -112,3 +101,10 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
+
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_KEY
+ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+
+COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
