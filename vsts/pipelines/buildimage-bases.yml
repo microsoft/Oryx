@@ -17,6 +17,8 @@ trigger:
     - build/
     - vsts/
 
+jobs:
+
 - job: Job_Python
   displayName: Build and push Python base images
   template: _buildimage-bases.job-template.yml
