@@ -15,6 +15,7 @@ trigger:
     - images/build/php
     - images/build/yarn-cache
     - build/
+    - vsts/
 
 steps:
 
