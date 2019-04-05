@@ -4,7 +4,6 @@ resources:
 jobs:
 - job: Job_Security
   displayName: Security
-  condition: succeeded()
   pool:
     name: Hosted VS2017
   steps:
@@ -12,7 +11,6 @@ jobs:
 
 - job: Job_BuildImage
   displayName: Build and Test Build Image
-  condition: succeeded()
   pool:
     name: OryxLinux
   timeoutInMinutes: 100
@@ -28,7 +26,6 @@ jobs:
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
-  condition: succeeded()
   pool:
     name: OryxLinux
   steps:
