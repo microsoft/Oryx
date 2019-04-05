@@ -31,7 +31,7 @@ jobs:
       azureSubscriptionEndpoint: $(ascName)
       azureContainerRegistry: $(acrName)
       pushMultipleImages: true
-      imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases.txt'
+      imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-image-bases/${{ parameters.imageDir }}.txt'
 
   - task: PublishBuildArtifacts@1
     displayName: Publish build artifacts
