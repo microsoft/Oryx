@@ -26,14 +26,14 @@ jobs:
       echo "##vso[task.setvariable variable=PushToDockerHub;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
     displayName: 'Set variables'
-      
   - template: _buildParallel.yml
 
-- job: Job_RuntimeImage
+- job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
   condition: succeeded()
   pool:
     name: OryxLinux
+  timeoutInMinutes: 100
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
@@ -45,14 +45,13 @@ jobs:
       echo "##vso[task.setvariable variable=PushToDockerHub;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
     displayName: 'Set variables'
-      
   - template: _buildParallel.yml
 
 - job: Job_IntegrationTest
   displayName: Run Integration Tests
   dependsOn: 
     - Job_BuildImage
-    - Job_RuntimeImage
+    - Job_RuntimeImages
   pool:
     name: OryxLinux
   steps:
@@ -67,7 +66,6 @@ jobs:
       echo "##vso[task.setvariable variable=PushToDockerHub;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
     displayName: 'Set variables'
-      
   - template: _buildParallel.yml
 
 trigger: none

@@ -12,7 +12,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
 echo
-echo Building a base image for tests...
+echo Building a build image for tests...
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
 echo
