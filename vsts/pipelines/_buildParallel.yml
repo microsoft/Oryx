@@ -101,10 +101,10 @@ steps:
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Create images having restricted permissions for testing build and runtime images'
+  displayName: 'Build a build image for tests'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/build-testimage.sh
+    scriptPath: ./build/build-testimage.sh
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: AzureKeyVault@1
@@ -206,13 +206,13 @@ steps:
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Clean up docker containers and images'
+  displayName: 'Clean up Docker containers and images'
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Clean up docker artifacts from mounted directory'
+  displayName: 'Clean up Docker artifacts from mounted directory'
   inputs:
     scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))

@@ -10,7 +10,7 @@ def exception_handler(exc):
 
 class Database:
     def listProductNames(self):
-        host = os.getenv('DATABASE_HOSTNAME')
+        host = os.getenv('DATABASE_HOST')
         databaseName = os.getenv('DATABASE_NAME')
         user = os.getenv('DATABASE_USERNAME')
         password = os.getenv('DATABASE_PASSWORD')
