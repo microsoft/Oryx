@@ -15,22 +15,20 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PythonEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class PythonEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8001;
+        private const int HostPort = Constants.PythonEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
-        private readonly HttpClient _httpClient;
         private readonly string _tempRootDir;
 
         public PythonEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _httpClient = new HttpClient();
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
@@ -694,15 +692,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     data = await GetResponseDataAsync($"http://localhost:{HostPort}{link}");
                     Assert.Contains("!function(e){var t={};function n(r){if(t[r])return t[r].exports", data);
                 });
-        }
-
-        // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
-        // see the documentation for the Encoding.RegisterProvider method.
-        private async Task<string> GetResponseDataAsync(string url)
-        {
-            var bytes = await _httpClient.GetByteArrayAsync(url);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }

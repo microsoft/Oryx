@@ -21,7 +21,7 @@ declare -r TESTS_SRC_DIR="$__REPO_DIR/tests"
 
 declare -r ARTIFACTS_DIR="$__REPO_DIR/artifacts"
 declare -r BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images.txt"
-declare -r BUILD_IMAGE_BASES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-image-bases.txt"
+declare -r BUILD_IMAGE_BASES_ARTIFACTS_FILE_PREFIX="$ARTIFACTS_DIR/images/build-image-bases"
 declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.txt"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
 declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr.txt"
