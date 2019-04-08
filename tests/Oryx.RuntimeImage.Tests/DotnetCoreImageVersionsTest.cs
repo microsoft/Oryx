@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("1.0", "Version  : 1.0.1")]
-        [InlineData("1.1", "Version  : 1.1.11")]
+        [InlineData("1.1", "Version  : 1.1.12")]
         public void DotnetVersionMatchesImageName_NetCoreApp1Versions(string version, string expectedOutput)
         {
             // Arrange & Act
@@ -75,8 +75,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("2.0", "Version  : 2.0.9")]
-        [InlineData("2.1", "Version: 2.1.8")]
-        [InlineData("2.2", "Version: 2.2.2")]
+        [InlineData("2.1", "Version: 2.1.9")]
+        [InlineData("2.2", "Version: 2.2.3")]
         public void DotnetVersionMatchesImageName(string version, string expectedOutput)
         {
             // Arrange & Act
