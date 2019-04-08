@@ -181,6 +181,12 @@ steps:
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
+  displayName: 'Clean up Docker mounted directories'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
+  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
+  
+- task: ShellScript@2
   displayName: 'Generate release notes'
   inputs:
     scriptPath: ./vsts/scripts/generate-release-notes.sh
