@@ -9,7 +9,9 @@ steps:
     pipelineId: 'Oryx-CI'
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.SourcesDirectory)'
-  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'))
+  condition: >
+   and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'),
+   or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
@@ -178,6 +180,12 @@ steps:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
+- task: ShellScript@2
+  displayName: 'Clean up Docker mounted directories'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
+  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
+  
 - task: ShellScript@2
   displayName: 'Generate release notes'
   inputs:
