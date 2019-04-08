@@ -1,6 +1,7 @@
 variables:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
+  skipComponentGovernanceDetection: true
 
 jobs:
 
