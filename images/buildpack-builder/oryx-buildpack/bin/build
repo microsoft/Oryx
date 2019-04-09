@@ -6,10 +6,22 @@
 # usage: bin/build <layers dir> <platform dir> <plan path>
 set -eo pipefail
 
+layersDir=$1
+platformDir=$2
+planPath=$3
+launchFile="$1/launch.toml"
+
 echo "# Running 'oryx build .' in '`pwd`'..."
 
 oryx build .
-oryxExitStatus=$?
 
-echo "# Oryx exited with $oryxExitStatus..."
-exit $oryxExitStatus
+cat $3
+
+echo "# Running 'oryx run-script' in '`pwd`'..."
+runCommand=`oryx run-script --platform nodejs`
+
+echo "# Generated run script:"
+echo $runCommand
+echo
+
+echo "processes = [{ type = \"web\", command = \"$runCommand\" }]" > $launchFile
