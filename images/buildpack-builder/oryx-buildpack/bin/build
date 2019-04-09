@@ -10,7 +10,7 @@ layersDir=$1
 platformDir=$2
 planPath=$3
 bpLaunchFile="$1/launch.toml"
-runFile="./run.sh"
+runFile="./msrun.sh"
 
 echo "# Running 'oryx build .' in '`pwd`'..."
 
