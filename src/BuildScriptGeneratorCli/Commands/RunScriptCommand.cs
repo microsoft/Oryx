@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceRepo = sourceRepo,
                 UserStartupCommand = UserStartupCommand,
                 PlatformVersion = PlatformVersion,
-                BindPort = BindPort,
+                BindPort = BindPort
             };
 
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
