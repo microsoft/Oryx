@@ -31,6 +31,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _logger = logger;
         }
 
+        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
+        {
+            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
+            var benvArgs = string.Join(' ', listOfBenvArgs);
+            return benvArgs;
+        }
+
         public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script)
         {
             script = null;
@@ -201,13 +208,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 _logger.LogInformation("Using {type} script from {scriptPath}", type, scriptPath);
             }
-        }
-
-        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
-        {
-            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
-            var benvArgs = string.Join(' ', listOfBenvArgs);
-            return benvArgs;
         }
 
         /// <summary>

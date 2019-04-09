@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             "--output",
             CommandOptionType.SingleValue,
             Description = "[Optional] Path to the script to be generated. If not specified, will default to STDOUT.")]
-        public string OutputPath { get; set; };
+        public string OutputPath { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
