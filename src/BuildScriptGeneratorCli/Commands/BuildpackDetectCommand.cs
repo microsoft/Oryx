@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("buildpack-detect", Description = "Determines whether Oryx can build an app in " +
         "the current working directory (for use in a Buildpack).")]
-    internal class BuildpackDetectCommand : BaseCommand
+    internal class BuildpackDetectCommand : CommandBase
     {
         // Imitates the command line arguments that a buildpack's `bin/detect` would expect.
 

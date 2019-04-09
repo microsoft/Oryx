@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("buildpack-build", Description = "Builds an app in the current working directory " +
         "(for use in a Buildpack).")]
-    internal class BuildpackCommandBase : BaseCommand
+    internal class BuildpackCommandBase : CommandBase
     {
         [Option("--platform-dir <dir>", CommandOptionType.SingleValue, Description = "Platform directory.")]
         public string PlatformDir { get; set; }

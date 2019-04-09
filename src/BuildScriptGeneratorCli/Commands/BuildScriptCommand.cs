@@ -14,7 +14,7 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("build-script", Description = "Generate build script to standard output.")]
-    internal class BuildScriptCommand : BaseCommand
+    internal class BuildScriptCommand : CommandBase
     {
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
