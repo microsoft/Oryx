@@ -17,19 +17,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 832951")]
         public async Task NodeApp_PostgreSqlDB()
         {
             await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-postgres"));
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 832951")]
         public async Task Python37App_PostgreSqlDB()
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "postgres-sample"));
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 832951")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
