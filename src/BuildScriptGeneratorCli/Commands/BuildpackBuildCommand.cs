@@ -15,21 +15,14 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("buildpack-detect", Description = "Determines whether Oryx can build an app in " +
-        "the current working directory (for use in a Buildpack).")]
-    internal class BuildpackDetectCommand : BaseCommand
+    [Command("buildpack-build", Description = "Builds an app in the current working directory " +
+        "(for use in a Buildpack).")]
+    internal class BuildpackBuildCommand : BuildpackCommandBase
     {
-        // Imitates the command line arguments that a buildpack's `bin/detect` would expect.
-
-        [Argument(0, Description = "Platform directory.")]
-        public string PlatformDir { get; set; }
-
-        [Argument(1, Description = "Build plan path.")]
-        public string PlanPath { get; set; }
-
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var result = ;
+            var logger = serviceProvider.GetRequiredService<ILogger<BuildpackBuildCommand>>();
 
             if (!File.Exists(PlanPath))
             {
