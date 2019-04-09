@@ -59,15 +59,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<BuildpackDetectCommand>>();
-            var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
+            console.WriteLine("# Stdin:");
+            console.WriteLine(console.In.ReadToEnd());
+            console.WriteLine("# End Stdin");
 
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            var env = serviceProvider.GetRequiredService<CliEnvironmentSettings>();
-            var repo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-
-            var ctx = BuildScriptGenerator.CreateContext(options, env, repo);
-            return 100; // CodeDetectFail in buildpack/lifecycle/detector.go
+            return base.Execute(serviceProvider, console);
         }
     }
 }
