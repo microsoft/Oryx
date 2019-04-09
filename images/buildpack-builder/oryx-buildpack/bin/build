@@ -9,7 +9,8 @@ set -eo pipefail
 layersDir=$1
 platformDir=$2
 planPath=$3
-launchFile="$1/launch.toml"
+bpLaunchFile="$1/launch.toml"
+runFile="./run.sh"
 
 echo "# Running 'oryx build .' in '`pwd`'..."
 
@@ -18,10 +19,11 @@ oryx build .
 cat $3
 
 echo "# Running 'oryx run-script' in '`pwd`'..."
-runCommand=`oryx run-script --platform nodejs`
+# TODO: make platform dynamic, based on build
+oryx run-script --platform nodejs --output $runFile
 
 echo "# Generated run script:"
-echo $runCommand
+cat $runFile
 echo
 
-echo "processes = [{ type = \"web\", command = \"$runCommand\" }]" > $launchFile
+echo "processes = [{ type = \"web\", command = \"$runFile\" }]" > $bpLaunchFile
