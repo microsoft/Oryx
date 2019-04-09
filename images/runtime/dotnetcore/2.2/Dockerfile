@@ -1,5 +1,5 @@
 # Startup script generator
-FROM golang:1.11-alpine as startupCmdGen
+FROM golang:1.11-stretch as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
 ARG GIT_COMMIT=unspecified
