@@ -119,6 +119,7 @@ steps:
   displayName: 'Test integration'
   inputs:
     scriptPath: ./build/test-integration.sh
+    args: variables['TestIntegrationCaseFilter']
   env:
     STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
     KUBECONFIG: $(KUBECONFIG)
