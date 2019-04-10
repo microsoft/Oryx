@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Command(
         "languages",
         Description = "Show the list of supported platforms and other information like versions, properties etc.")]
-    internal class LanguagesCommand : BaseCommand
+    internal class LanguagesCommand : CommandBase
     {
         [Option("--json", Description = "Output the supported platform data in JSON format.")]
         public bool OutputJson { get; set; }

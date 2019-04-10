@@ -14,7 +14,7 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("run-script", Description = "Generate startup script.")]
-    internal class RunScriptCommand : BaseCommand
+    internal class RunScriptCommand : CommandBase
     {
         [Option(
             "--platform",

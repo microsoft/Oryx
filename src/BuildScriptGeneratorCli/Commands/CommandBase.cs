@@ -13,7 +13,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    internal abstract class BaseCommand
+    internal abstract class CommandBase
     {
         private IServiceProvider _serviceProvider = null;
 
@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 _serviceProvider = GetServiceProvider();
-                _serviceProvider?.GetRequiredService<ILogger<BaseCommand>>()?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
+                _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
                 if (!IsValidInput(_serviceProvider, console))
                 {
                     return ProcessConstants.ExitFailure;
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (Exception exc)
             {
-                _serviceProvider?.GetRequiredService<ILogger<BaseCommand>>()?.LogError(exc, "Exception caught");
+                _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogError(exc, "Exception caught");
 
                 console.Error.WriteLine(Constants.GenericErrorMessage);
                 if (ShowStackTrace)
