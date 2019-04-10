@@ -129,9 +129,8 @@ write a script that can start it. They are written in Go, and are located in
 
 ## Runtime images
 
-We have a set of runtime images, and their Dockerfiles are located in [images/runtime](./images/runtime). Some of the Dockerfiles
-are generated from a template, also located in this folder, with a corresponding script to turn those scripts
-into actual Dockerfiles. That helps us maintain consistency across the Dockerfiles.
+We have a set of runtime images, and their Dockerfiles are located in [images/runtime](./images/runtime). Some of the Dockerfiles are generated from a template, also located in this folder, with a corresponding script to turn those
+scripts into actual Dockerfiles. Having templates helps us maintain consistency across the Dockerfiles.
 
 There are some exceptions that are not templates, where we have to customize the image. A typical need for
 such customization is security, where we have to patch a tool or rely on a different base image than the
