@@ -84,10 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal virtual IServiceProvider GetServiceProvider()
         {
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    ConfigureBuildScriptGeneratorOptions(o);
-                });
+                .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();
         }
 
