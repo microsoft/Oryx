@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         "an app in the current working directory.")]
     internal class BuildpackDetectCommand : CommandBase
     {
+        // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 
         [Option("--platform-dir <dir>", CommandOptionType.SingleValue, Description = "Platform directory path.")]
@@ -76,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitSuccess;
             }
 
-            return DetectorFailCode; // CodeDetectFail in buildpack/lifecycle/detector.go
+            return DetectorFailCode;
         }
     }
 }
