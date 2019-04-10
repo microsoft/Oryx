@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IList<string> GetEnvironmentVariableAsList(string name)
         {
             IList<string> ret = null;
-            var values = Environment.GetEnvironmentVariable(name);
+            var values = GetEnvironmentVariable(name);
             if (!string.IsNullOrWhiteSpace(values))
             {
                 ret = values.Split(",");
