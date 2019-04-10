@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("1", DotNetCoreVersions.DotNetCore11Version)]
         [InlineData("1.1", DotNetCoreVersions.DotNetCore11Version)]
-        [InlineData("1.1.12", DotNetCoreVersions.DotNetCore11Version)]
+        [InlineData("1.1.13", DotNetCoreVersions.DotNetCore11Version)]
         [InlineData("2", DotNetCoreVersions.DotNetCore21Version)]
         [InlineData("2.1", DotNetCoreVersions.DotNetCore21Version)]
         [InlineData("lts", DotNetCoreVersions.DotNetCore21Version)]
