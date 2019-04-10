@@ -6,12 +6,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
+using System;
 using System.IO;
 using Xunit;
 using Microsoft.Oryx.Tests.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
-using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace BuildScriptGeneratorCli.Tests
@@ -29,31 +29,39 @@ namespace BuildScriptGeneratorCli.Tests
         public void Execute_OutputsNode_WhenPackageJsonExists()
         {
             // Arrange
-            File.WriteAllText(Path.Combine(_testDirPath, NodeConstants.PackageJsonFileName), "\n");
-
-            var detectCommand = new BuildpackDetectCommand { PlatformDir = string.Empty, PlanPath = string.Empty };
-            var testConsole = new TestConsole();
-
-            var env = new TestEnvironment();
-            env.SetEnvironmentVariable("NODE_SUPPORTED_VERSIONS", NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
-
-            var svcProvider = new ServiceProviderBuilder()
-                .ConfigureServices(svcs => svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env)))
-                .ConfigureScriptGenerationOptions(opts => detectCommand.ConfigureBuildScriptGeneratorOptions(opts))
-                .Build();
+            var cmd = new BuildpackDetectCommand { PlatformDir = string.Empty, PlanPath = string.Empty };
+            var console = new TestConsole();
+            var svcProvider = GetServiceProvider(cmd);
 
             // Act
             int exitCode;
             using (new CurrentDirectoryChange(_testDirPath))
             {
-                exitCode = detectCommand.Execute(svcProvider, testConsole);
+                // Assert with an empty app directory
+                Assert.Equal(BuildpackDetectCommand.DetectorFailCode, cmd.Execute(svcProvider, console));
+
+                // Add file to app directory and assert again
+                File.WriteAllText(Path.Combine(_testDirPath, NodeConstants.PackageJsonFileName), "\n");
+                exitCode = cmd.Execute(svcProvider, console);
             }
 
             // Assert
             Assert.Equal(0, exitCode);
             Assert.Contains(
                 $"{NodeConstants.NodeJsName}=\"{NodeScriptGeneratorOptionsSetup.NodeLtsVersion}\"",
-                testConsole.StdOutput);
+                console.StdOutput);
+        }
+
+        private static IServiceProvider GetServiceProvider(BuildpackDetectCommand cmd)
+        {
+            var env = new TestEnvironment();
+            env.SetEnvironmentVariable("NODE_SUPPORTED_VERSIONS", NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
+
+            var svcProvider = new ServiceProviderBuilder()
+                .ConfigureServices(svcs => svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env)))
+                .ConfigureScriptGenerationOptions(opts => cmd.ConfigureBuildScriptGeneratorOptions(opts))
+                .Build();
+            return svcProvider;
         }
     }
 }
