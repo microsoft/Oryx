@@ -23,7 +23,7 @@ builderName="$DOCKER_DEV_REPO_BASE/buildpack-builder"
 	--builder-config $REPO_DIR/images/buildpack-builder/builder.toml \
 	--no-pull
 
-# Remove pack everything that was added by it
+# Remove pack & everything that was added by it
 rm -f   ./pack 
 rm -rf ~/.pack
 
