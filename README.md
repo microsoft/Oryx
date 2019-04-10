@@ -124,11 +124,12 @@ The build image also contains the build script generator, which can be accessed 
 ## Startup script generators
 
 These are command line tools, one for each platform, that inspect the output directory of an application and
-write a script that can start it. They are written in Go and can be found in [.src/startupscriptgenerator/].
+write a script that can start it. They are written in Go, and are located in
+[src/startupscriptgenerator](./src/startupscriptgenerator/).
 
 ## Runtime images
 
-We have a set of runtime images, and their Dockerfiles are located in [./images/runtime]. Some of the Dockerfiles
+We have a set of runtime images, and their Dockerfiles are located in [images/runtime](./images/runtime). Some of the Dockerfiles
 are generated from a template, also located in this folder, with a corresponding script to turn those scripts
 into actual Dockerfiles. That helps us maintain consistency across the Dockerfiles.
 
