@@ -17,13 +17,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact]
         public async Task NodeApp_MySqlDB()
         {
             await RunTestAsync("nodejs",  "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mysql"));
         }
 
-        [Theory(Skip = "Bug 832951")]
+        [Theory]
         [InlineData("mysql-pymysql-sample")]
         [InlineData("mysql-mysqlconnector-sample")]
         [InlineData("mysql-mysqlclient-sample")]
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", sampleAppName));
         }
 
-        [Theory(Skip = "Bug 832951")]
+        [Theory]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
