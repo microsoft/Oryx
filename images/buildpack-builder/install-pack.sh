@@ -1,4 +1,8 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 declare -r PACK_VERSION='0.1.0'
 
