@@ -63,12 +63,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string DestinationDir { get; set; }
 
         [Option(
-            "--bp-layers-dir <dir>",
-            CommandOptionType.SingleValue,
-            Description = "Path to the layers directory, if invoked from within a Buildpack.")]
-        public string BuildpackLayersDir { get; set; }
-
-        [Option(
             "-p|--property <key-value>",
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
