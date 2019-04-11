@@ -15,12 +15,12 @@ docker build -f "$BUILDER_BASE_IMAGE_DOCKERFILE" -t $DOCKER_BUILDER_BASE_IMAGE_R
 
 cd /tmp
 
-$REPO_DIR/images/buildpack-builder/install-pack.sh
+$REPO_DIR/images/pack-builder/install-pack.sh
 
 # Create builder
-builderName="$DOCKER_DEV_REPO_BASE/buildpack-builder"
+builderName="$DOCKER_DEV_REPO_BASE/pack-builder"
 ./pack create-builder $builderName \
-	--builder-config $REPO_DIR/images/buildpack-builder/builder.toml \
+	--builder-config $REPO_DIR/images/pack-builder/builder.toml \
 	--no-pull
 
 # Remove pack & everything that was added by it
