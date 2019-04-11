@@ -25,6 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 
+        [Argument(0, Description = "The source directory.")]
+        public string SourceDir { get; set; }
+
         [Option("--platform-dir <dir>", CommandOptionType.SingleValue, Description = "Platform directory path.")]
         public string PlatformDir { get; set; }
 
@@ -35,6 +38,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var result = true;
             var logger = serviceProvider.GetService<ILogger<BuildpackDetectCommand>>();
+            
+            if (!Directory.Exists(SourceDir))
+            {
+                logger.LogError("Could not find the source directory {srcDir}", SourceDir);
+                console.Error.WriteLine($"Error: Could not find the source directory '{SourceDir}'.");
+                result = false;
+            }
 
             if (!File.Exists(PlanPath))
             {
@@ -56,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options, Directory.GetCurrentDirectory(), null, null, null, null, scriptOnly: false, null);
+                options, SourceDir, null, null, null, null, scriptOnly: false, null);
         }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)

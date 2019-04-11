@@ -29,21 +29,24 @@ namespace BuildScriptGeneratorCli.Tests
         public void Execute_OutputsNode_WhenPackageJsonExists()
         {
             // Arrange
-            var cmd = new BuildpackDetectCommand { PlatformDir = string.Empty, PlanPath = string.Empty };
+            var cmd = new BuildpackDetectCommand
+            {
+                SourceDir = _testDirPath,
+                PlatformDir = string.Empty,
+                PlanPath = string.Empty
+            };
             var console = new TestConsole();
             var svcProvider = GetServiceProvider(cmd);
 
             // Act
             int exitCode;
-            using (new CurrentDirectoryChange(_testDirPath))
-            {
-                // Assert with an empty app directory
-                Assert.Equal(BuildpackDetectCommand.DetectorFailCode, cmd.Execute(svcProvider, console));
 
-                // Add file to app directory and assert again
-                File.WriteAllText(Path.Combine(_testDirPath, NodeConstants.PackageJsonFileName), "\n");
-                exitCode = cmd.Execute(svcProvider, console);
-            }
+            // Assert with an empty app directory
+            Assert.Equal(BuildpackDetectCommand.DetectorFailCode, cmd.Execute(svcProvider, console));
+
+            // Add file to app directory and assert again
+            File.WriteAllText(Path.Combine(_testDirPath, NodeConstants.PackageJsonFileName), "\n");
+            exitCode = cmd.Execute(svcProvider, console);
 
             // Assert
             Assert.Equal(0, exitCode);
