@@ -5,14 +5,13 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using System;
 using System.IO;
 using Xunit;
 using Microsoft.Oryx.Tests.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 
 namespace BuildScriptGeneratorCli.Tests
 {
