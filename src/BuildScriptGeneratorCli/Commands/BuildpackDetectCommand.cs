@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 result = false;
             }
 
-			if (PlanPath != null)
+			if (!string.IsNullOrWhiteSpace(PlanPath))
 			{
 				PlanPath = Path.GetFullPath(PlanPath);
 	            if (!File.Exists(PlanPath))
@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 	            }
 			}
 
-			if (PlatformDir != null)
+			if (!string.IsNullOrWhiteSpace(PlatformDir))
 			{
 				PlatformDir = Path.GetFullPath(PlatformDir);
 	            if (!Directory.Exists(PlatformDir))
