@@ -4,8 +4,6 @@ Oryx provides a buildpack that runs it, so that Oryx can also be used via the [p
 
 ## Related images
 
-* `mcr.microsoft.com/oryx/pack`: 
-* `mcr.microsoft.com/oryx/pack-builder`: 
-* `mcr.microsoft.com/oryx/pack-stack-base`: 
+WIP
 
 [pack]: https://github.com/buildpack/pack
