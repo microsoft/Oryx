@@ -1,6 +1,6 @@
 # Oryx Buildpack
 
-Oryx provides a buildpack that runs it, so it can be used via the [pack][] tool.
+Oryx provides a buildpack that runs it, so that Oryx can also be used via the [pack][] tool.
 
 ## Related images
 
