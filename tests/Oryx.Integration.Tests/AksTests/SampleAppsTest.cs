@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.Integration.Tests.AksTests
             }
         }
 
-        [Theory, Trait("E2E", "AKS")]
+        [Theory, Trait("Category", "AKS")]
         [InlineData("linxnodeexpress", "oryxdevms/node-4.4:latest", "nodejs", "4.4.7")]
         [InlineData("webfrontend", "oryxdevms/node-8.1:latest", "nodejs", "8.1")]
         [InlineData("soundcloud-ngrx", "oryxdevms/node-8.11:latest", "nodejs", "8.11")]

@@ -31,7 +31,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         public DbContainerFixtureBase()
         {
             DbServerContainerName = RunDbServerContainer().ContainerName;
-            WaitUntilDbServerIsUp();
+            if (!WaitUntilDbServerIsUp())
+            {
+                throw new Exception("Database not ready in time");
+            }
             InsertSampleData();
         }
 
@@ -64,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected abstract DockerRunCommandResult RunDbServerContainer();
 
-        protected abstract void WaitUntilDbServerIsUp();
+        protected abstract bool WaitUntilDbServerIsUp();
 
         protected virtual string GetSampleDataInsertionSql()
         {
