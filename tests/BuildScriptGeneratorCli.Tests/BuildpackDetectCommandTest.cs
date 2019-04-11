@@ -25,27 +25,33 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void Execute_Returns100_WhenSourceDirIsEmpty()
+        {
+            // Arrange
+            var srcDir = Path.Combine(_testDirPath, "emptydir");
+            Directory.CreateDirectory(srcDir);
+
+            var cmd = new BuildpackDetectCommand { SourceDir = srcDir };
+
+            // Act & Assert
+            Assert.Equal(
+                BuildpackDetectCommand.DetectorFailCode,
+                cmd.Execute(GetServiceProvider(cmd), new TestConsole()));
+        }
+
+        [Fact]
         public void Execute_OutputsNode_WhenPackageJsonExists()
         {
             // Arrange
-            var cmd = new BuildpackDetectCommand
-            {
-                SourceDir = _testDirPath,
-                PlatformDir = string.Empty,
-                PlanPath = string.Empty
-            };
+            var srcDir = Path.Combine(_testDirPath, "nodeappdir");
+            Directory.CreateDirectory(srcDir);
+            File.WriteAllText(Path.Combine(srcDir, NodeConstants.PackageJsonFileName), "\n");
+
+            var cmd = new BuildpackDetectCommand { SourceDir = srcDir };
             var console = new TestConsole();
-            var svcProvider = GetServiceProvider(cmd);
 
             // Act
-            int exitCode;
-
-            // Assert with an empty app directory
-            Assert.Equal(BuildpackDetectCommand.DetectorFailCode, cmd.Execute(svcProvider, console));
-
-            // Add file to app directory and assert again
-            File.WriteAllText(Path.Combine(_testDirPath, NodeConstants.PackageJsonFileName), "\n");
-            exitCode = cmd.Execute(svcProvider, console);
+            int exitCode = cmd.Execute(GetServiceProvider(cmd), console);
 
             // Assert
             Assert.Equal(0, exitCode);
