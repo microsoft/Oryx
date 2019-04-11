@@ -9,9 +9,9 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 # The official Node 8.1 image has vulnerabilities, so we build our own version
-# to fetch the latest jessie release with the required fixes.
+# to fetch the latest stretch release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 2d4c7b0fdc553a5321c714526eefd3cd0cb9e074.
-FROM buildpack-deps:jessie AS node-original-image
+FROM buildpack-deps:stretch AS node-original-image
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node

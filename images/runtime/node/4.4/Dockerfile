@@ -9,9 +9,9 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 # The official Node 4.4 image has vulnerabilities, so we build our own version
-# to fetch the latest jessie release with the required fixes.
+# to fetch the latest stretch release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 22668206915e4d39c4c35608848be835dd5526a3
-FROM buildpack-deps:jessie AS node-original-image
+FROM buildpack-deps:stretch AS node-original-image
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
