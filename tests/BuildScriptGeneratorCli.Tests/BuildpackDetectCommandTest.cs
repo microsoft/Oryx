@@ -12,6 +12,7 @@ using Microsoft.Oryx.Tests.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.Common;
 
 namespace BuildScriptGeneratorCli.Tests
 {
@@ -54,7 +55,7 @@ namespace BuildScriptGeneratorCli.Tests
             int exitCode = cmd.Execute(GetServiceProvider(cmd), console);
 
             // Assert
-            Assert.Equal(0, exitCode);
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
                 $"{NodeConstants.NodeJsName}=\"{NodeScriptGeneratorOptionsSetup.NodeLtsVersion}\"",
                 console.StdOutput);
