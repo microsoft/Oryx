@@ -37,12 +37,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var result = true;
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             var logger = serviceProvider.GetService<ILogger<BuildpackDetectCommand>>();
-            
-            if (!Directory.Exists(SourceDir))
+
+            if (!Directory.Exists(options.SourceDir))
             {
-                logger.LogError("Could not find the source directory {srcDir}", SourceDir);
-                console.Error.WriteLine($"Error: Could not find the source directory '{SourceDir}'.");
+                logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
+                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }
 
@@ -66,7 +67,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options, SourceDir, null, null, null, null, scriptOnly: false, null);
+                options,
+                SourceDir,
+                destinationDir: null,
+                intermediateDir: null,
+                language: null,
+                languageVersion: null,
+                scriptOnly: false,
+                properties: null);
         }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
