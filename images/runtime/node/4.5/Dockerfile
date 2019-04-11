@@ -48,6 +48,9 @@ CMD [ "node" ]
 
 FROM node-original-image AS oryx
 
+RUN apt-get update && apt-get install -y unzip \
+ && rm -rf /var/lib/apt/lists/*
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
