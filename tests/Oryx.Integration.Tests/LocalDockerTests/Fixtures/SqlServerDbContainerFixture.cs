@@ -47,14 +47,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             return runDbContainerResult;
         }
 
-        protected override void WaitUntilDbServerIsUp()
+        protected override bool WaitUntilDbServerIsUp()
         {
-            var interval = TimeSpan.FromSeconds(3);
             // Try 30 times at most, with a constant 3s in between attempts
-            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => interval);
-            retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName)
-                                          .Contains("SQL Server is now ready for client connections"));
-            Thread.Sleep(interval);
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(3));
+            return retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName)
+                                                 .Contains("SQL Server is now ready for client connections"));
         }
 
         protected override void InsertSampleData()
