@@ -20,7 +20,7 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("build", Description = "Generate and run build scripts.")]
-    internal class BuildCommand : BaseCommand
+    internal class BuildCommand : CommandBase
     {
         // Beginning and ending markers for build script output spans that should be time measured
         private readonly TextSpan[] _measurableStdOutSpans =

@@ -14,14 +14,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public interface IEnvironment
     {
         /// <summary>
-        /// Gets values of an environment variable.
+        /// Gets the value of an environment variable.
         /// </summary>
-        /// <param name="name">Name of the environment variable. Is case-sensitive.</param>
+        /// <param name="name">Name of the environment variable. Case-sensitive.</param>
         /// <returns>
-        /// The value of the environment variable specified by variable,
-        /// or null if the environment variable is not found.
+        /// The value of the given environment variable, or null if the environment variable isn't found.
         /// </returns>
-        string GetEnvironmentVariable(string name);
+        string GetEnvironmentVariable(string name, string defaultValue = null);
 
         /// <summary>
         /// Gets the value of an environment variable as a boolean, if found. The check

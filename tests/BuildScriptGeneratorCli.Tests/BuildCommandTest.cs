@@ -239,8 +239,7 @@ namespace BuildScriptGeneratorCli.Tests
 
         [Theory]
         [MemberData(nameof(DestinationDirectoryPathData))]
-        public void IsValidInput_IsTrue_IfDestinationDirIsNotEmpty(
-            string destinationDir)
+        public void IsValidInput_IsTrue_IfDestinationDirIsNotEmpty(string destinationDir)
         {
             // Arrange
             var serviceProvider = new ServiceProviderBuilder()
