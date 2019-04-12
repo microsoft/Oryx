@@ -9,9 +9,9 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 # The official Node 6.6 image has vulnerabilities, so we build our own version
-# to fetch the latest jessie release with the required fixes.
+# to fetch the latest stretch release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 9cd8d4c47e9e695bb38d98a32c4dd45dfa981962.
-FROM buildpack-deps:jessie AS node-original-image
+FROM buildpack-deps:stretch AS node-original-image
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
@@ -47,6 +47,9 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 CMD [ "node" ]
 
 FROM node-original-image AS oryx
+
+RUN apt-get update && apt-get install -y unzip \
+ && rm -rf /var/lib/apt/lists/*
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
