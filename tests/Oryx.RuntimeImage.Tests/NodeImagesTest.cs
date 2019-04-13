@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(
                 $"oryxdevms/node-{nodeTag}:latest",
-                "sh", new[] { "-c", "which tar && which unzip" });
+                "sh", new[] { "-c", "which tar && which unzip && which pm2" });
 
             // Assert
             RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
