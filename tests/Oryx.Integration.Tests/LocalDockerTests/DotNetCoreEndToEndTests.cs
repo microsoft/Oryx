@@ -5,9 +5,11 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
@@ -89,6 +91,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddStringExistsInFileCheck(
+                $"{DotnetCoreConstants.StartupFileName}=\"Yoyo.dll\"",
+                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -223,7 +228,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
-               .ToString();
+               .AddStringExistsInFileCheck(
+                $"{DotnetCoreConstants.StartupFileName}=\"Yoyo.dll\"",
+                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx -appPath {appOutputDir} -sourcePath {appDir} -bindPort {ContainerPort}")
@@ -501,6 +509,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx build {repoDir} -o {appOutputDir}") // Do not specify language and version
+                .AddStringExistsInFileCheck(
+                $"{DotnetCoreConstants.StartupFileName}=\"WebApp1.dll\"",
+                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
@@ -535,7 +546,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory()
+        public async Task CanBuildAndRun_NetCore21WebApp_HavingMultipleProjects()
         {
             // Arrange
             var appName = "MultiWebAppRepo";
@@ -549,6 +560,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx build {repoDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddStringExistsInFileCheck(
+                $"{DotnetCoreConstants.StartupFileName}=\"WebApp1.dll\"",
+                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)

@@ -124,6 +124,15 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() string {
 func (gen *DotnetCoreStartupScriptGenerator) getStartupDllFileName() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupDllFileName")
 
+	manifestFilePath := filepath.Join(gen.AppPath, common.ManifestFileName)
+	if common.FileExists(manifestFilePath) {
+		logger.LogInformation("Found build manifest file at '%s'.", manifestFilePath)
+		buildManifest := common.GetBuildManifest(gen.AppPath)
+		return buildManifest.StartupFileName
+	} else {
+		logger.LogInformation("Cound not find build manifest file at '%s'.", manifestFilePath)
+	}
+
 	if _gotStartupFileName {
 		return _startupFileName
 	}

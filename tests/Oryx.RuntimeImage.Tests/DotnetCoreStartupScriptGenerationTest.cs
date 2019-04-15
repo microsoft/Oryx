@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             @"<ItemGroup><PackageReference Include=""Microsoft.AspNetCore.App"" /></ItemGroup>" +
             "</Project>";
 
-        private const string ProjectFileWithExplicitAssemblyName = 
+        private const string ProjectFileWithExplicitAssemblyName =
             @"<Project Sdk=""Microsoft.NET.Sdk.Web"">" +
             "<PropertyGroup><TargetFramework>netcoreapp2.1</TargetFramework><AssemblyName>Foo</AssemblyName></PropertyGroup>" +
             @"<ItemGroup><PackageReference Include=""Microsoft.AspNetCore.App"" /></ItemGroup></Project>";
@@ -52,6 +52,46 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"mkdir -p {appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/shoppingapp.dll")
                 .AddCommand($"oryx -appPath {appOutputDir} -sourcePath {appDir}")
+                .AddCommand($"cat {ScriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_UsingStartupFileName_FromBuildManifest_NotUsingSourcePath()
+        {
+            // Arrange
+            var appDir = "/app";
+            var appOutputDir = "/app/output";
+            var expectedStartupCommand = $"dotnet \"different.dll\"";
+            var expectedWorkingDir = $"cd \"{appOutputDir}\"";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/shoppingapp.csproj")
+                .AddCommand($"mkdir -p {appOutputDir}")
+                .AddCommand($"echo \"startupFileName='different.dll'\" > {appOutputDir}/oryx-manifest.toml")
+                .AddCommand($"echo > {appOutputDir}/different.dll")
+                // NOTE: Do not specify source path argument
+                .AddCommand($"oryx -appPath {appOutputDir}")
                 .AddCommand($"cat {ScriptLocation}")
                 .ToString();
 
@@ -463,7 +503,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Act
             var res = _dockerCli.Run("oryxdevms/dotnetcore-2.2", "/bin/sh", new[] { "-c", script });
-            
+
             // Assert
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
         }
