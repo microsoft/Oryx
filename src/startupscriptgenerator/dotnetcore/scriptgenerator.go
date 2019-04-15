@@ -16,7 +16,7 @@ import (
 
 type DotnetCoreStartupScriptGenerator struct {
 	SourcePath          string
-	AppPath 			string
+	AppPath             string
 	UserStartupCommand  string
 	DefaultAppFilePath  string
 	BindPort            string

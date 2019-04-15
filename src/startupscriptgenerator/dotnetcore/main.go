@@ -56,7 +56,7 @@ func main() {
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
 		SourcePath:          fullSourcePath,
-		AppPath: 			 fullAppPath,
+		AppPath:             fullAppPath,
 		BindPort:            *bindPortPtr,
 		UserStartupCommand:  *userStartupCommandPtr,
 		DefaultAppFilePath:  fullDefaultAppFilePath,
