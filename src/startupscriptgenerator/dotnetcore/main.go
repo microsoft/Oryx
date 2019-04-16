@@ -14,14 +14,16 @@ import (
 func main() {
 	common.PrintVersionInfo()
 
+	appPathPtr := flag.String(
+		"appPath",
+		".",
+		"The path to the published output of the application that is going to be run, e.g. '/home/site/wwwroot/'. " +
+		"Default is current directory.")
 	sourcePathPtr := flag.String(
 		"sourcePath",
-		".",
-		"The path to the application that is being deployed, e.g. '/home/site/repository/src/ShoppingWebApp/'.")
-	publishedOutputPathPtr := flag.String(
-		"publishedOutputPath",
 		"",
-		"The path to the published output of the application that is going to be run, e.g. '/home/site/wwwroot/'.")
+		"[Optional] The path to the application that is being deployed, " +
+		"Ex: '/home/site/repository/src/ShoppingWebApp/'.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",
@@ -31,16 +33,20 @@ func main() {
 	defaultAppFilePathPtr := flag.String(
 		"defaultAppFilePath",
 		"",
-		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
+		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. " +
+		"Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
 	flag.Parse()
 
-	fullSourcePath := common.GetValidatedFullPath(*sourcePathPtr)
+	fullAppPath := ""
+	if *appPathPtr != "" {
+		fullAppPath = common.GetValidatedFullPath(*appPathPtr)
+	}
 
-	common.SetGlobalOperationId(fullSourcePath)
+	common.SetGlobalOperationId(fullAppPath)
 
-	fullPublishedOutputPath := ""
-	if *publishedOutputPathPtr != "" {
-		fullPublishedOutputPath = common.GetValidatedFullPath(*publishedOutputPathPtr)
+	fullSourcePath := ""
+	if *sourcePathPtr != "" {
+		fullSourcePath = common.GetValidatedFullPath(*sourcePathPtr)
 	}
 
 	fullDefaultAppFilePath := ""
@@ -50,7 +56,7 @@ func main() {
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
 		SourcePath:          fullSourcePath,
-		PublishedOutputPath: fullPublishedOutputPath,
+		AppPath:             fullAppPath,
 		BindPort:            *bindPortPtr,
 		UserStartupCommand:  *userStartupCommandPtr,
 		DefaultAppFilePath:  fullDefaultAppFilePath,
