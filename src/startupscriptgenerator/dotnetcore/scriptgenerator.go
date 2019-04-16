@@ -15,11 +15,11 @@ import (
 )
 
 type DotnetCoreStartupScriptGenerator struct {
-	SourcePath          string
-	AppPath             string
-	UserStartupCommand  string
-	DefaultAppFilePath  string
-	BindPort            string
+	SourcePath         string
+	AppPath            string
+	UserStartupCommand string
+	DefaultAppFilePath string
+	BindPort           string
 }
 
 type projectDetails struct {
@@ -51,10 +51,7 @@ type packageReference struct {
 const ProjectEnvironmentVariableName = "PROJECT"
 const DefaultBindPort = "8080"
 
-var _retrievedProjectDetails = false
-var _gotStartupFileName = false
 var _projDetails projectDetails = projectDetails{}
-var _startupFileName = ""
 
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
@@ -128,16 +125,18 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupDllFileName() string {
 	if common.FileExists(manifestFilePath) {
 		logger.LogInformation("Found build manifest file at '%s'.", manifestFilePath)
 		buildManifest := common.GetBuildManifest(gen.AppPath)
-		return buildManifest.StartupFileName
+		if buildManifest.StartupFileName == "" {
+			logger.LogInformation(
+				"Found build manifest file at '%s', but startup file name property is empty.",
+				manifestFilePath)
+		} else {
+			return buildManifest.StartupFileName
+		}
 	} else {
 		logger.LogInformation("Cound not find build manifest file at '%s'.", manifestFilePath)
 	}
 
-	if _gotStartupFileName {
-		return _startupFileName
-	}
-
-	projDetails := gen.getProjectDetailsAndCache()
+	projDetails := gen.getProjectDetails()
 	if projDetails.FullPath == "" {
 		logger.LogError("Could not find the project file.")
 		return ""
@@ -158,19 +157,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupDllFileName() string {
 	} else {
 		startupFileName = assemblyName + ".dll"
 	}
-	_startupFileName = startupFileName
-	_gotStartupFileName = true
-	return _startupFileName
-}
-func (gen *DotnetCoreStartupScriptGenerator) getProjectDetailsAndCache() projectDetails {
-	if _retrievedProjectDetails {
-		return _projDetails
-	}
-
-	projDetails := gen.getProjectDetails()
-	_retrievedProjectDetails = true
-	_projDetails = projDetails
-	return _projDetails
+	return startupFileName
 }
 
 func (gen *DotnetCoreStartupScriptGenerator) getProjectDetails() projectDetails {

@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"mkdir -p {appDir}")
                 .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/shoppingapp.csproj")
                 .AddCommand($"mkdir -p {appOutputDir}")
-                .AddCommand($"echo \"startupFileName='different.dll'\" > {appOutputDir}/oryx-manifest.toml")
+                .AddCommand($"echo startupFileName=\\\"different.dll\\\" > {appOutputDir}/oryx-manifest.toml")
                 .AddCommand($"echo > {appOutputDir}/different.dll")
                 // NOTE: Do not specify source path argument
                 .AddCommand($"oryx -appPath {appOutputDir}")
@@ -111,6 +111,83 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_UsingSourcePath_IfStartupFileNameIsEmpty_FromSourcePath()
+        {
+            // Arrange
+            var appDir = "/app";
+            var appOutputDir = "/app/output";
+            var expectedStartupCommand = $"dotnet \"shoppingapp.dll\"";
+            var expectedWorkingDir = $"cd \"{appOutputDir}\"";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/shoppingapp.csproj")
+                .AddCommand($"mkdir -p {appOutputDir}")
+                .AddCommand($"echo startupFileName=\\\"\\\" > {appOutputDir}/oryx-manifest.toml")
+                .AddCommand($"echo > {appOutputDir}/shoppingapp.dll")
+                .AddCommand($"oryx -appPath {appOutputDir} -sourcePath {appDir}")
+                .AddCommand($"cat {ScriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedWorkingDir, result.StdOut);
+                    Assert.Contains(expectedStartupCommand, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_WithDefaultAppFilePath_IfStartupFileFromBuildManifest_DoesNotExist()
+        {
+            // Arrange
+            var appDir = "/app";
+            var outputDir = "/app/output";
+            var defaultWebAppFile = "/tmp/defaultwebapp.dll";
+            var expectedStartupCommand = $"dotnet \"{defaultWebAppFile}\"";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}")
+                .AddCommand($"echo '{RegularProjectFileContent}' > {appDir}/shoppingapp.csproj")
+                .AddCommand($"mkdir -p {outputDir}")
+                .AddCommand($"echo startupFileName=\\\"doesnotexist.dll\\\" > {outputDir}/oryx-manifest.toml")
+                .AddCommand($"echo > /tmp/defaultwebapp.dll")
+                .AddCommand($"oryx -appPath {outputDir} -defaultAppFilePath {defaultWebAppFile}")
+                .AddCommand($"cat {ScriptLocation}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                DotnetCoreRuntimeImageName,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments: new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
                     Assert.Contains(expectedStartupCommand, result.StdOut);
                 },
                 result.GetDebugInfo());
