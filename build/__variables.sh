@@ -7,9 +7,6 @@ declare -r __REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r BUILD_CONFIGURATION="${BUILDCONFIGURATION:-Debug}"
 
-declare -r BUILD_BUILDIMAGES_USING_NOCACHE="$BUILD_BUILDIMAGES_USING_NOCACHE"
-declare -r BUILD_RUNTIMEIMAGES_USING_NOCACHE="$BUILD_RUNTIMEIMAGES_USING_NOCACHE"
-
 declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$__REPO_DIR/"
 declare -r BUILD_IMAGES_DOCKERFILE="$__REPO_DIR/images/build/Dockerfile"
 declare -r PACK_IMAGE_DOCKERFILE="$__REPO_DIR/images/pack-builder/pack-runner.Dockerfile"
