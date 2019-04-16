@@ -30,28 +30,40 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            var result = true;
+            var result = base.IsValidInput(serviceProvider, console);
             var logger = serviceProvider.GetRequiredService<ILogger<BuildpackBuildCommand>>();
 
-            if (!Directory.Exists(LayersDir))
+            if (!string.IsNullOrWhiteSpace(LayersDir))
             {
-                logger.LogError("Could not find layers directory {layersDir}", LayersDir);
-                console.Error.WriteLine($"Error: Could not find layers directory '{LayersDir}'.");
-                result = false;
+                LayersDir = Path.GetFullPath(LayersDir);
+                if (!Directory.Exists(LayersDir))
+                {
+                    logger.LogError("Could not find layers directory {layersDir}", LayersDir);
+                    console.Error.WriteLine($"Error: Could not find layers directory '{LayersDir}'.");
+                    result = false;
+                }
             }
 
-            if (!File.Exists(PlanPath))
+            if (!string.IsNullOrWhiteSpace(PlanPath))
             {
-                logger.LogError("Could not find build plan file {planPath}", PlanPath);
-                console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
-                result = false;
+                PlanPath = Path.GetFullPath(PlanPath);
+                if (!File.Exists(PlanPath))
+                {
+                    logger?.LogError("Could not find build plan file {planPath}", PlanPath);
+                    console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
+                    result = false;
+                }
             }
 
-            if (!Directory.Exists(PlatformDir))
+            if (!string.IsNullOrWhiteSpace(PlatformDir))
             {
-                logger.LogError("Could not find platform directory {platformDir}", PlatformDir);
-                console.Error.WriteLine($"Error: Could not find platform directory '{PlatformDir}'.");
-                result = false;
+                PlatformDir = Path.GetFullPath(PlatformDir);
+                if (!Directory.Exists(PlatformDir))
+                {
+                    logger?.LogError("Could not find platform directory {platformDir}", PlatformDir);
+                    console.Error.WriteLine($"Error: Could not find platform directory '{PlatformDir}'.");
+                    result = false;
+                }
             }
 
             return result;
@@ -62,7 +74,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.WriteLine("# Stdin:");
             console.WriteLine(console.In.ReadToEnd());
             console.WriteLine("# End Stdin");
-
             return base.Execute(serviceProvider, console);
         }
     }

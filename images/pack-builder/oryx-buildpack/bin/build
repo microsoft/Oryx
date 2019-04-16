@@ -12,9 +12,9 @@ planPath=$3
 bpLaunchFile="$1/launch.toml"
 runFile="./msrun.sh"
 
-echo "# Running 'oryx build .' in '`pwd`'..."
+echo "# Running 'oryx buildpack-build .' in '`pwd`'..."
 
-oryx build .
+oryx buildpack-build .
 
 cat $3
 
