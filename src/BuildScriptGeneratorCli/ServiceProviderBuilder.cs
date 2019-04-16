@@ -5,6 +5,7 @@
 
 using System;
 using System.IO;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -50,10 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder ConfigureScriptGenerationOptions(Action<BuildScriptGeneratorOptions> configure)
         {
-            _serviceCollection.Configure<BuildScriptGeneratorOptions>(options =>
-            {
-                configure(options);
-            });
+            _serviceCollection.Configure<BuildScriptGeneratorOptions>(opts => configure(opts));
             return this;
         }
 
@@ -62,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return _serviceCollection.BuildServiceProvider();
         }
 
-        private LoggingConfiguration BuildNLogConfiguration(string logPath)
+        private LoggingConfiguration BuildNLogConfiguration([CanBeNull] string logPath)
         {
             var config = new LoggingConfiguration();
 

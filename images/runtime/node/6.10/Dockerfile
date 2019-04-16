@@ -9,9 +9,9 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 # The official Node 6.10 image has vulnerabilities, so we build our own version
-# to fetch the latest jessie release with the required fixes.
+# to fetch the latest stretch release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 6f27c95ade7f6cfbf1254d4187dc72da67be5d15.
-FROM buildpack-deps:jessie AS node-original-image
+FROM buildpack-deps:stretch AS node-original-image
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -73,6 +73,9 @@ CMD [ "node" ]
 
 FROM node-original-image AS oryx
 
+RUN apt-get update && apt-get install -y unzip \
+ && rm -rf /var/lib/apt/lists/*
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
@@ -81,6 +84,10 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 # for packages valid for all apps.
 RUN mkdir -p /node_modules \
  && chmod 777 /node_modules
+
+# PM2 is supported as an option when running the app,
+# so we need to make sure it is available in our images.
+RUN npm install -g pm2
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx

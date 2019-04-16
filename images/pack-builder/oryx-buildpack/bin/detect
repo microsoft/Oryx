@@ -6,6 +6,8 @@
 # usage: bin/detect <platform-dir> <plan-path>
 set -eo pipefail
 
-echo "# Running 'oryx buildpack-detect $1 $2' in '`pwd`'..."
+sourceDir=`pwd`
 
-exec oryx buildpack-detect --platform-dir $1 --plan-path $2
+echo "# Running 'oryx buildpack-detect $sourceDir --platform-dir $1 --plan-path $2'..."
+
+exec oryx buildpack-detect $sourceDir --platform-dir $1 --plan-path $2

@@ -16,7 +16,7 @@ import (
 
 type DotnetCoreStartupScriptGenerator struct {
 	SourcePath          string
-	PublishedOutputPath string
+	AppPath             string
 	UserStartupCommand  string
 	DefaultAppFilePath  string
 	BindPort            string
@@ -49,7 +49,6 @@ type packageReference struct {
 }
 
 const ProjectEnvironmentVariableName = "PROJECT"
-const OryxPublishOutputDirectory = "oryx_publish_output"
 const DefaultBindPort = "8080"
 
 var _retrievedProjectDetails = false
@@ -64,9 +63,9 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger.LogInformation(
 		"Generating script for source at '%s' and published output at '%s'",
 		gen.SourcePath,
-		gen.PublishedOutputPath)
+		gen.AppPath)
 
-	command, publishOutputDir := gen.getStartupCommand()
+	command := gen.getStartupCommand()
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
@@ -78,7 +77,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	if command != "" {
 		logger.LogInformation("Successfully generated startup command.")
-		scriptBuilder.WriteString("cd \"" + publishOutputDir + "\"\n\n")
+		scriptBuilder.WriteString("cd \"" + gen.AppPath + "\"\n\n")
 		scriptBuilder.WriteString(command + "\n\n")
 	} else {
 		if gen.DefaultAppFilePath != "" {
@@ -96,62 +95,20 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 	return scriptBuilder.String()
 }
 
-func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string) {
+func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupCommand")
 	defer logger.Shutdown()
-
-	// Get the publish output directory irrespective of whether the user supplied a custom startup command
-	// as we want to generate a script which does a 'cd' to this directory and run the user startup command
-	publishOutputDir := gen.PublishedOutputPath
-	if publishOutputDir == "" {
-
-		// Check if current directory is indeed the output directory (Example, like in AppService's case)
-		currentDir := common.GetValidatedFullPath(".")
-
-		startupFileName := gen.getStartupDllFileName()
-		startupFileFullPath := filepath.Join(currentDir, startupFileName)
-		if common.FileExists(startupFileFullPath) {
-			logger.LogInformation("Found publish output directory '%s'", currentDir)
-			publishOutputDir = currentDir
-		} else {
-			projDetails := gen.getProjectDetailsAndCache()
-			if projDetails.FullPath == "" {
-				logger.LogError("Could not find the project file.")
-				return "", ""
-			}
-
-			publishOutputDir = filepath.Join(projDetails.Directory, OryxPublishOutputDirectory)
-
-			logger.LogInformation(
-				"Published output directory not supplied. Checking for default oryx publish output directory at '%s'",
-				publishOutputDir)
-
-			if _, err := os.Stat(publishOutputDir); os.IsNotExist(err) {
-				logger.LogError(
-					"Could not find oryx publish output directory at '%s'. Error: %s",
-					publishOutputDir,
-					err.Error())
-				return "", ""
-			} else {
-				logger.LogInformation("Successfully found oryx publish output directory.")
-			}
-		}
-	}
 
 	command := gen.UserStartupCommand
 	if command == "" {
 		startupFileName := gen.getStartupDllFileName()
 
 		// Check if the startup file is indeed present
-		startupFileFullPath := filepath.Join(publishOutputDir, startupFileName)
-		if _, err := os.Stat(startupFileFullPath); os.IsNotExist(err) {
-			logger.LogError(
-				"Could not find the startup file '%s'. Error: %s",
-				startupFileFullPath,
-				err.Error())
-			return "", ""
+		startupFileFullPath := filepath.Join(gen.AppPath, startupFileName)
+		if !common.FileExists(startupFileFullPath) {
+			logger.LogError("Could not find the startup file '%s'.", startupFileFullPath)
+			return ""
 		}
-
 		command = "dotnet \"" + startupFileName + "\"\n"
 	} else {
 		logger.LogCritical("Using the explicit user provided startup command.")
@@ -161,7 +118,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() (string, string
 		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
 
-	return command, publishOutputDir
+	return command
 }
 
 func (gen *DotnetCoreStartupScriptGenerator) getStartupDllFileName() string {
@@ -217,11 +174,8 @@ func (gen *DotnetCoreStartupScriptGenerator) getProjectDetails() projectDetails 
 	if projectEnv != "" {
 		// Since relative paths are provided to the environment variable, get the full path
 		projectFilePath := filepath.Join(gen.SourcePath, projectEnv)
-		if _, err := os.Stat(projectFilePath); os.IsNotExist(err) {
-			logger.LogError(
-				"Could not find project file '%s'. Error: %s",
-				projectFilePath,
-				err.Error())
+		if !common.FileExists(projectFilePath) {
+			logger.LogError("Could not find project file '%s'.", projectFilePath)
 			return projDetails
 		} else {
 			projFileInfo, _ := os.Stat(projectFilePath)

@@ -33,7 +33,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 _serviceProvider = GetServiceProvider();
-                _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
+                _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogInformation(
+                    "Oryx command line: {cmdLine}", Environment.CommandLine);
                 if (!IsValidInput(_serviceProvider, console))
                 {
                     return ProcessConstants.ExitFailure;
@@ -84,10 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal virtual IServiceProvider GetServiceProvider()
         {
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    ConfigureBuildScriptGeneratorOptions(o);
-                });
+                .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();
         }
 

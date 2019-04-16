@@ -37,7 +37,7 @@ echo "-> Building pack runner image: $DOCKER_PACK_IMAGE_REPO"
 echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_IMAGE_DOCKERFILE" \
-	--build-arg BUILD_NUMBER='0.2.0' \
+	--build-arg BUILD_NUMBER="$BUILD_NUMBER" \
 	--build-arg BUILDPACK_BUILDER_NAME="$builderImageName" \
 	-t $DOCKER_PACK_IMAGE_REPO:latest \
 	.

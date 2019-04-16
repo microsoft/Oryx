@@ -3,9 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -99,7 +97,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var options = new PhpScriptGeneratorOptions();
             optionsSetup.Configure(options);
 
-            return new PhpLanguageDetector(Options.Create(options), new TestPhpVersionProvider(supportedPhpVersions), NullLogger<PhpLanguageDetector>.Instance);
+            return new PhpLanguageDetector(
+                Options.Create(options),
+                new TestPhpVersionProvider(supportedPhpVersions),
+                NullLogger<PhpLanguageDetector>.Instance);
         }
 
         private class TestPhpVersionProvider : IPhpVersionProvider
