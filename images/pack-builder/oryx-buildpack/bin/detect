@@ -8,6 +8,6 @@ set -eo pipefail
 
 appSrcDir=`pwd`
 
-echo "# Running 'oryx buildpack-detect $appSrcDir --platform-dir $1 --plan-path $2'..."
+echo "# Running 'oryx buildpack-detect \"$appSrcDir\" --platform-dir \"$1\" --plan-path \"$2\"'..."
 
-exec oryx buildpack-detect $appSrcDir --platform-dir $1 --plan-path $2
+exec oryx buildpack-detect "$appSrcDir" --platform-dir "$1" --plan-path "$2"
