@@ -1,0 +1,35 @@
+#!/bin/sh
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
+#
+# This script wraps the `node` commmand, and is used when Oryx needs to inject values to the node
+# command line and the application is started using "npm start", or any other form where the
+# node command is executed indirectly.
+set -ex
+originalNodePath=/usr/local/bin/node
+inspectParameter=${ORYX_NODE_INSPECT_PARAM:-"--inspect=0.0.0.0:9229"}
+targetScript="$1"
+if [[ ${targetScript: -4} == "/npm" || ${targetScript: -4} == "/pm2" ]]; then
+    $originalNodePath $@
+else
+    injectDebugFlag=true
+    args=""
+    inspectFlag="--inspect"
+    for param in "$@"; do
+        if [[ ${#param} >= ${#inspectFlag}} &&  "${param:0: ${#inspectFlag}}" == $inspectFlag ]]; then
+            injectDebugFlag=false
+            args="$args $inspectParameter"
+        else
+            args="$args $param"
+        fi
+        let "i=i+1"
+    done
+
+    if [[ $injectDebugFlag == true ]]; then
+        $originalNodePath $inspectParameter $@
+    else
+        $originalNodePath $args
+    fi
+fi
