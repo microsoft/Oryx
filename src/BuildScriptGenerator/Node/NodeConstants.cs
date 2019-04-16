@@ -27,5 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NodeModulesZippedFileName = "node_modules.zip";
         internal const string NodeModulesTarGzFileName = "node_modules.tar.gz";
         internal const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
+        internal const string NodeAppInsightPackageName = "applicationinsights";
+        internal const string OryxNodeAppInsightLoader = "./oryxappinsightloader.js";
+        internal const string OryxNodeOptions = "NODE_OPTIONS";
     }
 }

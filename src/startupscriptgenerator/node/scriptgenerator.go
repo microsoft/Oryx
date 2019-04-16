@@ -166,6 +166,15 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		startupCommand = common.ExtendPathForCommand(startupCommand, gen.SourcePath)
 	}
 
+	scriptBuilder.WriteString("if [ -f ./" + common.ManifestFileName + " ]; then\n")
+	scriptBuilder.WriteString("    isInManifest=$(cat " + common.ManifestFileName + " | grep -c 'NODE_OPTIONS')\n")
+	scriptBuilder.WriteString("    if [ $isInManifest -eq 0 ]; then\n")
+	scriptBuilder.WriteString("        echo \"Oryx has set up Code-less App-Insight...\"\n")
+	scriptBuilder.WriteString("        export NODE_OPTIONS='--require ./oryxappinsightloader.js'\n")
+	scriptBuilder.WriteString("    else\n")
+	scriptBuilder.WriteString("        export NODE_OPTIONS=$NODE_OPTIONS\n")
+	scriptBuilder.WriteString("    fi\n")
+	scriptBuilder.WriteString("fi\n")
 	scriptBuilder.WriteString(startupCommand + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})

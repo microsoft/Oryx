@@ -302,6 +302,10 @@ COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190417.1 /opt /opt
 COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
+# Copy applicationinsightloader for node
+COPY images/build/node/oryxappinsightloader.js /tmp
+RUN chmod +x /tmp/oryxappinsightloader.js
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}

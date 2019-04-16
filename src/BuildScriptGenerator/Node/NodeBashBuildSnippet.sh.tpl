@@ -82,6 +82,17 @@ echo "Running '{{ PackageInstallCommand }}'..."
 echo
 {{ PackageInstallCommand }}
 
+{{ if OryxAppInsightInjectCommand | IsNotBlank }}
+echo
+echo "Preparing Envrionment to set up application insight..."
+echo "Running '{{ OryxAppInsightInjectCommand }}'..."
+echo
+{{ OryxAppInsightInjectCommand }}
+echo
+echo "copying application insight loader to '$DESTINATION_DIR'"
+cp /tmp/oryxappinsightloader.js "$DESTINATION_DIR"
+{{ end }}
+
 {{ if NpmRunBuildCommand | IsNotBlank }}
 echo
 echo "Running '{{ NpmRunBuildCommand }}'..."
