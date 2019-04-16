@@ -11,6 +11,7 @@ using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using ScriptGenerator=Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -34,6 +35,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{DotnetCoreConstants.StartupFileName}=\"{appName}.dll\"",
+                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
 
             // Act

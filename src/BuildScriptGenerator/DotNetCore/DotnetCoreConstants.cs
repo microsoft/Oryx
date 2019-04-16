@@ -24,5 +24,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string AspNetCoreAppPackageReference = "Microsoft.AspNetCore.App";
 
         public const string ProjectFileLanguageDetectorProperty = "ProjectFile";
+        public const string StartupFileName = "startupFileName";
     }
 }
