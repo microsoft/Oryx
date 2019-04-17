@@ -33,8 +33,9 @@ declare -r DOCKER_PACK_BUILDER_IMAGE_REPO="$DOCKER_DEV_REPO_BASE/$DOCKER_PACK_BU
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 declare -r DOCKER_RUNTIME_IMAGES_REPO=$DOCKER_DEV_REPO_BASE
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
+declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
-declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_DEV_NAME/public/oryx"
+declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
