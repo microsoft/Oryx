@@ -7,29 +7,42 @@
 # This script wraps the `node` commmand, and is used when Oryx needs to inject values to the node
 # command line and the application is started using "npm start", or any other form where the
 # node command is executed indirectly.
-set -ex
-originalNodePath=/usr/local/bin/node
-inspectParameter=${ORYX_NODE_INSPECT_PARAM:-"--inspect=0.0.0.0:9229"}
-targetScript="$1"
-if [[ ${targetScript: -4} == "/npm" || ${targetScript: -4} == "/pm2" ]]; then
-    $originalNodePath $@
-else
-    injectDebugFlag=true
-    args=""
-    inspectFlag="--inspect"
-    for param in "$@"; do
-        if [[ ${#param} >= ${#inspectFlag}} &&  "${param:0: ${#inspectFlag}}" == $inspectFlag ]]; then
-            injectDebugFlag=false
-            args="$args $inspectParameter"
-        else
-            args="$args $param"
-        fi
-        let "i=i+1"
-    done
+set -e
 
-    if [[ $injectDebugFlag == true ]]; then
-        $originalNodePath $inspectParameter $@
-    else
-        $originalNodePath $args
-    fi
+originalNodePath=/usr/local/bin/node
+if [[ -z "$ORYX_NODE_INSPECT_PARAM" ]]; then
+    inspectParameter="--inspect=0.0.0.0:9229"
+else
+    inspectParameter=$ORYX_NODE_INSPECT_PARAM
 fi
+
+targetScript="$1"
+case $targetScript in
+    *"/npm"|*"/pm2")
+        $originalNodePath $@
+        ;;
+    *)
+        injectDebugFlag=true
+        args=""
+        inspectFlag="--inspect"
+        for param in "$@"; do
+            case $param in
+                # If the command already has --inspect as a parameter, we place it with our version of
+                # it since we want to make sure the port is the one we expect.
+                *"--inspect"*)
+                    injectDebugFlag=false
+                    args="$args $inspectParameter"
+                    ;;
+                *)
+                    args="$args $param"
+                    ;;
+            esac
+        done
+
+        if [[ $injectDebugFlag == true ]]; then
+            $originalNodePath $inspectParameter $@
+        else
+            $originalNodePath $args
+        fi
+        ;;
+esac
