@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -42,13 +44,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(scriptGeneratorContext.SourceRepo);
+            var buildProperties = new Dictionary<string, string>();
+            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context.SourceRepo);
             if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
             {
                 return null;
             }
+
+            string startupFileName = null;
+            var projectFileContent = context.SourceRepo.ReadFile(projectFile);
+            var projFileDoc = XDocument.Load(new StringReader(projectFileContent));
+            var assemblyNameElement = projFileDoc.XPathSelectElement("/Project/PropertyGroup/AssemblyName");
+            if (assemblyNameElement == null)
+            {
+                var name = Path.GetFileNameWithoutExtension(projectFile);
+                startupFileName = $"{name}.dll";
+            }
+            else
+            {
+                startupFileName = $"{assemblyNameElement.Value}.dll";
+            }
+
+            buildProperties[DotnetCoreConstants.StartupFileName] = startupFileName;
 
             var props = new DotNetCoreBashBuildSnippetProperties
             {
@@ -56,7 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 PublishDirectory = publishDir
             };
             string script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.DotNetCoreSnippet, props, _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
+            return new BuildScriptSnippet { BashBuildScriptSnippet = script, BuildProperties = buildProperties };
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
