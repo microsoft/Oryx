@@ -49,6 +49,11 @@ namespace Microsoft.Oryx.Tests.Common
             return Append($"oryx build-script {argumentsString}");
         }
 
+        public ShellScriptBuilder SetEnvironmentVariable(string name, string value)
+        {
+            return Append($"export {name}={value}");
+        }
+
         public ShellScriptBuilder CreateDirectory(string directory)
         {
             return Append($"mkdir -p \"{directory}\"");

@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+TOTAL_EXECUTION_START_TIME=$SECONDS
 SOURCE_DIR=$1
 DESTINATION_DIR=$2
 INTERMEDIATE_DIR=$3
@@ -114,5 +115,6 @@ echo "Manifest file created."
 {{ end }}
 {{ end }}
 
+TOTAL_EXECUTION_ELAPSED_TIME=$(($SECONDS - $TOTAL_EXECUTION_START_TIME))
 echo
-echo Done.
+echo "Done in $TOTAL_EXECUTION_ELAPSED_TIME sec(s)."

@@ -81,5 +81,10 @@ namespace BuildScriptGeneratorCli.Tests
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
         }
+
+        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

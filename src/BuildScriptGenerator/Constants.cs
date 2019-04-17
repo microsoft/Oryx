@@ -10,5 +10,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
         public const string BuildEnvironmentFileName = "build.env";
         public const string ManifestFileName = "oryx-manifest.toml";
+
+        public const string ZipAllOutputBuildPropertyKey = "zip_all_output";
+        public const string ZipAllOutputBuildPropertyKeyDocumentation =
+            "Zips entire output content and puts the file in the destination directory." +
+            "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.";
     }
 }
