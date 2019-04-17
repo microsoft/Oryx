@@ -22,7 +22,6 @@ type NodeStartupScriptGenerator struct {
 	CustomStartCommand              string
 	RemoteDebugging                 bool
 	RemoteDebuggingBreakBeforeStart bool
-	RemoteDebuggingIp               string
 	RemoteDebuggingPort             string
 	UseLegacyDebugger               bool //used for node versions < 7.7
 	SkipNodeModulesExtraction       bool
@@ -38,6 +37,9 @@ type packageJsonScripts struct {
 }
 
 const DefaultBindPort = "8080"
+const NodeWrapperPath = "/opt/node-wrapper/"
+const LocalIp = "0.0.0.0"
+const inspectParamVariableName = "ORYX_NODE_INSPECT_PARAM"
 
 func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
@@ -58,13 +60,16 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("if [ -f " + oryxManifestFile + " ]; then\n")
 		scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "', checking if node_modules was compressed...\"\n")
 		scriptBuilder.WriteString("    source " + oryxManifestFile + "\n")
-		scriptBuilder.WriteString("    if [ ${compressedNodeModulesFile: -4} == \".zip\" ]; then\n")
-		scriptBuilder.WriteString("        echo \"Found zip-based node_modules.\"\n")
-		scriptBuilder.WriteString("        extractionCommand=\"unzip -q $compressedNodeModulesFile -d /node_modules\"\n")
-		scriptBuilder.WriteString("    elif [ ${compressedNodeModulesFile: -7} == \".tar.gz\" ]; then\n")
-		scriptBuilder.WriteString("        echo \"Found tar.gz based node_modules.\"\n")
-		scriptBuilder.WriteString("        extractionCommand=\"tar -xzf $compressedNodeModulesFile -C /node_modules\"\n")
-		scriptBuilder.WriteString("    fi\n")
+		scriptBuilder.WriteString("    case $compressedNodeModulesFile in \n")
+		scriptBuilder.WriteString("        *\".zip\"\n")
+		scriptBuilder.WriteString("            echo \"Found zip-based node_modules.\"\n")
+		scriptBuilder.WriteString("            extractionCommand=\"unzip -q $compressedNodeModulesFile -d /node_modules\"\n")
+		scriptBuilder.WriteString("            ;;\n")
+		scriptBuilder.WriteString("        *\".tar.gz\"\n")
+		scriptBuilder.WriteString("            echo \"Found tar.gz based node_modules.\"\n")
+		scriptBuilder.WriteString("            extractionCommand=\"tar -xzf $compressedNodeModulesFile -C /node_modules\"\n")
+		scriptBuilder.WriteString("            ;;\n")
+		scriptBuilder.WriteString("    esac\n")
 		scriptBuilder.WriteString("    if [ ! -z \"$extractionCommand\" ]; then\n")
 		scriptBuilder.WriteString("        echo \"Removing existing modules directory...\"\n")
 		scriptBuilder.WriteString("        rm -fr /node_modules\n")
@@ -75,10 +80,10 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("    echo \"Done.\"\n")
 		scriptBuilder.WriteString("fi\n\n")
 	}
-	commandSource := ""
 
 	// If user passed a custom startup command, it should take precedence above all other options
 	startupCommand := strings.TrimSpace(gen.UserStartupCommand)
+	commandSource := "User"
 	if startupCommand == "" {
 		logger.LogVerbose("No user-supplied startup command found")
 
@@ -86,31 +91,30 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		packageJsonObj := getPackageJsonObject(gen.SourcePath)
 
 		startupCommand = gen.getPackageJsonStartCommand(packageJsonObj)
-		if startupCommand != "" {
-			commandSource = "PackageJsonStart"
-		} else {
+		commandSource = "PackageJsonStart"
+
+		if startupCommand == "" {
 			logger.LogVerbose("scripts.start not found in package.json")
 			if packageJsonObj != nil && packageJsonObj.Main != "" {
 				logger.LogVerbose("Using startup command from package.json main field")
 				startupCommand = gen.getStartupCommandFromJsFile(packageJsonObj.Main)
+				commandSource = "PackageJsonMain"
 			}
 		}
 
-		if startupCommand != "" {
-			commandSource = "PackageJsonMain"
-		} else {
+		if startupCommand == "" {
 			startupCommand = gen.getCandidateFilesStartCommand(gen.SourcePath)
+			commandSource = "CandidateFile"
 		}
 
-		if startupCommand != "" {
-			commandSource = "CandidateFile"
-		} else {
+		if startupCommand == "" {
 			logger.LogWarning("Resorting to default startup command")
 			startupCommand = gen.getDefaultAppStartCommand()
 			commandSource = "DefaultApp"
 		}
+
 	} else {
-		commandSource = "User"
+
 		logger.LogInformation("adding execution permission if needed ...")
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
 		logger.LogInformation("permission added %t", isPermissionAdded)
@@ -128,12 +132,21 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 // Gets the startup script from package.json if defined. Returns empty string if not found.
 func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj *packageJson) string {
 	if packageJsonObj != nil && packageJsonObj.Scripts != nil && packageJsonObj.Scripts.Start != "" {
+		var commandBuilder strings.Builder
+		if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
+			// At this point we know debugging is enabled, and node will be called indirectly through npm
+			// or yarn. We inject the wrapper in the path so it executes instead of the node binary.
+			commandBuilder.WriteString("PATH=" + NodeWrapperPath + ":$PATH\n")
+			debugFlag := gen.getDebugFlag()
+			commandBuilder.WriteString(inspectParamVariableName + "=\"" + debugFlag + "\"\n")
+		}
 		yarnLockPath := filepath.Join(gen.SourcePath, "yarn.lock") // TODO: consolidate with Microsoft.Oryx.BuildScriptGenerator.Node.NodeConstants.YarnLockFileName
 		if common.FileExists(yarnLockPath) {
-			return "yarn run start"
+			commandBuilder.WriteString("yarn run start\n")
 		} else {
-			return "npm start"
+			commandBuilder.WriteString("npm start\n")
 		}
+		return commandBuilder.String()
 	}
 	return ""
 }
@@ -173,23 +186,8 @@ func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePat
 	var commandBuilder strings.Builder
 	if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
 		logger.LogInformation("Remote debugging on")
-
-		if gen.UseLegacyDebugger {
-			commandBuilder.WriteString("node --debug")
-		} else {
-			commandBuilder.WriteString("node --inspect")
-		}
-
-		if gen.RemoteDebuggingBreakBeforeStart {
-			commandBuilder.WriteString("-brk")
-		}
-
-		if gen.RemoteDebuggingIp != "" {
-			commandBuilder.WriteString("=" + gen.RemoteDebuggingIp)
-			if gen.RemoteDebuggingPort != "" {
-				commandBuilder.WriteString(":" + gen.RemoteDebuggingPort)
-			}
-		}
+		debugFlag := gen.getDebugFlag()
+		commandBuilder.WriteString("node " + debugFlag)
 	} else if gen.CustomStartCommand != "" {
 		commandBuilder.WriteString(gen.CustomStartCommand)
 	} else {
@@ -197,6 +195,27 @@ func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePat
 	}
 
 	commandBuilder.WriteString(" " + mainJsFilePath)
+	return commandBuilder.String()
+}
+
+// Builds the flag that should be passed to `node` to enable debugging.
+func (gen *NodeStartupScriptGenerator) getDebugFlag() string {
+	var commandBuilder strings.Builder
+	if gen.UseLegacyDebugger {
+		commandBuilder.WriteString("--debug")
+	} else {
+		commandBuilder.WriteString("--inspect")
+	}
+
+	if gen.RemoteDebuggingBreakBeforeStart {
+		commandBuilder.WriteString("-brk")
+	}
+
+	commandBuilder.WriteString("=" + LocalIp)
+	if gen.RemoteDebuggingPort != "" {
+		commandBuilder.WriteString(":" + gen.RemoteDebuggingPort)
+	}
+
 	return commandBuilder.String()
 }
 

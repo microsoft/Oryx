@@ -7,6 +7,8 @@
 # This script wraps the `node` commmand, and is used when Oryx needs to inject values to the node
 # command line and the application is started using "npm start", or any other form where the
 # node command is executed indirectly.
+# We cannot use NODE_OPTIONS for instance, since for npm commands this variable would also apply
+# and thus the debug port would be consumed for debugging npm itself instead of the application.
 set -e
 
 originalNodePath=/usr/local/bin/node
@@ -18,7 +20,10 @@ fi
 
 targetScript="$1"
 case $targetScript in
-    *"/npm"|*"/pm2")
+    # If the path is /usr/local, we asumme we're running an intermal library or tool, e.g. npm,
+    # and not the app. In this case we run the node binary unchanged.
+    "/usr/local/"*)
+        echo "target1: $targetScript"
         $originalNodePath $@
         ;;
     *)
