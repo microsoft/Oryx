@@ -57,9 +57,9 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	if !gen.SkipNodeModulesExtraction {
 		const oryxManifestFile string = "oryx-manifest.toml"
-		scriptBuilder.WriteString("if [ -f " + oryxManifestFile + " ]; then\n")
+		scriptBuilder.WriteString("if [ -f ./" + oryxManifestFile + " ]; then\n")
 		scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "', checking if node_modules was compressed...\"\n")
-		scriptBuilder.WriteString("    source " + oryxManifestFile + "\n")
+		scriptBuilder.WriteString("    source ./" + oryxManifestFile + "\n")
 		scriptBuilder.WriteString("    case $compressedNodeModulesFile in \n")
 		scriptBuilder.WriteString("        *\".zip\")\n")
 		scriptBuilder.WriteString("            echo \"Found zip-based node_modules.\"\n")
@@ -138,7 +138,7 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj
 			// or yarn. We inject the wrapper in the path so it executes instead of the node binary.
 			commandBuilder.WriteString("PATH=" + NodeWrapperPath + ":$PATH\n")
 			debugFlag := gen.getDebugFlag()
-			commandBuilder.WriteString(inspectParamVariableName + "=\"" + debugFlag + "\"\n")
+			commandBuilder.WriteString("export " + inspectParamVariableName + "=\"" + debugFlag + "\"\n")
 		}
 		yarnLockPath := filepath.Join(gen.SourcePath, "yarn.lock") // TODO: consolidate with Microsoft.Oryx.BuildScriptGenerator.Node.NodeConstants.YarnLockFileName
 		if common.FileExists(yarnLockPath) {
