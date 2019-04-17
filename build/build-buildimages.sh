@@ -83,7 +83,7 @@ echo Building a base image for tests ...
 # Do not write this image tag to the artifacts file as we do not intend to push it
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
-# Retag build image with acr tags
+# Retag build image with ACR tags
 docker tag "$DOCKER_BUILD_IMAGES_REPO:latest" "$ACR_BUILD_IMAGES_REPO:latest"
 
 if [ -n "$BUILD_NUMBER" ]
