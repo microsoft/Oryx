@@ -59,7 +59,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		const oryxManifestFile string = "oryx-manifest.toml"
 		scriptBuilder.WriteString("if [ -f ./" + oryxManifestFile + " ]; then\n")
 		scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "', checking if node_modules was compressed...\"\n")
-		scriptBuilder.WriteString("    source ./" + oryxManifestFile + "\n")
+		scriptBuilder.WriteString("    . ./" + oryxManifestFile + "\n")
 		scriptBuilder.WriteString("    case $compressedNodeModulesFile in \n")
 		scriptBuilder.WriteString("        *\".zip\")\n")
 		scriptBuilder.WriteString("            echo \"Found zip-based node_modules.\"\n")
@@ -76,6 +76,9 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("        mkdir -p /node_modules\n")
 		scriptBuilder.WriteString("        echo \"Extracting modules...\"\n")
 		scriptBuilder.WriteString("        $extractionCommand\n")
+		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
+		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
+		scriptBuilder.WriteString("        export NODE_PATH=/node_modules:$NODE_PATH\n")
 		scriptBuilder.WriteString("    fi\n")
 		scriptBuilder.WriteString("    echo \"Done.\"\n")
 		scriptBuilder.WriteString("fi\n\n")
@@ -136,7 +139,7 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj
 		if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
 			// At this point we know debugging is enabled, and node will be called indirectly through npm
 			// or yarn. We inject the wrapper in the path so it executes instead of the node binary.
-			commandBuilder.WriteString("PATH=" + NodeWrapperPath + ":$PATH\n")
+			commandBuilder.WriteString("export PATH=" + NodeWrapperPath + ":$PATH\n")
 			debugFlag := gen.getDebugFlag()
 			commandBuilder.WriteString("export " + inspectParamVariableName + "=\"" + debugFlag + "\"\n")
 		}
@@ -144,7 +147,7 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj
 		if common.FileExists(yarnLockPath) {
 			commandBuilder.WriteString("yarn run start\n")
 		} else {
-			commandBuilder.WriteString("npm start\n")
+			commandBuilder.WriteString("npm start --scripts-prepend-node-path false\n")
 		}
 		return commandBuilder.String()
 	}

@@ -12,7 +12,7 @@
 set -e
 
 originalNodePath=/usr/local/bin/node
-if [[ -z "$ORYX_NODE_INSPECT_PARAM" ]]; then
+if [ -z "$ORYX_NODE_INSPECT_PARAM" ]; then
     inspectParameter="--inspect=0.0.0.0:9229"
 else
     inspectParameter=$ORYX_NODE_INSPECT_PARAM
@@ -44,7 +44,7 @@ case $targetScript in
             esac
         done
 
-        if [[ $injectDebugFlag == true ]]; then
+        if [ "$injectDebugFlag" = "true" ]; then
             $originalNodePath $inspectParameter $@
         else
             $originalNodePath $args

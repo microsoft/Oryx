@@ -17,26 +17,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
-        [InlineData("4.4")]
-        [InlineData("4.5")]
-        [InlineData("4.8")]
-        [InlineData("6.2")]
-        [InlineData("6.6")]
-        [InlineData("6.9")]
-        [InlineData("6.10")]
-        [InlineData("6.11")]
-        [InlineData("8.0")]
-        [InlineData("8.1")]
-        [InlineData("8.2")]
-        [InlineData("8.8")]
-        [InlineData("8.9")]
-        [InlineData("8.11")]
-        [InlineData("8.12")]
-        [InlineData("9.4")]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.12")]
-        [InlineData("10.14")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public void NodeImage_Contains_VersionAndCommit_Information(string version)
         {
             var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
@@ -108,26 +89,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("4.4")]
-        [InlineData("4.5")]
-        [InlineData("4.8")]
-        [InlineData("6.2")]
-        [InlineData("6.6")]
-        [InlineData("6.9")]
-        [InlineData("6.10")]
-        [InlineData("6.11")]
-        [InlineData("8.0")]
-        [InlineData("8.1")]
-        [InlineData("8.2")]
-        [InlineData("8.8")]
-        [InlineData("8.9")]
-        [InlineData("8.11")]
-        [InlineData("8.12")]
-        [InlineData("9.4")]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.12")]
-        [InlineData("10.14")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public void NodeImage_Contains_RequiredPrograms(string nodeTag)
         {
             // Arrange & Act
