@@ -40,7 +40,7 @@ builderFqn="mcr.microsoft.com/oryx/$DOCKER_PACK_BUILDER_IMAGE_NAME"
 docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$builderFqn"
 
 # Remove pack & everything that was added by it
-rm -f   ./pack 
+rm -f   ./pack
 rm -rf ~/.pack
 
 # Build an image that runs `pack`
