@@ -106,6 +106,9 @@ then
 	echo "$ACR_BUILD_IMAGES_REPO:$BUILD_DEFINITIONNAME.$BUILD_NUMBER" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 fi
 
+# Build buildpack images
+source $REPO_DIR/build/build-buildpacks-images.sh
+
 echo
 echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
 cat $BUILD_IMAGES_ARTIFACTS_FILE
