@@ -89,6 +89,14 @@ cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
 
+{{ if PostBuildScriptPath | IsNotBlank }}
+# Make sure to cd to the source directory so that the post-build script runs from there
+cd $SOURCE_DIR
+echo "{{ PostBuildScriptPrologue }}"
+"{{ PostBuildScriptPath }}"
+echo "{{ PostBuildScriptEpilogue }}"
+{{ end }}
+
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	cd "$SOURCE_DIR"
@@ -104,14 +112,6 @@ then
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 fi
-
-{{ if PostBuildScriptPath | IsNotBlank }}
-# Make sure to cd to the source directory so that the post-build script runs from there
-cd $SOURCE_DIR
-echo "{{ PostBuildScriptPrologue }}"
-"{{ PostBuildScriptPath }}"
-echo "{{ PostBuildScriptEpilogue }}"
-{{ end }}
 
 {{ if ManifestFileName | IsNotBlank }}
 MANIFEST_FILE={{ ManifestFileName }}
