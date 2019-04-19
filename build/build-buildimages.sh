@@ -77,8 +77,8 @@ then
 
 	echo
 	echo "Retagging image '$builtImageTag' with DockerHub and ACR related tags..."
-	docker tag "$builtImageTag" "$DOCKER_BUILD_IMAGE_REPO:latest"
-	docker tag "$builtImageTag" "$DOCKER_BUILD_IMAGE_REPO:$uniqueTag"
+	docker tag "$builtImageTag" "$DOCKER_BUILD_IMAGES_REPO:latest"
+	docker tag "$builtImageTag" "$DOCKER_BUILD_IMAGES_REPO:$uniqueTag"
 	docker tag "$builtImageTag" "$ACR_BUILD_IMAGE_REPO:latest"
 	docker tag "$builtImageTag" "$ACR_BUILD_IMAGE_REPO:$uniqueTag"
 
@@ -88,8 +88,8 @@ then
 	mkdir -p "$ARTIFACTS_DIR/images"
 
 	# Write image list to artifacts file
-	echo "$DOCKER_BUILD_IMAGE_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "$DOCKER_BUILD_IMAGE_REPO:$uniqueTag" >> $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$DOCKER_BUILD_IMAGES_REPO:$uniqueTag" >> $BUILD_IMAGES_ARTIFACTS_FILE
 	echo "$ACR_BUILD_IMAGE_REPO:latest" > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	echo "$ACR_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
