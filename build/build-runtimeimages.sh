@@ -92,8 +92,8 @@ for dockerFile in $dockerFiles; do
     then
         uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
-        dockerHubRuntimeImageTagNameRepo="$DOCKER_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
-        acrRuntimeImageTagNameRepo="$ACR_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
+        dockerHubRuntimeImageTagNameRepo="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
+        acrRuntimeImageTagNameRepo="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
 
         docker tag "$localImageTagName" "$dockerHubRuntimeImageTagNameRepo:latest"
         docker tag "$localImageTagName" "$dockerHubRuntimeImageTagNameRepo:$uniqueTag"
