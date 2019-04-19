@@ -127,21 +127,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool pruneDevDependencies = ShouldPruneDevDependencies(context);
             bool appInsightDependency = IsPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightPackageName);
             string appInsightInjectCommand = string.Empty;
-            _logger.LogInformation("Current Node Version: {v}", context.NodeVersion);
-            _logger.LogInformation("Comparing to version 8: {x}", SemanticVersionResolver.CompareVersion(context.NodeVersion, "8.0.0"));
-            _logger.LogInformation("Comparing to version 6.12.0: {y}", SemanticVersionResolver.CompareVersion(context.NodeVersion, "6.12.0"));
 
             // node_options is only supported in version 8.0.0 or newer and in 6.12.0
-            // so we will be able to set upapp insight only when node version is 6.12.0 or 8.0.0 or newer
+            // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
             if (!appInsightDependency
                 && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.AppInsightKey))
                 && ( SemanticVersionResolver.CompareVersion(context.NodeVersion, "8.0.0") >= 0
-                || SemanticVersionResolver.CompareVersion(context.NodeVersion, "6.12.0") == 0))
+                || SemanticVersionResolver.CompareVersion(context.NodeVersion, "6.12.0") == 0
+                || SemanticVersionResolver.CompareVersion(context.LanguageVersion, "8.0.0") >= 0
+                || SemanticVersionResolver.CompareVersion(context.LanguageVersion, "6.12.0") == 0))
             {
                 appInsightInjectCommand =
-                string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightPackageName);
-                var nodeOptionValue = string.Concat("--require ", NodeConstants.OryxNodeAppInsightLoader);
-                buildProperties[NodeConstants.OryxNodeOptions] = nodeOptionValue;
+                    string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightPackageName);
+                buildProperties[NodeConstants.OryxNodeOptions] = true.ToString();
                 _logger.LogInformation("Oryx setting up applicationinsight for auto-collection telemetry... ");
             }
 

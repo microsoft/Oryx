@@ -89,8 +89,24 @@ echo "Running '{{ OryxAppInsightInjectCommand }}'..."
 echo
 {{ OryxAppInsightInjectCommand }}
 echo
-echo "copying application insight loader to '$DESTINATION_DIR'"
-cp /tmp/oryxappinsightloader.js "$DESTINATION_DIR"
+echo "Creating application insight loader file to '$DESTINATION_DIR'"
+echo "// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+var appInsights = require('applicationinsights');
+
+if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+    try {
+        appInsights
+            .setup()
+            .start();
+    } catch (e) {
+        console.error(e);
+    }
+}">oryxappinsightloader.js
+cat oryxappinsightloader.js
 {{ end }}
 
 {{ if NpmRunBuildCommand | IsNotBlank }}

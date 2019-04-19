@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -446,6 +447,114 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_DoesNotConfigureAppInsight_IfAppInsightEnvironmentVariable_NotSet()
+        {
+            var nodeVersion = "10.14.1";
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = nodeVersion;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                oryxAppInsightInjectCommand:null);
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_DoesNotConfigureAppInsight_IfNodeVersionCondition_Unsatisfied()
+        {
+            var nodeVersion = "6.9.3";
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            Environment.SetEnvironmentVariable(Constants.AppInsightKey, "xyz");
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = nodeVersion;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                oryxAppInsightInjectCommand: null);
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Theory]
+        [InlineData("8.0.0")]
+        [InlineData("10.14.1")]
+        public void GeneratedScript_ConfigureAppInsight_Condition_Satisfied(string version)
+        {
+            // Condition is node version have to be 8 or newer or node version is 6.12.0
+            // As we don't support 6.12.0 in our build image we condition remains node 8 or newer
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: version);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            Environment.SetEnvironmentVariable(Constants.AppInsightKey, "xyz");
+            var context = CreateScriptGeneratorContext(repo);
+            context.NodeVersion = version;
+            context.LanguageVersion = version;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                oryxAppInsightInjectCommand: "npm install --save applicationinsights");
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("applicationinsights", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);

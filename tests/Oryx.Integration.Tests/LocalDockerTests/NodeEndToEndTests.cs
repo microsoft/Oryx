@@ -347,6 +347,66 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Theory]
+        [InlineData("8.0")]
+        [InlineData("10.14")]
+        public async Task CanBuildAndRun_NodeApp_WithAppInsight_Configured(string nodeVersion)
+        {
+            // Arrange
+            var appName = "webfrontend";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + nodeVersion;
+            var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{hostDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .AddFileExistsCheck($"{appDir}/oryxappinsightloader.js")
+                .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
+                .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"export APPINSIGHTS_INSTRUMENTATIONKEY=asdas")
+                .AddCommand("printenv")
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .AddFileExistsCheck($"{appDir}/oryxappinsightloader.js")
+                .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("Oryx has set up Code-less App-Insight", $"{appDir}/run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                "/bin/bash",
+                 new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda") },
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.DoesNotContain("Say It Again", data);
+                });
+        }
+
         [Fact]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {

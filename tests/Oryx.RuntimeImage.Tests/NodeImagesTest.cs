@@ -131,6 +131,44 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
         }
 
+        [Fact]
+        public void GeneratedScript_CanRunStartupScripts_WithAInsightConfigured()
+        {
+            // Arrange
+            const int exitCodeSentinel = 222;
+            var appPath = "/tmp/app";
+            var aiNodesdkLoaderContent = @"var appInsights = require('applicationinsights');  
+                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+                { 
+                    try 
+                    { 
+                       appInsights.setup().start();
+                    } catch (e) { 
+                       console.error(e); 
+                    } 
+                }";
+            var manifestFileContent = "OryxInjectedAppInsight=\"True\"";
+
+            var script = new ShellScriptBuilder()
+                .CreateDirectory(appPath)
+                .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
+                .CreateFile(appPath + "/oryx-manifest.toml", manifestFileContent)
+                .CreateFile(appPath + "/oryxappinsightloader.js", aiNodesdkLoaderContent)
+                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
+                .AddCommand(". ./run.sh") // Source the default output path
+                .AddStringExistsInFileCheck("export NODE_OPTIONS='--require ./oryxappinsightloader.js'", "./run.sh")
+                .ToString();
+
+            // Act
+            var res = _dockerCli.Run("oryxdevms/node-10.14", 
+                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "asdas"), "/bin/sh", new[] { "-c", script });
+
+            // Assert
+            RunAsserts(() => 
+            Assert.Equal(res.ExitCode, exitCodeSentinel),
+            res.GetDebugInfo());
+        }
+
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingProcessJson(string nodeVersion)

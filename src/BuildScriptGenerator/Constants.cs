@@ -10,7 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
         public const string BuildEnvironmentFileName = "build.env";
         public const string ManifestFileName = "oryx-manifest.toml";
-        public const string InjectAppInsightBuildProperty = "oryxSetAppInsight";
         public const string AppInsightKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
     }
 }
