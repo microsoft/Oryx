@@ -17,45 +17,6 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 	// node a/b/c.js
 }
 
-func ExampleNodeStartupScriptGenerator_GenerateEntrypointScript_UserStartupCommandIsUsed() {
-	gen := &NodeStartupScriptGenerator{
-		SourcePath:         "output",
-		UserStartupCommand: "abc",
-		BindPort:           "8080",
-	}
-	command := gen.GenerateEntrypointScript()
-	fmt.Println(command)
-	// Output:
-	// #!/bin/sh
-	//
-	// # Enter the source directory to make sure the script runs where the user expects
-	// cd output
-	//
-	// export PORT=8080
-	//
-	// if [ -f oryx-manifest.toml ]; then
-	//     echo "Found 'oryx-manifest.toml', checking if node_modules was compressed..."
-	//     source oryx-manifest.toml
-	//     if [ ${compressedNodeModulesFile: -4} == ".zip" ]; then
-	//         echo "Found zip-based node_modules."
-	//         extractionCommand="unzip -q $compressedNodeModulesFile -d /node_modules"
-	//     elif [ ${compressedNodeModulesFile: -7} == ".tar.gz" ]; then
-	//         echo "Found tar.gz based node_modules."
-	//         extractionCommand="tar -xzf $compressedNodeModulesFile -C /node_modules"
-	//     fi
-	//     if [ ! -z "$extractionCommand" ]; then
-	//         echo "Removing existing modules directory..."
-	//         rm -fr /nodeModules
-	//         mkdir -p /nodeModules
-	//         echo "Extracting modules..."
-	//         $extractionCommand
-	//     fi
-	//     echo "Done."
-	// fi
-	//
-	// PATH="$PATH:output" abc
-}
-
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
 	gen := &NodeStartupScriptGenerator{
 		CustomStartCommand: "pm2 start --no-daemon",
