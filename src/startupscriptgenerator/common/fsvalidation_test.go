@@ -14,6 +14,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Example_FSValidation_GetSubPath_SimpleSubPath() {
+	result := GetSubPath("a/b", "a/b/c")
+	fmt.Println(result)
+	// Output:
+	// c
+}
+
+func Example_FSValidation_GetSubPath_EqualPath() {
+	result := GetSubPath("a/b", "a/b/")
+	fmt.Println(result)
+	// Output:
+	//
+}
+
+func Example_FSValidation_GetSubPath_TwoLevels() {
+	result := GetSubPath("a/b/", "a/b/cde/fghi.abc")
+	fmt.Println(result)
+	// Output:
+	// cde/fghi.abc
+}
+
 //test pathexists with valid path
 func Test_FSValidation_PathExists_PathIsValid(t *testing.T) {
 	testPath := os.TempDir()
