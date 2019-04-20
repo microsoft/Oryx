@@ -530,7 +530,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Investigate environment")]
         // TODO - renable it with 851972, removing the inline data
         //[MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         [InlineData("10.10")]
