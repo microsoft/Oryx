@@ -19,7 +19,7 @@ type NodeStartupScriptGenerator struct {
 	UserStartupCommand              string
 	DefaultAppJsFilePath            string
 	BindPort                        string
-	CustomStartCommand              string
+	UsePm2                          bool
 	RemoteDebugging                 bool
 	RemoteDebuggingBreakBeforeStart bool
 	RemoteDebuggingPort             string
@@ -116,6 +116,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 		if startupCommand == "" && userStartupCommandFullPath != "" {
 			isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
+			logger.LogInformation("permission added %t", isPermissionAdded)
 			startupCommand = common.ExtendPathForCommand(gen.UserStartupCommand, gen.SourcePath)
 			commandSource = "UserScript"
 		}
@@ -250,8 +251,8 @@ func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePat
 		logger.LogInformation("Remote debugging on")
 		debugFlag := gen.getDebugFlag()
 		commandBuilder.WriteString("node " + debugFlag)
-	} else if gen.CustomStartCommand != "" {
-		commandBuilder.WriteString(gen.CustomStartCommand)
+	} else if gen.UsePm2 {
+		commandBuilder.WriteString("pm2 start --no-daemon")
 	} else {
 		commandBuilder.WriteString("node")
 	}

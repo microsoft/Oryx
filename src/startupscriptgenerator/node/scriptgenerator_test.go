@@ -131,7 +131,7 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
 	gen := &NodeStartupScriptGenerator{
-		CustomStartCommand: "pm2 start --no-daemon",
+		UsePm2: true,
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
 	fmt.Println(command)
