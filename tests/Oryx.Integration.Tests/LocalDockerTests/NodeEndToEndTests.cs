@@ -361,7 +361,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + nodeVersion;
             var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{hostDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .AddFileExistsCheck($"{appDir}/oryxappinsightloader.js")
                 .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
@@ -403,7 +403,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    Assert.DoesNotContain("Say It Again", data);
+                    Assert.Contains("Say It Again", data);
                 });
         }
 

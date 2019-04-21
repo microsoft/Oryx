@@ -138,12 +138,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {nestedOutputDir} --log-file {nestedOutputDir}/1.log")
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryxappinsightloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{nestedOutputDir}/1.log")
+                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
             // Act
@@ -179,12 +179,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
             var nestedOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {nestedOutputDir}/1.log")
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryxappinsightloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{nestedOutputDir}/1.log")
+                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
             // Act
@@ -220,7 +220,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var nestedOutputDir = "/tmp/output";
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {nestedOutputDir}/1.log")
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryxappinsightloader.js")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
@@ -259,7 +259,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var nestedOutputDir = "/tmp/output";
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {nestedOutputDir}/1.log")
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryxappinsightloader.js")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
