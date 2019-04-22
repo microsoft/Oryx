@@ -46,7 +46,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
         {
             // Arrange & Act
-            var result = _dockerCli.Run("oryxdevms/php-" + imageTag + ":latest", "php", new[] { "-r", "echo json_encode(gd_info());" });
+            var result = _dockerCli.Run(
+                "oryxdevms/php-" + imageTag + ":latest",
+                "php", new[] { "-r", "echo json_encode(gd_info());" });
 
             // Assert
             JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);
