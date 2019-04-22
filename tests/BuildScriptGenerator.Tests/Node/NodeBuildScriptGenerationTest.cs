@@ -453,7 +453,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        [Fact]
+        [Fact ]
         public void GeneratedScript_DoesNotConfigureAppInsight_IfAppInsightEnvironmentVariable_NotSet()
         {
             var nodeVersion = "10.14.1";
@@ -462,7 +462,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = nodeVersion;
+            context.NodeVersion = nodeVersion;
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -497,7 +497,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             Environment.SetEnvironmentVariable(Constants.AppInsightKey, "xyz");
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = nodeVersion;
+            context.NodeVersion = nodeVersion;
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -512,6 +512,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            Environment.SetEnvironmentVariable(Constants.AppInsightKey, string.Empty);
 
             // Assert
             Assert.NotNull(snippet);
@@ -536,7 +537,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Environment.SetEnvironmentVariable(Constants.AppInsightKey, "xyz");
             var context = CreateScriptGeneratorContext(repo);
             context.NodeVersion = version;
-            context.LanguageVersion = version;
+            //context.LanguageVersion = version;
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
@@ -551,6 +552,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            Environment.SetEnvironmentVariable(Constants.AppInsightKey, string.Empty);
 
             // Assert
             Assert.NotNull(snippet);
