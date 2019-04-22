@@ -103,7 +103,7 @@ for dockerFile in $dockerFiles; do
         if [ $clearedOutput == "false" ]
         then
             # clear existing contents of the file, if any
-            > $DOCKER_RUNTIME_IMAGES_ARTIFACTS_FILE
+            > $RUNTIME_IMAGES_ARTIFACTS_FILE
             > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
             clearedOutput=true
         fi
@@ -111,8 +111,8 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating artifacts file with the built runtime image information..."
-    	echo "$dockerHubRuntimeImageTagNameRepo:latest" >> $DOCKER_RUNTIME_IMAGES_ARTIFACTS_FILE
-    	echo "$dockerHubRuntimeImageTagNameRepo:$uniqueTag" >> $DOCKER_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$dockerHubRuntimeImageTagNameRepo:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$dockerHubRuntimeImageTagNameRepo:$uniqueTag" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
         echo "$acrRuntimeImageTagNameRepo:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
         echo "$acrRuntimeImageTagNameRepo:$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     fi
@@ -123,8 +123,8 @@ done
 if [ -n "$BUILD_NUMBER" ]
 then
     echo
-    echo "List of images built (from '$DOCKER_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
-    cat $DOCKER_RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
+    cat $RUNTIME_IMAGES_ARTIFACTS_FILE
     
     echo
     echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
