@@ -479,7 +479,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                appInsightsInjectCommand: null);
+                appInsightsInjectCommand: null,
+                appInsightsPackageName: "applicationinsights",
+                appInsightsLoaderFileName: "oryx-appinsightsloader.js");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -520,7 +522,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                appInsightsInjectCommand: null);
+                appInsightsInjectCommand: null,
+                appInsightsPackageName: "applicationinsights",
+                appInsightsLoaderFileName: "oryx-appinsightsloader.js");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -571,7 +575,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                appInsightsInjectCommand: "npm install --save applicationinsights");
+                appInsightsInjectCommand: "npm install --save applicationinsights",
+                appInsightsPackageName: "applicationinsights",
+                appInsightsLoaderFileName: "oryx-appinsightsloader.js");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);

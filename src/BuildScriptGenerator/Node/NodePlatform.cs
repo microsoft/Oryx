@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(context);
-            bool appInsightDependency = IsPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightPackageName);
+            bool appInsightDependency = IsPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
             string appInsightsInjectCommand = string.Empty;
 
             if (_environment != null)
@@ -157,9 +157,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12.0") == 0))
                 {
                     appInsightsInjectCommand =
-                        string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightPackageName);
+                        string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightsPackageName);
                     buildProperties[NodeConstants.OryxInjectedAppInsights] = true.ToString();
-                    _logger.LogInformation("Oryx setting up applicationinsight for auto-collection telemetry... ");
+                    _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
                 }
             }
 
@@ -173,7 +173,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 compressedNodeModulesFileName: compressedNodeModulesFileName,
                 configureYarnCache: configureYarnCache,
                 pruneDevDependencies: pruneDevDependencies,
-                appInsightsInjectCommand: appInsightsInjectCommand);
+                appInsightsInjectCommand: appInsightsInjectCommand,
+                appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
+                appInsightsLoaderFileName: NodeConstants.NodeAppInsightsLoaderFileName);
 
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,

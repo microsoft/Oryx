@@ -96,7 +96,7 @@ echo "// -----------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
 // Created by Oryx
-var appInsights = require('applicationinsights');
+var appInsights = require('{{ AppInsightsPackageName }}');
 
 if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     try {
@@ -106,8 +106,8 @@ if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     } catch (e) {
         console.error(e);
     }
-}">oryx-appinsightsloader.js
-cat oryx-appinsightsloader.js
+}">{{ AppInsightsLoaderFileName }}
+cat {{ AppInsightsLoaderFileName }}
 {{ end }}
 
 {{ if NpmRunBuildCommand | IsNotBlank }}

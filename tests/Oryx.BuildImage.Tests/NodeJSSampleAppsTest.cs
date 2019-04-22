@@ -141,10 +141,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand("printenv")
                 .AddCommand($"oryx build {appDir} -o {nestedOutputDir} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryxappinsightsloader.js")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
             // Act
@@ -196,7 +195,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
             // Act
@@ -328,8 +326,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
-                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
+                .AddFileExistsCheck($"{appOutputDir}/hi.txt")
+                .AddFileExistsCheck($"{appOutputDir}/blah/hi.txt")
                 .ToString();
 
             // Act

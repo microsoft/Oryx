@@ -377,7 +377,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
