@@ -303,6 +303,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.AllNodeModulesDirName,
                 NodeConstants.ProdNodeModulesDirName,
                 NodeConstants.NodeModulesDirName,
+                NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
                 NodeConstants.NodeModulesTarGzFileName
             };
@@ -364,7 +365,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 else if (string.Equals(compressNodeModulesOption, ZipNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesZippedFileName;
-                    compressNodeModulesCommand = $"zip -q -r";
+                    compressNodeModulesCommand = $"zip -y -q -r";
                     isNodeModulesPackaged = true;
                 }
             }

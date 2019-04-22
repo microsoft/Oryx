@@ -79,6 +79,16 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
 		scriptBuilder.WriteString("        export NODE_PATH=/node_modules:$NODE_PATH\n")
+		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
+		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
+		scriptBuilder.WriteString("        export PATH=/node_modules/.bin:$PATH\n")
+		// To avoid having older versions of packages available, we delete existing node_modules folder.
+		// We do so in the background to not block the app's startup.
+		scriptBuilder.WriteString("        if [ -d node_modules ]; then\n")
+		// We move the directory first to prevent node from start using it
+		scriptBuilder.WriteString("            mv -f node_modules _del_node_modules || true\n")
+		scriptBuilder.WriteString("            nohup rm -fr _del_node_modules &> /dev/null &\n")
+		scriptBuilder.WriteString("        fi\n")
 		scriptBuilder.WriteString("    fi\n")
 		scriptBuilder.WriteString("    echo \"Done.\"\n")
 		scriptBuilder.WriteString("fi\n\n")
