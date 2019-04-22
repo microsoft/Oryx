@@ -29,5 +29,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"root": gen.SourcePath, "cmd": gen.StartupCmd})
-	return scriptBuilder.String()
+	var runScript = scriptBuilder.String()
+	logger.LogInformation("Run script content:\n" + runScript)
+	return runScript
 }

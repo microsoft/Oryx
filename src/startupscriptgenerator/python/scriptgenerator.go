@@ -119,7 +119,9 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogProperties("Finalizing script", map[string]string{"appType": appType, "appModule": appModule, "venv": gen.VirtualEnvironmentName})
 
-	return scriptBuilder.String()
+	var runScript = scriptBuilder.String()
+	logger.LogInformation("Run script content:\n" + runScript)
+	return runScript
 }
 
 func logReadDirError(logger *common.Logger, path string, err error) {

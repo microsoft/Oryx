@@ -88,8 +88,9 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 			return ""
 		}
 	}
-
-	return scriptBuilder.String()
+	var runScript = scriptBuilder.String()
+	logger.LogInformation("Run script content:\n" + runScript)
+	return runScript
 }
 
 func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() string {

@@ -138,8 +138,10 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString(startupCommand + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
-
-	return scriptBuilder.String()
+	
+	var runScript = scriptBuilder.String()
+	logger.LogInformation("Run script content:\n" + runScript)
+	return runScript
 }
 
 // Gets the startup script from package.json if defined. Returns empty string if not found.
