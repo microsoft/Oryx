@@ -55,8 +55,8 @@ The latest version of `pip` is used to install dependencies.
 
 The following process is applied to determine how to start an app.
 
-1. If user has specified a start script utilize that.
-1. Find a WSGI module and run with [gunicorn][].
+1. If user has specified a start script, run it.
+1. Else, find a WSGI module and run with [gunicorn][].
     1. Look for and run a directory containing a `wsgi.py` file (*for Django*).
     1. Look for the following files in the root of the repo and an `app` class within them (*for Flask* and other WSGI frameworks).
         * `application.py`
@@ -82,8 +82,8 @@ status, i.e. `3.7.x` and `2.7.x` in early 2019; and 3.6 and later releases in
 We will provide notification twelve months prior to removing a release line;
 subscribe to [Azure Updates][] to stay updated!
 
-We will update the `micro` version of supported `major.minor` releases at
-least once every 3 months, replacing the previous `micro` version for that
+We will update the `patch` version of supported `major.minor` releases at
+least once every 3 months, replacing the previous `patch` version for that
 release.
 
 [release schedule]: https://devguide.python.org/#status-of-python-branches

@@ -35,8 +35,8 @@ The following process is applied for each build.
 1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
 1. Run `npm install` without any flags, which includes npm `preinstall` and
    `postinstall` scripts and also installs devDependencies.
-1. Run `npm run build` if a `build` script is specified.
-1. Run `npm run build:azure` if a `build:azure` script is specified.
+1. Run `npm run build` if a `build` script is specified in your `package.json`.
+1. Run `npm run build:azure` if a `build:azure` script is specified in your `package.json`.
 1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
 > NOTE: As described in [npm docs][], scripts named `prebuild` and `postbuild`
@@ -60,7 +60,7 @@ will be used instead of npm.
 The following process is applied to determine how to start an app.
 
 1. Run `npm start` if a `start` script is specified.
-1. If a script is specified in package.json's `main` field run that.
+1. Else, if a script is specified in `package.json`'s `main` field, run that.
 1. Run the first found of the following scripts in the root of the repo:
     * bin/www
     * server.js
