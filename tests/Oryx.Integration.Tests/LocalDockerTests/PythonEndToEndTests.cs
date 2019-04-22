@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -218,8 +216,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython37_AndZippedVirtualEnv()
+        [Theory]
+        [InlineData("tar-gz", "tar.gz")]
+        [InlineData("zip", "zip")]
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndCompressedVirtualEnv(
+            string compressOption,
+            string expectedCompressFileNameExtension)
         {
             // Arrange
             var appName = "flask-app";
@@ -232,12 +234,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
+            var tempOutputDir = "/tmp/output";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/output -p virtualenv_name={virtualEnvName}")
-                .AddDirectoryDoesNotExistCheck($"/tmp/output/{virtualEnvName}")
-                .AddFileExistsCheck($"/tmp/output/{virtualEnvName}.tar.gz")
-                .AddCommand($"cp -rf /tmp/output/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir}" +
+                $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
+                .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
