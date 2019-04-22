@@ -14,7 +14,7 @@ fi
 VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
 VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
 VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}
-zippedVirtualEnvName="$VIRTUALENVIRONMENTNAME.tar.gz"
+zippedVirtualEnvFileName={{ CompressedVirtualEnvFileName }}
 
 echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
@@ -80,7 +80,6 @@ echo Done running pip install.
 
 
 {{ if !DisableCollectStatic }}
-
 if [ -e "$SOURCE_DIR/manage.py" ]
 then
 	if grep -iq "Django" "$SOURCE_DIR/requirements.txt"
@@ -95,28 +94,20 @@ then
 		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
 fi
-
 {{ end }}
 
-if [ -f "$zippedVirtualEnvName" ]
-then
-	echo
-	echo "File '$zippedVirtualEnvName' already exists under '$SOURCE_DIR'. Deleting it..."
-	rm -f "$zippedVirtualEnvName"
-fi
-
 {{ if VirtualEnvironmentName | IsNotBlank }}
-{{ if ZipVirtualEnvDir }}
+{{ if CompressVirtualEnvCommand | IsNotBlank }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	if [ -d "$VIRTUALENVIRONMENTNAME" ]
 	then
 		echo
-		echo "Zipping existing '$VIRTUALENVIRONMENTNAME' folder..."
+		echo "Compressing existing '$VIRTUALENVIRONMENTNAME' folder..."
 		START_TIME=$SECONDS
-		# Make the contents of the '$VIRTUALENVIRONMENTNAME' folder appear in the zip file, not the folder itself
+		# Make the contents of the virtual env folder appear in the zip file, not the folder itself
 		cd "$VIRTUALENVIRONMENTNAME"
-		tar -zcf ../$zippedVirtualEnvName .
+		{{ CompressVirtualEnvCommand }} ../$zippedVirtualEnvFileName .
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
 	fi

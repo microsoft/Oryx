@@ -20,7 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 virtualEnvironmentParameters: null,
                 packagesDirectory: "packages_dir",
                 disableCollectStatic: false,
-                zipVirtualEnvDir: false);
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null);
 
             // Act
             var text = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, snippetProps);
@@ -39,7 +40,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 virtualEnvironmentParameters: null,
                 packagesDirectory: "packages_dir",
                 disableCollectStatic: true,
-                zipVirtualEnvDir: false);
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null);
 
             // Act
             var text = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, snippetProps);

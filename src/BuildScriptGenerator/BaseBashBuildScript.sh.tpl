@@ -25,7 +25,7 @@ then
     DESTINATION_DIR=$(pwd -P)
 fi
 
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
+if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ] && [ "$CLEAN_DESTINATION_DIR" == "true" ]
 then
 	if [ -d "$DESTINATION_DIR" ] && [ "$(ls -A $DESTINATION_DIR)" ]
 	then

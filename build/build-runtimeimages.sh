@@ -36,28 +36,28 @@ function getTagName()
     return 0
 }
 
-
-echo
-echo "Generating Dockerfiles for Node runtime images..."
-$REPO_DIR/images/runtime/node/generateDockerfiles.sh
-
-echo
-echo "Generating Dockerfiles for .NET Core runtime images..."
-$REPO_DIR/images/runtime/dotnetcore/generateDockerfiles.sh
-
-echo
-echo "Generating Dockerfiles for Python runtime images..."
-$REPO_DIR/images/runtime/python/generateDockerfiles.sh
-
-echo
-echo "Generating Dockerfiles for PHP runtime images..."
-$REPO_DIR/images/runtime/php/generate-dockerfiles.sh
-
-dockerFiles=$(find $RUNTIME_IMAGES_SRC_DIR -type f -name "Dockerfile")
-if [ -z "$dockerFiles" ]
+runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
+runtimeName="$1"
+if [ ! -z "$runtimeName" ]
 then
-    echo "Couldn't find any Dockerfiles under '$RUNTIME_IMAGES_SRC_DIR' and its sub-directories."
-    exit 1
+    case "$runtimeName" in
+        node)
+            runtimeImagesSourceDir="$runtimeImagesSourceDir/node"
+        ;;
+        python)
+            runtimeImagesSourceDir="$runtimeImagesSourceDir/python"
+        ;;
+        dotnetcore)
+            runtimeImagesSourceDir="$runtimeImagesSourceDir/dotnetcore"
+        ;;
+        php)
+            runtimeImagesSourceDir="$runtimeImagesSourceDir/php"
+        ;;
+        *)
+            echo "Unknown runtime '$runtimeName'"
+            exit 1
+        ;;
+    esac
 fi
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
@@ -66,6 +66,25 @@ labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
 	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+fi
+
+generateDockerFiles=$(find $runtimeImagesSourceDir -type f -name "generateDockerfiles.sh")
+if [ -z "$generateDockerFiles" ]
+then
+    echo "Couldn't find any 'generateDockerfiles.sh' under '$runtimeImagesSourceDir' and its sub-directories."
+fi
+
+for generateDockerFile in $generateDockerFiles; do
+    echo
+    echo "Executing '$generateDockerFile'..."
+    "$generateDockerFile"
+done
+
+dockerFiles=$(find $runtimeImagesSourceDir -type f -name "Dockerfile")
+if [ -z "$dockerFiles" ]
+then
+    echo "Couldn't find any Dockerfiles under '$runtimeImagesSourceDir' and its sub-directories."
+    exit 1
 fi
 
 # Write the list of images that were built to artifacts folder
