@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         CompressVirtualEnvPropertyKey,
         "Indicates how and if virtual environment folder should be compressed into a single file in the output " +
         "folder. Options are '" + ZipOption + "', and '" + TarGzOption + "'. Default is to not compress. " +
-        "If this option is used, when running the app the virutal environment folder must be extracted from " +
+        "If this option is used, when running the app the virtual environment folder must be extracted from " +
         "this file.")]
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
