@@ -13,6 +13,7 @@ import (
 type PhpStartupScriptGenerator struct {
 	SourcePath string
 	StartupCmd string
+	BindPort   string
 }
 
 func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
