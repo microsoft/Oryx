@@ -10,12 +10,14 @@ import (
 	"startupscriptgenerator/common"
 )
 
+const DefaultBindPort = "8080"
+
 func main() {
 	common.PrintVersionInfo()
 
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
 	startupCmdPtr := flag.String("startupCommand", "apache2-foreground", "Command that will be executed to start the application server up.")
-	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
+	bindPortPtr := flag.String("bindPort", DefaultBindPort, "[Optional] Port where the application will bind to. Default is " + DefaultBindPort)
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 
