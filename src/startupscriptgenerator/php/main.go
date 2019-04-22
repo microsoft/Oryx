@@ -17,7 +17,7 @@ func main() {
 
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
 	startupCmdPtr := flag.String("startupCommand", "apache2-foreground", "Command that will be executed to start the application server up.")
-	bindPortPtr := flag.String("bindPort", DefaultBindPort, "[Optional] Port where the application will bind to. Default is " + DefaultBindPort)
+	bindPortPtr := flag.String("bindPort", DefaultBindPort, "[Optional] Port where the application will bind to.")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 
