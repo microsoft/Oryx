@@ -865,6 +865,71 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void PreAndPostBuildScripts_HaveAccessToSourceAndDestinationDirectoryVariables()
+        {
+            // Arrange
+            var volume = CreateSampleAppVolume("flask-app");
+            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo \"pre-build: $SOURCE_DIR, $DESTINATION_DIR\"");
+            }
+            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("#!/bin/bash");
+                sw.WriteLine("echo \"post-build: $SOURCE_DIR, $DESTINATION_DIR\"");
+            }
+            if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
+            {
+                ProcessHelper.RunProcess(
+                    "chmod",
+                    new[] { "-R", "777", scriptsDir.FullName },
+                    workingDirectory: null,
+                    waitTimeForExit: null);
+            }
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new List<EnvironmentVariable>()
+                {
+                    CreateAppNameEnvVar("flask-app"),
+                    new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
+                    new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh")
+                },
+                new List<DockerVolume>() { volume },
+                portMapping: null,
+                link: null,
+                runContainerInBackground: false,
+                command: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"pre-build: {appDir}, {appOutputDir}", result.StdOut);
+                    Assert.Contains($"post-build: {appDir}, {appOutputDir}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Build_UsesEnvironmentSettings_InOrderOfPrecedence()
         {
             // Order of precedence is: EnvironmentVariables -> build.env file settings

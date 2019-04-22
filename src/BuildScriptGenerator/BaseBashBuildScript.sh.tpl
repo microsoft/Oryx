@@ -62,6 +62,10 @@ if [ -f /usr/local/bin/benv ]; then
 fi
 {{ end }}
 
+# Export these variables so that they are available for the pre and post build scripts.
+export SOURCE_DIR
+export DESTINATION_DIR
+
 {{ if PreBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd "$SOURCE_DIR"
