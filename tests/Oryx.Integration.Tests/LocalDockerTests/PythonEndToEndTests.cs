@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -239,7 +237,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var tempOutputDir = "/tmp/output";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir}" + 
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir}" +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
                 .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
                 .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")

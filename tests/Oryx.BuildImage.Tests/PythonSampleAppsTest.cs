@@ -520,8 +520,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        public void Build_ZipsVirtualEnv_IfZipVirtualEnvDir_EnvironmentVariable_IsTrue()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("tar-gz")]
+        public void Build_CompressesVirtualEnv_InTargGzFormat(string compressionFormat)
         {
             // Arrange
             var virtualEnvironmentName = "myenv";
@@ -529,8 +531,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p virtualenv_name={virtualEnvironmentName} -p compress_virtualenv={compressionFormat}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();
@@ -561,7 +564,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_ZipsVirtualEnv_IfZipVirtualEnvDir_EnvironmentVariable_IsFalse()
+        public void Build_CompressesVirtualEnv_InZipFormat()
         {
             // Arrange
             var virtualEnvironmentName = "myenv";
@@ -569,10 +572,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=false")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p virtualenv_name={virtualEnvironmentName} -p compress_virtualenv=zip")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}")
+                .AddFileExistsCheck($"{appOutputDir}/{virtualEnvironmentName}.zip")
                 .ToString();
 
             // Act
@@ -599,6 +603,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
 
         [Fact]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
