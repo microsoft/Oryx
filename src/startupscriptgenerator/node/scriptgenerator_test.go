@@ -9,6 +9,118 @@ import (
 	"fmt"
 )
 
+func ExampleNodeStartupScriptGenerator_getPackageJsonStartCommand_subDir() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/a/b",
+	}
+	packageJson := &packageJson{
+		Scripts: &packageJsonScripts{
+			Start: "node server.js",
+		},
+	}
+	command := gen.getPackageJsonStartCommand(packageJson, "/a/b/c/package.json")
+	fmt.Println(command)
+	// Output:
+	// npm --prefix=/a/b/c start
+}
+
+func ExampleNodeStartupScriptGenerator_getPackageJsonStartCommand_rootDir() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/a/b",
+	}
+	packageJson := &packageJson{
+		Scripts: &packageJsonScripts{
+			Start: "node server.js",
+		},
+	}
+	command := gen.getPackageJsonStartCommand(packageJson, "/a/b/package.json")
+	fmt.Println(command)
+	// Output:
+	// npm start
+}
+
+func ExampleNodeStartupScriptGenerator_getPackageJsonStartCommand_subDirDebug() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath:      "/a/b",
+		RemoteDebugging: true,
+	}
+	packageJson := &packageJson{
+		Scripts: &packageJsonScripts{
+			Start: "node server.js",
+		},
+	}
+	command := gen.getPackageJsonStartCommand(packageJson, "/a/b/c/package.json")
+	fmt.Println(command)
+	// Output:
+	// export PATH=/opt/node-wrapper/:$PATH
+	// export ORYX_NODE_INSPECT_PARAM="--inspect=0.0.0.0"
+	// npm --prefix=/a/b/c start --scripts-prepend-node-path false
+}
+
+func ExampleNodeStartupScriptGenerator_getPackageJsonStartCommand_rootDirDebug() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath:      "/a/b",
+		RemoteDebugging: true,
+	}
+	packageJson := &packageJson{
+		Scripts: &packageJsonScripts{
+			Start: "node server.js",
+		},
+	}
+	command := gen.getPackageJsonStartCommand(packageJson, "/a/b/package.json")
+	fmt.Println(command)
+	// Output:
+	// export PATH=/opt/node-wrapper/:$PATH
+	// export ORYX_NODE_INSPECT_PARAM="--inspect=0.0.0.0"
+	// npm start --scripts-prepend-node-path false
+}
+
+func ExampleNodeStartupScriptGenerator_getUserProvidedJsFileCommand_sameDir() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/a/b",
+	}
+	command := gen.getUserProvidedJsFileCommand("/a/b/server.js")
+	fmt.Println(command)
+	// Output:
+	// node server.js
+}
+
+func ExampleNodeStartupScriptGenerator_getUserProvidedJsFileCommand_subDir() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/a/b",
+	}
+	command := gen.getUserProvidedJsFileCommand("/a/b/c/server.js")
+	fmt.Println(command)
+	// Output:
+	// node c/server.js
+}
+
+func ExampleNodeStartupScriptGenerator_getPackageJsonMainCommand_rootDir() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/a/b",
+	}
+	packageJson := &packageJson{
+		Main: "server.js",
+	}
+	command := gen.getPackageJsonMainCommand(packageJson, "/a/b/package.json")
+	fmt.Println(command)
+	// Output:
+	// node server.js
+}
+
+func ExampleNodeStartupScriptGenerator_getPackageJsonMainCommand_subDir() {
+	gen := &NodeStartupScriptGenerator{
+		SourcePath: "/a/b",
+	}
+	packageJson := &packageJson{
+		Main: "server.js",
+	}
+	command := gen.getPackageJsonMainCommand(packageJson, "/a/b/c/package.json")
+	fmt.Println(command)
+	// Output:
+	// node c/server.js
+}
+
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCommand() {
 	gen := &NodeStartupScriptGenerator{}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
@@ -19,7 +131,7 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
 	gen := &NodeStartupScriptGenerator{
-		CustomStartCommand: "pm2 start --no-daemon",
+		UsePm2: true,
 	}
 	command := gen.getStartupCommandFromJsFile("a/b/c.js")
 	fmt.Println(command)
