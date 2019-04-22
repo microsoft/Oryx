@@ -20,6 +20,10 @@ ENV APACHE_RUN_USER www-data
 ENV APACHE_DOCUMENT_ROOT /home/site/wwwroot
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Edit the default port setting
+ENV APACHE_PORT 8080
+RUN sed -ri -e 's!<VirtualHost *:80>!<VirtualHost *:${APACHE_PORT}>!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!Listen 80!Listen ${APACHE_PORT}!g' /etc/apache2/ports.conf
 
 # Install common PHP extensions
 RUN apt-get update \
