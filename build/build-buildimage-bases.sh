@@ -12,7 +12,10 @@
 
 set -e
 
-source __variables.sh
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+
+# Load all variables
+source $REPO_DIR/build/__variables.sh
 
 IMAGE_DIR_TO_BUILD=$1
 IMAGE_TAG="${BUILD_NUMBER:-latest}"
