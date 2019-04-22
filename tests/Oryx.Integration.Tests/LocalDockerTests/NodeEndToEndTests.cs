@@ -615,6 +615,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange
+            // Use a separate volume for output due to rsync errors
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "create-react-app-sample";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
@@ -622,24 +626,25 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=zip")
+               .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+               .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion, "-i", "/tmp", "-p", "compress_node_modules=zip" },
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/bash",
+                new[] { "-c", buildScript },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
                 "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    runAppScript
-                },
+                new[] { "-c", runAppScript },
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
