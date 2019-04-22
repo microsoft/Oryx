@@ -18,19 +18,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 847845")]
         public async Task NodeApp_MicrosoftSqlServerDB()
         {
             await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mssql"));
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 847845")]
         public async Task Python37App_MicrosoftSqlServerDB()
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"));
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 847845")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         // pdo_sqlsrv only supports PHP >= 7.1
