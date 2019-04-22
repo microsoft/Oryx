@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_DoestNotCleanDestinationDir_IfCleanDestinationDir_IsFalse()
+        public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -147,47 +147,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddFileExistsCheck($"{appOutputDir}/hi.txt")
                 .AddFileExistsCheck($"{appOutputDir}/blah/hi.txt")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void Build_CleansDestinationDir_IfCleanDestinationDir_IsTrue()
-        {
-            // Arrange
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/output";
-            var script = new ShellScriptBuilder()
-                // Pre-populate the output directory with content
-                .CreateDirectory(appOutputDir)
-                .CreateFile($"{appOutputDir}/hi.txt", "hi")
-                .CreateDirectory($"{appOutputDir}/blah")
-                .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
-                .AddCommand("export CLEAN_DESTINATION_DIR=true")
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/blah/hi.txt")
                 .ToString();
 
             // Act

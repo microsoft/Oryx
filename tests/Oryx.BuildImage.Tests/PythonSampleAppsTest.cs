@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_DoestNotCleanDestinationDir_WhenCleanDestinationDir_IsFalse()
+        public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
             var volume = CreateSampleAppVolume("flask-app");
