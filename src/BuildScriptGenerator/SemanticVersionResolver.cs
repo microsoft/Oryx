@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return null;
         }
 
-        public static int CompareVersion(string providedVersion, string supportedVersion)
+        public static int CompareVersions(string providedVersion, string supportedVersion)
         {
             try
             {

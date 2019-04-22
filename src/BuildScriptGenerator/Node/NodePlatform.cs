@@ -33,6 +33,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
         private readonly NodeLanguageDetector _detector;
+        private readonly IEnvironment _environment;
+
+        public NodePlatform(
+            IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
+            INodeVersionProvider nodeVersionProvider,
+            ILogger<NodePlatform> logger,
+            NodeLanguageDetector detector,
+            IEnvironment environment)
+        {
+            _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
+            _nodeVersionProvider = nodeVersionProvider;
+            _logger = logger;
+            _detector = detector;
+            _environment = environment;
+        }
 
         public NodePlatform(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
@@ -126,21 +141,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(context);
             bool appInsightDependency = IsPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightPackageName);
-            string appInsightInjectCommand = string.Empty;
+            string appInsightsInjectCommand = string.Empty;
 
-            // node_options is only supported in version 8.0.0 or newer and in 6.12.0
-            // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
-            if (!appInsightDependency
-                && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.AppInsightKey))
-                && ( SemanticVersionResolver.CompareVersion(context.NodeVersion, "8.0.0") >= 0
-                || SemanticVersionResolver.CompareVersion(context.NodeVersion, "6.12.0") == 0
-                || SemanticVersionResolver.CompareVersion(context.LanguageVersion, "8.0.0") >= 0
-                || SemanticVersionResolver.CompareVersion(context.LanguageVersion, "6.12.0") == 0))
+            if (_environment != null)
             {
-                appInsightInjectCommand =
-                    string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightPackageName);
-                buildProperties[NodeConstants.OryxNodeOptions] = true.ToString();
-                _logger.LogInformation("Oryx setting up applicationinsight for auto-collection telemetry... ");
+                var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
+
+                // node_options is only supported in version 8.0.0 or newer and in 6.12.0
+                // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
+                if (!appInsightDependency
+                    && !string.IsNullOrEmpty(appInsightsKey)
+                    && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0.0") >= 0
+                    || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12.0") == 0
+                    || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0.0") >= 0
+                    || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12.0") == 0))
+                {
+                    appInsightsInjectCommand =
+                        string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightPackageName);
+                    buildProperties[NodeConstants.OryxInjectedAppInsights] = true.ToString();
+                    _logger.LogInformation("Oryx setting up applicationinsight for auto-collection telemetry... ");
+                }
             }
 
             var scriptProps = new NodeBashBuildSnippetProperties(
@@ -153,7 +173,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 compressedNodeModulesFileName: compressedNodeModulesFileName,
                 configureYarnCache: configureYarnCache,
                 pruneDevDependencies: pruneDevDependencies,
-                oryxAppInsightInjectCommand: appInsightInjectCommand);
+                appInsightsInjectCommand: appInsightsInjectCommand);
 
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,

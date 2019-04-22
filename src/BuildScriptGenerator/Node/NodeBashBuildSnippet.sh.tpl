@@ -82,19 +82,20 @@ echo "Running '{{ PackageInstallCommand }}'..."
 echo
 {{ PackageInstallCommand }}
 
-{{ if OryxAppInsightInjectCommand | IsNotBlank }}
+{{ if AppInsightsInjectCommand | IsNotBlank }}
 echo
-echo "Preparing Envrionment to set up application insight..."
-echo "Running '{{ OryxAppInsightInjectCommand }}'..."
+echo "Preparing environment to set up Application Insights..."
+echo "Running '{{ AppInsightsInjectCommand }}'..."
 echo
-{{ OryxAppInsightInjectCommand }}
+{{ AppInsightsInjectCommand }}
 echo
-echo "Creating application insight loader file to '$DESTINATION_DIR'"
+echo "Creating Application Insights loader file in '$DESTINATION_DIR'"
 echo "// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+// Created by Oryx
 var appInsights = require('applicationinsights');
 
 if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
@@ -105,8 +106,8 @@ if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     } catch (e) {
         console.error(e);
     }
-}">oryxappinsightloader.js
-cat oryxappinsightloader.js
+}">oryx-appinsightsloader.js
+cat oryx-appinsightsloader.js
 {{ end }}
 
 {{ if NpmRunBuildCommand | IsNotBlank }}

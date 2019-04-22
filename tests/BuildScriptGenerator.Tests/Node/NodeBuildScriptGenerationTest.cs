@@ -453,10 +453,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        [Fact ]
-        public void GeneratedScript_DoesNotConfigureAppInsight_IfAppInsightEnvironmentVariable_NotSet()
+        [Theory]
+        [InlineData("4.4.7")]
+        [InlineData("4.5.0")]
+        [InlineData("6.2.2")]
+        [InlineData("6.9.3")]
+        [InlineData("6.10.3")]
+        [InlineData("6.11.0")]
+        [InlineData("6.12.1")]
+        public void GeneratedScript_DoesNotConfigureAppInsights_IfAppInsightsEnvironmentVariable_NotSet(string nodeVersion)
         {
-            var nodeVersion = "10.14.1";
             // Arrange
             var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion);
             var repo = new MemorySourceRepo();
@@ -473,46 +479,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                oryxAppInsightInjectCommand:null);
+                appInsightsInjectCommand: null);
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
-
-            // Assert
-            Assert.NotNull(snippet);
-            Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
-            Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
-                snippet.BashBuildScriptSnippet);
-            Assert.True(scriptGenerator.IsCleanRepo(repo));
-        }
-
-        [Fact]
-        public void GeneratedScript_DoesNotConfigureAppInsight_IfNodeVersionCondition_Unsatisfied()
-        {
-            var nodeVersion = "6.9.3";
-            // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
-            Environment.SetEnvironmentVariable(Constants.AppInsightKey, "xyz");
-            var context = CreateScriptGeneratorContext(repo);
-            context.NodeVersion = nodeVersion;
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null,
-                oryxAppInsightInjectCommand: null);
-
-            // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
-            Environment.SetEnvironmentVariable(Constants.AppInsightKey, string.Empty);
 
             // Assert
             Assert.NotNull(snippet);
@@ -524,17 +494,70 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Theory]
+        [InlineData("4.4.7")]
+        [InlineData("4.5.0")]
+        [InlineData("6.2.2")]
+        [InlineData("6.9.3")]
+        [InlineData("6.10.3")]
+        [InlineData("6.11.0")]
+        [InlineData("6.12.1")]
+        public void GeneratedScript_DoesNotConfigureAppInsights_IfNodeVersionCondition_Unsatisfied(string nodeVersion)
+        {
+            // Arrange
+            var otherEnvironment = new Dictionary<string, string> { { Constants.AppInsightsKey, "xyz" } };
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion, otherEnvironment: otherEnvironment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.NodeVersion = nodeVersion;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                appInsightsInjectCommand: null);
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Theory]
+        [InlineData("6.12.0")]
         [InlineData("8.0.0")]
+        [InlineData("8.1.4")]
+        [InlineData("8.2.1")]
+        [InlineData("8.8.1")]
+        [InlineData("8.9.4")]
+        [InlineData("8.11.2")]
+        [InlineData("8.12.0")]
+        [InlineData("8.15.1")]
+        [InlineData("9.4.0")]
+        [InlineData("10.1.0")]
+        [InlineData("10.10.0")]
         [InlineData("10.14.1")]
-        public void GeneratedScript_ConfigureAppInsight_Condition_Satisfied(string version)
+        [InlineData("10.15.2")]
+        public void GeneratedScript_ConfigureAppInsights_Condition_Satisfied(string version)
         {
             // Condition is node version have to be 8 or newer or node version is 6.12.0
             // As we don't support 6.12.0 in our build image we condition remains node 8 or newer
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: version);
+            var otherEnvironment = new Dictionary<string, string> { { Constants.AppInsightsKey, "xyz" } };
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: version, otherEnvironment: otherEnvironment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
-            Environment.SetEnvironmentVariable(Constants.AppInsightKey, "xyz");
             var context = CreateScriptGeneratorContext(repo);
             context.NodeVersion = version;
             //context.LanguageVersion = version;
@@ -548,11 +571,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NpmInstallCommand),
                 compressedNodeModulesFileName: null,
                 compressNodeModulesCommand: null,
-                oryxAppInsightInjectCommand: "npm install --save applicationinsights");
+                appInsightsInjectCommand: "npm install --save applicationinsights");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
-            Environment.SetEnvironmentVariable(Constants.AppInsightKey, string.Empty);
 
             // Assert
             Assert.NotNull(snippet);
@@ -565,12 +587,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private IProgrammingPlatform GetNodePlatformInstance(
             string defaultNodeVersion = null,
-            string defaultNpmVersion = null)
+            string defaultNpmVersion = null,
+            Dictionary<string, string> otherEnvironment = null)
         {
             var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
             environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
 
+            if (otherEnvironment != null)
+            {
+                foreach (var environmentVariable in otherEnvironment.Keys)
+                {
+                    environment.Variables[environmentVariable] = otherEnvironment[environmentVariable];
+                }
+            }
+            
             var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1" }, new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
@@ -581,7 +612,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeScriptGeneratorOptions,
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
-                null);
+                null,
+                environment);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(

@@ -349,8 +349,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         [Theory]
         [InlineData("8.0")]
+        [InlineData("8.1")]
+        [InlineData("8.2")]
+        [InlineData("8.8")]
+        [InlineData("8.9")]
+        [InlineData("8.11")]
+        [InlineData("8.12")]
+        [InlineData("8.15")]
+        [InlineData("9.4")]
+        [InlineData("10.1")]
+        [InlineData("10.10")]
         [InlineData("10.14")]
-        public async Task CanBuildAndRun_NodeApp_WithAppInsight_Configured(string nodeVersion)
+        [InlineData("10.15")]
+        public async Task CanBuildAndRun_NodeApp_WithAppInsights_Configured(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -363,21 +374,20 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
-                .AddFileExistsCheck($"{appDir}/oryxappinsightloader.js")
+                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export APPINSIGHTS_INSTRUMENTATIONKEY=asdas")
-                .AddCommand("printenv")
+                .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileExistsCheck($"{appDir}/oryxappinsightloader.js")
+                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("Oryx has set up Code-less App-Insight", $"{appDir}/run.sh")
                 .ToString();
 

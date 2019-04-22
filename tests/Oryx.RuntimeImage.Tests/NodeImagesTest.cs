@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Fact]
-        public void GeneratedScript_CanRunStartupScripts_WithAInsightConfigured()
+        public void GeneratedScript_CanRunStartupScripts_WithAppInsightsConfigured()
         {
             // Arrange
             const int exitCodeSentinel = 222;
@@ -147,16 +147,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                        console.error(e); 
                     } 
                 }";
-            var manifestFileContent = "OryxInjectedAppInsight=\"True\"";
+            var manifestFileContent = "injectedAppInsight=\"True\"";
 
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
                 .CreateFile(appPath + "/oryx-manifest.toml", manifestFileContent)
-                .CreateFile(appPath + "/oryxappinsightloader.js", aiNodesdkLoaderContent)
+                .CreateFile(appPath + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
                 .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
                 .AddCommand(". ./run.sh") // Source the default output path
-                .AddStringExistsInFileCheck("export NODE_OPTIONS='--require ./oryxappinsightloader.js'", "./run.sh")
+                .AddStringExistsInFileCheck("export NODE_OPTIONS='--require ./oryx-appinsightsloader.js'", "./run.sh")
                 .ToString();
 
             // Act

@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string compressedNodeModulesFileName,
             bool configureYarnCache = false,
             bool pruneDevDependencies = false,
-            string oryxAppInsightInjectCommand = null)
+            string appInsightsInjectCommand = null)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             CompressedNodeModulesFileName = compressedNodeModulesFileName;
             ConfigureYarnCache = configureYarnCache;
             PruneDevDependencies = pruneDevDependencies;
-            OryxAppInsightInjectCommand = oryxAppInsightInjectCommand;
+            AppInsightsInjectCommand = appInsightsInjectCommand;
         }
 
         public string PackageInstallCommand { get; set; }
@@ -52,6 +52,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public bool PruneDevDependencies { get; set; }
 
-        public string OryxAppInsightInjectCommand { get; set; }
+        public string AppInsightsInjectCommand { get; set; }
     }
 }

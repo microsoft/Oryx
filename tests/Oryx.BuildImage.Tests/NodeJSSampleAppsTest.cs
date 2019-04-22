@@ -131,18 +131,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void BuildNodeApp_ConfigureAppInsight__WithDefaultNodeVersion_AIEnvironmentVariableSet()
+        public void BuildNodeApp_ConfigureAppInsights__WithDefaultNodeVersion_AIEnvironmentVariableSet()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
+                .AddCommand("printenv")
                 .AddCommand($"oryx build {appDir} -o {nestedOutputDir} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryxappinsightloader.js")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryxappinsightsloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
@@ -169,9 +170,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [InlineData("8.0.0")]
+        [InlineData("8.1.4")]
+        [InlineData("8.2.1")]
         [InlineData("8.8.1")]
+        [InlineData("8.9.4")]
+        [InlineData("8.11.2")]
+        [InlineData("8.12.0")]
+        [InlineData("8.15.1")]
+        [InlineData("9.4.0")]
+        [InlineData("10.1.0")]
         [InlineData("10.10.0")]
-        public void BuildNodeApp_ConfigureAppInsight_WithCorrectNodeVersion_AIEnvironmentVariableSet(string version)
+        [InlineData("10.14.1")]
+        [InlineData("10.15.2")]
+        public void BuildNodeApp_ConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableSet(string version)
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -181,9 +193,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryxappinsightloader.js")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("OryxInjectedAppInsight=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("Oryx setting up applicationinsight for auto-collection telemetry... ", $"{appDir}/1.log")
                 .ToString();
 
@@ -210,9 +222,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("6.9.3")]
         [InlineData("4.4.7")]
-        public void BuildNodeApp_DoesNotConfigureAppInsight_WithoutCorrectNodeVersion_AIEnvironmentVariableSet(string version)
+        [InlineData("4.5.0")]
+        [InlineData("6.2.2")]
+        [InlineData("6.9.3")]
+        [InlineData("6.10.3")]
+        [InlineData("6.11.0")]
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(string version)
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -222,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryxappinsightloader.js")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .ToString();
 
@@ -249,9 +265,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [InlineData("8.0.0")]
+        [InlineData("8.1.4")]
+        [InlineData("8.2.1")]
         [InlineData("8.8.1")]
+        [InlineData("8.9.4")]
+        [InlineData("8.11.2")]
+        [InlineData("8.12.0")]
+        [InlineData("8.15.1")]
+        [InlineData("9.4.0")]
+        [InlineData("10.1.0")]
         [InlineData("10.10.0")]
-        public void BuildNodeApp_DoesNotConfigureAppInsight_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(string version)
+        [InlineData("10.14.1")]
+        [InlineData("10.15.2")]
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(string version)
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -261,7 +288,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryxappinsightloader.js")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .ToString();
 
