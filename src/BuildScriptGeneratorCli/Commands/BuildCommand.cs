@@ -211,6 +211,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     workingDirectory: sourceRepo.RootPath,
                     stdOutHandler == null ? stdOutBaseHandler : stdOutBaseHandler + stdOutHandler,
                     stdErrHandler == null ? stdErrBaseHandler : stdErrBaseHandler + stdErrHandler);
+
+                timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
             logger.LogDebug("Build script content:\n" + scriptContent);
