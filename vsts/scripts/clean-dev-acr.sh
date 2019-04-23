@@ -20,5 +20,6 @@ TIMESTAMP_CUTOFF=`$datecmd --iso-8601=seconds -d 'month ago'`
 for repo in "${REPOS[@]}"
 do
 	echo "Deleting images created before '$TIMESTAMP_CUTOFF' in repository '$repo'..."
-	# 
+	az acr repository show-manifests --repository $repo --name $ACR_NAME --orderby time_asc -o json --query "[? timestamp >=\`$TIMESTAMP_CUTOFF\`]"
+	exit 0
 done
