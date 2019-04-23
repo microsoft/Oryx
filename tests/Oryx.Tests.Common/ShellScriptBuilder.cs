@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddStringDoestNotExistInFileCheck(string searchString, string file)
+        public ShellScriptBuilder AddStringDoesNotExistInFileCheck(string searchString, string file)
         {
             return Append(
                 $"grep '{searchString}' '{file}' && if [ $? -eq 0 ]; then " +

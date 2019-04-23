@@ -243,8 +243,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --log-file {logFile}")
-                .AddStringDoestNotExistInFileCheck("app4", logFile)
-                .AddStringDoestNotExistInFileCheck("3.log", logFile)
+                .AddStringDoesNotExistInFileCheck("app4", logFile)
+                .AddStringDoesNotExistInFileCheck("3.log", logFile)
                 .ToString();
 
             // Act
