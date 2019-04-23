@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mssql"));
         }
 
-        [Fact(Skip = "Bug 847845")]
+        [Fact]
         public async Task Python37App_MicrosoftSqlServerDB()
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"));
