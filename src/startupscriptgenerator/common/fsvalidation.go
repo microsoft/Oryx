@@ -29,6 +29,16 @@ func FileExists(path string) bool {
 	return !fi.IsDir()
 }
 
+func GetSubPath(parentDir string, subDir string) string {
+	parentDir = filepath.Clean(parentDir)
+	subDir = filepath.Clean(subDir)
+	if len(parentDir) >= len(subDir) {
+		return ""
+	} else {
+		return subDir[len(parentDir)+1:]
+	}
+}
+
 // Gets the full path from a relative path, and ensure the path exists.
 func GetValidatedFullPath(filePath string) string {
 	fullAppPath, err := filepath.Abs(filePath)

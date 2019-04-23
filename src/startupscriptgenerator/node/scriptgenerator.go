@@ -19,7 +19,7 @@ type NodeStartupScriptGenerator struct {
 	UserStartupCommand              string
 	DefaultAppJsFilePath            string
 	BindPort                        string
-	CustomStartCommand              string
+	UsePm2                          bool
 	RemoteDebugging                 bool
 	RemoteDebuggingBreakBeforeStart bool
 	RemoteDebuggingPort             string
@@ -96,23 +96,39 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	// If user passed a custom startup command, it should take precedence above all other options
 	startupCommand := strings.TrimSpace(gen.UserStartupCommand)
+	userStartupCommandFullPath := ""
+	if startupCommand != "" {
+		userStartupCommandFullPath = filepath.Join(gen.SourcePath, startupCommand)
+	}
 	commandSource := "User"
-	if startupCommand == "" {
+	// If the startup command provided by the user is an actual file, we
+	// explore it further to see if instead of being a script it is a js
+	// or package.json file.
+	if startupCommand == "" || common.FileExists(userStartupCommandFullPath) {
 		logger.LogVerbose("No user-supplied startup command found")
 
 		// deserialize package.json content
-		packageJsonObj := getPackageJsonObject(gen.SourcePath)
+		packageJsonObj, packageJsonPath := getPackageJsonObject(gen.SourcePath, userStartupCommandFullPath)
 
-		startupCommand = gen.getPackageJsonStartCommand(packageJsonObj)
+		startupCommand = gen.getPackageJsonStartCommand(packageJsonObj, packageJsonPath)
 		commandSource = "PackageJsonStart"
 
 		if startupCommand == "" {
 			logger.LogVerbose("scripts.start not found in package.json")
-			if packageJsonObj != nil && packageJsonObj.Main != "" {
-				logger.LogVerbose("Using startup command from package.json main field")
-				startupCommand = gen.getStartupCommandFromJsFile(packageJsonObj.Main)
-				commandSource = "PackageJsonMain"
-			}
+			startupCommand = gen.getPackageJsonMainCommand(packageJsonObj, packageJsonPath)
+			commandSource = "PackageJsonMain"
+		}
+
+		if startupCommand == "" {
+			startupCommand = gen.getUserProvidedJsFileCommand(userStartupCommandFullPath)
+			commandSource = "UserJsFilePath"
+		}
+
+		if startupCommand == "" && userStartupCommandFullPath != "" {
+			isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
+			logger.LogInformation("permission added %t", isPermissionAdded)
+			startupCommand = common.ExtendPathForCommand(gen.UserStartupCommand, gen.SourcePath)
+			commandSource = "UserScript"
 		}
 
 		if startupCommand == "" {
@@ -143,7 +159,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 }
 
 // Gets the startup script from package.json if defined. Returns empty string if not found.
-func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj *packageJson) string {
+func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj *packageJson, packageJsonPath string) string {
 	if packageJsonObj != nil && packageJsonObj.Scripts != nil && packageJsonObj.Scripts.Start != "" {
 		var commandBuilder strings.Builder
 		if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
@@ -153,15 +169,59 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj
 			debugFlag := gen.getDebugFlag()
 			commandBuilder.WriteString("export " + inspectParamVariableName + "=\"" + debugFlag + "\"\n")
 		}
+		packageJsonDir := filepath.Dir(packageJsonPath)
+		isPackageJsonAtRoot := filepath.Clean(packageJsonDir) == filepath.Clean(gen.SourcePath)
 		yarnLockPath := filepath.Join(gen.SourcePath, "yarn.lock") // TODO: consolidate with Microsoft.Oryx.BuildScriptGenerator.Node.NodeConstants.YarnLockFileName
 		if common.FileExists(yarnLockPath) {
-			commandBuilder.WriteString("yarn run start\n")
+			if !isPackageJsonAtRoot {
+				commandBuilder.WriteString("yarn --cwd=" + packageJsonDir + " run start\n")
+			} else {
+				commandBuilder.WriteString("yarn run start\n")
+			}
 		} else {
-			commandBuilder.WriteString("npm start --scripts-prepend-node-path false\n")
+			if !isPackageJsonAtRoot {
+				commandBuilder.WriteString("npm --prefix=" + packageJsonDir + " start")
+			} else {
+				commandBuilder.WriteString("npm start")
+			}
+			if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
+				commandBuilder.WriteString(" --scripts-prepend-node-path false")
+			}
+			commandBuilder.WriteString("\n")
 		}
 		return commandBuilder.String()
 	}
 	return ""
+}
+
+// Gets the startup script from package.json if defined. Returns empty string if not found.
+func (gen *NodeStartupScriptGenerator) getPackageJsonMainCommand(packageJsonObj *packageJson, packageJsonPath string) string {
+	if packageJsonObj != nil && packageJsonObj.Main != "" {
+		logger := common.GetLogger("node.scriptgenerator.getPackageJsonMainCommand")
+		defer logger.Shutdown()
+		logger.LogVerbose("Using startup command from package.json main field")
+		startupFilePath := packageJsonObj.Main
+		packageJsonDir := filepath.Dir(packageJsonPath)
+		// If package.json is not at the root, we need to add the path to it
+		// to the script, since we assume the script in the main property
+		// has the path relative to package.json.
+		if filepath.Clean(packageJsonDir) != filepath.Clean(gen.SourcePath) {
+			subPath := common.GetSubPath(gen.SourcePath, packageJsonDir)
+			startupFilePath = filepath.Join(subPath, startupFilePath)
+		}
+		startupCommand := gen.getStartupCommandFromJsFile(startupFilePath)
+		return startupCommand
+	}
+	return ""
+}
+
+func (gen *NodeStartupScriptGenerator) getUserProvidedJsFileCommand(fileFullPath string) string {
+	command := ""
+	if strings.HasSuffix(fileFullPath, ".js") {
+		subPath := common.GetSubPath(gen.SourcePath, fileFullPath)
+		command = gen.getStartupCommandFromJsFile(subPath)
+	}
+	return command
 }
 
 // Try to find the main file for the app
@@ -176,7 +236,7 @@ func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath str
 		fullPath := filepath.Join(gen.SourcePath, file)
 		if common.FileExists(fullPath) {
 			logger.LogInformation("Found startup candidate '%s'", fullPath)
-			startupFileCommand = gen.getStartupCommandFromJsFile(fullPath)
+			startupFileCommand = gen.getStartupCommandFromJsFile(file)
 			break
 		}
 	}
@@ -201,8 +261,8 @@ func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePat
 		logger.LogInformation("Remote debugging on")
 		debugFlag := gen.getDebugFlag()
 		commandBuilder.WriteString("node " + debugFlag)
-	} else if gen.CustomStartCommand != "" {
-		commandBuilder.WriteString(gen.CustomStartCommand)
+	} else if gen.UsePm2 {
+		commandBuilder.WriteString("pm2 start --no-daemon")
 	} else {
 		commandBuilder.WriteString("node")
 	}
@@ -232,19 +292,33 @@ func (gen *NodeStartupScriptGenerator) getDebugFlag() string {
 	return commandBuilder.String()
 }
 
-func getPackageJsonObject(appPath string) *packageJson {
-	packageJsonPath := filepath.Join(appPath, "package.json")
+func getPackageJsonObject(appPath string, userProvidedPath string) (obj *packageJson, filePath string) {
+	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
+	defer logger.Shutdown()
+
+	const packageFileName = "package.json"
+	var packageJsonPath string
+
+	// We prioritize the file the user provided
+	if strings.HasSuffix(userProvidedPath, packageFileName) {
+		logger.LogInformation("Using user-provided path for packageJson: " + userProvidedPath)
+		packageJsonPath = userProvidedPath
+	} else {
+		logger.LogInformation("Use package.json at the root.")
+		packageJsonPath = filepath.Join(appPath, packageFileName)
+	}
+
 	if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
 		packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
 		if err != nil {
-			return nil
+			return nil, ""
 		}
 
 		packageJsonObj := new(packageJson)
 		err = json.Unmarshal(packageJsonBytes, &packageJsonObj)
 		if err == nil {
-			return packageJsonObj
+			return packageJsonObj, packageJsonPath
 		}
 	}
-	return nil
+	return nil, ""
 }

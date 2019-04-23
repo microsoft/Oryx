@@ -10,8 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonScriptGeneratorOptionsSetup : IConfigureOptions<PythonScriptGeneratorOptions>
     {
-        internal const string ZipVirtualEnvDir = "ORYX_ZIP_VIRTUALENV_DIR";
-
         private readonly IEnvironment _environment;
 
         public PythonScriptGeneratorOptionsSetup(IEnvironment environment)
@@ -33,9 +31,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // other environments, e.g. our local machines for debugging.
             options.SupportedPythonVersions = _environment.GetEnvironmentVariableAsList(
                 PythonConstants.PythonSupportedVersionsEnvVarName);
-
-            bool.TryParse(_environment.GetEnvironmentVariable(ZipVirtualEnvDir), out var zipVirtualEnvDir);
-            options.ZipVirtualEnvDir = zipVirtualEnvDir;
         }
     }
 }

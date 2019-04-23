@@ -17,7 +17,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// Gets or sets the user-provided list of python versions.
         /// </summary>
         public IList<string> SupportedPythonVersions { get; set; }
-
-        public bool ZipVirtualEnvDir { get; set; }
     }
 }
