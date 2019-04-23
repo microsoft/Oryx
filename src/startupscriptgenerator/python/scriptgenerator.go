@@ -13,13 +13,14 @@ import (
 )
 
 type PythonStartupScriptGenerator struct {
-	SourcePath             string
-	UserStartupCommand     string
-	DefaultAppPath         string
-	DefaultAppModule       string
-	BindPort               string
-	VirtualEnvironmentName string
-	PackageDirectory       string
+	SourcePath               string
+	UserStartupCommand       string
+	DefaultAppPath           string
+	DefaultAppModule         string
+	BindPort                 string
+	VirtualEnvironmentName   string
+	PackageDirectory         string
+	SkipVirtualEnvExtraction bool
 }
 
 const DefaultHost = "0.0.0.0"
@@ -30,26 +31,43 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	defer logger.Shutdown()
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
-	
+
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
-	
+
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	scriptBuilder.WriteString("virtualEnvDir=\"" + filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName) + "\"\n");
-	scriptBuilder.WriteString("virtualEnvName=\"" + gen.VirtualEnvironmentName + "\"\n");
-	scriptBuilder.WriteString("zippedVirtualEnvName=\"$virtualEnvName.tar.gz\"\n");
-	scriptBuilder.WriteString("if [ -f \"$zippedVirtualEnvName\" ] && [ \"$ORYX_DISABLE_VIRTUALENV_EXTRACTION\" != \"true\" ]; then\n")
-	scriptBuilder.WriteString("	   virtualEnvDir=\"/$virtualEnvName\"\n");
-	scriptBuilder.WriteString("    echo \"Found '$zippedVirtualEnvName', will extract its contents.\"\n")
-	scriptBuilder.WriteString("    rm -rf \"$virtualEnvDir\"\n")
-	scriptBuilder.WriteString("    mkdir -p \"$virtualEnvDir\"\n")
-	scriptBuilder.WriteString("    echo \"Extracting...\"\n")
-	scriptBuilder.WriteString("    tar -xzf \"$zippedVirtualEnvName\" -C \"$virtualEnvDir\"\n")
-	scriptBuilder.WriteString("    echo \"Done.\"\n\n")
-	scriptBuilder.WriteString("fi\n\n")
+	scriptBuilder.WriteString("virtualEnvDir=\"" + filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName) + "\"\n")
+	scriptBuilder.WriteString("virtualEnvName=\"" + gen.VirtualEnvironmentName + "\"\n")
+	const buildManifestFile string = "oryx-manifest.toml"
+	scriptBuilder.WriteString("buildManifestFile=\"" + buildManifestFile + "\"\n")
+	if !gen.SkipVirtualEnvExtraction {
+		scriptBuilder.WriteString("if [ -f ./$buildManifestFile ]; then\n")
+		scriptBuilder.WriteString("    echo \"Found '$buildManifestFile', checking if virtual environment was compressed...\"\n")
+		scriptBuilder.WriteString("    . ./$buildManifestFile\n")
+		scriptBuilder.WriteString("    case $compressedVirtualEnvFile in \n")
+		scriptBuilder.WriteString("        *\".zip\")\n")
+		scriptBuilder.WriteString("            echo \"Found zip-based virtual environment.\"\n")
+		scriptBuilder.WriteString("            extractionCommand=\"unzip -q $compressedVirtualEnvFile -d /$virtualEnvName\"\n")
+		scriptBuilder.WriteString("            ;;\n")
+		scriptBuilder.WriteString("        *\".tar.gz\")\n")
+		scriptBuilder.WriteString("            echo \"Found tar.gz based virtual environment.\"\n")
+		scriptBuilder.WriteString("            extractionCommand=\"tar -xzf $compressedVirtualEnvFile -C /$virtualEnvName\"\n")
+		scriptBuilder.WriteString("            ;;\n")
+		scriptBuilder.WriteString("    esac\n")
+		scriptBuilder.WriteString("    if [ ! -z \"$extractionCommand\" ]; then\n")
+		scriptBuilder.WriteString("        echo \"Removing existing virtual environment directory...\"\n")
+		scriptBuilder.WriteString("        rm -fr /$virtualEnvName\n")
+		scriptBuilder.WriteString("        mkdir -p /$virtualEnvName\n")
+		scriptBuilder.WriteString("        echo \"Extracting...\"\n")
+		scriptBuilder.WriteString("        $extractionCommand\n")
+		scriptBuilder.WriteString("	   	   virtualEnvDir=\"/$virtualEnvName\"\n")
+		scriptBuilder.WriteString("    fi\n")
+		scriptBuilder.WriteString("    echo \"Done.\"\n")
+		scriptBuilder.WriteString("fi\n\n")
+	}
 
 	packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
 	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
@@ -109,8 +127,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			command = gen.getCommandFromModule(appModule, appDirectory)
 		}
 	} else {
-		logger.LogInformation("adding execution permission if needed ...");
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath);
+		logger.LogInformation("adding execution permission if needed ...")
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
 		logger.LogInformation("permission added %t", isPermissionAdded)
 		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}

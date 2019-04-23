@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {
-            var runDatabaseContainerResult = _dockerCli.Run(
+            var runDbContainerResult = _dockerCli.Run(
                 Settings.MySqlDbImageName,
                 environmentVariables: new List<EnvironmentVariable>
                 {
@@ -31,15 +31,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 command: null,
                 commandArguments: null);
 
-            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
-            return runDatabaseContainerResult;
+            RunAsserts(() => Assert.True(runDbContainerResult.IsSuccess), runDbContainerResult.GetDebugInfo());
+            return runDbContainerResult;
         }
 
-        protected override void WaitUntilDbServerIsUp()
+        protected override bool WaitUntilDbServerIsUp()
         {
             // Try 30 times at most, with a constant 2s in between attempts
             var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
-            retry.Execute(() =>
+            return retry.Execute(() =>
             {
                 // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
                 string status = _dockerCli.GetContainerStatus(DbServerContainerName);
@@ -52,7 +52,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             const string sqlFile = "/tmp/setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
-                // No space after the '-p' on purpose: https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password
+                // No space after the '-p' on purpose:
+                // https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password
                 .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {sqlFile}")
                 .ToString();
 

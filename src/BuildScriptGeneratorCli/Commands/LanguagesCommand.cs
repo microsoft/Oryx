@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Command(
         "languages",
         Description = "Show the list of supported platforms and other information like versions, properties etc.")]
-    internal class LanguagesCommand : BaseCommand
+    internal class LanguagesCommand : CommandBase
     {
         [Option("--json", Description = "Output the supported platform data in JSON format.")]
         public bool OutputJson { get; set; }
@@ -73,10 +73,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var defs = new DefinitionListFormatter();
                 defs.AddDefinition("Platform", platform.Name);
 
-                if (platform.Versions != null && platform.Versions.Any())
-                {
-                    defs.AddDefinition("Versions", string.Join(Environment.NewLine, platform.Versions));
-                }
+                defs.AddDefinition("Versions",
+                    (platform.Versions != null && platform.Versions.Any()) ?
+                        string.Join(Environment.NewLine, platform.Versions) : "N/A");
 
                 if (platform.Properties != null && platform.Properties.Any())
                 {

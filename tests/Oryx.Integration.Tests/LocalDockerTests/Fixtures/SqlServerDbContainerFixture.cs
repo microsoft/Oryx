@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override DockerRunCommandResult RunDbServerContainer()
         {
-            var runDatabaseContainerResult = _dockerCli.Run(
+            var runDbContainerResult = _dockerCli.Run(
                     Settings.MicrosoftSQLServerImageName,
                     environmentVariables: new List<EnvironmentVariable>
                     {
@@ -43,17 +43,16 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                     command: null,
                     commandArguments: null);
 
-            RunAsserts(() => Assert.True(runDatabaseContainerResult.IsSuccess), runDatabaseContainerResult.GetDebugInfo());
-            return runDatabaseContainerResult;
+            RunAsserts(() => Assert.True(runDbContainerResult.IsSuccess), runDbContainerResult.GetDebugInfo());
+            return runDbContainerResult;
         }
 
-        protected override void WaitUntilDbServerIsUp()
+        protected override bool WaitUntilDbServerIsUp()
         {
-            var interval = TimeSpan.FromSeconds(3);
-            // Try 30 times at most, with a constant 3s in between attempts
-            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => interval);
-            retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName).Contains("SQL Server is now ready for client connections"));
-            Thread.Sleep(interval);
+            // Try 33 times at most, with a constant 3s in between attempts
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(33, i => TimeSpan.FromSeconds(3));
+            return retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName)
+                                                 .Contains("SQL Server is now ready for client connections"));
         }
 
         protected override void InsertSampleData()

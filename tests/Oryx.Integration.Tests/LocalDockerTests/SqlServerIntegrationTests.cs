@@ -10,31 +10,34 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
+    [Trait("Category", "DB")]
     public class SqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.SqlServerDbContainerFixture>
     {
-        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture) : base(output, dbFixture)
+        public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture)
+            : base(output, dbFixture)
         {
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact(Skip = "Bug 847845")]
         public async Task NodeApp_MicrosoftSqlServerDB()
         {
             await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mssql"));
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact(Skip = "Bug 847845")]
         public async Task Python37App_MicrosoftSqlServerDB()
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"));
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 847845")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         // pdo_sqlsrv only supports PHP >= 7.1
         public async Task PhpApp_UsingPdo(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), 80);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "sqlsrv-example"), 80,
+                specifyBindPortFlag: false);
         }
     }
 }

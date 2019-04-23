@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
@@ -33,19 +33,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        [Fact]
-        public void ConsidersZipVenvBuildProperty()
+        [Theory]
+        [InlineData(null, "bla.tar.gz")]
+        [InlineData("tar-gz", "bla.tar.gz")]
+        [InlineData("zip", "bla.zip")]
+        public void ExlcudedDirs_DoesNotContainVirtualEnvDir_IfCompressVirtualEnv_IsEnabled(
+            string compressOption,
+            string compressedVirtualEnvFileName)
         {
             // Arrange
             var scriptGenerator = CreatePlatformInstance();
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
             var venvName = "bla";
-            var context = new BuildScriptGeneratorContext {
+            var context = new BuildScriptGeneratorContext
+            {
                 SourceRepo = repo,
                 Properties = new Dictionary<string, string> {
                     { "virtualenv_name", venvName },
-                    { "zip_venv_dir", "true" }
+                    { "compress_virtualenv", compressOption }
                 }
             };
 
@@ -55,6 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotNull(excludedDirs);
             Assert.Contains(venvName, excludedDirs);
+            Assert.DoesNotContain(compressedVirtualEnvFileName, excludedDirs);
         }
 
         private PythonPlatform CreatePlatformInstance(string defaultVersion = null)

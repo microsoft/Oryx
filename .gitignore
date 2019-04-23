@@ -18,7 +18,6 @@
 x64/
 x86/
 bld/
-[Bb]in/
 [Oo]bj/
 [Ll]og/
 
@@ -272,11 +271,10 @@ images/runtime/dotnetcore/*.*/
 !images/runtime/dotnetcore/2.2/
 images/runtime/python/*.*/
 
-# Golang packages, if oryx is added to GOPATH (which it should)
+# Go packages, if Oryx is added to GOPATH (which it should)
 pkg/
-bin/
 
-# Go packages from github
+# Go packages from GitHub
 src/github.com/
 src/startupscriptgenerator/vendor/
 src/golang.org/

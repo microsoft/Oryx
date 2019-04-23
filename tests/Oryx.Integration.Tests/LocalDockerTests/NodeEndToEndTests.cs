@@ -15,29 +15,25 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class NodeEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8000;
+        private const int HostPort = Constants.NodeEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
-
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
-        private readonly HttpClient _httpClient;
         private readonly string _tempRootDir;
 
         public NodeEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _httpClient = new HttpClient();
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
         [Theory]
-        [InlineData("tar-gz")]
-        [InlineData("zip")]
-        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules(string compressFormat)
+        [MemberData(nameof(TestValueGenerator.GetZipOptions_NodeVersions), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules(string compressFormat, string nodeVersion)
         {
             // NOTE:
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
@@ -49,8 +45,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
-            var appName = "webfrontend";
+            var appName = "linxnodeexpress";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
@@ -88,7 +83,58 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    Assert.Contains("Say It Again", data);
+                    Assert.Equal("Hello World from express!", data);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRunNodeApp_WithDebugger(string nodeVersion)
+        {
+            // Arrange
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appName = "linxnodeexpress";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            const int localPort = 9393;
+            const int containerDebugPort = 9595;
+            var portMapping = $"{localPort}:{containerDebugPort}";
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appOutputDir} -remoteDebug -debugPort {containerDebugPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runAppScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{localPort}/json/list");
+                    Assert.Contains("devtoolsFrontendUrl", data);
                 });
         }
 
@@ -398,16 +444,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
+                "oryx", new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
                 $"oryxdevms/node-{nodeVersion}",
                 portMapping,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    script
-                },
+                "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
@@ -567,6 +607,51 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Theory]
+        // TODO - renable it with 851972, removing the inline data
+        //[MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        [InlineData("10.10")]
+        [InlineData("10.14")]
+        public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
+        {
+            // Arrange
+            // Use a separate volume for output due to rsync errors
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appName = "create-react-app-sample";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=zip")
+               .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+               .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[] { "-c", runAppScript },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("<title>React App</title>", data);
+                });
+        }
+
         [Fact]
         public async Task Node_CreateReactAppSample_singleImage()
         {
@@ -689,15 +774,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Equal("Hello World from express!", data);
                 });
-        }
-
-        // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
-        // see the documentation for the Encoding.RegisterProvider method.
-        private async Task<string> GetResponseDataAsync(string url)
-        {
-            var bytes = await _httpClient.GetByteArrayAsync(url);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }

@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -15,22 +13,20 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PythonEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class PythonEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8001;
+        private const int HostPort = Constants.PythonEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
-        private readonly HttpClient _httpClient;
         private readonly string _tempRootDir;
 
         public PythonEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _httpClient = new HttpClient();
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
@@ -220,8 +216,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython37_AndZippedVirtualEnv()
+        [Theory]
+        [InlineData("tar-gz", "tar.gz")]
+        [InlineData("zip", "zip")]
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndCompressedVirtualEnv(
+            string compressOption,
+            string expectedCompressFileNameExtension)
         {
             // Arrange
             var appName = "flask-app";
@@ -234,12 +234,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
+            var tempOutputDir = "/tmp/output";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"export ORYX_ZIP_VIRTUALENV_DIR=true")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/output -p virtualenv_name={virtualEnvName}")
-                .AddDirectoryDoesNotExistCheck($"/tmp/output/{virtualEnvName}")
-                .AddFileExistsCheck($"/tmp/output/{virtualEnvName}.tar.gz")
-                .AddCommand($"cp -rf /tmp/output/* {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir}" +
+                $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
+                .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -694,15 +696,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     data = await GetResponseDataAsync($"http://localhost:{HostPort}{link}");
                     Assert.Contains("!function(e){var t={};function n(r){if(t[r])return t[r].exports", data);
                 });
-        }
-
-        // The following method is used to avoid following exception from HttpClient when trying to read a response:
-        // '"utf-8"' is not a supported encoding name. For information on defining a custom encoding,
-        // see the documentation for the Encoding.RegisterProvider method.
-        private async Task<string> GetResponseDataAsync(string url)
-        {
-            var bytes = await _httpClient.GetByteArrayAsync(url);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }

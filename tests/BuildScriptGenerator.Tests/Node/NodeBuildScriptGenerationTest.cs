@@ -407,7 +407,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
                 compressedNodeModulesFileName: "node_modules.zip",
-                compressNodeModulesCommand: "zip -q -r");
+                compressNodeModulesCommand: "zip -y -q -r");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);

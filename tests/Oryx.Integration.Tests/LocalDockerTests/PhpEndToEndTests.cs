@@ -3,31 +3,25 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
-    public class PhpEndToEndTests : IClassFixture<TestTempDirTestFixture>
+    public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = 8000;
+        private const int HostPort = Constants.PhpEndToEndTestsPort;
         private const string RunScriptPath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
         private readonly string _hostSamplesDir;
         private readonly string _hostTempDir;
-        private readonly HttpClient _httpClient = new HttpClient();
         private readonly IList<string> _downloadedPaths = new List<string>();
 
         public PhpEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -77,13 +71,15 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task WordPress51(string phpVersion)
         {
             // Arrange
-            string hostDir;
-            using (var webClient = new WebClient())
+            string hostDir = Path.Combine(_hostTempDir, "wordpress");
+            if (!Directory.Exists(hostDir))
             {
-                var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
-                webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
-                ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir); // The ZIP already contains a `wordpress` folder
-                hostDir = Path.Combine(_hostTempDir, "wordpress");
+                using (var webClient = new WebClient())
+                {
+                    var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
+                    webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
+                    ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir); // The ZIP already contains a `wordpress` folder
+                }
             }
 
             var appName = "wordpress";
@@ -117,7 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         public async Task ImagickExample(string phpVersion)
         {
             // Arrange
-            var appName = "image-examples";
+            var appName = "imagick-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;

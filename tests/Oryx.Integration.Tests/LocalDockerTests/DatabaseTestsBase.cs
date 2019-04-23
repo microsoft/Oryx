@@ -19,30 +19,30 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         private static readonly Random _rand = new Random();
-        protected readonly int _appPort;
+        protected readonly int _hostPort;
+        protected readonly HttpClient _httpClient = new HttpClient();
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _output = outputHelper;
             _dbFixture = dbFixture;
-            _appPort = 8080 + _rand.Next(100);
+            _hostPort = 8080 + _rand.Next(100);
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            HttpClient = new HttpClient();
         }
 
         protected string HostSamplesDir { get; }
 
-        protected HttpClient HttpClient { get; }
-
-        protected async Task RunTestAsync(string language, string languageVersion, string samplePath, int containerPort = 8000)
+        protected async Task RunTestAsync(string language, string languageVersion, string samplePath,
+            int containerPort = 8000, bool specifyBindPortFlag = true)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{_appPort}:{containerPort}";
+            var portMapping = $"{_hostPort}:{containerPort}";
             var entrypointScript = "./run.sh";
+            var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {containerPort}")
+                .AddCommand($"oryx -appPath {appDir} {bindPortFlag}")
                 .AddCommand(entrypointScript)
                 .ToString();
 
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
-                    var data = await HttpClient.GetStringAsync($"http://localhost:{_appPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{_hostPort}/");
                     Assert.Equal(_dbFixture.GetSampleDataAsJson(), data.Trim(), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
                 });
         }

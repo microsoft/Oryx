@@ -243,7 +243,9 @@ ARG AGENTBUILD=${AGENTBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN if [ -z "$AGENTBUILD" ]; then dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release  BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; fi
+RUN if [ -z "$AGENTBUILD" ]; then \
+        dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
+    fi
 
 # This stage is only when building in devops agents
 FROM main AS copybuildscriptbinaries
@@ -286,10 +288,10 @@ COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN . /tmp/php/install-prereqs.sh
-COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190325.6 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190325.6 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190325.6 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190325.6 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190417.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190417.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190417.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190417.1 /opt /opt
 
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage

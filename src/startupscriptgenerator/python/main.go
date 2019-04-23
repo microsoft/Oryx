@@ -21,6 +21,11 @@ func main() {
 	packagesFolderPtr := flag.String("packagedir", "__oryx_packages__", "Directory where the python packages were installed, if no virtual environment was used.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
+	skipVirtualEnvExtraction := flag.Bool(
+		"skipVirtualEnvExtraction",
+		false,
+		"Disables the extraction of the compressed virtual environment file. If used, some external tool will have to extract it - "+
+			"otherwise the application might not work.")
 	flag.Parse()
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
@@ -29,13 +34,14 @@ func main() {
 	common.SetGlobalOperationId(fullAppPath)
 
 	entrypointGenerator := PythonStartupScriptGenerator{
-		SourcePath:             fullAppPath,
-		UserStartupCommand:     *userStartupCommandPtr,
-		VirtualEnvironmentName: *virtualEnvironmentNamePtr,
-		BindPort:               *bindPortPtr,
-		DefaultAppPath:         defaultAppFullPAth,
-		DefaultAppModule:       *defaultAppModulePtr,
-		PackageDirectory:       *packagesFolderPtr,
+		SourcePath:               fullAppPath,
+		UserStartupCommand:       *userStartupCommandPtr,
+		VirtualEnvironmentName:   *virtualEnvironmentNamePtr,
+		BindPort:                 *bindPortPtr,
+		DefaultAppPath:           defaultAppFullPAth,
+		DefaultAppModule:         *defaultAppModulePtr,
+		PackageDirectory:         *packagesFolderPtr,
+		SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()

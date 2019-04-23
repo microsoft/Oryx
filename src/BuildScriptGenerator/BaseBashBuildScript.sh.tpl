@@ -25,19 +25,6 @@ then
     DESTINATION_DIR=$(pwd -P)
 fi
 
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
-then
-	if [ -d "$DESTINATION_DIR" ] && [ "$(ls -A $DESTINATION_DIR)" ]
-	then
-		echo
-		echo "Destination directory is not empty. Deleting its contents..."
-		START_TIME=$SECONDS
-		rm -rf "$DESTINATION_DIR"/*
-		ELAPSED_TIME=$(($SECONDS - $START_TIME))
-		echo "Done in $ELAPSED_TIME sec(s)."
-	fi
-fi
-
 if [ ! -z "$INTERMEDIATE_DIR" ]
 then
 	echo "Using intermediate directory '$INTERMEDIATE_DIR'."
@@ -89,6 +76,14 @@ cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
 
+{{ if PostBuildScriptPath | IsNotBlank }}
+# Make sure to cd to the source directory so that the post-build script runs from there
+cd $SOURCE_DIR
+echo "{{ PostBuildScriptPrologue }}"
+"{{ PostBuildScriptPath }}"
+echo "{{ PostBuildScriptEpilogue }}"
+{{ end }}
+
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	cd "$SOURCE_DIR"
@@ -104,14 +99,6 @@ then
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 fi
-
-{{ if PostBuildScriptPath | IsNotBlank }}
-# Make sure to cd to the source directory so that the post-build script runs from there
-cd $SOURCE_DIR
-echo "{{ PostBuildScriptPrologue }}"
-"{{ PostBuildScriptPath }}"
-echo "{{ PostBuildScriptEpilogue }}"
-{{ end }}
 
 {{ if ManifestFileName | IsNotBlank }}
 MANIFEST_FILE={{ ManifestFileName }}

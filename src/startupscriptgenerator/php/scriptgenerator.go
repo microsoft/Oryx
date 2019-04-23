@@ -10,9 +10,12 @@ import (
 	"strings"
 )
 
+const DefaultBindPort = "8080"
+
 type PhpStartupScriptGenerator struct {
 	SourcePath string
 	StartupCmd string
+	BindPort   string
 }
 
 func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
@@ -26,6 +29,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 	scriptBuilder.WriteString("export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "APACHE_PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"root": gen.SourcePath, "cmd": gen.StartupCmd})

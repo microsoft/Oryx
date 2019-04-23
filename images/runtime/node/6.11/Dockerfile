@@ -91,5 +91,13 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 RUN mkdir -p /node_modules \
  && chmod 777 /node_modules
 
+# PM2 is supported as an option when running the app,
+# so we need to make sure it is available in our images.
+RUN npm install -g pm2
+
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
+
+# Node wrapper is used to debug apps when node is executed indirectly, e.g. by npm.
+COPY src/startupscriptgenerator/node/wrapper/node /opt/node-wrapper/
+RUN chmod a+x /opt/node-wrapper/node

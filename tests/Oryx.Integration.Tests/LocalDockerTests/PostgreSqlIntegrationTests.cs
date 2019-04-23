@@ -10,32 +10,35 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
+    [Trait("Category", "DB")]
     public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
-        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture) : base(output, dbFixture)
+        public PostgreSqlIntegrationTests(ITestOutputHelper output, Fixtures.PostgreSqlDbContainerFixture dbFixture)
+            : base(output, dbFixture)
         {
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact(Skip = "Bug 847845")]
         public async Task NodeApp_PostgreSqlDB()
         {
             await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-postgres"));
         }
 
-        [Fact(Skip = "Bug 832951")]
+        [Fact(Skip = "Bug 847845")]
         public async Task Python37App_PostgreSqlDB()
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "postgres-sample"));
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 847845")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
         [InlineData("5.6")]
         public async Task PhpApp(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), 80);
+            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "pgsql-example"), 80,
+                specifyBindPortFlag: false);
         }
     }
 }

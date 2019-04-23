@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             script = null;
 
             var toolsToVersion = new Dictionary<string, string>();
-            List<BuildScriptSnippet> snippets;
+            IList<BuildScriptSnippet> snippets;
             var directoriesToExcludeFromCopyToIntermediateDir = new List<string>();
             var directoriesToExcludeFromCopyToBuildOutputDir = new List<string>();
 
@@ -70,42 +70,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
-        {
-            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
-            var benvArgs = string.Join(' ', listOfBenvArgs);
-            return benvArgs;
-        }
-
-        private List<BuildScriptSnippet> GetBuildSnippets(
-            BuildScriptGeneratorContext context,
-            Dictionary<string, string> toolsToVersion,
-            List<string> directoriesToExcludeFromCopyToIntermediateDir,
-            List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
+        public IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
         {
             bool providedLanguageFound = false;
-            var snippets = new List<BuildScriptSnippet>();
+            var resultPlatforms = new List<Tuple<IProgrammingPlatform, string>>();
 
             foreach (var platform in _programmingPlatforms)
             {
-                if (!platform.IsEnabled(context))
+                if (!platform.IsEnabled(ctx))
                 {
                     _logger.LogDebug("{platformName} has been disabled", platform.Name);
                     continue;
                 }
 
                 bool usePlatform = false;
-                var currPlatformMatchesProvided = !string.IsNullOrEmpty(context.Language) &&
-                    string.Equals(context.Language, platform.Name, StringComparison.OrdinalIgnoreCase);
+                var currPlatformMatchesProvided = !string.IsNullOrEmpty(ctx.Language) &&
+                    string.Equals(ctx.Language, platform.Name, StringComparison.OrdinalIgnoreCase);
 
                 string targetVersionSpec = null;
                 if (currPlatformMatchesProvided)
                 {
                     providedLanguageFound = true;
-                    targetVersionSpec = context.LanguageVersion;
+                    targetVersionSpec = ctx.LanguageVersion;
                     usePlatform = true;
                 }
-                else if (context.DisableMultiPlatformBuild && !string.IsNullOrEmpty(context.Language))
+                else if (ctx.DisableMultiPlatformBuild && !string.IsNullOrEmpty(ctx.Language))
                 {
                     _logger.LogDebug(
                         "Multi platform build is disabled and platform was specified. " +
@@ -117,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 if (!currPlatformMatchesProvided || string.IsNullOrEmpty(targetVersionSpec))
                 {
                     _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
-                    var detectionResult = platform.Detect(context.SourceRepo);
+                    var detectionResult = platform.Detect(ctx.SourceRepo);
                     if (detectionResult != null)
                     {
                         _logger.LogDebug(
@@ -136,43 +125,62 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (usePlatform)
                 {
-                    var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
-                    if (excludedDirs.Any())
-                    {
-                        directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
-                    }
-
-                    excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
-                    if (excludedDirs.Any())
-                    {
-                        directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
-                    }
-
-                    string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
-                    platform.SetVersion(context, targetVersion);
-
-                    string cleanOrNot = platform.IsCleanRepo(context.SourceRepo) ? "clean" : "not clean";
-                    _logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
-
-                    var snippet = platform.GenerateBashBuildScriptSnippet(context);
-                    if (snippet != null)
-                    {
-                        _logger.LogDebug("Script generator {scriptGenType} was used", platform.GetType());
-                        snippets.Add(snippet);
-                        platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
-                    }
-                    else
-                    {
-                        _logger.LogDebug("Script generator {scriptGenType} cannot be used", platform.GetType());
-                    }
+                    resultPlatforms.Add(Tuple.Create(platform, targetVersionSpec));
                 }
             }
 
             // Even if a language was detected, we throw an error if the user provided
             // an unsupported language as target.
-            if (!string.IsNullOrEmpty(context.Language) && !providedLanguageFound)
+            if (!string.IsNullOrEmpty(ctx.Language) && !providedLanguageFound)
             {
-                ThrowInvalidLanguageProvided(context);
+                ThrowInvalidLanguageProvided(ctx);
+            }
+
+            return resultPlatforms;
+        }
+
+        private IList<BuildScriptSnippet> GetBuildSnippets(
+            BuildScriptGeneratorContext context,
+            Dictionary<string, string> toolsToVersion,
+            List<string> directoriesToExcludeFromCopyToIntermediateDir,
+            List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
+        {
+            var snippets = new List<BuildScriptSnippet>();
+
+            var platformsToUse = GetCompatiblePlatforms(context);
+            foreach (Tuple<IProgrammingPlatform, string> platformAndVersion in platformsToUse)
+            {
+                var (platform, targetVersionSpec) = platformAndVersion;
+
+                var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
+                if (excludedDirs.Any())
+                {
+                    directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
+                }
+
+                excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
+                if (excludedDirs.Any())
+                {
+                    directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
+                }
+
+                string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);
+                platform.SetVersion(context, targetVersion);
+
+                string cleanOrNot = platform.IsCleanRepo(context.SourceRepo) ? "clean" : "not clean";
+                _logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
+
+                var snippet = platform.GenerateBashBuildScriptSnippet(context);
+                if (snippet != null)
+                {
+                    _logger.LogDebug("Script generator {scriptGenType} was used", platform.GetType());
+                    snippets.Add(snippet);
+                    platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
+                }
+                else
+                {
+                    _logger.LogDebug("Script generator {scriptGenType} cannot be used", platform.GetType());
+                }
             }
 
             return snippets;
@@ -195,12 +203,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
+        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
+        {
+            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
+            var benvArgs = string.Join(' ', listOfBenvArgs);
+            return benvArgs;
+        }
+
         /// <summary>
         /// Builds the full build script from the list of snippets for each platform.
         /// </summary>
         /// <returns>Finalized build script as a string.</returns>
         private string BuildScriptFromSnippets(
-            List<BuildScriptSnippet> snippets,
+            IList<BuildScriptSnippet> snippets,
             Dictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
             List<string> directoriesToExcludeFromCopyToBuildOutputDir)

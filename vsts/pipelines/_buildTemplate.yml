@@ -9,7 +9,9 @@ steps:
     pipelineId: 'Oryx-CI'
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.SourcesDirectory)'
-  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'))
+  condition: >
+   and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'),
+   or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ]
@@ -138,6 +140,7 @@ steps:
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
     includeLatestTag: false
+    enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@1
@@ -149,6 +152,7 @@ steps:
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
     includeLatestTag: false
+    enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@0
@@ -159,6 +163,7 @@ steps:
     action: 'Push images'
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
     includeLatestTag: false
+    enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: Docker@1
@@ -170,6 +175,7 @@ steps:
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     includeLatestTag: false
+    enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
@@ -178,6 +184,12 @@ steps:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
+- task: ShellScript@2
+  displayName: 'Clean up Docker mounted directories'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
+  condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
+  
 - task: ShellScript@2
   displayName: 'Generate release notes'
   inputs:

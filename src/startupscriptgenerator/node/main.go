@@ -20,10 +20,9 @@ func main() {
 	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed to start the application up.")
 	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/startup/default-static-site.js'")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
-	customStartCommandPtr := flag.String("serverCmd", "", "[Optional] Command to start the server, if different than 'node', e.g. 'pm2 start --no-daemon'")
+	usePm2Ptr := flag.Bool("usePM2", false, "If enabled, application will run using PM2.")
 	remoteDebugEnabledPtr := flag.Bool("remoteDebug", false, "Application will run in debug mode.")
 	remoteDebugBrkEnabledPtr := flag.Bool("remoteDebugBrk", false, "Application will run in debug mode, and will debugger will break before the user code starts.")
-	remoteDebugIp := flag.String("debugHost", "", "The IP address where the debugger will listen to, e.g. '0.0.0.0' or '127.0.0.1")
 	remoteDebugPort := flag.String("debugPort", "", "The port the debugger will listen to.")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	skipNodeModulesExtraction := flag.Bool(
@@ -43,11 +42,10 @@ func main() {
 		SourcePath:                      fullAppPath,
 		UserStartupCommand:              *userStartupCommandPtr,
 		DefaultAppJsFilePath:            defaultAppFullPAth,
-		CustomStartCommand:              *customStartCommandPtr,
+		UsePm2:                          *usePm2Ptr,
 		BindPort:                        *bindPortPtr,
 		RemoteDebugging:                 *remoteDebugEnabledPtr,
 		RemoteDebuggingBreakBeforeStart: *remoteDebugBrkEnabledPtr,
-		RemoteDebuggingIp:               *remoteDebugIp,
 		RemoteDebuggingPort:             *remoteDebugPort,
 		UseLegacyDebugger:               useLegacyDebugger,
 		SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
