@@ -52,6 +52,19 @@ UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:*.*"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:*.*"
+UntagImages node:4.4.7
+UntagImages node:4.5.0
+UntagImages node:4.8.7
+UntagImages node:6.2.2
+UntagImages node:6.6.0
+UntagImages node:6.9.5
+UntagImages node:6.10.3
+UntagImages node:6.11.5
+UntagImages node:8.0.0
+UntagImages node:8.1.4
+UntagImages node:8.2.1
+UntagImages node:8.8.1
+UntagImages node:8.9.4
 
 echo
 echo "Updated list of docker images:"

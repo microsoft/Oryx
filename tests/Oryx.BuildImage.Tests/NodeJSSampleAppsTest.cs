@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
+        public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -145,8 +145,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/hi.txt")
-                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/blah")
+                .AddFileExistsCheck($"{appOutputDir}/hi.txt")
+                .AddFileExistsCheck($"{appOutputDir}/blah/hi.txt")
                 .ToString();
 
             // Act

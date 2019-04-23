@@ -16,16 +16,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     [BuildProperty(
         VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
     [BuildProperty(
-        ZipVenvDirPropertyKey, "If provided, the virtual environment folder will be zipped to the output folder.")]
+        CompressVirtualEnvPropertyKey,
+        "Indicates how and if virtual environment folder should be compressed into a single file in the output " +
+        "folder. Options are '" + ZipOption + "', and '" + TarGzOption + "'. Default is to not compress. " +
+        "If this option is used, when running the app the virtual environment folder must be extracted from " +
+        "this file.")]
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
         "Directory to download the packages to, if no virtual environment is provided. Default: '" +
         DefaultTargetPackageDirectory + "'")]
     internal class PythonPlatform : IProgrammingPlatform
     {
-        internal const string ZipVenvDirPropertyKey = "zip_venv_dir";
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
+
+        internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
+        internal const string ZipOption = "zip";
+        internal const string TarGzOption = "tar-gz";
 
         private const string DefaultTargetPackageDirectory = "__oryx_packages__";
 
@@ -60,7 +67,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            var virtualEnvName = GetVirutalEnvironmentName(context);
+            var buildProperties = new Dictionary<string, string>();
+            var virtualEnvName = GetVirtualEnvironmentName(context);
+            if (!string.IsNullOrWhiteSpace(virtualEnvName))
+            {
+                buildProperties[PythonConstants.VirtualEnvNameBuildProperty] = virtualEnvName;
+            }
 
             string packageDir = null;
             if (context.Properties == null ||
@@ -109,6 +121,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 disableCollectStatic = true;
             }
 
+            string compressVirtualEnvCommand = null;
+            string compressedVirtualEnvFileName = null;
+            GetVirtualEnvPackOptions(
+                context,
+                virtualEnvName,
+                out compressVirtualEnvCommand,
+                out compressedVirtualEnvFileName);
+
+            if (!string.IsNullOrWhiteSpace(compressedVirtualEnvFileName))
+            {
+                buildProperties[PythonConstants.CompressedVirtualEnvFileBuildProperty] = compressedVirtualEnvFileName;
+            }
+
             TryLogDependencies(pythonVersion, context.SourceRepo);
 
             var scriptProps = new PythonBashBuildSnippetProperties(
@@ -117,7 +142,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
                 disableCollectStatic: disableCollectStatic,
-                zipVirtualEnvDir: ShouldZipVenvDir(context));
+                compressVirtualEnvCommand: compressVirtualEnvCommand,
+                compressedVirtualEnvFileName: compressedVirtualEnvFileName);
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.PythonSnippet,
                 scriptProps,
@@ -126,6 +152,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return new BuildScriptSnippet()
             {
                 BashBuildScriptSnippet = script,
+                BuildProperties = buildProperties
             };
         }
 
@@ -164,29 +191,77 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext context)
         {
-            var venvName = GetVirutalEnvironmentName(context);
-            if (string.IsNullOrEmpty(venvName))
+            var dirs = new List<string>();
+            var virtualEnvName = GetVirtualEnvironmentName(context);
+            if (GetVirtualEnvPackOptions(
+                context,
+                virtualEnvName,
+                out string compressCommand,
+                out string compressedFileName))
             {
-                return Array.Empty<string>();
+                dirs.Add(virtualEnvName);
+            }
+            else if (!string.IsNullOrWhiteSpace(compressedFileName))
+            {
+                dirs.Add(compressedFileName);
             }
 
-            string dir = ShouldZipVenvDir(context) ? venvName : $"{venvName}.{PythonConstants.ZipFileExtension}";
-            return new string[] { dir };
+            return dirs;
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext context)
         {
             var excludeDirs = new List<string>();
+
             excludeDirs.Add(DefaultTargetPackageDirectory);
 
-            var virtualEnvName = GetVirutalEnvironmentName(context);
+            var virtualEnvName = GetVirtualEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))
             {
-                excludeDirs.Add($"{virtualEnvName}.{PythonConstants.ZipFileExtension}");
+                excludeDirs.Add(virtualEnvName);
+                excludeDirs.Add(string.Format(PythonConstants.ZipVirtualEnvFileNameFormat, virtualEnvName));
+                excludeDirs.Add(string.Format(PythonConstants.TarGzVirtualEnvFileNameFormat, virtualEnvName));
+            }
+            return excludeDirs;
+        }
+
+        private static bool GetVirtualEnvPackOptions(
+            BuildScriptGeneratorContext context,
+            string virtualEnvName,
+            out string compressVirtualEnvCommand,
+            out string compressedVirtualEnvFileName)
+        {
+            var isVirtualEnvPackaged = false;
+            compressVirtualEnvCommand = null;
+            compressedVirtualEnvFileName = null;
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(CompressVirtualEnvPropertyKey, out string compressVirtualEnvOption))
+            {
+                // default to tar.gz if the property was provided with no value.
+                if (string.IsNullOrEmpty(compressVirtualEnvOption) ||
+                    string.Equals(
+                        compressVirtualEnvOption, TarGzOption, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    compressedVirtualEnvFileName = string.Format(
+                        PythonConstants.TarGzVirtualEnvFileNameFormat,
+                        virtualEnvName);
+                    compressVirtualEnvCommand = $"tar -zcf";
+                    isVirtualEnvPackaged = true;
+                }
+                else if (string.Equals(
+                    compressVirtualEnvOption, ZipOption, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    compressedVirtualEnvFileName = string.Format(
+                        PythonConstants.ZipVirtualEnvFileNameFormat,
+                        virtualEnvName);
+                    compressVirtualEnvCommand = $"zip -y -q -r";
+                    isVirtualEnvPackaged = true;
+                }
             }
 
-            return excludeDirs;
+
+            return isVirtualEnvPackaged;
         }
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
@@ -208,7 +283,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
         }
 
-        private string GetVirutalEnvironmentName(BuildScriptGeneratorContext context)
+        private string GetVirtualEnvironmentName(BuildScriptGeneratorContext context)
         {
             if (context.Properties == null ||
                 !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
@@ -217,13 +292,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return virtualEnvName;
-        }
-
-        private bool ShouldZipVenvDir(BuildScriptGeneratorContext context)
-        {
-            // Build property takes precedence over env var
-            return context.Properties?.ContainsKey(ZipVenvDirPropertyKey) == true ||
-                _pythonScriptGeneratorOptions.ZipVirtualEnvDir;
         }
     }
 }
