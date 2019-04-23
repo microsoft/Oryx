@@ -205,7 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var logFile = "/tmp/directory.log";
 
             var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
-                .AddFileExistsCheck(logFile, true)
+                .AddFileExistsCheck(logFile)
                 .AddStringExistsInFileCheck("idea.js", logFile)
                 .AddStringExistsInFileCheck("app2", logFile)
                 .AddStringExistsInFileCheck("app3", logFile)
@@ -243,8 +243,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --log-file {logFile}")
-                .AddStringNotExistsInFileCheck("app4", logFile, true)
-                .AddStringNotExistsInFileCheck("3.log", logFile)
+                .AddStringDoestNotExistInFileCheck("app4", logFile)
+                .AddStringDoestNotExistInFileCheck("3.log", logFile)
                 .ToString();
 
             // Act

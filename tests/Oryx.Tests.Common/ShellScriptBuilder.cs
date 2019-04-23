@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         /// <summary>
-        /// Adds the 'oryx script' command with the supplied <paramref name="argumentsString"/>.
+        /// Adds the 'oryx build-script' command with the supplied <paramref name="argumentsString"/>.
         /// </summary>
         /// <param name="argumentsString"></param>
         /// <returns></returns>
@@ -80,51 +80,44 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddFileDoesNotExistCheck(string file, bool isAppendSemiColon = false)
+        public ShellScriptBuilder AddFileDoesNotExistCheck(string file)
         {
             return Append(
                 $"if [ -f \"{file}\" ]; then " +
                 $"echo File '{file}' is still present 1>&2 && " +
-                "exit 1; fi", isAppendSemiColon);
+                "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddFileExistsCheck(string file, bool isAppendSemicolon = false)
+        public ShellScriptBuilder AddFileExistsCheck(string file)
         {
             return Append(
                 $"if [ ! -f \"{file}\" ]; then " +
                 $"echo File '{file}' not found 1>&2 && " +
-                "exit 1; fi", isAppendSemicolon);
+                "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file, bool isAppendSemiColon = false)
+        public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file)
         {
             return Append(
                 $"grep '{searchString}' '{file}' && if [ $? -eq 1 ]; then " +
                 $"echo '{searchString}' not found 1>&2 && " +
-                "exit 1; fi", isAppendSemiColon);
+                "exit 1; fi");
         }
 
-        public ShellScriptBuilder AddStringNotExistsInFileCheck(string searchString, string file, bool isAppendSemiColon = false)
+        public ShellScriptBuilder AddStringDoestNotExistInFileCheck(string searchString, string file)
         {
             return Append(
                 $"grep '{searchString}' '{file}' && if [ $? -eq 0 ]; then " +
                 $"echo '{searchString}' found 1>&2 && " +
-                "exit 0; fi", isAppendSemiColon);
+                "exit 1; fi");
         }
 
-        private ShellScriptBuilder Append(string content, bool isAppendSemiColon = false)
+        private ShellScriptBuilder Append(string content)
         {
-            // NOTE: do not use AppendLine as in the script must be in one line
+            // NOTE: do not use AppendLine as this script must be in one line
             if (_contentPresent)
             {
-                if (!isAppendSemiColon)
-                {
-                    _scriptBuilder.Append(" && ");
-                }
-                else
-                {
-                    _scriptBuilder.Append("; ");
-                }
+                _scriptBuilder.Append(" && ");
             }
 
             _scriptBuilder.Append(content);
