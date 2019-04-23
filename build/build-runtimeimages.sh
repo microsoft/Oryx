@@ -37,27 +37,14 @@ function getTagName()
 }
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
-runtimeName="$1"
-if [ ! -z "$runtimeName" ]
+runtimeSubDir="$1"
+if [ ! -z "$runtimeSubDir" ]
 then
-    case "$runtimeName" in
-        node)
-            runtimeImagesSourceDir="$runtimeImagesSourceDir/node"
-        ;;
-        python)
-            runtimeImagesSourceDir="$runtimeImagesSourceDir/python"
-        ;;
-        dotnetcore)
-            runtimeImagesSourceDir="$runtimeImagesSourceDir/dotnetcore"
-        ;;
-        php)
-            runtimeImagesSourceDir="$runtimeImagesSourceDir/php"
-        ;;
-        *)
-            echo "Unknown runtime '$runtimeName'"
-            exit 1
-        ;;
-    esac
+    runtimeImagesSourceDir="$runtimeImagesSourceDir/$runtimeSubDir"
+    if [ ! -d "$runtimeImagesSourceDir" ]; then
+        (>&2 echo "Unknown runtime '$runtimeSubDir'")
+        exit 1
+    fi
 fi
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
