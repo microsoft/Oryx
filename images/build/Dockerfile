@@ -94,6 +94,7 @@ FROM main AS node-install
 RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
+ && ~/n/bin/n -d 4.8.0 \
  && ~/n/bin/n -d 6.2.2 \
  && ~/n/bin/n -d 6.6.0 \
  && ~/n/bin/n -d 6.9.3 \
@@ -149,7 +150,8 @@ RUN set -ex \
 RUN set -ex \
  && ln -s 4.4.7 /opt/nodejs/4.4 \
  && ln -s 4.5.0 /opt/nodejs/4.5 \
- && ln -s 4.5 /opt/nodejs/4 \
+ && ln -s 4.8.0 /opt/nodejs/4.8 \
+ && ln -s 4.8 /opt/nodejs/4 \
  && ln -s 6.2.2 /opt/nodejs/6.2 \
  && ln -s 6.6.0 /opt/nodejs/6.6 \
  && ln -s 6.9.3 /opt/nodejs/6.9 \
@@ -179,6 +181,8 @@ RUN set -ex \
  && ln -s 3.9.5 /opt/npm/3.9 \
  && ln -s 3.10.10 /opt/npm/3.10 \
  && ln -s 3.10 /opt/npm/3 \
+ && ln -s 4.8.0 /opt/npm/4.8 \
+ && ln -s 4.8 /opt/npm/4 \
  && ln -s 5.0.3 /opt/npm/5.0 \
  && ln -s 5.3.0 /opt/npm/5.3 \
  && ln -s 5.4.2 /opt/npm/5.4 \
