@@ -27,5 +27,7 @@ do
 	for manifest in "${MANIFESTS[@]}"
 	do
 		az acr repository delete --name $ACR_NAME --yes --image $manifest
+		echo "> Deleted $manifest"
 	done
+	echo
 done
