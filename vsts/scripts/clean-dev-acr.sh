@@ -27,13 +27,14 @@ declare -r azQuery="[?timestamp<=\`$tsLimit\`].digest"
 
 for repo in "${REPOS[@]}"
 do
+	echo "Fetching manifests in repository '$repo'..."
 	digests=(`az acr repository show-manifests $AZ_NAME_OUTPUT_PARAMS --repository $repo --orderby time_asc --query "$azQuery"`)
 
 	echo "Deleting ${#digests[@]} images created before '$tsLimit' in repository '$repo'..."
-	for manifest in "${MANIFESTS[@]}"
+	for digest in "${digests[@]}"
 	do
-		az acr repository delete --name $ACR_NAME $YES --image $manifest
-		echo "> Deleted $manifest"
+		az acr repository delete --name $ACR_NAME --image "$repo@$digest" $YES
+		echo "> Deleted $digest"
 	done
 	echo
 done
