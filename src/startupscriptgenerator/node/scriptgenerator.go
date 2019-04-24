@@ -120,6 +120,21 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		}
 
 		if startupCommand == "" {
+			startupCommand = gen.getProcessJsonCommand(userStartupCommandFullPath)
+			commandSource = "ProcessJson"
+		}
+
+		if startupCommand == "" {
+			startupCommand = gen.getConfigJsCommand(userStartupCommandFullPath)
+			commandSource = "ConfigJs"
+		}
+
+		if startupCommand == "" {
+			startupCommand = gen.getConfigYamlCommand(userStartupCommandFullPath)
+			commandSource = "ConfigYaml"
+		}
+
+		if startupCommand == "" {
 			startupCommand = gen.getUserProvidedJsFileCommand(userStartupCommandFullPath)
 			commandSource = "UserJsFilePath"
 		}
@@ -162,12 +177,11 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj *packageJson, packageJsonPath string) string {
 	if packageJsonObj != nil && packageJsonObj.Scripts != nil && packageJsonObj.Scripts.Start != "" {
 		var commandBuilder strings.Builder
-		if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
+		if gen.isDebugging() {
 			// At this point we know debugging is enabled, and node will be called indirectly through npm
 			// or yarn. We inject the wrapper in the path so it executes instead of the node binary.
-			commandBuilder.WriteString("export PATH=" + NodeWrapperPath + ":$PATH\n")
-			debugFlag := gen.getDebugFlag()
-			commandBuilder.WriteString("export " + inspectParamVariableName + "=\"" + debugFlag + "\"\n")
+			debugCommand := gen.getNodeWrapperDebugCommand()
+			commandBuilder.WriteString(debugCommand)
 		}
 		packageJsonDir := filepath.Dir(packageJsonPath)
 		isPackageJsonAtRoot := filepath.Clean(packageJsonDir) == filepath.Clean(gen.SourcePath)
@@ -184,7 +198,7 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj
 			} else {
 				commandBuilder.WriteString("npm start")
 			}
-			if gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart {
+			if gen.isDebugging() {
 				commandBuilder.WriteString(" --scripts-prepend-node-path false")
 			}
 			commandBuilder.WriteString("\n")
@@ -192,6 +206,18 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj
 		return commandBuilder.String()
 	}
 	return ""
+}
+
+// Creates the commands that inject the node wrapper, which will intercept calls to 'node' and
+// add the debug option.
+func (gen *NodeStartupScriptGenerator) getNodeWrapperDebugCommand() string {
+	var commandBuilder strings.Builder
+	// At this point we know debugging is enabled, and node will be called indirectly through npm
+	// or yarn. We inject the wrapper in the path so it executes instead of the node binary.
+	commandBuilder.WriteString("export PATH=" + NodeWrapperPath + ":$PATH\n")
+	debugFlag := gen.getDebugFlag()
+	commandBuilder.WriteString("export " + inspectParamVariableName + "=\"" + debugFlag + "\"\n")
+	return commandBuilder.String()
 }
 
 // Gets the startup script from package.json if defined. Returns empty string if not found.
@@ -213,6 +239,56 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonMainCommand(packageJsonObj 
 		return startupCommand
 	}
 	return ""
+}
+
+func (gen *NodeStartupScriptGenerator) getProcessJsonCommand(userInputPath string) string {
+	processJsonPath := ""
+	if userInputPath != "" {
+		if strings.HasSuffix(userInputPath, ".json") {
+			processJsonPath = userInputPath
+		}
+	} else {
+		processJsonPath = "process.json"
+	}
+
+	if processJsonPath != "" {
+		processJsonFullPath := filepath.Join(gen.SourcePath, processJsonPath)
+		if common.FileExists(processJsonFullPath) {
+			debugCommand := ""
+			if gen.isDebugging() {
+				debugCommand = gen.getNodeWrapperDebugCommand()
+			}
+			return debugCommand + getPm2StartCommand(processJsonPath)
+		}
+	}
+	return ""
+}
+
+func (gen *NodeStartupScriptGenerator) getConfigYamlCommand(userInputFullPath string) string {
+	if strings.HasSuffix(userInputFullPath, ".yml") || strings.HasSuffix(userInputFullPath, ".yaml") {
+		return getPm2StartCommand(userInputFullPath)
+	}
+	return ""
+}
+
+func (gen *NodeStartupScriptGenerator) getConfigJsCommand(userInputFullPath string) string {
+	configJsFullPath := ""
+	if userInputFullPath != "" {
+		if strings.HasSuffix(userInputFullPath, ".config.js") {
+			configJsFullPath = userInputFullPath
+		}
+	} else {
+		configJsFullPath = filepath.Join(gen.SourcePath, "ecosystem.config.js")
+	}
+
+	if configJsFullPath != "" && common.FileExists(configJsFullPath) {
+		return getPm2StartCommand(configJsFullPath)
+	}
+	return ""
+}
+
+func (gen *NodeStartupScriptGenerator) isDebugging() bool {
+	return gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart
 }
 
 func (gen *NodeStartupScriptGenerator) getUserProvidedJsFileCommand(fileFullPath string) string {
@@ -262,13 +338,21 @@ func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePat
 		debugFlag := gen.getDebugFlag()
 		commandBuilder.WriteString("node " + debugFlag)
 	} else if gen.UsePm2 {
-		commandBuilder.WriteString("pm2 start --no-daemon")
+		commandBuilder.WriteString(getPm2StartCommand(""))
 	} else {
 		commandBuilder.WriteString("node")
 	}
 
 	commandBuilder.WriteString(" " + mainJsFilePath)
 	return commandBuilder.String()
+}
+
+func getPm2StartCommand(filePath string) string {
+	if filePath != "" {
+		filePath = " " + filePath
+	}
+	command := "pm2 start" + filePath + " --no-daemon"
+	return command
 }
 
 // Builds the flag that should be passed to `node` to enable debugging.
@@ -297,27 +381,31 @@ func getPackageJsonObject(appPath string, userProvidedPath string) (obj *package
 	defer logger.Shutdown()
 
 	const packageFileName = "package.json"
-	var packageJsonPath string
+	packageJsonPath := ""
 
 	// We prioritize the file the user provided
-	if strings.HasSuffix(userProvidedPath, packageFileName) {
-		logger.LogInformation("Using user-provided path for packageJson: " + userProvidedPath)
-		packageJsonPath = userProvidedPath
+	if userProvidedPath != "" {
+		if strings.HasSuffix(userProvidedPath, packageFileName) {
+			logger.LogInformation("Using user-provided path for packageJson: " + userProvidedPath)
+			packageJsonPath = userProvidedPath
+		}
 	} else {
 		logger.LogInformation("Use package.json at the root.")
-		packageJsonPath = filepath.Join(appPath, packageFileName)
+		packageJsonPath = packageFileName
 	}
+	if packageJsonPath != "" {
+		packageJsonPath = filepath.Join(appPath, packageJsonPath)
+		if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
+			packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
+			if err != nil {
+				return nil, ""
+			}
 
-	if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
-		packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
-		if err != nil {
-			return nil, ""
-		}
-
-		packageJsonObj := new(packageJson)
-		err = json.Unmarshal(packageJsonBytes, &packageJsonObj)
-		if err == nil {
-			return packageJsonObj, packageJsonPath
+			packageJsonObj := new(packageJson)
+			err = json.Unmarshal(packageJsonBytes, &packageJsonObj)
+			if err == nil {
+				return packageJsonObj, packageJsonPath
+			}
 		}
 	}
 	return nil, ""
