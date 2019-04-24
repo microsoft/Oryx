@@ -608,10 +608,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        // TODO - renable it with 851972, removing the inline data
-        //[MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        [InlineData("10.10")]
-        [InlineData("10.14")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange

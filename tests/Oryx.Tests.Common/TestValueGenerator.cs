@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private readonly static List<string> NodeVersions = new List<string>
         {
-            "4.4", "4.5", //"4.8", TODO - Add node 4.8 to the build image and re-enable this
+            "4.4", "4.5", "4.8",
             "6.2", "6.6", "6.9", "6.10", "6.11",
             "8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
             "9.4",
