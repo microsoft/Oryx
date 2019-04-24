@@ -14,6 +14,7 @@ if [[ "$1" == "--yes" ]]; then
 fi
 
 # Prepare an array with all repository names in the registry
+echo "Active subscription: `az account show --query 'name'`"
 REPOS=(`az acr repository list $AZ_NAME_OUTPUT_PARAMS`)
 echo "Found ${#REPOS[@]} repositories in ACR instance '$ACR_NAME'"
 echo
