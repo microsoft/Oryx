@@ -40,12 +40,17 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         public string DbServerContainerName { get; }
 
-        public void Dispose()
+        protected virtual void StopContainer()
         {
             if (!string.IsNullOrEmpty(DbServerContainerName))
             {
                 _dockerCli.StopContainer(DbServerContainerName);
             }
+        }
+
+        public void Dispose()
+        {
+            StopContainer();
         }
 
         [NotNull]

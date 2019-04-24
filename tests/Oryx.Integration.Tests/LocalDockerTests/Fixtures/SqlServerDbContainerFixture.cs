@@ -68,5 +68,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });
             RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
+
+        protected override void StopContainer()
+        {
+            // We have noticed that 'docker stop' of the sql server container does not work always,
+            // So instead kill the process from within the container itself.
+            var result = _dockerCli.Exec(
+                DbServerContainerName,
+                "/bin/sh",
+                //NOTE: sqlservr is not a typo! It is the name of the process
+                new[] { "-c", "kill -SIGKILL $(pgrep sqlservr)" });
+
+            // Call to base to stop the container itself if the above step did not stop it.
+            base.StopContainer();
+        }
     }
 }
