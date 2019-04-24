@@ -7,9 +7,10 @@
 set -e
 
 ACR_NAME='oryxdevmcr'
+AZ_NAME_OUTPUT_PARAMS="--name $ACR_NAME --output tsv"
 
 # Prepare an array with all repository names in the registry
-REPOS=(`az acr repository list --name $ACR_NAME --output tsv`)
+REPOS=(`az acr repository list $AZ_NAME_OUTPUT_PARAMS`)
 echo "Found ${#REPOS[@]} repositories in ACR instance '$ACR_NAME'"
 echo
 
@@ -19,7 +20,12 @@ TIMESTAMP_CUTOFF=`$datecmd --iso-8601=seconds -d 'month ago'`
 
 for repo in "${REPOS[@]}"
 do
-	echo "Deleting images created before '$TIMESTAMP_CUTOFF' in repository '$repo'..."
-	az acr repository show-manifests --repository $repo --name $ACR_NAME --orderby time_asc -o json --query "[? timestamp >=\`$TIMESTAMP_CUTOFF\`]"
-	exit 0
+	azQuery="[?timestamp<=\`$TIMESTAMP_CUTOFF\`].digest"
+	digests=(`az acr repository show-manifests $AZ_NAME_OUTPUT_PARAMS --repository $repo --orderby time_asc --query "$azQuery"`)
+
+	echo "Deleting ${#digests[@]} images created before '$TIMESTAMP_CUTOFF' in repository '$repo'..."
+	for manifest in "${MANIFESTS[@]}"
+	do
+		az acr repository delete --name $ACR_NAME --yes --image $manifest
+	done
 done
