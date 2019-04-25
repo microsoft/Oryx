@@ -249,7 +249,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingProcessJson_withDebugging(string nodeVersion)
         {
-
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);

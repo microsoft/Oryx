@@ -120,7 +120,17 @@ namespace Microsoft.Oryx.Tests.Common
             await RunAndAssertAppAsync(runtimeImageName, output, volumes, environmentVariables, portMapping, link, runCmd, runArgs, assertAction, dockerCli);
         }
 
-        public static async Task RunAndAssertAppAsync(string imageName, ITestOutputHelper output, List<DockerVolume> volumes, List<EnvironmentVariable> environmentVariables, string portMapping, string link, string runCmd, string[] runArgs, Func<Task> assertAction, DockerCli dockerCli)
+        public static async Task RunAndAssertAppAsync(
+            string imageName,
+            ITestOutputHelper output,
+            List<DockerVolume> volumes, 
+            List<EnvironmentVariable> environmentVariables, 
+            string portMapping, 
+            string link, 
+            string runCmd, 
+            string[] runArgs, 
+            Func<Task> assertAction, 
+            DockerCli dockerCli)
         {
             DockerRunCommandProcessResult runResult = null;
             try

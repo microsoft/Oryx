@@ -173,6 +173,41 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	return scriptBuilder.String()
 }
 
+func getPackageJsonObject(appPath string, userProvidedPath string) (obj *packageJson, filePath string) {
+	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
+	defer logger.Shutdown()
+
+	const packageFileName = "package.json"
+	packageJsonPath := ""
+
+	// We prioritize the file the user provided
+	if userProvidedPath != "" {
+		if strings.HasSuffix(userProvidedPath, packageFileName) {
+			logger.LogInformation("Using user-provided path for packageJson: " + userProvidedPath)
+			packageJsonPath = userProvidedPath
+		}
+	} else {
+		logger.LogInformation("Use package.json at the root.")
+		packageJsonPath = packageFileName
+	}
+	if packageJsonPath != "" {
+		packageJsonPath = filepath.Join(appPath, packageJsonPath)
+		if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
+			packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
+			if err != nil {
+				return nil, ""
+			}
+
+			packageJsonObj := new(packageJson)
+			err = json.Unmarshal(packageJsonBytes, &packageJsonObj)
+			if err == nil {
+				return packageJsonObj, packageJsonPath
+			}
+		}
+	}
+	return nil, ""
+}
+
 // Gets the startup script from package.json if defined. Returns empty string if not found.
 func (gen *NodeStartupScriptGenerator) getPackageJsonStartCommand(packageJsonObj *packageJson, packageJsonPath string) string {
 	if packageJsonObj != nil && packageJsonObj.Scripts != nil && packageJsonObj.Scripts.Start != "" {
@@ -242,53 +277,35 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonMainCommand(packageJsonObj 
 }
 
 func (gen *NodeStartupScriptGenerator) getProcessJsonCommand(userInputPath string) string {
-	processJsonPath := ""
-	if userInputPath != "" {
-		if strings.HasSuffix(userInputPath, ".json") {
-			processJsonPath = userInputPath
-		}
-	} else {
-		processJsonPath = "process.json"
-	}
-
+	processJsonPath := gen.checkStartupFileWithPath(".json", "process.json", userInputPath)
 	if processJsonPath != "" {
-		processJsonFullPath := filepath.Join(gen.SourcePath, processJsonPath)
-		if common.FileExists(processJsonFullPath) {
-			debugCommand := ""
-			if gen.isDebugging() {
-				debugCommand = gen.getNodeWrapperDebugCommand()
-			}
-			return debugCommand + getPm2StartCommand(processJsonPath)
+		debugCommand := ""
+		if gen.isDebugging() {
+			debugCommand = gen.getNodeWrapperDebugCommand()
 		}
-	}
-	return ""
-}
-
-func (gen *NodeStartupScriptGenerator) getConfigYamlCommand(userInputFullPath string) string {
-	if strings.HasSuffix(userInputFullPath, ".yml") || strings.HasSuffix(userInputFullPath, ".yaml") {
-		return getPm2StartCommand(userInputFullPath)
+		return debugCommand + getPm2StartCommand(processJsonPath)
 	}
 	return ""
 }
 
 func (gen *NodeStartupScriptGenerator) getConfigJsCommand(userInputFullPath string) string {
-	configJsFullPath := ""
-	if userInputFullPath != "" {
-		if strings.HasSuffix(userInputFullPath, ".config.js") {
-			configJsFullPath = userInputFullPath
-		}
-	} else {
-		configJsFullPath = filepath.Join(gen.SourcePath, "ecosystem.config.js")
-	}
-
-	if configJsFullPath != "" && common.FileExists(configJsFullPath) {
+	configJsFullPath := gen.checkStartupFileWithPath(".config.js", "ecosystem.config.js", userInputFullPath)
+	if configJsFullPath != "" {
 		return getPm2StartCommand(configJsFullPath)
 	}
 	return ""
 }
 
-func (gen *NodeStartupScriptGenerator) isDebugging() bool {
-	return gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart
+func (gen *NodeStartupScriptGenerator) getConfigYamlCommand(userInputFullPath string) string {
+	configYamlFullPath := gen.checkStartupFileWithPath(".yml", "", userInputFullPath)
+
+	if configYamlFullPath == "" {
+		configYamlFullPath = gen.checkStartupFileWithPath(".yaml", "", userInputFullPath)
+	}
+	if configYamlFullPath != "" {
+		return getPm2StartCommand(userInputFullPath)
+	}
+	return ""
 }
 
 func (gen *NodeStartupScriptGenerator) getUserProvidedJsFileCommand(fileFullPath string) string {
@@ -326,6 +343,30 @@ func (gen *NodeStartupScriptGenerator) getDefaultAppStartCommand() string {
 		startupCommand = gen.getStartupCommandFromJsFile(gen.DefaultAppJsFilePath)
 	}
 	return startupCommand
+}
+
+func (gen *NodeStartupScriptGenerator) isDebugging() bool {
+	return gen.RemoteDebugging || gen.RemoteDebuggingBreakBeforeStart
+}
+
+// Look for a configuration file called 'configFileName' in the user repo, or if the user provided a path
+// to a file as the startup command, checks if the path refers to a config file by using 'configFileSuffix'.
+// If the config file exists on disk, its full path is returned. Otherwise it returns an empty string.
+func (gen *NodeStartupScriptGenerator) checkStartupFileWithPath(configFileSuffix string, configFileName string, userInputFullPath string) string {
+	configFilePath := ""
+	if userInputFullPath != "" {
+		if strings.HasSuffix(userInputFullPath, configFileSuffix) {
+			configFilePath = userInputFullPath
+		}
+	} else if configFileName != "" {
+		configFilePath = filepath.Join(gen.SourcePath, configFileName)
+	}
+
+	if configFilePath != "" && common.FileExists(configFilePath) {
+		return configFilePath
+	}
+	return ""
+
 }
 
 func (gen *NodeStartupScriptGenerator) getStartupCommandFromJsFile(mainJsFilePath string) string {
@@ -374,39 +415,4 @@ func (gen *NodeStartupScriptGenerator) getDebugFlag() string {
 	}
 
 	return commandBuilder.String()
-}
-
-func getPackageJsonObject(appPath string, userProvidedPath string) (obj *packageJson, filePath string) {
-	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
-	defer logger.Shutdown()
-
-	const packageFileName = "package.json"
-	packageJsonPath := ""
-
-	// We prioritize the file the user provided
-	if userProvidedPath != "" {
-		if strings.HasSuffix(userProvidedPath, packageFileName) {
-			logger.LogInformation("Using user-provided path for packageJson: " + userProvidedPath)
-			packageJsonPath = userProvidedPath
-		}
-	} else {
-		logger.LogInformation("Use package.json at the root.")
-		packageJsonPath = packageFileName
-	}
-	if packageJsonPath != "" {
-		packageJsonPath = filepath.Join(appPath, packageJsonPath)
-		if _, err := os.Stat(packageJsonPath); !os.IsNotExist(err) {
-			packageJsonBytes, err := ioutil.ReadFile(packageJsonPath)
-			if err != nil {
-				return nil, ""
-			}
-
-			packageJsonObj := new(packageJson)
-			err = json.Unmarshal(packageJsonBytes, &packageJsonObj)
-			if err == nil {
-				return packageJsonObj, packageJsonPath
-			}
-		}
-	}
-	return nil, ""
 }
