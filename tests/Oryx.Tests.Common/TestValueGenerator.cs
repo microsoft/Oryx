@@ -56,5 +56,12 @@ namespace Microsoft.Oryx.Tests.Common
                 yield return new object[] { version };
             }
         }
+
+        public static IEnumerable<object[]> GetNodeVersions_SupportPm2()
+        {
+            return NodeVersions
+                .Where(v => !v.StartsWith("4."))
+                .Select(v => new object[] { v });
+        }
     }
 }

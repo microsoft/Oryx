@@ -4,16 +4,26 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class NodeImagesTest : TestBase
+    public class NodeImagesTest : TestBase, IClassFixture<TestTempDirTestFixture>
     {
-        public NodeImagesTest(ITestOutputHelper output) : base(output)
+        private readonly string _hostSamplesDir;
+        private readonly string _tempRootDir;
+        protected readonly HttpClient _httpClient = new HttpClient();
+
+        public NodeImagesTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
         {
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
         [SkippableTheory]
@@ -119,6 +129,157 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             
             // Assert
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingProcessJson(string nodeVersion)
+        {
+
+            var appName = "express-process-json";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int hostPort = 8585;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -bindPort {containerPort}")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes:  new List<DockerVolume> { volume },
+                environmentVariables: null,
+                portMapping: $"{hostPort}:{containerPort}",
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+            
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingConfigYml(string nodeVersion)
+        {
+
+            var appName = "express-config-yaml";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int hostPort = 8585;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -bindPort {containerPort} -userStartupCommand config.yml")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                portMapping: $"{hostPort}:{containerPort}",
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingConfigJs(string nodeVersion)
+        {
+
+            var appName = "express-config-js";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int hostPort = 8585;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -bindPort {containerPort}")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                portMapping: $"{hostPort}:{containerPort}",
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+
+        }
+
+        [Theory(Skip="Investigating debugging using pm2")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingProcessJson_withDebugging(string nodeVersion)
+        {
+            var appName = "express-process-json";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int hostPort = 8585;
+            int containerDebugPort = 9593;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -remoteDebug -debugPort={containerDebugPort}")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                portMapping: $"{hostPort}:{containerDebugPort}",
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/json/list");
+                    Assert.Contains("devtoolsFrontendUrl", data);
+                },
+                dockerCli: _dockerCli);
+
         }
     }
 }
