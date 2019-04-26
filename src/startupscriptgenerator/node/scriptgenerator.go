@@ -170,7 +170,9 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogInformation("Looking for App-Insights loader injected by Oryx and export that to NODE_OPTIONS if needed")
 	scriptBuilder.WriteString("if [ -n $injectedAppInsights ]; then\n")
-	scriptBuilder.WriteString("    export NODE_OPTIONS='--require ./oryx-appinsightsloader.js '$NODE_OPTIONS\n")
+	scriptBuilder.WriteString("    if [ -f ./oryx-appinsightsloader.js ]; then\n")
+	scriptBuilder.WriteString("        export NODE_OPTIONS='--require ./oryx-appinsightsloader.js '$NODE_OPTIONS\n")
+	scriptBuilder.WriteString("    fi\n")
 	scriptBuilder.WriteString("fi\n")
 	scriptBuilder.WriteString(startupCommand + "\n")
 
