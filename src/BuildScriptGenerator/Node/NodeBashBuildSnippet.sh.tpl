@@ -106,6 +106,7 @@ try
             .start();
 	}
 }catch (e) {
+        console.log('Application Insights could not be automatically configured for this application'); 
         console.log(e);
 }">{{ AppInsightsLoaderFileName }}
 cat {{ AppInsightsLoaderFileName }}
