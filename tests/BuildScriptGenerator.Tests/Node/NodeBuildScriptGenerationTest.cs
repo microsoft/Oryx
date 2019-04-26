@@ -454,13 +454,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Theory]
-        [InlineData("4.4.7")]
-        [InlineData("4.5.0")]
-        [InlineData("6.2.2")]
-        [InlineData("6.9.3")]
-        [InlineData("6.10.3")]
-        [InlineData("6.11.0")]
-        [InlineData("6.12.1")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public void GeneratedScript_DoesNotConfigureAppInsights_IfAppInsightsEnvironmentVariable_NotSet(string nodeVersion)
         {
             // Arrange
@@ -496,13 +491,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Theory]
-        [InlineData("4.4.7")]
-        [InlineData("4.5.0")]
-        [InlineData("6.2.2")]
-        [InlineData("6.9.3")]
-        [InlineData("6.10.3")]
-        [InlineData("6.11.0")]
-        [InlineData("6.12.1")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public void GeneratedScript_DoesNotConfigureAppInsights_IfNodeVersionCondition_Unsatisfied(string nodeVersion)
         {
             // Arrange
@@ -539,20 +529,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Theory]
-        [InlineData("6.12.0")]
-        [InlineData("8.0.0")]
-        [InlineData("8.1.4")]
-        [InlineData("8.2.1")]
-        [InlineData("8.8.1")]
-        [InlineData("8.9.4")]
-        [InlineData("8.11.2")]
-        [InlineData("8.12.0")]
-        [InlineData("8.15.1")]
-        [InlineData("9.4.0")]
-        [InlineData("10.1.0")]
-        [InlineData("10.10.0")]
-        [InlineData("10.14.1")]
-        [InlineData("10.15.2")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public void GeneratedScript_ConfigureAppInsights_Condition_Satisfied(string version)
         {
             // Condition is node version have to be 8 or newer or node version is 6.12.0

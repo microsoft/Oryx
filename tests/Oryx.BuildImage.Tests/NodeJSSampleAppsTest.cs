@@ -169,19 +169,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("8.0.0")]
-        [InlineData("8.1.4")]
-        [InlineData("8.2.1")]
-        [InlineData("8.8.1")]
-        [InlineData("8.9.4")]
-        [InlineData("8.11.2")]
-        [InlineData("8.12.0")]
-        [InlineData("8.15.1")]
-        [InlineData("9.4.0")]
-        [InlineData("10.1.0")]
-        [InlineData("10.10.0")]
-        [InlineData("10.14.1")]
-        [InlineData("10.15.2")]
+        //[InlineData("8.0.0")]
+        //[InlineData("8.1.4")]
+        //[InlineData("8.2.1")]
+        //[InlineData("8.8.1")]
+        //[InlineData("8.9.4")]
+        //[InlineData("8.11.2")]
+        //[InlineData("8.12.0")]
+        //[InlineData("8.15.1")]
+        //[InlineData("9.4.0")]
+        //[InlineData("10.1.0")]
+        //[InlineData("10.10.0")]
+        //[InlineData("10.14.1")]
+        //[InlineData("10.15.2")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public void BuildNodeApp_ConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableSet(string version)
         {
             // Arrange
@@ -220,12 +222,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("4.4.7")]
-        [InlineData("4.5.0")]
-        [InlineData("6.2.2")]
-        [InlineData("6.9.3")]
-        [InlineData("6.10.3")]
-        [InlineData("6.11.0")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(string version)
         {
             // Arrange
@@ -263,19 +261,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("8.0.0")]
-        [InlineData("8.1.4")]
-        [InlineData("8.2.1")]
-        [InlineData("8.8.1")]
-        [InlineData("8.9.4")]
-        [InlineData("8.11.2")]
-        [InlineData("8.12.0")]
-        [InlineData("8.15.1")]
-        [InlineData("9.4.0")]
-        [InlineData("10.1.0")]
-        [InlineData("10.10.0")]
-        [InlineData("10.14.1")]
-        [InlineData("10.15.2")]
+        //[InlineData("8.0.0")]
+        //[InlineData("8.1.4")]
+        //[InlineData("8.2.1")]
+        //[InlineData("8.8.1")]
+        //[InlineData("8.9.4")]
+        //[InlineData("8.11.2")]
+        //[InlineData("8.12.0")]
+        //[InlineData("8.15.1")]
+        //[InlineData("9.4.0")]
+        //[InlineData("10.1.0")]
+        //[InlineData("10.10.0")]
+        //[InlineData("10.14.1")]
+        //[InlineData("10.15.2")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(string version)
         {
             // Arrange

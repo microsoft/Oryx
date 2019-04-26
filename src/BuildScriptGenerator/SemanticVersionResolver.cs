@@ -3,11 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using SemVer;
-
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
+    using System.Collections.Generic;
+    using SemVer;
+    using Version = System.Version;
+
     internal static class SemanticVersionResolver
     {
         public static string GetMaxSatisfyingVersion(string providedVersion, IEnumerable<string> supportedVersions)
@@ -29,8 +30,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             try
             {
-                var v1 = new Version(providedVersion);
-                var v2 = new Version(supportedVersion);
+                var v1 = Version.Parse(providedVersion);
+                var v2 = Version.Parse(supportedVersion);
+
                 return v1.CompareTo(v2);
             }
             catch

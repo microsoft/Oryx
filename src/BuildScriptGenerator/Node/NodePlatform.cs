@@ -128,19 +128,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(context);
-            bool appInsightsDependency = HasPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
             string appInsightsInjectCommand = string.Empty;
-
             var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
+            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, context, appInsightsKey);
 
             // node_options is only supported in version 8.0.0 or newer and in 6.12.0
             // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
-            if (!appInsightsDependency
-                && !string.IsNullOrEmpty(appInsightsKey)
-                && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0.0") >= 0
-                || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12.0") == 0
-                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0.0") >= 0
-                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12.0") == 0))
+            if (shouldInjectAppInsights)
             {
                 appInsightsInjectCommand = string.Concat(
                     NodeConstants.NpmPackageInstallCommand,
@@ -377,7 +371,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return ret;
         }
 
-        private static bool HasPackageDependencyExist(dynamic packageJson, string packageName)
+        private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
         {
             if (packageJson?.dependencies != null)
             {
@@ -390,6 +384,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return false;
+        }
+
+        private static bool ShouldInjectAppInsights(
+            dynamic packageJson,
+            BuildScriptGeneratorContext context,
+            string appInsightsKey)
+        {
+            bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
+            string appInsightsInjectCommand = string.Empty;
+
+            // node_options is only supported in version 8.0 or newer and in 6.12
+            // so we will be able to set up app-insight only when node version is 6.12 or 8.0 or newer
+            if (!appInsightsDependency
+                && !string.IsNullOrEmpty(appInsightsKey)
+                && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0") >= 0
+                || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12") == 0
+                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0") >= 0
+                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12") == 0))
+            {
+                return true;
+            }
+
+                return false;
         }
 
         private static bool GetNodeModulesPackOptions(

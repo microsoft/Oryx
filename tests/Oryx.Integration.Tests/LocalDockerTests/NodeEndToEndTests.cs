@@ -348,7 +348,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_NodeApp_WithAppInsights_Configured(string nodeVersion)
         {
             // Arrange
