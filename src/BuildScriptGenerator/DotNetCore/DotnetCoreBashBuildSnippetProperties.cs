@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
@@ -13,5 +15,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string ProjectFile { get; set; }
 
         public string PublishDirectory { get; set; }
+
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToIntermediateDir { get; set; }
+
+        public string BenvArgs { get; set; }
+
+        public string PreBuildScriptPath { get; set; }
+
+        public string PostBuildScriptPath { get; set; }
+
+        public bool ZipAllOutput { get; set; }
+
+        public string ManifestFileName { get; set; }
+
+        public Dictionary<string, string> BuildProperties { get; set; }
     }
 }

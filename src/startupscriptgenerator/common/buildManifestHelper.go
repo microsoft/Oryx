@@ -12,7 +12,8 @@ import (
 )
 
 type BuildManifest struct {
-	StartupFileName string
+    StartupFileName string
+    ZipAllOutput    string
 }
 
 const ManifestFileName = "oryx-manifest.toml"

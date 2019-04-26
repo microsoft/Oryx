@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+TOTAL_EXECUTION_START_TIME=$SECONDS
 SOURCE_DIR=$1
 DESTINATION_DIR=$2
 INTERMEDIATE_DIR=$3
@@ -62,6 +63,10 @@ if [ -f /usr/local/bin/benv ]; then
 fi
 {{ end }}
 
+# Export these variables so that they are available for the pre and post build scripts.
+export SOURCE_DIR
+export DESTINATION_DIR
+
 {{ if PreBuildScriptPath | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd "$SOURCE_DIR"
@@ -114,5 +119,6 @@ echo "Manifest file created."
 {{ end }}
 {{ end }}
 
+TOTAL_EXECUTION_ELAPSED_TIME=$(($SECONDS - $TOTAL_EXECUTION_START_TIME))
 echo
-echo Done.
+echo "Done in $TOTAL_EXECUTION_ELAPSED_TIME sec(s)."

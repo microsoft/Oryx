@@ -26,5 +26,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// are stored in a file in the build output.
         /// </remarks>
         public IDictionary<string, string> BuildProperties { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this snippet represents a full script.
+        /// </summary>
+        public bool IsFullScript { get; set; }
     }
 }

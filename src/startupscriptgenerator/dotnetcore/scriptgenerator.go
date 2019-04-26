@@ -17,9 +17,11 @@ import (
 type DotnetCoreStartupScriptGenerator struct {
 	SourcePath         string
 	AppPath            string
+	RunFromPath        string
 	UserStartupCommand string
 	DefaultAppFilePath string
 	BindPort           string
+	Manifest           common.BuildManifest
 }
 
 type projectDetails struct {
@@ -53,7 +55,7 @@ const DefaultBindPort = "8080"
 
 var _projDetails projectDetails = projectDetails{}
 
-func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
+func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *strings.Builder) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
@@ -62,79 +64,47 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript() string {
 		gen.SourcePath,
 		gen.AppPath)
 
-	command := gen.getStartupCommand()
-
-	scriptBuilder := strings.Builder{}
-	scriptBuilder.WriteString("#!/bin/sh\n")
-	scriptBuilder.WriteString("set -e\n\n")
+	startupDllFileName := gen.getStartupDllFileName()
 
 	// Expose the port so that a custom command can use it if needed
-	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
 
-	if command != "" {
-		logger.LogInformation("Successfully generated startup command.")
-		scriptBuilder.WriteString("cd \"" + gen.AppPath + "\"\n\n")
-		scriptBuilder.WriteString(command + "\n\n")
-	} else {
-		if gen.DefaultAppFilePath != "" {
-			logger.LogInformation(
-				"Could not generate startup command. Using the default app file path to generate a command.")
+	scriptBuilder.WriteString("readonly appPath=\"" + gen.RunFromPath + "\"\n")
+	scriptBuilder.WriteString("userStartUpCommand=\"" + gen.UserStartupCommand + "\"\n")
+	scriptBuilder.WriteString("startUpCommand=\"\"\n")
+	scriptBuilder.WriteString("readonly startupDllFileName=\"" + startupDllFileName + "\"\n")
+	scriptBuilder.WriteString("readonly defaultAppFilePath=\"" + gen.DefaultAppFilePath + "\"\n")
+	scriptBuilder.WriteString("if [ ! -z \"$userStartUpCommand\" ]; then\n")
+	scriptBuilder.WriteString("  cd \"$appPath\"\n")
+	scriptBuilder.WriteString("  startUpCommand=\"$userStartUpCommand\"\n")
+	scriptBuilder.WriteString("  if [ -f \"$userStartUpCommand\" ]; then\n")
+	scriptBuilder.WriteString("    chmod 755 \"$userStartUpCommand\"\n")
+	scriptBuilder.WriteString("  fi\n")
+	scriptBuilder.WriteString("elif [ ! -z \"$startupDllFileName\" ]; then\n")
+	scriptBuilder.WriteString("  cd \"$appPath\"\n")
+	scriptBuilder.WriteString("  startUpCommand=\"dotnet $startupDllFileName\"\n")
+	scriptBuilder.WriteString("elif [ ! -z \"$defaultAppFilePath\" ]; then\n")
+	scriptBuilder.WriteString("  startUpCommand=\"dotnet $defaultAppFilePath\"\n")
+	scriptBuilder.WriteString("else\n")
+	scriptBuilder.WriteString("  echo Unable to start the application.\n")
+	scriptBuilder.WriteString("  exit 1\n")
+	scriptBuilder.WriteString("fi\n\n")
+	scriptBuilder.WriteString("eval \"$startUpCommand\"\n\n")
 
-			command = "dotnet \"" + gen.DefaultAppFilePath + "\""
-			scriptBuilder.WriteString(command + "\n\n")
-		} else {
-			logger.LogInformation("Default app file path was not provided. Could not generate a startup script.")
-			return ""
-		}
-	}
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }
 
-func (gen *DotnetCoreStartupScriptGenerator) getStartupCommand() string {
-	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupCommand")
-	defer logger.Shutdown()
-
-	command := gen.UserStartupCommand
-	if command == "" {
-		startupFileName := gen.getStartupDllFileName()
-
-		// Check if the startup file is indeed present
-		startupFileFullPath := filepath.Join(gen.AppPath, startupFileName)
-		if !common.FileExists(startupFileFullPath) {
-			logger.LogError("Could not find the startup file '%s'.", startupFileFullPath)
-			return ""
-		}
-		command = "dotnet \"" + startupFileName + "\"\n"
-	} else {
-		logger.LogCritical("Using the explicit user provided startup command.")
-		logger.LogInformation("adding execution permission if needed ...")
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
-		logger.LogInformation("permission added %t", isPermissionAdded)
-		command = common.ExtendPathForCommand(command, gen.SourcePath)
-	}
-
-	return command
-}
-
 func (gen *DotnetCoreStartupScriptGenerator) getStartupDllFileName() string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.getStartupDllFileName")
 
-	manifestFilePath := filepath.Join(gen.AppPath, common.ManifestFileName)
-	if common.FileExists(manifestFilePath) {
-		logger.LogInformation("Found build manifest file at '%s'.", manifestFilePath)
-		buildManifest := common.GetBuildManifest(gen.AppPath)
-		if buildManifest.StartupFileName == "" {
-			logger.LogInformation(
-				"Found build manifest file at '%s', but startup file name property is empty.",
-				manifestFilePath)
-		} else {
-			return buildManifest.StartupFileName
-		}
-	} else {
-		logger.LogInformation("Cound not find build manifest file at '%s'.", manifestFilePath)
+	if gen.Manifest.StartupFileName != "" {
+		logger.LogInformation(
+			"Found startup file name as '%s' from build manifest file.",
+			gen.Manifest.StartupFileName)
+		return gen.Manifest.StartupFileName
 	}
 
 	projDetails := gen.getProjectDetails()

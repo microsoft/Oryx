@@ -664,7 +664,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        [InlineData("8.11")]
+        [InlineData("8.12")]
+        [InlineData("10.1")]
+        [InlineData("10.10")]
+        [InlineData("10.14")]
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange
