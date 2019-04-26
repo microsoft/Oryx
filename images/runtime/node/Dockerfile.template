@@ -11,6 +11,8 @@ RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM node:%NODE_BASE_IMAGE%
 
+RUN apk update && apk add unzip
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
