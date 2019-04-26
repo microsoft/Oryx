@@ -423,7 +423,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    //Assert.
                 },
                 result.GetDebugInfo());
         }
