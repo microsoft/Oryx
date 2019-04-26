@@ -113,6 +113,18 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 10.15.2 \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
+RUN set -e \
+ && for ver in `ls /opt/nodejs`; do \
+        nodeModulesDir="/opt/nodejs/$ver/lib/node_modules"; \
+        npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`; \
+        if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then \
+            echo "Upgrading node $ver's npm version from $npm_ver to 6.9.0"; \
+            cd $nodeModulesDir; \
+            PATH="/opt/nodejs/$ver/bin:$PATH" \
+            "$nodeModulesDir/npm/bin/npm-cli.js" install npm@6.9.0; \
+            echo; \
+        fi; \
+    done
 RUN set -ex \
  && for ver in `ls /opt/nodejs`; do \
         npm_ver=`jq -r .version /opt/nodejs/$ver/lib/node_modules/npm/package.json`; \
