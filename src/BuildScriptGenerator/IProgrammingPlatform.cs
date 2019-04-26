@@ -96,5 +96,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>List of directories</returns>
         IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext);
+
+        /// <summary>
+        /// Checks if the programming platform wants to participate in a multi-platform build.
+        /// </summary>
+        /// <param name="scriptGeneratorContext">The script generator context.</param>
+        /// <returns>true, if the platform wants to participate, false otherwise.</returns>
+        bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext);
     }
 }

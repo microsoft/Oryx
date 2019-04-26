@@ -172,6 +172,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return scriptGeneratorContext.EnablePython;
         }
 
+        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return true;
+        }
+
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion,
             [NotNull] IDictionary<string, string> toolsToVersion)
         {

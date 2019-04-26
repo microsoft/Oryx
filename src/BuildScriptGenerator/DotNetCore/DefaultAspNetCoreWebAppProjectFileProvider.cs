@@ -121,7 +121,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // To enable unit testing
         internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            var packageReferenceElements = projectFileDoc.XPathSelectElements("Project/ItemGroup/PackageReference");
+            var packageReferenceElements = projectFileDoc.XPathSelectElements(
+                DotnetCoreConstants.ProjectReferenceXPathExpression);
             if (packageReferenceElements == null || !packageReferenceElements.Any())
             {
                 return false;

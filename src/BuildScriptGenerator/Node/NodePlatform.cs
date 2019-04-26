@@ -158,6 +158,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return scriptGeneratorContext.EnableNodeJs;
         }
 
+        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return true;
+        }
+
         public void SetRequiredTools(
             ISourceRepo sourceRepo,
             string targetPlatformVersion,

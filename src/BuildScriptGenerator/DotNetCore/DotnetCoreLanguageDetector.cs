@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -42,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                "/Project/PropertyGroup/TargetFramework");
+                DotnetCoreConstants.TargetFrameworkXPathExpression);
             var targetFramework = targetFrameworkElement?.Value;
             if (string.IsNullOrEmpty(targetFramework))
             {
@@ -76,6 +77,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
+            languageVersion = VerifyAndResolveVersion(languageVersion);
+
             return new LanguageDetectorResult
             {
                 Language = DotnetCoreConstants.LanguageName,
@@ -100,6 +103,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return null;
+        }
+
+        private string VerifyAndResolveVersion(string version)
+        {
+            if (string.IsNullOrEmpty(version))
+            {
+                return _scriptGeneratorOptions.DefaultVersion;
+            }
+            else
+            {
+                var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                    version,
+                    _versionProvider.SupportedDotNetCoreVersions);
+
+                if (string.IsNullOrEmpty(maxSatisfyingVersion))
+                {
+                    var exc = new UnsupportedVersionException(
+                        $"Target .NET Core version '{version}' is unsupported. Supported versions are:" +
+                        $" {string.Join(", ", _versionProvider.SupportedDotNetCoreVersions)}");
+                    _logger.LogError(exc, "Exception caught");
+                    throw exc;
+                }
+
+                return maxSatisfyingVersion;
+            }
         }
 
         private dynamic GetGlobalJsonObject(ISourceRepo sourceRepo)
