@@ -96,16 +96,17 @@ echo "// -----------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
 // Created by Oryx
-var appInsights = require('{{ AppInsightsPackageName }}');
+try 
+{
+	var appInsights = require('{{ AppInsightsPackageName }}');
+	if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
 
-if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
-    try {
         appInsights
             .setup()
             .start();
-    } catch (e) {
-        console.error(e);
-    }
+	}
+}catch (e) {
+        console.log(e);
 }">{{ AppInsightsLoaderFileName }}
 cat {{ AppInsightsLoaderFileName }}
 {{ end }}

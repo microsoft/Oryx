@@ -267,7 +267,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeScriptGeneratorOptions: options,
                 nodeVersionProvider: null,
                 logger: NullLogger<NodePlatform>.Instance,
-                detector: null);
+                detector: null, 
+                environment: null);
             return platform;
         }
     }

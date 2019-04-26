@@ -49,18 +49,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _environment = environment;
         }
 
-        public NodePlatform(
-            IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
-            INodeVersionProvider nodeVersionProvider,
-            ILogger<NodePlatform> logger,
-            NodeLanguageDetector detector)
-        {
-            _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
-            _nodeVersionProvider = nodeVersionProvider;
-            _logger = logger;
-            _detector = detector;
-        }
-
         public string Name => NodeConstants.NodeJsName;
 
         public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
@@ -140,27 +128,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(context);
-            bool appInsightDependency = IsPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
+            bool appInsightsDependency = HasPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
             string appInsightsInjectCommand = string.Empty;
 
-            if (_environment != null)
-            {
-                var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
+            var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
 
-                // node_options is only supported in version 8.0.0 or newer and in 6.12.0
-                // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
-                if (!appInsightDependency
-                    && !string.IsNullOrEmpty(appInsightsKey)
-                    && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0.0") >= 0
-                    || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12.0") == 0
-                    || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0.0") >= 0
-                    || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12.0") == 0))
-                {
-                    appInsightsInjectCommand =
-                        string.Concat(NodeConstants.NpmPackageInstallCommand, " --save ", NodeConstants.NodeAppInsightsPackageName);
-                    buildProperties[NodeConstants.OryxInjectedAppInsights] = true.ToString();
-                    _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
-                }
+            // node_options is only supported in version 8.0.0 or newer and in 6.12.0
+            // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
+            if (!appInsightsDependency
+                && !string.IsNullOrEmpty(appInsightsKey)
+                && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0.0") >= 0
+                || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12.0") == 0
+                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0.0") >= 0
+                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12.0") == 0))
+            {
+                appInsightsInjectCommand = string.Concat(
+                    NodeConstants.NpmPackageInstallCommand,
+                    " --save ",
+                    NodeConstants.NodeAppInsightsPackageName);
+
+                buildProperties[NodeConstants.InjectedAppInsights] = true.ToString();
+                _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
             }
 
             var scriptProps = new NodeBashBuildSnippetProperties(
@@ -384,7 +372,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return ret;
         }
 
-        private static bool IsPackageDependencyExist(dynamic packageJson, string packageName)
+        private static bool HasPackageDependencyExist(dynamic packageJson, string packageName)
         {
             if (packageJson?.dependencies != null)
             {

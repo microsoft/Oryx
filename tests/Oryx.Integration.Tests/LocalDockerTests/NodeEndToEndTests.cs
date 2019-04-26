@@ -348,19 +348,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        [InlineData("8.0")]
-        [InlineData("8.1")]
-        [InlineData("8.2")]
-        [InlineData("8.8")]
-        [InlineData("8.9")]
-        [InlineData("8.11")]
-        [InlineData("8.12")]
-        [InlineData("8.15")]
-        [InlineData("9.4")]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.14")]
-        [InlineData("10.15")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_NodeApp_WithAppInsights_Configured(string nodeVersion)
         {
             // Arrange
@@ -387,7 +375,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
                 .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("Oryx has set up Code-less App-Insight", $"{appDir}/run.sh")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

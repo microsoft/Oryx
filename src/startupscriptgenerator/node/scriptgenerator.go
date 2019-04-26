@@ -47,51 +47,53 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
+	const oryxManifestFile string = "oryx-manifest.toml"
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
+	scriptBuilder.WriteString("if [ -f ./" + oryxManifestFile + " ]; then\n")
+	scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "'\"\n")
+	scriptBuilder.WriteString("    . ./" + oryxManifestFile + "\n")
+	scriptBuilder.WriteString("fi\n\n")
+
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
 	if !gen.SkipNodeModulesExtraction {
-		const oryxManifestFile string = "oryx-manifest.toml"
-		scriptBuilder.WriteString("if [ -f ./" + oryxManifestFile + " ]; then\n")
-		scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "', checking if node_modules was compressed...\"\n")
-		scriptBuilder.WriteString("    . ./" + oryxManifestFile + "\n")
-		scriptBuilder.WriteString("    case $compressedNodeModulesFile in \n")
-		scriptBuilder.WriteString("        *\".zip\")\n")
-		scriptBuilder.WriteString("            echo \"Found zip-based node_modules.\"\n")
-		scriptBuilder.WriteString("            extractionCommand=\"unzip -q $compressedNodeModulesFile -d /node_modules\"\n")
-		scriptBuilder.WriteString("            ;;\n")
-		scriptBuilder.WriteString("        *\".tar.gz\")\n")
-		scriptBuilder.WriteString("            echo \"Found tar.gz based node_modules.\"\n")
-		scriptBuilder.WriteString("            extractionCommand=\"tar -xzf $compressedNodeModulesFile -C /node_modules\"\n")
-		scriptBuilder.WriteString("            ;;\n")
-		scriptBuilder.WriteString("    esac\n")
-		scriptBuilder.WriteString("    if [ ! -z \"$extractionCommand\" ]; then\n")
-		scriptBuilder.WriteString("        echo \"Removing existing modules directory...\"\n")
-		scriptBuilder.WriteString("        rm -fr /node_modules\n")
-		scriptBuilder.WriteString("        mkdir -p /node_modules\n")
-		scriptBuilder.WriteString("        echo \"Extracting modules...\"\n")
-		scriptBuilder.WriteString("        $extractionCommand\n")
+		scriptBuilder.WriteString("echo \"Checking if node_modules was compressed...\"\n")
+		scriptBuilder.WriteString("case $compressedNodeModulesFile in \n")
+		scriptBuilder.WriteString("    *\".zip\")\n")
+		scriptBuilder.WriteString("        echo \"Found zip-based node_modules.\"\n")
+		scriptBuilder.WriteString("        extractionCommand=\"unzip -q $compressedNodeModulesFile -d /node_modules\"\n")
+		scriptBuilder.WriteString("        ;;\n")
+		scriptBuilder.WriteString("    *\".tar.gz\")\n")
+		scriptBuilder.WriteString("        echo \"Found tar.gz based node_modules.\"\n")
+		scriptBuilder.WriteString("        extractionCommand=\"tar -xzf $compressedNodeModulesFile -C /node_modules\"\n")
+		scriptBuilder.WriteString("         ;;\n")
+		scriptBuilder.WriteString("esac\n")
+		scriptBuilder.WriteString("if [ ! -z \"$extractionCommand\" ]; then\n")
+		scriptBuilder.WriteString("    echo \"Removing existing modules directory...\"\n")
+		scriptBuilder.WriteString("    rm -fr /node_modules\n")
+		scriptBuilder.WriteString("    mkdir -p /node_modules\n")
+		scriptBuilder.WriteString("    echo \"Extracting modules...\"\n")
+		scriptBuilder.WriteString("    $extractionCommand\n")
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
-		scriptBuilder.WriteString("        export NODE_PATH=/node_modules:$NODE_PATH\n")
+		scriptBuilder.WriteString("    export NODE_PATH=/node_modules:$NODE_PATH\n")
 		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
 		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
-		scriptBuilder.WriteString("        export PATH=/node_modules/.bin:$PATH\n")
+		scriptBuilder.WriteString("    export PATH=/node_modules/.bin:$PATH\n")
 		// To avoid having older versions of packages available, we delete existing node_modules folder.
 		// We do so in the background to not block the app's startup.
-		scriptBuilder.WriteString("        if [ -d node_modules ]; then\n")
+		scriptBuilder.WriteString("    if [ -d node_modules ]; then\n")
 		// We move the directory first to prevent node from start using it
-		scriptBuilder.WriteString("            mv -f node_modules _del_node_modules || true\n")
-		scriptBuilder.WriteString("            nohup rm -fr _del_node_modules &> /dev/null &\n")
-		scriptBuilder.WriteString("        fi\n")
+		scriptBuilder.WriteString("        mv -f node_modules _del_node_modules || true\n")
+		scriptBuilder.WriteString("        nohup rm -fr _del_node_modules &> /dev/null &\n")
 		scriptBuilder.WriteString("    fi\n")
-		scriptBuilder.WriteString("    echo \"Done.\"\n")
-		scriptBuilder.WriteString("fi\n\n")
+		scriptBuilder.WriteString("fi\n")
+		scriptBuilder.WriteString("echo \"Done.\"\n")
 	}
 
 	// If user passed a custom startup command, it should take precedence above all other options
@@ -166,12 +168,9 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		startupCommand = common.ExtendPathForCommand(startupCommand, gen.SourcePath)
 	}
 
-	logger.LogInformation("Looking for appinsights loader and to export it to NODE_OPTIONS if needed")
-	scriptBuilder.WriteString("if [ -f ./" + common.ManifestFileName + " ]; then\n")
-	scriptBuilder.WriteString("    if [ -n $injectedAppInsights ]; then\n")
-	scriptBuilder.WriteString("        echo \"Oryx has set up Code-less App-Insight...\"\n")
-	scriptBuilder.WriteString("        export NODE_OPTIONS='--require ./oryx-appinsightsloader.js '$NODE_OPTIONS\n")
-	scriptBuilder.WriteString("    fi\n")
+	logger.LogInformation("Looking for App-Insights loader injected by Oryx and export that to NODE_OPTIONS if needed")
+	scriptBuilder.WriteString("if [ -n $injectedAppInsights ]; then\n")
+	scriptBuilder.WriteString("    export NODE_OPTIONS='--require ./oryx-appinsightsloader.js '$NODE_OPTIONS\n")
 	scriptBuilder.WriteString("fi\n")
 	scriptBuilder.WriteString(startupCommand + "\n")
 

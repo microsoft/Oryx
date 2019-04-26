@@ -319,5 +319,113 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 dockerCli: _dockerCli);
 
         }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public void GeneratesScript_CanRun_AppInsightsModule_Found(string nodeVersion)
+        {
+            // Arrange
+            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
+            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
+            var manifestFileContent = "injectedAppInsight=\"True\"";
+            var aiNodesdkLoaderContent = @"try {
+                var appInsights = require('applicationinsights');  
+                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+                { 
+                    appInsights.setup().start();
+                } 
+                }catch (e) { 
+                    console.log(e); 
+                } ";
+
+
+            var script = new ShellScriptBuilder()
+                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
+                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .AddCommand($"cd {appDir}")
+                .AddCommand("npm install applicationinsights")
+                .AddCommand("npm install")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules/applicationinsights")
+                .AddCommand("./run.sh & sleep 30 ; kill $!")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                imageName,
+                volume,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public void GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
+        {
+            // Arrange
+            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
+            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
+            var manifestFileContent = "injectedAppInsight=\"True\"";
+            var aiNodesdkLoaderContent = @"try {
+                var appInsights = require('applicationinsights');  
+                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+                { 
+                    appInsights.setup().start();
+                } 
+                }catch (e) { 
+                    console.warn(e); 
+                } ";
+
+
+            var script = new ShellScriptBuilder()
+                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
+                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .AddCommand($"cd {appDir}")
+                .AddCommand("npm install")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/node_modules/applicationinsights")
+                .AddCommand("./run.sh & sleep 30 ; kill $!")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                imageName,
+                volume,
+                commandToExecuteOnRun: "/bin/sh",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    //Assert.
+                },
+                result.GetDebugInfo());
+        }
     }
 }
