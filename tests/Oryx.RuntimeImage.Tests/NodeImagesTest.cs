@@ -99,6 +99,32 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        // Only version 6 of npm is upgraded, so the following should remain unchanged.
+        [InlineData("10.1", "5.6.0")]
+        // Make sure the we get the upgraded version of npm in the following cases
+        [InlineData("10.10", "6.9.0")]
+        [InlineData("10.12", "6.9.0")]
+        [InlineData("10.14", "6.9.0")]
+        public void HasExpectedNpmVersion(string nodeTag, string expectedNpmVersion)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(
+                "oryxdevms/node-" + nodeTag + ":latest",
+                commandToExecuteOnRun: "npm",
+                commandArguments: new[] { "--version" });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedNpmVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public void NodeImage_Contains_RequiredPrograms(string nodeTag)
         {
