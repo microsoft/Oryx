@@ -347,7 +347,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
                 .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
                 .AddCommand($"cd {appDir}")
-                .AddCommand("npm install applicationinsights")
+                .AddCommand("npm install --save applicationinsights")
                 .AddCommand("npm install")
                 .AddCommand($"oryx -appPath {appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
