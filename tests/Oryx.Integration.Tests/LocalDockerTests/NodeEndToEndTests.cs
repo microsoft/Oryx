@@ -347,6 +347,63 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRun_NodeApp_WithAppInsights_Configured(string nodeVersion)
+        {
+            // Arrange
+            var appName = "webfrontend";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + nodeVersion;
+            var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                "/bin/bash",
+                 new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda") },
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+
         [Fact]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {

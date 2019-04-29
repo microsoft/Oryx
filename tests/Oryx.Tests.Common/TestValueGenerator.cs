@@ -49,6 +49,16 @@ namespace Microsoft.Oryx.Tests.Common
             return versions.Select(v => new object[] { v });
         }
 
+        public static IEnumerable<object[]> GetNodeVersions_DoesNotSupportDebugging()
+        {
+            var versions = new List<string>
+            {
+                "4.4.7", "4.5.0", "6.2.2", "6.9.3", "6.10.3", "6.11.0"
+            };
+
+            return versions.Select(v => new object[] { v });
+        }
+
         public static IEnumerable<object[]> GetNodeVersions()
         {
             foreach (var version in NodeVersions)

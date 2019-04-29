@@ -48,6 +48,35 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
+            List<DockerVolume> volume,
+            string buildCmd,
+            string[] buildArgs,
+            string runtimeImageName,
+            List<EnvironmentVariable> environmentVariables,
+            string portMapping,
+            string runCmd,
+            string[] runArgs,
+            Func<Task> assertAction)
+        {
+            var AppNameEnvVariable = new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName);
+            environmentVariables.Add(AppNameEnvVariable);
+            return BuildRunAndAssertAppAsync(
+                output,
+                volume,
+                buildCmd,
+                buildArgs,
+                runtimeImageName,
+                environmentVariables,
+                portMapping,
+                link:null,
+                runCmd,
+                runArgs,
+                assertAction);
+        }
+
+        public static Task BuildRunAndAssertAppAsync(
+            string appName,
+            ITestOutputHelper output,
             List<DockerVolume> volumes,
             string buildCmd,
             string[] buildArgs,
@@ -99,7 +128,7 @@ namespace Microsoft.Oryx.Tests.Common
             // Build
             var buildAppResult = dockerCli.Run(
                 Settings.BuildImageName,
-                environmentVariables: null,
+                environmentVariables: environmentVariables,
                 volumes: volumes,
                 portMapping: null,
                 link: null,

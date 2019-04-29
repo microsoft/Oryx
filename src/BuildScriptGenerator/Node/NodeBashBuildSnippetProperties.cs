@@ -19,7 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string compressNodeModulesCommand,
             string compressedNodeModulesFileName,
             bool configureYarnCache = false,
-            bool pruneDevDependencies = false)
+            bool pruneDevDependencies = false,
+            string appInsightsInjectCommand = null,
+            string appInsightsPackageName = null,
+            string appInsightsLoaderFileName = null)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
@@ -30,6 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             CompressedNodeModulesFileName = compressedNodeModulesFileName;
             ConfigureYarnCache = configureYarnCache;
             PruneDevDependencies = pruneDevDependencies;
+            AppInsightsInjectCommand = appInsightsInjectCommand;
+            AppInsightsPackageName = appInsightsPackageName;
+            AppInsightsLoaderFileName = appInsightsLoaderFileName;
         }
 
         public string PackageInstallCommand { get; set; }
@@ -49,5 +55,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public bool ConfigureYarnCache { get; set; }
 
         public bool PruneDevDependencies { get; set; }
+
+        public string AppInsightsInjectCommand { get; set; }
+
+        public string AppInsightsPackageName { get; set; }
+
+        public string AppInsightsLoaderFileName { get; set; }
     }
 }

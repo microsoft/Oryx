@@ -157,6 +157,44 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
         }
 
+        [Fact]
+        public void GeneratedScript_CanRunStartupScripts_WithAppInsightsConfigured()
+        {
+            // Arrange
+            const int exitCodeSentinel = 222;
+            var appPath = "/tmp/app";
+            var aiNodesdkLoaderContent = @"var appInsights = require('applicationinsights');  
+                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+                { 
+                    try 
+                    { 
+                       appInsights.setup().start();
+                    } catch (e) { 
+                       console.error(e); 
+                    } 
+                }";
+            var manifestFileContent = "injectedAppInsight=\"True\"";
+
+            var script = new ShellScriptBuilder()
+                .CreateDirectory(appPath)
+                .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
+                .CreateFile(appPath + "/oryx-manifest.toml", manifestFileContent)
+                .CreateFile(appPath + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
+                .AddCommand(". ./run.sh") // Source the default output path
+                .AddStringExistsInFileCheck("export NODE_OPTIONS='--require ./oryx-appinsightsloader.js'", "./run.sh")
+                .ToString();
+
+            // Act
+            var res = _dockerCli.Run("oryxdevms/node-10.14", 
+                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "asdas"), "/bin/sh", new[] { "-c", script });
+
+            // Assert
+            RunAsserts(() => 
+            Assert.Equal(res.ExitCode, exitCodeSentinel),
+            res.GetDebugInfo());
+        }
+
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingProcessJson(string nodeVersion)
@@ -280,7 +318,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var volume = DockerVolume.Create(hostDir);
             var dir = volume.ContainerDir;
             int hostPort = 8585;
-            int containerDebugPort = 9593;
+            int containerDebugPort = 8080;
 
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {dir}/app")
@@ -301,11 +339,115 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 runArgs: new[] { "-c", runAppScript },
                 assertAction: async () =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/json/list");
-                    Assert.Contains("devtoolsFrontendUrl", data);
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
                 },
                 dockerCli: _dockerCli);
 
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        public async Task GeneratesScript_CanRun_AppInsightsModule_Found(string nodeVersion)
+        {
+            // Arrange
+            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
+            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
+            var manifestFileContent = "injectedAppInsight=\"True\"";
+            var aiNodesdkLoaderContent = @"try {
+                var appInsights = require('applicationinsights');  
+                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+                { 
+                    appInsights.setup().start();
+                } 
+                }catch (e) { 
+                    console.log(e); 
+                } ";
+
+            int hostPort = 8585;
+            int containerDebugPort = 8080;
+
+            var script = new ShellScriptBuilder()
+                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
+                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .AddCommand($"cd {appDir}")
+                .AddCommand("npm install")
+                .AddCommand("npm install --save applicationinsights")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules/applicationinsights")
+                .AddCommand("./run.sh")
+                .ToString();
+           
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                portMapping: $"{hostPort}:{containerDebugPort}",
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", script },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
+                },
+                dockerCli: _dockerCli);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
+        {
+            // Arrange
+            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
+            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var appDir = volume.ContainerDir;
+            var manifestFileContent = "injectedAppInsight=\"True\"";
+            var aiNodesdkLoaderContent = @"try {
+                var appInsights = require('applicationinsights');  
+                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+                { 
+                    appInsights.setup().start();
+                } 
+                }catch (e) { 
+                    console.log(e); 
+                } ";
+
+            int hostPort = 8585;
+            int containerDebugPort = 8080;
+
+            var script = new ShellScriptBuilder()
+                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
+                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .AddCommand($"cd {appDir}")
+                .AddCommand("npm install")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/node_modules/applicationinsights")
+                .AddCommand("./run.sh")
+                .ToString();
+
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                portMapping: $"{hostPort}:{containerDebugPort}",
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", script },
+                assertAction: async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
+                },
+                dockerCli: _dockerCli);
         }
     }
 }
