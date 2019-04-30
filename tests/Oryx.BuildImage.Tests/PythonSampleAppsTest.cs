@@ -64,9 +64,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(PythonVersions.Python27Version)]
-        [InlineData(PythonVersions.Python36Version)]
-        [InlineData(PythonVersions.Python37Version)]
+        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
         public void GeneratesScript_AndBuilds_Shapely_With_Python(string version)
         {
             // Arrange
@@ -74,8 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv python={version}")
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
 
