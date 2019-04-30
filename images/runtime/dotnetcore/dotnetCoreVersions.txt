@@ -1,4 +1,2 @@
-1.0, mcr.microsoft.com/dotnet/core/runtime:1.0.15
-1.1, mcr.microsoft.com/dotnet/core/runtime:1.1.12
-2.0, microsoft/aspnetcore:2.0.9
-2.1, mcr.microsoft.com/dotnet/core/aspnet:2.1.10
+2.2, mcr.microsoft.com/dotnet/core/aspnet:2.2.4
+3.0, mcr.microsoft.com/dotnet/core/aspnet:3.0.0-preview4

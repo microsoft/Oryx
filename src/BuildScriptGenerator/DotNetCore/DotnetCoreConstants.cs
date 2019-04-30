@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp20 = "netcoreapp2.0";
         public const string NetCoreApp21 = "netcoreapp2.1";
         public const string NetCoreApp22 = "netcoreapp2.2";
+        public const string NetCoreApp30 = "netcoreapp3.0";
 
         public const string OryxOutputPublishDirectory = "oryx_publish_output";
 
@@ -26,7 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string ProjectFileLanguageDetectorProperty = "ProjectFile";
         public const string StartupFileName = "startupFileName";
 
-        public const string ProjectReferenceXPathExpression = "Project/ItemGroup/PackageReference";
+        public const string WebSdkProjectXPathExpression = "/Project[@Sdk='Microsoft.NET.Sdk.Web']";
+        public const string ProjectReferenceXPathExpression = "/Project/ItemGroup/PackageReference";
         public const string AssemblyNameXPathExpression = "/Project/PropertyGroup/AssemblyName";
         public const string TargetFrameworkXPathExpression = "/Project/PropertyGroup/TargetFramework";
     }

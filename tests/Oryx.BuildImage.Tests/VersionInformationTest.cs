@@ -89,6 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(DotNetCoreVersions.DotNetCore21Version, DotNetCoreVersions.DotNetCore21Version)]
         [InlineData("2.2", DotNetCoreVersions.DotNetCore22Version)]
         [InlineData(DotNetCoreVersions.DotNetCore22Version, DotNetCoreVersions.DotNetCore22Version)]
+        [InlineData("3.0", DotNetCoreVersions.DotNetCore30VersionPreviewName)]
         public void DotnetAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)

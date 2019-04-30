@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         private const string NetCoreApp11WebApp = "NetCoreApp11WebApp";
         private const string NetCoreApp21WebApp = "NetCoreApp21WebApp";
         private const string NetCoreApp22WebApp = "NetCoreApp22WebApp";
+        private const string NetCoreApp30WebApp = "NetCoreApp30WebApp";
         private const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
         private const string DefaultStartupFilePath = "./run.sh";
 
@@ -332,6 +333,98 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp22WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_NetCore30WebApp()
+        {
+            // Arrange
+            var dotnetcoreVersion = "3.0";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp22WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_NetCore30WebApp_HavingExplicitAssemblyName()
+        {
+            // Arrange
+            var appName = "NetCoreApp30WebAppWithExplicitAssemblyName";
+            var dotnetcoreVersion = "3.0";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddStringExistsInFileCheck(
+                $"{DotnetCoreConstants.StartupFileName}=\"Yoyo.dll\"",
+                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
                 _output,
                 volume,
                 "/bin/sh",

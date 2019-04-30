@@ -207,6 +207,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void Builds_NetCore30App_UsingNetCore30_DotnetSdkVersion()
+        {
+            // Arrange
+            var appName = "NetCoreApp30WebApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/NetCoreApp30WebApp-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        ".NET Core Version: " + DotNetCoreVersions.DotNetCore30VersionPreviewName,
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Publishes_DotnetCore22App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
