@@ -572,9 +572,6 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
-                .AddCommand("pip install gunicorn")
-                .AddCommand("pip install flask")
-                .AddCommand("pip install shapely")
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
@@ -586,7 +583,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 _output,
                 volume,
                 "oryx",
-                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}" },
+                new[] { "build", appDir },
                 imageVersion,
                 portMapping,
                 "/bin/bash",
