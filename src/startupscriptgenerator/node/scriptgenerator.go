@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"startupscriptgenerator/common"
+	"startupscriptgenerator/common/consts"
 	"strings"
 )
 
@@ -168,10 +169,12 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		startupCommand = common.ExtendPathForCommand(startupCommand, gen.SourcePath)
 	}
 
-	logger.LogInformation("Looking for App-Insights loader injected by Oryx and export that to NODE_OPTIONS if needed")
+	logger.LogInformation("Looking for App-Insights loader injected by Oryx and export to NODE_OPTIONS if needed")
 	scriptBuilder.WriteString("if [ -n $injectedAppInsights ]; then\n")
 	scriptBuilder.WriteString("    if [ -f ./oryx-appinsightsloader.js ]; then\n")
-	scriptBuilder.WriteString("        export NODE_OPTIONS='--require ./oryx-appinsightsloader.js '$NODE_OPTIONS\n")
+	var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " '$NODE_OPTIONS"
+	scriptBuilder.WriteString("        export NODE_OPTIONS=" + nodeOptions + "\n")
+	scriptBuilder.WriteString("")
 	scriptBuilder.WriteString("    fi\n")
 	scriptBuilder.WriteString("fi\n")
 	scriptBuilder.WriteString(startupCommand + "\n")
