@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
     public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = Constants.PhpEndToEndTestsPort;
+        private const int ContainerPort = 8080;
         private const string RunScriptPath = "/tmp/startup.sh";
 
         private readonly ITestOutputHelper _output;
@@ -54,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                $"{HostPort}:80",
+                $"{HostPort}:{ContainerPort}",
                 "/bin/sh", new[] { "-c", script },
                 async () =>
                 {
@@ -96,7 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                $"{HostPort}:80",
+                $"{HostPort}:{ContainerPort}",
                 "/bin/sh", new[] { "-c", runScript },
                 async () =>
                 {
@@ -128,7 +129,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                $"{HostPort}:80",
+                $"{HostPort}:{ContainerPort}",
                 "/bin/sh", new[] { "-c", runScript },
                 async () =>
                 {
