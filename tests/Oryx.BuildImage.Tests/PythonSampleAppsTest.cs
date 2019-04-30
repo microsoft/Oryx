@@ -63,6 +63,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory]
+        [InlineData(PythonVersions.Python27Version)]
+        [InlineData(PythonVersions.Python36Version)]
+        [InlineData(PythonVersions.Python37Version)]
+        public void GeneratesScript_AndBuilds_Shapely_With_Python(string version)
+        {
+            // Arrange
+            var volume = CreateSampleAppVolume("shapely-flask-app");
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv python={version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                CreateAppNameEnvVar("shapely-flask-app"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
