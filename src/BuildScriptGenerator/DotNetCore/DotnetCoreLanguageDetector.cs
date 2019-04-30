@@ -100,6 +100,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 case DotnetCoreConstants.NetCoreApp22:
                     return "2.2";
+
+                case DotnetCoreConstants.NetCoreApp30:
+                    return "3.0";
             }
 
             return null;

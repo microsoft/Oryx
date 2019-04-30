@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,8 +56,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (!sourceRepo.FileExists(projectFile))
                 {
                     _logger.LogWarning($"Could not find the project file '{projectFile}'.");
-                    return null;
+                    throw new InvalidOperationException(
+                        $"Could not find the project file '{projectFile}' specified by the environment variable" +
+                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectEnvVariablePath}'.");
                 }
+
+                // NOTE: Do not check if the project file specified by the end user is a web application since this
+                // can be a escape hatch for end users if our logic to determine a web app is incorrect.
+                return projectFile;
             }
 
             if (projectFile != null)
@@ -121,6 +128,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // To enable unit testing
         internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
+            if (IsAspNetCore30App(projectFileDoc))
+            {
+                return true;
+            }
+
             var packageReferenceElements = projectFileDoc.XPathSelectElements(
                 DotnetCoreConstants.ProjectReferenceXPathExpression);
             if (packageReferenceElements == null || !packageReferenceElements.Any())
@@ -154,6 +166,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (aspNetCorePackageReference != null)
             {
                 return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsAspNetCore30App(XDocument projectFileDoc)
+        {
+            var targetFrameworkElement = projectFileDoc.XPathSelectElement(
+                DotnetCoreConstants.TargetFrameworkXPathExpression);
+            if (string.Equals(targetFrameworkElement.Value, DotnetCoreConstants.NetCoreApp30))
+            {
+                var projectElement = projectFileDoc.XPathSelectElement(
+                    DotnetCoreConstants.WebSdkProjectXPathExpression);
+                return projectElement != null;
             }
 
             return false;

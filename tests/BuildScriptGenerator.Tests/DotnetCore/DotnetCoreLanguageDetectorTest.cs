@@ -102,6 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("netcoreapp2.0", DotNetCoreVersions.DotNetCore21Version)]
         [InlineData("netcoreapp2.1", DotNetCoreVersions.DotNetCore21Version)]
         [InlineData("netcoreapp2.2", DotNetCoreVersions.DotNetCore22Version)]
+        [InlineData("netcoreapp3.0", DotNetCoreVersions.DotNetCore30Version)]
         public void Detect_ReturnsExpectedLanguageVersion_ForTargetFrameworkVersions(
             string netCoreAppVersion,
             string expectedSdkVersion)
@@ -123,7 +124,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -153,7 +155,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -186,7 +189,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -226,7 +230,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -265,7 +270,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version
                 },
                 projectFile);
 

@@ -75,6 +75,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
           </ItemGroup>
         </Project>";
 
+        private const string NetCoreApp30_ProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+          <PropertyGroup>
+            <TargetFramework>netcoreapp3.0</TargetFramework>
+            <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include = ""Microsoft.AspNetCore.Mvc.NewtonsoftJson""
+             Version=""3.0.0-preview4-19216-03"" />
+          </ItemGroup>
+        </Project>";
+
+        private const string NetCoreApp30_NonWebAppProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Razor"">
+          <PropertyGroup>
+            <TargetFramework>netcoreapp3.0</TargetFramework>
+            <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+            <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+          </PropertyGroup>
+          <ItemGroup>
+            <FrameworkReference Include = ""Microsoft.AspNetCore.App"" />
+          </ItemGroup>
+        </Project>";
+
         private readonly string _tempDirRoot;
 
         public DefaultAspNetCoreWebAppProjectFileProviderTest(TestTempDirTestFixture testFixture)
@@ -181,8 +205,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Null(actual);
         }
 
+        // This is a scenario where our probing of a project could be incorrect. In this case a user can explicitly
+        // specify the project file to use and we use it without checking further.
         [Fact]
-        public void GetProjectFile_ReturnsNull_IfPathInProjectEnvVariableValue_DoesNotExist()
+        public void GetProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            var expectedFile = Path.Combine(webApp1Dir, "WebApp1.csproj");
+            File.WriteAllText(
+                expectedFile,
+                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var relativeProjectPath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
+            var options = new DotnetCoreScriptGeneratorOptions();
+            options.Project = relativeProjectPath;
+            var provider = CreateProjectFileProvider(options);
+
+            // Act
+            var actualFile = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actualFile);
+        }
+
+        [Fact]
+        public void GetProjectFile_Throws_IfPathInProjectEnvVariableValue_DoesNotExist()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -201,11 +251,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
 
-            // Act
-            var actualFile = provider.GetProjectFile(sourceRepo);
-
-            // Assert
-            Assert.Null(actualFile);
+            // Act & Assert
+            var exception = Assert.Throws<InvalidOperationException>(() => provider.GetProjectFile(sourceRepo));
+            Assert.Contains("Could not find the project file ",exception.Message);
         }
 
         [Fact]
@@ -320,6 +368,82 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var options = new DotnetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
+
+            // Act
+            var actualFile = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actualFile);
+        }
+
+        [Fact]
+        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_ForWebApp()
+        {
+            // Arrange
+            var xdoc = XDocument.Load(new StringReader(NetCoreApp30_ProjectFile));
+
+            // Act
+            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
+
+            // Assert
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void IsAspNetCoreWebApplicationProject_ReturnsFalse_ForNonWebApp()
+        {
+            // Arrange
+            var xdoc = XDocument.Load(new StringReader(NetCoreApp30_NonWebAppProjectFile));
+
+            // Act
+            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
+
+            // Assert
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(
+                Path.Combine(webApp1Dir, "WebApp1.csproj"),
+                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            var webApp2Dir = CreateDir(srcDir, "WebApp2");
+            var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
+            File.WriteAllText(
+                expectedFile,
+                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actualFile = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actualFile);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsNetCoreApp30ProjectFile_ByProbingAllAcrossRepo()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(
+                Path.Combine(webApp1Dir, "WebApp1.csproj"),
+                NetCoreApp30_NonWebAppProjectFile);
+            var webApp2Dir = CreateDir(srcDir, "WebApp2");
+            var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
+            File.WriteAllText(
+                expectedFile,
+                NetCoreApp30_ProjectFile);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
 
             // Act
             var actualFile = provider.GetProjectFile(sourceRepo);

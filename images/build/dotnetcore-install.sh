@@ -15,8 +15,6 @@ echo
 DEFAULT_DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz
 DOTNET_SDK_URL="${DOTNET_SDK_URL:-$DEFAULT_DOTNET_SDK_URL}"
 
-DOTNET_DIR=/opt/dotnet/$DOTNET_SDK_VER
-mkdir -p $DOTNET_DIR
 curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz
 if [ "$DOTNET_SDK_SHA" != "" ]
 then
@@ -24,6 +22,15 @@ then
     echo "Verifying archive hash..."
     echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c -
 fi
+
+globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
+
+# If the version is a preview version, then trim out the preview part
+# Example: 3.0.100-preview4-011223 will be changed to 3.0.100
+DOTNET_SDK_VER=${DOTNET_SDK_VER%%-*}
+
+DOTNET_DIR=/opt/dotnet/$DOTNET_SDK_VER
+mkdir -p $DOTNET_DIR
 tar -xzf dotnet.tar.gz -C $DOTNET_DIR
 rm dotnet.tar.gz
 
@@ -42,7 +49,7 @@ then
     dotnet=/opt/dotnet/$DOTNET_SDK_VER/dotnet
     mkdir warmup
     cd warmup
-    echo "{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}" > global.json
+    echo "$globalJsonContent" > global.json
     $dotnet new mvc
     $dotnet restore
     cd ..

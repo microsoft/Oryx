@@ -79,6 +79,11 @@ RUN . /tmp/__dot-net-core-versions.sh && \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SHA512 \
     /dotnetcore-install.sh
 
+RUN . /tmp/__dot-net-core-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_30_VERSION_PREVIEW_NAME \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_30_SHA512 \
+    /dotnetcore-install.sh
+
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
     && find /var/nuget -type d -exec chmod 777 {} \;
@@ -86,6 +91,7 @@ RUN set -ex \
 RUN set -ex \
  && ln -s 1.1 /opt/dotnet/1 \
  && ln -s 2.1 /opt/dotnet/2 \
+ && ln -s 3.0 /opt/dotnet/3 \
  && ln -s 2 /opt/dotnet/lts \
  && ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 
