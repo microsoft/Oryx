@@ -17,8 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
     public class DefaultAspNetCoreWebAppProjectFileProviderTest : IClassFixture<TestTempDirTestFixture>
     {
-        private const string ProjectFileWithNoMicrosoftAspNetCorePackageReferences = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+        private const string NonWebSdkProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Razor"">
           <PropertyGroup>
             <LangVersion>7.3</LangVersion>
             <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
           </ItemGroup>
         </Project>";
 
-        private const string ProjectFileWithMicrosoftAspNetCorePackageReference = @"
+        private const string WebSdkProjectFile = @"
         <Project Sdk=""Microsoft.NET.Sdk.Web"">
           <PropertyGroup>
             <LangVersion>7.3</LangVersion>
@@ -36,66 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
           </PropertyGroup>
           <ItemGroup>
             <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
-          </ItemGroup>
-        </Project>";
-
-        private const string ProjectFileWithMicrosoftAspNetCoreAllPackageReference = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-            <TargetFramework>netcoreapp2.1</TargetFramework>
-          </PropertyGroup>
-          <ItemGroup>
-            <PackageReference Include=""Microsoft.AspNetCore.All"" Version=""2.1.0"" />
-          </ItemGroup>
-        </Project>";
-
-        private const string ProjectFileWithMicrosoftAspNetCoreAppPackageReference = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-            <TargetFramework>netcoreapp2.1</TargetFramework>
-          </PropertyGroup>
-          <ItemGroup>
-            <PackageReference Include=""Microsoft.AspNetCore.App"" Version=""2.1.0"" />
-          </ItemGroup>
-        </Project>";
-
-        private const string ProjectFileWithMultipleItemGroups = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-            <TargetFramework>netcoreapp2.1</TargetFramework>
-          </PropertyGroup>
-          <ItemGroup>
-            <PackageReference Include=""xunit"" Version=""2.3.1"" />
-          </ItemGroup>
-          <ItemGroup>
-            <PackageReference Include=""Microsoft.AspNetCore.App"" Version=""2.1.0"" />
-          </ItemGroup>
-        </Project>";
-
-        private const string NetCoreApp30_ProjectFile = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <TargetFramework>netcoreapp3.0</TargetFramework>
-            <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-          </PropertyGroup>
-          <ItemGroup>
-            <PackageReference Include = ""Microsoft.AspNetCore.Mvc.NewtonsoftJson""
-             Version=""3.0.0-preview4-19216-03"" />
-          </ItemGroup>
-        </Project>";
-
-        private const string NetCoreApp30_NonWebAppProjectFile = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Razor"">
-          <PropertyGroup>
-            <TargetFramework>netcoreapp3.0</TargetFramework>
-            <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-            <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-          </PropertyGroup>
-          <ItemGroup>
-            <FrameworkReference Include = ""Microsoft.AspNetCore.App"" />
           </ItemGroup>
         </Project>";
 
@@ -107,10 +47,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsFalse_WhenNoAspNetCoreRelatedPackagesArePresent()
+        public void IsAspNetCoreWebApplicationProject_ReturnsFalse_WhenProject_IsNotWebSdkProject()
         {
             // Arrange
-            var xdoc = XDocument.Load(new StringReader(ProjectFileWithNoMicrosoftAspNetCorePackageReferences));
+            var xdoc = XDocument.Load(new StringReader(NonWebSdkProjectFile));
 
             // Act
             var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
@@ -120,49 +60,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_ForAspNetCorePackageReference()
+        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_WhenProject_IsWebSdkProject()
         {
             // Arrange
-            var xdoc = XDocument.Load(new StringReader(ProjectFileWithMicrosoftAspNetCorePackageReference));
-
-            // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_ForAspNetCoreAllPackageReference()
-        {
-            // Arrange
-            var xdoc = XDocument.Load(new StringReader(ProjectFileWithMicrosoftAspNetCoreAllPackageReference));
-
-            // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_ForAspNetCoreAppPackageReference()
-        {
-            // Arrange
-            var xdoc = XDocument.Load(new StringReader(ProjectFileWithMicrosoftAspNetCoreAppPackageReference));
-
-            // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_ForProjectFileWithMultipleItemGroups()
-        {
-            // Arrange
-            var xdoc = XDocument.Load(new StringReader(ProjectFileWithMultipleItemGroups));
+            var xdoc = XDocument.Load(new StringReader(WebSdkProjectFile));
 
             // Act
             var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
@@ -187,14 +88,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsNull_IfNoAspNetCoreWebApplicationReferencesFound_ForRootProject()
+        public void GetProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "test.csproj");
-            File.WriteAllText(
-                expectedFile,
-                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, WebSdkProjectFile);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -215,9 +131,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
             var expectedFile = Path.Combine(webApp1Dir, "WebApp1.csproj");
-            File.WriteAllText(
-                expectedFile,
-                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            File.WriteAllText(expectedFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
             var options = new DotnetCoreScriptGeneratorOptions();
@@ -238,13 +152,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            File.WriteAllText(
-                Path.Combine(webApp2Dir, "WebApp2.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", "WebApp2-doesnotexist.csproj");
             var options = new DotnetCoreScriptGeneratorOptions();
@@ -252,24 +162,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider(options);
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidOperationException>(() => provider.GetProjectFile(sourceRepo));
-            Assert.Contains("Could not find the project file ",exception.Message);
+            var exception = Assert.Throws<InvalidUsageException>(() => provider.GetProjectFile(sourceRepo));
+            Assert.Contains("Could not find the project file ", exception.Message);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsNull_IfNoAspNetCoreWebApplicationReferencesFound_AllAcrossRepo()
+        public void GetProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), NonWebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            File.WriteAllText(
-                Path.Combine(webApp2Dir, "WebApp2.csproj"),
-                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -279,40 +185,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Assert
             Assert.Null(actual);
         }
-
+        
         [Fact]
-        public void GetProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent()
-        {
-            // Arrange
-            var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "test.csproj");
-            File.WriteAllText(
-                expectedFile,
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
-            var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var provider = CreateProjectFileProvider();
-
-            // Act
-            var actual = provider.GetProjectFile(sourceRepo);
-
-            // Assert
-            Assert.Equal(expectedFile, actual);
-        }
-
-        [Fact]
-        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects()
+        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            File.WriteAllText(
-                Path.Combine(webApp2Dir, "WebApp2.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -330,14 +213,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
             var fooDir = CreateDir(srcDir, "foo");
             var webApp2Dir = CreateDir(fooDir, "WebApp2");
-            File.WriteAllText(
-                Path.Combine(webApp2Dir, "WebApp2.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -355,14 +234,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), webApp1Dir);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
             var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
-            File.WriteAllText(
-                expectedFile,
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
+            File.WriteAllText(expectedFile, webApp1Dir);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", "WebApp2.csproj");
             var options = new DotnetCoreScriptGeneratorOptions();
@@ -377,71 +252,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsTrue_ForWebApp()
-        {
-            // Arrange
-            var xdoc = XDocument.Load(new StringReader(NetCoreApp30_ProjectFile));
-
-            // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void IsAspNetCoreWebApplicationProject_ReturnsFalse_ForNonWebApp()
-        {
-            // Arrange
-            var xdoc = XDocument.Load(new StringReader(NetCoreApp30_NonWebAppProjectFile));
-
-            // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
-
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
         public void GetProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                ProjectFileWithNoMicrosoftAspNetCorePackageReferences);
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), NonWebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
             var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
-            File.WriteAllText(
-                expectedFile,
-                ProjectFileWithMicrosoftAspNetCoreAppPackageReference);
-            var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var provider = CreateProjectFileProvider();
-
-            // Act
-            var actualFile = provider.GetProjectFile(sourceRepo);
-
-            // Assert
-            Assert.Equal(expectedFile, actualFile);
-        }
-
-        [Fact]
-        public void GetProjectFile_ReturnsNetCoreApp30ProjectFile_ByProbingAllAcrossRepo()
-        {
-            // Arrange
-            var sourceRepoDir = CreateSourceRepoDir();
-            var srcDir = CreateDir(sourceRepoDir, "src");
-            var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(
-                Path.Combine(webApp1Dir, "WebApp1.csproj"),
-                NetCoreApp30_NonWebAppProjectFile);
-            var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
-            File.WriteAllText(
-                expectedFile,
-                NetCoreApp30_ProjectFile);
+            File.WriteAllText(expectedFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
