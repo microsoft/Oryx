@@ -73,6 +73,15 @@
       namespace: Microsoft.Oryx.Common
     - type: go
       directory: src/startupscriptgenerator/common/consts
+- name: node-app-insights-loader
+  constants:
+    node-app-insights-loader-file-name: oryx-appinsightsloader.js
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/Node
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
+    - type: go
+      directory: src/startupscriptgenerator/common/consts
 - name: node-versions
   constants:
     yarn-version: 1.13.0

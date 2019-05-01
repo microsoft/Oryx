@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 pruneDevDependencies: pruneDevDependencies,
                 appInsightsInjectCommand: appInsightsInjectCommand,
                 appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
-                appInsightsLoaderFileName: NodeConstants.NodeAppInsightsLoaderFileName);
+                appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName);
 
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,
