@@ -33,7 +33,8 @@ jobs:
   condition: succeeded()
   pool:
     name: OryxLinux
-  timeoutInMinutes: 100
+  # Building runtime images can take a long time due our PHP images
+  timeoutInMinutes: 150
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
