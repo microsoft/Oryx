@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
 
             var result = ExecuteCommand(new[] { "logs", containerName });
-            return result.StdOut;
+            return result.StdOut + result.StdErr;
         }
 
         public DockerCommandResult Exec(string containerName, string command, string[] commandArgs)

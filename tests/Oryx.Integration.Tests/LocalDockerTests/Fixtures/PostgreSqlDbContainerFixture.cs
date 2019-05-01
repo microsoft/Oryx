@@ -36,15 +36,25 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override bool WaitUntilDbServerIsUp()
         {
-            // Try 33 times at most, with a constant 3s in between attempts
-            var retry = Policy.HandleResult(result: false).WaitAndRetry(33, i => TimeSpan.FromSeconds(3));
-            return retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName)
-                                                 .Contains("database system is ready to accept connections"));
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(retryCount: 36, i => TimeSpan.FromSeconds(5));
+            return retry.Execute(() =>
+            {
+                try
+                {
+                    var status = _dockerCli.GetContainerLogs(DbServerContainerName);
+                    return status.Contains("listening on IPv4 address");
+                }
+                catch
+                {
+                    // In case of any exception, we consider this retry as a failure and will retry again.
+                    return false;
+                }
+            });
         }
 
         protected override void InsertSampleData()
         {
-            const string sqlFile = "/tmp/setup.sql";
+            const string sqlFile = "/tmp/postgres_setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
                 .AddCommand($"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")

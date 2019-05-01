@@ -11,6 +11,7 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 {
     [Trait("Category", "DB")]
+    [Trait("db", "mysql")]
     public class MySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
         public MySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture dbFixture)
@@ -18,13 +19,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
         }
 
-        [Fact(Skip = "Bug 847845")]
+        [Fact]
         public async Task NodeApp_MySqlDB()
         {
-            await RunTestAsync("nodejs",  "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mysql"));
+            await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mysql"));
         }
 
-        [Theory(Skip = "Bug 847845")]
+        [Theory]
         [InlineData("mysql-pymysql-sample")]
         [InlineData("mysql-mysqlconnector-sample")]
         [InlineData("mysql-mysqlclient-sample")]
@@ -33,14 +34,18 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", sampleAppName));
         }
 
-        [Theory(Skip = "Bug 847845")]
+        [Theory]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
         [InlineData("5.6")]
         public async Task PhpApp_UsingMysqli(string phpVersion)
         {
-            await RunTestAsync("php", phpVersion, Path.Combine(HostSamplesDir, "php", "mysqli-example"), 80,
+            await RunTestAsync(
+                "php",
+                phpVersion,
+                Path.Combine(HostSamplesDir, "php", "mysqli-example"),
+                8080,
                 specifyBindPortFlag: false);
         }
     }

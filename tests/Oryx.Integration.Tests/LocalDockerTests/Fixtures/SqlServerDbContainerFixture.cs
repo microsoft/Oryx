@@ -49,15 +49,25 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override bool WaitUntilDbServerIsUp()
         {
-            // Try 33 times at most, with a constant 3s in between attempts
-            var retry = Policy.HandleResult(result: false).WaitAndRetry(33, i => TimeSpan.FromSeconds(3));
-            return retry.Execute(() => _dockerCli.GetContainerLogs(DbServerContainerName)
-                                                 .Contains("SQL Server is now ready for client connections"));
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(retryCount: 24, i => TimeSpan.FromSeconds(10));
+            return retry.Execute(() =>
+            {
+                try
+                {
+                    return _dockerCli.GetContainerLogs(DbServerContainerName)
+                            .Contains("SQL Server is now ready for client connections");
+                }
+                catch
+                {
+                    // In case of any exception, we consider this retry as a failure and will retry again.
+                    return false;
+                }
+            });
         }
 
         protected override void InsertSampleData()
         {
-            const string sqlFile = "/tmp/setup.sql";
+            const string sqlFile = "/tmp/sqlserver_setup.sql";
             string baseSqlCmd = $"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd}";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
