@@ -26,7 +26,7 @@ jobs:
   displayName: Build and Publish Oryx Images
   dependsOn: Job_2
   condition: succeeded()
-  timeoutInMinutes: 150
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
