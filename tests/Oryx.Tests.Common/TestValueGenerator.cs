@@ -21,6 +21,11 @@ namespace Microsoft.Oryx.Tests.Common
             "10.1", "10.10", "10.14"
         };
 
+        private readonly static List<string> PythonVersions = new List<string>
+        {
+            "2.7", "3.6", "3.7"
+        };
+
         private readonly static List<string> ZipOptions = new List<string>
         {
             "tar-gz", "zip"
@@ -62,6 +67,14 @@ namespace Microsoft.Oryx.Tests.Common
         public static IEnumerable<object[]> GetNodeVersions()
         {
             foreach (var version in NodeVersions)
+            {
+                yield return new object[] { version };
+            }
+        }
+
+        public static IEnumerable<object[]> GetPythonVersions()
+        {
+            foreach (var version in PythonVersions)
             {
                 yield return new object[] { version };
             }

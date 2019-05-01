@@ -6,4 +6,5 @@ RUN chmod +x /tmp/build.sh && \
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
 		tk-dev \
-		uuid-dev
+		uuid-dev \
+		libgeos-dev
