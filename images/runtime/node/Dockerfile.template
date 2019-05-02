@@ -1,5 +1,5 @@
 # Startup script generator
-FROM golang:1.11-%NODE_BASE_IMAGE_ALPINE_OR_STRETCH% as startupCmdGen
+FROM golang:1.11-stretch as startupCmdGen
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
 ARG GIT_COMMIT=unspecified
@@ -9,29 +9,11 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 # GOPATH is set to "/go" in the base image, so no need to set it again
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM node:%NODE_BASE_IMAGE%
-
-RUN apt-get update && apt-get install unzip --yes
+FROM %RUNTIME_BASE_IMAGE_NAME%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-
-# All users need access to node_modules at the root, as this is the location
-# for packages valid for all apps.
-RUN mkdir -p /node_modules \
- && chmod 777 /node_modules
-
-RUN set -e \
- && npm_ver=$(npm --version) \
- && if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then \
-        echo "Upgrading npm version from $npm_ver to 6.9.0"; \
-        npm install -g npm@6.9.0; \
-    fi
-
-# PM2 is supported as an option when running the app,
-# so we need to make sure it is available in our images.
-RUN npm install -g pm2
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
