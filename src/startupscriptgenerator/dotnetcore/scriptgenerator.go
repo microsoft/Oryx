@@ -33,21 +33,12 @@ type projectDetails struct {
 
 // Object models representing .NET Core '.csproj' file xml content
 type csProject struct {
-	XMLName    xml.Name        `xml:"Project"`
+	SdkName    string          `xml:"Project,Sdk"`
 	Properties []propertyGroup `xml:"PropertyGroup"`
-	ItemGroups []itemGroup     `xml:"ItemGroup"`
 }
 
 type propertyGroup struct {
 	AssemblyName string `xml:"AssemblyName"`
-}
-
-type itemGroup struct {
-	PackageReferences []packageReference `xml:"PackageReference"`
-}
-
-type packageReference struct {
-	Name string `xml:"Include,attr"`
 }
 
 const ProjectEnvironmentVariableName = "PROJECT"
@@ -175,35 +166,39 @@ func (gen *DotnetCoreStartupScriptGenerator) getProjectDetails() projectDetails 
 		return projDetails
 	}
 
+	// Filter for ASP.NET Core Web Application project files
+	var webAppProjects []projectDetails
 	for _, projectFile := range projectFiles {
 		csProjObj := deserializeProjectFile(projectFile)
-		if csProjObj.ItemGroups == nil {
-			continue
-		}
+		if csProjObj.SdkName == "Microsoft.NET.Sdk.Web" {
+			currProjDetails := projectDetails{}
+			projFileInfo, _ := os.Stat(projectFile)
+			currProjDetails.Name = projFileInfo.Name()
+			currProjDetails.FullPath = projectFile
+			currProjDetails.Directory = filepath.Dir(projectFile)
+			currProjDetails.CSProjectObj = csProjObj
 
-		for _, itemGroup := range csProjObj.ItemGroups {
-			if itemGroup.PackageReferences == nil {
-				continue
-			}
-
-			for _, packageReference := range itemGroup.PackageReferences {
-				if packageReference.Name == "" {
-					continue
-				}
-
-				if packageReference.Name == "Microsoft.AspNetCore.App" ||
-					packageReference.Name == "Microsoft.AspNetCore.All" ||
-					packageReference.Name == "Microsoft.AspNetCore" {
-					projFileInfo, _ := os.Stat(projectFile)
-					projDetails.Name = projFileInfo.Name()
-					projDetails.FullPath = projectFile
-					projDetails.Directory = filepath.Dir(projectFile)
-					projDetails.CSProjectObj = csProjObj
-					break
-				}
-			}
+			webAppProjects = append(webAppProjects, currProjDetails)
 		}
 	}
+
+	if len(webAppProjects) == 1 {
+		return webAppProjects[0]
+	} else if len(webAppProjects) > 1 {
+		var webAppProjectFiles []string
+		for _, webAppProject := range webAppProjects {
+			webAppProjectFiles = append(webAppProjectFiles, webAppProject.FullPath)
+		}
+		printProjectFiles := strings.Join(webAppProjectFiles[:], ", ")
+		logger.LogError(
+			"Found multiple ASP.NET Core web application projects. Projects: '%s'",
+			printProjectFiles)
+
+		panic(
+			"Found multiple ASP.NET Core web application projects. " +
+			"Use the PROJECT environment variable to specify a repo relative path to the project file to consider.")
+	}
+
 	return projDetails
 }
 

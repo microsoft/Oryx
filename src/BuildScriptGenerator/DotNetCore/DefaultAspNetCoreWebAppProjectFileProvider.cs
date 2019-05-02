@@ -56,9 +56,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (!sourceRepo.FileExists(projectFile))
                 {
                     _logger.LogWarning($"Could not find the project file '{projectFile}'.");
-                    throw new InvalidOperationException(
+                    throw new InvalidUsageException(
                         $"Could not find the project file '{projectFile}' specified by the environment variable" +
-                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectEnvVariablePath}'.");
+                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectEnvVariablePath}'. " +
+                        "Make sure the path to the project file is relative to the root of the repo. " +
+                        "For example: PROJECT=src/Dashboard/Dashboard.csproj");
                 }
 
                 // NOTE: Do not check if the project file specified by the end user is a web application since this
@@ -110,9 +112,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 if (webAppProjects.Count > 1)
                 {
+                    var projects = string.Join(", ", webAppProjects);
                     throw new InvalidUsageException(
                         "Ambiguity in selecting an ASP.NET Core web application to build. " +
-                        "Found multiple applications: " + string.Join(", ", webAppProjects));
+                        $"Found multiple applications: '{projects}'. Use the environment variable " +
+                        $"'{EnvironmentSettingsKeys.Project}' to specify the relative path to the project " +
+                        "to be deployed.");
                 }
 
                 projectFile = webAppProjects[0];
@@ -128,47 +133,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // To enable unit testing
         internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            if (IsAspNetCore30App(projectFileDoc))
-            {
-                return true;
-            }
-
-            var packageReferenceElements = projectFileDoc.XPathSelectElements(
-                DotnetCoreConstants.ProjectReferenceXPathExpression);
-            if (packageReferenceElements == null || !packageReferenceElements.Any())
-            {
-                return false;
-            }
-
-            var aspNetCorePackageReference = packageReferenceElements
-                .Where(packageRefElement =>
-                {
-                    if (!packageRefElement.HasAttributes)
-                    {
-                        return false;
-                    }
-
-                    var includeAttribute = packageRefElement.Attributes()
-                    .Where(attr => string.Equals(attr.Name.LocalName, "Include"))
-                    .FirstOrDefault();
-                    if (includeAttribute == null)
-                    {
-                        return false;
-                    }
-
-                    var value = includeAttribute.Value;
-                    return string.Equals(value, DotnetCoreConstants.AspNetCoreAppPackageReference)
-                    || string.Equals(value, DotnetCoreConstants.AspNetCoreAllPackageReference)
-                    || string.Equals(value, DotnetCoreConstants.AspNetCorePackageReference);
-                })
-                .FirstOrDefault();
-
-            if (aspNetCorePackageReference != null)
-            {
-                return true;
-            }
-
-            return false;
+            var webSdkProjectElement = projectFileDoc.XPathSelectElement(
+                DotnetCoreConstants.WebSdkProjectXPathExpression);
+            return webSdkProjectElement != null;
         }
 
         private static bool IsAspNetCore30App(XDocument projectFileDoc)
