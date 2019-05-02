@@ -13,6 +13,7 @@ using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Trait("Category", "DOTNETCORE")]
     public class DotNetCoreEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = Constants.DotNetCoreEndToEndTestsPort;
