@@ -11,7 +11,7 @@ using Xunit;
 using Xunit.Abstractions;
 using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     public class DotNetCoreEndToEndTests : PlatformEndToEndTestsBase
     {
@@ -542,7 +542,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
-        public async Task DotNetCoreStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
+        public async Task StartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
         {
             // Arrange
             var dotnetcoreVersion = "2.2";
@@ -686,7 +686,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory_WhenNotSpecifyingLanguageVersion()
+        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory_AndNoLanguageVersionSwitch()
         {
             // Arrange
             var appName = "MultiWebAppRepo";

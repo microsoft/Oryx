@@ -107,22 +107,11 @@ steps:
     scriptPath: ./build/build-testimage.sh
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
-- task: AzureKeyVault@1
-  displayName: 'Fetch storage account key from vault'
-  inputs:
-    azureSubscription: 'Oryx Build'
-    keyVaultName: oryx
-    secretsFilter: 'STORAGEACCOUNTKEY,KUBECONFIG'
-  condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Test integration'
   inputs:
     scriptPath: ./build/test-integration.sh
     args: $(TestIntegrationCaseFilter)
-  env:
-    STORAGEACCOUNTKEY: $(STORAGEACCOUNTKEY)
-    KUBECONFIG: $(KUBECONFIG)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0

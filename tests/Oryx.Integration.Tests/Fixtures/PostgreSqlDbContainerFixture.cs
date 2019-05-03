@@ -9,7 +9,7 @@ using Microsoft.Oryx.Tests.Common;
 using Polly;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
+namespace Microsoft.Oryx.Integration.Tests.Fixtures
 {
     public class PostgreSqlDbContainerFixture : DbContainerFixtureBase
     {
@@ -58,7 +58,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             const string sqlFile = "/tmp/postgres_setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
-                .AddCommand($"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost -d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")
+                .AddCommand(
+                $"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost " +
+                $"-d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")
                 .ToString();
 
             var result = _dockerCli.Exec(DbServerContainerName, "/bin/sh", new[] { "-c", dbSetupScript });

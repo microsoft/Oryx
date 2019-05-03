@@ -11,7 +11,7 @@ using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     public class PythonEndToEndTests : PlatformEndToEndTestsBase
     {
@@ -77,7 +77,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var portMapping = $"{HostPort}:{ContainerPort}";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -l python --language-version 2.7 -p virtualenv_name={virtualEnvName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
@@ -90,15 +93,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "2.7", "-p", $"virtualenv_name={virtualEnvName}" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-2.7",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -397,7 +404,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // Simulate apps that were built using package directory, and then virtual env
             var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -l python --language-version {pythonVersion}")
-                .AddBuildCommand($"{appDir} -p virtualenv_name={virtualEnvName} -l python --language-version {pythonVersion}")
+                .AddBuildCommand(
+                $"{appDir} -p virtualenv_name={virtualEnvName} " +
+                $"-l python --language-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -443,9 +452,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             const string virtualEnvName = "antenv3.6";
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -l python --language-version 3.6 -p virtualenv_name={virtualEnvName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -453,15 +465,19 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}", "-l", "python", "--language-version", "3.6" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.6",
                 portMapping,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async () =>
                 {
@@ -766,7 +782,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                     var linkdEndIx = data.IndexOf(".js", linkStartIdx);
                     Assert.NotEqual(-1, linkdEndIx);
 
-                    // We remove 5 chars for `src="` and add 2 since we get the first char of ".js" but we want to include ".js in the string
+                    // We remove 5 chars for `src="` and add 2 since we get the first char of ".js"
+                    // but we want to include ".js in the string
                     int length = linkdEndIx - linkStartIdx - 2;
                     var link = data.Substring(linkStartIdx + 5, length);
 

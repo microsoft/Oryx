@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     internal class Constants
     {

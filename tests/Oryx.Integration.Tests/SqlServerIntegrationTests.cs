@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     //// NOTE:
     //// Commenting out the tests here as the test fixture is still run and we want to avoid that as stopping the
