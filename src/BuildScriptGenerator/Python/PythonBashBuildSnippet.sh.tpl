@@ -35,6 +35,11 @@ then
 
 	echo "Running pip install..."
 	pip install --prefer-binary -r requirements.txt | ts $TS_FMT
+	pipInstallExitCode=${PIPESTATUS[0]}
+	if [[ $pipInstallExitCode != 0 ]]
+	then
+		exit $pipInstallExitCode
+	fi
 else
 	echo $REQS_NOT_FOUND_MSG
 fi

@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var nestedOutputDir = "/tmp/app-output/subdir1";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/{PackagesDirectory}")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/pythonenv3.7")
                 .ToString();
 
             // Act
