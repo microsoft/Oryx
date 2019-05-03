@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.DoesNotContain("Python Virtual Environment", snippet.BashBuildScriptSnippet);
+            Assert.Contains("Python Virtual Environment", snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 

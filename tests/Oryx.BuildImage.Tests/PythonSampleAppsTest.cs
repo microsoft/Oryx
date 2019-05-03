@@ -518,7 +518,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_DoesNotZipVirtualEnv_ByDefault()
+        public void Build_VirtualEnv_Unzipped_ByDefault()
         {
             // Arrange
             var virtualEnvironmentName = "pythonenv3.7";

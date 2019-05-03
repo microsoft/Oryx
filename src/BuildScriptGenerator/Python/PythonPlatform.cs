@@ -15,7 +15,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     [BuildProperty(
-        VirtualEnvironmentNamePropertyKey, "Name of the virtual environment to be created.")]
+        VirtualEnvironmentNamePropertyKey, "Name of the virtual environment to be created. Defaults to 'pythonenv<Python version>'.")]
     [BuildProperty(
         CompressVirtualEnvPropertyKey,
         "Indicates how and if virtual environment folder should be compressed into a single file in the output " +
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
-                virtualEnvModule = GetVirtualEnvModules(pythonVersion, ref virtualEnvCopyParam);
+                (virtualEnvModule, virtualEnvCopyParam) = GetVirtualEnvModules(pythonVersion);
 
                 _logger.LogDebug(
                     "Using virtual environment {venv}, module {venvModule}",
@@ -180,9 +180,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return enableCollectStatic;
         }
 
-        private string GetVirtualEnvModules(string pythonVersion, ref string virtualEnvCopyParam)
+        private (string virtualEnvModule, string virtualEnvCopyParam) GetVirtualEnvModules(string pythonVersion)
         {
             string virtualEnvModule;
+            string virtualEnvCopyParam = string.Empty;
             switch (pythonVersion.Split('.')[0])
             {
                 case "2":
@@ -200,7 +201,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     throw new NotSupportedException(errorMessage);
             }
 
-            return virtualEnvModule;
+            return (virtualEnvModule, virtualEnvCopyParam);
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
