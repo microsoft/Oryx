@@ -40,7 +40,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (string.IsNullOrEmpty(runtimeVersion))
             {
-                var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern,
+                var files = sourceRepo.EnumerateFiles(
+                    PythonConstants.PythonFileNamePattern,
                     searchSubDirectories: false);
                 if (files == null || !files.Any())
                 {

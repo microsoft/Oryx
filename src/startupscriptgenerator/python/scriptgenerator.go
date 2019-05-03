@@ -38,68 +38,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
 
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
-
-	scriptBuilder.WriteString("virtualEnvDir=\"" + filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName) + "\"\n")
-	scriptBuilder.WriteString("virtualEnvName=\"" + gen.VirtualEnvironmentName + "\"\n")
-	const buildManifestFile string = "oryx-manifest.toml"
-	scriptBuilder.WriteString("buildManifestFile=\"" + buildManifestFile + "\"\n")
-	if !gen.SkipVirtualEnvExtraction {
-		scriptBuilder.WriteString("if [ -f ./$buildManifestFile ]; then\n")
-		scriptBuilder.WriteString("    echo \"Found '$buildManifestFile', checking if virtual environment was compressed...\"\n")
-		scriptBuilder.WriteString("    . ./$buildManifestFile\n")
-		scriptBuilder.WriteString("    case $compressedVirtualEnvFile in \n")
-		scriptBuilder.WriteString("        *\".zip\")\n")
-		scriptBuilder.WriteString("            echo \"Found zip-based virtual environment.\"\n")
-		scriptBuilder.WriteString("            extractionCommand=\"unzip -q $compressedVirtualEnvFile -d /$virtualEnvName\"\n")
-		scriptBuilder.WriteString("            ;;\n")
-		scriptBuilder.WriteString("        *\".tar.gz\")\n")
-		scriptBuilder.WriteString("            echo \"Found tar.gz based virtual environment.\"\n")
-		scriptBuilder.WriteString("            extractionCommand=\"tar -xzf $compressedVirtualEnvFile -C /$virtualEnvName\"\n")
-		scriptBuilder.WriteString("            ;;\n")
-		scriptBuilder.WriteString("    esac\n")
-		scriptBuilder.WriteString("    if [ ! -z \"$extractionCommand\" ]; then\n")
-		scriptBuilder.WriteString("        echo \"Removing existing virtual environment directory...\"\n")
-		scriptBuilder.WriteString("        rm -fr /$virtualEnvName\n")
-		scriptBuilder.WriteString("        mkdir -p /$virtualEnvName\n")
-		scriptBuilder.WriteString("        echo \"Extracting...\"\n")
-		scriptBuilder.WriteString("        $extractionCommand\n")
-		scriptBuilder.WriteString("	   	   virtualEnvDir=\"/$virtualEnvName\"\n")
-		scriptBuilder.WriteString("    fi\n")
-		scriptBuilder.WriteString("    echo \"Done.\"\n")
-		scriptBuilder.WriteString("fi\n\n")
-	}
-
-	packagedDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
-	scriptBuilder.WriteString("# Check if the oryx packages folder is present, and if yes, add a .pth file for it so the interpreter can find it\n" +
-		"ORYX_PACKAGES_PATH=" + packagedDir + "\n" +
-		"if [ -d $ORYX_PACKAGES_PATH ]; then\n" +
-		"  SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n" +
-		"  SITE_PACKAGES_PATH=$HOME\"/.local/lib/python\"$SITE_PACKAGE_PYTHON_VERSION\"/site-packages\"\n" +
-		"  mkdir -p $SITE_PACKAGES_PATH\n" +
-		"  echo $ORYX_PACKAGES_PATH > $SITE_PACKAGES_PATH\"/oryx.pth\"\n" +
-		"  PATH=\"$ORYX_PACKAGES_PATH/bin:$PATH\"\n")
-
-	// If the build was created with an earlier version of the build image that created virtual environments,
-	// we still use it for backwards compatibility.
-	if gen.VirtualEnvironmentName != "" {
-		scriptBuilder.WriteString("elif [ -d \"$virtualEnvDir\" ]; then\n")
-		// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
-		// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
-		// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
-		// the libraries are not found.
-		scriptBuilder.WriteString("  PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
-		scriptBuilder.WriteString("  echo \"Using packages from virtual environment '$virtualEnvName' located at '$virtualEnvDir'.\"\n")
-		virtualEnvFolder := "\"$virtualEnvDir/lib/python$PYTHON_VERSION/site-packages\""
-		scriptBuilder.WriteString("  export PYTHONPATH=$PYTHONPATH:" + virtualEnvFolder + "\n")
-	}
+	packageSetupBlock := gen.getPackageSetupCommand()
+	scriptBuilder.WriteString(packageSetupBlock)
 
 	appType := ""
 	appModule := ""
-
-	scriptBuilder.WriteString("else\n")
-	// We just warn the user and don't error out, since we still can run the default website.
-	scriptBuilder.WriteString("  echo \"WARNING: Could not find packages folder or virtual environment.\"\n")
-	scriptBuilder.WriteString("fi\n")
 	command := gen.UserStartupCommand
 	if command == "" {
 		appDirectory := gen.SourcePath
@@ -144,6 +87,82 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 func logReadDirError(logger *common.Logger, path string, err error) {
 	logger.LogError("ioutil.ReadDir('%s') failed: %s", path, err.Error())
+}
+
+// Builds the commands to setup the Python packages, using virtual env or a package folder.
+func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
+	scriptBuilder := strings.Builder{}
+	const buildManifestFile string = "oryx-manifest.toml"
+	manifesFilePath := filepath.Join(gen.SourcePath, buildManifestFile)
+	// If a manifest file is present, it takes precedence.
+	if common.FileExists(manifesFilePath) {
+		virtualEnvVarPath := filepath.Join(gen.SourcePath, "$virtualEnvName")
+		scriptBuilder.WriteString("echo \"Using '" + buildManifestFile + "'.\"\n")
+		scriptBuilder.WriteString(". ./" + buildManifestFile + "\n")
+
+		if !gen.SkipVirtualEnvExtraction {
+			scriptBuilder.WriteString("echo \"Checking if virtual environment was compressed...\"\n")
+			scriptBuilder.WriteString("case $compressedVirtualEnvFile in \n")
+			scriptBuilder.WriteString("    *\".zip\")\n")
+			scriptBuilder.WriteString("        echo \"Found zip-based virtual environment.\"\n")
+			scriptBuilder.WriteString("        extractionCommand=\"unzip -q $compressedVirtualEnvFile -d /$virtualEnvName\"\n")
+			scriptBuilder.WriteString("        ;;\n")
+			scriptBuilder.WriteString("    *\".tar.gz\")\n")
+			scriptBuilder.WriteString("        echo \"Found tar.gz based virtual environment.\"\n")
+			scriptBuilder.WriteString("        extractionCommand=\"tar -xzf $compressedVirtualEnvFile -C /$virtualEnvName\"\n")
+			scriptBuilder.WriteString("        ;;\n")
+			scriptBuilder.WriteString("esac\n")
+			scriptBuilder.WriteString("if [ ! -z \"$extractionCommand\" ]; then\n")
+			scriptBuilder.WriteString("    echo \"Removing existing virtual environment directory...\"\n")
+			scriptBuilder.WriteString("    rm -fr /$virtualEnvName\n")
+			scriptBuilder.WriteString("    mkdir -p /$virtualEnvName\n")
+			scriptBuilder.WriteString("    echo \"Extracting...\"\n")
+			scriptBuilder.WriteString("    $extractionCommand\n")
+			scriptBuilder.WriteString("	   virtualEnvDir=\"/$virtualEnvName\"\n")
+			scriptBuilder.WriteString("elif [ ! -z \"$virtualEnvName\" ]; then\n")
+			scriptBuilder.WriteString("    virtualEnvDir=\"" + virtualEnvVarPath + "\"\n")
+			scriptBuilder.WriteString("fi\n")
+			virtualEnvCommand := getVirtualEnvironmentCommand()
+			scriptBuilder.WriteString(virtualEnvCommand)
+		}
+	} else {
+		// For backward compatibility, we check for the python packages folder.
+		packageDir := filepath.Join(gen.SourcePath, gen.PackageDirectory)
+		if common.PathExists(packageDir) {
+			scriptBuilder.WriteString("echo \"Using package directory '" + packageDir + "'\"\n" +
+				"SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n" +
+				"SITE_PACKAGES_PATH=$HOME\"/.local/lib/python\"$SITE_PACKAGE_PYTHON_VERSION\"/site-packages\"\n" +
+				"mkdir -p $SITE_PACKAGES_PATH\n" +
+				"echo \"" + packageDir + "\" > $SITE_PACKAGES_PATH\"/oryx.pth\"\n" +
+				"PATH=\"" + packageDir + "/bin:$PATH\"\n")
+		} else if gen.VirtualEnvironmentName != "" {
+			virtualEnvDir := filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName)
+			if common.PathExists(virtualEnvDir) {
+				// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
+				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
+				// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
+				// the libraries are not found.
+				scriptBuilder.WriteString("virtualEnvDir=\"" + filepath.Join(gen.SourcePath, gen.VirtualEnvironmentName) + "\"\n")
+				scriptBuilder.WriteString("virtualEnvName=\"" + gen.VirtualEnvironmentName + "\"\n")
+				virtualEnvCommand := getVirtualEnvironmentCommand()
+				scriptBuilder.WriteString(virtualEnvCommand)
+
+			} else {
+				// We just warn the user and don't error out, since we still can run the default website.
+				scriptBuilder.WriteString("  echo \"WARNING: Could not find packages folder or virtual environment.\"\n")
+			}
+		}
+	}
+	return scriptBuilder.String()
+}
+
+func getVirtualEnvironmentCommand() string {
+	scriptBuilder := strings.Builder{}
+	scriptBuilder.WriteString("PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
+	scriptBuilder.WriteString("echo \"Using packages from virtual environment '$virtualEnvName' located at '$virtualEnvDir'.\"\n")
+	virtualEnvFolder := "\"$virtualEnvDir/lib/python$PYTHON_VERSION/site-packages\""
+	scriptBuilder.WriteString("export PYTHONPATH=$PYTHONPATH:" + virtualEnvFolder + "\n")
+	return scriptBuilder.String()
 }
 
 // Checks if the app is based on Django, and returns a startup command if so.

@@ -521,12 +521,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_DoesNotZipVirtualEnv_ByDefault()
         {
             // Arrange
-            var virtualEnvironmentName = "myenv";
+            var virtualEnvironmentName = "pythonenv3.7";
             var volume = CreateSampleAppVolume("flask-app");
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvironmentName}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
                 .ToString();
 
