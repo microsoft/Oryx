@@ -138,7 +138,7 @@ jobs:
   - template: _buildParallel.yml
 
 - job: Job_DbIntegrationTests
-  displayName: Test Database Integration
+  displayName: Test Database Integration Tests
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImages

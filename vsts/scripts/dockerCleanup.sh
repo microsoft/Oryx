@@ -8,6 +8,10 @@ declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
 echo
+echo "Printing all running containers and stopped containers"
+echo
+docker ps -a 
+echo
 echo "Kill all running containers and delete all stopped containers"
 echo
 docker kill $(docker ps -q)
