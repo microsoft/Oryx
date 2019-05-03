@@ -13,7 +13,7 @@ declare integrationtestfilter="oryxdevmcr.azurecr.io/public/oryx/"
 
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 	integrationtestfilter=$TESTINTEGRATIONCASEFILTER
-elif [ -n "$TestIntegrationCaseFilter" ]
+elif [ -n "$TestIntegrationCaseFilter" ];then
 	integrationtestfilter="$TestIntegrationCaseFilter"
 fi
 
