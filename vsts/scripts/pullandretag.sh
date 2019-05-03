@@ -11,20 +11,20 @@ declare integrationtestfilter="oryxdevmcr.azurecr.io/public/oryx/"
 echo "Build image filter is set"
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-  if [[ $sourceImage != *:latest ]]; then
-	if [[ $sourceImage == *"build"* ]]; then
-		echo "Pulling the source image $sourceImage ..."
-		docker pull "$sourceImage" | sed 's/^/     /'
+  if [[ $buildImage != *:latest ]]; then
+	if [[ $buildImage == *"build"* ]]; then
+		echo "Pulling the source image $buildImage ..."
+		docker pull "$buildImage" | sed 's/^/     /'
         
 		# Trim the build number tag and append the '':latest' to end of it
-		newtag="${sourceImage%:*}:latest"
+		newtag="${buildImage%:*}:latest"
 
 		# Replace the ACR registry repository name with a name that the tests know about
 		newtag=$(echo "$newtag" | sed 's,oryxdevmcr.azurecr.io/public/oryx,oryxdevms,g')
 
 		echo
 		echo "Tagging the source image with tag $newtag ..."
-		docker tag "$sourceImage" "$newtag" | sed 's/^/     /'
+		docker tag "$buildImage" "$newtag" | sed 's/^/     /'
 		echo
 		echo -------------------------------------------------------------------------------
 	fi
