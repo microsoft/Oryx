@@ -41,8 +41,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             {
                 try
                 {
-                    var status = _dockerCli.GetContainerLogs(DbServerContainerName);
-                    return status.Contains("listening on IPv4 address");
+                    var lookUpText = "listening on IPv4 address";
+                    (var stdOut, var stdErr) = _dockerCli.GetContainerLogs(DbServerContainerName);
+                    return stdOut.Contains(lookUpText) || stdErr.Contains(lookUpText);
                 }
                 catch
                 {

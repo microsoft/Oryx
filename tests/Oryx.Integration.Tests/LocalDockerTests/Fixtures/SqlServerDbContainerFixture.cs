@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Oryx.Tests.Common;
 using Polly;
 using Xunit;
@@ -54,8 +53,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             {
                 try
                 {
-                    return _dockerCli.GetContainerLogs(DbServerContainerName)
-                            .Contains("SQL Server is now ready for client connections");
+                    var lookUpText = "SQL Server is now ready for client connections";
+                    (var stdOut, var stdErr) = _dockerCli.GetContainerLogs(DbServerContainerName);
+                    return stdOut.Contains(lookUpText) || stdErr.Contains(lookUpText);
                 }
                 catch
                 {

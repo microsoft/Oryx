@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
                 var isDbServerUp = WaitUntilDbServerIsUp();
                 if (isDbServerUp)
                 {
-                    Console.WriteLine("Done.");
+                    Console.WriteLine("Database server is up.");
                     Console.WriteLine("Inserting sample data...");
                     InsertSampleData();
                     insertedSampleData = true;
