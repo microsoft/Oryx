@@ -3,13 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
-using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
+using JetBrains.Annotations;
+using Microsoft.Oryx.Tests.Common;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 {
@@ -30,12 +29,44 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         public DbContainerFixtureBase()
         {
+            Console.WriteLine("Starting database container...");
             DbServerContainerName = RunDbServerContainer().ContainerName;
-            if (!WaitUntilDbServerIsUp())
+            Console.WriteLine("Done.");
+
+            bool insertedSampleData = false;
+            try
             {
-                throw new Exception("Database not ready in time");
+                Console.WriteLine("Waiting for database server to be up...");
+                var isDbServerUp = WaitUntilDbServerIsUp();
+                if (isDbServerUp)
+                {
+                    Console.WriteLine("Database server is up.");
+                    Console.WriteLine("Inserting sample data...");
+                    InsertSampleData();
+                    insertedSampleData = true;
+                    Console.WriteLine("Done.");
+                }
+                else
+                {
+                    Console.WriteLine("Database server was not up in time.");
+                }
             }
-            InsertSampleData();
+            catch (Exception ex)
+            {
+                // Since Dispose method does not get called in case of exceptions, catch the exception here, log it
+                // and stop the container.
+                Console.WriteLine("Exception occurred while setting up the database container: " + ex.ToString());
+            }
+
+            if (!insertedSampleData)
+            {
+                Console.WriteLine("Stopping the container...");
+                StopContainer();
+                Console.WriteLine("Done.");
+
+                // Throw exception here so that tests that depend on this fixture do not run.
+                throw new InvalidOperationException("Failed to setup database container for tests.");
+            }
         }
 
         public string DbServerContainerName { get; }
