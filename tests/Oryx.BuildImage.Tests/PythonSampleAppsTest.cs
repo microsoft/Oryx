@@ -352,7 +352,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains("Missing parentheses in call to 'print'", result.StdOut);
+                    Assert.Contains("Missing parentheses in call to 'print'", result.StdErr);
                 },
                 result.GetDebugInfo());
         }
