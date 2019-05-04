@@ -314,6 +314,10 @@ COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190417.1 /opt /opt
 COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190417.1 /opt /opt
 COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190417.1 /opt /opt
 COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190417.1 /opt /opt
+RUN ln -s /opt/php/5.6 /opt/php/5 \
+ && ln -s /opt/php/7.3 /opt/php/7 \
+ && ln -s /opt/php/7 /opt/php/lts \
+ && ln -s /opt/php/lts/bin/php /usr/local/bin/php
 
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
