@@ -12,7 +12,7 @@ echo "Build image filter is set"
 while read buildImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
   if [[ $buildImage != *:latest ]]; then
-	echo "Pulling the source image $buildImage ..."
+	echo "Pulling the build image $buildImage ..."
 	docker pull "$buildImage" | sed 's/^/     /'
         
 	# Trim the build number tag and append the '':latest' to end of it
@@ -39,9 +39,9 @@ echo "Runtime image filter is set for "$integrationtestfilter
 
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-  if [[ $sourceImage != *:latest ]]; then
-	if [[ $sourceImage == *"$integrationtestfilter"* ]]; then
-		echo "Pulling the source image $sourceImage ..."
+  if [[ "$sourceImage" != *:latest ]]; then
+	if [[ "$sourceImage" == *"$integrationtestfilter"* ]]; then
+		echo "Pulling the runtime image $sourceImage ..."
 		docker pull "$sourceImage" | sed 's/^/     /'
         
 		# Trim the build number tag and append the '':latest' to end of it
