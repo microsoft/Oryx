@@ -8,9 +8,13 @@ set -o pipefail
 
 declare integrationtestfilter="oryxdevmcr.azurecr.io/public/oryx/"
 
+echo "first arg: "$1
+echo "second arg: "$2
+
 echo "Build image filter is set"
-while read sourceImage; do
+while read buildImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
+  echo "image: "$buildImage
   if [[ $buildImage != *:latest ]]; then
 	if [[ $buildImage == *"build"* ]]; then
 		echo "Pulling the source image $buildImage ..."
@@ -40,6 +44,7 @@ echo "Runtime image filter is set for "$integrationtestfilter
 
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
+  echo "image: "$sourceImage
   if [[ $sourceImage != *:latest ]]; then
 	if [[ $sourceImage == *"$integrationtestfilter"* ]]; then
 		echo "Pulling the source image $sourceImage ..."
