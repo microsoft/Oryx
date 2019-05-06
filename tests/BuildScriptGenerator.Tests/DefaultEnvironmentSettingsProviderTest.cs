@@ -23,6 +23,53 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void TryGetAndLoadSettings_TrimsQuotesAndWhitespace()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var scriptFile = Path.Combine(sourceDir, "a b.sh");
+            File.Create(scriptFile);
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildScript, " \" a b c \" ");
+            testEnvironment.SetEnvironmentVariable(
+                EnvironmentSettingsKeys.PreBuildScriptPath,
+                $" \"{scriptFile}\" ");
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildScript, " \" a b c \" ");
+            testEnvironment.SetEnvironmentVariable(
+                EnvironmentSettingsKeys.PostBuildScriptPath,
+                $" \"{scriptFile}\" ");
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.TryGetAndLoadSettings(out var settings);
+
+            // Assert
+            Assert.Equal(" a b c ", settings.PreBuildScript);
+            Assert.Equal(scriptFile, settings.PreBuildScriptPath);
+            Assert.Equal(" a b c ", settings.PostBuildScript);
+            Assert.Equal(scriptFile, settings.PostBuildScriptPath);
+        }
+
+        [Theory]
+        [InlineData("\"")]
+        [InlineData("a\"")]
+        [InlineData("a\"\"")]
+        public void TryGetAndLoadSettings_TrimsOnlyWhenMatchingQuotesAreFound(string value)
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildScript, value);
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.TryGetAndLoadSettings(out var settings);
+
+            // Assert
+            Assert.Equal(value, settings.PreBuildScript);
+        }
+
+        [Fact]
         public void TryGetAndLoadSettings_PrefersPrefixedName_IfPresent()
         {
             // Arrange

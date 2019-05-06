@@ -1073,6 +1073,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void Build_Executes_InlinePreAndPostBuildCommands()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume("flask-app");
+            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("PRE_BUILD_SCRIPT=\"echo from pre-build command\"");
+                sw.WriteLine("POST_BUILD_SCRIPT=\"echo from post-build command\"");
+            }
+
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o /tmp/output")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("from pre-build command", result.StdOut);
+                    Assert.Contains("from post-build command", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Django_CollectStaticFailure_DoesNotFailBuild()
         {
             // Arrange

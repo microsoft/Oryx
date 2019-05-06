@@ -21,9 +21,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IEnumerable<string> BuildScriptSnippets { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the pre build script.
+        /// Gets or sets the the pre build script content
         /// </summary>
-        public string PreBuildScriptPath { get; set; }
+        public string PreBuildScript { get; set; }
 
         /// <summary>
         /// Gets or sets the argument to the benv command.
@@ -31,9 +31,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BenvArgs { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the post build script.
+        /// Gets or sets the path to the post build script content.
         /// </summary>
-        public string PostBuildScriptPath { get; set; }
+        public string PostBuildScript { get; set; }
 
         public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
 

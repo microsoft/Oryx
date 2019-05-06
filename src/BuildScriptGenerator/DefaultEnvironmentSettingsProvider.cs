@@ -139,39 +139,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var environmentSettings = new EnvironmentSettings
             {
-                PreBuildScriptPath = GetPath(EnvironmentSettingsKeys.PreBuildScriptPath),
-                PostBuildScriptPath = GetPath(EnvironmentSettingsKeys.PostBuildScriptPath)
+                PreBuildScriptPath = GetScriptAbsolutePath(TrimValue(EnvironmentSettingsKeys.PreBuildScriptPath)),
+                PostBuildScriptPath = GetScriptAbsolutePath(TrimValue(EnvironmentSettingsKeys.PostBuildScriptPath))
             };
 
-            if (!string.IsNullOrEmpty(environmentSettings.PreBuildScriptPath))
-            {
-                environmentSettings.PreBuildScriptPath = GetScriptAbsolutePath(environmentSettings.PreBuildScriptPath);
-            }
-
-            if (!string.IsNullOrEmpty(environmentSettings.PostBuildScriptPath))
-            {
-                environmentSettings.PostBuildScriptPath = GetScriptAbsolutePath(
-                    environmentSettings.PostBuildScriptPath);
-            }
+            environmentSettings.PreBuildScript = TrimValue(EnvironmentSettingsKeys.PreBuildScript);
+            environmentSettings.PostBuildScript = TrimValue(EnvironmentSettingsKeys.PostBuildScript);
 
             return environmentSettings;
 
-            string GetPath(string name)
+            string TrimValue(string key)
             {
-                var path = GetValue(name);
-                if (string.IsNullOrEmpty(path))
+                var value = GetValue(key);
+                if (string.IsNullOrEmpty(value))
                 {
                     return null;
                 }
 
-                path = path.Trim();
+                value = value.Trim();
                 var quote = '"';
-                if (path.StartsWith(quote) && path.EndsWith(quote))
+
+                if (value.Length > 1 && value.StartsWith(quote) && value.EndsWith(quote))
                 {
-                    return path.Trim(quote);
+                    value = value.Remove(0, 1);
+                    if (value.Length > 0)
+                    {
+                        value = value.Remove(value.Length - 1);
+                    }
                 }
 
-                return path;
+                return value;
             }
 
             string GetValue(string name)
@@ -194,6 +191,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             string GetScriptAbsolutePath(string path)
             {
+                if (string.IsNullOrEmpty(path))
+                {
+                    return null;
+                }
+
                 if (!Path.IsPathFullyQualified(path))
                 {
                     path = Path.Combine(_sourceRepo.RootPath, path);

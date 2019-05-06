@@ -67,11 +67,11 @@ fi
 export SOURCE_DIR
 export DESTINATION_DIR
 
-{{ if PreBuildScriptPath | IsNotBlank }}
+{{ if PreBuildScript | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd "$SOURCE_DIR"
 echo "{{ PreBuildScriptPrologue }}"
-"{{ PreBuildScriptPath }}"
+{{ PreBuildScript }}
 echo "{{ PreBuildScriptEpilogue }}"
 {{ end }}
 
@@ -81,11 +81,11 @@ cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
 
-{{ if PostBuildScriptPath | IsNotBlank }}
+{{ if PostBuildScript | IsNotBlank }}
 # Make sure to cd to the source directory so that the post-build script runs from there
 cd $SOURCE_DIR
 echo "{{ PostBuildScriptPrologue }}"
-"{{ PostBuildScriptPath }}"
+{{ PostBuildScript }}
 echo "{{ PostBuildScriptEpilogue }}"
 {{ end }}
 
