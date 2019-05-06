@@ -52,6 +52,7 @@ UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:*.*"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:*.*"
+UntagImages "mcr.microsoft.com/oryx/*:*.*"
 UntagImages node:4.4.7
 UntagImages node:4.5.0
 UntagImages node:4.8.7
