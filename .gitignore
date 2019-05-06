@@ -268,6 +268,7 @@ images/runtime/node/*.*/
 !images/runtime/node/8.9/
 images/runtime/dotnetcore/*.*/
 images/runtime/python/*.*/
+images/runtime/php/*.*/
 
 # Go packages, if Oryx is added to GOPATH (which it should)
 pkg/
