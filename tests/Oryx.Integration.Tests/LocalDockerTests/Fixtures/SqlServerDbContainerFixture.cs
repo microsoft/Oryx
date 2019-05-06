@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
             {
                 try
                 {
-                    var lookUpText = "SQL Server is now ready for client connections";
+                    var lookUpText = "The default language (LCID 0) has been set for engine and full-text services.";
                     (var stdOut, var stdErr) = _dockerCli.GetContainerLogs(DbServerContainerName);
                     return stdOut.Contains(lookUpText) || stdErr.Contains(lookUpText);
                 }
