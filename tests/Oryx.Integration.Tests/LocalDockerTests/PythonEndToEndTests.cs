@@ -583,7 +583,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 _output,
                 volume,
                 "oryx",
-                new[] { "build", appDir },
+                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
                 imageVersion,
                 portMapping,
                 "/bin/bash",
