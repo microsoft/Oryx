@@ -9,6 +9,7 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Moq;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -96,11 +97,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("netcoreapp1.0", "1.1")]
-        [InlineData("netcoreapp1.1", "1.1")]
-        [InlineData("netcoreapp2.0", "2.1")]
-        [InlineData("netcoreapp2.1", "2.1")]
-        [InlineData("netcoreapp2.2", "2.2")]
+        [InlineData("netcoreapp1.0", DotNetCoreVersions.DotNetCore11Version)]
+        [InlineData("netcoreapp1.1", DotNetCoreVersions.DotNetCore11Version)]
+        [InlineData("netcoreapp2.0", DotNetCoreVersions.DotNetCore21Version)]
+        [InlineData("netcoreapp2.1", DotNetCoreVersions.DotNetCore21Version)]
+        [InlineData("netcoreapp2.2", DotNetCoreVersions.DotNetCore22Version)]
+        [InlineData("netcoreapp3.0", DotNetCoreVersions.DotNetCore30Version)]
         public void Detect_ReturnsExpectedLanguageVersion_ForTargetFrameworkVersions(
             string netCoreAppVersion,
             string expectedSdkVersion)
@@ -122,7 +124,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -152,7 +155,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -162,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Assert
             Assert.NotNull(result);
             Assert.Equal(DotnetCoreConstants.LanguageName, result.Language);
-            Assert.Equal("2.1", result.LanguageVersion);
+            Assert.Equal(DotNetCoreVersions.DotNetCore21Version, result.LanguageVersion);
         }
 
         [Fact]
@@ -185,7 +189,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -203,7 +208,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var projectFile = "test.csproj";
             var globalJsonFileContent = GlobalJsonWithSdkVersionPlaceholder.Replace(
                 "#version#",
-                "100.100.100");
+                DotNetCoreVersions.DotNetCore21Version);
             var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                 "#TargetFramework#",
                 "netcoreapp2.1");
@@ -225,7 +230,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version,
                 },
                 projectFile);
 
@@ -235,7 +241,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Assert
             Assert.NotNull(result);
             Assert.Equal(DotnetCoreConstants.LanguageName, result.Language);
-            Assert.Equal("100.100.100", result.LanguageVersion);
+            Assert.Equal(DotNetCoreVersions.DotNetCore21Version, result.LanguageVersion);
         }
 
         [Fact]
@@ -264,7 +270,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 {
                     DotNetCoreVersions.DotNetCore11Version,
                     DotNetCoreVersions.DotNetCore21Version,
-                    DotNetCoreVersions.DotNetCore22Version
+                    DotNetCoreVersions.DotNetCore22Version,
+                    DotNetCoreVersions.DotNetCore30Version
                 },
                 projectFile);
 
@@ -274,7 +281,55 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Assert
             Assert.NotNull(result);
             Assert.Equal(DotnetCoreConstants.LanguageName, result.Language);
-            Assert.Equal("2.1", result.LanguageVersion);
+            Assert.Equal(DotNetCoreVersions.DotNetCore21Version, result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsMaximumSatisfyingVersion()
+        {
+            // Arrange
+            var projectFile = "test.csproj";
+            var sourceRepo = new Mock<ISourceRepo>();
+            sourceRepo
+                .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new[] { projectFile });
+            sourceRepo
+                .Setup(repo => repo.ReadFile(It.IsAny<string>()))
+                .Returns(ProjectFileWithTargetFrameworkPlaceHolder.Replace("#TargetFramework#", "netcoreapp2.1"));
+            var detector = CreateDotnetCoreLanguageDetector(
+                supportedVersions: new[] { "2.1.1", "2.1.300" },
+                projectFile);
+
+            // Act
+            var result = detector.Detect(sourceRepo.Object);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(DotnetCoreConstants.LanguageName, result.Language);
+            Assert.Equal("2.1.300", result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ThrowsUnsupportedException_WhenNoVersionFoundReturnsMaximumSatisfyingVersion()
+        {
+            // Arrange
+            var projectFile = "test.csproj";
+            var sourceRepo = new Mock<ISourceRepo>();
+            sourceRepo
+                .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new[] { projectFile });
+            sourceRepo
+                .Setup(repo => repo.ReadFile(It.IsAny<string>()))
+                .Returns(ProjectFileWithTargetFrameworkPlaceHolder.Replace("#TargetFramework#", "netcoreapp2.1"));
+            var detector = CreateDotnetCoreLanguageDetector(
+                supportedVersions: new[] { "2.2" },
+                projectFile);
+
+            // Act & Assert
+            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(sourceRepo.Object));
+            Assert.Equal(
+                "Target .NET Core version '2.1' is unsupported. Supported versions are: 2.2",
+                exception.Message);
         }
 
         private DotnetCoreLanguageDetector CreateDotnetCoreLanguageDetector(

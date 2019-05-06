@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -452,14 +453,139 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void GeneratedScript_DoesNotConfigureAppInsights_IfAppInsightsEnvironmentVariable_NotSet(string nodeVersion)
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.NodeVersion = nodeVersion;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                appInsightsInjectCommand: null,
+                appInsightsPackageName: "applicationinsights",
+                appInsightsLoaderFileName: "oryx-appinsightsloader.js");
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void GeneratedScript_DoesNotConfigureAppInsights_IfNodeVersionCondition_Unsatisfied(string nodeVersion)
+        {
+            // Arrange
+            var otherEnvironment = new Dictionary<string, string> { { Constants.AppInsightsKey, "xyz" } };
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion, otherEnvironment: otherEnvironment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.NodeVersion = nodeVersion;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                appInsightsInjectCommand: null,
+                appInsightsPackageName: "applicationinsights",
+                appInsightsLoaderFileName: "oryx-appinsightsloader.js");
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void GeneratedScript_ConfigureAppInsights_Condition_Satisfied(string version)
+        {
+            // Condition is node version have to be 8 or newer or node version is 6.12.0
+            // As we don't support 6.12.0 in our build image we condition remains node 8 or newer
+            // Arrange
+            var otherEnvironment = new Dictionary<string, string> { { Constants.AppInsightsKey, "xyz" } };
+            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: version, otherEnvironment: otherEnvironment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.NodeVersion = version;
+            //context.LanguageVersion = version;
+            var expected = new NodeBashBuildSnippetProperties(
+                packageInstallCommand: NpmInstallCommand,
+                runBuildCommand: "npm run build",
+                runBuildAzureCommand: "npm run build:azure",
+                hasProductionOnlyDependencies: true,
+                productionOnlyPackageInstallCommand: string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NpmInstallCommand),
+                compressedNodeModulesFileName: null,
+                compressNodeModulesCommand: null,
+                appInsightsInjectCommand: "npm install --save applicationinsights",
+                appInsightsPackageName: "applicationinsights",
+                appInsightsLoaderFileName: "oryx-appinsightsloader.js");
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("applicationinsights", snippet.BashBuildScriptSnippet);
+            Assert.Equal(
+                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
         private IProgrammingPlatform GetNodePlatformInstance(
             string defaultNodeVersion = null,
-            string defaultNpmVersion = null)
+            string defaultNpmVersion = null,
+            Dictionary<string, string> otherEnvironment = null)
         {
             var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
             environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
 
+            if (otherEnvironment != null)
+            {
+                foreach (var environmentVariable in otherEnvironment.Keys)
+                {
+                    environment.Variables[environmentVariable] = otherEnvironment[environmentVariable];
+                }
+            }
+            
             var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1" }, new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
@@ -470,7 +596,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeScriptGeneratorOptions,
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
-                null);
+                null,
+                environment);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(

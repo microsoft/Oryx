@@ -48,6 +48,35 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
+            List<DockerVolume> volume,
+            string buildCmd,
+            string[] buildArgs,
+            string runtimeImageName,
+            List<EnvironmentVariable> environmentVariables,
+            string portMapping,
+            string runCmd,
+            string[] runArgs,
+            Func<Task> assertAction)
+        {
+            var AppNameEnvVariable = new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName);
+            environmentVariables.Add(AppNameEnvVariable);
+            return BuildRunAndAssertAppAsync(
+                output,
+                volume,
+                buildCmd,
+                buildArgs,
+                runtimeImageName,
+                environmentVariables,
+                portMapping,
+                link:null,
+                runCmd,
+                runArgs,
+                assertAction);
+        }
+
+        public static Task BuildRunAndAssertAppAsync(
+            string appName,
+            ITestOutputHelper output,
             List<DockerVolume> volumes,
             string buildCmd,
             string[] buildArgs,
@@ -99,7 +128,7 @@ namespace Microsoft.Oryx.Tests.Common
             // Build
             var buildAppResult = dockerCli.Run(
                 Settings.BuildImageName,
-                environmentVariables: null,
+                environmentVariables: environmentVariables,
                 volumes: volumes,
                 portMapping: null,
                 link: null,
@@ -117,13 +146,28 @@ namespace Microsoft.Oryx.Tests.Common
                output);
 
             // Run
+            await RunAndAssertAppAsync(runtimeImageName, output, volumes, environmentVariables, portMapping, link, runCmd, runArgs, assertAction, dockerCli);
+        }
+
+        public static async Task RunAndAssertAppAsync(
+            string imageName,
+            ITestOutputHelper output,
+            List<DockerVolume> volumes, 
+            List<EnvironmentVariable> environmentVariables, 
+            string portMapping, 
+            string link, 
+            string runCmd, 
+            string[] runArgs, 
+            Func<Task> assertAction, 
+            DockerCli dockerCli)
+        {
             DockerRunCommandProcessResult runResult = null;
             try
             {
                 // Docker run the runtime container as a foreground process. This way we can catch any errors
                 // that might occur when the application is being started.
                 runResult = dockerCli.RunAndDoNotWaitForProcessExit(
-                    runtimeImageName,
+                    imageName,
                     environmentVariables,
                     volumes: volumes,
                     portMapping,

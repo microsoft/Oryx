@@ -89,6 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(DotNetCoreVersions.DotNetCore21Version, DotNetCoreVersions.DotNetCore21Version)]
         [InlineData("2.2", DotNetCoreVersions.DotNetCore22Version)]
         [InlineData(DotNetCoreVersions.DotNetCore22Version, DotNetCoreVersions.DotNetCore22Version)]
+        [InlineData("3.0", DotNetCoreVersions.DotNetCore30VersionPreviewName)]
         public void DotnetAlias_UsesVersion_SpecifiedAtDockerRun(
             string versionSentToDockerRun,
             string expectedOutput)
@@ -191,9 +192,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("4", "v4.5.0")]
+        [InlineData("4", "v4.8.0")]
         [InlineData("4.5", "v4.5.0")]
+        [InlineData("4.8", "v4.8.0")]
         [InlineData("4.5.0", "v4.5.0")]
+        [InlineData("4.8.0", "v4.8.0")]
         [InlineData("6", "v6.11.0")]
         [InlineData("6.11", "v6.11.0")]
         [InlineData("6.11.0", "v6.11.0")]
@@ -221,6 +224,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"source /usr/local/bin/benv node={versionSentToDockerRun}")
                 .AddCommand("node --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+
+        [Theory]
+        // Only version 6 of npm is upgraded, so the following should remain unchanged.
+        [InlineData("10.1", "5.6.0")]
+        // Make sure the we get the upgraded version of npm in the following cases
+        [InlineData("10.10.0", "6.9.0")]
+        [InlineData("10.14.1", "6.9.0")]
+        [InlineData("10.15", "6.9.0")]
+        public void UsesExpectedNpmVersion(string nodeVersion, string expectedOutput)
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source /usr/local/bin/benv node={nodeVersion}")
+                .AddCommand("npm --version")
                 .ToString();
 
             // Act

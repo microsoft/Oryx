@@ -78,6 +78,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return ctx.EnablePhp;
         }
 
+        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return true;
+        }
+
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return true;

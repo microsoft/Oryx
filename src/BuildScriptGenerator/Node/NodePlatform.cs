@@ -33,17 +33,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
         private readonly NodeLanguageDetector _detector;
+        private readonly IEnvironment _environment;
 
         public NodePlatform(
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatform> logger,
-            NodeLanguageDetector detector)
+            NodeLanguageDetector detector,
+            IEnvironment environment)
         {
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
             _logger = logger;
             _detector = detector;
+            _environment = environment;
         }
 
         public string Name => NodeConstants.NodeJsName;
@@ -125,6 +128,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(context);
+            string appInsightsInjectCommand = string.Empty;
+            var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
+            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, context, appInsightsKey);
+
+            // node_options is only supported in version 8.0.0 or newer and in 6.12.0
+            // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
+            if (shouldInjectAppInsights)
+            {
+                appInsightsInjectCommand = string.Concat(
+                    NodeConstants.NpmPackageInstallCommand,
+                    " --save ",
+                    NodeConstants.NodeAppInsightsPackageName);
+
+                buildProperties[NodeConstants.InjectedAppInsights] = true.ToString();
+                _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
+            }
+
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
                 runBuildCommand: runBuildCommand,
@@ -134,7 +154,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 compressNodeModulesCommand: compressNodeModulesCommand,
                 compressedNodeModulesFileName: compressedNodeModulesFileName,
                 configureYarnCache: configureYarnCache,
-                pruneDevDependencies: pruneDevDependencies);
+                pruneDevDependencies: pruneDevDependencies,
+                appInsightsInjectCommand: appInsightsInjectCommand,
+                appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
+                appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName);
 
             string script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.NodeBuildSnippet,
@@ -156,6 +179,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableNodeJs;
+        }
+
+        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return true;
         }
 
         public void SetRequiredTools(
@@ -341,6 +369,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return ret;
+        }
+
+        private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
+        {
+            if (packageJson?.dependencies != null)
+            {
+                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
+                var pkgDependencies = deps.ToObject<IDictionary<string, string>>();
+                if (pkgDependencies.ContainsKey(packageName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool ShouldInjectAppInsights(
+            dynamic packageJson,
+            BuildScriptGeneratorContext context,
+            string appInsightsKey)
+        {
+            bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
+            string appInsightsInjectCommand = string.Empty;
+
+            // node_options is only supported in version 8.0 or newer and in 6.12
+            // so we will be able to set up app-insight only when node version is 6.12 or 8.0 or newer
+            if (!appInsightsDependency
+                && !string.IsNullOrEmpty(appInsightsKey)
+                && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0") >= 0
+                || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12") == 0
+                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0") >= 0
+                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12") == 0))
+            {
+                return true;
+            }
+
+                return false;
         }
 
         private static bool GetNodeModulesPackOptions(

@@ -560,6 +560,83 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 });
         }
 
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnv(string pythonVersion)
+        {
+            // Arrange
+            var appName = "shapely-flask-app";
+            var virtualEnvName = "antenv";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+            var imageVersion = "oryxdevms/python-" + pythonVersion;
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir },
+                imageVersion,
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello Shapely, Area is: 314", data);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRun_ShapelyFlaskApp(string pythonVersion)
+        {
+            // Arrange
+            var appName = "shapely-flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+            var imageVersion = "oryxdevms/python-" + pythonVersion;
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
+                imageVersion,
+                portMapping,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello Shapely, Area is: 314", data);
+                });
+        }
+
         [Fact]
         public async Task PythonStartupScript_UsesPortEnvironmentVariableValue()
         {

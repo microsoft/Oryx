@@ -14,11 +14,16 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private readonly static List<string> NodeVersions = new List<string>
         {
-            "4.4", "4.5", //"4.8", TODO - Add node 4.8 to the build image and re-enable this
+            "4.4", "4.5", "4.8",
             "6.2", "6.6", "6.9", "6.10", "6.11",
             "8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
             "9.4",
             "10.1", "10.10", "10.14"
+        };
+
+        private readonly static List<string> PythonVersions = new List<string>
+        {
+            "2.7", "3.6", "3.7"
         };
 
         private readonly static List<string> ZipOptions = new List<string>
@@ -49,12 +54,37 @@ namespace Microsoft.Oryx.Tests.Common
             return versions.Select(v => new object[] { v });
         }
 
+        public static IEnumerable<object[]> GetNodeVersions_DoesNotSupportDebugging()
+        {
+            var versions = new List<string>
+            {
+                "4.4.7", "4.5.0", "6.2.2", "6.9.3", "6.10.3", "6.11.0"
+            };
+
+            return versions.Select(v => new object[] { v });
+        }
+
         public static IEnumerable<object[]> GetNodeVersions()
         {
             foreach (var version in NodeVersions)
             {
                 yield return new object[] { version };
             }
+        }
+
+        public static IEnumerable<object[]> GetPythonVersions()
+        {
+            foreach (var version in PythonVersions)
+            {
+                yield return new object[] { version };
+            }
+        }
+
+        public static IEnumerable<object[]> GetNodeVersions_SupportPm2()
+        {
+            return NodeVersions
+                .Where(v => !v.StartsWith("4."))
+                .Select(v => new object[] { v });
         }
     }
 }

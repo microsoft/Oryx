@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.Tests.Common
             return result.StdOut.Trim();
         }
 
-        public string GetContainerLogs(string containerName)
+        public (string stdOut, string stdErr) GetContainerLogs(string containerName)
         {
             if (string.IsNullOrEmpty(containerName))
             {
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
 
             var result = ExecuteCommand(new[] { "logs", containerName });
-            return result.StdOut;
+            return (stdOut: result.StdOut, stdErr: result.StdErr);
         }
 
         public DockerCommandResult Exec(string containerName, string command, string[] commandArgs)

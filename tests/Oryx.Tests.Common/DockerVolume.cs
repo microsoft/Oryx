@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
             else
             {
-                // Put the folders in a well known location which the CI build defnition looks for to clean up.
+                // Put the folders in a well known location which the CI build definition looks for to clean up.
                 tempDirRoot = Path.Combine(Path.GetTempPath(), MountedHostDirRootName);
             }
 

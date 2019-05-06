@@ -10,11 +10,12 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     [BuildProperty(
-        VirtualEnvironmentNamePropertyKey, "If provided, will create a virtual environment with the given name.")]
+        VirtualEnvironmentNamePropertyKey, "Name of the virtual environment to be created. Defaults to 'pythonenv<Python version>'.")]
     [BuildProperty(
         CompressVirtualEnvPropertyKey,
         "Indicates how and if virtual environment folder should be compressed into a single file in the output " +
@@ -23,8 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         "this file.")]
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
-        "Directory to download the packages to, if no virtual environment is provided. Default: '" +
-        DefaultTargetPackageDirectory + "'")]
+        "If provided, packages will be downloaded to the given directory instead of to a virtual environment.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
@@ -68,17 +68,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
+            var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
-            if (!string.IsNullOrWhiteSpace(virtualEnvName))
+            if (string.IsNullOrEmpty(packageDir))
             {
+                // If the package directory was not provided, we default to virtual envs
+                if (string.IsNullOrWhiteSpace(virtualEnvName))
+                {
+                    virtualEnvName = GetDefaultVirtualEnvName(context);
+                }
+
                 buildProperties[PythonConstants.VirtualEnvNameBuildProperty] = virtualEnvName;
             }
-
-            string packageDir = null;
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir))
+            else if (!string.IsNullOrWhiteSpace(virtualEnvName))
             {
-                packageDir = DefaultTargetPackageDirectory;
+                throw new InvalidUsageException($"Options '{TargetPackageDirectoryPropertyKey}' and " +
+                    $"'{VirtualEnvironmentNamePropertyKey}' are mutually exclusive. Please provide " +
+                    $"only the target package directory or virtual environment name.");
             }
 
             var virtualEnvModule = string.Empty;
@@ -89,22 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
-                switch (pythonVersion.Split('.')[0])
-                {
-                    case "2":
-                        virtualEnvModule = "virtualenv";
-                        break;
-
-                    case "3":
-                        virtualEnvModule = "venv";
-                        virtualEnvCopyParam = "--copies";
-                        break;
-
-                    default:
-                        string errorMessage = "Python version '" + pythonVersion + "' is not supported";
-                        _logger.LogError(errorMessage);
-                        throw new NotSupportedException(errorMessage);
-                }
+                (virtualEnvModule, virtualEnvCopyParam) = GetVirtualEnvModules(pythonVersion);
 
                 _logger.LogDebug(
                     "Using virtual environment {venv}, module {venvModule}",
@@ -112,14 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     virtualEnvModule);
             }
 
-            // Collect static is enabled by default, but users can opt-out of it
-            var disableCollectStatic = false;
-            var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
-                EnvironmentSettingsKeys.DisableCollectStatic);
-            if (string.Equals(disableCollectStaticEnvValue, "true", StringComparison.OrdinalIgnoreCase))
-            {
-                disableCollectStatic = true;
-            }
+            bool enableCollectStatic = IsCollectStaticEnabled();
 
             string compressVirtualEnvCommand = null;
             string compressedVirtualEnvFileName = null;
@@ -141,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
-                disableCollectStatic: disableCollectStatic,
+                disableCollectStatic: !enableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName);
             string script = TemplateHelpers.Render(
@@ -154,6 +138,70 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 BashBuildScriptSnippet = script,
                 BuildProperties = buildProperties
             };
+        }
+
+        private static string GetDefaultVirtualEnvName(BuildScriptGeneratorContext context)
+        {
+            string pythonVersion = context.PythonVersion;
+            if (!string.IsNullOrWhiteSpace(pythonVersion))
+            {
+                var versionSplit = pythonVersion.Split('.');
+                if (versionSplit.Length > 1)
+                {
+                    pythonVersion = $"{versionSplit[0]}.{versionSplit[1]}";
+                }
+            }
+
+            return $"pythonenv{pythonVersion}";
+        }
+
+        private static string GetPackageDirectory(BuildScriptGeneratorContext context)
+        {
+            string packageDir = null;
+            if (context.Properties != null)
+            {
+                context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir);
+            }
+
+            return packageDir;
+        }
+
+        private bool IsCollectStaticEnabled()
+        {
+            // Collect static is enabled by default, but users can opt-out of it
+            var enableCollectStatic = true;
+            var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
+                EnvironmentSettingsKeys.DisableCollectStatic);
+            if (string.Equals(disableCollectStaticEnvValue, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                enableCollectStatic = false;
+            }
+
+            return enableCollectStatic;
+        }
+
+        private (string virtualEnvModule, string virtualEnvCopyParam) GetVirtualEnvModules(string pythonVersion)
+        {
+            string virtualEnvModule;
+            string virtualEnvCopyParam = string.Empty;
+            switch (pythonVersion.Split('.')[0])
+            {
+                case "2":
+                    virtualEnvModule = "virtualenv";
+                    break;
+
+                case "3":
+                    virtualEnvModule = "venv";
+                    virtualEnvCopyParam = "--copies";
+                    break;
+
+                default:
+                    string errorMessage = "Python version '" + pythonVersion + "' is not supported";
+                    _logger.LogError(errorMessage);
+                    throw new NotSupportedException(errorMessage);
+            }
+
+            return (virtualEnvModule, virtualEnvCopyParam);
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
@@ -170,6 +218,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnablePython;
+        }
+
+        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return true;
         }
 
         public void SetRequiredTools(
@@ -223,6 +276,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 excludeDirs.Add(string.Format(PythonConstants.ZipVirtualEnvFileNameFormat, virtualEnvName));
                 excludeDirs.Add(string.Format(PythonConstants.TarGzVirtualEnvFileNameFormat, virtualEnvName));
             }
+
             return excludeDirs;
         }
 
@@ -259,7 +313,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     isVirtualEnvPackaged = true;
                 }
             }
-
 
             return isVirtualEnvPackaged;
         }

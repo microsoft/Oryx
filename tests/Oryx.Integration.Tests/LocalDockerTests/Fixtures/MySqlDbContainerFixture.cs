@@ -37,19 +37,26 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
 
         protected override bool WaitUntilDbServerIsUp()
         {
-            // Try 30 times at most, with a constant 2s in between attempts
-            var retry = Policy.HandleResult(result: false).WaitAndRetry(30, i => TimeSpan.FromSeconds(2));
+            var retry = Policy.HandleResult(result: false).WaitAndRetry(retryCount: 36, i => TimeSpan.FromSeconds(5));
             return retry.Execute(() =>
             {
-                // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
-                string status = _dockerCli.GetContainerStatus(DbServerContainerName);
-                return status.Contains("healthy") && !status.Contains("starting");
+                try
+                {
+                    // Based on https://hub.docker.com/r/mysql/mysql-server/#starting-a-mysql-server-instance
+                    string status = _dockerCli.GetContainerStatus(DbServerContainerName);
+                    return status.Contains("healthy") && !status.Contains("starting");
+                }
+                catch
+                {
+                    // In case of any exception, we consider this retry as a failure and will retry again.
+                    return false;
+                }
             });
         }
 
         protected override void InsertSampleData()
         {
-            const string sqlFile = "/tmp/setup.sql";
+            const string sqlFile = "/tmp/mysql_setup.sql";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
                 // No space after the '-p' on purpose:

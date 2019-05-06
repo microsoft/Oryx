@@ -50,6 +50,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.SetProperties(toolsToVersion);
             }
 
+            if (snippets != null)
+            {
+                foreach (var snippet in snippets)
+                {
+                    if (snippet.IsFullScript)
+                    {
+                        script = snippet.BashBuildScriptSnippet;
+                        return true;
+                    }
+                }
+            }
+
             if (snippets.Any())
             {
                 // By default exclude these irrespective of platform
@@ -72,68 +84,90 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
         {
-            bool providedLanguageFound = false;
             var resultPlatforms = new List<Tuple<IProgrammingPlatform, string>>();
 
-            foreach (var platform in _programmingPlatforms)
+            var enabledPlatforms = _programmingPlatforms.Where(p =>
             {
-                if (!platform.IsEnabled(ctx))
+                if (!p.IsEnabled(ctx))
                 {
-                    _logger.LogDebug("{platformName} has been disabled", platform.Name);
-                    continue;
+                    _logger.LogDebug("{platformName} has been disabled", p.Name);
+                    return false;
+                }
+                return true;
+            });
+
+            // If a user supplied the language explicitly, check if the platform is enabled for that
+            IProgrammingPlatform userSuppliedPlatform = null;
+            string platformVersion = null;
+            if (!string.IsNullOrEmpty(ctx.Language))
+            {
+                var selectedPlatform = enabledPlatforms
+                    .Where(p => string.Equals(ctx.Language, p.Name, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+
+                if (selectedPlatform == null)
+                {
+                    ThrowInvalidLanguageProvided(ctx);
                 }
 
-                bool usePlatform = false;
-                var currPlatformMatchesProvided = !string.IsNullOrEmpty(ctx.Language) &&
-                    string.Equals(ctx.Language, platform.Name, StringComparison.OrdinalIgnoreCase);
+                userSuppliedPlatform = selectedPlatform;
 
-                string targetVersionSpec = null;
-                if (currPlatformMatchesProvided)
+                platformVersion = ctx.LanguageVersion;
+                if (string.IsNullOrEmpty(platformVersion))
                 {
-                    providedLanguageFound = true;
-                    targetVersionSpec = ctx.LanguageVersion;
-                    usePlatform = true;
-                }
-                else if (ctx.DisableMultiPlatformBuild && !string.IsNullOrEmpty(ctx.Language))
-                {
-                    _logger.LogDebug(
-                        "Multi platform build is disabled and platform was specified. " +
-                        "Skipping language {skippedLang}",
-                        platform.Name);
-                    continue;
-                }
-
-                if (!currPlatformMatchesProvided || string.IsNullOrEmpty(targetVersionSpec))
-                {
-                    _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
-                    var detectionResult = platform.Detect(ctx.SourceRepo);
-                    if (detectionResult != null)
+                    var detectionResult = userSuppliedPlatform.Detect(ctx.SourceRepo);
+                    if (detectionResult == null || string.IsNullOrEmpty(detectionResult.LanguageVersion))
                     {
-                        _logger.LogDebug(
-                            "Detected {platformName} version {platformVersion} for app in repo",
-                            platform.Name,
-                            detectionResult.LanguageVersion);
-                        usePlatform = true;
-                        targetVersionSpec = detectionResult.LanguageVersion;
-                        if (string.IsNullOrEmpty(targetVersionSpec))
-                        {
-                            throw new UnsupportedVersionException(
-                                $"Couldn't detect a version for the platform '{platform.Name}' in the repo.");
-                        }
+                        throw new UnsupportedVersionException(
+                            $"Couldn't detect a version for the platform '{userSuppliedPlatform.Name}' in the repo.");
                     }
+
+                    platformVersion = detectionResult.LanguageVersion;
                 }
 
-                if (usePlatform)
+                resultPlatforms.Add(Tuple.Create(userSuppliedPlatform, platformVersion));
+
+                // if the user explicitly supplied a platform and if that platform does not want to be part of
+                // multi-platform builds, then short-circuit immediately ignoring going through other platforms
+                if (!IsEnabledForMultiPlatformBuild(userSuppliedPlatform, ctx))
                 {
-                    resultPlatforms.Add(Tuple.Create(platform, targetVersionSpec));
+                    return resultPlatforms;
                 }
             }
 
-            // Even if a language was detected, we throw an error if the user provided
-            // an unsupported language as target.
-            if (!string.IsNullOrEmpty(ctx.Language) && !providedLanguageFound)
+            // Ignore processing the same platform again
+            if (userSuppliedPlatform != null)
             {
-                ThrowInvalidLanguageProvided(ctx);
+                enabledPlatforms = enabledPlatforms.Where(p => !ReferenceEquals(p, userSuppliedPlatform));
+            }
+
+            foreach (var platform in enabledPlatforms)
+            {
+                string targetVersionSpec = null;
+
+                _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
+                var detectionResult = platform.Detect(ctx.SourceRepo);
+                if (detectionResult != null)
+                {
+                    _logger.LogDebug(
+                        "Detected {platformName} version {platformVersion} for app in repo",
+                        platform.Name,
+                        detectionResult.LanguageVersion);
+
+                    targetVersionSpec = detectionResult.LanguageVersion;
+                    if (string.IsNullOrEmpty(targetVersionSpec))
+                    {
+                        throw new UnsupportedVersionException(
+                            $"Couldn't detect a version for the platform '{platform.Name}' in the repo.");
+                    }
+
+                    resultPlatforms.Add(Tuple.Create(platform, targetVersionSpec));
+
+                    if (!IsEnabledForMultiPlatformBuild(platform, ctx))
+                    {
+                        return resultPlatforms;
+                    }
+                }
             }
 
             return resultPlatforms;
@@ -300,6 +334,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return targetVersion;
+        }
+
+        private bool IsEnabledForMultiPlatformBuild(IProgrammingPlatform platform, BuildScriptGeneratorContext context)
+        {
+            if (context.DisableMultiPlatformBuild)
+            {
+                return false;
+            }
+
+            return platform.IsEnabledForMultiPlatformBuild(context);
         }
     }
 }

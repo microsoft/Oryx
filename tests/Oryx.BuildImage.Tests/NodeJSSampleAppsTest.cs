@@ -131,7 +131,162 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_DoestNotCleanDestinationDir()
+        public void BuildNodeApp_ConfigureAppInsights__WithDefaultNodeVersion_AIEnvironmentVariableSet()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var nestedOutputDir = "/tmp/output";
+            var script = new ShellScriptBuilder()
+                .AddCommand("printenv")
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void BuildNodeApp_ConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableSet(string version)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var nestedOutputDir = "/tmp/output";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(string version)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var nestedOutputDir = "/tmp/output";
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz"),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(string version)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var nestedOutputDir = "/tmp/output";
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -205,7 +360,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var logFile = "/tmp/directory.log";
 
             var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
-                .AddFileExistsCheck(logFile, true)
+                .AddFileExistsCheck(logFile)
                 .AddStringExistsInFileCheck("idea.js", logFile)
                 .AddStringExistsInFileCheck("app2", logFile)
                 .AddStringExistsInFileCheck("app3", logFile)
@@ -243,8 +398,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var script = SetupEnvironment_ErrorDetectingNodeTest(appDir, appOutputDir, logFile)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --log-file {logFile}")
-                .AddStringNotExistsInFileCheck("app4", logFile, true)
-                .AddStringNotExistsInFileCheck("3.log", logFile)
+                .AddStringDoesNotExistInFileCheck("app4", logFile)
+                .AddStringDoesNotExistInFileCheck("3.log", logFile)
                 .ToString();
 
             // Act

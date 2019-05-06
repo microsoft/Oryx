@@ -11,6 +11,8 @@ RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM node:%NODE_BASE_IMAGE%
 
+RUN apt-get update && apt-get install unzip --yes
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
@@ -19,6 +21,13 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 # for packages valid for all apps.
 RUN mkdir -p /node_modules \
  && chmod 777 /node_modules
+
+RUN set -e \
+ && npm_ver=$(npm --version) \
+ && if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then \
+        echo "Upgrading npm version from $npm_ver to 6.9.0"; \
+        npm install -g npm@6.9.0; \
+    fi
 
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.

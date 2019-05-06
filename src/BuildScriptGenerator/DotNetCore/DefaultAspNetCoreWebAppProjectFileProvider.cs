@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,8 +56,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (!sourceRepo.FileExists(projectFile))
                 {
                     _logger.LogWarning($"Could not find the project file '{projectFile}'.");
-                    return null;
+                    throw new InvalidUsageException(
+                        $"Could not find the project file '{projectFile}' specified by the environment variable" +
+                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectEnvVariablePath}'. " +
+                        "Make sure the path to the project file is relative to the root of the repo. " +
+                        "For example: PROJECT=src/Dashboard/Dashboard.csproj");
                 }
+
+                // NOTE: Do not check if the project file specified by the end user is a web application since this
+                // can be a escape hatch for end users if our logic to determine a web app is incorrect.
+                return projectFile;
             }
 
             if (projectFile != null)
@@ -103,9 +112,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 if (webAppProjects.Count > 1)
                 {
+                    var projects = string.Join(", ", webAppProjects);
                     throw new InvalidUsageException(
                         "Ambiguity in selecting an ASP.NET Core web application to build. " +
-                        "Found multiple applications: " + string.Join(", ", webAppProjects));
+                        $"Found multiple applications: '{projects}'. Use the environment variable " +
+                        $"'{EnvironmentSettingsKeys.Project}' to specify the relative path to the project " +
+                        "to be deployed.");
                 }
 
                 projectFile = webAppProjects[0];
@@ -121,38 +133,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // To enable unit testing
         internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            var packageReferenceElements = projectFileDoc.XPathSelectElements("Project/ItemGroup/PackageReference");
-            if (packageReferenceElements == null || !packageReferenceElements.Any())
+            var webSdkProjectElement = projectFileDoc.XPathSelectElement(
+                DotnetCoreConstants.WebSdkProjectXPathExpression);
+            return webSdkProjectElement != null;
+        }
+
+        private static bool IsAspNetCore30App(XDocument projectFileDoc)
+        {
+            var targetFrameworkElement = projectFileDoc.XPathSelectElement(
+                DotnetCoreConstants.TargetFrameworkXPathExpression);
+            if (string.Equals(targetFrameworkElement.Value, DotnetCoreConstants.NetCoreApp30))
             {
-                return false;
-            }
-
-            var aspNetCorePackageReference = packageReferenceElements
-                .Where(packageRefElement =>
-                {
-                    if (!packageRefElement.HasAttributes)
-                    {
-                        return false;
-                    }
-
-                    var includeAttribute = packageRefElement.Attributes()
-                    .Where(attr => string.Equals(attr.Name.LocalName, "Include"))
-                    .FirstOrDefault();
-                    if (includeAttribute == null)
-                    {
-                        return false;
-                    }
-
-                    var value = includeAttribute.Value;
-                    return string.Equals(value, DotnetCoreConstants.AspNetCoreAppPackageReference)
-                    || string.Equals(value, DotnetCoreConstants.AspNetCoreAllPackageReference)
-                    || string.Equals(value, DotnetCoreConstants.AspNetCorePackageReference);
-                })
-                .FirstOrDefault();
-
-            if (aspNetCorePackageReference != null)
-            {
-                return true;
+                var projectElement = projectFileDoc.XPathSelectElement(
+                    DotnetCoreConstants.WebSdkProjectXPathExpression);
+                return projectElement != null;
             }
 
             return false;

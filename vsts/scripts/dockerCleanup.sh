@@ -11,7 +11,7 @@ echo
 echo "Kill all running containers and delete all stopped containers"
 echo
 docker kill $(docker ps -q)
-docker rm $(docker ps -a -q)
+docker rm -f $(docker ps -a -q)
 
 function UntagImages() {
 	local imagePattern=$1

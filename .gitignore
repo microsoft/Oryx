@@ -267,8 +267,6 @@ images/runtime/node/*.*/
 !images/runtime/node/8.8/
 !images/runtime/node/8.9/
 images/runtime/dotnetcore/*.*/
-# For .NET Core 2.2 we don't use a template, since its based in Alpine
-!images/runtime/dotnetcore/2.2/
 images/runtime/python/*.*/
 
 # Go packages, if Oryx is added to GOPATH (which it should)
