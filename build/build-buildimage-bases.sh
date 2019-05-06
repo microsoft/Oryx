@@ -52,17 +52,17 @@ case $IMAGE_DIR_TO_BUILD in
 
 		declare -r PHP_IMAGE_PREFIX="$ACR_DEV_NAME/public/oryx/php-build"
 
-		docker build -f $BUILD_IMAGE_PREFIX/php/5.6/Dockerfile -t "$PHP_IMAGE_PREFIX-5.6:$BUILD_NUMBER" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-5.6:$BUILD_NUMBER" >> $ARTIFACTS_FILE
+		docker build -f $BUILD_IMAGE_PREFIX/php/5.6/Dockerfile -t "$PHP_IMAGE_PREFIX-5.6:$IMAGE_TAG" $__REPO_DIR
+		echo "$PHP_IMAGE_PREFIX-5.6:$IMAGE_TAG" >> $ARTIFACTS_FILE
 
-		docker build -f $BUILD_IMAGE_PREFIX/php/7.0/Dockerfile -t "$PHP_IMAGE_PREFIX-7.0:$BUILD_NUMBER" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-7.0:$BUILD_NUMBER" >> $ARTIFACTS_FILE
+		docker build -f $BUILD_IMAGE_PREFIX/php/7.0/Dockerfile -t "$PHP_IMAGE_PREFIX-7.0:$IMAGE_TAG" $__REPO_DIR
+		echo "$PHP_IMAGE_PREFIX-7.0:$IMAGE_TAG" >> $ARTIFACTS_FILE
 
-		docker build -f $BUILD_IMAGE_PREFIX/php/7.2/Dockerfile -t "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-7.2:$BUILD_NUMBER" >> $ARTIFACTS_FILE
+		docker build -f $BUILD_IMAGE_PREFIX/php/7.2/Dockerfile -t "$PHP_IMAGE_PREFIX-7.2:$IMAGE_TAG" $__REPO_DIR
+		echo "$PHP_IMAGE_PREFIX-7.2:$IMAGE_TAG" >> $ARTIFACTS_FILE
 
-		docker build -f $BUILD_IMAGE_PREFIX/php/7.3/Dockerfile -t "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" $__REPO_DIR
-		echo "$PHP_IMAGE_PREFIX-7.3:$BUILD_NUMBER" >> $ARTIFACTS_FILE
+		docker build -f $BUILD_IMAGE_PREFIX/php/7.3/Dockerfile -t "$PHP_IMAGE_PREFIX-7.3:$IMAGE_TAG" $__REPO_DIR
+		echo "$PHP_IMAGE_PREFIX-7.3:$IMAGE_TAG" >> $ARTIFACTS_FILE
 		;;            
 	'yarn-cache')
 		echo "Building Yarn package cache base image"
