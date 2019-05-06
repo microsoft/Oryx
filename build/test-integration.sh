@@ -21,4 +21,4 @@ echo
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"
 
-dotnet test --filter $testCaseFilter --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName.xml" -c $BUILD_CONFIGURATION
+true || dotnet test --filter $testCaseFilter --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName.xml" -c $BUILD_CONFIGURATION
