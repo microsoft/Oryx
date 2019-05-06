@@ -566,14 +566,13 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             // Arrange
             var appName = "shapely-flask-app";
-            var virtualEnvName = "antenv";
             var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var imageVersion = "oryxdevms/python-" + pythonVersion;
@@ -601,9 +600,10 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp(string pythonVersion)
+        public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDir(string pythonVersion)
         {
             // Arrange
+            const string packageDir = "orx_packages";
             var appName = "shapely-flask-app";
             var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
             var volume = DockerVolume.Create(hostDir);
@@ -611,7 +611,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -packagedir {packageDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var imageVersion = "oryxdevms/python-" + pythonVersion;
@@ -621,7 +621,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 _output,
                 volume,
                 "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
+                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion, "-p", $"packagedir={packageDir}" },
                 imageVersion,
                 portMapping,
                 "/bin/bash",
