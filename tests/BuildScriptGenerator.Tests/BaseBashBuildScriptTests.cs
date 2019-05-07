@@ -50,9 +50,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, scriptProps);
 
             // Assert
-            Assert.Contains("Executing pre-build script", script);
+            Assert.Contains("Executing pre-build command", script);
             Assert.Contains(script1, script);
-            Assert.Contains("Executing post-build script", script);
+            Assert.Contains("Executing post-build command", script);
             Assert.Contains(script2, script);
         }
     }
