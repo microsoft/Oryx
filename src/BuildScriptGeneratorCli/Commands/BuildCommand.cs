@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             logger.LogDebug("Build script content:\n" + scriptContent);
-            logger.LogDebug("Build script output:\n" + buildScriptOutput.ToString());
+            logger.LogLongMessage(LogLevel.Debug, "Build script output", buildScriptOutput.ToString());
 
             if (exitCode != ProcessConstants.ExitSuccess)
             {

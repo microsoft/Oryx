@@ -3,7 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.NLogTarget;
 using Microsoft.Oryx.Common;
@@ -15,6 +18,8 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public static class LoggerAiExtensions
     {
+        private const int AiMessageLengthLimit = 2 ^ 15;
+
         /// <summary>
         /// Logs dependency specifications for a processed repository.
         /// </summary>
@@ -41,6 +46,17 @@ namespace Microsoft.Extensions.Logging
         public static void LogTrace(this ILogger logger, string message, IDictionary<string, string> props = null)
         {
             GetTelemetryClient().TrackTrace(message, props);
+        }
+
+        /// <summary>
+        /// Logs a long message in chunks, with each chunk limited in length to 2^15.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="level"></param>
+        /// <param name="header"></param>
+        /// <param name="message"></param>
+        public static void LogLongMessage(this ILogger logger, LogLevel level, [NotNull] string header, string message)
+        {
         }
 
         public static string StartOperation(this ILogger logger, string name)
