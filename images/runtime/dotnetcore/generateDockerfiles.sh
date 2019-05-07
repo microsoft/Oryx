@@ -8,7 +8,6 @@ set -e
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r IMAGE_NAME_PLACEHOLDER="%DOTNETCORE_BASE_IMAGE%"
-declare -r ALPINE_OR_STRETCH_PLACEHOLDER="%DOTNETCORE_BASE_IMAGE_ALPINE_OR_STRETCH%"
 
 function generateFiles()
 {
@@ -25,12 +24,6 @@ function generateFiles()
 		# Trim beginning whitespace
 		DOTNET_IMAGE_NAME="$(echo -e "${DOTNET_IMAGE_NAME}" | sed -e 's/^[[:space:]]*//')"
 		echo "Generating Dockerfile for image '$DOTNET_IMAGE_NAME' in directory '$VERSION_DIRECTORY'..."
-
-		GO_IMAGE_TYPE="stretch"
-		# Figure out if the final image is Alpine based
-		if [[ $DOTNET_IMAGE_NAME == *"alpine"* ]]; then
-			GO_IMAGE_TYPE="alpine"
-		fi
 		
 		mkdir -p "$DIR/$VERSION_DIRECTORY/"
 		TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/Dockerfile"
@@ -38,8 +31,6 @@ function generateFiles()
 
 		# Replace placeholders
 		sed -i "s|$IMAGE_NAME_PLACEHOLDER|$DOTNET_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-		sed -i "s|$ALPINE_OR_STRETCH_PLACEHOLDER|$GO_IMAGE_TYPE|g" "$TARGET_DOCKERFILE"
-
 	done < "$versionsFile"
 }
 
