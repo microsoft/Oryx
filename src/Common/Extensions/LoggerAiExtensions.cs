@@ -51,10 +51,10 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Logs a long message in chunks, with each chunk limited in length to 2^15.
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="level"></param>
-        /// <param name="header"></param>
-        /// <param name="message"></param>
+        /// <param name="logger">logger instance</param>
+        /// <param name="level">log level. will apply to all chunks</param>
+        /// <param name="header">chunk header. will be followed by chunk index, a colon, and a line break</param>
+        /// <param name="message">long message to be chunkified and logged</param>
         public static void LogLongMessage(this ILogger logger, LogLevel level, [NotNull] string header, string message)
         {
             int maxChunkLen = AiMessageLengthLimit - header.Length - 16; // 16 should cover for the header formatting
@@ -77,6 +77,17 @@ namespace Microsoft.Extensions.Logging
             return new EventStopwatch(GetTelemetryClient(), eventName, props);
         }
 
+        public static IList<string> Chunkify(string str, int maxLength)
+        {
+            var result = new List<string>();
+            for (int i = 0; i < str.Length; i += maxLength)
+            {
+                result.Add(str.Substring(i, Math.Min(maxLength, str.Length - i)));
+            }
+
+            return result;
+        }
+
         private static TelemetryClient GetTelemetryClient()
         {
             var client = new TelemetryClient();
@@ -88,16 +99,6 @@ namespace Microsoft.Extensions.Logging
             }
 
             return client;
-        }
-
-        public static IList<string> Chunkify(string str, int maxLength)
-        {
-            var result = new List<string>();
-            for (int i = 0; i < str.Length; i += maxLength)
-            {
-                result.Add(str.Substring(i, Math.Min(maxLength, str.Length - i)));
-            }
-            return result;
         }
     }
 }

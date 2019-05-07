@@ -3,23 +3,26 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using Xunit;
 
-namespace Oryx.Common.Test
+namespace Microsoft.Extensions.Logging
 {
     public class LoggerAiExtensionsTest
     {
         [Fact]
         public void SplitByLength_Sanity()
         {
-        	// Empty string
-        	// ...
+            // Empty string
+            Assert.Equal(0, LoggerAiExtensions.Chunkify("", 3).Count);
 
-        	// Chunks of equal lengths
-        	LoggerAiExtensions.Chunkify("abcabc", 3);
+            // 1-length chunks
+            Assert.Equal(new[] { "a", "b", "c" }, LoggerAiExtensions.Chunkify("abc", 1));
 
-        	// Chunks of different lengths
+            // Chunks of equal lengths
+            Assert.Equal(new[] { "abc", "abc" }, LoggerAiExtensions.Chunkify("abcabc", 3));
+
+            // Chunks of different lengths
+            Assert.Equal(new[] { "abc", "ab" }, LoggerAiExtensions.Chunkify("abcab", 3));
         }
     }
 }
