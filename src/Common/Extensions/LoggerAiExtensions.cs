@@ -57,6 +57,13 @@ namespace Microsoft.Extensions.Logging
         /// <param name="message"></param>
         public static void LogLongMessage(this ILogger logger, LogLevel level, [NotNull] string header, string message)
         {
+            int maxChunkLen = AiMessageLengthLimit - header.Length - 16; // 16 should cover for the header formatting
+            int i = 0;
+            var chunks = Chunkify(message, maxChunkLen);
+            foreach (string chunk in chunks)
+            {
+                logger.Log(level, $"{header} ({++i}/{chunks.Count}):\n{chunk}");
+            }
         }
 
         public static string StartOperation(this ILogger logger, string name)
@@ -81,6 +88,16 @@ namespace Microsoft.Extensions.Logging
             }
 
             return client;
+        }
+
+        public static IList<string> Chunkify(string str, int maxLength)
+        {
+            var result = new List<string>();
+            for (int i = 0; i < str.Length; i += maxLength)
+            {
+                result.Add(str.Substring(i, Math.Min(maxLength, str.Length - i)));
+            }
+            return result;
         }
     }
 }
