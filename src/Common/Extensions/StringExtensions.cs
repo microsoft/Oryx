@@ -23,20 +23,27 @@ namespace Microsoft.Oryx.Common.Extensions
         /// <returns>str with passwords in URL replaced by replacement</returns>
         public static string ReplaceUrlPasswords(this string str, string replacement = "***")
         {
-            StringBuilder result = new StringBuilder();
-            ICollection<Match> matches = Regex.Matches(str, UrlPattern, RegexOptions.IgnoreCase);
-
-            int positionInStr = 0;
-            foreach (Match m in matches)
+            try
             {
-                var passwordGroup = m.Groups["pass"];
-                result.Append(str.Substring(positionInStr, passwordGroup.Index - positionInStr));
-                result.Append(replacement);
-                positionInStr = passwordGroup.Index + passwordGroup.Length; // Skip past password
-            }
+                StringBuilder result = new StringBuilder();
+                ICollection<Match> matches = Regex.Matches(str, UrlPattern, RegexOptions.IgnoreCase);
 
-            result.Append(str.Substring(positionInStr));
-            return result.ToString();
+                int positionInStr = 0;
+                foreach (Match m in matches)
+                {
+                    var passwordGroup = m.Groups["pass"];
+                    result.Append(str.Substring(positionInStr, passwordGroup.Index - positionInStr));
+                    result.Append(replacement);
+                    positionInStr = passwordGroup.Index + passwordGroup.Length; // Skip past password
+                }
+
+                result.Append(str.Substring(positionInStr));
+                return result.ToString();
+            }
+            catch
+            {
+                return str;
+            }
         }
     }
 }
