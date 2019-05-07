@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Common.Extensions
         /// </summary>
         /// <param name="str">string to inspect</param>
         /// <param name="replacement">passwords will be replaced with this string</param>
-        /// <returns>position of the first URL, or -1 if none found</returns>
+        /// <returns>str with passwords in URL replaced by replacement</returns>
         public static string ReplaceUrlPasswords(this string str, string replacement = "***")
         {
             StringBuilder result = new StringBuilder();
