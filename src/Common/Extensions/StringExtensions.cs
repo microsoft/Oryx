@@ -45,5 +45,22 @@ namespace Microsoft.Oryx.Common.Extensions
                 return str;
             }
         }
+
+        /// <summary>
+        /// Splits a string to chunks of the given maximum length.
+        /// </summary>
+        /// <param name="str">string to split</param>
+        /// <param name="maxLength">maximum length of each chunk</param>
+        /// <returns>list of chunks</returns>
+        public static IList<string> Chunkify(this string str, int maxLength)
+        {
+            var result = new List<string>();
+            for (int i = 0; i < str.Length; i += maxLength)
+            {
+                result.Add(str.Substring(i, Math.Min(maxLength, str.Length - i)));
+            }
+
+            return result;
+        }
     }
 }

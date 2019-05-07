@@ -63,7 +63,7 @@ namespace Microsoft.Extensions.Logging
         {
             int maxChunkLen = AiMessageLengthLimit - header.Length - 16; // 16 should cover for the header formatting
             int i = 0;
-            var chunks = Chunkify(message, maxChunkLen);
+            var chunks = message.Chunkify(maxChunkLen);
             foreach (string chunk in chunks)
             {
                 logger.Log(level, $"{header} ({++i}/{chunks.Count}):\n{chunk}");
@@ -79,17 +79,6 @@ namespace Microsoft.Extensions.Logging
         public static EventStopwatch LogTimedEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
         {
             return new EventStopwatch(GetTelemetryClient(), eventName, props);
-        }
-
-        public static IList<string> Chunkify(string str, int maxLength)
-        {
-            var result = new List<string>();
-            for (int i = 0; i < str.Length; i += maxLength)
-            {
-                result.Add(str.Substring(i, Math.Min(maxLength, str.Length - i)));
-            }
-
-            return result;
         }
 
         private static TelemetryClient GetTelemetryClient()
