@@ -30,7 +30,7 @@ while read buildImage; do
 done <"$1"
 
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
-	integrationtestfilter=$TESTINTEGRATIONCASEFILTER
+	integrationtestfilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
 fi
 
 # Always convert filter for runtime images to lower case
