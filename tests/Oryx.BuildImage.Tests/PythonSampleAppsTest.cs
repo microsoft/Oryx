@@ -1081,8 +1081,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";
-                sw.WriteLine("PRE_BUILD_SCRIPT=\"echo from pre-build command\"");
-                sw.WriteLine("POST_BUILD_SCRIPT=\"echo from post-build command\"");
+                sw.WriteLine("PRE_BUILD_COMMAND=\"echo from pre-build command\"");
+                sw.WriteLine("POST_BUILD_COMMAND=\"echo from post-build command\"");
             }
 
             var appDir = volume.ContainerDir;

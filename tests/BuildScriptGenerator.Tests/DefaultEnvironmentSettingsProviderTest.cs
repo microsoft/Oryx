@@ -30,11 +30,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var scriptFile = Path.Combine(sourceDir, "a b.sh");
             File.Create(scriptFile);
             var testEnvironment = new TestEnvironment();
-            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildScript, " \" a b c \" ");
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildCommand, " \" a b c \" ");
             testEnvironment.SetEnvironmentVariable(
                 EnvironmentSettingsKeys.PreBuildScriptPath,
                 $" \"{scriptFile}\" ");
-            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildScript, " \" a b c \" ");
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand, " \" a b c \" ");
             testEnvironment.SetEnvironmentVariable(
                 EnvironmentSettingsKeys.PostBuildScriptPath,
                 $" \"{scriptFile}\" ");
@@ -44,9 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             provider.TryGetAndLoadSettings(out var settings);
 
             // Assert
-            Assert.Equal(" a b c ", settings.PreBuildScript);
+            Assert.Equal(" a b c ", settings.PreBuildCommand);
             Assert.Equal(scriptFile, settings.PreBuildScriptPath);
-            Assert.Equal(" a b c ", settings.PostBuildScript);
+            Assert.Equal(" a b c ", settings.PostBuildCommand);
             Assert.Equal(scriptFile, settings.PostBuildScriptPath);
         }
 
@@ -59,14 +59,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var sourceDir = CreateNewDir();
             var testEnvironment = new TestEnvironment();
-            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildScript, value);
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildCommand, value);
             var provider = CreateProvider(sourceDir, testEnvironment);
 
             // Act
             provider.TryGetAndLoadSettings(out var settings);
 
             // Assert
-            Assert.Equal(value, settings.PreBuildScript);
+            Assert.Equal(value, settings.PreBuildCommand);
         }
 
         [Fact]

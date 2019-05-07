@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Represents an line script or a path to a file
         /// </summary>
-        public const string PreBuildScript = "PRE_BUILD_SCRIPT";
+        public const string PreBuildCommand = "PRE_BUILD_COMMAND";
 
         /// <summary>
         /// Represents an line script or a path to a file
         /// </summary>
-        public const string PostBuildScript = "POST_BUILD_SCRIPT";
+        public const string PostBuildCommand = "POST_BUILD_COMMAND";
 
         public const string DotnetCoreDefaultVersion = "ORYX_DOTNETCORE_DEFAULT_VERSION";
 

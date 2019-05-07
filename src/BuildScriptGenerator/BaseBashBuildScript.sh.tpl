@@ -67,12 +67,12 @@ fi
 export SOURCE_DIR
 export DESTINATION_DIR
 
-{{ if PreBuildScript | IsNotBlank }}
+{{ if PreBuildCommand | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd "$SOURCE_DIR"
-echo "{{ PreBuildScriptPrologue }}"
-{{ PreBuildScript }}
-echo "{{ PreBuildScriptEpilogue }}"
+echo "{{ PreBuildCommandPrologue }}"
+{{ PreBuildCommand }}
+echo "{{ PreBuildCommandEpilogue }}"
 {{ end }}
 
 {{ for Snippet in BuildScriptSnippets }}
@@ -81,12 +81,12 @@ cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
 
-{{ if PostBuildScript | IsNotBlank }}
+{{ if PostBuildCommand | IsNotBlank }}
 # Make sure to cd to the source directory so that the post-build script runs from there
 cd $SOURCE_DIR
-echo "{{ PostBuildScriptPrologue }}"
-{{ PostBuildScript }}
-echo "{{ PostBuildScriptEpilogue }}"
+echo "{{ PostBuildCommandPrologue }}"
+{{ PostBuildCommand }}
+echo "{{ PostBuildCommandEpilogue }}"
 {{ end }}
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]

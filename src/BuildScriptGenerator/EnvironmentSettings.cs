@@ -12,8 +12,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string PostBuildScriptPath { get; set; }
 
-        public string PreBuildScript { get; set; }
+        public string PreBuildCommand { get; set; }
 
-        public string PostBuildScript { get; set; }
+        public string PostBuildCommand { get; set; }
     }
 }

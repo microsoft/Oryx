@@ -20,9 +20,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string BenvArgs { get; set; }
 
-        public string PreBuildScript { get; set; }
+        public string PreBuildCommand { get; set; }
 
-        public string PostBuildScript { get; set; }
+        public string PostBuildCommand { get; set; }
 
         public bool ZipAllOutput { get; set; }
 

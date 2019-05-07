@@ -92,10 +92,10 @@ fi
 # Make sure to create the destination dir so that pre-build script has access to it
 mkdir -p "$DESTINATION_DIR"
 
-{{ if PreBuildScript | IsNotBlank }}
+{{ if PreBuildCommand | IsNotBlank }}
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd "$SOURCE_DIR"
-{{ PreBuildScript }}
+{{ PreBuildCommand }}
 {{ end }}
 
 echo
@@ -112,10 +112,10 @@ dotnet restore "{{ ProjectFile }}"
 {{ if ZipAllOutput }}
 	publishToDirectory "$tmpDestinationPublishDir"
 
-	{{ if PostBuildScript | IsNotBlank }}
+	{{ if PostBuildCommand | IsNotBlank }}
 	# Make sure to cd to the source directory so that the post-build script runs from there
 	cd "$SOURCE_DIR"
-	{{ PostBuildScript }}
+	{{ PostBuildCommand }}
 	{{ end }}
 
 	# Zip only the contents and not the parent directory
@@ -129,10 +129,10 @@ dotnet restore "{{ ProjectFile }}"
 {{ else }}
 	publishToDirectory "$DESTINATION_DIR"
 
-	{{ if PostBuildScript | IsNotBlank }}
+	{{ if PostBuildCommand | IsNotBlank }}
 	# Make sure to cd to the source directory so that the post-build script runs from there
 	cd $SOURCE_DIR
-	{{ PostBuildScript }}
+	{{ PostBuildCommand }}
 	{{ end }}
 {{ end }}
 

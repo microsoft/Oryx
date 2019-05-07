@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
-            (var preBuildScript, var postBuildScript) = PreAndPostBuildScriptHelper.GetPreAndPostBuildScript(
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
                 environmentSettings);
 
@@ -88,8 +88,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 BenvArgs = $"dotnet={context.DotnetCoreVersion}",
                 DirectoriesToExcludeFromCopyToIntermediateDir = GetDirectoriesToExcludeFromCopyToIntermediateDir(
                     context),
-                PreBuildScript = preBuildScript,
-                PostBuildScript = postBuildScript,
+                PreBuildCommand = preBuildCommand,
+                PostBuildCommand = postBuildCommand,
                 ManifestFileName = Constants.ManifestFileName,
                 ZipAllOutput = zipAllOutput,
             };

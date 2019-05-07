@@ -7,9 +7,9 @@ using System.IO;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal static class PreAndPostBuildScriptHelper
+    internal static class PreAndPostBuildCommandHelper
     {
-        public static (string preBuildScript, string postBuildScript) GetPreAndPostBuildScript(
+        public static (string preBuildCommand, string postBuildCommand) GetPreAndPostBuildCommands(
             ISourceRepo sourceRepo,
             EnvironmentSettings settings)
         {
@@ -18,31 +18,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return (null, null);
             }
 
-            string preBuildScript = null;
-            string postBuildScript = null;
+            string preBuildCommand = null;
+            string postBuildCommand = null;
 
             if (!string.IsNullOrEmpty(settings.PreBuildScriptPath))
             {
-                preBuildScript = $"\"{settings.PreBuildScriptPath}\"";
+                preBuildCommand = $"\"{settings.PreBuildScriptPath}\"";
             }
-            else if (!string.IsNullOrEmpty(settings.PreBuildScript))
+            else if (!string.IsNullOrEmpty(settings.PreBuildCommand))
             {
-                preBuildScript = GetCommandOrScriptPath(sourceRepo, settings.PreBuildScript);
+                preBuildCommand = GetCommandOrFilePath(sourceRepo, settings.PreBuildCommand);
             }
 
             if (!string.IsNullOrEmpty(settings.PostBuildScriptPath))
             {
-                postBuildScript = $"\"{settings.PostBuildScriptPath}\"";
+                postBuildCommand = $"\"{settings.PostBuildScriptPath}\"";
             }
-            else if (!string.IsNullOrEmpty(settings.PreBuildScript))
+            else if (!string.IsNullOrEmpty(settings.PostBuildCommand))
             {
-                postBuildScript = GetCommandOrScriptPath(sourceRepo, settings.PostBuildScript);
+                postBuildCommand = GetCommandOrFilePath(sourceRepo, settings.PostBuildCommand);
             }
 
-            return (preBuildScript: preBuildScript, postBuildScript: postBuildScript);
+            return (preBuildCommand: preBuildCommand, postBuildCommand: postBuildCommand);
         }
 
-        private static string GetCommandOrScriptPath(ISourceRepo sourceRepo, string commandOrScriptPath)
+        private static string GetCommandOrFilePath(ISourceRepo sourceRepo, string commandOrScriptPath)
         {
             if (string.IsNullOrEmpty(commandOrScriptPath))
             {

@@ -42,8 +42,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             const string script2 = "hijklmn";
             var scriptProps = new BaseBashBuildScriptProperties()
             {
-                PreBuildScript = script1,
-                PostBuildScript = script2
+                PreBuildCommand = script1,
+                PostBuildCommand = script2
             };
 
             // Act

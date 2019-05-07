@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .SelectMany(s => s.BuildProperties)
                 .ToDictionary(p => p.Key, p => p.Value);
 
-            (var preBuildScript, var postBuildScript) = PreAndPostBuildScriptHelper.GetPreAndPostBuildScript(
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 sourceRepo,
                 environmentSettings);
 
@@ -274,16 +274,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
-                PreBuildScript = preBuildScript,
-                PostBuildScript = postBuildScript,
+                PreBuildCommand = preBuildCommand,
+                PostBuildCommand = postBuildCommand,
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
                 ManifestFileName = Constants.ManifestFileName,
                 BuildProperties = buildProperties
             };
 
-            LogScriptIfGiven("pre-build", buildScriptProps.PreBuildScript);
-            LogScriptIfGiven("post-build", buildScriptProps.PostBuildScript);
+            LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);
+            LogScriptIfGiven("post-build", buildScriptProps.PostBuildCommand);
 
             script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.BaseBashScript,
