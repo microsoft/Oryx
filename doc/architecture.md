@@ -57,17 +57,6 @@ The following are required to run and test this project locally.
 - go 1.11+ (for startup script generator)
 - docker v18.06.1-ce
 
-#### Additional requirements for tests
-
-- [az CLI](https://github.com/Azure/azure-cli)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-  
-> **NOTE:** You must set credentials for connecting to a Kubernetes cluster in
-> `.kube/config` prior to running tests. If using Azure Kubernetes service,
-> just run this command: `az aks get-credentials -g <resource group> -n
-> <cluster>`.
-
-
 # Go (Golang)
 
 The startup script generator is written in Go to reduce storage space

@@ -9,7 +9,7 @@ using Microsoft.Oryx.Tests.Common;
 using Polly;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
+namespace Microsoft.Oryx.Integration.Tests.Fixtures
 {
     public class MySqlDbContainerFixture : DbContainerFixtureBase
     {

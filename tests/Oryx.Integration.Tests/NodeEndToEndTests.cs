@@ -6,14 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
@@ -39,10 +37,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
             //      "tar: node_modules/form-data: file changed as we read it"
             //    related to zipping files on a folder which is volume mounted.
-            // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
+            // 2. Use output directory within the container due to 'rsync'
+            //    having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "linxnodeexpress";
@@ -58,7 +58,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules={compressFormat}")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
@@ -88,11 +90,14 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         }
 
         [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        [MemberData(
+            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRunNodeApp_WithDebugger(string nodeVersion)
         {
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "linxnodeexpress";
@@ -109,7 +114,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
@@ -145,10 +152,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
             //      "tar: node_modules/form-data: file changed as we read it"
             //    related to zipping files on a folder which is volume mounted.
-            // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
+            // 2. Use output directory within the container due to 'rsync'
+            //    having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -168,7 +177,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
@@ -204,10 +215,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
             //      "tar: node_modules/form-data: file changed as we read it"
             //    related to zipping files on a folder which is volume mounted.
-            // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
+            // 2. Use output directory within the container due to 'rsync'
+            //    having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -223,7 +236,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
@@ -260,10 +275,12 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
             //      "tar: node_modules/form-data: file changed as we read it"
             //    related to zipping files on a folder which is volume mounted.
-            // 2. Use output directory within the container due to 'rsync' having issues with volume mounted directories
+            // 2. Use output directory within the container due to 'rsync' 
+            //    having issues with volume mounted directories
 
             // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
@@ -280,7 +297,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion}")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
@@ -674,7 +693,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "create-react-app-sample";
@@ -689,7 +709,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 .ToString();
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs --language-version {nodeVersion} -p compress_node_modules=zip")
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules=zip")
                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                .ToString();
 
@@ -722,7 +744,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var portMapping = $"{HostPort}:{ContainerPort}";
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --bindPort {ContainerPort}")
+                .AddCommand(
+                $"oryx run-script --appPath {appDir} --platform nodejs " +
+                $"--platform-version {nodeVersion} --bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -767,7 +791,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"chmod -x ./{customStartupScriptName}")
-                .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
+                .AddCommand(
+                $"oryx run-script --appPath {appDir} --platform nodejs " +
+                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
                 .AddCommand($"./{customStartupScriptName}")
                 .ToString();
 
@@ -809,7 +835,9 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
 
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx run-script --appPath {appDir} --platform nodejs --platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
+                .AddCommand(
+                $"oryx run-script --appPath {appDir} --platform nodejs " +
+                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

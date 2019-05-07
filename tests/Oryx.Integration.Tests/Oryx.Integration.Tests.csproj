@@ -8,11 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KubernetesClient" Version="1.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="Polly" Version="7.1.0" />
-    <PackageReference Include="System.CodeDom" Version="4.5.0" />
-    <PackageReference Include="WindowsAzure.Storage" Version="7.2.1" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
@@ -24,31 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Specs\BuildVolume.tt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>BuildVolume.cs</LastGenOutput>
-    </None>
-    <None Update="Specs\BuildVolumeClaim.tt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>BuildVolumeClaim.cs</LastGenOutput>
-    </None>
-    <None Update="Specs\BuildPod.tt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>BuildPod.cs</LastGenOutput>
-    </None>
-    <None Update="Specs\RunTimeDeployment.tt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>RunTimeDeployment.cs</LastGenOutput>
-    </None>
-    <None Update="Specs\RunTimeService.tt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>RunTimeService.cs</LastGenOutput>
-    </None>
     <Content Include="..\SampleApps\**\*">
       <Link>SampleApps\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -57,34 +29,6 @@
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Specs\BuildPod.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BuildPod.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Specs\BuildVolume.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BuildVolume.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Specs\BuildVolumeClaim.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BuildVolumeClaim.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Specs\RunTimeDeployment.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>RunTimeDeployment.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Specs\RunTimeService.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>RunTimeService.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
 
 </Project>

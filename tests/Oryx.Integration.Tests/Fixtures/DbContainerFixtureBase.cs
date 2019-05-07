@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
+namespace Microsoft.Oryx.Integration.Tests.Fixtures
 {
     public abstract class DbContainerFixtureBase : IDisposable
     {
