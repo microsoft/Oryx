@@ -12,13 +12,13 @@ namespace Microsoft.Oryx.Common.Extensions
         [Fact]
         public void ReplaceUrlPasswords_Sanity()
         {
-            Assert.Equal("https://bla:***@example.com/", "https://bla:blabla@example.com/".ReplaceUrlPasswords());
+            Assert.Equal("http://bla:***@example.com/", "http://bla:blabla@example.com/".ReplaceUrlPasswords());
 
             Assert.Equal("https://bla:***@example.com/", "https://bla:123456@example.com/".ReplaceUrlPasswords());
 
-            Assert.Equal("https://bla:***@example.com/", "https://bla:123bla@example.com/".ReplaceUrlPasswords());
+            Assert.Equal("ftp://bla:***@example.com/", "ftp://bla:123bla@example.com/".ReplaceUrlPasswords());
 
-            Assert.Equal("https://bla:*@example.com/", "https://bla:bla123@example.com/".ReplaceUrlPasswords("*"));
+            Assert.Equal("git://bla:*@example.com/", "git://bla:bla123@example.com/".ReplaceUrlPasswords("*"));
 
             Assert.Equal(
                 "just before https://root:***@sub.example.net",
