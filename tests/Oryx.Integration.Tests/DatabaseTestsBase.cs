@@ -12,7 +12,7 @@ using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     public abstract class DatabaseTestsBase
     {
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
             {
                 runtimeImageName = $"oryxdevms/node-{languageVersion}";
             }
-            
+
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -65,7 +65,11 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{_hostPort}/");
-                    Assert.Equal(_dbFixture.GetSampleDataAsJson(), data.Trim(), ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+                    Assert.Equal(
+                        _dbFixture.GetSampleDataAsJson(),
+                        data.Trim(),
+                        ignoreLineEndingDifferences: true,
+                        ignoreWhiteSpaceDifferences: true);
                 });
         }
 

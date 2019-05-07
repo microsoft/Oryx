@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
+namespace Microsoft.Oryx.Integration.Tests
 {
     public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
@@ -79,7 +79,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests
                 {
                     var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
                     webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
-                    ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir); // The ZIP already contains a `wordpress` folder
+                    // The ZIP already contains a `wordpress` folder
+                    ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir);
                 }
             }
 

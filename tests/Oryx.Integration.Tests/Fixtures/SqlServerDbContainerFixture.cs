@@ -9,7 +9,7 @@ using Microsoft.Oryx.Tests.Common;
 using Polly;
 using Xunit;
 
-namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
+namespace Microsoft.Oryx.Integration.Tests.Fixtures
 {
     public class SqlServerDbContainerFixture : DbContainerFixtureBase
     {
@@ -68,7 +68,8 @@ namespace Microsoft.Oryx.Integration.Tests.LocalDockerTests.Fixtures
         protected override void InsertSampleData()
         {
             const string sqlFile = "/tmp/sqlserver_setup.sql";
-            string baseSqlCmd = $"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd}";
+            string baseSqlCmd
+                = $"/opt/mssql-tools/bin/sqlcmd -S localhost -U {DatabaseUsername} -P {Constants.DatabaseUserPwd}";
             var dbSetupScript = new ShellScriptBuilder()
                 .CreateFile(sqlFile, GetSampleDataInsertionSql())
                 .AddCommand($"{baseSqlCmd} -Q \"CREATE DATABASE {Constants.DatabaseName};\"")

@@ -26,7 +26,6 @@ $testScriptGeneratorScript "$@"
 $testBuildImagesScript "$@"
 $testRuntimeImagesScript "$@"
 
-# Test on AKS
 $testIntegrationScript "$@"
 
 # Test the Node.JS startup script generator
