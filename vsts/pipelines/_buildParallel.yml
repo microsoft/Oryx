@@ -41,7 +41,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
 
 - task: ShellScript@2
-  displayName: 'Build build image'
+  displayName: 'Build build images'
   inputs:
     scriptPath: ./build/build-buildimages.sh
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
