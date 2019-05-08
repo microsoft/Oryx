@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public static class LoggerAiExtensions
     {
-        private const int AiMessageLengthLimit = 2 ^ 15;
+        private const int AiMessageLengthLimit = 32768;
 
         /// <summary>
         /// Logs dependency specifications for a processed repository.
