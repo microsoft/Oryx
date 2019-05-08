@@ -10,6 +10,24 @@ namespace Microsoft.Oryx.Common.Extensions
     public class StringExtensionsTest
     {
         [Fact]
+        public void Chunkify_Sanity()
+        {
+            // Empty string
+            Assert.Equal(0, "".Chunkify(3).Count);
+
+            // 1 chunk
+            Assert.Equal(new[] { "abc" }, "abc".Chunkify(3));
+
+            // 1-length chunks
+            Assert.Equal(new[] { "a", "b", "c" }, "abc".Chunkify(1));
+
+            // Chunks of equal lengths
+            Assert.Equal(new[] { "abc", "abc" }, "abcabc".Chunkify(3));
+
+            // Chunks of different lengths
+            Assert.Equal(new[] { "abc", "ab" }, "abcab".Chunkify(3));
+        }
+
         public void ReplaceUrlUserInfo_Sanity()
         {
             Assert.Equal("http://***@example.com/", "http://bla:blabla@example.com/".ReplaceUrlUserInfo());
