@@ -37,7 +37,7 @@ cd /tmp
 
 $REPO_DIR/images/pack-builder/install-pack.sh
 
-echo "-> Creating builder image: $DOCKER_PACK_STACK_BASE_IMAGE_REPO"
+echo "-> Creating builder image: $DOCKER_PACK_BUILDER_IMAGE_REPO"
 echo
 ./pack create-builder $DOCKER_PACK_BUILDER_IMAGE_REPO \
 					  --builder-config $REPO_DIR/images/pack-builder/builder.toml \
