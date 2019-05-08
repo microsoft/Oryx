@@ -7,7 +7,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public static class EnvironmentSettingsKeys
     {
-        // Note: These two keys exist so that we do not break existing users who might still be using them
+        // Note: The following two constants exist so that we do not break
+        // existing users who might still be using them
         public const string PreBuildScriptPath = "PRE_BUILD_SCRIPT_PATH";
         public const string PostBuildScriptPath = "POST_BUILD_SCRIPT_PATH";
 
