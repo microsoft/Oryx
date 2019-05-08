@@ -20,7 +20,7 @@ echo
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"
 
-dotnet test \
+true || dotnet test \
     $testCaseFilter \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName.xml" \
