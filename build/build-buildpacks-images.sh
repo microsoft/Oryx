@@ -30,7 +30,7 @@ echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_STACK_BASE_IMAGE_DOCKERFILE" $noCacheFlag \
 			 -t "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:latest" \
-			 -t "mcr.microsoft.com/oryx/$DOCKER_PACK_STACK_BASE_IMAGE_NAME" \
+			 -t "mcr.microsoft.com/oryx/$PACK_STACK_BASE_IMAGE_NAME" \
 			 .
 
 cd /tmp
