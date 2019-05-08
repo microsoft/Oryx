@@ -473,6 +473,49 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void Build_Executes_InlinePreAndPostBuildCommands()
+        {
+            // Arrange
+            var appName = "NetCoreApp21WebApp";
+            var volume = CreateSampleAppVolume(appName);
+            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            {
+                sw.NewLine = "\n";
+                sw.WriteLine("PRE_BUILD_COMMAND=\"echo from pre-build command\"");
+                sw.WriteLine("POST_BUILD_COMMAND=\"echo from post-build command\"");
+            }
+
+            var appDir = volume.ContainerDir;
+            var tempOutputDir = "/tmp/output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {tempOutputDir} -l dotnet --language-version 2.1")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                SampleAppsTestBase.CreateAppNameEnvVar(appName),
+                volume,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("from pre-build command", result.StdOut);
+                    Assert.Contains("from post-build command", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Build_CopiesContentCreatedByPostBuildScript_ToExplicitOutputDirectory_AndOutpuIsZipped()
         {
             // Arrange

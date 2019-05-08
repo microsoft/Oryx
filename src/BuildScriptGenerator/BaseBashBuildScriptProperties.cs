@@ -9,11 +9,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class BaseBashBuildScriptProperties
     {
-        public const string PreBuildScriptPrologue = "Executing pre-build script...";
-        public const string PreBuildScriptEpilogue = "Finished executing pre-build script.";
+        public const string PreBuildCommandPrologue = "Executing pre-build command...";
+        public const string PreBuildCommandEpilogue = "Finished executing pre-build command.";
 
-        public const string PostBuildScriptPrologue = "Executing post-build script...";
-        public const string PostBuildScriptEpilogue = "Finished executing post-build script.";
+        public const string PostBuildCommandPrologue = "Executing post-build command...";
+        public const string PostBuildCommandEpilogue = "Finished executing post-build command.";
 
         /// <summary>
         /// Gets or sets the collection of build script snippets.
@@ -21,9 +21,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IEnumerable<string> BuildScriptSnippets { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the pre build script.
+        /// Gets or sets the the pre build script content
         /// </summary>
-        public string PreBuildScriptPath { get; set; }
+        public string PreBuildCommand { get; set; }
 
         /// <summary>
         /// Gets or sets the argument to the benv command.
@@ -31,9 +31,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BenvArgs { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the post build script.
+        /// Gets or sets the path to the post build script content.
         /// </summary>
-        public string PostBuildScriptPath { get; set; }
+        public string PostBuildCommand { get; set; }
 
         public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
 
