@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -69,6 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 directoriesToExcludeFromCopyToBuildOutputDir.Add(".git");
 
                 script = BuildScriptFromSnippets(
+                    context.SourceRepo,
                     snippets,
                     toolsToVersion,
                     directoriesToExcludeFromCopyToIntermediateDir,
@@ -249,6 +251,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <returns>Finalized build script as a string.</returns>
         private string BuildScriptFromSnippets(
+            ISourceRepo sourceRepo,
             IList<BuildScriptSnippet> snippets,
             Dictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
@@ -263,20 +266,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .SelectMany(s => s.BuildProperties)
                 .ToDictionary(p => p.Key, p => p.Value);
 
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
+                sourceRepo,
+                environmentSettings);
+
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
-                PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
-                PostBuildScriptPath = environmentSettings?.PostBuildScriptPath,
+                PreBuildCommand = preBuildCommand,
+                PostBuildCommand = postBuildCommand,
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
                 ManifestFileName = Constants.ManifestFileName,
                 BuildProperties = buildProperties
             };
 
-            LogScriptIfGiven("pre-build", buildScriptProps.PreBuildScriptPath);
-            LogScriptIfGiven("post-build", buildScriptProps.PostBuildScriptPath);
+            LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);
+            LogScriptIfGiven("post-build", buildScriptProps.PostBuildCommand);
 
             script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.BaseBashScript,

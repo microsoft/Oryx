@@ -23,6 +23,53 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void TryGetAndLoadSettings_TrimsQuotesAndWhitespace()
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var scriptFile = Path.Combine(sourceDir, "a b.sh");
+            File.Create(scriptFile);
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildCommand, " \" a b c \" ");
+            testEnvironment.SetEnvironmentVariable(
+                EnvironmentSettingsKeys.PreBuildScriptPath,
+                $" \"{scriptFile}\" ");
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand, " \" a b c \" ");
+            testEnvironment.SetEnvironmentVariable(
+                EnvironmentSettingsKeys.PostBuildScriptPath,
+                $" \"{scriptFile}\" ");
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.TryGetAndLoadSettings(out var settings);
+
+            // Assert
+            Assert.Equal(" a b c ", settings.PreBuildCommand);
+            Assert.Equal(scriptFile, settings.PreBuildScriptPath);
+            Assert.Equal(" a b c ", settings.PostBuildCommand);
+            Assert.Equal(scriptFile, settings.PostBuildScriptPath);
+        }
+
+        [Theory]
+        [InlineData("\"")]
+        [InlineData("a\"")]
+        [InlineData("a\"\"")]
+        public void TryGetAndLoadSettings_TrimsOnlyWhenMatchingQuotesAreFound(string value)
+        {
+            // Arrange
+            var sourceDir = CreateNewDir();
+            var testEnvironment = new TestEnvironment();
+            testEnvironment.SetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildCommand, value);
+            var provider = CreateProvider(sourceDir, testEnvironment);
+
+            // Act
+            provider.TryGetAndLoadSettings(out var settings);
+
+            // Assert
+            Assert.Equal(value, settings.PreBuildCommand);
+        }
+
+        [Fact]
         public void TryGetAndLoadSettings_PrefersPrefixedName_IfPresent()
         {
             // Arrange

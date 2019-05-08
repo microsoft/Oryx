@@ -76,6 +76,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
+                context.SourceRepo,
+                environmentSettings);
+
             var templateProperties = new DotNetCoreBashBuildSnippetProperties
             {
                 ProjectFile = projectFile,
@@ -84,8 +88,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 BenvArgs = $"dotnet={context.DotnetCoreVersion}",
                 DirectoriesToExcludeFromCopyToIntermediateDir = GetDirectoriesToExcludeFromCopyToIntermediateDir(
                     context),
-                PreBuildScriptPath = environmentSettings?.PreBuildScriptPath,
-                PostBuildScriptPath = environmentSettings?.PostBuildScriptPath,
+                PreBuildCommand = preBuildCommand,
+                PostBuildCommand = postBuildCommand,
                 ManifestFileName = Constants.ManifestFileName,
                 ZipAllOutput = zipAllOutput,
             };
@@ -176,6 +180,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 new FileInfo(projectFile).Directory.FullName,
                 DotnetCoreConstants.OryxOutputPublishDirectory);
             return (projectFile, publishDir);
+        }
+
+        private string GetCommandOrScript(string commandOrScript)
+        {
+            if (!string.IsNullOrEmpty(commandOrScript))
+            {
+                if (File.Exists(commandOrScript))
+                {
+                    return $"\"{commandOrScript}\"";
+                }
+            }
+
+            return commandOrScript;
         }
     }
 }

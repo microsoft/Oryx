@@ -58,7 +58,9 @@ namespace Microsoft.Oryx.Tests.Common
             string[] runArgs,
             Func<Task> assertAction)
         {
-            var AppNameEnvVariable = new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName);
+            var AppNameEnvVariable = new EnvironmentVariable(
+                LoggingConstants.AppServiceAppNameEnvironmentVariableName,
+                appName);
             environmentVariables.Add(AppNameEnvVariable);
             return BuildRunAndAssertAppAsync(
                 output,
@@ -68,7 +70,7 @@ namespace Microsoft.Oryx.Tests.Common
                 runtimeImageName,
                 environmentVariables,
                 portMapping,
-                link:null,
+                link: null,
                 runCmd,
                 runArgs,
                 assertAction);
@@ -146,19 +148,29 @@ namespace Microsoft.Oryx.Tests.Common
                output);
 
             // Run
-            await RunAndAssertAppAsync(runtimeImageName, output, volumes, environmentVariables, portMapping, link, runCmd, runArgs, assertAction, dockerCli);
+            await RunAndAssertAppAsync(
+                runtimeImageName,
+                output,
+                volumes,
+                environmentVariables,
+                portMapping,
+                link,
+                runCmd,
+                runArgs,
+                assertAction,
+                dockerCli);
         }
 
         public static async Task RunAndAssertAppAsync(
             string imageName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes, 
-            List<EnvironmentVariable> environmentVariables, 
-            string portMapping, 
-            string link, 
-            string runCmd, 
-            string[] runArgs, 
-            Func<Task> assertAction, 
+            List<DockerVolume> volumes,
+            List<EnvironmentVariable> environmentVariables,
+            string portMapping,
+            string link,
+            string runCmd,
+            string[] runArgs,
+            Func<Task> assertAction,
             DockerCli dockerCli)
         {
             DockerRunCommandProcessResult runResult = null;
@@ -204,11 +216,34 @@ namespace Microsoft.Oryx.Tests.Common
 
                         break;
                     }
-                    catch (Exception ex) when (ex.InnerException is IOException || ex.InnerException is SocketException)
+                    catch (Exception ex) when (ex.InnerException is IOException ||
+                    ex.InnerException is SocketException)
                     {
                         if (i == MaxRetryCount - 1)
                         {
-                            output.WriteLine(runResult.GetDebugInfo());
+                            string debugInfo = string.Empty;
+
+                            // ToString() on StringBuilder is throwing an exception probably because of a 
+                            // multithreading issue where the container is still writing data into it and we are trying
+                            // to retrieve the content out of it.
+                            try
+                            {
+                                // TO i
+                                // System.ArgumentOutOfRangeException : Index was out of range. Must be non-negative 
+                                //                                      and less than the size of the collection.
+                                // Parameter name: chunkLength
+                                // Stack Trace:
+                                // at System.Text.StringBuilder.ToString()
+                                debugInfo = runResult.GetDebugInfo();
+                                output.WriteLine(debugInfo);
+                            }
+                            catch (Exception debugInfoException)
+                            {
+                                output.WriteLine(
+                                    "An error occurred while trying to get data from the output and error " +
+                                    "streams of the container. Exception: " + debugInfoException.ToString());
+                            }
+
                             throw;
                         }
                     }
