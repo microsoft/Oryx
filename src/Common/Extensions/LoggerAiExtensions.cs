@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.NLogTarget;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -29,7 +30,10 @@ namespace Microsoft.Extensions.Logging
 
             foreach (string dep in dependencySpecs)
             {
-                client.TrackTrace($"Dependency: {dep}", ApplicationInsights.DataContracts.SeverityLevel.Information, props);
+                client.TrackTrace(
+                    $"Dependency: {dep.ReplaceUrlUserInfo()}",
+                    ApplicationInsights.DataContracts.SeverityLevel.Information,
+                    props);
             }
         }
 
