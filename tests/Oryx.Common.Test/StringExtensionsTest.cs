@@ -15,6 +15,9 @@ namespace Microsoft.Oryx.Common.Extensions
             // Empty string
             Assert.Equal(0, "".Chunkify(3).Count);
 
+            // 1 chunk
+            Assert.Equal(new[] { "abc" }, "abc".Chunkify(3));
+
             // 1-length chunks
             Assert.Equal(new[] { "a", "b", "c" }, "abc".Chunkify(1));
 
