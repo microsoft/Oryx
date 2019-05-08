@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.Logging
             foreach (string dep in dependencySpecs)
             {
                 client.TrackTrace(
-                    $"Dependency: {dep.ReplaceUrlPasswords()}",
+                    $"Dependency: {dep.ReplaceUrlUserInfo()}",
                     ApplicationInsights.DataContracts.SeverityLevel.Information,
                     props);
             }

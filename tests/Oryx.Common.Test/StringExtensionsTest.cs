@@ -25,28 +25,27 @@ namespace Microsoft.Oryx.Common.Extensions
             Assert.Equal(new[] { "abc", "ab" }, "abcab".Chunkify(3));
         }
 
-        [Fact]
-        public void ReplaceUrlPasswords_Sanity()
+        public void ReplaceUrlUserInfo_Sanity()
         {
-            Assert.Equal("http://bla:***@example.com/", "http://bla:blabla@example.com/".ReplaceUrlPasswords());
+            Assert.Equal("http://***@example.com/", "http://bla:blabla@example.com/".ReplaceUrlUserInfo());
 
-            Assert.Equal("https://bla:***@example.com/", "https://bla:123456@example.com/".ReplaceUrlPasswords());
+            Assert.Equal("https://***@example.com/", "https://bla:123456@example.com/".ReplaceUrlUserInfo());
 
-            Assert.Equal("ftp://bla:***@example.com/", "ftp://bla:123bla@example.com/".ReplaceUrlPasswords());
+            Assert.Equal("ftp://***@example.com/", "ftp://bla:123bla@example.com/".ReplaceUrlUserInfo());
 
-            Assert.Equal("git://bla:*@example.com/", "git://bla:bla123@example.com/".ReplaceUrlPasswords("*"));
-
-            Assert.Equal(
-                "just before https://root:***@sub.example.net",
-                "just before https://root:to!1or@sub.example.net".ReplaceUrlPasswords());
+            Assert.Equal("git://***@example.com/", "git://bla:bla123@example.com/".ReplaceUrlUserInfo());
 
             Assert.Equal(
-                "https://bla:***@example.com/ only after",
-                "https://bla:blabla@example.com/ only after".ReplaceUrlPasswords());
+                "just before https://***@sub.example.net",
+                "just before https://root:to!1or@sub.example.net".ReplaceUrlUserInfo());
 
             Assert.Equal(
-                "before https://bla:***@example.com/ and then ftp://user:***@example.org/subdir",
-                "before https://bla:123bla@example.com/ and then ftp://user:pass@example.org/subdir".ReplaceUrlPasswords());
+                "https://***@example.com/ only after",
+                "https://bla:blabla@example.com/ only after".ReplaceUrlUserInfo());
+
+            Assert.Equal(
+                "before https://***@example.com/ and then ftp://***@example.org/subdir",
+                "before https://bla:123bla@example.com/ and then ftp://user:pass@example.org/subdir".ReplaceUrlUserInfo());
         }
     }
 }

@@ -13,15 +13,16 @@ namespace Microsoft.Oryx.Common.Extensions
     public static class StringExtensions
     {
         private static readonly string UrlPattern = @"(https?|ftp|git|git+ssh|git+http|git+https|git+file):\/\/" +
-                                                    @"(?<user>[^\s/$.?#@]+):(?<pass>[^\s/$.?#@]+)@[^\s/$.?#].[^\s]*";
+                                                    @"(?<userinfo>[^\s/$.?#@]+)@[^\s/$.?#].[^\s]*";
+
+        private static readonly string UrlUserInfoReplacement = "***";
 
         /// <summary>
-        /// Determines whether a string contains a URL substring in it, and returns its position.
+        /// Replaces the userinfo subcomponent of URLs in a string with asterisks.
         /// </summary>
-        /// <param name="str">string to inspect</param>
-        /// <param name="replacement">passwords will be replaced with this string</param>
-        /// <returns>str with passwords in URL replaced by replacement</returns>
-        public static string ReplaceUrlPasswords(this string str, string replacement = "***")
+        /// <param name="str">string to replace</param>
+        /// <returns>str with authentication information in URLs replaced with asterisks</returns>
+        public static string ReplaceUrlUserInfo(this string str)
         {
             try
             {
@@ -31,10 +32,10 @@ namespace Microsoft.Oryx.Common.Extensions
                 int positionInStr = 0;
                 foreach (Match m in matches)
                 {
-                    var passwordGroup = m.Groups["pass"];
-                    result.Append(str.Substring(positionInStr, passwordGroup.Index - positionInStr));
-                    result.Append(replacement);
-                    positionInStr = passwordGroup.Index + passwordGroup.Length; // Skip past password
+                    var uig = m.Groups["userinfo"];
+                    result.Append(str.Substring(positionInStr, uig.Index - positionInStr));
+                    result.Append(UrlUserInfoReplacement);
+                    positionInStr = uig.Index + uig.Length; // Skip past password
                 }
 
                 result.Append(str.Substring(positionInStr));
