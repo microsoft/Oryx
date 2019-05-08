@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("Category", "PHP")]
+    [Trait("category", "php")]
     public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = Constants.PhpEndToEndTestsPort;

@@ -6,7 +6,13 @@
 
 set -o pipefail
 
-declare integrationtestfilter="oryxdevmcr.azurecr.io/public/oryx/"
+
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+
+# Load all variables
+source $REPO_DIR/build/__variables.sh
+
+declare integrationtestfilter=$ACR_RUNTIME_IMAGES_REPO
 
 echo "Build image filter is set"
 while read buildImage; do
@@ -29,12 +35,13 @@ while read buildImage; do
   fi
 done <"$1"
 
+# Extract language string from string (e.g extract 'python' from 'category=python')
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 	integrationtestfilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
 fi
 
 # Always convert filter for runtime images to lower case
-integrationtestfilter=$(echo "$integrationtestfilter" | sed 's/.*/\L&/')
+# integrationtestfilter=$(echo "$integrationtestfilter" | sed 's/.*/\L&/')
 echo "Runtime image filter is set for "$integrationtestfilter
 
 while read sourceImage; do

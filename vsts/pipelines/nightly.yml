@@ -49,7 +49,7 @@ jobs:
   - template: _buildParallel.yml
 
 - job: Job_PythonIntegrationTests
-  displayName: Test Python Integration Tests
+  displayName: Run Python Integration Tests
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImages
@@ -61,7 +61,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
       echo "##vso[task.setvariable variable=TestBuildImages;]false"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]Category=PYTHON"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=python"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
@@ -71,7 +71,7 @@ jobs:
   - template: _buildParallel.yml
 
 - job: Job_DotNetCoreIntegrationTests
-  displayName: Test DotNetCore Integration Tests
+  displayName: Run DotNetCore Integration Tests
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImages
@@ -83,7 +83,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
       echo "##vso[task.setvariable variable=TestBuildImages;]false"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]Category=DOTNETCORE"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=dotnetcore"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
@@ -93,7 +93,7 @@ jobs:
   - template: _buildParallel.yml
 
 - job: Job_NodeIntegrationTests
-  displayName: Test NodeJs Integration Tests
+  displayName: Run NodeJs Integration Tests
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImages
@@ -106,7 +106,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
       echo "##vso[task.setvariable variable=TestBuildImages;]false"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]Category=NODE"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=node"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
@@ -116,7 +116,7 @@ jobs:
   - template: _buildParallel.yml
 
 - job: Job_PhpIntegrationTests
-  displayName: Test Php Integration Tests
+  displayName: Run Php Integration Tests
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImages
@@ -128,7 +128,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
       echo "##vso[task.setvariable variable=TestBuildImages;]false"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]Category=PHP"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
@@ -138,7 +138,7 @@ jobs:
   - template: _buildParallel.yml
 
 - job: Job_DbIntegrationTests
-  displayName: Test Database Integration Tests
+  displayName: Run Database Integration Tests
   dependsOn: 
     - Job_BuildImage
     - Job_RuntimeImages
@@ -150,7 +150,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
       echo "##vso[task.setvariable variable=TestBuildImages;]false"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]Category=DB"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=db"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
@@ -172,18 +172,10 @@ jobs:
   pool:
     name: OryxLinux
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestBuildImages;]false"
-      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]Category=END"
-      echo "##vso[task.setvariable variable=TestIntegration;]true"
-      echo "##vso[task.setvariable variable=PushBuildImages;]false"
-      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=PushToDockerHub;]false"
-      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-    displayName: 'Set variables'
-  - template: _buildParallel.yml
+  - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    displayName: 'End of Integration Tests'
+    inputs:
+      type: InlineScript
+      script: 'echo "Integration tests ended"'
 
 trigger: none

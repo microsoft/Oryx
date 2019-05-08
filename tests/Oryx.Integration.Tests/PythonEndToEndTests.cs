@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("Category", "PYTHON")]
+    [Trait("category", "python")]
     public class PythonEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = Constants.PythonEndToEndTestsPort;

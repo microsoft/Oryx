@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.Integration.Tests
     //// Commenting out the tests here as the test fixture is still run and we want to avoid that as stopping the
     //// SQL Server container on the build agent fails sometimes requiring a reboot of the agent machine.
 
-    //[Trait("Category", "DB")]
+    //[Trait("category", "db")]
     //[Trait("db", "sqlserver")]
     //public class SqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.SqlServerDbContainerFixture>
     //{
