@@ -5,14 +5,9 @@
 # --------------------------------------------------------------------------------------------
 
 set -o pipefail
-
-
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-
-# Load all variables
-source $REPO_DIR/build/__variables.sh
-
-declare integrationtestfilter=$ACR_RUNTIME_IMAGES_REPO
+# $1 > buildimage-acr.txt
+# $2 > runtime-images-acr.txt
+declare integrationtestfilter="oryxdevmcr.azurecr.io/public/oryx"
 
 echo "Build image filter is set"
 while read buildImage; do
@@ -37,7 +32,10 @@ done <"$1"
 
 # Extract language string from string (e.g extract 'python' from 'category=python')
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
-	integrationtestfilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
+	# For DB tests we want all the runtime images to be present at thae agent machine
+	if [[ "$TESTINTEGRATIONCASEFILTER" != *db* ]];then
+		integrationtestfilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
+	fi
 fi
 
 # Always convert filter for runtime images to lower case
