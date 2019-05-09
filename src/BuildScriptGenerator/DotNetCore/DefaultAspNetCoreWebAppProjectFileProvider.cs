@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -79,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             // Check if any of the sub-directories has a .csproj file and if that .csproj file has references
-            // to typical AspNetCore package references.
+            // to web sdk.
             if (projectFile == null)
             {
                 var projectFiles = sourceRepo

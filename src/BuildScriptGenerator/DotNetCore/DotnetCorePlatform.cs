@@ -6,8 +6,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -56,21 +54,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            string startupFileName = null;
-            var projectFileContent = context.SourceRepo.ReadFile(projectFile);
-            var projFileDoc = XDocument.Load(new StringReader(projectFileContent));
-            var assemblyNameElement = projFileDoc.XPathSelectElement(DotnetCoreConstants.AssemblyNameXPathExpression);
-            if (assemblyNameElement == null)
-            {
-                var name = Path.GetFileNameWithoutExtension(projectFile);
-                startupFileName = $"{name}.dll";
-            }
-            else
-            {
-                startupFileName = $"{assemblyNameElement.Value}.dll";
-            }
-
-            buildProperties[DotnetCoreConstants.StartupFileName] = startupFileName;
             bool zipAllOutput = ShouldZipAllOutput(context);
             buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = zipAllOutput.ToString().ToLowerInvariant();
 
