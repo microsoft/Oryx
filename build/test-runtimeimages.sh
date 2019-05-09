@@ -26,4 +26,4 @@ fi
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
-true || dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
+dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
