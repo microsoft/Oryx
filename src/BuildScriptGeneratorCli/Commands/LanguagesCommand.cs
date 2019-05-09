@@ -73,7 +73,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var defs = new DefinitionListFormatter();
                 defs.AddDefinition("Platform", platform.Name);
 
-                defs.AddDefinition("Versions",
+                defs.AddDefinition(
+                    "Versions",
                     (platform.Versions != null && platform.Versions.Any()) ?
                         string.Join(Environment.NewLine, platform.Versions) : "N/A");
 

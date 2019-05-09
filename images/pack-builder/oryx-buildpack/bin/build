@@ -6,10 +6,24 @@
 # usage: bin/build <layers dir> <platform dir> <plan path>
 set -eo pipefail
 
-echo "# Running 'oryx build .' in '`pwd`'..."
+layersDir=$1
+platformDir=$2
+planPath=$3
+bpLaunchFile="$1/launch.toml"
+runFile="./msrun.sh"
 
-oryx build .
-oryxExitStatus=$?
+echo "# Running 'oryx buildpack-build .' in '`pwd`'..."
 
-echo "# Oryx exited with $oryxExitStatus..."
-exit $oryxExitStatus
+oryx buildpack-build .
+
+cat $3
+
+echo "# Running 'oryx run-script' in '`pwd`'..."
+# TODO: make platform dynamic, based on build
+oryx run-script --platform nodejs --output $runFile
+
+echo "# Generated run script:"
+cat $runFile
+echo
+
+echo "processes = [{ type = \"web\", command = \"$runFile\" }]" > $bpLaunchFile

@@ -18,6 +18,9 @@ else
 	exit 1
 fi
 
-wget -nv "https://github.com/buildpack/pack/releases/download/v$PACK_VERSION/pack-v$PACK_VERSION-$packPlatform.tgz"
-tar -xvf "pack-v$PACK_VERSION-$packPlatform.tgz"
+packTar="pack-v$PACK_VERSION-$packPlatform.tgz"
+if [ ! -f "$packTar" ]; then
+	wget -nv "https://github.com/buildpack/pack/releases/download/v$PACK_VERSION/$packTar"
+fi
+tar -xvf "$packTar"
 # `./pack` is now available for use

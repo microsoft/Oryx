@@ -43,6 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 var files = sourceRepo.EnumerateFiles(
                     PythonConstants.PythonFileNamePattern,
                     searchSubDirectories: false);
+
                 if (files == null || !files.Any())
                 {
                     _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileNamePattern}' do not exist " +

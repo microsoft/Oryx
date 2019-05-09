@@ -43,7 +43,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
 
 - task: ShellScript@2
-  displayName: 'Build build image'
+  displayName: 'Build build images'
   inputs:
     scriptPath: ./build/build-buildimages.sh
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
@@ -133,7 +133,7 @@ steps:
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@1
-  displayName: 'Push Build image to ACR'
+  displayName: 'Push build images to ACR'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}

@@ -77,8 +77,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             "--output",
             CommandOptionType.SingleValue,
-            Description = "[Optional] Path to the script to be generated.")]
-        public string OutputPath { get; set; } = "run.sh";
+            Description = "[Optional] Path to the script to be generated. If not specified, will default to STDOUT.")]
+        public string OutputPath { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -93,6 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string defaultAppFullPath = string.IsNullOrWhiteSpace(DefaultApp) ? null : Path.GetFullPath(DefaultApp);
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var sourceRepo = new LocalSourceRepo(appFullPath, loggerFactory);
+
             var options = new RunScriptGeneratorOptions
             {
                 CustomServerCommand = ServerCmd,
@@ -102,23 +103,29 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceRepo = sourceRepo,
                 UserStartupCommand = UserStartupCommand,
                 PlatformVersion = PlatformVersion,
-                BindPort = BindPort,
+                BindPort = BindPort
             };
+
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
             var script = runScriptGenerator.GenerateBashScript(PlatformName, options);
             if (string.IsNullOrEmpty(script))
             {
-                console.WriteLine("Couldn't generate startup script.");
+                console.Error.WriteLine("Error: Couldn't generate startup script.");
                 return ProcessConstants.ExitFailure;
+            }
+
+            if (string.IsNullOrWhiteSpace(OutputPath))
+            {
+                console.WriteLine(script);
             }
             else
             {
                 File.WriteAllText(OutputPath, script);
                 console.WriteLine($"Script written to '{OutputPath}'");
-            }
 
-            // Try making the script executable
-            ProcessHelper.TrySetExecutableMode(OutputPath);
+                // Try making the script executable
+                ProcessHelper.TrySetExecutableMode(OutputPath);
+            }
 
             return ProcessConstants.ExitSuccess;
         }
