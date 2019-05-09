@@ -48,7 +48,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	scriptBuilder.WriteString("      *.runtimeconfig.json)\n")
 	scriptBuilder.WriteString("        startupDllFileNamePrefix=${file%%.runtimeconfig.json}\n")
 	scriptBuilder.WriteString("        startupDllFileName=\"$startupDllFileNamePrefix.dll\"\n")
-	scriptBuilder.WriteString("  	     echo \"Found the startup file '$startupDllFileName'\"\n")
+	scriptBuilder.WriteString("        echo \"Found the startup file '$startupDllFileName'\"\n")
 	scriptBuilder.WriteString("        break\n")
 	scriptBuilder.WriteString("      ;;\n")
 	scriptBuilder.WriteString("    esac\n")
