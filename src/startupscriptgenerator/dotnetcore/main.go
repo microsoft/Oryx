@@ -58,7 +58,7 @@ func main() {
 	}
 
 	if fullDefaultAppFilePath != "" && !common.FileExists(fullDefaultAppFilePath) {
-		fmt.Println("Supplied default app file path '%s' does not exist", fullDefaultAppFilePath)
+		fmt.Printf("Supplied default app file path '%s' does not exist", fullDefaultAppFilePath)
 		return
 	}
 
