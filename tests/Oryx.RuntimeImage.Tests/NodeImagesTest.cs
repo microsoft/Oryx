@@ -353,7 +353,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange
             var imageName = string.Concat("oryxdevms/node-", nodeVersion);
             var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
             var appDir = volume.ContainerDir;
             var manifestFileContent = "injectedAppInsight=\"True\"";
             var aiNodesdkLoaderContent = @"try {
@@ -380,8 +380,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddDirectoryExistsCheck($"{appDir}/node_modules/applicationinsights")
                 .AddCommand("./run.sh")
                 .ToString();
-           
-            await EndToEndTestHelper.RunAndAssertAppAsync(
+
+           await EndToEndTestHelper.RunAndAssertAppAsync(
                 imageName: $"oryxdevms/node-{nodeVersion}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
@@ -393,9 +393,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 assertAction: async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
+                    Assert.Contains("Hello World from express!", data);
                 },
                 dockerCli: _dockerCli);
+            
         }
 
         [Theory]
@@ -405,7 +406,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange
             var imageName = string.Concat("oryxdevms/node-", nodeVersion);
             var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
             var appDir = volume.ContainerDir;
             var manifestFileContent = "injectedAppInsight=\"True\"";
             var aiNodesdkLoaderContent = @"try {
@@ -432,7 +433,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand("./run.sh")
                 .ToString();
 
-
             await EndToEndTestHelper.RunAndAssertAppAsync(
                 imageName: $"oryxdevms/node-{nodeVersion}",
                 output: _output,
@@ -445,7 +445,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 assertAction: async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
+                    Assert.Contains("Hello World from express!", data);
                 },
                 dockerCli: _dockerCli);
         }
