@@ -348,59 +348,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_AppInsightsModule_Found(string nodeVersion)
-        {
-            // Arrange
-            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
-            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
-            var appDir = volume.ContainerDir;
-            var manifestFileContent = "injectedAppInsight=\"True\"";
-            var aiNodesdkLoaderContent = @"try {
-                var appInsights = require('applicationinsights');  
-                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-                { 
-                    appInsights.setup().start();
-                } 
-                }catch (e) { 
-                    console.log(e); 
-                } ";
-
-            int hostPort = 8585;
-            int containerDebugPort = 8080;
-
-            var script = new ShellScriptBuilder()
-                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
-                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
-                .AddCommand($"cd {appDir}")
-                .AddCommand("npm install")
-                .AddCommand("npm install --save applicationinsights")
-                .AddCommand($"oryx -appPath {appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules/applicationinsights")
-                .AddCommand("./run.sh")
-                .ToString();
-
-           await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                portMapping: $"{hostPort}:{containerDebugPort}",
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", script },
-                assertAction: async () =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World from express!", data);
-                },
-                dockerCli: _dockerCli);
-            
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
         {
             // This test is for the following scenario: 
