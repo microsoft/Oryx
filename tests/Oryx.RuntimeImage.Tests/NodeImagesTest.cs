@@ -403,6 +403,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
         {
+            // This test is for the following scenario: 
+            // When we find injectedAppInsight=True in the manifest file, we assume that appinsights
+            // has been injected and it's installed during build (npm install). But for some reason if we 
+            // don't see the appinsights node_module we shouldn't break the app. We should run the app 
+            // and additionally print the exception message
+            
             // Arrange
             var imageName = string.Concat("oryxdevms/node-", nodeVersion);
             var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
