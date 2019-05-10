@@ -55,6 +55,7 @@ jobs:
     - Job_RuntimeImages
   pool:
     name: OryxLinux
+  timeoutInMinutes: 150
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"

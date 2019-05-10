@@ -13,6 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Trait("category", "node")]
     public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
         private const int HostPort = Constants.NodeEndToEndTestsPort;
@@ -372,7 +373,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NodeApp_WithAppInsights_Configured(string nodeVersion)
         {
             // Arrange
-            var appName = "webfrontend";
+            var appName = "linxnodeexpress";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
@@ -419,7 +420,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
-                    Assert.Contains("Say It Again", data);
+                    Assert.Contains("Hello World from express!", data);
                 });
         }
 

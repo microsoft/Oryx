@@ -348,64 +348,18 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_AppInsightsModule_Found(string nodeVersion)
-        {
-            // Arrange
-            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
-            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
-            var appDir = volume.ContainerDir;
-            var manifestFileContent = "injectedAppInsight=\"True\"";
-            var aiNodesdkLoaderContent = @"try {
-                var appInsights = require('applicationinsights');  
-                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-                { 
-                    appInsights.setup().start();
-                } 
-                }catch (e) { 
-                    console.log(e); 
-                } ";
-
-            int hostPort = 8585;
-            int containerDebugPort = 8080;
-
-            var script = new ShellScriptBuilder()
-                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
-                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
-                .AddCommand($"cd {appDir}")
-                .AddCommand("npm install")
-                .AddCommand("npm install --save applicationinsights")
-                .AddCommand($"oryx -appPath {appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules/applicationinsights")
-                .AddCommand("./run.sh")
-                .ToString();
-           
-            await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                portMapping: $"{hostPort}:{containerDebugPort}",
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", script },
-                assertAction: async () =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
-                },
-                dockerCli: _dockerCli);
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
         {
+            // This test is for the following scenario: 
+            // When we find injectedAppInsight=True in the manifest file, we assume that appinsights
+            // has been injected and it's installed during build (npm install). But for some reason if we 
+            // don't see the appinsights node_module we shouldn't break the app. We should run the app 
+            // and additionally print the exception message
+            
             // Arrange
             var imageName = string.Concat("oryxdevms/node-", nodeVersion);
             var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "webfrontend"));
+            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
             var appDir = volume.ContainerDir;
             var manifestFileContent = "injectedAppInsight=\"True\"";
             var aiNodesdkLoaderContent = @"try {
@@ -432,7 +386,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand("./run.sh")
                 .ToString();
 
-
             await EndToEndTestHelper.RunAndAssertAppAsync(
                 imageName: $"oryxdevms/node-{nodeVersion}",
                 output: _output,
@@ -445,7 +398,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 assertAction: async () =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
+                    Assert.Contains("Hello World from express!", data);
                 },
                 dockerCli: _dockerCli);
         }
