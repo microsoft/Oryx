@@ -26,11 +26,6 @@ func main() {
 		"runFromPath",
 		"",
 		"The path to the directory where the output is copied and run from there.")
-	sourcePathPtr := flag.String(
-		"sourcePath",
-		"",
-		"[Optional] The path to the application that is being deployed, "+
-			"Ex: '/home/site/repository/src/ShoppingWebApp/'.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",
@@ -57,14 +52,14 @@ func main() {
 		fullRunFromPath, _ = filepath.Abs(*runFromPathPtr)
 	}
 
-	fullSourcePath := ""
-	if *sourcePathPtr != "" {
-		fullSourcePath = common.GetValidatedFullPath(*sourcePathPtr)
-	}
-
 	fullDefaultAppFilePath := ""
 	if *defaultAppFilePathPtr != "" {
 		fullDefaultAppFilePath = common.GetValidatedFullPath(*defaultAppFilePathPtr)
+	}
+
+	if fullDefaultAppFilePath != "" && !common.FileExists(fullDefaultAppFilePath) {
+		fmt.Printf("Supplied default app file path '%s' does not exist", fullDefaultAppFilePath)
+		return
 	}
 
 	scriptBuilder := strings.Builder{}
@@ -91,7 +86,6 @@ func main() {
 	}
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
-		SourcePath:         fullSourcePath,
 		AppPath:            fullAppPath,
 		RunFromPath:        fullRunFromPath,
 		BindPort:           *bindPortPtr,

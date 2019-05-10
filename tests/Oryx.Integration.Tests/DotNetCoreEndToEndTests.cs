@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests
         private const int HostPort = Constants.DotNetCoreEndToEndTestsPort;
         private const int ContainerPort = 3000;
         private const string NetCoreApp11WebApp = "NetCoreApp11WebApp";
-        private const string NetCoreApp21WebApp = "NetCoreApp21WebApp";
+        private const string NetCoreApp21WebApp = "NetCoreApp21.WebApp";
         private const string NetCoreApp22WebApp = "NetCoreApp22WebApp";
         private const string NetCoreApp30WebApp = "NetCoreApp30WebApp";
         private const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
@@ -92,9 +92,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
-                .AddStringExistsInFileCheck(
-                $"{DotnetCoreConstants.StartupFileName}=\"Yoyo.dll\"",
-                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -190,7 +187,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -sourcePath {appDir} -bindPort {ContainerPort}")
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -238,7 +235,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -sourcePath {appDir} -bindPort {ContainerPort}")
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -267,6 +264,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
 
         }
+
         [Fact]
         public async Task CanBuildAndRun_NetCore21WebApp_WhenOutputDirIsCurrentDirectory()
         {
@@ -325,10 +323,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
-               .AddStringExistsInFileCheck(
-                $"{DotnetCoreConstants.StartupFileName}=\"Yoyo.dll\"",
-                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
-                .ToString();
+               .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -372,6 +367,55 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp22WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_NetCore22WebApp_WithStartupFileName_HavingWhitespace()
+        {
+            // Arrange
+            var dotnetcoreVersion = "2.2";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+               // Create files with whitespace in between them
+               .AddCommand($"mv {appOutputDir}/{NetCoreApp22WebApp}.dll {appOutputDir}/\"foo   bar.dll\"")
+               .AddCommand(
+                $"mv {appOutputDir}/{NetCoreApp22WebApp}.runtimeconfig.json" +
+                $" {appOutputDir}/\"foo   bar.runtimeconfig.json\"")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -461,10 +505,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
-               .AddStringExistsInFileCheck(
-                $"{DotnetCoreConstants.StartupFileName}=\"Yoyo.dll\"",
-                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
-                .ToString();
+               .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -654,7 +695,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"cp {appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json {appOutputDir}/foo.runtimeconfig.json")
                 .AddCommand($"rm -f {appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json")
                 .AddCommand(
-                // NOTE: Do NOT specify the source path as the startup command should be used as it is
                 $"oryx -appPath {appOutputDir} -output {startupFilePath} " +
                 $"-userStartupCommand {startupCommand} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
@@ -700,9 +740,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx build {repoDir} -o {appOutputDir}") // Do not specify language and version
-                .AddStringExistsInFileCheck(
-                $"{DotnetCoreConstants.StartupFileName}=\"MyWebApp.dll\"",
-                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
@@ -751,9 +788,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
                 .AddCommand($"oryx build {repoDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
-                .AddStringExistsInFileCheck(
-                $"{DotnetCoreConstants.StartupFileName}=\"MyWebApp.dll\"",
-                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 // NOTE: Need not explicitly set the PROJECT environment variable as it is part of the build manifest

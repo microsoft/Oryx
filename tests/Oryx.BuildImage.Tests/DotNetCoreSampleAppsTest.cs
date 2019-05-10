@@ -36,9 +36,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
-                .AddStringExistsInFileCheck(
-                $"{DotnetCoreConstants.StartupFileName}=\"{appName}.dll\"",
-                $"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
 
             // Act
