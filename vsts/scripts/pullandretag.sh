@@ -4,10 +4,10 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -o pipefail
+set -euo pipefail
 # $1 > buildimage-acr.txt
 # $2 > runtime-images-acr.txt
-declare integrationtestfilter="oryxdevmcr.azurecr.io/public/oryx"
+declare imagefilter="oryxdevmcr.azurecr.io/public/oryx"
 
 echo "Build image filter is set"
 while read buildImage; do
@@ -34,18 +34,17 @@ done <"$1"
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 	# For DB tests we want all the runtime images to be present at thae agent machine
 	if [[ "$TESTINTEGRATIONCASEFILTER" != *db* ]];then
-		integrationtestfilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
+		imagefilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
 	fi
 fi
 
 # Always convert filter for runtime images to lower case
-# integrationtestfilter=$(echo "$integrationtestfilter" | sed 's/.*/\L&/')
-echo "Runtime image filter is set for "$integrationtestfilter
+echo "Runtime image filter is set for "$imagefilter
 
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
   if [[ "$sourceImage" != *:latest ]]; then
-	if [[ "$sourceImage" == *"$integrationtestfilter"* ]]; then
+	if [[ "$sourceImage" == *"$imagefilter"* ]]; then
 		echo "Pulling the runtime image $sourceImage ..."
 		docker pull "$sourceImage" | sed 's/^/     /'
         
