@@ -14,7 +14,6 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Trait("category", "node")]
-    [CollectionDefinition("NodeTestCollection")]
     public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
         public readonly int HostPort = Constants.NodeEndToEndTestsPort;
@@ -749,7 +748,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    [Collection("NodeTestCollection")]
     public class TestNodeSassExample : NodeEndToEndTests
     {
         public int HostPort = Constants.NodeEndToEndTestsPort + 5;
@@ -798,7 +796,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    [Collection("NodeTestCollection")]
     public class TestUsingZippedNodeModules : NodeEndToEndTests
     {
         private int HostPort = Constants.NodeEndToEndTestsPort + 10;
@@ -870,7 +867,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    [Collection("NodeTestCollection")]
     public class TestWithAppInsightsConfigured : NodeEndToEndTests
     {
         private int HostPort = Constants.NodeEndToEndTestsPort + 15;

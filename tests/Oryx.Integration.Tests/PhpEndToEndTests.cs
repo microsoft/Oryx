@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [CollectionDefinition("PhpTestCollection")]
+    [Trait("category", "php")]
     public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
         public readonly List<int> HostPort = new List<int>() { 8005, 8010, 8015 };
@@ -35,7 +35,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    [Collection("PhpTestCollection")]
     public class PhpTwigExample : PhpEndToEndTests
     {
         public PhpTwigExample(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -77,7 +76,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    [Collection("PhpTestCollection")]
     public class PhpWordPress51 : PhpEndToEndTests
     {
         public PhpWordPress51(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -131,7 +129,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    [Collection("PhpTestCollection")]
     public class PhpImagickExample : PhpEndToEndTests
     {
         public PhpImagickExample(ITestOutputHelper output, TestTempDirTestFixture fixture)
