@@ -18,26 +18,26 @@ namespace Microsoft.Oryx.Integration.Tests
     {
         protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
-        private static readonly Random _rand = new Random();
-        protected readonly int _hostPort;
         protected readonly HttpClient _httpClient = new HttpClient();
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _output = outputHelper;
             _dbFixture = dbFixture;
-            _hostPort = 8080 + _rand.Next(100);
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
 
         protected string HostSamplesDir { get; }
 
-        protected async Task RunTestAsync(string language, string languageVersion, string samplePath,
-            int containerPort = 8000, bool specifyBindPortFlag = true)
+        protected async Task RunTestAsync(
+            string language,
+            string languageVersion,
+            string samplePath,
+            int containerPort = 8000,
+            bool specifyBindPortFlag = true)
         {
             var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{_hostPort}:{containerPort}";
             var entrypointScript = "./run.sh";
             var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
             var script = new ShellScriptBuilder()
@@ -60,11 +60,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),
-                portMapping, link,
+                containerPort,
+                link,
                 "/bin/sh", new[] { "-c", script },
-                async () =>
+                async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{_hostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal(
                         _dbFixture.GetSampleDataAsJson(),
                         data.Trim(),

@@ -3,12 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,7 +35,6 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "php")]
     public class PhpTwigExampleTest : PhpEndToEndTests
     {
-        private readonly int HostPort = Constants.PhpEndToEndTestsPort;
         public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
@@ -64,11 +63,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                $"{HostPort}:{ContainerPort}",
+                ContainerPort,
                 "/bin/sh", new[] { "-c", script },
-                async () =>
+                async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("<h1>Hello World!</h1>", data);
                 });
         }
@@ -77,8 +76,6 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "php")]
     public class PhpWordPress51Test : PhpEndToEndTests
     {
-        private readonly int HostPort = Constants.PhpEndToEndTestsPort + 5;
-
         public PhpWordPress51Test(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
@@ -118,22 +115,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                $"{HostPort}:{ContainerPort}",
+                ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
-                async () =>
+                async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("<title>WordPress &rsaquo; Setup Configuration File</title>", data);
                 });
         }
-
     }
 
     [Trait("category", "php")]
     public class PhpImagickExampleTest : PhpEndToEndTests
     {
-        private readonly int HostPort = Constants.PhpEndToEndTestsPort + 10;
-
         public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
@@ -162,11 +156,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName, _output, volume,
                 "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
                 $"oryxdevms/php-{phpVersion}",
-                $"{HostPort}:{ContainerPort}",
+                ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
-                async () =>
+                async (hostPort) =>
                 {
-                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("64x64", imagickOutput);
                 });
         }

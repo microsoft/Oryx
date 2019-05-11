@@ -15,20 +15,17 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {
-            var runDbContainerResult = _dockerCli.Run(
-                    Settings.PostgresDbImageName,
-                    environmentVariables: new List<EnvironmentVariable>
-                    {
-                        new EnvironmentVariable("POSTGRES_DB", Constants.DatabaseName),
-                        new EnvironmentVariable("POSTGRES_USER", Constants.DatabaseUserName),
-                        new EnvironmentVariable("POSTGRES_PASSWORD", Constants.DatabaseUserPwd),
-                    },
-                    volumes: null,
-                    portMapping: null,
-                    link: null,
-                    runContainerInBackground: true,
-                    command: null,
-                    commandArguments: null);
+            var runDbContainerResult = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.PostgresDbImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    new EnvironmentVariable("POSTGRES_DB", Constants.DatabaseName),
+                    new EnvironmentVariable("POSTGRES_USER", Constants.DatabaseUserName),
+                    new EnvironmentVariable("POSTGRES_PASSWORD", Constants.DatabaseUserPwd),
+                },
+                RunContainerInBackground = true,
+            });
 
             RunAsserts(() => Assert.True(runDbContainerResult.IsSuccess), runDbContainerResult.GetDebugInfo());
             return runDbContainerResult;

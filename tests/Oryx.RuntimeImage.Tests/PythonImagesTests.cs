@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using System;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -30,11 +31,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
+
             // Act
-            var result = _dockerCli.Run(
-                "oryxdevms/python-" + version + ":latest",
-                commandToExecuteOnRun: "oryx",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = "oryxdevms/python-" + version + ":latest",
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "--version" }
+            });
+
             // Assert
             RunAsserts(
                 () =>
@@ -54,10 +59,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                "oryxdevms/python-" + pythonVersion + ":latest",
-                commandToExecuteOnRun: "python",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = "oryxdevms/python-" + pythonVersion + ":latest",
+                CommandToExecuteOnRun = "python",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -77,10 +84,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             string expectedOutput = "Python " + Common.PythonVersions.Python27Version;
 
             // Arrange & Act
-            var result = _dockerCli.Run(
-                "oryxdevms/python-" + pythonVersion + ":latest",
-                commandToExecuteOnRun: "python",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = "oryxdevms/python-" + pythonVersion + ":latest",
+                CommandToExecuteOnRun = "python",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdErr.ReplaceNewLine();
@@ -109,10 +118,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             // Act
-            var res = _dockerCli.Run("oryxdevms/python-3.7", "/bin/sh", new[] { "-c", script });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = "oryxdevms/python-3.7",
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
-            RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
+            RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
         }
     }
 }

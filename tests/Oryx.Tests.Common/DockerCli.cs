@@ -30,19 +30,17 @@ namespace Microsoft.Oryx.Tests.Common
             _globalEnvVars = globalEnvVars;
         }
 
-        public DockerRunCommandResult Run(
-            string imageId,
-            List<EnvironmentVariable> environmentVariables,
-            List<DockerVolume> volumes,
-            string portMapping,
-            string link,
-            bool runContainerInBackground,
-            string command,
-            string[] commandArguments)
+        public DockerRunCommandResult Run(DockerRunArguments dockerRunArguments)
         {
-            if (string.IsNullOrEmpty(imageId))
+            if (dockerRunArguments == null)
             {
-                throw new ArgumentException($"'{nameof(imageId)}' cannot be null or empty.");
+                throw new ArgumentNullException(nameof(dockerRunArguments));
+            }
+
+            if (string.IsNullOrEmpty(dockerRunArguments.ImageId))
+            {
+                throw new ArgumentException(
+                    $"'{nameof(dockerRunArguments)}.{nameof(dockerRunArguments.ImageId)}' cannot be null or empty.");
             }
 
             var output = string.Empty;
@@ -55,16 +53,7 @@ namespace Microsoft.Oryx.Tests.Common
             var containerName = $"{CreatedContainerPrefix}{Guid.NewGuid().ToString("N")}";
 
             var fileName = "docker";
-            var arguments = PrepareDockerRunArguments(
-                containerName,
-                runContainerInBackground,
-                environmentVariables,
-                volumes,
-                portMapping,
-                link,
-                imageId,
-                command,
-                commandArguments);
+            var arguments = PrepareDockerRunArguments(containerName, dockerRunArguments);
 
             try
             {
@@ -85,22 +74,21 @@ namespace Microsoft.Oryx.Tests.Common
                 exception,
                 output,
                 error,
-                volumes,
+                dockerRunArguments.Volumes,
                 $"{fileName} {string.Join(" ", arguments)}");
         }
 
-        public DockerRunCommandProcessResult RunAndDoNotWaitForProcessExit(
-            string imageId,
-            List<EnvironmentVariable> environmentVariables,
-            List<DockerVolume> volumes,
-            string portMapping,
-            string link,
-            string command,
-            string[] commandArguments)
+        public DockerRunCommandProcessResult RunAndDoNotWaitForProcessExit(DockerRunArguments dockerRunArguments)
         {
-            if (string.IsNullOrEmpty(imageId))
+            if (dockerRunArguments == null)
             {
-                throw new ArgumentException($"'{nameof(imageId)}' cannot be null or empty.");
+                throw new ArgumentNullException(nameof(dockerRunArguments));
+            }
+
+            if (string.IsNullOrEmpty(dockerRunArguments.ImageId))
+            {
+                throw new ArgumentException(
+                    $"'{nameof(dockerRunArguments)}.{nameof(dockerRunArguments.ImageId)}' cannot be null or empty.");
             }
 
             Process process = null;
@@ -112,17 +100,11 @@ namespace Microsoft.Oryx.Tests.Common
             // Provide a prefix so that one can delete the containers using regex, if needed
             var containerName = $"{CreatedContainerPrefix}{Guid.NewGuid().ToString("N")}";
 
+            // Make sure not to run the container in background
+            dockerRunArguments.RunContainerInBackground = false;
+
             var fileName = "docker";
-            var arguments = PrepareDockerRunArguments(
-                containerName,
-                runContainerInBackground: false,
-                environmentVariables,
-                volumes,
-                portMapping,
-                link,
-                imageId,
-                command,
-                commandArguments);
+            var arguments = PrepareDockerRunArguments(containerName, dockerRunArguments);
 
             try
             {
@@ -238,6 +220,26 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
+        public DockerCommandResult GetPortMapping(string containerName, int portInContainer)
+        {
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
+            }
+
+            var arguments = PrepareArguments();
+            return ExecuteCommand(arguments);
+
+            IEnumerable<string> PrepareArguments()
+            {
+                var args = new List<string>();
+                args.Add("port");
+                args.Add(containerName);
+                args.Add(portInContainer.ToString());
+                return args;
+            }
+        }
+
         private DockerCommandResult ExecuteCommand(IEnumerable<string> arguments)
         {
             var fileName = "docker";
@@ -290,14 +292,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         private IEnumerable<string> PrepareDockerRunArguments(
             string containerName,
-            bool runContainerInBackground,
-            List<EnvironmentVariable> environmentVariables,
-            List<DockerVolume> volumes,
-            string portMapping,
-            string link,
-            string imageId,
-            string command,
-            string[] commandArguments)
+            DockerRunArguments dockerRunArguments)
         {
             var args = new List<string>();
             args.Add("run");
@@ -313,13 +308,13 @@ namespace Microsoft.Oryx.Tests.Common
                 args.Add("--rm");
             }
 
-            if (runContainerInBackground)
+            if (dockerRunArguments.RunContainerInBackground)
             {
                 args.Add("-d");
             }
 
             AddEnvVarArgs(args, _globalEnvVars);
-            AddEnvVarArgs(args, environmentVariables);
+            AddEnvVarArgs(args, dockerRunArguments.EnvironmentVariables);
 
             var aiKeyOverride = Environment.GetEnvironmentVariable(
                 "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
@@ -343,37 +338,37 @@ namespace Microsoft.Oryx.Tests.Common
                         appServiceAppName));
             }
 
-            if (volumes?.Count > 0)
+            if (dockerRunArguments.Volumes?.Count > 0)
             {
-                foreach (var volume in volumes)
+                foreach (var volume in dockerRunArguments.Volumes)
                 {
                     args.Add("-v");
                     args.Add($"{volume.MountedHostDir}:{volume.ContainerDir}");
                 }
             }
 
-            if (!string.IsNullOrEmpty(link))
+            if (!string.IsNullOrEmpty(dockerRunArguments.Link))
             {
                 args.Add("--link");
-                args.Add(link);
+                args.Add(dockerRunArguments.Link);
             }
 
-            if (!string.IsNullOrEmpty(portMapping))
+            if (dockerRunArguments.PortInContainer.HasValue)
             {
                 args.Add("-p");
-                args.Add(portMapping);
+                args.Add(dockerRunArguments.PortInContainer.ToString());
             }
 
-            args.Add(imageId);
+            args.Add(dockerRunArguments.ImageId);
 
-            if (!string.IsNullOrEmpty(command))
+            if (!string.IsNullOrEmpty(dockerRunArguments.CommandToExecuteOnRun))
             {
-                args.Add(command);
+                args.Add(dockerRunArguments.CommandToExecuteOnRun);
             }
 
-            if (commandArguments?.Length > 0)
+            if (dockerRunArguments.CommandArguments?.Length > 0)
             {
-                args.AddRange(commandArguments);
+                args.AddRange(dockerRunArguments.CommandArguments);
             }
 
             return args;

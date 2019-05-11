@@ -9,7 +9,12 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerCommandResult : DockerResultBase
     {
-        public DockerCommandResult(int exitCode, Exception exception, string output, string error, string executedCommand)
+        public DockerCommandResult(
+            int exitCode,
+            Exception exception,
+            string output,
+            string error,
+            string executedCommand)
             : base(exception, executedCommand)
         {
             ExitCode = exitCode;

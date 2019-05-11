@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.0")]
         [InlineData("2.1")]
         [InlineData("2.2")]
+        [InlineData("3.0")]
         public void DotnetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
@@ -33,11 +34,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
+
             // Act
-            var result = _dockerCli.Run(
-                "oryxdevms/dotnetcore-" + version + ":latest",
-                commandToExecuteOnRun: "oryx",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/dotnetcore-{version}:latest",
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "--version" }
+            });
+
             // Assert
             RunAsserts(
                 () =>
@@ -47,7 +52,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
                     Assert.Contains(gitCommitID, result.StdErr);
                     Assert.Contains(expectedOryxVersion, result.StdErr);
-                
+
                 },
                 result.GetDebugInfo());
         }
@@ -55,13 +60,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("1.0", "Version  : 1.0.1")]
         [InlineData("1.1", "Version  : 1.1.12")]
-        public void DotnetVersionMatchesImageName_NetCoreApp1Versions(string version, string expectedOutput)
+        public void RuntimeImage_HasExecptedDotnetVersion_NetCoreApp10Versions(string version, string expectedOutput)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                "oryxdevms/dotnetcore-" + version + ":latest",
-                commandToExecuteOnRun: "dotnet",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/dotnetcore-{version}:latest",
+                CommandToExecuteOnRun = "dotnet",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -77,13 +84,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.0", "Version  : 2.0.9")]
         [InlineData("2.1", "Version: 2.1.10")]
         [InlineData("2.2", "Version: 2.2.4")]
-        public void DotnetVersionMatchesImageName(string version, string expectedOutput)
+        [InlineData("3.0", "Version: 3.0.0-preview4-27615-11")]
+        public void RuntimeImage_HasExecptedDotnetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                "oryxdevms/dotnetcore-" + version + ":latest",
-                commandToExecuteOnRun: "dotnet",
-                commandArguments: new[] { "--info" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/dotnetcore-{version}:latest",
+                CommandToExecuteOnRun = "dotnet",
+                CommandArguments = new[] { "--info" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
