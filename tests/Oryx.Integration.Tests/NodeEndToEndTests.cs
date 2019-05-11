@@ -770,7 +770,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
         public async Task Node_CreateReactAppSample_singleImage()
         {
             // Arrange
@@ -856,7 +856,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange

@@ -85,19 +85,11 @@ steps:
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Pull and Retag recently built oryx build image'
+  displayName: 'Pull and Retag recently built oryx build and runtime images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pullandretag.sh
-    args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt
-  condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Pull and Retag recently built oryx runtime images'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/pullandretag.sh
-    args: $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+    args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
