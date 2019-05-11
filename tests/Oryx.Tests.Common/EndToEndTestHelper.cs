@@ -174,6 +174,7 @@ namespace Microsoft.Oryx.Tests.Common
             DockerCli dockerCli)
         {
             DockerRunCommandProcessResult runResult = null;
+            var showDebugInfo = true;
             try
             {
                 // Docker run the runtime container as a foreground process. This way we can catch any errors
@@ -187,16 +188,9 @@ namespace Microsoft.Oryx.Tests.Common
                     runCmd,
                     runArgs);
 
-                await RunAssertsAsync(
-                    () =>
-                    {
-                        // An exception could have occurred when a Docker process failed to start.
-                        Assert.Null(runResult.Exception);
-                        Assert.False(runResult.Process.HasExited);
-                        return Task.CompletedTask;
-                    },
-                    runResult,
-                    output);
+                // An exception could have occurred when a Docker process failed to start.
+                Assert.Null(runResult.Exception);
+                Assert.False(runResult.Process.HasExited);
 
                 for (var i = 0; i < MaxRetryCount; i++)
                 {
@@ -204,16 +198,11 @@ namespace Microsoft.Oryx.Tests.Common
 
                     try
                     {
-                        // Make sure the process is still alive and fail fast if not alive.
-                        await RunAssertsAsync(
-                            async () =>
-                            {
-                                Assert.False(runResult.Process.HasExited);
-                                await assertAction();
-                            },
-                            runResult,
-                            output);
+                        // Make sure the process is still alive and fail fast if not.
+                        Assert.False(runResult.Process.HasExited);
+                        await assertAction();
 
+                        showDebugInfo = false;
                         break;
                     }
                     catch (Exception ex) when (ex.InnerException is IOException ||
@@ -221,29 +210,6 @@ namespace Microsoft.Oryx.Tests.Common
                     {
                         if (i == MaxRetryCount - 1)
                         {
-                            string debugInfo = string.Empty;
-
-                            // ToString() on StringBuilder is throwing an exception probably because of a 
-                            // multithreading issue where the container is still writing data into it and we are trying
-                            // to retrieve the content out of it.
-                            try
-                            {
-                                // TO i
-                                // System.ArgumentOutOfRangeException : Index was out of range. Must be non-negative 
-                                //                                      and less than the size of the collection.
-                                // Parameter name: chunkLength
-                                // Stack Trace:
-                                // at System.Text.StringBuilder.ToString()
-                                debugInfo = runResult.GetDebugInfo();
-                                output.WriteLine(debugInfo);
-                            }
-                            catch (Exception debugInfoException)
-                            {
-                                output.WriteLine(
-                                    "An error occurred while trying to get data from the output and error " +
-                                    "streams of the container. Exception: " + debugInfoException.ToString());
-                            }
-
                             throw;
                         }
                     }
@@ -255,6 +221,12 @@ namespace Microsoft.Oryx.Tests.Common
                 {
                     // Stop the container so that shared resources (like ports) are disposed.
                     dockerCli.StopContainer(runResult.ContainerName);
+
+                    // Access the output and error streams after the process has exited
+                    if (showDebugInfo)
+                    {
+                        output.WriteLine(runResult.GetDebugInfo());
+                    }
                 }
             }
         }
