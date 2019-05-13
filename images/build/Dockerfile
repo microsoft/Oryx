@@ -199,16 +199,14 @@ RUN set -ex \
  && ln -s 3.9.5 /opt/npm/3.9 \
  && ln -s 3.10.10 /opt/npm/3.10 \
  && ln -s 3.10 /opt/npm/3 \
- && ln -s 4.8.0 /opt/npm/4.8 \
- && ln -s 4.8 /opt/npm/4 \
  && ln -s 5.0.3 /opt/npm/5.0 \
  && ln -s 5.3.0 /opt/npm/5.3 \
  && ln -s 5.4.2 /opt/npm/5.4 \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5 \
- && ln -s 6.4.1 /opt/npm/latest \
- && ln -s 6.4.1 /opt/npm/6.4 \
- && ln -s 6.4 /opt/npm/6
+ && ln -s 6.9.0 /opt/npm/6.9 \
+ && ln -s 6.9 /opt/npm/6 \
+ && ln -s 6 /opt/npm/latest
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
