@@ -55,6 +55,9 @@ If a `yarn.lock` file is found in your repo root or if you specify "yarn" in
 the `engines` field of package.json, the latest or specified version of yarn
 will be used instead of npm.
 
+Note that **installing packages globally is unsupported**, whether requested directly
+by your app or by some pre/post install script of an included package.
+
 # Run
 
 The following process is applied to determine how to start an app.
