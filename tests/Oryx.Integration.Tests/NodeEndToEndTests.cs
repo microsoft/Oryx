@@ -13,10 +13,8 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
     public class NodeEndToEndTests : PlatformEndToEndTestsBase
     {
-        public readonly int HostPort = Constants.NodeEndToEndTestsPort;
         public readonly int ContainerPort = 3000;
         public readonly string DefaultStartupFilePath = "./run.sh";
         public readonly ITestOutputHelper _output;
@@ -28,62 +26,15 @@ namespace Microsoft.Oryx.Integration.Tests
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
-        }       
+        }
+    }
+    public class AllOtherNodeEndtoEndTests : NodeEndToEndTests
+    {
+        private readonly int HostPort = Constants.NodeEndToEndTestsPort;
 
-        [Theory]
-        [MemberData(
-            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
-            MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRunNodeApp_WithDebugger(string nodeVersion)
+        public AllOtherNodeEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
         {
-            // Arrange
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "linxnodeexpress";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
-            var appDir = volume.ContainerDir;
-            const int localPort = 9393;
-            const int containerDebugPort = 9595;
-            var portMapping = $"{localPort}:{containerDebugPort}";
-            var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -remoteDebug -debugPort {containerDebugPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            var buildScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
-                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                new List<DockerVolume> { appOutputDirVolume, volume },
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    buildScript
-                },
-                $"oryxdevms/node-{nodeVersion}",
-                portMapping,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    runAppScript
-                },
-                async () =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{localPort}/json/list");
-                    Assert.Contains("devtoolsFrontendUrl", data);
-                });
         }
 
         [Fact]
@@ -616,7 +567,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task Node_CreateReactAppSample_singleImage()
         {
             // Arrange
@@ -702,7 +653,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
@@ -750,7 +701,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class TestNodeSassExample : NodeEndToEndTests
     {
-        public int HostPort = Constants.NodeEndToEndTestsPort + 5;
+        public readonly int HostPort = Constants.NodeEndToEndTestsPort + 5;
 
         public TestNodeSassExample(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
@@ -798,7 +749,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class TestUsingZippedNodeModules : NodeEndToEndTests
     {
-        private int HostPort = Constants.NodeEndToEndTestsPort + 10;
+        private readonly int HostPort = Constants.NodeEndToEndTestsPort + 10;
 
         public TestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
@@ -869,7 +820,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class TestWithAppInsightsConfigured : NodeEndToEndTests
     {
-        private int HostPort = Constants.NodeEndToEndTestsPort + 15;
+        private readonly int HostPort = Constants.NodeEndToEndTestsPort + 15;
 
         public TestWithAppInsightsConfigured(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
@@ -930,6 +881,73 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("Hello World from express!", data);
+                });
+        }
+    }
+
+    [Trait("category", "node")]
+    public class TestBuildAndRunNodeAppWithDebugger : NodeEndToEndTests
+    {
+        private readonly int HostPort = Constants.NodeEndToEndTestsPort + 20;
+
+        public TestBuildAndRunNodeAppWithDebugger(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
+        }
+
+        [Theory]
+        [MemberData(
+           nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+           MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRunNodeApp_WithDebugger(string nodeVersion)
+        {
+            // Arrange
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appName = "linxnodeexpress";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            //const int localPort = 9393;
+            const int containerDebugPort = 9595;
+            var portMapping = $"{HostPort}:{containerDebugPort}";
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appOutputDir} -remoteDebug -debugPort {containerDebugPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l nodejs " +
+                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runAppScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/json/list");
+                    Assert.Contains("devtoolsFrontendUrl", data);
                 });
         }
     }
