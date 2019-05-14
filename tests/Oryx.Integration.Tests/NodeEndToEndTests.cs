@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
     }
+
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         private readonly int HostPort = Constants.NodeEndToEndTestsPort;
