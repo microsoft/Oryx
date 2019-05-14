@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.Common
 
         public const string AppServiceAppNameEnvironmentVariableName = "APPSETTING_WEBSITE_SITE_NAME";
         public const string ContainerRegistryAppNameEnvironmentVariableName = "REGISTRY_NAME";
-        public const string DefaultOperationNameValue = ".oryx";
+        public const string DefaultOperationName = ".oryx";
 
         public const string DefaultLogPath = "/tmp/oryx.log";
 

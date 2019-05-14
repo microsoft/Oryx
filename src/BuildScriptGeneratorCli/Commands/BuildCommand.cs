@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // This will be an App Service app name if Oryx was invoked by Kudu
             var appName = env.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName)
                 ?? env.GetEnvironmentVariable(LoggingConstants.ContainerRegistryAppNameEnvironmentVariableName)
-                ?? LoggingConstants.DefaultOperationNameValue;
+                ?? LoggingConstants.DefaultOperationName;
             var buildOpId = logger.StartOperation(appName);
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
