@@ -33,10 +33,10 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    public class PhpTwigExample : PhpEndToEndTests
+    public class PhpTwigExampleTest : PhpEndToEndTests
     {
         private readonly int HostPort = Constants.PhpEndToEndTestsPort;
-        public PhpTwigExample(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -75,11 +75,11 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    public class PhpWordPress51 : PhpEndToEndTests
+    public class PhpWordPress51Test : PhpEndToEndTests
     {
         private readonly int HostPort = Constants.PhpEndToEndTestsPort + 5;
 
-        public PhpWordPress51(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public PhpWordPress51Test(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -130,11 +130,11 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    public class PhpImagickExample : PhpEndToEndTests
+    public class PhpImagickExampleTest : PhpEndToEndTests
     {
         private readonly int HostPort = Constants.PhpEndToEndTestsPort + 10;
 
-        public PhpImagickExample(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }

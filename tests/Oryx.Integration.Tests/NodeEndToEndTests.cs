@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    public class NodeEndToEndTests : PlatformEndToEndTestsBase
+    public class NodeEndToEndTestsBase : PlatformEndToEndTestsBase
     {
         public readonly int ContainerPort = 3000;
         public readonly string DefaultStartupFilePath = "./run.sh";
@@ -21,18 +21,18 @@ namespace Microsoft.Oryx.Integration.Tests
         public readonly string _hostSamplesDir;
         public readonly string _tempRootDir;
 
-        public NodeEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
     }
-    public class AllOtherNodeEndtoEndTests : NodeEndToEndTests
+    public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         private readonly int HostPort = Constants.NodeEndToEndTestsPort;
 
-        public AllOtherNodeEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -699,18 +699,18 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    public class TestNodeSassExample : NodeEndToEndTests
+    public class NodeSassExampleTest : NodeEndToEndTestsBase
     {
         public readonly int HostPort = Constants.NodeEndToEndTestsPort + 5;
 
-        public TestNodeSassExample(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public NodeSassExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task Node_NodeSassExample(string nodeVersion)
+        public async Task Test_NodeSassExample(string nodeVersion)
         {
             // Arrange
             var appName = "node-sass-example";
@@ -747,11 +747,11 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    public class TestUsingZippedNodeModules : NodeEndToEndTests
+    public class NodeTestUsingZippedNodeModules : NodeEndToEndTestsBase
     {
         private readonly int HostPort = Constants.NodeEndToEndTestsPort + 10;
 
-        public TestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public NodeTestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -818,11 +818,11 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    public class TestWithAppInsightsConfigured : NodeEndToEndTests
+    public class NodeTestWithAppInsightsConfigured : NodeEndToEndTestsBase
     {
         private readonly int HostPort = Constants.NodeEndToEndTestsPort + 15;
 
-        public TestWithAppInsightsConfigured(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public NodeTestWithAppInsightsConfigured(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -886,11 +886,11 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "node")]
-    public class TestBuildAndRunNodeAppWithDebugger : NodeEndToEndTests
+    public class NodeTestBuildAndRunAppWithDebugger : NodeEndToEndTestsBase
     {
         private readonly int HostPort = Constants.NodeEndToEndTestsPort + 20;
 
-        public TestBuildAndRunNodeAppWithDebugger(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public NodeTestBuildAndRunAppWithDebugger(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
