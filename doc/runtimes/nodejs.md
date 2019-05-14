@@ -56,7 +56,17 @@ the `engines` field of package.json, the latest or specified version of yarn
 will be used instead of npm.
 
 Note that **installing packages globally is unsupported**, whether requested directly
-by your app or by some pre/post install script of an included package.
+by your app or by some pre/post install script of an included package. For example,
+this will **not** work in your `package.json`:
+
+```json
+{
+  /// ...
+  "scripts" : {
+    "preinstall" : "npm install -g somepackage"
+  }
+}
+```
 
 # Run
 
