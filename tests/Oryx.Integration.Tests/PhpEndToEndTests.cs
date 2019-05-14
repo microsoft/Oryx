@@ -14,17 +14,15 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
     public class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
-        private const int HostPort = Constants.PhpEndToEndTestsPort;
-        private const int ContainerPort = 8080;
-        private const string RunScriptPath = "/tmp/startup.sh";
+        public readonly int ContainerPort = 8080;
+        public readonly string RunScriptPath = "/tmp/startup.sh";
 
-        private readonly ITestOutputHelper _output;
-        private readonly string _hostSamplesDir;
-        private readonly string _hostTempDir;
-        private readonly IList<string> _downloadedPaths = new List<string>();
+        public readonly ITestOutputHelper _output;
+        public readonly string _hostSamplesDir;
+        public readonly string _hostTempDir;
+        public readonly IList<string> _downloadedPaths = new List<string>();
 
         public PhpEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
         {
@@ -32,7 +30,17 @@ namespace Microsoft.Oryx.Integration.Tests
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _hostTempDir = fixture.RootDirPath;
         }
-        
+    }
+
+    [Trait("category", "php")]
+    public class PhpTwigExampleTest : PhpEndToEndTests
+    {
+        private readonly int HostPort = Constants.PhpEndToEndTestsPort;
+        public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
+        }
+
         [Theory]
         [InlineData("7.3")]
         [InlineData("7.2")]
@@ -63,6 +71,17 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<h1>Hello World!</h1>", data);
                 });
+        }
+    }
+
+    [Trait("category", "php")]
+    public class PhpWordPress51Test : PhpEndToEndTests
+    {
+        private readonly int HostPort = Constants.PhpEndToEndTestsPort + 5;
+
+        public PhpWordPress51Test(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
         }
 
         [Theory]
@@ -106,6 +125,18 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
                     Assert.Contains("<title>WordPress &rsaquo; Setup Configuration File</title>", data);
                 });
+        }
+
+    }
+
+    [Trait("category", "php")]
+    public class PhpImagickExampleTest : PhpEndToEndTests
+    {
+        private readonly int HostPort = Constants.PhpEndToEndTestsPort + 10;
+
+        public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
         }
 
         [Theory]
