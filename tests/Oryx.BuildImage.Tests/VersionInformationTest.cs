@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
-            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
             // Act
@@ -261,6 +261,50 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var script = new ShellScriptBuilder()
                 .AddCommand($"source /usr/local/bin/benv node={nodeVersion}")
+                .AddCommand("npm --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(
+                Settings.BuildImageName,
+                commandToExecuteOnRun: "/bin/bash",
+                commandArguments:
+                new[]
+                {
+                    "-c",
+                    script
+                });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("latest", "6.9.0")]
+        [InlineData("6", "6.9.0")]
+        [InlineData("6.9", "6.9.0")]
+        [InlineData("5", "5.6.0")]
+        [InlineData("5.6", "5.6.0")]
+        [InlineData("5.4", "5.4.2")]
+        [InlineData("5.3", "5.3.0")]
+        [InlineData("5.0", "5.0.3")]
+        [InlineData("3", "3.10.10")]
+        [InlineData("3.10", "3.10.10")]
+        [InlineData("3.9", "3.9.5")]
+        [InlineData("2", "2.15.9")]
+        [InlineData("2.15", "2.15.9")]
+        public void Npm_UsesVersion_SpecifiedToBenv(string specifiedVersion, string expectedOutput)
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source benv npm={specifiedVersion}")
                 .AddCommand("npm --version")
                 .ToString();
 
