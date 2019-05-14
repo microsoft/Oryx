@@ -60,12 +60,9 @@ by your app or by some pre/post install script of an included package. For examp
 this will **not** work in your `package.json`:
 
 ```json
-{
-  /* ... */
   "scripts" : {
     "preinstall" : "npm install -g somepackage"
   }
-}
 ```
 
 # Run
