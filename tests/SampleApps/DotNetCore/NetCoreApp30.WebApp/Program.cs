@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace NetCoreApp30WebApp
+namespace NetCoreApp30.WebApp
 {
     public class Program
     {

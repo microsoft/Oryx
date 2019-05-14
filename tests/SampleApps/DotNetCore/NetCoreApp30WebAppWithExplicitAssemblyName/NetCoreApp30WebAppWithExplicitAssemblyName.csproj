@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <AssemblyName>Yoyo</AssemblyName>
+    <AssemblyName>Yo.yo</AssemblyName>
   </PropertyGroup>
 
 </Project>
