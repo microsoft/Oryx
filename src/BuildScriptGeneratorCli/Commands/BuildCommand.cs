@@ -81,10 +81,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var env = serviceProvider.GetRequiredService<IEnvironment>();
 
             // This will be an App Service app name if Oryx was invoked by Kudu
-            var appName = Environment.GetEnvironmentVariable(
-                LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
+            var appName = env.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName)
+                ?? env.GetEnvironmentVariable(LoggingConstants.ContainerRegistryAppNameEnvironmentVariableName)
+                ?? LoggingConstants.DefaultOperationNameValue;
             var buildOpId = logger.StartOperation(appName);
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
