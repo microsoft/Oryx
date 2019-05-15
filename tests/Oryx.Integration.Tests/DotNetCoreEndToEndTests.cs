@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
@@ -483,7 +484,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRun_SelfContainedApp()
+        public async Task CanRun_SelfContainedApp_TargetedForLinux()
         {
             // ****************************************************************
             // A self-contained app is an app which does not depend on whether a .NET Core runtime is present on the
@@ -536,6 +537,42 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
+        }
+
+        [Fact]
+        public async Task CanRun_NetCore30App_PublishedOnMacMachine_ButRunOnNetCore30RuntimeContainer()
+        {
+            // This test verifies that we fallback to using 'dotnet TodoAppFromMac.dll' since the executable
+            // file 'TodoAppFromMac' was indeed generated from a Mac OS and cannot be run in a Linux container.
+
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "TodoAppFromMac");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                "oryxdevms/dotnetcore-3.0",
+                _output,
+                new List<DockerVolume>() { volume },
+                environmentVariables: null,
+                ContainerPort,
+                link: null,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                },
+                new DockerCli());
         }
 
         [Fact]
