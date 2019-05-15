@@ -82,7 +82,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var checkers = serviceProvider.GetServices<IChecker>();
 
             // This will be an App Service app name if Oryx was invoked by Kudu
             var appName = Environment.GetEnvironmentVariable(
@@ -90,10 +89,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildOpId = logger.StartOperation(appName);
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-
-            var messageFormatter = new DefinitionListFormatter();
-            checkers.SelectMany(checker => checker.CheckBuildScriptGeneratorOptions(options))
-                .Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
             console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
@@ -113,16 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 buildInfo.AddDefinition("Repository Commit", commitId);
             }
 
-            checkers.SelectMany(checker => checker.CheckSourceRepo(sourceRepo))
-                .Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
-
             console.WriteLine(buildInfo.ToString());
-
-            if (messageFormatter.Count > 0)
-            {
-                console.WriteLine();
-                console.WriteLine(messageFormatter.ToString());
-            }
 
             // Try writing the ID to a file in the source directory
             try
