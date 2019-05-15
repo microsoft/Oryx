@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         private const string NetCoreApp11WebApp = "NetCoreApp11WebApp";
         private const string NetCoreApp21WebApp = "NetCoreApp21.WebApp";
         private const string NetCoreApp22WebApp = "NetCoreApp22WebApp";
-        private const string NetCoreApp30WebApp = "NetCoreApp30WebApp";
+        private const string NetCoreApp30WebApp = "NetCoreApp30.WebApp";
         private const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
         private const string DefaultStartupFilePath = "./run.sh";
 
@@ -469,7 +469,108 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp22WebApp,
+                NetCoreApp30WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRun_SelfContainedApp()
+        {
+            // ****************************************************************
+            // A self-contained app is an app which does not depend on whether a .NET Core runtime is present on the
+            // target machine or not. It has all the required dependencies (.dlls etc.) in its published output itself,
+            // hence it is called self-contained app.
+            //
+            // To test if our runtime images run self-contained apps correctly (i.e not using the dotnet runtime
+            // installed in the runtime image itself), in this test we publish a self-contained 3.0 app and run it in
+            // a 1.1 runtime container. This is because 1.1 runtime container does not have 3.0 bits at all and hence
+            // if the app fails to run in that container, then we are doing something wrong. If all is well, this 3.0
+            // app should run fine.
+            // ****************************************************************
+
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"source benv dotnet=3")
+               .AddCommand($"cd {appDir}")
+               .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp30WebApp,
+                _output,
+                volume,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                "oryxdevms/dotnetcore-1.1",
+                portMapping,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async () =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommand()
+        {
+            // Arrange
+            var dotnetcoreVersion = "3.0";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var portMapping = $"{HostPort}:{ContainerPort}";
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -userStartupCommand ./NetCoreApp30.WebApp -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp30WebApp,
                 _output,
                 volume,
                 "/bin/sh",

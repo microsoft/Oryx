@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace NetCoreApp30WebApp
+namespace NetCoreApp30.WebApp
 {
     public class Startup
     {
