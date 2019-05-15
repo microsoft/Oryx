@@ -14,51 +14,24 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class NodeImagesTest : TestBase, IClassFixture<TestTempDirTestFixture>
+    public class NodeImagesTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
     {
-        private readonly string _hostSamplesDir;
-        private readonly string _tempRootDir;
-        protected readonly HttpClient _httpClient = new HttpClient();
+        public readonly string _hostSamplesDir;
+        public readonly string _tempRootDir;
+        public readonly HttpClient _httpClient = new HttpClient();
 
-        public NodeImagesTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
+        public NodeImagesTestBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
         {
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
+    }
 
-        [SkippableTheory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public void NodeImage_Contains_VersionAndCommit_Information(string version)
+    public class NodeRuntimeImageOtherTests : NodeImagesTestBase
+    {
+        public NodeRuntimeImageOtherTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
         {
-            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
-            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
-            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
-
-            // We can't always rely on git commit ID as env variable in case build context is not correctly passed
-            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
-            // or locally, locally we need to skip this test
-            Skip.If(string.IsNullOrEmpty(agentOS));
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = $"oryxdevms/node-{version}:latest",
-                CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.False(result.IsSuccess);
-                    Assert.NotNull(result.StdErr);
-                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
-                    Assert.Contains(gitCommitID, result.StdErr);
-                    Assert.Contains(expectedOryxVersion, result.StdErr);
-                },
-                result.GetDebugInfo());
         }
 
         [Theory]
@@ -132,25 +105,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public void NodeImage_Contains_RequiredPrograms(string nodeTag)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = $"oryxdevms/node-{nodeTag}:latest",
-                CommandToExecuteOnRun = "/bin/sh",
-                CommandArguments = new[]
-                {
-                    "-c",
-                    "which tar && which unzip && which pm2 && /opt/node-wrapper/node --version"
-                }
-            });
-
-            // Assert
-            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
-        }
 
         [Fact]
         public void GeneratedScript_CanRunStartupScriptsFromAppRoot()
@@ -221,117 +175,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
         }
 
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingProcessJson(string nodeVersion)
-        {
-
-            var appName = "express-process-json";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
-            var dir = volume.ContainerDir;
-            int containerPort = 80;
-
-            var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"cd {dir}/app")
-                .AddCommand("npm install")
-                .AddCommand("cd ..")
-                .AddCommand($"oryx -bindPort {containerPort}")
-                .AddCommand("./run.sh")
-                .ToString();
-
-            await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                containerPort,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", runAppScript },
-                assertAction: async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("Hello World from express!", data);
-                },
-                dockerCli: _dockerCli);
-
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingConfigYml(string nodeVersion)
-        {
-
-            var appName = "express-config-yaml";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
-            var dir = volume.ContainerDir;
-            int containerPort = 80;
-
-            var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"cd {dir}/app")
-                .AddCommand("npm install")
-                .AddCommand("cd ..")
-                .AddCommand($"oryx -bindPort {containerPort} -userStartupCommand config.yml")
-                .AddCommand("./run.sh")
-                .ToString();
-
-            await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                containerPort,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", runAppScript },
-                assertAction: async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("Hello World from express!", data);
-                },
-                dockerCli: _dockerCli);
-
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingConfigJs(string nodeVersion)
-        {
-
-            var appName = "express-config-js";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
-            var dir = volume.ContainerDir;
-            int containerPort = 80;
-
-            var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"cd {dir}/app")
-                .AddCommand("npm install")
-                .AddCommand("cd ..")
-                .AddCommand($"oryx -bindPort {containerPort}")
-                .AddCommand("./run.sh")
-                .ToString();
-
-            await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                containerPort,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", runAppScript },
-                assertAction: async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("Hello World from express!", data);
-                },
-                dockerCli: _dockerCli);
-
-        }
-
         [Theory(Skip = "Investigating debugging using pm2")]
         [MemberData(
             nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
@@ -369,11 +212,19 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 dockerCli: _dockerCli);
 
         }
+    }
+
+    public class NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound : NodeImagesTestBase
+    {
+        public NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
 
         [Theory]
         [MemberData(
-            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
-            MemberType = typeof(TestValueGenerator))]
+           nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+           MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
         {
             // This test is for the following scenario: 
@@ -427,5 +278,211 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 },
                 dockerCli: _dockerCli);
         }
+    }
+
+    public class NodeRuntimeImageContainsRequiredPrograms : NodeImagesTestBase
+    {
+        public NodeRuntimeImageContainsRequiredPrograms(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public void NodeImage_Contains_RequiredPrograms(string nodeTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "which tar && which unzip && which pm2 && /opt/node-wrapper/node --version"
+                }
+            });
+
+            // Assert
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
+        }
+    }
+
+    public class NodeRuntimeImageRunAppUsingConfigYml : NodeImagesTestBase
+    {
+        public NodeRuntimeImageRunAppUsingConfigYml(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingConfigYml(string nodeVersion)
+        {
+
+            var appName = "express-config-yaml";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -bindPort {containerPort} -userStartupCommand config.yml")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                containerPort,
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+        }
+    }
+
+    public class NodeRuntimeImageRunAppUsingProcessJson : NodeImagesTestBase
+    {
+        public NodeRuntimeImageRunAppUsingProcessJson(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingProcessJson(string nodeVersion)
+        {
+
+            var appName = "express-process-json";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -bindPort {containerPort}")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                containerPort,
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+
+        }
+    }
+
+    public class NodeRuntimeImageRunAppUsingConfigJs : NodeImagesTestBase
+    {
+        public NodeRuntimeImageRunAppUsingConfigJs(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunNodeAppUsingConfigJs(string nodeVersion)
+        {
+
+            var appName = "express-config-js";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.Create(hostDir);
+            var dir = volume.ContainerDir;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx -bindPort {containerPort}")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: $"oryxdevms/node-{nodeVersion}",
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                containerPort,
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+
+        }
+    }
+
+    public class NodeRuntimeImageContainsVersionAndCommitInfo : NodeImagesTestBase
+    {
+        public NodeRuntimeImageContainsVersionAndCommitInfo(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [SkippableTheory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public void NodeImage_Contains_VersionAndCommit_Information(string version)
+        {
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
+            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
+            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
+
+            // We can't always rely on git commit ID as env variable in case build context is not correctly passed
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
+            // or locally, locally we need to skip this test
+            Skip.If(string.IsNullOrEmpty(agentOS));
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/node-{version}:latest",
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "" }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.NotNull(result.StdErr);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
+                    Assert.Contains(gitCommitID, result.StdErr);
+                    Assert.Contains(expectedOryxVersion, result.StdErr);
+                },
+                result.GetDebugInfo());
+        }
+
     }
 }

@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = $"oryxdevms/dotnetcore-{version}:latest",
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "--version" }
+                CommandArguments = new[] { "" }
             });
 
             // Assert

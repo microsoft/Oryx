@@ -646,7 +646,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            const int localPort = 8080;
 
             // Create a custom startup command
             const string customStartupScriptCommand = "'npm start'";
