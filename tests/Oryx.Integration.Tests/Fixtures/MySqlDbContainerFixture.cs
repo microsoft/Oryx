@@ -15,21 +15,18 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
     {
         protected override DockerRunCommandResult RunDbServerContainer()
         {
-            var runDbContainerResult = _dockerCli.Run(
-                Settings.MySqlDbImageName,
-                environmentVariables: new List<EnvironmentVariable>
+            var runDbContainerResult = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.MySqlDbImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     new EnvironmentVariable("MYSQL_RANDOM_ROOT_PASSWORD", "yes"),
                     new EnvironmentVariable("MYSQL_DATABASE", Constants.DatabaseName),
                     new EnvironmentVariable("MYSQL_USER", Constants.DatabaseUserName),
                     new EnvironmentVariable("MYSQL_PASSWORD", Constants.DatabaseUserPwd),
                 },
-                volumes: null,
-                portMapping: null,
-                link: null,
-                runContainerInBackground: true,
-                command: null,
-                commandArguments: null);
+                RunContainerInBackground = true,
+            });
 
             RunAsserts(() => Assert.True(runDbContainerResult.IsSuccess), runDbContainerResult.GetDebugInfo());
             return runDbContainerResult;

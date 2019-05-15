@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using System;
-using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,7 +34,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(Settings.BuildImageName, CreateAppNameEnvVar(appName), volume, "/bin/bash", new[] { "-c", script });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(() =>
@@ -59,7 +66,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(Settings.BuildImageName, CreateAppNameEnvVar(appName), volume, "/bin/bash", new[] { "-c", script });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(() =>

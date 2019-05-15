@@ -39,11 +39,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
+
             // Act
-            var result = _dockerCli.Run(
-                "oryxdevms/node-" + version + ":latest",
-                commandToExecuteOnRun: "oryx",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/node-{version}:latest",
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "--version" }
+            });
+
             // Assert
             RunAsserts(
                 () =>
@@ -82,10 +86,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
-            var result = _dockerCli.Run(
-                "oryxdevms/node-" + nodeTag + ":latest",
-                commandToExecuteOnRun: "node",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                CommandToExecuteOnRun = "node",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -108,10 +114,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void HasExpectedNpmVersion(string nodeTag, string expectedNpmVersion)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                "oryxdevms/node-" + nodeTag + ":latest",
-                commandToExecuteOnRun: "npm",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                CommandToExecuteOnRun = "npm",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -129,9 +137,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void NodeImage_Contains_RequiredPrograms(string nodeTag)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                $"oryxdevms/node-{nodeTag}:latest",
-                "sh", new[] { "-c", "which tar && which unzip && which pm2 && /opt/node-wrapper/node --version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "which tar && which unzip && which pm2 && /opt/node-wrapper/node --version"
+                }
+            });
 
             // Assert
             RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
@@ -151,10 +166,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             // Act
-            var res = _dockerCli.Run("oryxdevms/node-10.14", "/bin/sh", new[] { "-c", script });
-            
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = "oryxdevms/node-10.14",
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[] { "-c", script }
+            });
+
             // Assert
-            RunAsserts(() => Assert.Equal(res.ExitCode, exitCodeSentinel), res.GetDebugInfo());
+            RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
         }
 
         [Fact]
@@ -186,13 +206,19 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             // Act
-            var res = _dockerCli.Run("oryxdevms/node-10.14", 
-                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "asdas"), "/bin/sh", new[] { "-c", script });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = "oryxdevms/node-10.14",
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "asdas")
+                },
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
-            RunAsserts(() => 
-            Assert.Equal(res.ExitCode, exitCodeSentinel),
-            res.GetDebugInfo());
+            RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
         }
 
         [Theory]
@@ -204,7 +230,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var dir = volume.ContainerDir;
-            int hostPort = 8585;
             int containerPort = 80;
 
             var runAppScript = new ShellScriptBuilder()
@@ -218,19 +243,19 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             await EndToEndTestHelper.RunAndAssertAppAsync(
                 imageName: $"oryxdevms/node-{nodeVersion}",
                 output: _output,
-                volumes:  new List<DockerVolume> { volume },
+                volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
-                portMapping: $"{hostPort}:{containerPort}",
+                containerPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", runAppScript },
-                assertAction: async () =>
+                assertAction: async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("Hello World from express!", data);
                 },
                 dockerCli: _dockerCli);
-            
+
         }
 
         [Theory]
@@ -242,7 +267,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var dir = volume.ContainerDir;
-            int hostPort = 8585;
             int containerPort = 80;
 
             var runAppScript = new ShellScriptBuilder()
@@ -258,11 +282,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
-                portMapping: $"{hostPort}:{containerPort}",
+                containerPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", runAppScript },
-                assertAction: async () =>
+                assertAction: async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("Hello World from express!", data);
@@ -280,7 +304,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var dir = volume.ContainerDir;
-            int hostPort = 8585;
             int containerPort = 80;
 
             var runAppScript = new ShellScriptBuilder()
@@ -296,11 +319,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
-                portMapping: $"{hostPort}:{containerPort}",
+                containerPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", runAppScript },
-                assertAction: async () =>
+                assertAction: async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("Hello World from express!", data);
@@ -309,15 +332,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         }
 
-        [Theory(Skip="Investigating debugging using pm2")]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        [Theory(Skip = "Investigating debugging using pm2")]
+        [MemberData(
+            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingProcessJson_withDebugging(string nodeVersion)
         {
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.Create(hostDir);
             var dir = volume.ContainerDir;
-            int hostPort = 8585;
             int containerDebugPort = 8080;
 
             var runAppScript = new ShellScriptBuilder()
@@ -333,11 +357,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
-                portMapping: $"{hostPort}:{containerDebugPort}",
+                port: containerDebugPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", runAppScript },
-                assertAction: async () =>
+                assertAction: async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Say It Again", data);
@@ -347,7 +371,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging), MemberType = typeof(TestValueGenerator))]
+        [MemberData(
+            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
         {
             // This test is for the following scenario: 
@@ -355,7 +381,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // has been injected and it's installed during build (npm install). But for some reason if we 
             // don't see the appinsights node_module we shouldn't break the app. We should run the app 
             // and additionally print the exception message
-            
+
             // Arrange
             var imageName = string.Concat("oryxdevms/node-", nodeVersion);
             var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
@@ -372,7 +398,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     console.log(e); 
                 } ";
 
-            int hostPort = 8585;
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
@@ -391,11 +416,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
-                portMapping: $"{hostPort}:{containerDebugPort}",
+                port: containerDebugPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", script },
-                assertAction: async () =>
+                assertAction: async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World from express!", data);

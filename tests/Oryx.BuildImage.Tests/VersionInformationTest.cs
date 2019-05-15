@@ -35,14 +35,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
-            // so we should check agent_os environment variable to know if the build is happening in azure devops agent
+            // so we should check agent_os environment variable to know if the test is happening in azure devops agent 
             // or locally, locally we need to skip this test
             Skip.If(string.IsNullOrEmpty(agentOS));
+
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "oryx",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "--version" }
+            });
+
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
@@ -63,10 +67,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreVersions.DotNetCore21Version;
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "dotnet",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "dotnet",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -90,26 +96,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2.2", DotNetCoreVersions.DotNetCore22Version)]
         [InlineData(DotNetCoreVersions.DotNetCore22Version, DotNetCoreVersions.DotNetCore22Version)]
         [InlineData("3.0", DotNetCoreVersions.DotNetCore30VersionPreviewName)]
-        public void DotnetAlias_UsesVersion_SpecifiedAtDockerRun(
-            string versionSentToDockerRun,
-            string expectedOutput)
+        public void DotnetAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv dotnet={versionSentToDockerRun}")
+                .AddCommand($"source benv dotnet={specifiedVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -128,11 +129,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = "v10.15.2";
 
-            // Arrange & Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "node",
-                commandArguments: new[] { "--version" });
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "node",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -152,10 +155,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = Python27VersionInfo;
 
             // Arrange & Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "python",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "python",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdErr.ReplaceNewLine();
@@ -175,10 +180,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = $"Python {Common.PythonVersions.Python37Version}";
 
             // Arrange & Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "python3",
-                commandArguments: new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "python3",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -216,26 +223,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.1", "v10.14.1")]
         [InlineData("10.15", "v10.15.2")]
-        public void NodeAlias_UsesVersion_SpecifiedAtDockerRun(
-            string versionSentToDockerRun,
-            string expectedOutput)
+        public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv node={versionSentToDockerRun}")
+                .AddCommand($"source benv node={specifiedVersion}")
                 .AddCommand("node --version")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -260,20 +262,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv node={nodeVersion}")
+                .AddCommand($"source benv node={nodeVersion}")
                 .AddCommand("npm --version")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -309,15 +308,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
@@ -334,26 +330,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
         [InlineData(Settings.Python27Version, Python27VersionInfo)]
-        public void PythonAlias_UsesVersion_SpecifiedAtDockerRun(
-            string versionSentToDockerRun,
-            string expectedOutput)
+        public void PythonAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv python={versionSentToDockerRun}")
+                .AddCommand($"source benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             // NOTE: Python2 version writes out information to StdErr unlike Python3 versions
@@ -371,26 +362,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
         [InlineData(Settings.Python27Version, Python27VersionInfo)]
-        public void Python2Alias_UsesVersion_SpecifiedAtDockerRun(
-            string versionSentToDockerRun,
-            string expectedOutput)
+        public void Python2Alias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv python={versionSentToDockerRun}")
+                .AddCommand($"source benv python={specifiedVersion}")
                 .AddCommand("python2 --version")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             var actualOutput = result.StdErr.ReplaceNewLine();
@@ -410,26 +396,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(Settings.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
         [InlineData(Common.PythonVersions.Python37Version, Python37VersionInfo)]
-        public void Python3_UsesVersion_SpecifiedAtDockerRun(
-            string versionSentToDockerRun,
-            string expectedOutput)
+        public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source /usr/local/bin/benv python={versionSentToDockerRun}")
+                .AddCommand($"source benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             var actualOutput = result.StdOut.ReplaceNewLine();
