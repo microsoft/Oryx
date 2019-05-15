@@ -83,7 +83,6 @@ namespace Microsoft.Oryx.Tests.Common
         public static IEnumerable<object[]> GetNodeVersions_SupportPm2()
         {
             return NodeVersions
-                .Where(v => !v.StartsWith("4."))
                 .Select(v => new object[] { v });
         }
     }
