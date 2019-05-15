@@ -207,7 +207,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Builds_NetCore30App_UsingNetCore30_DotnetSdkVersion()
         {
             // Arrange
-            var appName = "NetCoreApp30WebApp";
+            var appName = "NetCoreApp30.WebApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp30WebApp-output";
