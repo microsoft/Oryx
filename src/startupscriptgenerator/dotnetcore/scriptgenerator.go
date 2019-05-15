@@ -94,6 +94,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	scriptBuilder.WriteString("  fi\n\n")
 	scriptBuilder.WriteString("fi\n\n")
 
+	scriptBuilder.WriteString("echo \"Running the command '$startUpCommand'...\"\n")
 	scriptBuilder.WriteString("eval \"$startUpCommand\"\n\n")
 
 	var runScript = scriptBuilder.String()
