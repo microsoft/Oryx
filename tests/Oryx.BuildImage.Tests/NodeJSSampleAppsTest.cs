@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.Common;
@@ -17,10 +18,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         private static readonly string SampleAppName = "webfrontend";
 
-        private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
+        private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(
+            Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
 
         public NodeJSSampleAppsTest(ITestOutputHelper output) :
-            base(output, new DockerCli(new EnvironmentVariable[] { new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName) }))
+            base(output, new DockerCli(new EnvironmentVariable[]
+            {
+                new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName)
+            }))
         {
         }
 
@@ -37,16 +42,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -77,16 +79,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -110,16 +109,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -147,17 +143,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    "-c",
-                    script
-                });
+                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -179,7 +175,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
             var nestedOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddCommand(
+                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
@@ -187,17 +184,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    "-c",
-                    script
-                });
+                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -211,7 +208,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
             MemberType = typeof(TestValueGenerator))]
-        public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(string version)
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(
+            string version)
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -219,24 +217,25 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var nestedOutputDir = "/tmp/output";
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
             var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddCommand(
+                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    "-c",
-                    script
-                });
+                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -250,7 +249,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
             MemberType = typeof(TestValueGenerator))]
-        public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(string version)
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(
+            string version)
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -258,23 +258,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var nestedOutputDir = "/tmp/output";
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
             var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddCommand(
+                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -305,16 +303,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -325,10 +320,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        private ShellScriptBuilder SetupEnvironment_ErrorDetectingNodeTest(string appDir, string appOutputDir, string logFile)
+        private ShellScriptBuilder SetupEnvironment_ErrorDetectingNodeTest(
+            string appDir,
+            string appOutputDir,
+            string logFile)
         {
             var nodeCode =
-            @"var http = require('http'); var server = http.createServer(function(req, res) { res.writeHead(200); res.end('Hi oryx');}); server.listen(8080);";
+            @"var http = require('http'); var server = http.createServer(function(req, res) { res.writeHead(200); " +
+            "res.end('Hi oryx');}); server.listen(8080);";
 
             //following is the directory structure of the source repo in the test
             //tmp
@@ -368,15 +367,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                   script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -403,15 +399,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                   script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -438,17 +431,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    "\"" +
-                    script +
-                    "\""
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", "\"" + script + "\"" }
+            });
 
             // Assert
             RunAsserts(
@@ -472,16 +460,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -510,16 +495,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -548,16 +530,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -582,16 +561,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -614,16 +590,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -647,16 +620,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    buildScript
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", buildScript }
+            });
 
             // Assert
             RunAsserts(
@@ -708,16 +678,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -750,16 +717,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -785,20 +749,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=zip")
                 .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
-                .AddStringExistsInFileCheck("compressedNodeModulesFile=\"node_modules.zip\"", $"{appOutputDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck(
+                "compressedNodeModulesFile=\"node_modules.zip\"",
+                $"{appOutputDir}/oryx-manifest.toml")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    buildScript
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", buildScript }
+            });
 
             // Assert
             RunAsserts(
@@ -823,16 +786,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(

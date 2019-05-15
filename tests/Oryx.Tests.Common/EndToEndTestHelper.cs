@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 10;
-        private const int DelayBetweenRetriesInSeconds = 6;
+        private static readonly TimeSpan DelayBetweenRetriesInSeconds = TimeSpan.FromSeconds(6);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -27,10 +27,10 @@ namespace Microsoft.Oryx.Tests.Common
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
-            string portMapping,
+            int port,
             string runCmd,
             string[] runArgs,
-            Func<Task> assertAction)
+            Func<int, Task> assertAction)
         {
             return BuildRunAndAssertAppAsync(
                 appName,
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Tests.Common
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
-                portMapping,
+                port,
                 runCmd,
                 runArgs,
                 assertAction);
@@ -53,10 +53,10 @@ namespace Microsoft.Oryx.Tests.Common
             string[] buildArgs,
             string runtimeImageName,
             List<EnvironmentVariable> environmentVariables,
-            string portMapping,
+            int port,
             string runCmd,
             string[] runArgs,
-            Func<Task> assertAction)
+            Func<int, Task> assertAction)
         {
             var AppNameEnvVariable = new EnvironmentVariable(
                 LoggingConstants.AppServiceAppNameEnvironmentVariableName,
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Tests.Common
                 buildArgs,
                 runtimeImageName,
                 environmentVariables,
-                portMapping,
+                port,
                 link: null,
                 runCmd,
                 runArgs,
@@ -83,10 +83,10 @@ namespace Microsoft.Oryx.Tests.Common
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
-            string portMapping,
+            int port,
             string runCmd,
             string[] runArgs,
-            Func<Task> assertAction)
+            Func<int, Task> assertAction)
         {
             return BuildRunAndAssertAppAsync(
                 output,
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Tests.Common
                 {
                     new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName)
                 },
-                portMapping,
+                port,
                 link: null,
                 runCmd,
                 runArgs,
@@ -119,24 +119,24 @@ namespace Microsoft.Oryx.Tests.Common
             string[] buildArgs,
             string runtimeImageName,
             List<EnvironmentVariable> environmentVariables,
-            string portMapping,
+            int port,
             string link,
             string runCmd,
             string[] runArgs,
-            Func<Task> assertAction)
+            Func<int, Task> assertAction)
         {
             var dockerCli = new DockerCli();
 
             // Build
-            var buildAppResult = dockerCli.Run(
-                Settings.BuildImageName,
-                environmentVariables: environmentVariables,
-                volumes: volumes,
-                portMapping: null,
-                link: null,
-                runContainerInBackground: false,
-                commandToExecuteOnRun: buildCmd,
-                commandArguments: buildArgs);
+            var buildAppResult = dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = environmentVariables,
+                Volumes = volumes,
+                RunContainerInBackground = false,
+                CommandToExecuteOnRun = buildCmd,
+                CommandArguments = buildArgs,
+            });
 
             await RunAssertsAsync(
                () =>
@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.Tests.Common
                 output,
                 volumes,
                 environmentVariables,
-                portMapping,
+                port,
                 link,
                 runCmd,
                 runArgs,
@@ -166,11 +166,11 @@ namespace Microsoft.Oryx.Tests.Common
             ITestOutputHelper output,
             List<DockerVolume> volumes,
             List<EnvironmentVariable> environmentVariables,
-            string portMapping,
+            int port,
             string link,
             string runCmd,
             string[] runArgs,
-            Func<Task> assertAction,
+            Func<int, Task> assertAction,
             DockerCli dockerCli)
         {
             DockerRunCommandProcessResult runResult = null;
@@ -179,28 +179,30 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 // Docker run the runtime container as a foreground process. This way we can catch any errors
                 // that might occur when the application is being started.
-                runResult = dockerCli.RunAndDoNotWaitForProcessExit(
-                    imageName,
-                    environmentVariables,
-                    volumes: volumes,
-                    portMapping,
-                    link,
-                    runCmd,
-                    runArgs);
+                runResult = dockerCli.RunAndDoNotWaitForProcessExit(new DockerRunArguments
+                {
+                    ImageId = imageName,
+                    EnvironmentVariables = environmentVariables,
+                    Volumes = volumes,
+                    PortInContainer = port,
+                    Link = link,
+                    CommandToExecuteOnRun = runCmd,
+                    CommandArguments = runArgs,
+                });
 
                 // An exception could have occurred when a Docker process failed to start.
                 Assert.Null(runResult.Exception);
                 Assert.False(runResult.Process.HasExited);
 
+                var hostPort = await GetHostPortAsync(dockerCli, runResult.ContainerName, portInContainer: port);
+
                 for (var i = 0; i < MaxRetryCount; i++)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(DelayBetweenRetriesInSeconds));
-
                     try
                     {
                         // Make sure the process is still alive and fail fast if not.
                         Assert.False(runResult.Process.HasExited);
-                        await assertAction();
+                        await assertAction(hostPort);
 
                         showDebugInfo = false;
                         break;
@@ -212,6 +214,8 @@ namespace Microsoft.Oryx.Tests.Common
                         {
                             throw;
                         }
+
+                        await Task.Delay(DelayBetweenRetriesInSeconds);
                     }
                 }
             }
@@ -229,6 +233,37 @@ namespace Microsoft.Oryx.Tests.Common
                     }
                 }
             }
+        }
+
+        private static async Task<int> GetHostPortAsync(DockerCli dockerCli, string containerName, int portInContainer)
+        {
+            // We are depending on Docker to open ports in the host dynamically in order for our tests to be able to
+            // run in parallel without worrying about port collision and flaky tests. However it appears that Docker
+            // opens up a port in the host only after an attempt was made to open up a port in the container. Since a
+            // port in the container could open up late because of the way a web application works (like it might be
+            // initializing something which could take time), we are introducing delay for the application to be up
+            // before trying to invoke the 'docker port' command.
+            for (var i = 0; i < MaxRetryCount; i++)
+            {
+                await Task.Delay(DelayBetweenRetriesInSeconds);
+
+                // Example output that is ouput when "docker port <container-name> <container-port>" is run:
+                // 0.0.0.0:32774
+                var getPortMappingResult = dockerCli.GetPortMapping(containerName, portInContainer);
+                if (getPortMappingResult.ExitCode == 0)
+                {
+                    var stdOut = getPortMappingResult.StdOut?.Trim().ReplaceNewLine();
+                    var portMapping = stdOut?.Split(":");
+                    Assert.NotNull(portMapping);
+                    Assert.True(
+                        (portMapping.Length == 2),
+                        "Did not get the port mapping in expected format. StdOut: " + getPortMappingResult.StdOut);
+                    var hostPort = Convert.ToInt32(portMapping[1]);
+                    return hostPort;
+                }
+            }
+
+            throw new InvalidOperationException("Could not retreive the host port of the container.");
         }
 
         private static async Task RunAssertsAsync(Func<Task> action, DockerResultBase res, ITestOutputHelper output)

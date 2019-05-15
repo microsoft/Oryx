@@ -7,7 +7,6 @@ using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,7 +26,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
             // Arrange & Act
-            var result = _dockerCli.Run("oryxdevms/php-" + imageTag + ":latest", "php", new[] { "--version" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/php-{imageTag}:latest",
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "--version" }
+            });
 
             // Assert
             RunAsserts(() =>
@@ -46,9 +50,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                "oryxdevms/php-" + imageTag + ":latest",
-                "php", new[] { "-r", "echo json_encode(gd_info());" });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevms/php-{imageTag}:latest",
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
+            });
 
             // Assert
             JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);

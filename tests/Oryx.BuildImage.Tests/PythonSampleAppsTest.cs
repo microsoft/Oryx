@@ -30,7 +30,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -38,17 +39,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -66,7 +64,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -75,17 +74,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -104,7 +100,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_Shapely_With_Python(string version)
         {
             // Arrange
-            var volume = CreateSampleAppVolume("shapely-flask-app");
+            var appName = "shapely-flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -112,17 +109,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("shapely-flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -137,7 +131,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var subDir = Guid.NewGuid();
@@ -152,17 +147,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -177,7 +169,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/app-output/subdir1";
             var script = new ShellScriptBuilder()
@@ -186,17 +179,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -211,7 +201,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
@@ -219,17 +210,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -244,7 +232,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
@@ -253,17 +242,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -278,7 +264,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -294,17 +281,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -318,11 +302,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
-            // Try building a Python 2.7 app with 3.7 version. This should fail as there are major API changes between these versions
+            // Try building a Python 2.7 app with 3.7 version. This should fail as there are major
+            // API changes between these versions
 
             // Arrange
             var langVersion = PythonVersions.Python37Version;
-            var volume = CreateSampleAppVolume("python2-flask-app");
+            var appName = "python2-flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var generatedScript = "/tmp/build.sh";
             var appOutputDir = "/tmp/app-output";
@@ -335,17 +321,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("python2-flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -361,7 +344,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
@@ -369,17 +353,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -397,13 +378,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var generatedScript = "/tmp/build.sh";
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} -l python --language-version {Settings.Python36Version} > {generatedScript}")
+                .AddScriptCommand(
+                $"{appDir} -l python --language-version {Settings.Python36Version} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -411,17 +394,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -436,7 +416,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void CanthrowException_ForInvalidPythonVersion()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var generatedScript = "/tmp/build.sh";
             var appOutputDir = "/tmp/app-output";
@@ -449,17 +430,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -479,7 +457,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var langVersion = Settings.Python27Version;
-            var volume = CreateSampleAppVolume("python2-flask-app");
+            var appName = "python2-flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var generatedScript = "/tmp/build.sh";
             var appOutputDir = "/tmp/app-output";
@@ -493,17 +472,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("python2-flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -518,7 +494,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appIntermediateDir = "/tmp/app-intermediate";
             var appOutputDir = "/tmp/app-output";
@@ -528,17 +505,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -554,7 +528,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var virtualEnvironmentName = "pythonenv3.7";
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -564,17 +539,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -595,7 +567,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var virtualEnvironmentName = "myenv";
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -607,17 +580,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -636,7 +606,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var virtualEnvironmentName = "myenv";
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
@@ -648,17 +619,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -677,26 +645,25 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7/lib/python3.7/site-packages/flask")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -716,7 +683,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_DjangoApp_RunningCollectStatic(string disableCollectStatic)
         {
             // Arrange
-            var volume = CreateSampleAppVolume("django-app");
+            var appName = "django-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var scriptBuilder = new ShellScriptBuilder();
@@ -726,24 +694,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     $"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}");
             }
             var script = scriptBuilder
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("django-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -761,29 +727,28 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string disableCollectStatic)
         {
             // Arrange
-            var volume = CreateSampleAppVolume("django-app");
+            var appName = "django-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 // These css files should NOT be available since 'collectstatic' is set off
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("django-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -798,7 +763,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";
@@ -833,17 +799,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -864,7 +827,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_ExecutesPreAndPostBuildScripts_UsingEnvironmentVariables()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
             using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
             {
@@ -893,25 +857,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                new List<EnvironmentVariable>()
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    CreateAppNameEnvVar("flask-app"),
+                    CreateAppNameEnvVar(appName),
                     new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
                     new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh")
                 },
-                new List<DockerVolume>() { volume },
-                portMapping: null,
-                link: null,
-                runContainerInBackground: false,
-                command: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -932,7 +890,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PreAndPostBuildScripts_HaveAccessToSourceAndDestinationDirectoryVariables()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
             using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
             {
@@ -961,25 +920,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                new List<EnvironmentVariable>()
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    CreateAppNameEnvVar("flask-app"),
+                    CreateAppNameEnvVar(appName),
                     new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
                     new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh")
                 },
-                new List<DockerVolume>() { volume },
-                portMapping: null,
-                link: null,
-                runContainerInBackground: false,
-                command: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -998,7 +951,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Order of precedence is: EnvironmentVariables -> build.env file settings
 
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";
@@ -1035,26 +989,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                new List<EnvironmentVariable>()
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    CreateAppNameEnvVar("flask-app"),
+                    CreateAppNameEnvVar(appName),
                     new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
                     new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh"),
                     new EnvironmentVariable("key2", "value-from-environmentvariable")
                 },
-                new List<DockerVolume>() { volume },
-                portMapping: null,
-                link: null,
-                runContainerInBackground: false,
-                command: "/bin/bash",
-                commandArguments:
-                new[]
-                {
-                    "-c",
-                    script
-                });
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -1077,7 +1025,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appName = "flask-app";
-            var volume = CreateSampleAppVolume("flask-app");
+            var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";
@@ -1091,17 +1039,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                SampleAppsTestBase.CreateAppNameEnvVar(appName),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    "-c",
-                    script
-                });
+                    CreateAppNameEnvVar(appName),
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -1118,25 +1066,27 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Django_CollectStaticFailure_DoesNotFailBuild()
         {
             // Arrange
-            var volume = CreateSampleAppVolume("django-realworld-example-app");
+            var appName = "django-realworld-example-app";
+            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("django-realworld-example-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    "-c",
-                    script
-                });
+                    CreateAppNameEnvVar(appName),
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
@@ -1154,7 +1104,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
         {
             // Arrange
-            var volume = CreateSampleAppVolume("flask-app");
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
             {
                 sw.NewLine = "\n";
@@ -1191,26 +1142,32 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                Settings.BuildImageName,
-                CreateAppNameEnvVar("flask-app"),
-                volume,
-                commandToExecuteOnRun: "/bin/bash",
-                commandArguments:
-                new[]
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
                 {
-                    "-c",
-                    script
-                });
+                    CreateAppNameEnvVar(appName),
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.StdOut);
-                    Assert.Matches(@"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version, result.StdOut);
+                    Assert.Matches(
+                        @"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
+                        result.StdOut);
+                    Assert.Matches(
+                        @"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip",
+                        result.StdOut);
+                    Assert.Matches(
+                        @"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
+                        result.StdOut);
                     Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());

@@ -25,10 +25,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildScriptGenIsIncludedInBuildImage()
         {
             // Arrange & Act
-            var result = _dockerCli.Run(
-                imageId: Settings.BuildImageName,
-                commandToExecuteOnRun: "oryx",
-                commandArguments: null);
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "oryx",
+            });
 
             // Assert
             RunAsserts(() =>

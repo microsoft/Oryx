@@ -28,19 +28,16 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
 
         protected override DockerRunCommandResult RunDbServerContainer()
         {
-            var runDbContainerResult = _dockerCli.Run(
-                    Settings.MicrosoftSQLServerImageName,
-                    environmentVariables: new List<EnvironmentVariable>
-                    {
-                        new EnvironmentVariable("ACCEPT_EULA", "Y"),
-                        new EnvironmentVariable("SA_PASSWORD", Constants.DatabaseUserPwd),
-                    },
-                    volumes: null,
-                    portMapping: null,
-                    link: null,
-                    runContainerInBackground: true,
-                    command: null,
-                    commandArguments: null);
+            var runDbContainerResult = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.MicrosoftSQLServerImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    new EnvironmentVariable("ACCEPT_EULA", "Y"),
+                    new EnvironmentVariable("SA_PASSWORD", Constants.DatabaseUserPwd),
+                },
+                RunContainerInBackground = true,
+            });
 
             RunAsserts(() => Assert.True(runDbContainerResult.IsSuccess), runDbContainerResult.GetDebugInfo());
             return runDbContainerResult;
