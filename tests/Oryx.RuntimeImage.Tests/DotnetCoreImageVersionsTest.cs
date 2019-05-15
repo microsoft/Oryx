@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.0", "Version  : 2.0.9")]
         [InlineData("2.1", "Version: 2.1.10")]
         [InlineData("2.2", "Version: 2.2.4")]
-        [InlineData("3.0", "Version: 3.0.0-preview4-27615-11")]
+        [InlineData("3.0", "Version: 3.0.0-preview5-27626-15")]
         public void RuntimeImage_HasExecptedDotnetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
