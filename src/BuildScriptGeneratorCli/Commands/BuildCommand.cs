@@ -90,6 +90,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
             console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
             console.WriteLine();
+            
+            //var messageGenerators = serviceProvider.GetServices<>
 
             var buildInfo = new DefinitionListFormatter();
             buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
