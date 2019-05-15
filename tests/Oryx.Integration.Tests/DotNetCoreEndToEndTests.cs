@@ -501,7 +501,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"source benv dotnet=3")
@@ -525,16 +524,16 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildImageScript
                 },
                 "oryxdevms/dotnetcore-1.1",
-                portMapping,
+                ContainerPort,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     runtimeImageScript
                 },
-                async () =>
+                async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
         }
@@ -547,7 +546,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var portMapping = $"{HostPort}:{ContainerPort}";
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
@@ -981,16 +979,16 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
-                portMapping,
+                ContainerPort,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     runtimeImageScript
                 },
-                async () =>
+                async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{HostPort}/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
         }
