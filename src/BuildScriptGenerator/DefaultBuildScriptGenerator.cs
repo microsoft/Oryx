@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             script = null;
 
-            var toolsToVersion = new Dictionary<string, string>();
+            var toolsToVersion = new Dictionary<string, string>(); // To be populated by GetBuildSnippets
             IList<BuildScriptSnippet> snippets;
             var directoriesToExcludeFromCopyToIntermediateDir = new List<string>();
             var directoriesToExcludeFromCopyToBuildOutputDir = new List<string>();
@@ -72,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 script = BuildScriptFromSnippets(
                     context.SourceRepo,
                     snippets,
-                    toolsToVersion,
+                    new ReadOnlyDictionary<string, string>(toolsToVersion),
                     directoriesToExcludeFromCopyToIntermediateDir,
                     directoriesToExcludeFromCopyToBuildOutputDir);
                 return true;
@@ -175,7 +176,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return resultPlatforms;
         }
 
-        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
+        private static string GetBenvArgs(IDictionary<string, string> benvArgsMap)
         {
             var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
             var benvArgs = string.Join(' ', listOfBenvArgs);
@@ -253,7 +254,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private string BuildScriptFromSnippets(
             ISourceRepo sourceRepo,
             IList<BuildScriptSnippet> snippets,
-            Dictionary<string, string> toolsToVersion,
+            IDictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
             List<string> directoriesToExcludeFromCopyToBuildOutputDir)
         {
