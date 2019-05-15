@@ -9,10 +9,12 @@ using System.Text;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Performs arbitrary checks on different components of a build, in order to inform the user on failed checks.
+    /// Performs arbitrary checks during various stages of a build, in order to inform the user on failed checks.
     /// </summary>
     public interface IChecker
     {
         IList<ICheckerMessage> CheckSourceRepo(ISourceRepo repo);
+
+        IList<ICheckerMessage> CheckBuildScriptGeneratorOptions(BuildScriptGeneratorOptions opts);
     }
 }

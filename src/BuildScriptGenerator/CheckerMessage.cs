@@ -8,7 +8,20 @@ using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class DefaultCheckerMessage : ICheckerMessage
+    public class CheckerMessage : ICheckerMessage
     {
+        private readonly LogLevel _level;
+
+        private readonly string _content;
+
+        public CheckerMessage(string content, LogLevel level = LogLevel.Warning)
+        {
+            _level = level;
+            _content = content;
+        }
+
+        public LogLevel Level => _level;
+
+        public string Content => _content;
     }
 }

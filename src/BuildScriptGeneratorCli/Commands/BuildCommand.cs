@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Linq;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
@@ -81,17 +82,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var checkers = serviceProvider.GetServices<IChecker>();
 
             // This will be an App Service app name if Oryx was invoked by Kudu
             var appName = Environment.GetEnvironmentVariable(
                 LoggingConstants.AppServiceAppNameEnvironmentVariableName) ?? ".oryx";
             var buildOpId = logger.StartOperation(appName);
 
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+
+            var messageFormatter = new DefinitionListFormatter();
+            checkers.SelectMany(checker => checker.CheckBuildScriptGeneratorOptions(options))
+                .Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
+
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
             console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
             console.WriteLine();
-            
-            //var messageGenerators = serviceProvider.GetServices<>
 
             var buildInfo = new DefinitionListFormatter();
             buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
@@ -107,7 +113,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 buildInfo.AddDefinition("Repository Commit", commitId);
             }
 
+            checkers.SelectMany(checker => checker.CheckSourceRepo(sourceRepo))
+                .Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
+
             console.WriteLine(buildInfo.ToString());
+
+            if (messageFormatter.Count > 0)
+            {
+                console.WriteLine();
+                console.WriteLine(messageFormatter.ToString());
+            }
 
             // Try writing the ID to a file in the source directory
             try
@@ -198,7 +213,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ProcessHelper.TrySetExecutableMode(environmentSettings.PostBuildScriptPath);
 
             // Run the generated script
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {
