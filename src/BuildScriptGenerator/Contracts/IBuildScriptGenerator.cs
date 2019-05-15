@@ -23,9 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Determines which platforms can be used to build the given application.
         /// </summary>
-        /// <param name="scriptGeneratorContext">
-        /// The <see cref="BuildScriptGeneratorContext"/> with parameters for check.
-        /// </param>
+        /// <param name="ctx">The <see cref="BuildScriptGeneratorContext"/> with parameters for check.</param>
         /// <returns>a list of platform and version pairs.</returns>
         IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx);
     }
