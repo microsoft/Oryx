@@ -14,6 +14,10 @@ RUN set -e \
         npm install -g npm@6.9.0; \
     fi
 
+# This is a way to avoid using caches for the next stages, since we want the remaining steps
+# to always run
+ARG CACHEBUST=0
+
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.
 RUN npm install -g pm2

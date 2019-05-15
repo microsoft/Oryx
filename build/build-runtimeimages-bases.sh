@@ -85,7 +85,7 @@ for dockerFile in $dockerFiles; do
     cd $REPO_DIR
 
     echo
-    docker build -f $dockerFile -t $localImageTagName $labels .
+    docker build -f $dockerFile -t $localImageTagName --build-arg CACHEBUST=$(date +%s) $labels . 
 
     # Retag build image with DockerHub & ACR tags
     if [ -n "$BUILD_NUMBER" ]
