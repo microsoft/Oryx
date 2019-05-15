@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return result;
         }
 
-        public IList<ICheckerMessage> CheckBuildScriptGeneratorOptions(BuildScriptGeneratorOptions opts) => null;
+        public IList<ICheckerMessage> CheckToolVersions(IDictionary<string, string> toolsToVersions) => null;
 
         private static void CheckPackageJsonDependencyObject(dynamic packageJsonObj, string packageJsonKey, List<ICheckerMessage> result)
         {

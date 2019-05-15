@@ -15,6 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         IList<ICheckerMessage> CheckSourceRepo(ISourceRepo repo);
 
-        IList<ICheckerMessage> CheckBuildScriptGeneratorOptions(BuildScriptGeneratorOptions opts);
+        IList<ICheckerMessage> CheckToolVersions(IDictionary<string, string> toolsToVersions);
     }
 }
