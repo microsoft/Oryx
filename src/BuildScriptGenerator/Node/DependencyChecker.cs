@@ -9,7 +9,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public class DependencyChecker : IChecker
     {
-        private static readonly IDictionary<string, string> SupersededPackages = new Dictionary<string, string> {
+        // Lists packages that should not be used, but were NOT marked as "deprecated" in npm itself.
+        private static readonly IDictionary<string, string> SupersededPackages = new Dictionary<string, string>
+        {
             // According to https://www.npmjs.com/package/eslint-plugin-jsx-ally:
             // "DO NOT INSTALL THIS PACKAGE. Please install eslint-plugin-jsx-a11y"
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
