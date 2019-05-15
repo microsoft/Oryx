@@ -86,16 +86,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = "oryxdevms/python-" + version + ":latest",
+                ImageId = "oryxdevms/php-" + version + ":latest",
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "" }
+                CommandArguments = new[] { " " }
             });
 
             // Assert
             RunAsserts(
                 () =>
                 {
-                    Assert.False(result.IsSuccess);
+                    Assert.True(result.IsSuccess);
                     Assert.NotNull(result.StdErr);
                     Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
                     Assert.Contains(gitCommitID, result.StdErr);
