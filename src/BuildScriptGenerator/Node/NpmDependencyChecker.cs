@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public class DependencyChecker : IChecker
+    public class NpmDependencyChecker : IChecker
     {
         // Lists packages that should not be used, but were NOT marked as "deprecated" in npm itself.
         private static readonly IDictionary<string, string> SupersededPackages = new Dictionary<string, string>
@@ -16,11 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // "DO NOT INSTALL THIS PACKAGE. Please install eslint-plugin-jsx-a11y"
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
         };
-
-        public IList<ICheckerMessage> CheckBuildScriptGeneratorOptions(BuildScriptGeneratorOptions opts)
-        {
-            return null;
-        }
 
         public IList<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
@@ -35,6 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             CheckPackageJsonDependencyObject(packageJson.devDependencies, "devDependencies", result);
             return result;
         }
+
+        public IList<ICheckerMessage> CheckBuildScriptGeneratorOptions(BuildScriptGeneratorOptions opts) => null;
 
         private static void CheckPackageJsonDependencyObject(dynamic packageJsonObj, string packageJsonKey, List<ICheckerMessage> result)
         {
