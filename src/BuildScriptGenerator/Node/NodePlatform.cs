@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var npmVersion = GetNpmVersion(packageJson);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
-                    toolsToVersion["npm"] = npmVersion;
+                    toolsToVersion[NodeConstants.NpmName] = npmVersion;
                 }
             }
         }

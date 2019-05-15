@@ -7,11 +7,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     [AttributeUsage(AttributeTargets.Class)]
     public class CheckerAttribute : Attribute
     {
-        private readonly Type _targetPlatform;
+        private readonly string[] _targetToolNames;
 
-        public CheckerAttribute(Type targetPlatform)
+        public CheckerAttribute(params string[] toolNames)
         {
-            _targetPlatform = targetPlatform;
+            _targetToolNames = toolNames;
         }
     }
 }

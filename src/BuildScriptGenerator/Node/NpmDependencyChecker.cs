@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    [Checker(typeof(NodePlatform))]
+    [Checker(NodeConstants.NpmName)]
     public class NpmDependencyChecker : IChecker
     {
         // Lists packages that should not be used, but were NOT marked as "deprecated" in npm itself.
