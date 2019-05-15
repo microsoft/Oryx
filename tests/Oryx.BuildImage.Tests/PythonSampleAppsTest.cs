@@ -15,17 +15,23 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class PythonSampleAppsTest : SampleAppsTestBase
+    public class PythonSampleAppsTestBase : SampleAppsTestBase
     {
-        private const string PackagesDirectory = "__oryx_packages__";
-
-        public PythonSampleAppsTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
-        private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
+        public const string PackagesDirectory = "__oryx_packages__";
+        public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", sampleAppName));
 
+        public PythonSampleAppsTestBase(ITestOutputHelper output) : base(output)
+        {
+        }
+    }
+
+    public class PythonSampleAppsOtherTests : PythonSampleAppsTestBase
+    {
+        public PythonSampleAppsOtherTests(ITestOutputHelper output) : base(output)
+        {
+        }
+      
         [Fact]
         public void GeneratesScript_AndBuilds()
         {
@@ -95,37 +101,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public void GeneratesScript_AndBuilds_Shapely_With_Python(string version)
-        {
-            // Arrange
-            var appName = "shapely-flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {version}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
 
         [Fact]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
@@ -677,88 +652,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("false")]
-        public void GeneratesScript_AndBuilds_DjangoApp_RunningCollectStatic(string disableCollectStatic)
-        {
-            // Arrange
-            var appName = "django-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var scriptBuilder = new ShellScriptBuilder();
-            if (string.IsNullOrEmpty(disableCollectStatic))
-            {
-                scriptBuilder.AddCommand(
-                    $"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}");
-            }
-            var script = scriptBuilder
-                .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
-                // These css files should be available since 'collectstatic' is run in the script
-                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
-                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [InlineData("true")]
-        [InlineData("True")]
-        public void GeneratesScript_AndBuilds_DjangoApp_WithoutRunningCollectStatic_IfDisableCollectStatic_IsTrue(
-            string disableCollectStatic)
-        {
-            // Arrange
-            var appName = "django-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
-                .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
-                // These css files should NOT be available since 'collectstatic' is set off
-                .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
         [Fact]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
@@ -1169,6 +1062,141 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         @"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
                         result.StdOut);
                     Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+    }
+
+    public class PythonSampleAppsDjangoAppRunningCollectStatic : PythonSampleAppsTestBase
+    {
+        public PythonSampleAppsDjangoAppRunningCollectStatic(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("false")]
+        public void GeneratesScript_AndBuilds_DjangoApp_RunningCollectStatic(string disableCollectStatic)
+        {
+            // Arrange
+            var appName = "django-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var scriptBuilder = new ShellScriptBuilder();
+            if (string.IsNullOrEmpty(disableCollectStatic))
+            {
+                scriptBuilder.AddCommand(
+                    $"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}");
+            }
+            var script = scriptBuilder
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                // These css files should be available since 'collectstatic' is run in the script
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
+                .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+    }
+
+    public class PythonSampleAppsBuildsShapely : PythonSampleAppsTestBase
+    {
+        public PythonSampleAppsBuildsShapely(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
+        public void GeneratesScript_AndBuilds_Shapely_With_Python(string version)
+        {
+            // Arrange
+            var appName = "shapely-flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {version}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+    }
+
+    public class PythonSampleAppsDjangoAppWithoutRunningCollectStatic : PythonSampleAppsTestBase
+    {
+        public PythonSampleAppsDjangoAppWithoutRunningCollectStatic(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [InlineData("true")]
+        [InlineData("True")]
+        public void GeneratesScript_AndBuilds_DjangoApp_WithoutRunningCollectStatic_IfDisableCollectStatic_IsTrue(
+            string disableCollectStatic)
+        {
+            // Arrange
+            var appName = "django-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                // These css files should NOT be available since 'collectstatic' is set off
+                .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
         }

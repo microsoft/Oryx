@@ -37,14 +37,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = "oryxdevms/python-" + version + ":latest",
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "--version" }
+                CommandArguments = new[] { " " }
             });
 
             // Assert
             RunAsserts(
                 () =>
                 {
-                    Assert.False(result.IsSuccess);
+                    Assert.True(result.IsSuccess);
                     Assert.NotNull(result.StdErr);
                     Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
                     Assert.Contains(gitCommitID, result.StdErr);

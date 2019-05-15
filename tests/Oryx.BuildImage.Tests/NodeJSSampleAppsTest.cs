@@ -14,18 +14,25 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class NodeJSSampleAppsTest : SampleAppsTestBase
+    public class NodeJSSampleAppsTestBase : SampleAppsTestBase
     {
-        private static readonly string SampleAppName = "webfrontend";
+        public static readonly string SampleAppName = "webfrontend";
 
-        private DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(
+        public DockerVolume CreateWebFrontEndVolume() => DockerVolume.Create(
             Path.Combine(_hostSamplesDir, "nodejs", SampleAppName));
 
-        public NodeJSSampleAppsTest(ITestOutputHelper output) :
+        public NodeJSSampleAppsTestBase(ITestOutputHelper output) :
             base(output, new DockerCli(new EnvironmentVariable[]
             {
                 new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName)
             }))
+        {
+        }
+    }
+
+    public class NodeJsSampleAppsOtherTests : NodeJSSampleAppsTestBase
+    {
+        public NodeJsSampleAppsOtherTests(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -150,125 +157,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
                 },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
-            MemberType = typeof(TestValueGenerator))]
-        public void BuildNodeApp_ConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableSet(string version)
-        {
-            // Arrange
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
-            var nestedOutputDir = "/tmp/output";
-            var script = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable>
-                {
-                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
-                },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
-            MemberType = typeof(TestValueGenerator))]
-        public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(
-            string version)
-        {
-            // Arrange
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var nestedOutputDir = "/tmp/output";
-            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
-            var script = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable>
-                {
-                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
-                },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
-            MemberType = typeof(TestValueGenerator))]
-        public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(
-            string version)
-        {
-            // Arrange
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var nestedOutputDir = "/tmp/output";
-            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
-            var script = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -783,6 +671,146 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+    }
+
+    public class NodeJSSampleAppsTestConfigureAppInsights : NodeJSSampleAppsTestBase
+    {
+        public NodeJSSampleAppsTestConfigureAppInsights(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void BuildNodeApp_ConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableSet(string version)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var nestedOutputDir = "/tmp/output";
+            var script = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+    }
+
+    public class NodeJSSampleAppsTestWithAppInsightsEnvVariableSet : NodeJSSampleAppsTestBase
+    {
+        public NodeJSSampleAppsTestWithAppInsightsEnvVariableSet(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithWrongNodeVersion_AIEnvironmentVariableSet(
+            string version)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var nestedOutputDir = "/tmp/output";
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var script = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+    }
+
+    public class NodeJSSampleAppsTestWithAppInsightsEnvVariableNotSet : NodeJSSampleAppsTestBase
+    {
+        public NodeJSSampleAppsTestWithAppInsightsEnvVariableNotSet(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+            MemberType = typeof(TestValueGenerator))]
+        public void BuildNodeApp_DoesNotConfigureAppInsights_WithCorrectNodeVersion_AIEnvironmentVariableNotSet(
+            string version)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var nestedOutputDir = "/tmp/output";
+            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var script = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
+                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
                 .ToString();
 
             // Act
