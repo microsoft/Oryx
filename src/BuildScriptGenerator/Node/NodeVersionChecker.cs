@@ -15,8 +15,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
-            // check < NodeScriptGeneratorOptionsSetup.NodeLtsVersion
-            // if (opts.Language == NodeConstants.NodeJsName && opts.LanguageVersion)
+            if (tools.ContainsKey(NodeConstants.NodeJsName))
+            {
+                var used = tools[NodeConstants.NodeJsName];
+                if (SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion) < 0)
+                {
+                    return new[]
+                    {
+                        new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating.")
+                    };
+                }
+            }
+
             return Enumerable.Empty<ICheckerMessage>();
         }
 
