@@ -87,12 +87,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Null(actual);
         }
 
-        [Fact]
-        public void GetProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            var expectedFile = Path.Combine(sourceRepoDir, $"WebApp1.{projectFileExtension}");
             File.WriteAllText(expectedFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
@@ -104,12 +106,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedFile, actual);
         }
 
-        [Fact]
-        public void GetProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            var expectedFile = Path.Combine(sourceRepoDir, $"WebApp1.{projectFileExtension}");
             File.WriteAllText(expectedFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
@@ -123,17 +127,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
         // This is a scenario where our probing of a project could be incorrect. In this case a user can explicitly
         // specify the project file to use and we use it without checking further.
-        [Fact]
-        public void GetProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            var expectedFile = Path.Combine(webApp1Dir, "WebApp1.csproj");
+            var expectedFile = Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}");
             File.WriteAllText(expectedFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var relativeProjectPath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
+            var relativeProjectPath = Path.Combine("src", "WebApp1", $"WebApp1.{projectFileExtension}");
             var options = new DotnetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
@@ -166,16 +173,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Contains("Could not find the project file ", exception.Message);
         }
 
-        [Fact]
-        public void GetProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), NonWebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), NonWebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), NonWebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -185,17 +194,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Assert
             Assert.Null(actual);
         }
-        
-        [Fact]
-        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects()
+
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), WebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -206,17 +217,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 exception.Message);
         }
 
-        [Fact]
-        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects_AcrossDifferentFolderLevels()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects_AcrossDifferentFolderLevels(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), WebSdkProjectFile);
             var fooDir = CreateDir(srcDir, "foo");
             var webApp2Dir = CreateDir(fooDir, "WebApp2");
-            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
@@ -227,19 +241,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 exception.Message);
         }
 
-        [Fact]
-        public void GetProjectFile_DoesNotThrow_IfSourceRepo_HasMultipleWebAppProjects_AndProjectEnvVariableValue()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_DoesNotThrow_IfSourceRepo_HasMultipleWebAppProjects_AndProjectEnvVariableValue(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), webApp1Dir);
+            File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), webApp1Dir);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
+            var expectedFile = Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}");
             File.WriteAllText(expectedFile, webApp1Dir);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var relativeProjectPath = Path.Combine("src", "WebApp2", "WebApp2.csproj");
+            var relativeProjectPath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
             var options = new DotnetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
@@ -251,16 +268,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedFile, actualFile);
         }
 
-        [Fact]
-        public void GetProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo()
+        [Theory]
+        [InlineData("csproj")]
+        [InlineData("fsproj")]
+        public void GetProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), NonWebSdkProjectFile);
+            File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), NonWebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            var expectedFile = Path.Combine(webApp2Dir, "WebApp2.csproj");
+            var expectedFile = Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}");
             File.WriteAllText(expectedFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
