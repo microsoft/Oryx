@@ -536,16 +536,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
         }
 
-        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
-            IProgrammingPlatform generator)
+        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(IProgrammingPlatform platform)
         {
-            return new DefaultBuildScriptGenerator(new[] { generator }, new TestEnvironmentSettingsProvider(), null, NullLogger<DefaultBuildScriptGenerator>.Instance);
+            return CreateDefaultScriptGenerator(new[] { platform });
         }
 
-        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
-            IProgrammingPlatform[] generators)
+        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(IProgrammingPlatform[] platforms)
         {
-            return new DefaultBuildScriptGenerator(generators, new TestEnvironmentSettingsProvider(), null, NullLogger<DefaultBuildScriptGenerator>.Instance);
+            return new DefaultBuildScriptGenerator(
+                platforms,
+                new TestEnvironmentSettingsProvider(),
+                null,
+                NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
