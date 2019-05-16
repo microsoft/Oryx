@@ -120,7 +120,7 @@ fi
 
 echo "Running the command '$startUpCommand'..."
 eval "$startUpCommand"
-	`
+`
 	scriptBuilder.WriteString(script)
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
