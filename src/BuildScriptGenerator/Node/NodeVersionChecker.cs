@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
             // check < NodeScriptGeneratorOptionsSetup.NodeLtsVersion
-            //if (opts.Language == NodeConstants.NodeJsName && opts.LanguageVersion)
+            // if (opts.Language == NodeConstants.NodeJsName && opts.LanguageVersion)
             return null;
         }
 
