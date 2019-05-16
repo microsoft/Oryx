@@ -36,7 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _checkers = checkers;
         }
 
-        public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script, List<ICheckerMessage> checkerMessageSink = null)
+        public bool TryGenerateBashScript(
+            BuildScriptGeneratorContext context,
+            out string script,
+            List<ICheckerMessage> checkerMessageSink = null)
         {
             script = null;
 

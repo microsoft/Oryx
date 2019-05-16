@@ -11,11 +11,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public static class CheckerExtensions
     {
-        public static IEnumerable<IChecker> WhereApplicable(this IEnumerable<IChecker> checkers, IDictionary<string, string> tools)
+        public static IEnumerable<IChecker> WhereApplicable(
+            this IEnumerable<IChecker> checkers,
+            IDictionary<string, string> tools)
         {
             return checkers.Where(checker =>
             {
-                var attr = checker.GetType().GetCustomAttributes(typeof(CheckerAttribute), false).FirstOrDefault() as CheckerAttribute;
+                var attr = checker.GetType().GetCustomAttributes(typeof(CheckerAttribute), false)
+                                            .FirstOrDefault() as CheckerAttribute;
 
                 // If the checker wasn't annotated with the designated attribute, it shouldn't be used at all
                 if (attr == null)

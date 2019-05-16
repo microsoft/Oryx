@@ -36,7 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) =>
             Enumerable.Empty<ICheckerMessage>();
 
-        private static void CheckPackageJsonDependencyObject(dynamic packageJsonObj, string packageJsonKey, List<ICheckerMessage> result)
+        private static void CheckPackageJsonDependencyObject(
+            dynamic packageJsonObj,
+            string packageJsonKey,
+            List<ICheckerMessage> result)
         {
             if (packageJsonObj == null)
             {
