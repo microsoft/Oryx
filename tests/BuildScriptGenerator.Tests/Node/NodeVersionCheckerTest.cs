@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
     public class NodeVersionCheckerTest
     {
         [Fact]
-        public void Checker_WarnsWhenOutdatedVersionUsed()
+        public void Checker_Warns_WhenOutdatedVersionUsed()
         {
             // Arrange
             var checker = new NodeVersionChecker();
@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Checker_DoesNotWarnWhenLtsVersionUsed()
+        public void Checker_DoesNotWarn_WhenLtsVersionUsed()
         {
             // Arrange
             var checker = new NodeVersionChecker();
@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Checker_DoesNotWarnWhenCurrentVersionUsed()
+        public void Checker_DoesNotWarn_WhenCurrentVersionUsed()
         {
             // Arrange
             var checker = new NodeVersionChecker();
