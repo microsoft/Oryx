@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.SetProperties(toolsToVersion);
             }
 
-            if (_checkers != null && checkerMessageSink != null)
+            if (_checkers != null && checkerMessageSink != null && context.EnableCheckers)
             {
                 RunCheckers(context, toolsToVersion, checkerMessageSink);
             }

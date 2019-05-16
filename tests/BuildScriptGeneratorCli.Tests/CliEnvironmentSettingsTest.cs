@@ -16,6 +16,7 @@ namespace BuildScriptGeneratorCli.Tests
         {
             get
             {
+                yield return new object[] { "DISABLE_CHECKERS", (Func<CliEnvironmentSettings, bool>)(s => s.DisableCheckers) };
                 yield return new object[] { "DISABLE_DOTNETCORE_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableDotNetCore) };
                 yield return new object[] { "DISABLE_PYTHON_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisablePython) };
                 yield return new object[] { "DISABLE_NODEJS_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableNodeJs) };
