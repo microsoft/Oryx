@@ -553,7 +553,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image is currently not supported")]
         public async Task Node_CreateReactAppSample_singleImage()
         {
             // Arrange
@@ -637,7 +637,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image is currently not supported")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
