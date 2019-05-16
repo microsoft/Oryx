@@ -17,8 +17,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets the value of an environment variable.
         /// </summary>
         /// <param name="name">Name of the environment variable. Case-sensitive.</param>
+        /// <param name="defaultValue">Value to be returned if the variable isn't found.</param>
         /// <returns>
-        /// The value of the given environment variable, or null if the environment variable isn't found.
+        /// The value of the given environment variable, or the default value if the environment variable isn't found.
         /// </returns>
         string GetEnvironmentVariable(string name, string defaultValue = null);
 
