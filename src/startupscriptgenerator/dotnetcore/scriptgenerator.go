@@ -56,16 +56,19 @@ cd "$appPath"
 if [ ! -z "$userStartUpCommand" ]; then
 	len=${#userStartUpCommand[@]}
 	if [ "$len" -eq "1" ]; then
-		if [ -f "${userStartUpCommand[$0]}" ]; then
-		  startUpCommand="$userStartUpCommand"
+		file="${userStartUpCommand[0]}"
+		if [ -f "$file" ]; then
+		  # The startup command could be for example: 'todoApp' or './todoApp'
+		  # So just extract the 'todoApp' part and prefix it with './' to be './todoApp'
+		  startUpCommand="./${file##*/}"
 		else
-		  echo "Could not find the startup file '${userStartUpCommand[$0]}' on disk."
+		  echo "Could not find the startup file '$file' on disk."
 		fi
-	elif [ "$len" -eq "2" ] && [ "${userStartUpCommand[$0]}" == "dotnet" ]; then
-		if [ -f "${userStartUpCommand[$1]}" ]; then
+	elif [ "$len" -eq "2" ] && [ "${userStartUpCommand[0]}" == "dotnet" ]; then
+		if [ -f "${userStartUpCommand[1]}" ]; then
 		  startUpCommand="$userStartUpCommand"
 		else
-		  echo "Could not find the file '${userStartUpCommand[$1]}' on disk."
+		  echo "Could not find the file '${userStartUpCommand[1]}' on disk."
 		fi
 	else
 		startUpCommand="$userStartUpCommand"

@@ -575,8 +575,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 new DockerCli());
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommand()
+        [Theory]
+        [InlineData("NetCoreApp30.WebApp")]
+        [InlineData("./NetCoreApp30.WebApp")]
+        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommand(string startupCommand)
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
@@ -589,7 +591,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -userStartupCommand ./NetCoreApp30.WebApp -bindPort {ContainerPort}")
+                $"oryx -appPath {appOutputDir} -userStartupCommand {startupCommand} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
