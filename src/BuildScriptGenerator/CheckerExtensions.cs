@@ -15,9 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             return checkers.Where(checker =>
             {
-                var attr = (CheckerAttribute)Attribute.GetCustomAttribute(checker.GetType().Assembly, typeof(CheckerAttribute));
+                var attr = checker.GetType().GetCustomAttributes(typeof(CheckerAttribute), false).FirstOrDefault() as CheckerAttribute;
 
-                // If the checker wasn't annotated with the designated attribute, it shouldn't be used
+                // If the checker wasn't annotated with the designated attribute, it shouldn't be used at all
                 if (attr == null)
                 {
                     return false;

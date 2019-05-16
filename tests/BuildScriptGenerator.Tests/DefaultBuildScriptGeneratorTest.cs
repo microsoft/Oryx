@@ -53,32 +53,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void Checkers_AreAppliedCorrectly()
-        {
-            // Arrange
-            var repoWarning = new CheckerMessage("some repo warning");
-            IChecker[] checkers = { new TestChecker(new [] { repoWarning }) };
-
-            var platformVersion = "1.0.0";
-            var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
-            var platform = new TestProgrammingPlatform(
-                TestPlatformName, new[] { platformVersion }, true, "script-content", detector);
-            
-            var generator = CreateDefaultScriptGenerator(new [] { platform }, checkers);
-            var context = CreateScriptGeneratorContext(TestPlatformName, platformVersion);
-
-            var messages = new List<ICheckerMessage>();
-
-            // Act
-            // Return value of TryGenerateBashScript is irrelevant - messages should be added even if build fails
-            generator.TryGenerateBashScript(context, out var generatedScript, messages);
-
-            // Assert
-            Assert.Single(messages);
-            Assert.Equal(repoWarning, messages.First());
-        }
-
-        [Fact]
         public void TryGenerateScript_OnlyProcessProvidedPlatform_IfMultiPlatformIsDisabled()
         {
             // Arrange
@@ -560,6 +534,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(2, compatiblePlatforms.Count);
         }
 
+        [Fact]
+        public void Checkers_AreAppliedCorrectly()
+        {
+            // Arrange
+            var repoWarning = new CheckerMessage("some repo warning");
+            IChecker[] checkers = { new TestChecker(new[] { repoWarning }) };
+
+            var platformVersion = "1.0.0";
+            var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
+            var platform = new TestProgrammingPlatform(
+                TestPlatformName, new[] { platformVersion }, true, "script-content", detector);
+
+            var generator = CreateDefaultScriptGenerator(new[] { platform }, checkers);
+            var context = CreateScriptGeneratorContext(TestPlatformName, platformVersion);
+
+            var messages = new List<ICheckerMessage>();
+
+            // Act
+            // Return value of TryGenerateBashScript is irrelevant - messages should be added even if build fails
+            generator.TryGenerateBashScript(context, out var generatedScript, messages);
+
+            // Assert
+            Assert.Single(messages);
+            Assert.Equal(repoWarning, messages.First());
+        }
+
         private string CreateNewDir()
         {
             return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
@@ -762,8 +762,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 IEnumerable<ICheckerMessage> repoMessages = null,
                 IEnumerable<ICheckerMessage> toolMessages = null)
             {
-                _sourceRepoMessages = repoMessages;
-                _toolVersionMessages = toolMessages;
+                _sourceRepoMessages  = repoMessages ?? Enumerable.Empty<ICheckerMessage>();
+                _toolVersionMessages = toolMessages ?? Enumerable.Empty<ICheckerMessage>();
             }
 
             public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo) => _sourceRepoMessages;

@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {

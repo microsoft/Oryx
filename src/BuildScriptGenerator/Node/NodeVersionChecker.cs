@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -16,12 +17,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             // check < NodeScriptGeneratorOptionsSetup.NodeLtsVersion
             // if (opts.Language == NodeConstants.NodeJsName && opts.LanguageVersion)
-            return null;
+            return Enumerable.Empty<ICheckerMessage>();
         }
 
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
-            return null;
+            return Enumerable.Empty<ICheckerMessage>();
         }
     }
 }

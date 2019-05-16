@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -32,7 +33,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return result;
         }
 
-        public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) => null;
+        public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) =>
+            Enumerable.Empty<ICheckerMessage>();
 
         private static void CheckPackageJsonDependencyObject(dynamic packageJsonObj, string packageJsonKey, List<ICheckerMessage> result)
         {

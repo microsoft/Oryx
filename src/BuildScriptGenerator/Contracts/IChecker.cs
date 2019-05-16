@@ -3,8 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -13,8 +13,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public interface IChecker
     {
+        [NotNull]
         IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo);
 
+        [NotNull]
         IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> toolsToVersions);
     }
 }
