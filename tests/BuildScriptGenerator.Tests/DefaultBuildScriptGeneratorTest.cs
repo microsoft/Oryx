@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Tests.Common;
@@ -15,6 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class DefaultBuildScriptGeneratorTest : IClassFixture<TestTempDirTestFixture>
     {
+        private const string TestPlatformName = "test";
+
         private readonly string _tempDirRoot;
 
         public DefaultBuildScriptGeneratorTest(TestTempDirTestFixture testFixure)
@@ -47,6 +50,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.True(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void Checkers_AreAppliedCorrectly()
+        {
+            // Arrange
+            var repoWarning = new CheckerMessage("some repo warning");
+            IChecker[] checkers = { new TestChecker(new [] { repoWarning }) };
+
+            var platformVersion = "1.0.0";
+            var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
+            var platform = new TestProgrammingPlatform(
+                TestPlatformName, new[] { platformVersion }, true, "script-content", detector);
+            
+            var generator = CreateDefaultScriptGenerator(new [] { platform }, checkers);
+            var context = CreateScriptGeneratorContext(TestPlatformName, platformVersion);
+
+            var messages = new List<ICheckerMessage>();
+
+            // Act
+            // Return value of TryGenerateBashScript is irrelevant - messages should be added even if build fails
+            generator.TryGenerateBashScript(context, out var generatedScript, messages);
+
+            // Assert
+            Assert.Single(messages);
+            Assert.Equal(repoWarning, messages.First());
         }
 
         [Fact]
@@ -541,12 +570,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return CreateDefaultScriptGenerator(new[] { platform });
         }
 
-        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(IProgrammingPlatform[] platforms)
+        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
+            IProgrammingPlatform[] platforms,
+            IEnumerable<IChecker> checkers = null)
         {
             return new DefaultBuildScriptGenerator(
                 platforms,
                 new TestEnvironmentSettingsProvider(),
-                null,
+                checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
@@ -708,6 +739,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 string targetPlatformVersion,
                 IDictionary<string, string> toolsToVersion)
             {
+                toolsToVersion.Add(Name, SupportedLanguageVersions.First());
             }
 
             public void SetVersion(BuildScriptGeneratorContext context, string version)
@@ -718,6 +750,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 return _platformIsEnabledForMultiPlatformBuild;
             }
+        }
+
+        [Checker(TestPlatformName)]
+        private class TestChecker : IChecker
+        {
+            private readonly IEnumerable<ICheckerMessage> _sourceRepoMessages;
+            private readonly IEnumerable<ICheckerMessage> _toolVersionMessages;
+
+            public TestChecker(
+                IEnumerable<ICheckerMessage> repoMessages = null,
+                IEnumerable<ICheckerMessage> toolMessages = null)
+            {
+                _sourceRepoMessages = repoMessages;
+                _toolVersionMessages = toolMessages;
+            }
+
+            public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo) => _sourceRepoMessages;
+
+            public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) => _toolVersionMessages;
         }
 
         private class TestSourceRepo : ISourceRepo

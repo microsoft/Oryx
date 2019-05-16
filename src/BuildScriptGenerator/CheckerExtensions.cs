@@ -16,6 +16,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return checkers.Where(checker =>
             {
                 var attr = (CheckerAttribute)Attribute.GetCustomAttribute(checker.GetType().Assembly, typeof(CheckerAttribute));
+
+                // If the checker wasn't annotated with the designated attribute, it shouldn't be used
+                if (attr == null)
+                {
+                    return false;
+                }
+
+                // If the checker didn't specify a scope, it's global
+                if (attr.TargetToolNames == null)
+                {
+                    return true;
+                }
+
                 return attr.TargetToolNames.Intersect(tools.Keys).Count() > 0;
             });
         }
