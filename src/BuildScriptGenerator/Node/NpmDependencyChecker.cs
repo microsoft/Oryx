@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
         };
 
-        public IList<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
+        public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
             if (packageJson == null)
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return result;
         }
 
-        public IList<ICheckerMessage> CheckToolVersions(IDictionary<string, string> toolsToVersions) => null;
+        public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) => null;
 
         private static void CheckPackageJsonDependencyObject(dynamic packageJsonObj, string packageJsonKey, List<ICheckerMessage> result)
         {

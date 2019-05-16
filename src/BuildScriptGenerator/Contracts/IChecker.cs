@@ -13,8 +13,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public interface IChecker
     {
-        IList<ICheckerMessage> CheckSourceRepo(ISourceRepo repo);
+        IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo);
 
-        IList<ICheckerMessage> CheckToolVersions(IDictionary<string, string> toolsToVersions);
+        IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> toolsToVersions);
     }
 }
