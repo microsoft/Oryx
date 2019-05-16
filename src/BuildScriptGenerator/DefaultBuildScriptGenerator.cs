@@ -60,7 +60,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (_checkers != null && checkerMessageSink != null && context.EnableCheckers)
             {
-                RunCheckers(context, toolsToVersion, checkerMessageSink);
+                try
+                {
+                    RunCheckers(context, toolsToVersion, checkerMessageSink);
+                }
+                catch (Exception exc)
+                {
+                    _logger.LogError(exc, "Exception caught while running checkers");
+                }
             }
 
             if (snippets != null)
