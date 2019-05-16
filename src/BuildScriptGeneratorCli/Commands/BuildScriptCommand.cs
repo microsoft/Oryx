@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, null);
+            var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessageSink: null);
 
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {

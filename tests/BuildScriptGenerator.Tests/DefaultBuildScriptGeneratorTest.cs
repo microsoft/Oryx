@@ -539,7 +539,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             // Arrange
             var repoWarning = new CheckerMessage("some repo warning");
-            IChecker[] checkers = { new TestChecker(new[] { repoWarning }) };
+            IChecker[] checkers = { new TestChecker(() => new[] { repoWarning }) };
 
             var platformVersion = "1.0.0";
             var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
@@ -558,6 +558,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.Single(messages);
             Assert.Equal(repoWarning, messages.First());
+        }
+
+        [Fact]
+        public void Checkers_DontFailTheBuild_WhenTheyThrow()
+        {
+            // Arrange
+            bool checkerRan = false;
+            IChecker[] checkers = { new TestChecker(() =>
+            {
+                checkerRan = true;
+                throw new Exception("checker failed");
+            }) };
+
+            var platformVersion = "1.0.0";
+            var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
+            var scriptContent = "script-content";
+            var platform = new TestProgrammingPlatform(
+                TestPlatformName, new[] { platformVersion }, true, scriptContent, detector);
+
+            var generator = CreateDefaultScriptGenerator(new[] { platform }, checkers);
+            var context = CreateScriptGeneratorContext(TestPlatformName, platformVersion);
+
+            var messages = new List<ICheckerMessage>();
+
+            // Act
+            generator.TryGenerateBashScript(context, out var generatedScript, messages);
+
+            // Assert
+            Assert.True(checkerRan);
         }
 
         private string CreateNewDir()
@@ -755,20 +784,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [Checker(TestPlatformName)]
         private class TestChecker : IChecker
         {
-            private readonly IEnumerable<ICheckerMessage> _sourceRepoMessages;
-            private readonly IEnumerable<ICheckerMessage> _toolVersionMessages;
+            private readonly Func<IEnumerable<ICheckerMessage>> _sourceRepoMessageProvider;
+            private readonly Func<IEnumerable<ICheckerMessage>> _toolVersionMessageProvider;
 
             public TestChecker(
-                IEnumerable<ICheckerMessage> repoMessages = null,
-                IEnumerable<ICheckerMessage> toolMessages = null)
+                Func<IEnumerable<ICheckerMessage>> repoMessageProvider = null,
+                Func<IEnumerable<ICheckerMessage>> toolMessageProvider = null)
             {
-                _sourceRepoMessages  = repoMessages ?? Enumerable.Empty<ICheckerMessage>();
-                _toolVersionMessages = toolMessages ?? Enumerable.Empty<ICheckerMessage>();
+                _sourceRepoMessageProvider  = repoMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
+                _toolVersionMessageProvider = toolMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
             }
 
-            public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo) => _sourceRepoMessages;
+            public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo) =>
+                _sourceRepoMessageProvider();
 
-            public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) => _toolVersionMessages;
+            public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) =>
+                _toolVersionMessageProvider();
         }
 
         private class TestSourceRepo : ISourceRepo
