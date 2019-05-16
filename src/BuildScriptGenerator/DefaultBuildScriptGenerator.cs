@@ -6,8 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
@@ -20,20 +20,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
-        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
+        private readonly IEnumerable<IChecker> _checkers;
+        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
 
         public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
+            IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
+            _checkers = checkers;
         }
 
-        public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script)
+        public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script, List<ICheckerMessage> checkerMessageSink = null)
         {
             script = null;
 
@@ -50,6 +53,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     directoriesToExcludeFromCopyToIntermediateDir,
                     directoriesToExcludeFromCopyToBuildOutputDir);
                 timedEvent.SetProperties(toolsToVersion);
+            }
+
+            if (_checkers != null && checkerMessageSink != null)
+            {
+                RunCheckers(context, toolsToVersion, checkerMessageSink);
             }
 
             if (snippets != null)
@@ -181,6 +189,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
             var benvArgs = string.Join(' ', listOfBenvArgs);
             return benvArgs;
+        }
+
+        private void RunCheckers(
+            BuildScriptGeneratorContext ctx,
+            IDictionary<string, string> tools,
+            [NotNull] List<ICheckerMessage> checkerMessageSink)
+        {
+            var checkers = _checkers.WhereApplicable(tools);
+
+            using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
+            {
+                timedEvent.AddProperty(
+                    "checkersApplied",
+                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
+
+                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo)));
+                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckToolVersions(tools)));
+            }
         }
 
         private IList<BuildScriptSnippet> GetBuildSnippets(

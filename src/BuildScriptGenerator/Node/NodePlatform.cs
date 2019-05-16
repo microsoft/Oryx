@@ -197,7 +197,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 $"{nameof(sourceRepo)} must not be null since Node needs access to the repository");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion["node"] = targetPlatformVersion;
+                toolsToVersion[NodeConstants.NodeJsName] = targetPlatformVersion;
             }
 
             var packageJson = GetPackageJsonObject(sourceRepo, _logger);

@@ -1,6 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using System;
+using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -9,9 +13,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly string[] _targetToolNames;
 
-        public CheckerAttribute(params string[] toolNames)
-        {
-            _targetToolNames = toolNames;
-        }
+        public CheckerAttribute(params string[] toolNames) => _targetToolNames = toolNames;
+
+        public string[] TargetToolNames => _targetToolNames;
     }
 }

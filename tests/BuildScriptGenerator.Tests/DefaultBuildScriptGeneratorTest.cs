@@ -539,13 +539,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
             IProgrammingPlatform generator)
         {
-            return new DefaultBuildScriptGenerator(new[] { generator }, new TestEnvironmentSettingsProvider(), NullLogger<DefaultBuildScriptGenerator>.Instance);
+            return new DefaultBuildScriptGenerator(new[] { generator }, new TestEnvironmentSettingsProvider(), null, NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
         private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
             IProgrammingPlatform[] generators)
         {
-            return new DefaultBuildScriptGenerator(generators, new TestEnvironmentSettingsProvider(), NullLogger<DefaultBuildScriptGenerator>.Instance);
+            return new DefaultBuildScriptGenerator(generators, new TestEnvironmentSettingsProvider(), null, NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(

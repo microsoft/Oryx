@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
@@ -135,7 +135,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string scriptContent;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
-                var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
+                var checkerMessages = new List<ICheckerMessage>();
+                var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
+
+                if (checkerMessages.Count > 0)
+                {
+                    var messageFormatter = new DefinitionListFormatter();
+                    checkerMessages.Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
+                    console.WriteLine(messageFormatter.ToString());
+                }
+
                 if (!scriptGenerator.TryGenerateScript(out scriptContent))
                 {
                     stopwatch.AddProperty("failed", "true");

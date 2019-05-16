@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,14 +16,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class BuildScriptGenerator
     {
-        private readonly IConsole _console;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IConsole _console;
+        private readonly List<ICheckerMessage> _checkerMessageSink;
         private readonly ILogger<BuildScriptGenerator> _logger;
 
-        public BuildScriptGenerator(IConsole console, IServiceProvider serviceProvider)
+        public BuildScriptGenerator(
+            IServiceProvider serviceProvider,
+            IConsole console,
+            List<ICheckerMessage> checkerMessageSink)
         {
             _console = console;
             _serviceProvider = serviceProvider;
+            _checkerMessageSink = checkerMessageSink;
             _logger = _serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
         }
 
@@ -52,14 +58,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             try
             {
                 var options = _serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-                var scriptGenerator = _serviceProvider.GetRequiredService<IBuildScriptGenerator>();
+                var scriptGen = _serviceProvider.GetRequiredService<IBuildScriptGenerator>();
                 var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
                 var environment = _serviceProvider.GetRequiredService<CliEnvironmentSettings>();
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
-                var scriptGeneratorContext = CreateContext(options, environment, sourceRepo);
+                var scriptGenCtx = CreateContext(options, environment, sourceRepo);
 
                 // Try generating a script
-                if (!scriptGenerator.TryGenerateBashScript(scriptGeneratorContext, out generatedScript))
+                if (!scriptGen.TryGenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink))
                 {
                     _console.Error.WriteLine(
                         "Error: Could not find a script generator which can generate a script for " +
