@@ -3,14 +3,6 @@ parameters:
   acrName: oryxdevmcr.azurecr.io
 
 steps:
-- task: DownloadPipelineArtifact@0
-  displayName: 'Download Pipeline Artifact'
-  inputs:
-    pipelineId: 'Oryx-CI'
-    artifactName: 'drop-$(Build.BuildNumber)'
-    targetPath: '$(Build.SourcesDirectory)'
-  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'))
-
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ] && [ "$(TestIntegration)" != "true" ]
     then
