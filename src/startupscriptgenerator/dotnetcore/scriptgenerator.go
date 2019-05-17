@@ -41,62 +41,90 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	scriptBuilder.WriteString("readonly defaultAppFileDir=\"" + defaultAppFileDir + "\"\n")
 	scriptBuilder.WriteString("readonly defaultAppFilePath=\"" + gen.DefaultAppFilePath + "\"\n")
 
-	scriptBuilder.WriteString("cd \"$appPath\"\n")
-	scriptBuilder.WriteString("if [ ! -z \"$userStartUpCommand\" ]; then\n")
-	scriptBuilder.WriteString("    len=${#userStartUpCommand[@]}\n")
-	scriptBuilder.WriteString("    if [ \"$len\" -eq \"1\" ]; then\n")
-	scriptBuilder.WriteString("      if [ -f \"${userStartUpCommand[$0]}\" ]; then\n")
-	scriptBuilder.WriteString("        startUpCommand=\"$userStartUpCommand\"\n")
-	scriptBuilder.WriteString("      else\n")
-	scriptBuilder.WriteString("        echo \"Could not find the startup file '${userStartUpCommand[$0]}' on disk.\"\n")
-	scriptBuilder.WriteString("      fi\n")
-	scriptBuilder.WriteString("    elif [ \"$len\" -eq \"2\" ] && [ \"${userStartUpCommand[$0]}\" == \"dotnet\" ]; then\n")
-	scriptBuilder.WriteString("      if [ -f \"${userStartUpCommand[$1]}\" ]; then\n")
-	scriptBuilder.WriteString("        startUpCommand=\"$userStartUpCommand\"\n")
-	scriptBuilder.WriteString("      else\n")
-	scriptBuilder.WriteString("        echo \"Could not find the file '${userStartUpCommand[$1]}' on disk.\"\n")
-	scriptBuilder.WriteString("      fi\n")
-	scriptBuilder.WriteString("    else\n")
-	scriptBuilder.WriteString("      startUpCommand=\"$userStartUpCommand\"\n")
-	scriptBuilder.WriteString("    fi\n")
-	scriptBuilder.WriteString("fi\n\n")
+	script := `
+isLinuxExecutable() {
+	local file="$1"
+	if [ -x "$file" ] && file "$file" | grep -q "GNU/Linux"
+	then
+	  isLinuxExecutableResult="true"
+	else
+	  isLinuxExecutableResult="false"
+	fi
+}
 
-	scriptBuilder.WriteString("if [ -z \"$startUpCommand\" ]; then\n")
-	scriptBuilder.WriteString("  echo Finding the startup file name...\n")
-	scriptBuilder.WriteString("  for file in *; do \n")
-	scriptBuilder.WriteString("    if [ -f \"$file\" ]; then \n")
-	scriptBuilder.WriteString("      case $file in\n")
-	scriptBuilder.WriteString("        *.runtimeconfig.json)\n")
-	scriptBuilder.WriteString("          startupDllFileNamePrefix=${file%%.runtimeconfig.json}\n")
-	scriptBuilder.WriteString("          startupExecutableFileName=\"$startupDllFileNamePrefix\"\n")
-	scriptBuilder.WriteString("          startupDllFileName=\"$startupDllFileNamePrefix.dll\"\n")
-	scriptBuilder.WriteString("          break\n")
-	scriptBuilder.WriteString("        ;;\n")
-	scriptBuilder.WriteString("      esac\n")
-	scriptBuilder.WriteString("    fi\n")
-	scriptBuilder.WriteString("  done\n\n")
-	scriptBuilder.WriteString("  if [ -f \"$startupExecutableFileName\" ]; then\n")
-	scriptBuilder.WriteString("    echo \"Found the startup file '$startupExecutableFileName'\"\n")
-	scriptBuilder.WriteString("    startUpCommand=\"./$startupExecutableFileName\"\n")
-	scriptBuilder.WriteString("  elif [ -f \"$startupDllFileName\" ]; then\n")
-	scriptBuilder.WriteString("    echo \"Found the startup file '$startupDllFileName'\"\n")
-	scriptBuilder.WriteString("    startUpCommand=\"dotnet '$startupDllFileName'\"\n")
-	scriptBuilder.WriteString("  fi\n")
-	scriptBuilder.WriteString("fi\n\n")
+cd "$appPath"
+if [ ! -z "$userStartUpCommand" ]; then
+	len=${#userStartUpCommand[@]}
+	if [ "$len" -eq "1" ]; then
+		file="${userStartUpCommand[0]}"
+		if [ -f "$file" ]; then
+		  # The startup command could be for example: 'todoApp' or './todoApp'
+		  # So just extract the 'todoApp' part and prefix it with './' to be './todoApp'
+		  startUpCommand="./${file##*/}"
+		else
+		  echo "Could not find the startup file '$file' on disk."
+		fi
+	elif [ "$len" -eq "2" ] && [ "${userStartUpCommand[0]}" == "dotnet" ]; then
+		if [ -f "${userStartUpCommand[1]}" ]; then
+		  startUpCommand="$userStartUpCommand"
+		else
+		  echo "Could not find the file '${userStartUpCommand[1]}' on disk."
+		fi
+	else
+		startUpCommand="$userStartUpCommand"
+	fi
+fi
 
-	scriptBuilder.WriteString("if [ -z \"$startUpCommand\" ]; then\n")
-	scriptBuilder.WriteString("  if [ -f \"$defaultAppFilePath\" ]; then\n")
-	scriptBuilder.WriteString("    cd \"$defaultAppFileDir\"\n")
-	scriptBuilder.WriteString("    startUpCommand=\"dotnet '$defaultAppFilePath'\"\n")
-	scriptBuilder.WriteString("  else\n")
-	scriptBuilder.WriteString("    echo Unable to start the application.\n")
-	scriptBuilder.WriteString("    exit 1\n")
-	scriptBuilder.WriteString("  fi\n\n")
-	scriptBuilder.WriteString("fi\n\n")
+if [ -z "$startUpCommand" ]; then
+	echo Finding the startup file name...
+	for file in *; do 
+		if [ -f "$file" ]; then 
+			case $file in
+			*.runtimeconfig.json)
+				startupDllFileNamePrefix=${file%%.runtimeconfig.json}
+				startupExecutableFileName="$startupDllFileNamePrefix"
+				startupDllFileName="$startupDllFileNamePrefix.dll"
+				break
+			;;
+			esac
+		fi
+	done
 
-	scriptBuilder.WriteString("echo \"Running the command '$startUpCommand'...\"\n")
-	scriptBuilder.WriteString("eval \"$startUpCommand\"\n\n")
+	if [ -f "$startupExecutableFileName" ]; then
+		# Starting ASP.NET Core 3.0, an executable is created based on the platform where it is published from,
+		# so for example, if a user does a publish (not self-contained) on Mac, there would be files like 'todoApp'
+		# and 'todoApp.dll'. In this scenario the 'todoApp' executable is actually meant for Mac and not for Linux.
+		# So here we check for the file type and fall back to using 'dotnet todoApp.dll'.
 
+		isLinuxExecutable $startupExecutableFileName
+		if [ "$isLinuxExecutableResult" == "true" ]; then
+			echo "Found the startup executable file '$startupExecutableFileName'"
+			startUpCommand="./$startupExecutableFileName"
+		else
+			echo "Cannot use executable '$startupExecutableFileName' as startup file as it is not meant for Linux"
+		fi
+	fi
+
+	if [ -z "$startUpCommand" ] && [ -f "$startupDllFileName" ]; then
+			echo "Found the startup file '$startupDllFileName'"
+			startUpCommand="dotnet '$startupDllFileName'"
+	fi
+fi
+
+if [ -z "$startUpCommand" ]; then
+	if [ -f "$defaultAppFilePath" ]; then
+		cd "$defaultAppFileDir"
+		startUpCommand="dotnet '$defaultAppFilePath'"
+	else
+		echo Unable to start the application.
+		exit 1
+	fi
+fi
+
+echo "Running the command '$startUpCommand'..."
+eval "$startUpCommand"
+`
+	scriptBuilder.WriteString(script)
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
