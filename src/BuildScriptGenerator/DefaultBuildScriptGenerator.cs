@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _checkers = checkers;
         }
 
-        public bool GenerateBashScript(
+        public void GenerateBashScript(
             BuildScriptGeneratorContext context,
             out string script,
             List<ICheckerMessage> checkerMessageSink = null)
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     if (snippet.IsFullScript)
                     {
                         script = snippet.BashBuildScriptSnippet;
-                        return true;
+                        return;
                     }
                 }
             }
@@ -94,12 +94,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     new ReadOnlyDictionary<string, string>(toolsToVersion),
                     directoriesToExcludeFromCopyToIntermediateDir,
                     directoriesToExcludeFromCopyToBuildOutputDir);
-                return true;
             }
             else
             {
                 LogAndThrowNoPlatformFound(context);
-                return false;
             }
         }
 

@@ -65,15 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
                 var scriptGenCtx = CreateContext(options, environment, sourceRepo);
 
-                // Try generating a script
-                if (!scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink))
-                {
-                    _console.Error.WriteLine(
-                        "Error: Could not find a script generator which can generate a script for " +
-                        $"the code in '{options.SourceDir}'.");
-                    return false;
-                }
-
+                scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink);
                 return true;
             }
             catch (InvalidUsageException ex)

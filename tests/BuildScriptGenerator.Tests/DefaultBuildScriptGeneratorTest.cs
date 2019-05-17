@@ -44,10 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: null);
 
             // Act
-            var canGenerateScript = generator.GenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.True(detector.DetectInvoked);
         }
@@ -77,10 +76,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             context.DisableMultiPlatformBuild = true;
 
             // Act
-            var canGenerateScript = generator.GenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.DoesNotContain("some code", generatedScript);
         }
@@ -104,7 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             context.LanguageVersion = null; // version not provided by user
 
             // Act
-            var canGenerateScript = generator.GenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
             Assert.Contains("script-content", generatedScript);
@@ -315,8 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: false);
 
             // Act & Assert
-            var generateOutput = generator.GenerateBashScript(context, out var generatedScript);
-            Assert.True(generateOutput);
+            generator.GenerateBashScript(context, out var generatedScript);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -351,8 +348,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: false);
 
             // Act & Assert
-            var generateOutput = generator.GenerateBashScript(context, out var generatedScript);
-            Assert.True(generateOutput);
+            generator.GenerateBashScript(context, out var generatedScript);
             Assert.False(detector.DetectInvoked);
             Assert.False(detector2.DetectInvoked);
         }
@@ -388,8 +384,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: true);
 
             // Act & Assert
-            var generateOutput = generator.GenerateBashScript(context, out var generatedScript);
-            Assert.True(generateOutput);
+            generator.GenerateBashScript(context, out var generatedScript);
             Assert.False(detector.DetectInvoked);
             Assert.True(detector2.DetectInvoked);
         }
@@ -420,10 +415,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: "1.0.0");
 
             // Act
-            var canGenerateScript = generator.GenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.False(detector.DetectInvoked);
         }
@@ -457,10 +451,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: true);
 
             // Act
-            var canGenerateScript = generator.GenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("ABCDEFG", generatedScript);
             Assert.Contains("123456", generatedScript);
         }
@@ -489,10 +482,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: "1.0.0");
 
             // Act
-            var canGenerateScript = generator.GenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("ABCDEFG", generatedScript);
             Assert.DoesNotContain("123456", generatedScript);
         }
