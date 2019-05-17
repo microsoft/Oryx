@@ -16,7 +16,12 @@ FROM %DOTNETCORE_BASE_IMAGE%
 # We manually update it here so we can still depend on the original images.
 # This command should be removed once support for deprecated .NET core images is halted.
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
-RUN apt-get update && apt-get install curl --yes
+
+RUN apt-get update \
+  && apt-get install -y \
+     curl \
+     file \
+  && rm -rf /var/lib/apt/lists/*
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
