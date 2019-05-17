@@ -5,12 +5,14 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     [Checker(NodeConstants.NodeJsName)]
     public class NodeVersionChecker : IChecker
     {
+        [NotNull]
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
             if (tools.ContainsKey(NodeConstants.NodeJsName))
@@ -21,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     return new[]
                     {
                         new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating. " +
-                                            "Versions supported in Oryx: https://github.com/microsoft/Oryx");
+                                           $"Versions supported in Oryx: {Constants.OryxGitHubUrl}")
                     };
                 }
             }
@@ -29,6 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return Enumerable.Empty<ICheckerMessage>();
         }
 
+        [NotNull]
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             return Enumerable.Empty<ICheckerMessage>();

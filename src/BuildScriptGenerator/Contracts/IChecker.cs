@@ -3,8 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
