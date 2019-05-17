@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="script">The generated script if the operation was successful.</param>
         /// <param name="checkerMessageSink">If specified, messages from checkers will be appended to this list.</param>
         /// <returns><c>true</c> if the operation was successful, <c>false</c> otherwise.</returns>
-        bool TryGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext, out string script, List<ICheckerMessage> checkerMessageSink = null);
+        bool GenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext, out string script, List<ICheckerMessage> checkerMessageSink = null);
 
         /// <summary>
         /// Determines which platforms can be used to build the given application.
