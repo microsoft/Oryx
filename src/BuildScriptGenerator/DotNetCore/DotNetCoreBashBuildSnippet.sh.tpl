@@ -7,7 +7,7 @@ function publishToDirectory()
 	echo
 	echo "Publishing to directory '$directoryToPublishTo'..."
 	echo
-	dotnet publish "{{ ProjectFile }}" -c Release -o "$directoryToPublishTo"
+	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$directoryToPublishTo"
 }
 
 TOTAL_EXECUTION_START_TIME=$SECONDS
