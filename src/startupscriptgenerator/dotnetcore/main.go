@@ -63,7 +63,7 @@ func main() {
 	}
 
 	scriptBuilder := strings.Builder{}
-	scriptBuilder.WriteString("#!/bin/sh\n")
+	scriptBuilder.WriteString("#!/bin/bash\n")
 	scriptBuilder.WriteString("set -e\n\n")
 
 	if fullRunFromPath != "" {

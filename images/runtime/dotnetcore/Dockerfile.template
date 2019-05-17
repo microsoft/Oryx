@@ -11,6 +11,11 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 FROM %DOTNETCORE_BASE_IMAGE%
 
+RUN apt-get update \
+  && apt-get install -y \
+     file \
+  && rm -rf /var/lib/apt/lists/*
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
