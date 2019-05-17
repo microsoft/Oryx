@@ -81,13 +81,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var env = serviceProvider.GetRequiredService<IEnvironment>();
-
-            // This will be an App Service app name if Oryx was invoked by Kudu
-            var appName = env.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName)
-                ?? env.GetEnvironmentVariable(LoggingConstants.ContainerRegistryAppNameEnvironmentVariableName)
-                ?? LoggingConstants.DefaultOperationName;
-            var buildOpId = logger.StartOperation(appName);
+            var buildOpId = logger.StartOperation(
+                BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
             console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
@@ -309,6 +304,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return true;
+        }
+
+        private static string BuildOperationName(IEnvironment env)
+        {
+            foreach (var srcType in LoggingConstants.OperationNameSourceEnvVars)
+            {
+                var opName = env.GetEnvironmentVariable(srcType.Key);
+                if (!string.IsNullOrWhiteSpace(opName))
+                {
+                    return $"{srcType.Value}:{opName}";
+                }
+            }
+
+            return LoggingConstants.DefaultOperationName;
         }
 
         private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)

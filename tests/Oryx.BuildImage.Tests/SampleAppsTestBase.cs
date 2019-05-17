@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected readonly DockerCli _dockerCli;
 
         public static EnvironmentVariable CreateAppNameEnvVar(string sampleAppName) =>
-            new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, sampleAppName);
+            new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, sampleAppName);
 
         public SampleAppsTestBase(ITestOutputHelper output, DockerCli dockerCli = null)
         {
