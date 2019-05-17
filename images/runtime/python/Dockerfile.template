@@ -9,7 +9,21 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 # GOPATH is set to "/go" in the base image, so no need to set it again
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM python:%PYTHON_BASE_IMAGE%
+FROM buildpack-deps:stretch AS main
+
+ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
+
+# Add python binaries from Oryx base image
+COPY --from=mcr.microsoft.com/oryx/python-build-%PYTHON_VERSION%:%IMAGE_TAG% /opt /opt
+RUN set -ex \
+ && cd /opt/python/ \
+ && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
+ && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
+ && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
+ && ldconfig
+
+ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin/:${PATH}"
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
