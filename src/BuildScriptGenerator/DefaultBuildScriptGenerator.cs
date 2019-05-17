@@ -43,7 +43,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             script = null;
 
-            var toolsToVersion = new Dictionary<string, string>(); // To be populated by GetBuildSnippets
+            // To be populated by GetBuildSnippets
+            var toolsToVersion = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
             IList<BuildScriptSnippet> snippets;
             var directoriesToExcludeFromCopyToIntermediateDir = new List<string>();
             var directoriesToExcludeFromCopyToBuildOutputDir = new List<string>();
