@@ -1,4 +1,4 @@
-FROM node:%NODE_BASE_IMAGE%
+FROM node:9.4.0-stretch
 
 RUN apt-get update && apt-get install unzip --yes
 
