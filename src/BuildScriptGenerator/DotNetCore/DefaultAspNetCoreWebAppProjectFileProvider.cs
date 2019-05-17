@@ -44,12 +44,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (string.IsNullOrEmpty(projectEnvVariablePath))
             {
                 // Check if root of the repo has a .csproj or a .fsproj file
-                projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.CSharpProjectFileExtensionName);
-
-                if (projectFile == null)
-                {
-                    projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.FSharpProjectFileExtensionName);
-                }
+                projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.CSharpProjectFileExtension) ??
+                    GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.FSharpProjectFileExtension);
             }
             else
             {
@@ -87,24 +83,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // search for .csproj files
                 var projectFiles = GetAllProjectFilesInRepo(
                         sourceRepo,
-                        DotnetCoreConstants.CSharpProjectFileExtensionName);
+                        DotnetCoreConstants.CSharpProjectFileExtension);
 
                 if (!projectFiles.Any())
                 {
                     _logger.LogDebug(
                         "Could not find any files with extension " +
-                        $"'{DotnetCoreConstants.CSharpProjectFileExtensionName}' in repo.");
+                        $"'{DotnetCoreConstants.CSharpProjectFileExtension}' in repo.");
 
                     // search for .fsproj files
                     projectFiles = GetAllProjectFilesInRepo(
                         sourceRepo,
-                        DotnetCoreConstants.FSharpProjectFileExtensionName);
+                        DotnetCoreConstants.FSharpProjectFileExtension);
 
                     if (!projectFiles.Any())
                     {
                         _logger.LogDebug(
                             "Could not find any files with extension " +
-                            $"'{DotnetCoreConstants.FSharpProjectFileExtensionName}' in repo.");
+                            $"'{DotnetCoreConstants.FSharpProjectFileExtension}' in repo.");
                         return null;
                     }
                 }

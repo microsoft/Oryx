@@ -88,8 +88,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent(string projectFileExtension)
         {
             // Arrange
@@ -107,8 +107,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject(string projectFileExtension)
         {
             // Arrange
@@ -128,8 +128,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         // This is a scenario where our probing of a project could be incorrect. In this case a user can explicitly
         // specify the project file to use and we use it without checking further.
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp(
             string projectFileExtension)
         {
@@ -174,8 +174,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo(string projectFileExtension)
         {
             // Arrange
@@ -196,8 +196,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects(string projectFileExtension)
         {
             // Arrange
@@ -218,8 +218,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects_AcrossDifferentFolderLevels(
             string projectFileExtension)
         {
@@ -242,8 +242,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_DoesNotThrow_IfSourceRepo_HasMultipleWebAppProjects_AndProjectEnvVariableValue(
             string projectFileExtension)
         {
@@ -269,8 +269,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("csproj")]
-        [InlineData("fsproj")]
+        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
         public void GetProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo(string projectFileExtension)
         {
             // Arrange
