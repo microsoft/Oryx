@@ -39,6 +39,63 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
           </ItemGroup>
         </Project>";
 
+        private const string WebSdkProjectFileWithVersion = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web/1.0.0"">
+          <PropertyGroup>
+            <LangVersion>7.3</LangVersion>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+        </Project>";
+
+        private const string NonWebSdkProjectFileWithVersion = @"
+        <Project Sdk=""Microsoft.NET.Sdk/1.0.0"">
+          <PropertyGroup>
+            <LangVersion>7.3</LangVersion>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+        </Project>";
+
+        private const string WebSdkProjectFileWithSdkInfoAsElement = @"
+        <Project>
+          <Sdk Name=""Microsoft.NET.Sdk.Web"" Version=""1.0.0"" />
+          <PropertyGroup>
+            <LangVersion>7.3</LangVersion>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+        </Project>";
+
+        private const string NonWebSdkProjectFileWithSdkInfoAsElement = @"
+        <Project>
+          <Sdk Name=""Microsoft.NET.Sdk"" Version=""1.0.0"" />
+          <PropertyGroup>
+            <LangVersion>7.3</LangVersion>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+        </Project>";
+
+        private const string NoSdkInformationProjectFile = @"
+        <Project>
+          <PropertyGroup>
+            <LangVersion>7.3</LangVersion>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+        </Project>";
+
         private readonly string _tempDirRoot;
 
         public DefaultAspNetCoreWebAppProjectFileProviderTest(TestTempDirTestFixture testFixture)
@@ -104,6 +161,91 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.Equal(expectedFile, actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsProjectFile_IfSdkHasBothNameAndVersion()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, WebSdkProjectFileWithVersion);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsNull_IfSdkHasBothNameAndVersion_AndIsNotWebSdk()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, NonWebSdkProjectFileWithVersion);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Null(actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsProjectFile_IfSdkIsPresentAsElement()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, WebSdkProjectFileWithSdkInfoAsElement);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsNull_IfSdkIsPresentAsElement_AndIsNotWebSdk()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, NonWebSdkProjectFileWithSdkInfoAsElement);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Null(actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsNull_WhenNoInformationAboutSdkIsPresentInProjectFile()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, NoSdkInformationProjectFile);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Null(actual);
         }
 
         [Theory]

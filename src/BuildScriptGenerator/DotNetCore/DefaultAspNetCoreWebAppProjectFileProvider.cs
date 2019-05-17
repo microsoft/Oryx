@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -145,9 +146,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         // To enable unit testing
         internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            var webSdkProjectElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.WebSdkProjectXPathExpression);
-            return webSdkProjectElement != null;
+            // For reference
+            // https://docs.microsoft.com/en-us/visualstudio/msbuild/project-element-msbuild?view=vs-2019
+
+            // Look for the attribute value on Project element first as that is more common
+            // Example: <Project Sdk="Microsoft.NET.Sdk.Web">
+            var expectedWebSdkName = DotnetCoreConstants.WebSdkName.ToLowerInvariant();
+            var sdkAttributeValue = projectFileDoc.XPathEvaluate(
+                DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
+            var sdkName = sdkAttributeValue as string;
+            if (!string.IsNullOrEmpty(sdkName))
+            {
+                return sdkName.ToLowerInvariant().StartsWith(expectedWebSdkName);
+            }
+
+            // Example:
+            // <Project>
+            //    <Sdk Name="Microsoft.NET.Sdk.Web" Version="1.0.0" />
+            var sdkNameAttributeValue = projectFileDoc.XPathEvaluate(
+                DotnetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
+            sdkName = sdkNameAttributeValue as string;
+            if (!string.IsNullOrEmpty(sdkName))
+            {
+                return string.Equals(sdkName, expectedWebSdkName, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return false;
         }
 
         private static IEnumerable<string> GetAllProjectFilesInRepo(
@@ -167,11 +191,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private static bool IsAspNetCore30App(XDocument projectFileDoc)
         {
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkXPathExpression);
+                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
             if (string.Equals(targetFrameworkElement.Value, DotnetCoreConstants.NetCoreApp30))
             {
                 var projectElement = projectFileDoc.XPathSelectElement(
-                    DotnetCoreConstants.WebSdkProjectXPathExpression);
+                    DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
                 return projectElement != null;
             }
 
