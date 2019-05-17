@@ -43,10 +43,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string projectFile = null;
             if (string.IsNullOrEmpty(projectEnvVariablePath))
             {
-                // Check if root of the repo has a .csproj file
-                projectFile = sourceRepo
-                    .EnumerateFiles($"*.{DotnetCoreConstants.ProjectFileExtensionName}", searchSubDirectories: false)
-                    .FirstOrDefault();
+                // Check if root of the repo has a .csproj or a .fsproj file
+                projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.CSharpProjectFileExtension) ??
+                    GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.FSharpProjectFileExtension);
             }
             else
             {
@@ -81,15 +80,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // to web sdk.
             if (projectFile == null)
             {
-                var projectFiles = sourceRepo
-                    .EnumerateFiles($"*.{DotnetCoreConstants.ProjectFileExtensionName}", searchSubDirectories: true);
+                // search for .csproj files
+                var projectFiles = GetAllProjectFilesInRepo(
+                        sourceRepo,
+                        DotnetCoreConstants.CSharpProjectFileExtension);
 
                 if (!projectFiles.Any())
                 {
                     _logger.LogDebug(
                         "Could not find any files with extension " +
-                        $"'{DotnetCoreConstants.ProjectFileExtensionName}' in repo.");
-                    return null;
+                        $"'{DotnetCoreConstants.CSharpProjectFileExtension}' in repo.");
+
+                    // search for .fsproj files
+                    projectFiles = GetAllProjectFilesInRepo(
+                        sourceRepo,
+                        DotnetCoreConstants.FSharpProjectFileExtension);
+
+                    if (!projectFiles.Any())
+                    {
+                        _logger.LogDebug(
+                            "Could not find any files with extension " +
+                            $"'{DotnetCoreConstants.FSharpProjectFileExtension}' in repo.");
+                        return null;
+                    }
                 }
 
                 var webAppProjects = new List<string>();
@@ -135,6 +148,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var webSdkProjectElement = projectFileDoc.XPathSelectElement(
                 DotnetCoreConstants.WebSdkProjectXPathExpression);
             return webSdkProjectElement != null;
+        }
+
+        private static IEnumerable<string> GetAllProjectFilesInRepo(
+            ISourceRepo sourceRepo,
+            string projectFileExtension)
+        {
+            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories: true);
+        }
+
+        private static string GetProjectFileAtRoot(ISourceRepo sourceRepo, string projectFileExtension)
+        {
+            return sourceRepo
+                .EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories: false)
+                .FirstOrDefault();
         }
 
         private static bool IsAspNetCore30App(XDocument projectFileDoc)
