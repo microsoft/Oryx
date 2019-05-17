@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly string[] _targetToolNames;
 
-        public CheckerAttribute(params string[] toolNames) => _targetToolNames = toolNames;
+        public CheckerAttribute(params string[] targetToolNames) => _targetToolNames = targetToolNames;
 
         public string[] TargetToolNames => _targetToolNames;
     }
