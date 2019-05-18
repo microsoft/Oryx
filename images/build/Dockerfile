@@ -1,7 +1,7 @@
 # Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
 ARG BUILDSCRIPT_SOURCE=buildscriptbuilder
 ARG AGENTBUILD
-FROM buildpack-deps:stable AS main
+FROM buildpack-deps:stretch AS main
 # End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
 
 # Configure locale (required for Python)
