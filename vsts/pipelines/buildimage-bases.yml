@@ -6,6 +6,7 @@ variables:
 jobs:
 
 - template: _buildimage-bases.job-template.yml
+  timeoutInMinutes: 250
   parameters:
     displayName: Build and push Node base images for runtime
     scriptPath: ./build/build-runtimeimages-bases.sh
