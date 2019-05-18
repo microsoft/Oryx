@@ -221,7 +221,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1", "v10.1.0")]
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
-        [InlineData("10.14.1", "v10.14.1")]
+        [InlineData("10.14.2", "v10.14.2")]
         [InlineData("10.15", "v10.15.2")]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
@@ -256,7 +256,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1", "5.6.0")]
         // Make sure the we get the upgraded version of npm in the following cases
         [InlineData("10.10.0", "6.9.0")]
-        [InlineData("10.14.1", "6.9.0")]
+        [InlineData("10.14.2", "6.9.0")]
         [InlineData("10.15", "6.9.0")]
         public void UsesExpectedNpmVersion(string nodeVersion, string expectedOutput)
         {
