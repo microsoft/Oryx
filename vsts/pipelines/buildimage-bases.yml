@@ -4,7 +4,6 @@ variables:
   skipComponentGovernanceDetection: true
 
 jobs:
-
 - template: _buildimage-bases.job-template.yml
   parameters:
     displayName: Build and push Node base images for runtime
