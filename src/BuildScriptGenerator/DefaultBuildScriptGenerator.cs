@@ -99,6 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
+                // TODO: Should an UnsupportedLanguageException be thrown here?
+                // Seeing as the issue was that platforms were IDENTIFIED, but no build snippets were emitted from them
                 LogAndThrowNoPlatformFound(context);
             }
         }
