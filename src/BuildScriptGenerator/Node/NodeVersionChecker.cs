@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    [Checker(NodeConstants.NodeJsName)]
+    [Checker(NodeConstants.NodeToolName)]
     public class NodeVersionChecker : IChecker
     {
         [NotNull]

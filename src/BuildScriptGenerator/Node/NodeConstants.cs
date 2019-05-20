@@ -11,8 +11,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string PackageJsonFileName = "package.json";
         internal const string PackageLockJsonFileName = "package-lock.json";
         internal const string YarnLockFileName = "yarn.lock";
-        internal const string NpmName = "npm";
-        internal const string NpmCommand = NpmName;
+        internal const string NodeToolName = "node";
+        internal const string NpmToolName = "npm";
+        internal const string NpmCommand = NpmToolName;
         internal const string NpmStartCommand = "npm start";
         internal const string YarnStartCommand = "yarn run start";
         internal const string YarnCommand = "yarn";
