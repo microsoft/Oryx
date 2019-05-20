@@ -391,6 +391,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
 
         }
+
         [Fact]
         public async Task CanBuildAndRun_NetCore22WebApp()
         {
@@ -403,10 +404,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
+
+            // NOTE: Do NOT change this as we want to make sure that all the non-existent directories in the path
+            //       are created.
+            var startupFile = "/tmp/a/b/c/startup.sh";
+
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -output {startupFile}")
+                .AddCommand(startupFile)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
