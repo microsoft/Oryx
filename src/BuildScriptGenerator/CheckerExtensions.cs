@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 // If the checker didn't specify a scope, it's global
-                if (attr.TargetToolNames == null)
+                if (attr.TargetToolNames == null || attr.TargetToolNames.Length == 0)
                 {
                     return true;
                 }
