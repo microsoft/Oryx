@@ -11,11 +11,11 @@
       directory: src/startupscriptgenerator/common/consts
 - name: dot-net-core-versions
   constants:
-    dot-net-core-11-version: 1.1.13
-    dot-net-core-21-version: 2.1.603
-    dot-net-core-21-sha512: DD0EFB8AAE75D8F48EF3ABBECA38AE14D2621A47E37B2D9D74755B58F9173343305F1A62CFA9A03F17C42F58B1D1B653D271E7D1327C81FF4AF0A54C43C7DB59
-    dot-net-core-22-version: 2.2.202
-    dot-net-core-22-sha512: 14F5C0E6FBB874A882334E0D500E494B01D7F363028E72DB58DFFF6DB43C54670533539DCF6B8F50A97CE1E099119A8286CE84E193B361D65B1FD8C7DFFCE63D
+    dot-net-core-11-version: 1.1.14
+    dot-net-core-21-version: 2.1.604
+    dot-net-core-21-sha512: ad57d8c2a6b5bfaccb69270af0478a6717717e41672e52b96149a710626972983d8d5b10ce42201b306c57948435ec388545672a8c726c06f803d3c1d5a61860
+    dot-net-core-22-version: 2.2.204
+    dot-net-core-22-sha512: 1add882c32a96ad564ef3f2a38fdc9282c6ee1c851bc59c22ada911d36dbe5f2f839b428307510e3f93900246e0bbd4a277a9bd45f778df4b889782d6867bf01
     # Since preview names of .NET Core break the semver norms, it does not work well with the code
     # that we depend on for semantic version checks, so having two constants here.
     dot-net-core-30-version-preview-name: 3.0.100-preview5-011568
