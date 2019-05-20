@@ -16,6 +16,8 @@ cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 declare BUILDSCRIPT_SOURCE="buildscriptbuilder"
 declare BUILD_SIGNED=""
 
+echo "SignType is: "$SignType
+
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
 if [ "$SignType" == "real" ] || [ "$SignType" == "Real" ]
 then
