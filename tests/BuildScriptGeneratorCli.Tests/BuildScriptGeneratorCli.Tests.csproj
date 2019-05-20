@@ -7,6 +7,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\build\TestAssembliesKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <AssemblyName>Microsoft.Oryx.BuildScriptGeneratorCli.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.BuildScriptGeneratorCli.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
