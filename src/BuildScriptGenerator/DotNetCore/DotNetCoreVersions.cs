@@ -4,11 +4,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreVersions
     {
-        public const string DotNetCore11Version = "1.1.13";
-        public const string DotNetCore21Version = "2.1.603";
-        public const string DotNetCore21Sha512 = "DD0EFB8AAE75D8F48EF3ABBECA38AE14D2621A47E37B2D9D74755B58F9173343305F1A62CFA9A03F17C42F58B1D1B653D271E7D1327C81FF4AF0A54C43C7DB59";
-        public const string DotNetCore22Version = "2.2.202";
-        public const string DotNetCore22Sha512 = "14F5C0E6FBB874A882334E0D500E494B01D7F363028E72DB58DFFF6DB43C54670533539DCF6B8F50A97CE1E099119A8286CE84E193B361D65B1FD8C7DFFCE63D";
+        public const string DotNetCore11Version = "1.1.14";
+        public const string DotNetCore21Version = "2.1.604";
+        public const string DotNetCore21Sha512 = "ad57d8c2a6b5bfaccb69270af0478a6717717e41672e52b96149a710626972983d8d5b10ce42201b306c57948435ec388545672a8c726c06f803d3c1d5a61860";
+        public const string DotNetCore22Version = "2.2.204";
+        public const string DotNetCore22Sha512 = "1add882c32a96ad564ef3f2a38fdc9282c6ee1c851bc59c22ada911d36dbe5f2f839b428307510e3f93900246e0bbd4a277a9bd45f778df4b889782d6867bf01";
         public const string DotNetCore30VersionPreviewName = "3.0.100-preview5-011568";
         public const string DotNetCore30Version = "3.0.100";
         public const string DotNetCore30Sha512 = "207af1f3161cbd0864902370475fcad5b500bf2b7199b06445e7c338053bc7cb0157ee1b4d00a37a351eae6e209417ee4a15eeacee086aac0ac1be7a62f3ad0b";
