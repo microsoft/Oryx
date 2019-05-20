@@ -8,6 +8,7 @@ parameters:
 jobs:
 - job: ${{ parameters.name }}
   displayName: ${{ parameters.displayName }}
+  timeoutInMinutes: 250
   steps:
 
   - task: ShellScript@2

@@ -69,6 +69,9 @@ then
     exit 1
 fi
 
+# Making sure we pull the latest base image
+docker pull buildpack-deps:stretch
+
 # Write the list of images that were built to artifacts folder
 mkdir -p "$BASE_IMAGES_ARTIFACTS_FILE_PREFIX"
 ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-bases.txt"

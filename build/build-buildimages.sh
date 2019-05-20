@@ -45,6 +45,8 @@ function BuildAndTagStage()
 	docker build --target $stageName -t $stageTagName $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 }
 
+docker pull buildpack-deps:stretch
+
 # Tag stages to avoid creating dangling images.
 # NOTE:
 # These images are not written to artifacts file because they are not expected
