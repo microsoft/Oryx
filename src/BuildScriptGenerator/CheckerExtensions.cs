@@ -34,8 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
-                logger.LogDebug("attr.TargetToolNames={targetToolNames}, tools.Keys={actualToolNames}",
-                    string.Join(',', attr.TargetToolNames), string.Join(',', tools.Keys));
+                logger.LogInformation("checker={checkerType}, checkerTools={checkerTools}, targetTools={targetTool}",
+                    checker.GetType(), string.Join(',', tools.Keys), string.Join(',', attr.TargetToolNames));
                 return attr.TargetToolNames.Intersect(tools.Keys).Count() > 0;
             });
         }
