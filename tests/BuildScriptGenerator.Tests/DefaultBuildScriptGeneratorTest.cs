@@ -733,6 +733,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 throw new NotImplementedException();
             }
 
+            public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
             public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
                 BuildScriptGeneratorContext scriptGeneratorContext)
             {

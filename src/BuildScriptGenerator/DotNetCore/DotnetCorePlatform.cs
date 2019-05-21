@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -91,7 +92,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
