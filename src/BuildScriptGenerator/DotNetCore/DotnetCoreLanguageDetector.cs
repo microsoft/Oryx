@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkXPathExpression);
+                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
             var targetFramework = targetFrameworkElement?.Value;
             if (string.IsNullOrEmpty(targetFramework))
             {
