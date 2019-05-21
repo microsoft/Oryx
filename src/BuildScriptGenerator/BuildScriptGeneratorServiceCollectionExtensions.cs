@@ -3,7 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -24,6 +26,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
             services.AddSingleton<IEnvironmentSettingsProvider, DefaultEnvironmentSettingsProvider>();
             services.AddSingleton<IRunScriptGenerator, RunScriptGenerator>();
+
+            // Add all checkers
+            foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())
+            {
+                if (type.GetCustomAttributes(typeof(CheckerAttribute), false).Length > 0)
+                {
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IChecker), type));
+                }
+            }
 
             return services;
         }
