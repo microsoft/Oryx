@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -21,19 +22,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotnetCorePlatform> _logger;
         private readonly DotnetCoreLanguageDetector _detector;
+        private readonly DotnetCoreScriptGeneratorOptions _options;
 
         public DotnetCorePlatform(
             IDotnetCoreVersionProvider versionProvider,
             IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotnetCorePlatform> logger,
-            DotnetCoreLanguageDetector detector)
+            DotnetCoreLanguageDetector detector,
+            IOptions<DotnetCoreScriptGeneratorOptions> options)
         {
             _versionProvider = versionProvider;
             _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
+            _options = options.Value;
         }
 
         public string Name => DotnetCoreConstants.LanguageName;
@@ -75,6 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 PostBuildCommand = postBuildCommand,
                 ManifestFileName = Constants.ManifestFileName,
                 ZipAllOutput = zipAllOutput,
+                Configuration = GetBuildConfiguration()
             };
             var script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.DotNetCoreSnippet,
@@ -143,6 +148,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return dirs;
         }
 
+        private string GetBuildConfiguration()
+        {
+            var configuration = _options.MSBuildConfiguration;
+            if (string.IsNullOrEmpty(configuration))
+            {
+                configuration = DotnetCoreConstants.DefaultMSBuildConfiguration;
+            }
+
+            return configuration;
+        }
+
         private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
         {
             return BuildPropertiesHelper.IsTrue(
@@ -153,15 +169,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(repo);
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(repo);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return (null, null);
             }
 
-            var publishDir = Path.Combine(
-                new FileInfo(projectFile).Directory.FullName,
-                DotnetCoreConstants.OryxOutputPublishDirectory);
+            var publishDir = Path.Combine(repo.RootPath, DotnetCoreConstants.OryxOutputPublishDirectory);
             return (projectFile, publishDir);
         }
 

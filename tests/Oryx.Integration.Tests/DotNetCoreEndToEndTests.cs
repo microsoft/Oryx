@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -441,7 +442,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore22WebApp_WithStartupFileName_HavingWhitespace()
+        public async Task CanBuildAndRun_NetCore22WebApp_UsingDebugConfiguration()
         {
             // Arrange
             var dotnetcoreVersion = "2.2";
@@ -450,12 +451,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
-               // Create files with whitespace in between them
-               .AddCommand($"mv {appOutputDir}/{NetCoreApp22WebApp}.dll {appOutputDir}/\"foo   bar.dll\"")
-               .AddCommand(
-                $"mv {appOutputDir}/{NetCoreApp22WebApp}.runtimeconfig.json" +
-                $" {appOutputDir}/\"foo   bar.runtimeconfig.json\"")
+                .SetEnvironmentVariable(EnvironmentSettingsKeys.MSBuildConfiguration, "Debug")
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -484,9 +481,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    Assert.Contains("Hello World! from Debug build.", data);
                 });
         }
+
 
         [Fact]
         public async Task CanBuildAndRun_NetCore30WebApp()
@@ -801,7 +799,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore22WebApp_HavingExplicitAssemblyName()
+        public async Task CanBuildAndRun_NetCore22WebApp_HavingExplicitAssemblyName_WithWhiteSpaceInIt()
         {
             // Arrange
             var appName = "NetCoreApp22WithExplicitAssemblyName";
@@ -812,6 +810,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddFileExistsCheck($"{appOutputDir}/foo  bar.dll")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -947,20 +946,16 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NetCore21WebApp_HavingMultipleProjects()
         {
             // Arrange
-            var appName = "MultiWebAppRepo";
-            var dotnetcoreVersion = "2.1";
+            var appName = "NetCoreApp22MultiProjectApp";
+            var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.Create(hostDir);
             var repoDir = volume.ContainerDir;
             var appOutputDir = $"{repoDir}/myoutputdir";
-            var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand(setProjectEnvVariable)
-                .AddCommand($"oryx build {repoDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {repoDir} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                // NOTE: Need not explicitly set the PROJECT environment variable as it is part of the build manifest
-                // file
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -986,7 +981,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World! from WebApp1", data);
+                    Assert.Contains("Hello World!", data);
                 });
         }
 
@@ -1077,6 +1072,55 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_UsingDefaultAppPath()
+        {
+            // Arrange
+            var dotnetcoreVersion = "2.2";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var doesNotContainApp = "/tmp/does-not-contain-app";
+            var defaultApp = "/tmp/defaultApp";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {defaultApp}")
+                .AddCommand($"cp -rf {appOutputDir}/* {defaultApp}")
+                .AddCommand($"mkdir -p {doesNotContainApp}")
+                .AddCommand(
+                $"oryx -appPath {doesNotContainApp} -defaultAppFilePath {defaultApp}/{NetCoreApp22WebApp}.dll " +
+                $"-bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp22WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/executingDir");
+                    Assert.Contains($"App is running from directory: {defaultApp}", data);
                 });
         }
     }

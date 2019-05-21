@@ -29,5 +29,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string Project = "PROJECT";
 
         public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";
+
+        /// <summary>
+        /// Represents the 'Configuration' switch of a build, for example: dotnet build --configuration Release
+        /// </summary>
+        public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";
     }
 }
