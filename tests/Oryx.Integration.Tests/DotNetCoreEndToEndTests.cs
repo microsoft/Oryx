@@ -481,7 +481,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    Assert.Contains("Hello World! from Debug build.", data);
                 });
         }
 
