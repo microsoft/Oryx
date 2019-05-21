@@ -15,11 +15,21 @@ steps:
       echo "Variable 'BuildBuildImages' or 'BuildRuntimeImages' needs to be 'true' to run this build."
       exit 1
     fi
+    echo "all caps signtype- "$(SIGNTYPE)
+    echo "camel case signtype- "$(SignType)
   displayName: 'Validate pipeline run'
 
 - checkout: self
   clean: true
 
+- task: DownloadPipelineArtifact@0
+  displayName: 'Download Pipeline Artifact'
+  inputs:
+    pipelineId: 'Oryx-CI'
+    artifactName: 'drop-$(Build.BuildNumber)'
+    targetPath: '$(Build.SourcesDirectory)'
+  condition: and(succeeded(), or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')))
+     
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:

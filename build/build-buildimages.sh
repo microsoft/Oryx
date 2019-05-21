@@ -24,6 +24,7 @@ then
 # "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
     BUILDSCRIPT_SOURCE="copybuildscriptbinaries"
 	BUILD_SIGNED="true"
+	ls -l $BUILD_IMAGES_BUILD_CONTEXT_DIR
 else
 # locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
     mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
