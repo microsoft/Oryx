@@ -10,6 +10,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
+    public class RunTimeInstallationScriptGenerator : IRunTimeInstallationScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
 

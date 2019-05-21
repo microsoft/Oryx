@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
+namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("install-runtime", Description = "Install the required runtime components for a platform.")]
-    class InstallRunTimeCommand : CommandBase
+    internal class InstallRunTimeCommand : CommandBase
     {
         [Option(
             "-p|--platform <name>",
