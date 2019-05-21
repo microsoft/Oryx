@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IDictionary<string, string> tools,
             [NotNull] List<ICheckerMessage> checkerMessageSink)
         {
-            var checkers = _checkers.WhereApplicable(tools, _logger).ToArray();
+            var checkers = _checkers.WhereApplicable(tools).ToArray();
 
             _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
                 checkers.Length, tools.Keys.Count, string.Join(',', tools.Keys));
