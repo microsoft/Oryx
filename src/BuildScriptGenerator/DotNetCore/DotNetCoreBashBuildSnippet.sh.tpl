@@ -5,7 +5,7 @@ function publishToDirectory()
 {
 	local directoryToPublishTo="$1"
 	echo
-	echo "Publishing to directory '$directoryToPublishTo'..."
+	echo "Publishing '{{ ProjectFile }}' to directory '$directoryToPublishTo'..."
 	echo
 	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$directoryToPublishTo"
 }
@@ -105,7 +105,7 @@ echo ".NET Core Version: $dotnetCoreVersion"
 cd "$SOURCE_DIR"
 
 echo
-echo Restoring packages ...
+echo "Restoring packages for '{{ ProjectFile }}'..."
 echo
 dotnet restore "{{ ProjectFile }}"
 

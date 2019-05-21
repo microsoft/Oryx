@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsNull_IfNoProjectFileFound()
+        public void GetRelativePathToProjectFile_ReturnsNull_IfNoProjectFileFound()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
             Assert.Null(actual);
@@ -159,138 +159,142 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent(string projectFileExtension)
+        public void GetRelativePathToProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, $"WebApp1.{projectFileExtension}");
-            File.WriteAllText(expectedFile, WebSdkProjectFile);
+            var expectedRelativePath = $"WebApp1.{projectFileExtension}";
+            var projectFile = Path.Combine(sourceRepoDir, expectedRelativePath);
+            File.WriteAllText(projectFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actualPath = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actual);
+            Assert.Equal(expectedRelativePath, actualPath);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsProjectFile_IfSdkHasBothNameAndVersion()
+        public void GetRelativePathToProjectFile_ReturnsProjectFile_IfSdkHasBothNameAndVersion()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
-            File.WriteAllText(expectedFile, WebSdkProjectFileWithVersion);
+            var expectedRelativePath = "WebApp1.csproj";
+            var projectFile = Path.Combine(sourceRepoDir, expectedRelativePath);
+            File.WriteAllText(projectFile, WebSdkProjectFileWithVersion);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actualPath = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actual);
+            Assert.Equal(expectedRelativePath, actualPath);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsNull_IfSdkHasBothNameAndVersion_AndIsNotWebSdk()
+        public void GetRelativePathToProjectFile_ReturnsNull_IfSdkHasBothNameAndVersion_AndIsNotWebSdk()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
-            File.WriteAllText(expectedFile, NonWebSdkProjectFileWithVersion);
+            var projectFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(projectFile, NonWebSdkProjectFileWithVersion);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
             Assert.Null(actual);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsProjectFile_IfSdkIsPresentAsElement()
+        public void GetRelativePathToProjectFile_ReturnsProjectFile_IfSdkIsPresentAsElement()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
-            File.WriteAllText(expectedFile, WebSdkProjectFileWithSdkInfoAsElement);
+            var expectedRelativePath = "WebApp1.csproj";
+            var projectFile = Path.Combine(sourceRepoDir, expectedRelativePath);
+            File.WriteAllText(projectFile, WebSdkProjectFileWithSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actual);
+            Assert.Equal(expectedRelativePath, actual);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsNull_IfSdkIsPresentAsElement_AndIsNotWebSdk()
+        public void GetRelativePathToProjectFile_ReturnsNull_IfSdkIsPresentAsElement_AndIsNotWebSdk()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
-            File.WriteAllText(expectedFile, NonWebSdkProjectFileWithSdkInfoAsElement);
+            var projectFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(projectFile, NonWebSdkProjectFileWithSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
             Assert.Null(actual);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsNull_WhenNoInformationAboutSdkIsPresentInProjectFile()
+        public void GetRelativePathToProjectFile_ReturnsNull_WhenNoInformationAboutSdkIsPresentInProjectFile()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
-            File.WriteAllText(expectedFile, NoSdkInformationProjectFile);
+            var projectFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(projectFile, NoSdkInformationProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
             Assert.Null(actual);
         }
 
         [Fact]
-        public void GetProjectFile_ReturnsProjectFile_IfMultiplePlacesHaveSdkInfo()
+        public void GetRelativePathToProjectFile_ReturnsProjectFile_IfMultiplePlacesHaveSdkInfo()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
-            File.WriteAllText(expectedFile, WebSdkProjectFileWithMultipleSdkInfoAsElement);
+            var expectedRelativePath = "WebApp1.csproj";
+            var projectFile = Path.Combine(sourceRepoDir, expectedRelativePath);
+            File.WriteAllText(projectFile, WebSdkProjectFileWithMultipleSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actualPath = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actual);
+            Assert.Equal(expectedRelativePath, actualPath);
         }
 
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject(string projectFileExtension)
+        public void GetRelativePathToProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
-            var expectedFile = Path.Combine(sourceRepoDir, $"WebApp1.{projectFileExtension}");
-            File.WriteAllText(expectedFile, NonWebSdkProjectFile);
+            var projectFile = Path.Combine(sourceRepoDir, $"WebApp1.{projectFileExtension}");
+            File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
             Assert.Null(actual);
@@ -301,15 +305,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp(
+        public void GetRelativePathToProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp(
             string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var srcDir = CreateDir(sourceRepoDir, "src");
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            var expectedFile = Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}");
-            File.WriteAllText(expectedFile, NonWebSdkProjectFile);
+            var projectFile = Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}");
+            File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp1", $"WebApp1.{projectFileExtension}");
             var options = new DotnetCoreScriptGeneratorOptions();
@@ -317,14 +321,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider(options);
 
             // Act
-            var actualFile = provider.GetProjectFile(sourceRepo);
+            var actualFilePath = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actualFile);
+            Assert.Equal(relativeProjectPath, actualFilePath);
         }
 
         [Fact]
-        public void GetProjectFile_Throws_IfPathInProjectEnvVariableValue_DoesNotExist()
+        public void GetRelativePathToProjectFile_Throws_IfPathInProjectEnvVariableValue_DoesNotExist()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -340,14 +344,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider(options);
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(() => provider.GetProjectFile(sourceRepo));
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => provider.GetRelativePathToProjectFile(sourceRepo));
             Assert.Contains("Could not find the project file ", exception.Message);
         }
 
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo(string projectFileExtension)
+        public void GetRelativePathToProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -360,7 +366,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actual = provider.GetProjectFile(sourceRepo);
+            var actual = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
             Assert.Null(actual);
@@ -369,7 +375,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects(string projectFileExtension)
+        public void GetRelativePathToProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -382,7 +389,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(() => provider.GetProjectFile(sourceRepo));
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => provider.GetRelativePathToProjectFile(sourceRepo));
             Assert.StartsWith(
                 "Ambiguity in selecting an ASP.NET Core web application to build. Found multiple applications:",
                 exception.Message);
@@ -391,7 +399,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects_AcrossDifferentFolderLevels(
+        public void GetRelativePathToProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects_AtDifferentDirLevels(
             string projectFileExtension)
         {
             // Arrange
@@ -406,7 +414,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(() => provider.GetProjectFile(sourceRepo));
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => provider.GetRelativePathToProjectFile(sourceRepo));
             Assert.StartsWith(
                 "Ambiguity in selecting an ASP.NET Core web application to build. Found multiple applications:",
                 exception.Message);
@@ -415,7 +424,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_DoesNotThrow_IfSourceRepo_HasMultipleWebAppProjects_AndProjectEnvVariableValue(
+        public void GetRelativePathToProjectFile_DoesNotThrow_IfRepoHasMultipleWebApps_AndProjectEnvVariableIsSet(
             string projectFileExtension)
         {
             // Arrange
@@ -424,8 +433,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
             File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), webApp1Dir);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            var expectedFile = Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}");
-            File.WriteAllText(expectedFile, webApp1Dir);
+            var projectFile = Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}");
+            File.WriteAllText(projectFile, webApp1Dir);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
             var options = new DotnetCoreScriptGeneratorOptions();
@@ -433,16 +442,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var provider = CreateProjectFileProvider(options);
 
             // Act
-            var actualFile = provider.GetProjectFile(sourceRepo);
+            var actualFile = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actualFile);
+            Assert.Equal(relativeProjectPath, actualFile);
         }
 
         [Theory]
         [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
         [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo(string projectFileExtension)
+        public void GetRelativePathToProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo(string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -450,16 +459,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var webApp1Dir = CreateDir(srcDir, "WebApp1");
             File.WriteAllText(Path.Combine(webApp1Dir, $"WebApp1.{projectFileExtension}"), NonWebSdkProjectFile);
             var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            var expectedFile = Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}");
-            File.WriteAllText(expectedFile, WebSdkProjectFile);
+            var projectFile = Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}");
+            File.WriteAllText(projectFile, WebSdkProjectFile);
+            var expectedRelativePath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var provider = CreateProjectFileProvider();
 
             // Act
-            var actualFile = provider.GetProjectFile(sourceRepo);
+            var actualPath = provider.GetRelativePathToProjectFile(sourceRepo);
 
             // Assert
-            Assert.Equal(expectedFile, actualFile);
+            Assert.Equal(expectedRelativePath, actualPath);
+        }
+
+        public static TheoryData<string, string, string> GetRelativePathToRootData
+        {
+            get
+            {
+                var data = new TheoryData<string, string, string>();
+
+                var repoRoot = Path.Combine("c:", "apps");
+                var expectedPath = Path.Combine("src", "webapp1", "webapp1.csproj");
+                var projectFile = Path.Combine(repoRoot, expectedPath);
+                data.Add(projectFile, repoRoot, expectedPath);
+
+                repoRoot = Path.Combine("c:", "apps");
+                expectedPath = "webapp1.csproj";
+                projectFile = Path.Combine(repoRoot, expectedPath);
+                data.Add(projectFile, repoRoot, expectedPath);
+
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRelativePathToRootData))]
+        public void GetRelativePathToRoot_ReturnsPathRelativeToRoot(
+            string projectFile,
+            string repoRoot,
+            string expectedRelativePath)
+        {
+            // Arrange & Act
+            var actualPath = DefaultAspNetCoreWebAppProjectFileProvider.GetRelativePathToRoot(projectFile, repoRoot);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actualPath);
         }
 
         private string CreateSourceRepoDir()
