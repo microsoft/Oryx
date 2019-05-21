@@ -252,7 +252,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public void CanBuildAndRun_NodeApp_WithBuildpack()
+        public async Task CanBuildAndRun_NodeApp_WithBuildpack()
         {
             // Arrange
             var appName = "webfrontend";
@@ -282,7 +282,6 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Say It Again", data);
                 });
-            Console.WriteLine(result.GetDebugInfo());
         }
 
         [Fact]
