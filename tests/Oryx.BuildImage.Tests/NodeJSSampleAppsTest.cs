@@ -721,6 +721,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
+            Console.WriteLine(result.GetDebugInfo());
         }
     }
 

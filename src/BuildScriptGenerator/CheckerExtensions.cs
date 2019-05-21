@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -13,7 +14,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static IEnumerable<IChecker> WhereApplicable(
             this IEnumerable<IChecker> checkers,
-            IDictionary<string, string> tools)
+            IDictionary<string, string> tools,
+            ILogger logger)
         {
             return checkers.Where(checker =>
             {
@@ -32,6 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
+                logger.LogDebug("attr.TargetToolNames={targetToolNames}, tools.Keys={actualToolNames}",
+                    string.Join(',', attr.TargetToolNames), string.Join(',', tools.Keys));
                 return attr.TargetToolNames.Intersect(tools.Keys).Count() > 0;
             });
         }
