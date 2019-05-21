@@ -10,22 +10,22 @@ using Xunit;
 
 namespace BuildScriptGeneratorCli.Tests
 {
+    using FlagGetter = Func<CliEnvironmentSettings, bool>;
+
     public class CliEnvironmentSettingsTest
     {
-        public static IEnumerable<object[]> DisableVariableNamesAndGetters
+        public static IEnumerable<object[]> DisableVariableNamesAndGetters = new[]
         {
-            get
-            {
-                yield return new object[] { "DISABLE_DOTNETCORE_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableDotNetCore) };
-                yield return new object[] { "DISABLE_PYTHON_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisablePython) };
-                yield return new object[] { "DISABLE_NODEJS_BUILD", (Func<CliEnvironmentSettings, bool>)(s => s.DisableNodeJs) };
-                yield return new object[] { "ENABLE_MULTIPLATFORM_BUILD", (Func<CliEnvironmentSettings, bool>)(s => !s.DisableMultiPlatformBuild) };
-            }
-        }
+            new object[] { "DISABLE_CHECKERS", (FlagGetter)(s => s.DisableCheckers) },
+            new object[] { "DISABLE_DOTNETCORE_BUILD", (FlagGetter)(s => s.DisableDotNetCore) },
+            new object[] { "DISABLE_PYTHON_BUILD", (FlagGetter)(s => s.DisablePython) },
+            new object[] { "DISABLE_NODEJS_BUILD", (FlagGetter)(s => s.DisableNodeJs) },
+            new object[] { "ENABLE_MULTIPLATFORM_BUILD", (FlagGetter)(s => !s.DisableMultiPlatformBuild) }
+        };
 
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]
-        public void DisableFeature_DontDisable_IfSetToFalse(string envVariableName, Func<CliEnvironmentSettings, bool> valueGetter)
+        public void DisableFeature_DontDisable_IfSetToFalse(string envVariableName, FlagGetter valueGetter)
         {
             // Arrange
             var testEnvironment = new TestEnvironment();
@@ -41,7 +41,7 @@ namespace BuildScriptGeneratorCli.Tests
 
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]
-        public void DisableFeature_DontDisable_IfSetToNonBoolean(string envVariableName, Func<CliEnvironmentSettings, bool> valueGetter)
+        public void DisableFeature_DontDisable_IfSetToNonBoolean(string envVariableName, FlagGetter valueGetter)
         {
             // Arrange
             var testEnvironment = new TestEnvironment();
@@ -57,7 +57,7 @@ namespace BuildScriptGeneratorCli.Tests
 
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]
-        public void DisableFeature_DontDisable_IfNotSet(string envVariableName, Func<CliEnvironmentSettings, bool> valueGetter)
+        public void DisableFeature_DontDisable_IfNotSet(string envVariableName, FlagGetter valueGetter)
         {
             // Arrange
             var testEnvironment = new TestEnvironment();
@@ -72,7 +72,7 @@ namespace BuildScriptGeneratorCli.Tests
 
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]
-        public void DisableFeature_Disable_IfSetToTrue(string envVariableName, Func<CliEnvironmentSettings, bool> valueGetter)
+        public void DisableFeature_Disable_IfSetToTrue(string envVariableName, FlagGetter valueGetter)
         {
             // Arrange
             var testEnvironment = new TestEnvironment();

@@ -13,19 +13,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Tries to generate a bash script to build an application.
         /// </summary>
-        /// <param name="scriptGeneratorContext">
-        /// The <see cref="BuildScriptGeneratorContext"/> with parameters for the script.
-        /// </param>
+        /// <param name="ctx">The <see cref="BuildScriptGeneratorContext"/> with parameters for the script.</param>
         /// <param name="script">The generated script if the operation was successful.</param>
-        /// <returns><c>true</c> if the operation was successful, <c>false</c> otherwise.</returns>
-        bool TryGenerateBashScript(BuildScriptGeneratorContext scriptGeneratorContext, out string script);
+        /// <param name="checkerMessageSink">If specified, messages from checkers will be appended to this list.</param>
+        void GenerateBashScript(
+            BuildScriptGeneratorContext ctx,
+            out string script,
+            List<ICheckerMessage> checkerMessageSink = null);
 
         /// <summary>
         /// Determines which platforms can be used to build the given application.
         /// </summary>
-        /// <param name="scriptGeneratorContext">
-        /// The <see cref="BuildScriptGeneratorContext"/> with parameters for check.
-        /// </param>
+        /// <param name="ctx">The <see cref="BuildScriptGeneratorContext"/> with parameters for check.</param>
         /// <returns>a list of platform and version pairs.</returns>
         IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx);
     }

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Tests.Common;
@@ -15,6 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class DefaultBuildScriptGeneratorTest : IClassFixture<TestTempDirTestFixture>
     {
+        private const string TestPlatformName = "test";
+
         private readonly string _tempDirRoot;
 
         public DefaultBuildScriptGeneratorTest(TestTempDirTestFixture testFixure)
@@ -41,10 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: null);
 
             // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.True(detector.DetectInvoked);
         }
@@ -74,10 +76,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             context.DisableMultiPlatformBuild = true;
 
             // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.DoesNotContain("some code", generatedScript);
         }
@@ -101,7 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             context.LanguageVersion = null; // version not provided by user
 
             // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
             Assert.Contains("script-content", generatedScript);
@@ -124,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal("Could not detect the language from repo.", exception.Message);
             Assert.True(detector.DetectInvoked);
         }
@@ -144,7 +145,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal("Couldn't detect a version for the platform 'test' in the repo.", exception.Message);
             Assert.True(detector.DetectInvoked);
         }
@@ -164,7 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal("'test2' platform is not supported. Supported platforms are: test1", exception.Message);
         }
 
@@ -183,7 +184,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
         }
 
         [Fact]
@@ -206,7 +207,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
                 "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
                 exception.Message);
@@ -233,7 +234,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
                 "'unsupported' platform is not supported. Supported platforms are: test",
                 exception.Message);
@@ -260,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
                 "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
                 exception.Message);
@@ -287,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
-                () => generator.TryGenerateBashScript(context, out var generatedScript));
+                () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal("Could not detect the language from repo.", exception.Message);
             Assert.True(detector.DetectInvoked);
         }
@@ -312,8 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: false);
 
             // Act & Assert
-            var generateOutput = generator.TryGenerateBashScript(context, out var generatedScript);
-            Assert.True(generateOutput);
+            generator.GenerateBashScript(context, out var generatedScript);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -348,8 +348,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: false);
 
             // Act & Assert
-            var generateOutput = generator.TryGenerateBashScript(context, out var generatedScript);
-            Assert.True(generateOutput);
+            generator.GenerateBashScript(context, out var generatedScript);
             Assert.False(detector.DetectInvoked);
             Assert.False(detector2.DetectInvoked);
         }
@@ -385,8 +384,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: true);
 
             // Act & Assert
-            var generateOutput = generator.TryGenerateBashScript(context, out var generatedScript);
-            Assert.True(generateOutput);
+            generator.GenerateBashScript(context, out var generatedScript);
             Assert.False(detector.DetectInvoked);
             Assert.True(detector2.DetectInvoked);
         }
@@ -417,10 +415,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: "1.0.0");
 
             // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("script-content", generatedScript);
             Assert.False(detector.DetectInvoked);
         }
@@ -454,10 +451,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: true);
 
             // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("ABCDEFG", generatedScript);
             Assert.Contains("123456", generatedScript);
         }
@@ -486,10 +482,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: "1.0.0");
 
             // Act
-            var canGenerateScript = generator.TryGenerateBashScript(context, out var generatedScript);
+            generator.GenerateBashScript(context, out var generatedScript);
 
             // Assert
-            Assert.True(canGenerateScript);
             Assert.Contains("ABCDEFG", generatedScript);
             Assert.DoesNotContain("123456", generatedScript);
         }
@@ -531,21 +526,80 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(2, compatiblePlatforms.Count);
         }
 
+        [Fact]
+        public void Checkers_AreAppliedCorrectly()
+        {
+            // Arrange
+            var repoWarning = new CheckerMessage("some repo warning");
+            IChecker[] checkers = { new TestChecker(() => new[] { repoWarning }) };
+
+            var platformVersion = "1.0.0";
+            var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
+            var platform = new TestProgrammingPlatform(
+                TestPlatformName, new[] { platformVersion }, true, "script-content", detector);
+
+            var generator = CreateDefaultScriptGenerator(new[] { platform }, checkers);
+            var context = CreateScriptGeneratorContext(TestPlatformName, platformVersion);
+
+            var messages = new List<ICheckerMessage>();
+
+            // Act
+            // Return value of TryGenerateBashScript is irrelevant - messages should be added even if build fails
+            generator.GenerateBashScript(context, out var generatedScript, messages);
+
+            // Assert
+            Assert.Single(messages);
+            Assert.Equal(repoWarning, messages.First());
+        }
+
+        [Fact]
+        public void Checkers_DontFailTheBuild_WhenTheyThrow()
+        {
+            // Arrange
+            bool checkerRan = false;
+            IChecker[] checkers = { new TestChecker(() =>
+            {
+                checkerRan = true;
+                throw new Exception("checker failed");
+            }) };
+
+            var platformVersion = "1.0.0";
+            var detector = new TestLanguageDetectorSimpleMatch(true, TestPlatformName, platformVersion);
+            var scriptContent = "script-content";
+            var platform = new TestProgrammingPlatform(
+                TestPlatformName, new[] { platformVersion }, true, scriptContent, detector);
+
+            var generator = CreateDefaultScriptGenerator(new[] { platform }, checkers);
+            var context = CreateScriptGeneratorContext(TestPlatformName, platformVersion);
+
+            var messages = new List<ICheckerMessage>();
+
+            // Act
+            generator.GenerateBashScript(context, out var generatedScript, messages);
+
+            // Assert
+            Assert.True(checkerRan);
+        }
+
         private string CreateNewDir()
         {
             return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
         }
 
-        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
-            IProgrammingPlatform generator)
+        private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(IProgrammingPlatform platform)
         {
-            return new DefaultBuildScriptGenerator(new[] { generator }, new TestEnvironmentSettingsProvider(), NullLogger<DefaultBuildScriptGenerator>.Instance);
+            return CreateDefaultScriptGenerator(new[] { platform });
         }
 
         private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
-            IProgrammingPlatform[] generators)
+            IProgrammingPlatform[] platforms,
+            IEnumerable<IChecker> checkers = null)
         {
-            return new DefaultBuildScriptGenerator(generators, new TestEnvironmentSettingsProvider(), NullLogger<DefaultBuildScriptGenerator>.Instance);
+            return new DefaultBuildScriptGenerator(
+                platforms,
+                new TestEnvironmentSettingsProvider(),
+                checkers,
+                NullLogger<DefaultBuildScriptGenerator>.Instance);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
@@ -706,6 +760,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 string targetPlatformVersion,
                 IDictionary<string, string> toolsToVersion)
             {
+                toolsToVersion.Add(Name, SupportedLanguageVersions.First());
             }
 
             public void SetVersion(BuildScriptGeneratorContext context, string version)
@@ -716,6 +771,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 return _platformIsEnabledForMultiPlatformBuild;
             }
+        }
+
+        [Checker(TestPlatformName)]
+        private class TestChecker : IChecker
+        {
+            private readonly Func<IEnumerable<ICheckerMessage>> _sourceRepoMessageProvider;
+            private readonly Func<IEnumerable<ICheckerMessage>> _toolVersionMessageProvider;
+
+            public TestChecker(
+                Func<IEnumerable<ICheckerMessage>> repoMessageProvider = null,
+                Func<IEnumerable<ICheckerMessage>> toolMessageProvider = null)
+            {
+                _sourceRepoMessageProvider  = repoMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
+                _toolVersionMessageProvider = toolMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
+            }
+
+            public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo) =>
+                _sourceRepoMessageProvider();
+
+            public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) =>
+                _toolVersionMessageProvider();
         }
 
         private class TestSourceRepo : ISourceRepo

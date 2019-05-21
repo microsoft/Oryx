@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -89,6 +90,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 ?? LoggingConstants.DefaultOperationName;
             var buildOpId = logger.StartOperation(appName);
 
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
             console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
             console.WriteLine();
@@ -134,7 +137,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string scriptContent;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
-                var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
+                var checkerMessages = new List<ICheckerMessage>();
+                var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
+
+                if (checkerMessages.Count > 0)
+                {
+                    var messageFormatter = new DefinitionListFormatter();
+                    checkerMessages.Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
+                    console.WriteLine(messageFormatter.ToString());
+                }
+
                 if (!scriptGenerator.TryGenerateScript(out scriptContent))
                 {
                     stopwatch.AddProperty("failed", "true");
@@ -198,7 +210,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ProcessHelper.TrySetExecutableMode(environmentSettings.PostBuildScriptPath);
 
             // Run the generated script
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {
