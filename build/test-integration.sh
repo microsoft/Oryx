@@ -15,7 +15,7 @@ then
 fi
 
 echo
-echo "Running integration tests with filter '$testCaseFilter'..."
+echo "Running integration tests with '$testCaseFilter'..."
 echo
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"

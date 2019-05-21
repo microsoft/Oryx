@@ -274,7 +274,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "--builder", "oryxdevms/pack-builder"
                 },
                 appImageName,
-                "8080",
+                8080,
                 runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
                 runArgs: null,
                 async (hostPort) =>
