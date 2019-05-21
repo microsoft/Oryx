@@ -264,13 +264,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var snippet = platform.GenerateBashBuildScriptSnippet(context);
                 if (snippet != null)
                 {
-                    _logger.LogDebug("Script generator {scriptGenType} was used", platform.GetType());
+                    _logger.LogDebug("Platform {platformType} was used",
+                        platform.GetType());
                     snippets.Add(snippet);
                     platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
                 }
                 else
                 {
-                    _logger.LogDebug("Script generator {scriptGenType} cannot be used", platform.GetType());
+                    _logger.LogWarning("{platformType}.GenerateBashBuildScriptSnippet() returned null",
+                        platform.GetType());
                 }
             }
 
