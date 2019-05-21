@@ -696,14 +696,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
+            var dockerPortVolume = new DockerVolume("/var/run/docker.sock", "/var/run/docker.sock");
             var appDir = volume.ContainerDir;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.PackImageName,
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "pack",
+                Volumes = new List<DockerVolume> { volume, dockerPortVolume },
                 CommandArguments = new[] { "build", appDir }
             });
 

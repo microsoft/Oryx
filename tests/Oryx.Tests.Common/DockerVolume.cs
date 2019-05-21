@@ -22,6 +22,15 @@ namespace Microsoft.Oryx.Tests.Common
 
         public const string ContainerDirRoot = "/oryxtests";
 
+        // TODO: rename Dir -> Path
+        public DockerVolume(
+            string mountedHostDir,
+            string containerDir)
+        {
+            MountedHostDir = mountedHostDir;
+            ContainerDir = containerDir;
+        }
+
         private DockerVolume(
             string originalHostDir,
             string mountedHostDir,
