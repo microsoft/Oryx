@@ -94,6 +94,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             throw new System.NotImplementedException();
         }
 
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableDotNetCore;

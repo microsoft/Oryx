@@ -69,6 +69,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>The bash run script.</returns>
         string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions);
 
+        string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options);
+
         /// <summary>
         /// Checks if the programming platform should be included in a build script.
         /// </summary>

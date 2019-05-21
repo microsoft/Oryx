@@ -215,6 +215,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             throw new NotImplementedException();
         }
 
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnablePython;
