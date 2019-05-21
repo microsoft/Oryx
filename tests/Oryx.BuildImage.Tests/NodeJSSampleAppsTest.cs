@@ -695,16 +695,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void CanBuild_UsingPack_AndRun()
         {
             // Arrange
-            var volume = CreateWebFrontEndVolume();
+            var appVolume = CreateWebFrontEndVolume();
             var dockerPortVolume = new DockerVolume("/var/run/docker.sock", "/var/run/docker.sock");
-            var appDir = volume.ContainerDir;
+            var appDir = appVolume.ContainerDir;
+            var appImageName = "testnodeapp";
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.PackImageName,
-                Volumes = new List<DockerVolume> { volume, dockerPortVolume },
-                CommandArguments = new[] { "build", appDir }
+                Volumes = new List<DockerVolume> { appVolume, dockerPortVolume },
+                CommandArguments = new[]
+                {
+                    "build", appImageName,
+                    "--no-pull", "--no-color",
+                    "--path", appDir,
+                    "--builder", "oryxdevms/pack-builder"
+                }
             });
 
             // Assert
