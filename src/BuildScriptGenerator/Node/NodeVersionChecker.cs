@@ -18,7 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (tools.ContainsKey(NodeConstants.NodeJsName))
             {
                 var used = tools[NodeConstants.NodeJsName];
-                if (SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion) < 0)
+                var comparison = SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
+                Console.WriteLine($"*** comparison={comparison}");
+                if (comparison < 0)
                 {
                     return new[]
                     {
