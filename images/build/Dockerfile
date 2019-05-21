@@ -1,5 +1,4 @@
 # Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
-ARG BUILDSCRIPT_SOURCE=buildscriptbuilder
 ARG AGENTBUILD
 FROM buildpack-deps:stretch AS main
 # End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
@@ -257,25 +256,27 @@ COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
 COPY src/Common /usr/oryx/src/Common
 COPY build/FinalPublicKey.snk usr/oryx/build/
 COPY src/CommonFiles /usr/oryx/src/CommonFiles
+COPY binaries /opt/buildscriptgen/
 WORKDIR /usr/oryx/src
 ARG GIT_COMMIT=unspecified
 ARG AGENTBUILD=${AGENTBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
+RUN echo 'hello1'
+RUN echo $GIT_COMMIT
+RUN echo $BUILD_NUMBER
+RUN echo ${GIT_COMMIT}
+RUN echo ${BUILD_NUMBER}
 RUN if [ -z "$AGENTBUILD" ]; then \
         dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
     fi
-
-# This stage is only when building in devops agents
-FROM main AS copybuildscriptbinaries
-COPY binaries /opt/buildscriptgen/
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 # This stage copies oryx binaries from specific build stage, for local/dev it copies
 # from "buildscriptbuilder" and for devops it copies from "copybuildscriptbinaries"
 # https://github.com/moby/moby/issues/34482
-FROM ${BUILDSCRIPT_SOURCE} AS buildscriptbinaries
-ARG BUILDSCRIPT_SOURCE
+FROM buildscriptbuilder AS buildscriptbinaries
 WORKDIR /usr/oryx/src
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
@@ -319,7 +320,12 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
-COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
+RUN echo 'hello1'
+RUN echo $GIT_COMMIT
+RUN echo $BUILD_NUMBER
+RUN echo ${GIT_COMMIT}
+RUN echo ${BUILD_NUMBER}
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
 # Bake Application Insights key from pipeline variable into final image

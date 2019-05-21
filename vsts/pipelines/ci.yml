@@ -49,6 +49,7 @@ jobs:
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
+  dependsOn: Job_SignBinaries
   condition: succeeded()
   pool:
     name: OryxLinux
