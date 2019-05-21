@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 var used = tools[NodeConstants.NodeJsName];
                 var comparison = SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
-                Console.WriteLine($"*** comparison={comparison}");
+                System.Console.WriteLine($"*** comparison={comparison}");
                 if (comparison < 0)
                 {
                     return new[]
