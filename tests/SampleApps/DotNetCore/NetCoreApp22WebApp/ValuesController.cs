@@ -21,7 +21,7 @@ namespace NetCoreApp22WebApp.Controllers
                 responseContent += " from Debug build.";
 #endif
 
-                await context.Response.WriteAsync(responseContent);
+                return responseContent;
         }
 
         [HttpGet("executingDir")]
