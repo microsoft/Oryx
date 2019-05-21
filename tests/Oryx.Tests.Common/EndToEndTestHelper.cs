@@ -48,7 +48,34 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volume,
+            List<DockerVolume> volumes,
+            string buildCmd,
+            string[] buildArgs,
+            string runtimeImageName,
+            int port,
+            string runCmd,
+            string[] runArgs,
+            Func<int, Task> assertAction)
+        {
+            return BuildRunAndAssertAppAsync(
+                appName,
+                output,
+                volumes,
+                Settings.BuildImageName,
+                buildCmd,
+                buildArgs,
+                runtimeImageName,
+                port,
+                runCmd,
+                runArgs,
+                assertAction);
+        }
+
+        public static Task BuildRunAndAssertAppAsync(
+            string appName,
+            ITestOutputHelper output,
+            List<DockerVolume> volumes,
+            string buildImage,
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
@@ -64,7 +91,8 @@ namespace Microsoft.Oryx.Tests.Common
             environmentVariables.Add(AppNameEnvVariable);
             return BuildRunAndAssertAppAsync(
                 output,
-                volume,
+                volumes,
+                buildImage,
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
@@ -80,6 +108,7 @@ namespace Microsoft.Oryx.Tests.Common
             string appName,
             ITestOutputHelper output,
             List<DockerVolume> volumes,
+            string buildImage,
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
@@ -91,6 +120,7 @@ namespace Microsoft.Oryx.Tests.Common
             return BuildRunAndAssertAppAsync(
                 output,
                 volumes,
+                buildImage,
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
@@ -115,6 +145,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static async Task BuildRunAndAssertAppAsync(
             ITestOutputHelper output,
             List<DockerVolume> volumes,
+            string buildImage,
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
@@ -130,7 +161,7 @@ namespace Microsoft.Oryx.Tests.Common
             // Build
             var buildAppResult = dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImage,
                 EnvironmentVariables = environmentVariables,
                 Volumes = volumes,
                 RunContainerInBackground = false,

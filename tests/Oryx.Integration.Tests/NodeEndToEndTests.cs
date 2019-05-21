@@ -265,7 +265,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { appVolume, dockerPort },
-                "build",
+                Constants.PackImageName,
+                null, // `pack` is already in the image's ENTRYPOINT
                 new[]
                 {
                     "build", appImageName,
@@ -852,6 +853,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
+                Settings.BuildImageName,
                 "/bin/bash",
                  new[]
                 {
