@@ -96,6 +96,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
           </ItemGroup>
         </Project>";
 
+        private const string WebSdkProjectFileWithMultipleSdkInfoAsElement = @"
+        <Project Sdk=""Microsoft.NET.Sdk/1.0.0"">
+          <Sdk Name=""Microsoft.NET.Sdk.Web"" Version=""1.0.0"" />
+          <PropertyGroup>
+            <LangVersion>7.3</LangVersion>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+        </Project>";
+
         private readonly string _tempDirRoot;
 
         public DefaultAspNetCoreWebAppProjectFileProviderTest(TestTempDirTestFixture testFixture)
@@ -246,6 +258,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.Null(actual);
+        }
+
+        [Fact]
+        public void GetProjectFile_ReturnsProjectFile_IfMultiplePlacesHaveSdkInfo()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var expectedFile = Path.Combine(sourceRepoDir, "WebApp1.csproj");
+            File.WriteAllText(expectedFile, WebSdkProjectFileWithMultipleSdkInfoAsElement);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var provider = CreateProjectFileProvider();
+
+            // Act
+            var actual = provider.GetProjectFile(sourceRepo);
+
+            // Assert
+            Assert.Equal(expectedFile, actual);
         }
 
         [Theory]

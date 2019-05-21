@@ -150,14 +150,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // https://docs.microsoft.com/en-us/visualstudio/msbuild/project-element-msbuild?view=vs-2019
 
             // Look for the attribute value on Project element first as that is more common
-            // Example: <Project Sdk="Microsoft.NET.Sdk.Web">
+            // Example: <Project Sdk="Microsoft.NET.Sdk.Web/1.0.0">
             var expectedWebSdkName = DotnetCoreConstants.WebSdkName.ToLowerInvariant();
             var sdkAttributeValue = projectFileDoc.XPathEvaluate(
                 DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
             var sdkName = sdkAttributeValue as string;
-            if (!string.IsNullOrEmpty(sdkName))
+            if (!string.IsNullOrEmpty(sdkName) &&
+                sdkName.StartsWith(expectedWebSdkName, StringComparison.OrdinalIgnoreCase))
             {
-                return sdkName.ToLowerInvariant().StartsWith(expectedWebSdkName);
+                return true;
             }
 
             // Example:
@@ -166,12 +167,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var sdkNameAttributeValue = projectFileDoc.XPathEvaluate(
                 DotnetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
             sdkName = sdkNameAttributeValue as string;
-            if (!string.IsNullOrEmpty(sdkName))
-            {
-                return string.Equals(sdkName, expectedWebSdkName, StringComparison.OrdinalIgnoreCase);
-            }
 
-            return false;
+            return string.Equals(sdkName, expectedWebSdkName, StringComparison.OrdinalIgnoreCase);
         }
 
         private static IEnumerable<string> GetAllProjectFilesInRepo(
