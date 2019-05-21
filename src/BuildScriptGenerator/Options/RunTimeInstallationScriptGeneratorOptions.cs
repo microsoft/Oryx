@@ -10,10 +10,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class RunTimeInstallationScriptGeneratorOptions
     {
-        public string DestinationDir { get; set; }
+        public string InstallationDir { get; set; }
 
-        public string Language { get; set; }
+        public string Platform { get; set; }
 
-        public string LanguageVersion { get; set; }
+        public string PlatformVersion { get; set; }
     }
 }
