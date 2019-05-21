@@ -690,6 +690,31 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void CanBuild_UsingPack_AndRun()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.PackImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "pack",
+                CommandArguments = new[] { "build", appDir }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
     }
 
     public class NodeJSSampleAppsTestConfigureAppInsights : NodeJSSampleAppsTestBase
