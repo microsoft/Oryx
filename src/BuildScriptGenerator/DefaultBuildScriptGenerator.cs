@@ -216,8 +216,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var checkers = _checkers.WhereApplicable(tools).ToArray();
 
-            _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools",
-                checkers.Length, tools.Keys.Count);
+            _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
+                checkers.Length, tools.Keys.Count, string.Join(',', tools.Keys));
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
             {
