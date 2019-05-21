@@ -14,8 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static IEnumerable<IChecker> WhereApplicable(
             this IEnumerable<IChecker> checkers,
-            IDictionary<string, string> tools,
-            ILogger logger)
+            IDictionary<string, string> tools)
         {
             return checkers.Where(checker =>
             {
@@ -34,8 +33,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
-                logger.LogInformation("checker={checkerType}, checkerTools={checkerTools}, targetTools={targetTool}",
-                    checker.GetType(), string.Join(',', tools.Keys), string.Join(',', attr.TargetToolNames));
                 return attr.TargetToolNames.Intersect(tools.Keys).Count() > 0;
             });
         }
