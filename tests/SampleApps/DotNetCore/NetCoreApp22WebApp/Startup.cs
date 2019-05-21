@@ -27,7 +27,14 @@ namespace NetCoreApp22WebApp
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                var responseContent = "Hello World!";
+
+// For verifying scenarios where we want to make sure this app is being using Debug configuration.
+#if DEBUG
+                responseContent += " from Debug build.";
+#endif
+
+                await context.Response.WriteAsync(responseContent);
             });
         }
     }
