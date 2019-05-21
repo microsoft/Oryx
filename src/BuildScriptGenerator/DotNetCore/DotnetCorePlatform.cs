@@ -169,15 +169,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(repo);
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(repo);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return (null, null);
             }
 
-            var publishDir = Path.Combine(
-                new FileInfo(projectFile).Directory.FullName,
-                DotnetCoreConstants.OryxOutputPublishDirectory);
+            var publishDir = Path.Combine(repo.RootPath, DotnetCoreConstants.OryxOutputPublishDirectory);
             return (projectFile, publishDir);
         }
 

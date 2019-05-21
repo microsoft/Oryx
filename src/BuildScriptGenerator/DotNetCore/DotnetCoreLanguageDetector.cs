@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(sourceRepo);
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(sourceRepo);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
