@@ -367,7 +367,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 _projectFilePath = projectFilePath;
             }
 
-            public string GetProjectFile(ISourceRepo sourceRepo)
+            public string GetRelativePathToProjectFile(ISourceRepo sourceRepo)
             {
                 return _projectFilePath;
             }
