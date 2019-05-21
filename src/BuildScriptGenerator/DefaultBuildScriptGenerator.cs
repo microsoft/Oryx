@@ -64,6 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 try
                 {
+                    _logger.LogDebug("Running checkers");
                     RunCheckers(context, toolsToVersion, checkerMessageSink);
                 }
                 catch (Exception exc)
@@ -208,7 +209,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IDictionary<string, string> tools,
             [NotNull] List<ICheckerMessage> checkerMessageSink)
         {
-            var checkers = _checkers.WhereApplicable(tools);
+            var checkers = _checkers.WhereApplicable(tools).ToArray();
+
+            _logger.LogDebug("Running {checkerCount} applicable checkers for {toolCount} tools",
+                checkers.Length, tools.Keys.Count);
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
             {
