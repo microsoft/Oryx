@@ -27,6 +27,9 @@ namespace Microsoft.Oryx.Integration.Tests
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
+
+        protected DockerVolume CreateAppVolume(string appName) => DockerVolume.Create(
+            Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
@@ -53,8 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
             var appName = "webfrontend";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appOutputDir}")
@@ -114,8 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
             var appName = "webfrontend";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -173,8 +174,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
             var appName = "webfrontend";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -222,8 +222,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "webfrontend";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -257,7 +256,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "webfrontend";
-            var appVolume = CreateWebFrontEndVolume();
+            var appVolume = CreateAppVolume(appName);
             var dockerPort = new DockerVolume("/var/run/docker.sock", "/var/run/docker.sock");
             var appImageName = "testnodeapp";
 
@@ -292,8 +291,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "10.14";
             var appName = "webfrontend";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -329,8 +327,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "10.14";
             var appName = "webfrontend";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -366,8 +363,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "webfrontend-yarnlock";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
@@ -398,8 +394,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "NodeAndTypeScriptHelloWorld";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -434,8 +429,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "lab2-appservice";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -470,8 +464,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "soundcloud-ngrx";
             var nodeVersion = "8.11";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -509,8 +502,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "create-react-app-sample";
             var nodeVersion = "10.14";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -554,8 +546,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "create-react-app-sample";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -593,8 +584,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "create-react-app-sample";
             var nodeVersion = "10";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -631,8 +621,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "linxnodeexpress";
             var nodeVersion = "10";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
@@ -677,8 +666,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "linxnodeexpress";
             var nodeVersion = "10";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
@@ -728,8 +716,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "node-sass-example";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -784,8 +771,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "linxnodeexpress";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -841,8 +827,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "linxnodeexpress";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = "-l nodejs --language-version=" + nodeVersion;
             var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
@@ -911,8 +896,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "linxnodeexpress";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
