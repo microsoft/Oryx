@@ -146,6 +146,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     checkerMessages.Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
                     console.WriteLine(messageFormatter.ToString());
                 }
+                else
+                {
+                    logger.LogDebug("No checker messages emitted");
+                }
 
                 if (!scriptGenerator.TryGenerateScript(out scriptContent))
                 {

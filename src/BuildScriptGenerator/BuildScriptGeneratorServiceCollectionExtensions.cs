@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IEnvironmentSettingsProvider, DefaultEnvironmentSettingsProvider>();
             services.AddSingleton<IRunScriptGenerator, RunScriptGenerator>();
 
-            // Add all checkers
+            // Add all checkers (platform-dependent + platform-independent)
             foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())
             {
                 if (type.GetCustomAttributes(typeof(CheckerAttribute), false).Length > 0)
