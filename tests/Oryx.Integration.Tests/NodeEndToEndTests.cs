@@ -253,6 +253,40 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        public void CanBuildAndRun_NodeApp_WithBuildpack()
+        {
+            // Arrange
+            var appName = "webfrontend";
+            var appVolume = CreateWebFrontEndVolume();
+            var dockerPort = new DockerVolume("/var/run/docker.sock", "/var/run/docker.sock");
+            var appImageName = "testnodeapp";
+
+            // Act
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appVolume, dockerPort },
+                "build",
+                new[]
+                {
+                    "build", appImageName,
+                    "--no-pull", "--no-color",
+                    "--path", appVolume.ContainerDir,
+                    "--builder", "oryxdevms/pack-builder"
+                },
+                appImageName,
+                "8080",
+                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
+                runArgs: null,
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+            Console.WriteLine(result.GetDebugInfo());
+        }
+
+        [Fact]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {
             // Arrange

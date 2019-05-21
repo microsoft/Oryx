@@ -690,39 +690,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
-        [Fact]
-        public void CanBuild_UsingPack_AndRun()
-        {
-            // Arrange
-            var appVolume = CreateWebFrontEndVolume();
-            var dockerPortVolume = new DockerVolume("/var/run/docker.sock", "/var/run/docker.sock");
-            var appDir = appVolume.ContainerDir;
-            var appImageName = "testnodeapp";
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.PackImageName,
-                Volumes = new List<DockerVolume> { appVolume, dockerPortVolume },
-                CommandArguments = new[]
-                {
-                    "build", appImageName,
-                    "--no-pull", "--no-color",
-                    "--path", appDir,
-                    "--builder", "oryxdevms/pack-builder"
-                }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-            Console.WriteLine(result.GetDebugInfo());
-        }
     }
 
     public class NodeJSSampleAppsTestConfigureAppInsights : NodeJSSampleAppsTestBase
