@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="name">The name of the environment variable.</param>
         /// <returns>true if the variable exists and has value "true";
         /// false if it has value "false", or no value otherwise.
-        ///</returns>
+        /// </returns>
         bool? GetBoolEnvironmentVariable(string name);
 
         /// <summary>

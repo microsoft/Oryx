@@ -5,8 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
@@ -19,24 +20,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
-        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
+        private readonly IEnumerable<IChecker> _checkers;
+        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
 
         public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
+            IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
+            _checkers = checkers;
         }
 
-        public bool TryGenerateBashScript(BuildScriptGeneratorContext context, out string script)
+        public void GenerateBashScript(
+            BuildScriptGeneratorContext context,
+            out string script,
+            List<ICheckerMessage> checkerMessageSink = null)
         {
             script = null;
 
-            var toolsToVersion = new Dictionary<string, string>();
+            // To be populated by GetBuildSnippets
+            var toolsToVersion = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
             IList<BuildScriptSnippet> snippets;
             var directoriesToExcludeFromCopyToIntermediateDir = new List<string>();
             var directoriesToExcludeFromCopyToBuildOutputDir = new List<string>();
@@ -51,6 +60,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.SetProperties(toolsToVersion);
             }
 
+            if (_checkers != null && checkerMessageSink != null && context.EnableCheckers)
+            {
+                try
+                {
+                    RunCheckers(context, toolsToVersion, checkerMessageSink);
+                }
+                catch (Exception exc)
+                {
+                    _logger.LogError(exc, "Exception caught while running checkers");
+                }
+            }
+
             if (snippets != null)
             {
                 foreach (var snippet in snippets)
@@ -58,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     if (snippet.IsFullScript)
                     {
                         script = snippet.BashBuildScriptSnippet;
-                        return true;
+                        return;
                     }
                 }
             }
@@ -72,15 +93,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 script = BuildScriptFromSnippets(
                     context.SourceRepo,
                     snippets,
-                    toolsToVersion,
+                    new ReadOnlyDictionary<string, string>(toolsToVersion),
                     directoriesToExcludeFromCopyToIntermediateDir,
                     directoriesToExcludeFromCopyToBuildOutputDir);
-                return true;
             }
             else
             {
+                // TODO: Should an UnsupportedLanguageException be thrown here?
+                // Seeing as the issue was that platforms were IDENTIFIED, but no build snippets were emitted from them
                 LogAndThrowNoPlatformFound(context);
-                return false;
             }
         }
 
@@ -175,11 +196,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return resultPlatforms;
         }
 
-        private static string GetBenvArgs(Dictionary<string, string> benvArgsMap)
+        private static string GetBenvArgs(IDictionary<string, string> benvArgsMap)
         {
             var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
             var benvArgs = string.Join(' ', listOfBenvArgs);
             return benvArgs;
+        }
+
+        private void RunCheckers(
+            BuildScriptGeneratorContext ctx,
+            IDictionary<string, string> tools,
+            [NotNull] List<ICheckerMessage> checkerMessageSink)
+        {
+            var checkers = _checkers.WhereApplicable(tools);
+
+            using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
+            {
+                timedEvent.AddProperty(
+                    "checkersApplied",
+                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
+
+                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo)));
+                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckToolVersions(tools)));
+            }
         }
 
         private IList<BuildScriptSnippet> GetBuildSnippets(
@@ -253,7 +292,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private string BuildScriptFromSnippets(
             ISourceRepo sourceRepo,
             IList<BuildScriptSnippet> snippets,
-            Dictionary<string, string> toolsToVersion,
+            IDictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
             List<string> directoriesToExcludeFromCopyToBuildOutputDir)
         {

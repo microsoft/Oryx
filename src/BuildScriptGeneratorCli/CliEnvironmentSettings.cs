@@ -10,6 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     public class CliEnvironmentSettings
     {
+        private const string DisableCheckersEnvVarName = "DISABLE_CHECKERS";
         private const string DisableDotNetCoreEnvVarName = "DISABLE_DOTNETCORE_BUILD";
         private const string DisablePythonEnvVarName = "DISABLE_PYTHON_BUILD";
         private const string DisablePhpEnvVarName = "DISABLE_PHP_BUILD";
@@ -22,6 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
+
+        public bool DisableCheckers => IsEnvVariableTrue(DisableCheckersEnvVarName);
 
         public bool DisableDotNetCore => IsEnvVariableTrue(DisableDotNetCoreEnvVarName);
 
