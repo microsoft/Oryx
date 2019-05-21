@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
-                _logger.LogDebug("Not running checkers - condition evaluates to ({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
+                _logger.LogInformation("Not running checkers - condition evaluates to ({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
                     _checkers != null, checkerMessageSink != null, context.EnableCheckers);
             }
 
@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var checkers = _checkers.WhereApplicable(tools).ToArray();
 
-            _logger.LogDebug("Running {checkerCount} applicable checkers for {toolCount} tools",
+            _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools",
                 checkers.Length, tools.Keys.Count);
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
