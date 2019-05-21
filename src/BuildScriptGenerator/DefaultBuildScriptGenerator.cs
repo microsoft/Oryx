@@ -72,6 +72,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _logger.LogError(exc, "Exception caught while running checkers");
                 }
             }
+            else
+            {
+                _logger.LogDebug("Not running checkers - condition evaluates to ({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
+                    _checkers != null, checkerMessageSink != null, context.EnableCheckers);
+            }
 
             if (snippets != null)
             {
