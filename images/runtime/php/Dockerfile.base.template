@@ -2,7 +2,7 @@ FROM php:%PHP_BASE_IMAGE%
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION %PHP_VERSION%
 
-RUN a2enmod rewrite expires include deflate
+RUN a2enmod rewrite expires include deflate remoteip headers
 
 ENV APACHE_RUN_USER www-data
 # Edit the default DocumentRoot setting
@@ -37,6 +37,7 @@ RUN apt-get update \
         curl \
         wget \
         tcptraceroute \
+        mysql-client \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
