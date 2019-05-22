@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Common
         {
             StringBuilder result = new StringBuilder();
 
-            int headingWidth = _rows.Max(t => t.Item1.Length) + 1;
+            int headingWidth = _rows.Max(t => t.Item1.Length);
             foreach (var row in _rows)
             {
                 result.Append(row.Item1.PadRight(headingWidth) + HeadingSuffix);

@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    [Checker(NodeConstants.NpmToolName)]
-    public class NpmDependencyChecker : IChecker
+    [Checker(NodeConstants.NodeToolName)]
+    public class NodeDependencyChecker : IChecker
     {
         // Lists packages that should not be used, but were NOT marked as "deprecated" in npm itself.
         private static readonly IDictionary<string, string> SupersededPackages = new Dictionary<string, string>
@@ -20,9 +20,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
         };
 
-        private readonly ILogger<NpmDependencyChecker> _logger;
+        private readonly ILogger<NodeDependencyChecker> _logger;
 
-        public NpmDependencyChecker(ILogger<NpmDependencyChecker> logger)
+        public NodeDependencyChecker(ILogger<NodeDependencyChecker> logger)
         {
             _logger = logger;
         }
