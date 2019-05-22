@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
 
                 var generated = scriptGenerator.TryGenerateScript(out scriptContent);
-                stopwatch.AddProperty("generateSucceeded", generated);
+                stopwatch.AddProperty("generateSucceeded", generated.ToString());
 
                 if (checkerMessages.Count > 0)
                 {
