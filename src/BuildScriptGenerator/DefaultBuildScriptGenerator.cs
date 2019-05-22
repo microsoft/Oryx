@@ -75,8 +75,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
-                _logger.LogInformation("Not running checkers - condition evaluates to ({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
-                    _checkers != null, checkerMessageSink != null, context.EnableCheckers);
+                _logger.LogInformation("Not running checkers - condition evaluates to " +
+                                       "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
+                                       _checkers != null, checkerMessageSink != null, context.EnableCheckers);
             }
 
             if (snippets != null)
@@ -265,8 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var snippet = platform.GenerateBashBuildScriptSnippet(context);
                 if (snippet != null)
                 {
-                    _logger.LogDebug("Platform {platformType} was used",
-                        platform.GetType());
+                    _logger.LogDebug("Platform {platformType} was used", platform.GetType());
                     snippets.Add(snippet);
                     platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
                 }
