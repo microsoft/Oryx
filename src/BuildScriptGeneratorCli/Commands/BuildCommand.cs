@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (checkerMessages.Count > 0)
                 {
                     var messageFormatter = new DefinitionListFormatter();
-                    checkerMessages.Select(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
+                    checkerMessages.ForEach(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
                     console.WriteLine(messageFormatter.ToString());
                 }
                 else
