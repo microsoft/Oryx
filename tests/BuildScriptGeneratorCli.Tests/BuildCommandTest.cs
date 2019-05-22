@@ -369,7 +369,7 @@ namespace BuildScriptGeneratorCli.Tests
 
         [Theory]
         [MemberData(nameof(GetOperationNameEnvVarNames))]
-        public void BuildOperationName_Sanity(string envVarName, string opNamePrefix)
+        public void BuildOperationName_ReturnsCorrectPrefix(string envVarName, string opNamePrefix)
         {
             var appName = "bla";
             var env = new TestEnvironment();
