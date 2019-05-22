@@ -28,9 +28,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {
-                return new ICheckerMessage[]
+                return new[]
                 {
-                    new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating. " +
+                    new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating.\n" +
                                        $"Versions supported by Oryx: {Constants.OryxGitHubUrl}")
                 };
             }

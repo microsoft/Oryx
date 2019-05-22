@@ -13,12 +13,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public interface ICheckerMessage
     {
         /// <summary>
-        /// Severity level.
+        /// Gets the severity level of this message.
         /// </summary>
         LogLevel Level { get; }
 
         /// <summary>
-        /// Body of message. Can span multiple lines.
+        /// Gets the body of this message. Can span multiple lines.
         /// </summary>
         string Content { get; }
     }

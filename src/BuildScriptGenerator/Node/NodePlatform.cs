@@ -203,11 +203,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var packageJson = GetPackageJsonObject(sourceRepo, _logger);
             if (packageJson != null)
             {
-                var npmVersion = GetNpmVersion(packageJson);
+                string npmVersion = GetNpmVersion(packageJson);
+                _logger.LogDebug("GetNpmVersion returned {npmVersion}", npmVersion);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
                     toolsToVersion[NodeConstants.NpmToolName] = npmVersion;
                 }
+            }
+            else
+            {
+                _logger.LogDebug("packageJson is null");
             }
         }
 

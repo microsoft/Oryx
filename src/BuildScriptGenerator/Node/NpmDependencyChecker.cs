@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -19,11 +20,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
         };
 
+        private readonly ILogger<NpmDependencyChecker> _logger;
+
+        public NpmDependencyChecker(ILogger<NpmDependencyChecker> logger)
+        {
+            _logger = logger;
+        }
+
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
             if (packageJson == null)
             {
+                _logger.LogDebug("packageJson is null");
                 return null;
             }
 
@@ -37,16 +46,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             Enumerable.Empty<ICheckerMessage>();
 
         private static void CheckPackageJsonDependencyObject(
-            dynamic packageJsonObj,
+            dynamic packageJsonChildObj,
             string packageJsonKey,
             List<ICheckerMessage> result)
         {
-            if (packageJsonObj == null)
+            if (packageJsonChildObj == null)
             {
                 return;
             }
 
-            Newtonsoft.Json.Linq.JObject depsObj = packageJsonObj;
+            Newtonsoft.Json.Linq.JObject depsObj = packageJsonChildObj;
             foreach (string packageName in depsObj.ToObject<IDictionary<string, string>>().Keys)
             {
                 if (SupersededPackages.ContainsKey(packageName))
