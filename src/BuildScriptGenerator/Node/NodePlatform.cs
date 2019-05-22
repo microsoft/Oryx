@@ -488,10 +488,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
                 var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
-                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    npmVersionRange,
-                    supportedNpmVersions);
-                if (string.IsNullOrWhiteSpace(npmVersion))
+                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(npmVersionRange, supportedNpmVersions);
+                if (string.IsNullOrEmpty(npmVersion))
                 {
                     _logger.LogWarning(
                         "User requested npm version {npmVersion} but it wasn't resolved",
