@@ -140,6 +140,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var checkerMessages = new List<ICheckerMessage>();
                 var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
 
+                var generated = scriptGenerator.TryGenerateScript(out scriptContent);
+                stopwatch.AddProperty("generateSucceeded", generated);
+
                 if (checkerMessages.Count > 0)
                 {
                     var messageFormatter = new DefinitionListFormatter();
@@ -151,9 +154,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     logger.LogDebug("No checker messages emitted");
                 }
 
-                if (!scriptGenerator.TryGenerateScript(out scriptContent))
+                if (!generated)
                 {
-                    stopwatch.AddProperty("failed", "true");
                     return ProcessConstants.ExitFailure;
                 }
             }
