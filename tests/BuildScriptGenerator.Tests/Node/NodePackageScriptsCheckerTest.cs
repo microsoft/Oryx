@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var scripts = new Dictionary<string, string>
             {
                 { "preinstall",     "npm i -g casperjs # checked and problematic" },
-                { "install",        "echo bla bla      # checked and not problematic" },
+                { "install",        "echo bla bla bla  # checked and not problematic" },
                 { "postshrinkwrap", "npm i -g casperjs # not checked" }
             };
 
