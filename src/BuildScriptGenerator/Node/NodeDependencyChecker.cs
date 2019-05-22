@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static void CheckPackageJsonDependencyObject(
             dynamic packageJsonChildObj,
-            string packageJsonKey,
+            string childObjKey,
             List<ICheckerMessage> result)
         {
             if (packageJsonChildObj == null)
@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     result.Add(new CheckerMessage(
                         $"The package '{packageName}', specified in {NodeConstants.PackageJsonFileName}'s " +
-                        $"{packageJsonKey}, is known to have been superseded by {SupersededPackages[packageName]}. " +
+                        $"{childObjKey},\nis known to have been superseded by '{SupersededPackages[packageName]}'. " +
                         "Consider switching over."));
                 }
             }
