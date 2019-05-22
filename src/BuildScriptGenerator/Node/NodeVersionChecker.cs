@@ -23,19 +23,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         [NotNull]
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
-            if (tools.ContainsKey(NodeConstants.NodeJsName))
+            var used = tools[NodeConstants.NodeToolName];
+            var comparison = SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
+            _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
+            if (comparison < 0)
             {
-                var used = tools[NodeConstants.NodeJsName];
-                var comparison = SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
-                _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
-                if (comparison < 0)
+                return new[]
                 {
-                    return new[]
-                    {
-                        new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating. " +
-                                           $"Versions supported in Oryx: {Constants.OryxGitHubUrl}")
-                    };
-                }
+                    new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating. " +
+                                       $"Versions supported in Oryx: {Constants.OryxGitHubUrl}")
+                };
             }
 
             return Enumerable.Empty<ICheckerMessage>();
