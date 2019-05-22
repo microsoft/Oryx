@@ -223,12 +223,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
             {
-                timedEvent.AddProperty(
-                    "checkersApplied",
-                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
+                var repoMessages = checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo))
+                checkerMessageSink.AddRange(repoMessages);
 
-                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo)));
-                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckToolVersions(tools)));
+                var toolMessages = checkers.SelectMany(checker => checker.CheckToolVersions(tools));
+                checkerMessageSink.AddRange(toolMessages);
+
+                timedEvent.AddProperty("repoMsgCount", repoMessages.Count);
+                timedEvent.AddProperty("toolMsgCount", toolMessages.Count);
+
+                timedEvent.AddProperty("checkersApplied",
+                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
             }
         }
 
