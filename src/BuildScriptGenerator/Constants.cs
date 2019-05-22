@@ -15,5 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string ZipAllOutputBuildPropertyKeyDocumentation =
             "Zips entire output content and puts the file in the destination directory." +
             "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.";
+
+        public const string OryxGitHubUrl = "https://github.com/microsoft/Oryx";
     }
 }

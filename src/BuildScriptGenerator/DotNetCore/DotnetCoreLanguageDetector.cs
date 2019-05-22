@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(sourceRepo);
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(sourceRepo);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkXPathExpression);
+                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
             var targetFramework = targetFrameworkElement?.Value;
             if (string.IsNullOrEmpty(targetFramework))
             {

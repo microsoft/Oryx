@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AssemblyName>Yoyo</AssemblyName>
+    <!-- Have explicit whitespace in assemblyname -->
+    <AssemblyName>foo  bar</AssemblyName>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 

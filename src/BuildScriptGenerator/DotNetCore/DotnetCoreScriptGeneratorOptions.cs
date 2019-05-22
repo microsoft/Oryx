@@ -16,5 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public IList<string> SupportedVersions { get; set; }
 
         public string Project { get; set; }
+
+        public string MSBuildConfiguration { get; set; }
     }
 }
