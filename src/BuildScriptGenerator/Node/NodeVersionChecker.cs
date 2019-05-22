@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 return new[]
                 {
-                    new CheckerMessage($"An outdated version of Node.js was used ({used}). Consider updating.\n" +
+                    new CheckerMessage($"An outdated version of Node.js was detected ({used}). Consider updating.\n" +
                                        $"Versions supported by Oryx: {Constants.OryxGitHubUrl}")
                 };
             }
