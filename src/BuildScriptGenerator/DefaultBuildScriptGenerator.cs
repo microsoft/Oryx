@@ -229,8 +229,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var toolMessages = checkers.SelectMany(checker => checker.CheckToolVersions(tools));
                 checkerMessageSink.AddRange(toolMessages);
 
-                timedEvent.AddProperty("repoMsgCount", repoMessages.Count);
-                timedEvent.AddProperty("toolMsgCount", toolMessages.Count);
+                timedEvent.AddProperty("repoMsgCount", repoMessages.Count().ToString());
+                timedEvent.AddProperty("toolMsgCount", toolMessages.Count().ToString());
 
                 timedEvent.AddProperty("checkersApplied",
                     string.Join(',', checkers.Select(checker => checker.GetType().Name)));
