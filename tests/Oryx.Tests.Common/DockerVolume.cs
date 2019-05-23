@@ -53,14 +53,20 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         public string ContainerDir { get; }
 
-        public static DockerVolume Create(string hostDir)
+        /// <summary>
+        /// Creates a copy of a local directory, and returns a DockerVolume instance for mounting that copy in a
+        /// container.
+        /// </summary>
+        /// <param name="originalDir">local directory to be used in a container</param>
+        /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
+        public static DockerVolume CreateMirror(string originalDir)
         {
-            if (string.IsNullOrEmpty(hostDir))
+            if (string.IsNullOrEmpty(originalDir))
             {
-                throw new ArgumentException($"'{nameof(hostDir)}' cannot be null or empty.");
+                throw new ArgumentException($"'{nameof(originalDir)}' cannot be null or empty.");
             }
 
-            var dirInfo = new DirectoryInfo(hostDir);
+            var dirInfo = new DirectoryInfo(originalDir);
 
             // Copy the host directory to a different location and mount that one as it's always possible that a
             // single sample app could be tested by different tests and we do not want to modify its original state
@@ -89,7 +95,7 @@ namespace Microsoft.Oryx.Tests.Common
                 tempDirRoot,
                 Guid.NewGuid().ToString("N"),
                 dirInfo.Name);
-            CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
+            CopyDirectories(originalDir, writableHostDir, copySubDirs: true);
 
             // Grant permissions to the folder we just copied on the host machine. The permisions here allow the
             // user(a non-root user) in the container to read/write/execute files.
@@ -108,7 +114,7 @@ namespace Microsoft.Oryx.Tests.Common
             // Note: Path.Combine is the ideal solution here but this would fail when we run the
             // tests on a windows machine (which most of us use).
             var containerDir = $"{ContainerDirRoot}/{containerDirName}";
-            return new DockerVolume(hostDir, writableHostDir, containerDir);
+            return new DockerVolume(originalDir, writableHostDir, containerDir);
         }
 
         private static void CopyDirectories(string sourceDirName, string destDirName, bool copySubDirs)

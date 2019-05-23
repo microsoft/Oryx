@@ -183,7 +183,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerDebugPort = 8080;
 
@@ -236,7 +236,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange
             var imageName = string.Concat("oryxdevms/node-", nodeVersion);
             var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
+            var volume = DockerVolume.CreateMirror(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
             var appDir = volume.ContainerDir;
             var manifestFileContent = "injectedAppInsight=\"True\"";
             var aiNodesdkLoaderContent = @"try {
@@ -322,7 +322,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var appName = "express-config-yaml";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerPort = 80;
 
@@ -366,7 +366,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerPort = 80;
 
@@ -411,7 +411,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var appName = "express-config-js";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerPort = 80;
 
