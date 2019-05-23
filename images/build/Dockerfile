@@ -322,6 +322,12 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 COPY --from=buildscriptbinaries /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
+# Build various run script generators
+RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen-dotnetcore
+RUN ./build.sh node       /opt/startupcmdgen/startupcmdgen=node
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
