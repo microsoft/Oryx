@@ -258,7 +258,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var appVolume = CreateAppVolume(appName);
             // Allows `pack` to use the host's Docker engine
-            var dockerPort = new DockerVolume("/var/run/docker.sock", "/var/run/docker.sock");
+            var dockerPort = DockerVolume.Create("/var/run/docker.sock", "/var/run/docker.sock");
             var appImageName = "testnodeapp";
 
             // Act

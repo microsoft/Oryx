@@ -22,19 +22,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public const string ContainerDirRoot = "/oryxtests";
 
-        // TODO: rename Dir -> Path
-        public DockerVolume(
-            string mountedHostDir,
-            string containerDir)
-        {
-            MountedHostDir = mountedHostDir;
-            ContainerDir = containerDir;
-        }
-
-        private DockerVolume(
-            string originalHostDir,
-            string mountedHostDir,
-            string containerDir)
+        private DockerVolume(string originalHostDir, string mountedHostDir, string containerDir)
         {
             OriginalHostDir = originalHostDir;
             MountedHostDir = mountedHostDir;
@@ -52,6 +40,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// '/oryxtests/app'
         /// </summary>
         public string ContainerDir { get; }
+
+        public static DockerVolume Create(string hostDir, string containerDir) =>
+            new DockerVolume(null, hostDir, containerDir);
 
         /// <summary>
         /// Creates a copy of a local directory, and returns a DockerVolume instance for mounting that copy in a
