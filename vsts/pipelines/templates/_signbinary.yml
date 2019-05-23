@@ -34,16 +34,27 @@ steps:
     restoreSolution: Oryx.sln
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish linux'
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: |
-     src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
-    arguments: '-c $(BuildConfiguration) -r linux-x64'
-    zipAfterPublish: false
-    modifyOutputPath: false
+#- task: DotNetCoreCLI@2
+#  displayName: 'dotnet publish linux'
+#  inputs:
+#    command: publish
+#    publishWebProjects: false
+#    projects: |
+#     src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
+#    arguments: '-c $(BuildConfiguration) -r linux-x64'
+#    zipAfterPublish: false
+#    modifyOutputPath: false
+#  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
+- powershell: |
+   Write-Host "Setting up git_commit and build_number as env variable"
+   $env:GIT_COMMIT=$(git rev-parse HEAD)
+   $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
+   $env:GIT_COMMIT
+   $env:BUILD_NUMBER
+   dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
+
+  displayName: 'PowerShell Script'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: VSBuild@1
