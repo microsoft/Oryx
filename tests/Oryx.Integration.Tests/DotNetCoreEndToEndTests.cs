@@ -38,6 +38,49 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        public async Task CanBuildAndRun_NetCoreApp10WebApp()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "aspnetcore10");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+                // NOTE: we are using 1.1 'sdk' version to build 1.0 netcoreapp
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version 1.1 -o {appOutputDir}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp11WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-1.0",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+        
+        [Fact]
         public async Task CanBuildAndRun_NetCore11WebApp()
         {
             // Arrange
@@ -110,6 +153,49 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_NetCoreApp20WebApp()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "aspnetcore20");
+            var volume = DockerVolume.Create(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+                // NOTE: we are using 2.1 'sdk' version to build 2.0 netcoreapp
+                .AddCommand($"oryx build {appDir} -l dotnet --language-version 2.1 -o {appOutputDir}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp11WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.0",
                 ContainerPort,
                 "/bin/sh",
                 new[]
