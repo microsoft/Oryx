@@ -9,8 +9,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotnetCoreScriptGeneratorOptionsSetup : IConfigureOptions<DotnetCoreScriptGeneratorOptions>
     {
-        internal const string DefaultVersion = DotNetCoreVersions.DotNetCore21Version;
-        internal const string InstalledVersionsDir = "/opt/dotnet/"; // TODO: remove hard-coded path
+        internal const string DefaultVersion = DotNetCoreRuntimeVersions.NetCoreApp21;
+        internal const string InstalledVersionsDir = "/opt/dotnet/runtimes";
 
         private readonly IEnvironment _environment;
 
