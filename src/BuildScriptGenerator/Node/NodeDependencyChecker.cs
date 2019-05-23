@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
             if (packageJson == null)
             {
-                _logger.LogDebug("packageJson is null");
+                _logger.LogDebug("packageJson is null; skipping checking for superseded packages");
                 return null;
             }
 

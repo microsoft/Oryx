@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
-            DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
         [Fact]
         public void Builds_NetCore11App_UsingNetCore11_DotnetSdkVersion()
@@ -603,7 +603,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appName = "dotnetreact";
             var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()

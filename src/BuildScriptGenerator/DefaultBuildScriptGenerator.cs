@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
-            _logger.LogDebug("Available checkers: {checkerCount}", _checkers.Count());
+            _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
         }
 
         public void GenerateBashScript(
