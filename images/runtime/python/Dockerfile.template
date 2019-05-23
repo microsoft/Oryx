@@ -20,9 +20,13 @@ RUN set -ex \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
  && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
  && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
- && ldconfig
+ && ldconfig \
+ && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
+ && ln -s idle3 idle \
+ && ln -s pydoc3 pydoc \
+ && ln -s python3-config python-config; fi
 
-ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin/:${PATH}"
+ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
