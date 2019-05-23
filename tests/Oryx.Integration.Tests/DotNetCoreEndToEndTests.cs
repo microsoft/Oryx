@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-1.0",
+                "oryxdevms/dotnetcore-1.0",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -195,7 +195,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-2.0",
+                "oryxdevms/dotnetcore-2.0",
                 ContainerPort,
                 "/bin/sh",
                 new[]
