@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.Single(messages);
-            Assert.Contains("outdated version of Node.js was used", messages.First().Content);
+            Assert.Contains("outdated version of Node.js was detected", messages.First().Content);
         }
 
         [Fact]
