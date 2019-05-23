@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Tests.Common
@@ -41,8 +42,15 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         public string ContainerDir { get; }
 
-        public static DockerVolume Create(string hostDir, string containerDir) =>
-            new DockerVolume(null, hostDir, containerDir);
+        public static DockerVolume Create([NotNull] string hostPath, [NotNull] string containerPath)
+        {
+            if (string.IsNullOrEmpty(hostPath) && !Directory.Exists(hostPath) && !File.Exists(hostPath))
+            {
+                throw new ArgumentException($"'{nameof(hostPath)}' must point to an existing directory or file.");
+            }
+
+            return new DockerVolume(null, hostPath, containerPath);
+        }
 
         /// <summary>
         /// Creates a copy of a local directory, and returns a DockerVolume instance for mounting that copy in a
