@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                _logger.LogDebug("packageJson is null");
+                _logger.LogDebug($"packageJson is null; skipping setting {NodeConstants.NpmToolName} tool");
             }
         }
 
