@@ -60,10 +60,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (SupersededPackages.ContainsKey(packageName))
                 {
-                    result.Add(new CheckerMessage(
-                        $"The package '{packageName}', specified in {NodeConstants.PackageJsonFileName}'s " +
-                        $"{childObjKey},\nis known to have been superseded by '{SupersededPackages[packageName]}'. " +
-                        "Consider switching over."));
+                    result.Add(new CheckerMessage(string.Format(Resources.Labels.NodeDependencyCheckerMessageFormat,
+                        packageName,
+                        childObjKey,
+                        SupersededPackages[packageName])));
                 }
             }
         }

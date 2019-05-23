@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Labels {
@@ -57,6 +57,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The package &apos;{0}&apos;, specified in package.json&apos;s {1},\nis known to have been superseded by &apos;{2}&apos;. Consider switching over..
+        /// </summary>
+        internal static string NodeDependencyCheckerMessageFormat {
+            get {
+                return ResourceManager.GetString("NodeDependencyCheckerMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An outdated version of Node.js was detected ({0}). Consider updating.\nVersions supported by Oryx: {1}.
+        /// </summary>
+        internal static string NodeVersionCheckerMessageFormat {
+            get {
+                return ResourceManager.GetString("NodeVersionCheckerMessageFormat", resourceCulture);
             }
         }
         

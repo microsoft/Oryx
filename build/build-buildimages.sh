@@ -73,7 +73,9 @@ echo Building a base image for tests ...
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
 # Create artifact files
+touch $BUILD_IMAGES_ARTIFACTS_FILE
 > $BUILD_IMAGES_ARTIFACTS_FILE
+touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 # Build buildpack images
