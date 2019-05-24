@@ -5,7 +5,6 @@
 # --------------------------------------------------------------------------------------------
 
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
-declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
 echo
 echo "Printing all running containers and stopped containers"
@@ -81,13 +80,9 @@ echo
 docker images
 
 echo
-echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
-if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
-then
-    docker system prune -f
-
-    echo
-    echo "Updated list of docker images:"
-    echo
-    docker images
-fi
+echo "Cleanup: Running 'docker system prune'"
+docker system prune -f
+echo
+echo "Updated list of docker images:"
+echo
+docker images
