@@ -6,9 +6,10 @@ ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
+# GOPATH is set to "/go" in the base image, so no need to set it again
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/node-6.11-base:20190518.7
+FROM mcr.microsoft.com/oryx/node-base:6.11-20190518.7
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
