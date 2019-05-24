@@ -32,8 +32,6 @@ jobs:
 
   steps:
   - script: |
-      echo "Sign Type is"
-      echo $(SignType)
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
       echo "##vso[task.setvariable variable=TestBuildImages;]true"
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"

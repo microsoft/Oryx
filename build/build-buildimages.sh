@@ -21,7 +21,6 @@ echo "SignType is: "$SIGNTYPE
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
 then
 # "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
-    # BUILDSCRIPT_SOURCE="copybuildscriptbinaries"
 	BUILD_SIGNED="true"
 	ls -l $BUILD_IMAGES_BUILD_CONTEXT_DIR
 else
@@ -59,8 +58,6 @@ BuildAndTagStage node-install
 BuildAndTagStage dotnet-install
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
-# BuildAndTagStage copybuildscriptbinaries
-BuildAndTagStage buildscriptbinaries
 
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \

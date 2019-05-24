@@ -256,6 +256,8 @@ COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
 COPY src/Common /usr/oryx/src/Common
 COPY build/FinalPublicKey.snk usr/oryx/build/
 COPY src/CommonFiles /usr/oryx/src/CommonFiles
+# This statement copies signed oryx binaries from during agent build.
+# For local/dev contents of blank/empty directory named binaries are getting copied
 COPY binaries /opt/buildscriptgen/
 WORKDIR /usr/oryx/src
 ARG GIT_COMMIT=unspecified
@@ -263,25 +265,9 @@ ARG AGENTBUILD=${AGENTBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN echo 'hello1'
-RUN echo $GIT_COMMIT
-RUN echo $BUILD_NUMBER
-RUN echo ${GIT_COMMIT}
-RUN echo ${BUILD_NUMBER}
 RUN if [ -z "$AGENTBUILD" ]; then \
         dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
     fi
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-
-# This stage copies oryx binaries from specific build stage, for local/dev it copies
-# from "buildscriptbuilder" and for devops it copies from "copybuildscriptbinaries"
-# https://github.com/moby/moby/issues/34482
-FROM buildscriptbuilder AS buildscriptbinaries
-WORKDIR /usr/oryx/src
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM python AS final
@@ -321,11 +307,6 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 # Build script generator content, currently docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN echo 'hello1'
-RUN echo $GIT_COMMIT
-RUN echo $BUILD_NUMBER
-RUN echo ${GIT_COMMIT}
-RUN echo ${BUILD_NUMBER}
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
 # Bake Application Insights key from pipeline variable into final image

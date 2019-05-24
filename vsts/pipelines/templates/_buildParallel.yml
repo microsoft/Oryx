@@ -15,8 +15,6 @@ steps:
       echo "Variable 'BuildBuildImages' or 'BuildRuntimeImages' needs to be 'true' to run this build."
       exit 1
     fi
-    echo "all caps signtype- "$(SIGNTYPE)
-    echo "camel case signtype- "$(SignType)
   displayName: 'Validate pipeline run'
 
 - checkout: self
