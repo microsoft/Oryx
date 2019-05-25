@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
             // Arrange
-            var expectedOutput = "v10.15.2";
+            var expectedOutput = "v10.15.3";
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -210,11 +210,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("4.8", "v4.8.0")]
         [InlineData("4.5.0", "v4.5.0")]
         [InlineData("4.8.0", "v4.8.0")]
-        [InlineData("6", "v6.11.0")]
+        [InlineData("6", "v6.17.0")]
         [InlineData("6.11", "v6.11.0")]
         [InlineData("6.11.0", "v6.11.0")]
-        [InlineData("lts", "v10.15.2")]
-        [InlineData("8", "v8.15.1")]
+        [InlineData("lts", "v10.15.3")]
+        [InlineData("8", "v8.16.0")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.2")]
         [InlineData("8.11.2", "v8.11.2")]
@@ -223,12 +223,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("9", "v9.4.0")]
         [InlineData("9.4", "v9.4.0")]
         [InlineData("9.4.0", "v9.4.0")]
-        [InlineData("10", "v10.15.2")]
+        [InlineData("10", "v10.15.3")]
         [InlineData("10.1", "v10.1.0")]
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("10.15", "v10.15.2")]
+        [InlineData("10.15", "v10.15.3")]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
