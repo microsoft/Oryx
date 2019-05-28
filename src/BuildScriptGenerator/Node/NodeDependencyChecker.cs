@@ -5,11 +5,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    [Checker(NodeConstants.NpmToolName)]
-    public class NpmDependencyChecker : IChecker
+    [Checker(NodeConstants.NodeToolName)]
+    public class NodeDependencyChecker : IChecker
     {
         // Lists packages that should not be used, but were NOT marked as "deprecated" in npm itself.
         private static readonly IDictionary<string, string> SupersededPackages = new Dictionary<string, string>
@@ -19,11 +20,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
         };
 
+        private readonly ILogger<NodeDependencyChecker> _logger;
+
+        public NodeDependencyChecker(ILogger<NodeDependencyChecker> logger)
+        {
+            _logger = logger;
+        }
+
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
             if (packageJson == null)
             {
+                _logger.LogDebug("packageJson is null; skipping checking for superseded packages");
                 return null;
             }
 
@@ -37,24 +46,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             Enumerable.Empty<ICheckerMessage>();
 
         private static void CheckPackageJsonDependencyObject(
-            dynamic packageJsonObj,
-            string packageJsonKey,
+            dynamic packageJsonChildObj,
+            string childObjKey,
             List<ICheckerMessage> result)
         {
-            if (packageJsonObj == null)
+            if (packageJsonChildObj == null)
             {
                 return;
             }
 
-            Newtonsoft.Json.Linq.JObject depsObj = packageJsonObj;
+            Newtonsoft.Json.Linq.JObject depsObj = packageJsonChildObj;
             foreach (string packageName in depsObj.ToObject<IDictionary<string, string>>().Keys)
             {
                 if (SupersededPackages.ContainsKey(packageName))
                 {
-                    result.Add(new CheckerMessage(
-                        $"The package '{packageName}', specified in {NodeConstants.PackageJsonFileName}'s " +
-                        $"{packageJsonKey}, is known to have been superseded by {SupersededPackages[packageName]}. " +
-                        "Consider switching over."));
+                    result.Add(new CheckerMessage(string.Format(Resources.Labels.NodeDependencyCheckerMessageFormat,
+                        packageName,
+                        childObjKey,
+                        SupersededPackages[packageName])));
                 }
             }
         }

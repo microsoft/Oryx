@@ -72,6 +72,17 @@ echo Building a base image for tests ...
 # Do not write this image tag to the artifacts file as we do not intend to push it
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
+# Create artifact dir & files
+mkdir -p "$ARTIFACTS_DIR/images"
+
+touch $BUILD_IMAGES_ARTIFACTS_FILE
+> $BUILD_IMAGES_ARTIFACTS_FILE
+touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
+# Build buildpack images
+source $REPO_DIR/build/build-buildpacks-images.sh
+
 # Retag build image with DockerHub and ACR tags
 if [ -n "$BUILD_NUMBER" ]
 then
@@ -87,16 +98,12 @@ then
 	# Write the list of images that were built to artifacts folder
 	echo
 	echo "Writing the list of build images built to artifacts folder..."
-	mkdir -p "$ARTIFACTS_DIR/images"
 
 	# Write image list to artifacts file
-	echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$DOCKER_BUILD_IMAGES_REPO:latest" >> $BUILD_IMAGES_ARTIFACTS_FILE
 	echo "$DOCKER_BUILD_IMAGES_REPO:$uniqueTag" >> $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "$ACR_BUILD_IMAGES_REPO:latest" > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$ACR_BUILD_IMAGES_REPO:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	echo "$ACR_BUILD_IMAGES_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-	# Build buildpack images
-	source $REPO_DIR/build/build-buildpacks-images.sh
 
 	echo
 	echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"

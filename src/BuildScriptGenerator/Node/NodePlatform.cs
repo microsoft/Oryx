@@ -203,11 +203,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var packageJson = GetPackageJsonObject(sourceRepo, _logger);
             if (packageJson != null)
             {
-                var npmVersion = GetNpmVersion(packageJson);
+                string npmVersion = GetNpmVersion(packageJson);
+                _logger.LogDebug("GetNpmVersion returned {npmVersion}", npmVersion);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
                     toolsToVersion[NodeConstants.NpmToolName] = npmVersion;
                 }
+            }
+            else
+            {
+                _logger.LogDebug($"packageJson is null; skipping setting {NodeConstants.NpmToolName} tool");
             }
         }
 
@@ -483,10 +488,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
                 var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
-                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    npmVersionRange,
-                    supportedNpmVersions);
-                if (string.IsNullOrWhiteSpace(npmVersion))
+                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(npmVersionRange, supportedNpmVersions);
+                if (string.IsNullOrEmpty(npmVersion))
                 {
                     _logger.LogWarning(
                         "User requested npm version {npmVersion} but it wasn't resolved",

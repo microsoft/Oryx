@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.Common.Extensions
             Assert.Equal(new[] { "abc", "ab" }, "abcab".Chunkify(3));
         }
 
+        [Fact]
         public void ReplaceUrlUserInfo_Sanity()
         {
             Assert.Equal("http://***@example.com/", "http://bla:blabla@example.com/".ReplaceUrlUserInfo());

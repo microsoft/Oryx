@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
             int containerPort = 8000,
             bool specifyBindPortFlag = true)
         {
-            var volume = DockerVolume.Create(samplePath);
+            var volume = DockerVolume.CreateMirror(samplePath);
             var appDir = volume.ContainerDir;
             var entrypointScript = "./run.sh";
             var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
@@ -57,6 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
                 new List<DockerVolume> { volume },
+                Settings.BuildImageName,
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),

@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
+            _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
         }
 
         public void GenerateBashScript(
@@ -64,12 +65,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 try
                 {
+                    _logger.LogDebug("Running checkers");
                     RunCheckers(context, toolsToVersion, checkerMessageSink);
                 }
                 catch (Exception exc)
                 {
                     _logger.LogError(exc, "Exception caught while running checkers");
                 }
+            }
+            else
+            {
+                _logger.LogInformation("Not running checkers - condition evaluates to " +
+                                       "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
+                                       _checkers != null, checkerMessageSink != null, context.EnableCheckers);
             }
 
             if (snippets != null)
@@ -208,16 +216,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IDictionary<string, string> tools,
             [NotNull] List<ICheckerMessage> checkerMessageSink)
         {
-            var checkers = _checkers.WhereApplicable(tools);
+            var checkers = _checkers.WhereApplicable(tools).ToArray();
+
+            _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
+                checkers.Length, tools.Keys.Count, string.Join(',', tools.Keys));
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
             {
-                timedEvent.AddProperty(
-                    "checkersApplied",
-                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
+                var repoMessages = checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo));
+                checkerMessageSink.AddRange(repoMessages);
 
-                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo)));
-                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckToolVersions(tools)));
+                var toolMessages = checkers.SelectMany(checker => checker.CheckToolVersions(tools));
+                checkerMessageSink.AddRange(toolMessages);
+
+                timedEvent.AddProperty("repoMsgCount", repoMessages.Count().ToString());
+                timedEvent.AddProperty("toolMsgCount", toolMessages.Count().ToString());
+
+                timedEvent.AddProperty("checkersApplied",
+                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
             }
         }
 
@@ -255,13 +271,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var snippet = platform.GenerateBashBuildScriptSnippet(context);
                 if (snippet != null)
                 {
-                    _logger.LogDebug("Script generator {scriptGenType} was used", platform.GetType());
+                    _logger.LogDebug("Platform {platformType} was used", platform.GetType());
                     snippets.Add(snippet);
                     platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
                 }
                 else
                 {
-                    _logger.LogDebug("Script generator {scriptGenType} cannot be used", platform.GetType());
+                    _logger.LogWarning("{platformType}.GenerateBashBuildScriptSnippet() returned null",
+                        platform.GetType());
                 }
             }
 

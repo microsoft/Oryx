@@ -6,6 +6,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
@@ -16,27 +17,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_Warns_WhenOutdatedVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker();
+            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeJsName, "1.0.0" } });
+                new Dictionary<string, string> { { NodeConstants.NodeToolName, "1.0.0" } });
 
             // Assert
             Assert.Single(messages);
-            Assert.Contains("outdated version of Node.js was used", messages.First().Content);
+            Assert.Contains("outdated version of Node.js was detected", messages.First().Content);
         }
 
         [Fact]
         public void Checker_DoesNotWarn_WhenLtsVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker();
+            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
 
             // Act
             var ltsVer = NodeScriptGeneratorOptionsSetup.NodeLtsVersion;
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeJsName, ltsVer } });
+                new Dictionary<string, string> { { NodeConstants.NodeToolName, ltsVer } });
 
             // Assert
             Assert.Empty(messages);
@@ -46,11 +47,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_DoesNotWarn_WhenCurrentVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker();
+            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeJsName, "10.15.3" } });
+                new Dictionary<string, string> { { NodeConstants.NodeToolName, "10.15.3" } });
 
             // Assert
             Assert.Empty(messages);
