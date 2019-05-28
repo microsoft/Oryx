@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Common
 {
@@ -12,11 +13,15 @@ namespace Microsoft.Oryx.Common
         public const string ApplicationInsightsInstrumentationKeyEnvironmentVariableName
             = "ORYX_AI_INSTRUMENTATION_KEY";
 
-        public const string AppServiceAppNameEnvironmentVariableName = "APPSETTING_WEBSITE_SITE_NAME";
-        public const string ContainerRegistryAppNameEnvironmentVariableName = "REGISTRY_NAME";
         public const string DefaultOperationName = ".oryx";
 
         public const string DefaultLogPath = "/tmp/oryx.log";
+
+        public static readonly IDictionary<string, string> OperationNameSourceEnvVars = new Dictionary<string, string>
+        {
+            { ExtVarNames.AppServiceAppNameEnvVarName, "AAS" },
+            { "REGISTRY_NAME", "ACR" }
+        };
 
         public static readonly TimeSpan FlushTimeout = TimeSpan.FromSeconds(3);
     }
