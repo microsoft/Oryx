@@ -219,7 +219,7 @@ RUN set -ex \
  && ln -s 6.9.3 /opt/nodejs/6.9 \
  && ln -s 6.10.3 /opt/nodejs/6.10 \
  && ln -s 6.11.0 /opt/nodejs/6.11 \
- && ln -s 6.17.0 /opt/nodejs/6.17 \
+ && ln -s 6.17.1 /opt/nodejs/6.17 \
  && ln -s 6.17 /opt/nodejs/6 \
  && ln -s 8.0.0 /opt/nodejs/8.0 \
  && ln -s 8.1.4 /opt/nodejs/8.1 \

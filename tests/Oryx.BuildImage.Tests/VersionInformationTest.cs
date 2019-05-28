@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("4.8", "v4.8.0")]
         [InlineData("4.5.0", "v4.5.0")]
         [InlineData("4.8.0", "v4.8.0")]
-        [InlineData("6", "v6.17.0")]
+        [InlineData("6", "v6.17.1")]
         [InlineData("6.11", "v6.11.0")]
         [InlineData("6.11.0", "v6.11.0")]
         [InlineData("lts", "v10.15.3")]
