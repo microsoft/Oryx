@@ -4,7 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -360,6 +362,19 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Contains(
                 "Cannot use language version without specifying language name also.",
                 testConsole.StdError);
+        }
+
+        public static IEnumerable<object[]> GetOperationNameEnvVarNames() =>
+            Microsoft.Oryx.Common.LoggingConstants.OperationNameSourceEnvVars.Select(e => new[] { e.Key, e.Value });
+
+        [Theory]
+        [MemberData(nameof(GetOperationNameEnvVarNames))]
+        public void BuildOperationName_ReturnsCorrectPrefix(string envVarName, string opNamePrefix)
+        {
+            var appName = "bla";
+            var env = new TestEnvironment();
+            env.SetEnvironmentVariable(envVarName, appName);
+            Assert.Equal(opNamePrefix + ":" + appName, BuildCommand.BuildOperationName(env));
         }
 
         private string CreateNewDir()

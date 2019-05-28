@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public NodeJSSampleAppsTestBase(ITestOutputHelper output) :
             base(output, new DockerCli(new EnvironmentVariable[]
             {
-                new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, SampleAppName)
+                new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, SampleAppName)
             }))
         {
         }

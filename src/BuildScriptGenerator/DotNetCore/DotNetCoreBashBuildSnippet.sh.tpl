@@ -100,7 +100,7 @@ cd "$SOURCE_DIR"
 
 echo
 dotnetCoreVersion=$(dotnet --version)
-echo ".NET Core Version: $dotnetCoreVersion"
+echo "Using .NET Core SDK Version: $dotnetCoreVersion"
 
 cd "$SOURCE_DIR"
 

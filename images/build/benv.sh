@@ -149,12 +149,13 @@ benv-resolve() {
 
   # Resolve dotnet versions
   if [ "$name" == "dotnet" -o "${name::11}" == "dotnet_" ] && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/dotnet/$value" ]; then
+    local runtimesDir="/opt/dotnet/runtimes"
+    if [ ! -d "$runtimesDir/$value" ]; then
       echo >&2 benv: dotnet version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/dotnet
+      benv-versions >&2 $runtimesDir
       return 1
     fi
-    local DIR="/opt/dotnet/$value"
+    local DIR=$(readlink $"$runtimesDir/$value/sdk")
     if [ "$name" == "dotnet" ]; then
       export PATH="$DIR:$PATH"
       export dotnet="$DIR/dotnet"
