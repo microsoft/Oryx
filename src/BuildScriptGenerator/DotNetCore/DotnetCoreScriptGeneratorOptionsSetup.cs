@@ -3,15 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.IO;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotnetCoreScriptGeneratorOptionsSetup : IConfigureOptions<DotnetCoreScriptGeneratorOptions>
     {
-        internal const string DefaultVersion = DotNetCoreVersions.DotNetCore21Version;
-        internal const string InstalledVersionsDir = "/opt/dotnet/"; // TODO: remove hard-coded path
+        internal const string DefaultVersion = DotNetCoreRuntimeVersions.NetCoreApp21;
+        internal const string InstalledVersionsDir = "/opt/dotnet/runtimes";
 
         private readonly IEnvironment _environment;
 
@@ -33,6 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             options.SupportedVersions = _environment.GetEnvironmentVariableAsList(
                 EnvironmentSettingsKeys.DotnetCoreSupportedVersions);
             options.Project = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.Project);
+            options.MSBuildConfiguration = _environment.GetEnvironmentVariable(
+                EnvironmentSettingsKeys.MSBuildConfiguration);
         }
     }
 }

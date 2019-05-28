@@ -3,9 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -21,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
         private bool _probedForProjectFile;
-        private string _projectFile;
+        private string _projectFileRelativePath;
 
         public DefaultAspNetCoreWebAppProjectFileProvider(
             IOptions<DotnetCoreScriptGeneratorOptions> options,
@@ -31,40 +33,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
         }
 
-        public string GetProjectFile(ISourceRepo sourceRepo)
+        public string GetRelativePathToProjectFile(ISourceRepo sourceRepo)
         {
             if (_probedForProjectFile)
             {
-                return _projectFile;
+                return _projectFileRelativePath;
             }
 
             var projectEnvVariablePath = _options.Project;
 
             string projectFile = null;
-            if (string.IsNullOrEmpty(projectEnvVariablePath))
+            if (!string.IsNullOrEmpty(projectEnvVariablePath))
             {
-                // Check if root of the repo has a .csproj or a .fsproj file
-                projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.CSharpProjectFileExtension) ??
-                    GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.FSharpProjectFileExtension);
-            }
-            else
-            {
-                projectEnvVariablePath = projectEnvVariablePath.Trim();
-                projectFile = Path.Combine(sourceRepo.RootPath, projectEnvVariablePath);
+                var projectFileWithRelativePath = projectEnvVariablePath.Trim();
+                projectFile = Path.Combine(sourceRepo.RootPath, projectFileWithRelativePath);
                 if (!sourceRepo.FileExists(projectFile))
                 {
                     _logger.LogWarning($"Could not find the project file '{projectFile}'.");
                     throw new InvalidUsageException(
                         $"Could not find the project file '{projectFile}' specified by the environment variable" +
-                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectEnvVariablePath}'. " +
+                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectFileWithRelativePath}'. " +
                         "Make sure the path to the project file is relative to the root of the repo. " +
                         "For example: PROJECT=src/Dashboard/Dashboard.csproj");
                 }
 
                 // NOTE: Do not check if the project file specified by the end user is a web application since this
                 // can be a escape hatch for end users if our logic to determine a web app is incorrect.
-                return projectFile;
+                return projectFileWithRelativePath;
             }
+
+            // Check if root of the repo has a .csproj or a .fsproj file
+            projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.CSharpProjectFileExtension) ??
+                GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.FSharpProjectFileExtension);
 
             if (projectFile != null)
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     return null;
                 }
 
-                return projectFile;
+                return new FileInfo(projectFile).Name;
             }
 
             // Check if any of the sub-directories has a .csproj file and if that .csproj file has references
@@ -137,17 +137,55 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             // Cache the results
             _probedForProjectFile = true;
-            _projectFile = projectFile;
-
-            return _projectFile;
+            _projectFileRelativePath = GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
+            return _projectFileRelativePath;
         }
 
         // To enable unit testing
         internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            var webSdkProjectElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.WebSdkProjectXPathExpression);
-            return webSdkProjectElement != null;
+            // For reference
+            // https://docs.microsoft.com/en-us/visualstudio/msbuild/project-element-msbuild?view=vs-2019
+
+            // Look for the attribute value on Project element first as that is more common
+            // Example: <Project Sdk="Microsoft.NET.Sdk.Web/1.0.0">
+            var expectedWebSdkName = DotnetCoreConstants.WebSdkName.ToLowerInvariant();
+            var sdkAttributeValue = projectFileDoc.XPathEvaluate(
+                DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
+            var sdkName = sdkAttributeValue as string;
+            if (!string.IsNullOrEmpty(sdkName) &&
+                sdkName.StartsWith(expectedWebSdkName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            // Example:
+            // <Project>
+            //    <Sdk Name="Microsoft.NET.Sdk.Web" Version="1.0.0" />
+            var sdkNameAttributeValue = projectFileDoc.XPathEvaluate(
+                DotnetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
+            sdkName = sdkNameAttributeValue as string;
+
+            return string.Equals(sdkName, expectedWebSdkName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // To enable unit testing
+        internal static string GetRelativePathToRoot(string projectFilePath, string repoRoot)
+        {
+            var repoRootDir = new DirectoryInfo(repoRoot);
+            var projectFileInfo = new FileInfo(projectFilePath);
+            var currDir = projectFileInfo.Directory;
+            var parts = new List<string>();
+            parts.Add(projectFileInfo.Name);
+
+            // Since directory names are case sensitive on non-Windows OSes, try not to use ignore case
+            while (!string.Equals(currDir.FullName, repoRootDir.FullName, StringComparison.Ordinal))
+            {
+                parts.Insert(0, currDir.Name);
+                currDir = currDir.Parent;
+            }
+
+            return Path.Combine(parts.ToArray());
         }
 
         private static IEnumerable<string> GetAllProjectFilesInRepo(
@@ -167,11 +205,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private static bool IsAspNetCore30App(XDocument projectFileDoc)
         {
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkXPathExpression);
+                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
             if (string.Equals(targetFrameworkElement.Value, DotnetCoreConstants.NetCoreApp30))
             {
                 var projectElement = projectFileDoc.XPathSelectElement(
-                    DotnetCoreConstants.WebSdkProjectXPathExpression);
+                    DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
                 return projectElement != null;
             }
 

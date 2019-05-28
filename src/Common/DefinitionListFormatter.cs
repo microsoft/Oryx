@@ -20,16 +20,23 @@ namespace Microsoft.Oryx.Common
 
         private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
 
-        public void AddDefinition(string title, string value)
+        public int Count
+        {
+            get { return _rows.Count; }
+        }
+
+        public DefinitionListFormatter AddDefinition(string title, string value)
         {
             var tuple = CreateDefTuple(title, value);
             if (tuple != null)
             {
                 _rows.Add(tuple);
             }
+
+            return this;
         }
 
-        public void AddDefinitions([CanBeNull] IDictionary<string, string> values)
+        public DefinitionListFormatter AddDefinitions([CanBeNull] IDictionary<string, string> values)
         {
             if (values != null)
             {
@@ -37,13 +44,15 @@ namespace Microsoft.Oryx.Common
                     .Select(pair => CreateDefTuple(pair.Key, pair.Value))
                     .Where(tuple => tuple != null));
             }
+
+            return this;
         }
 
         public override string ToString()
         {
             StringBuilder result = new StringBuilder();
 
-            int headingWidth = _rows.Max(t => t.Item1.Length) + 1;
+            int headingWidth = _rows.Max(t => t.Item1.Length);
             foreach (var row in _rows)
             {
                 result.Append(row.Item1.PadRight(headingWidth) + HeadingSuffix);

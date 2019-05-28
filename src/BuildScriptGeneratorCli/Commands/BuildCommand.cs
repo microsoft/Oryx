@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -68,6 +69,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
 
+        public static string BuildOperationName(IEnvironment env)
+        {
+            foreach (var srcType in LoggingConstants.OperationNameSourceEnvVars)
+            {
+                var opName = env.GetEnvironmentVariable(srcType.Key);
+                if (!string.IsNullOrWhiteSpace(opName))
+                {
+                    return $"{srcType.Value}:{opName}";
+                }
+            }
+
+            return LoggingConstants.DefaultOperationName;
+        }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             return Execute(serviceProvider, console, stdOutHandler: null, stdErrHandler: null);
@@ -81,13 +96,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var env = serviceProvider.GetRequiredService<IEnvironment>();
+            var buildOpId = logger.StartOperation(
+                BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
 
-            // This will be an App Service app name if Oryx was invoked by Kudu
-            var appName = env.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName)
-                ?? env.GetEnvironmentVariable(LoggingConstants.ContainerRegistryAppNameEnvironmentVariableName)
-                ?? LoggingConstants.DefaultOperationName;
-            var buildOpId = logger.StartOperation(appName);
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
             console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
@@ -134,10 +146,25 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string scriptContent;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
-                var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
-                if (!scriptGenerator.TryGenerateScript(out scriptContent))
+                var checkerMessages = new List<ICheckerMessage>();
+                var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
+
+                var generated = scriptGenerator.TryGenerateScript(out scriptContent);
+                stopwatch.AddProperty("generateSucceeded", generated.ToString());
+
+                if (checkerMessages.Count > 0)
                 {
-                    stopwatch.AddProperty("failed", "true");
+                    var messageFormatter = new DefinitionListFormatter();
+                    checkerMessages.ForEach(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
+                    console.WriteLine(messageFormatter.ToString());
+                }
+                else
+                {
+                    logger.LogDebug("No checker messages emitted");
+                }
+
+                if (!generated)
+                {
                     return ProcessConstants.ExitFailure;
                 }
             }
@@ -198,7 +225,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ProcessHelper.TrySetExecutableMode(environmentSettings.PostBuildScriptPath);
 
             // Run the generated script
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {

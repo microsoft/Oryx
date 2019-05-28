@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var scriptGenerator = new BuildScriptGenerator(console, serviceProvider);
+            var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessageSink: null);
 
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {

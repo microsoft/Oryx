@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetProjectFile(sourceRepo);
+            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(sourceRepo);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkXPathExpression);
+                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
             var targetFramework = targetFrameworkElement?.Value;
             if (string.IsNullOrEmpty(targetFramework))
             {
@@ -91,18 +91,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             switch (targetFramework)
             {
                 case DotnetCoreConstants.NetCoreApp10:
+                    return DotNetCoreRuntimeVersions.NetCoreApp10;
+
                 case DotnetCoreConstants.NetCoreApp11:
-                    return "1.1";
+                    return DotNetCoreRuntimeVersions.NetCoreApp11;
 
                 case DotnetCoreConstants.NetCoreApp20:
+                    return DotNetCoreRuntimeVersions.NetCoreApp20;
+
                 case DotnetCoreConstants.NetCoreApp21:
-                    return "2.1";
+                    return DotNetCoreRuntimeVersions.NetCoreApp21;
 
                 case DotnetCoreConstants.NetCoreApp22:
-                    return "2.2";
+                    return DotNetCoreRuntimeVersions.NetCoreApp22;
 
                 case DotnetCoreConstants.NetCoreApp30:
-                    return "3.0";
+                    return DotNetCoreRuntimeVersions.NetCoreApp30;
             }
 
             return null;
@@ -123,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (string.IsNullOrEmpty(maxSatisfyingVersion))
                 {
                     var exc = new UnsupportedVersionException(
-                        $"Target .NET Core version '{version}' is unsupported. Supported versions are:" +
+                        $"Target .NET Core runtime version '{version}' is unsupported. Supported versions are:" +
                         $" {string.Join(", ", _versionProvider.SupportedDotNetCoreVersions)}");
                     _logger.LogError(exc, "Exception caught");
                     throw exc;

@@ -39,6 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IDictionary<string, string> Properties { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether build-time checkers should run.
+        /// Defaults to true.
+        /// </summary>
+        public bool EnableCheckers { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the detection and build of NodeJs
         /// code in the repo should be enabled.
         /// Defaults to true.

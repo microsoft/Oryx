@@ -354,7 +354,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         private void WriteEnvFile(string sourceDir, params string[] contentLines)
         {
-            File.WriteAllText(Path.Combine(sourceDir, Constants.BuildEnvironmentFileName), string.Join(Environment.NewLine, contentLines));
+            File.WriteAllText(
+                Path.Combine(sourceDir, Constants.BuildEnvironmentFileName),
+                string.Join(Environment.NewLine, contentLines));
         }
 
         private DefaultEnvironmentSettingsProvider CreateProvider(string sourceDir)

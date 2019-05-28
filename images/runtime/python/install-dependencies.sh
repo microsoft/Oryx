@@ -45,13 +45,4 @@ EOL
 pip install --upgrade pip
 pip install gunicorn
 
-# Make sure the paths from the build image are also present in the runtime, since pip might use the
-# path hardcoded in some places.
-# PYTHON_VERSION is defined in the base images.
-mkdir -p /opt/python/$PYTHON_VERSION/
-ln -s /usr/local/bin/ /opt/python/$PYTHON_VERSION/
-ln -s /usr/local/include/ /opt/python/$PYTHON_VERSION/
-ln -s /usr/local/lib/ /opt/python/$PYTHON_VERSION/
-ln -s /usr/local/share/ /opt/python/$PYTHON_VERSION/
-
 ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
