@@ -60,11 +60,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "dotnet")]
         [Fact]
         public void DotnetAlias_UsesLtsVersion_ByDefault()
         {
             // Arrange
-            var expectedOutput = DotNetCoreVersions.DotNetCore21Version;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -85,22 +86,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "dotnet")]
         [Theory]
-        [InlineData("1", DotNetCoreVersions.DotNetCore11Version)]
-        [InlineData("1.1", DotNetCoreVersions.DotNetCore11Version)]
-        [InlineData(DotNetCoreVersions.DotNetCore11Version, DotNetCoreVersions.DotNetCore11Version)]
-        [InlineData("2", DotNetCoreVersions.DotNetCore21Version)]
-        [InlineData("2.1", DotNetCoreVersions.DotNetCore21Version)]
-        [InlineData("lts", DotNetCoreVersions.DotNetCore21Version)]
-        [InlineData(DotNetCoreVersions.DotNetCore21Version, DotNetCoreVersions.DotNetCore21Version)]
-        [InlineData("2.2", DotNetCoreVersions.DotNetCore22Version)]
-        [InlineData(DotNetCoreVersions.DotNetCore22Version, DotNetCoreVersions.DotNetCore22Version)]
-        [InlineData("3.0", DotNetCoreVersions.DotNetCore30VersionPreviewName)]
-        public void DotnetAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
+        [InlineData("1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        [InlineData("1.0", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        [InlineData("1.1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
+        [InlineData("3", DotNetCoreSdkVersions.DotNetCore30SdkVersionPreviewName)]
+        [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersionPreviewName)]
+        public void DotnetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv dotnet={specifiedVersion}")
+                .AddCommand($"source benv dotnet={runtimeVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -118,11 +120,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Equal(expectedSdkVersion, actualOutput);
                 },
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "node")]
         [Fact]
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
@@ -148,6 +151,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "python")]
         [Fact]
         public void PythonAlias_UsesPython2_ByDefault_WhenNoExplicitVersionIsProvided()
         {
@@ -173,6 +177,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "python")]
         [Fact]
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
@@ -198,6 +203,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "node")]
         [Theory]
         [InlineData("4", "v4.8.0")]
         [InlineData("4.5", "v4.5.0")]
@@ -250,7 +256,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-
+        [Trait("platform", "node")]
         [Theory]
         // Only version 6 of npm is upgraded, so the following should remain unchanged.
         [InlineData("10.1", "5.6.0")]
@@ -285,6 +291,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "node")]
         [Theory]
         [InlineData("latest", "6.9.0")]
         [InlineData("6", "6.9.0")]
@@ -326,6 +333,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "python")]
         [Theory]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
@@ -358,6 +366,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "python")]
         [Theory]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
@@ -389,6 +398,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "python")]
         [Theory]
         [InlineData("latest", Python37VersionInfo)]
         [InlineData("3", Python37VersionInfo)]

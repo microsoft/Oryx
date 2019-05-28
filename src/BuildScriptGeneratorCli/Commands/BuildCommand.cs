@@ -69,6 +69,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
 
+        public static string BuildOperationName(IEnvironment env)
+        {
+            foreach (var srcType in LoggingConstants.OperationNameSourceEnvVars)
+            {
+                var opName = env.GetEnvironmentVariable(srcType.Key);
+                if (!string.IsNullOrWhiteSpace(opName))
+                {
+                    return $"{srcType.Value}:{opName}";
+                }
+            }
+
+            return LoggingConstants.DefaultOperationName;
+        }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             return Execute(serviceProvider, console, stdOutHandler: null, stdErrHandler: null);
@@ -82,13 +96,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var env = serviceProvider.GetRequiredService<IEnvironment>();
-
-            // This will be an App Service app name if Oryx was invoked by Kudu
-            var appName = env.GetEnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName)
-                ?? env.GetEnvironmentVariable(LoggingConstants.ContainerRegistryAppNameEnvironmentVariableName)
-                ?? LoggingConstants.DefaultOperationName;
-            var buildOpId = logger.StartOperation(appName);
+            var buildOpId = logger.StartOperation(
+                BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 

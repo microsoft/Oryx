@@ -85,9 +85,7 @@ namespace Microsoft.Oryx.Tests.Common
             string[] runArgs,
             Func<int, Task> assertAction)
         {
-            var AppNameEnvVariable = new EnvironmentVariable(
-                LoggingConstants.AppServiceAppNameEnvironmentVariableName,
-                appName);
+            var AppNameEnvVariable = new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appName);
             environmentVariables.Add(AppNameEnvVariable);
             return BuildRunAndAssertAppAsync(
                 output,
@@ -126,7 +124,7 @@ namespace Microsoft.Oryx.Tests.Common
                 runtimeImageName,
                 new List<EnvironmentVariable>()
                 {
-                    new EnvironmentVariable(LoggingConstants.AppServiceAppNameEnvironmentVariableName, appName)
+                    new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appName)
                 },
                 port,
                 link: null,
