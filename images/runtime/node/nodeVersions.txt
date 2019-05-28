@@ -1,7 +1,0 @@
-8.11.4-stretch
-8.12.0-stretch
-9.4.0-stretch
-10.1.0-stretch
-10.10.0-stretch
-10.12.0-stretch
-10.14.1-stretch
