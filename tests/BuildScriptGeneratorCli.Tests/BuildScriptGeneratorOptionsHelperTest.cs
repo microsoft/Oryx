@@ -7,11 +7,10 @@ using System;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildScriptGeneratorOptionsHelperTest : IClassFixture<TestTempDirTestFixture>
     {

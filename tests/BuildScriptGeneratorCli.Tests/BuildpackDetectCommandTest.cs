@@ -11,10 +11,9 @@ using Xunit;
 using Microsoft.Oryx.Tests.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildpackDetectCommandTest : IClassFixture<TestTempDirTestFixture>
     {
