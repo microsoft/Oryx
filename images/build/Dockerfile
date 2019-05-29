@@ -139,7 +139,10 @@ RUN set -ex \
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
-RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
+COPY build/__node-versions.sh /tmp
+RUN chmod a+x /tmp/__node-versions.sh \
+ && . /tmp/__node-versions.sh \
+ && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
  && ~/n/bin/n -d 4.8.0 \
@@ -148,7 +151,6 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 6.9.3 \
  && ~/n/bin/n -d 6.10.3 \
  && ~/n/bin/n -d 6.11.0 \
- && ~/n/bin/n -d 6.17.1 \
  && ~/n/bin/n -d 8.0.0 \
  && ~/n/bin/n -d 8.1.4 \
  && ~/n/bin/n -d 8.2.1 \
@@ -157,12 +159,13 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 8.11.2 \
  && ~/n/bin/n -d 8.12.0 \
  && ~/n/bin/n -d 8.15.1 \
- && ~/n/bin/n -d 8.16.0 \
  && ~/n/bin/n -d 9.4.0 \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.2 \
- && ~/n/bin/n -d 10.15.3 \
+ && ~/n/bin/n -d $NODE6_VERSION \
+ && ~/n/bin/n -d $NODE8_VERSION \
+ && ~/n/bin/n -d $NODE10_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -e \
@@ -191,7 +194,6 @@ RUN set -ex \
         fi; \
     done
 
-COPY build/__node-versions.sh /tmp
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -218,9 +220,7 @@ RUN set -ex \
  && ln -s 6.6.0 /opt/nodejs/6.6 \
  && ln -s 6.9.3 /opt/nodejs/6.9 \
  && ln -s 6.10.3 /opt/nodejs/6.10 \
- && ln -s 6.11.0 /opt/nodejs/6.11 \
- && ln -s 6.17.1 /opt/nodejs/6.17 \
- && ln -s 6.17 /opt/nodejs/6 \
+ && ln -s 6.11.0 /opt/nodejs/6.11 \ 
  && ln -s 8.0.0 /opt/nodejs/8.0 \
  && ln -s 8.1.4 /opt/nodejs/8.1 \
  && ln -s 8.2.1 /opt/nodejs/8.2 \
@@ -229,15 +229,18 @@ RUN set -ex \
  && ln -s 8.11.2 /opt/nodejs/8.11 \
  && ln -s 8.12.0 /opt/nodejs/8.12 \
  && ln -s 8.15.1 /opt/nodejs/8.15 \
- && ln -s 8.16.0 /opt/nodejs/8.16 \
- && ln -s 8.16 /opt/nodejs/8 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && ln -s 10.15.3 /opt/nodejs/10.15 \
- && ln -s 10.15 /opt/nodejs/10 \
+ && . /tmp/__node-versions.sh \
+ && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
+ && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
+ && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
+ && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
+ && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
  && ln -s 10 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \

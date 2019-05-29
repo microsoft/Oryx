@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided()
         {
             // Arrange
-            var expectedOutput = "v10.15.3";
+            var expectedOutput = "v" + NodeVersions.Node10Version;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -210,11 +210,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("4.8", "v4.8.0")]
         [InlineData("4.5.0", "v4.5.0")]
         [InlineData("4.8.0", "v4.8.0")]
-        [InlineData("6", "v6.17.1")]
         [InlineData("6.11", "v6.11.0")]
         [InlineData("6.11.0", "v6.11.0")]
-        [InlineData("lts", "v10.15.3")]
-        [InlineData("8", "v8.16.0")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.2")]
         [InlineData("8.11.2", "v8.11.2")]
@@ -223,12 +220,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("9", "v9.4.0")]
         [InlineData("9.4", "v9.4.0")]
         [InlineData("9.4.0", "v9.4.0")]
-        [InlineData("10", "v10.15.3")]
         [InlineData("10.1", "v10.1.0")]
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("10.15", "v10.15.3")]
+        [InlineData("6", "v" + NodeVersions.Node6Version)]
+        [InlineData("8", "v" + NodeVersions.Node8Version)]
+        [InlineData("10", "v" + NodeVersions.Node10Version)]
+        [InlineData(NodeVersions.Node6MajorMinorVersion, "v" + NodeVersions.Node6Version)]
+        [InlineData(NodeVersions.Node8MajorMinorVersion, "v" + NodeVersions.Node8Version)]
+        [InlineData(NodeVersions.Node10MajorMinorVersion, "v" + NodeVersions.Node10Version)]
+        [InlineData("lts", "v" + NodeVersions.Node10Version)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -263,7 +265,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         // Make sure the we get the upgraded version of npm in the following cases
         [InlineData("10.10.0", "6.9.0")]
         [InlineData("10.14.2", "6.9.0")]
-        [InlineData("10.15", "6.9.0")]
+        [InlineData(NodeVersions.Node10MajorMinorVersion, "6.9.0")]
         public void UsesExpectedNpmVersion(string nodeVersion, string expectedOutput)
         {
             // Arrange
