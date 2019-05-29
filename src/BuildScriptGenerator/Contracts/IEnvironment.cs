@@ -13,6 +13,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public interface IEnvironment
     {
+        EnvironmentType Type { get; }
+
         /// <summary>
         /// Gets the value of an environment variable.
         /// </summary>
