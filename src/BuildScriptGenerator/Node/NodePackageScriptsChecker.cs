@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
-            dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
+            dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, logger: null);
             if (packageJson == null)
             {
                 return null;
@@ -49,11 +49,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             string script = scripts[scriptKey];
-            if (script?.Contains("npm install -g") == true || script?.Contains("npm i -g") == true)
+            if (script?.Contains("-g") == true || script?.Contains("--global") == true)
             {
                 result.Add(new CheckerMessage(
                     $"The script '{scriptKey}', defined in {NodeConstants.PackageJsonFileName}, seems to be trying " +
-                    $"to install packages globally. This is unsupported by Oryx.", Extensions.Logging.LogLevel.Error));
+                    $"to install packages globally. This is unsupported by Oryx."));
             }
         }
     }
