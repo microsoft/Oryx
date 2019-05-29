@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var checker = new NodePackageScriptsChecker(null);
             var scripts = new Dictionary<string, string>
             {
-                { "preinstall",     "npm i -g pkg # checked and problematic" },
+                { "preinstall",     "npm i pkg -g # checked and problematic" },
                 { "install",        "echo bla bla # checked and not problematic" },
                 { "postshrinkwrap", "npm i -g pkg # not checked" }
             };
