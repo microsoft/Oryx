@@ -104,7 +104,16 @@
     yarn-version: 1.13.0
     yarn-minor-version: 1.13
     yarn-major-version: 1
+    node6-version: 6.17.1
+    node6-major-minor-version: 6.17
+    node8-version: 8.16.0
+    node8-major-minor-version: 8.16
+    node10-version: 10.16.0
+    node10-major-minor-version: 10.16
   outputs:
     - type: shell
       directory: build
       file-name-prefix: __
+    - type: csharp
+      directory: tests/Oryx.Tests.Common
+      namespace: Microsoft.Oryx.Tests.Common
