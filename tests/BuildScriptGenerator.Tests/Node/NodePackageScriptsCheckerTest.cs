@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
+using Microsoft.Oryx.Tests.Common;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {
@@ -17,16 +19,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_DetectsGlobalNpmInstalls()
         {
             // Arrange
-            var checker = new NodePackageScriptsChecker();
+            var checker = new NodePackageScriptsChecker(null);
             var scripts = new Dictionary<string, string>
             {
-                { "preinstall",     "npm i -g casperjs # checked and problematic" },
-                { "install",        "echo bla bla bla  # checked and not problematic" },
-                { "postshrinkwrap", "npm i -g casperjs # not checked" }
+                { "preinstall",     "npm i -g pkg # checked and problematic" },
+                { "install",        "echo bla bla # checked and not problematic" },
+                { "postshrinkwrap", "npm i -g pkg # not checked" }
             };
 
             // Act & Assert
-            Assert.Single(checker.CheckInstallScripts(scripts));
+            Assert.Single(checker.CheckScriptsForGlobalInstallationAttempts(scripts));
         }
     }
 }
