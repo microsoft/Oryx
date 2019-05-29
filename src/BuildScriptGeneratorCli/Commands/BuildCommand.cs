@@ -72,7 +72,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static string BuildOperationName(IEnvironment env)
         {
             LoggingConstants.EnvTypeOperationNamePrefix.TryGetValue(env.Type, out var prefix);
-            return string.IsNullOrWhiteSpace(prefix) ? LoggingConstants.DefaultOperationName : prefix;
+            var opName = env.GetEnvironmentVariable(
+                LoggingConstants.OperationNameSourceEnvVars.Single(e => e.Value == env.Type).Key);
+
+            if (string.IsNullOrWhiteSpace(prefix) || string.IsNullOrWhiteSpace(opName))
+            {
+                return LoggingConstants.DefaultOperationName;
+            }
+
+            return $"{prefix}:{opName}";
         }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)

@@ -17,7 +17,21 @@ namespace Microsoft.Oryx.Tests.Common
         // Environment variables in Linux are case-sensitive
         public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        public EnvironmentType Type => throw new NotImplementedException();
+        public EnvironmentType Type
+        {
+            get
+            {
+                foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
+                {
+                    if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Key)))
+                    {
+                        return entry.Value;
+                    }
+                }
+
+                return EnvironmentType.Unknown;
+            }
+        }
 
         public bool? GetBoolEnvironmentVariable(string name)
         {
