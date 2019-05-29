@@ -7,11 +7,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultEnvironment : IEnvironment
     {
+        public EnvironmentType Type
+        {
+            get
+            {
+                foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
+                {
+                    if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Key)))
+                    {
+                        return entry.Value;
+                    }
+                }
+
+                return EnvironmentType.Unknown;
+            }
+        }
+
         public bool? GetBoolEnvironmentVariable(string name)
         {
             var variable = GetEnvironmentVariable(name);
