@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -28,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        protected DockerVolume CreateAppVolume(string appName) => DockerVolume.CreateMirror(
+        protected DockerVolume CreateAppVolume(string appName) => DockerVolume.Create(
             Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
@@ -52,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
             var appName = "webfrontend";
@@ -112,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
             var appName = "webfrontend";
@@ -170,7 +172,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = "10.14";
             var appName = "webfrontend";
@@ -258,7 +260,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var appVolume = CreateAppVolume(appName);
             // Allows `pack` to use the host's Docker engine
-            var dockerPort = DockerVolume.Create("/var/run/docker.sock", "/var/run/docker.sock");
+            var dockerPort = DockerVolume.CreateDockerSocket();
             var appImageName = "testnodeapp";
 
             // Act
@@ -544,7 +546,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Use a separate volume for output due to rsync errors
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "create-react-app-sample";
             var volume = CreateAppVolume(appName);
@@ -769,7 +771,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "linxnodeexpress";
             var volume = CreateAppVolume(appName);
@@ -836,8 +838,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .AddFileExistsCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{NodeConstants.InjectedAppInsights}=\"True\"", $"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -846,8 +849,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{appDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{appDir}/oryx-manifest.toml")
+                .AddFileExistsCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{NodeConstants.InjectedAppInsights}=\"True\"",
+                $"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -895,7 +900,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = DockerVolume.Create(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "linxnodeexpress";
             var volume = CreateAppVolume(appName);

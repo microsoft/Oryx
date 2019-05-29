@@ -83,7 +83,7 @@
       file-name-prefix: __
 - name: file-paths
   constants:
-    build-id-file-name: .oryx_build_id
+    build-manifest-file-name: oryx-manifest.toml
   outputs:
     - type: csharp
       directory: src/Common

@@ -20,25 +20,30 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private readonly IConsole _console;
         private readonly List<ICheckerMessage> _checkerMessageSink;
         private readonly ILogger<BuildScriptGenerator> _logger;
+        private readonly string _operationId;
 
         public BuildScriptGenerator(
             IServiceProvider serviceProvider,
             IConsole console,
-            List<ICheckerMessage> checkerMessageSink)
+            List<ICheckerMessage> checkerMessageSink,
+            string operationId)
         {
             _console = console;
             _serviceProvider = serviceProvider;
             _checkerMessageSink = checkerMessageSink;
             _logger = _serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
+            _operationId = operationId;
         }
 
         public static BuildScriptGeneratorContext CreateContext(
             BuildScriptGeneratorOptions options,
             CliEnvironmentSettings envSettings,
-            ISourceRepo sourceRepo)
+            ISourceRepo sourceRepo,
+            string operationId)
         {
             return new BuildScriptGeneratorContext
             {
+                OperationId = operationId,
                 SourceRepo = sourceRepo,
                 Language = options.Language,
                 LanguageVersion = options.LanguageVersion,
@@ -63,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
                 var environment = _serviceProvider.GetRequiredService<CliEnvironmentSettings>();
                 var sourceRepo = sourceRepoProvider.GetSourceRepo();
-                var scriptGenCtx = CreateContext(options, environment, sourceRepo);
+                var scriptGenCtx = CreateContext(options, environment, sourceRepo, _operationId);
 
                 scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink);
                 return true;

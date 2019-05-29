@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -52,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotNetCoreVersion = "1.0";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "aspnetcore10");
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -105,7 +106,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "1.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp11WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -149,7 +150,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "NetCoreApp11WithExplicitAssemblyName";
             var dotnetcoreVersion = "1.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -202,7 +203,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotNetCoreVersion = "2.0";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "aspnetcore20");
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -255,7 +256,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var buildImageScript = new ShellScriptBuilder()
@@ -298,15 +299,15 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
-                .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
-                .AddCommand($"rm -f {appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -345,15 +346,15 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "NetCoreApp21WithExplicitAssemblyName");
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
-                .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
-                .AddCommand($"rm -f {appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -393,7 +394,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -438,7 +439,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "NetCoreApp21WithExplicitAssemblyName";
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -481,7 +482,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/run.sh";
             var startupCommand = "\"dotnet foo.dll\"";
@@ -534,7 +535,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "MultiWebAppRepo";
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var repoDir = volume.ContainerDir;
             var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
             var appOutputDir = $"{repoDir}/myoutputdir";
@@ -581,7 +582,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "NetCoreApp22MultiProjectApp";
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var repoDir = volume.ContainerDir;
             var appOutputDir = $"{repoDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -623,7 +624,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -668,7 +669,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -723,7 +724,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -771,7 +772,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -815,7 +816,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -859,7 +860,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -904,7 +905,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "NetCoreApp22WithExplicitAssemblyName";
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -948,7 +949,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "2.2";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var doesNotContainApp = "/tmp/does-not-contain-app";
@@ -1005,7 +1006,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "FSharpNetCoreApp21.WebApp");
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -1049,7 +1050,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "3.0";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -1103,7 +1104,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -1150,7 +1151,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "TodoAppFromMac");
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -1186,7 +1187,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = "3.0";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
@@ -1230,7 +1231,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "NetCoreApp30WebAppWithExplicitAssemblyName";
             var dotnetcoreVersion = "3.0";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()

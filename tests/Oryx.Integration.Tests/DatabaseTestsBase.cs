@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
             int containerPort = 8000,
             bool specifyBindPortFlag = true)
         {
-            var volume = DockerVolume.CreateMirror(samplePath);
+            var volume = DockerVolume.Create(samplePath);
             var appDir = volume.ContainerDir;
             var entrypointScript = "./run.sh";
             var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;

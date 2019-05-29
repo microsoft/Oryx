@@ -48,7 +48,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
-	const oryxManifestFile string = "oryx-manifest.toml"
+	const oryxManifestFile string = consts.BuildManifestFileName
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")

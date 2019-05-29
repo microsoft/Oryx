@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Tests.Common
@@ -42,30 +41,35 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         public string ContainerDir { get; }
 
-        public static DockerVolume Create([NotNull] string hostPath, [NotNull] string containerPath)
+        /// <summary>
+        /// Allows a container to use host's docker engine.
+        /// </summary>
+        /// <returns></returns>
+        public static DockerVolume CreateDockerSocket()
         {
-            if (string.IsNullOrEmpty(hostPath) && !Directory.Exists(hostPath) && !File.Exists(hostPath))
-            {
-                throw new ArgumentException($"'{nameof(hostPath)}' must point to an existing directory or file.");
-            }
-
-            return new DockerVolume(null, hostPath, containerPath);
+            var dockerSocket = "/var/run/docker.sock";
+            return new DockerVolume(originalHostDir: null, dockerSocket, dockerSocket);
         }
 
         /// <summary>
         /// Creates a copy of a local directory, and returns a DockerVolume instance for mounting that copy in a
         /// container.
         /// </summary>
-        /// <param name="originalDir">local directory to be used in a container</param>
+        /// <param name="hostDir">local directory to be used in a container</param>
         /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
-        public static DockerVolume CreateMirror(string originalDir)
+        public static DockerVolume Create(string hostDir)
         {
-            if (string.IsNullOrEmpty(originalDir))
+            if (string.IsNullOrEmpty(hostDir))
             {
-                throw new ArgumentException($"'{nameof(originalDir)}' cannot be null or empty.");
+                throw new ArgumentException($"'{nameof(hostDir)}' cannot be null or empty.");
             }
 
-            var dirInfo = new DirectoryInfo(originalDir);
+            if (!Directory.Exists(hostDir))
+            {
+                throw new ArgumentException($"'{nameof(hostDir)}' must point to an existing directory.");
+            }
+
+            var dirInfo = new DirectoryInfo(hostDir);
 
             // Copy the host directory to a different location and mount that one as it's always possible that a
             // single sample app could be tested by different tests and we do not want to modify its original state
@@ -94,7 +98,7 @@ namespace Microsoft.Oryx.Tests.Common
                 tempDirRoot,
                 Guid.NewGuid().ToString("N"),
                 dirInfo.Name);
-            CopyDirectories(originalDir, writableHostDir, copySubDirs: true);
+            CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
 
             // Grant permissions to the folder we just copied on the host machine. The permisions here allow the
             // user(a non-root user) in the container to read/write/execute files.
@@ -113,7 +117,7 @@ namespace Microsoft.Oryx.Tests.Common
             // Note: Path.Combine is the ideal solution here but this would fail when we run the
             // tests on a windows machine (which most of us use).
             var containerDir = $"{ContainerDirRoot}/{containerDirName}";
-            return new DockerVolume(originalDir, writableHostDir, containerDir);
+            return new DockerVolume(hostDir, writableHostDir, containerDir);
         }
 
         private static void CopyDirectories(string sourceDirName, string destDirName, bool copySubDirs)

@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
 
             var appName = "wordpress";
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "imagick-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")

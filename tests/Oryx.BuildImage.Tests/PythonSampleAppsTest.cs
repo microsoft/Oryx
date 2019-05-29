@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         public const string PackagesDirectory = "__oryx_packages__";
         public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
-            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", sampleAppName));
+            DockerVolume.Create(Path.Combine(_hostSamplesDir, "python", sampleAppName));
 
         public PythonSampleAppsTestBase(ITestOutputHelper output) : base(output)
         {

@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"startupscriptgenerator/common"
+	"startupscriptgenerator/common/consts"
 	"strings"
 )
 
@@ -92,7 +93,7 @@ func logReadDirError(logger *common.Logger, path string, err error) {
 // Builds the commands to setup the Python packages, using virtual env or a package folder.
 func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	scriptBuilder := strings.Builder{}
-	const buildManifestFile string = "oryx-manifest.toml"
+	const buildManifestFile string = consts.BuildManifestFileName
 	manifesFilePath := filepath.Join(gen.SourcePath, buildManifestFile)
 	// If a manifest file is present, it takes precedence.
 	if common.FileExists(manifesFilePath) {

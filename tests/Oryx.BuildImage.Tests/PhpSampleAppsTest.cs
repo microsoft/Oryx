@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
-            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
+            DockerVolume.Create(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
         [Fact]
         public void GeneratesScript_AndBuilds_TwigExample()
