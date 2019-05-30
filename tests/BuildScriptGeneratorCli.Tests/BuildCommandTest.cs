@@ -4,17 +4,18 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
@@ -360,6 +361,19 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Contains(
                 "Cannot use language version without specifying language name also.",
                 testConsole.StdError);
+        }
+
+        public static IEnumerable<object[]> GetOperationNameEnvVarNames() =>
+            Microsoft.Oryx.Common.LoggingConstants.OperationNameSourceEnvVars.Select(e => new[] { e.Key, e.Value });
+
+        [Theory]
+        [MemberData(nameof(GetOperationNameEnvVarNames))]
+        public void BuildOperationName_ReturnsCorrectPrefix(string envVarName, string opNamePrefix)
+        {
+            var appName = "bla";
+            var env = new TestEnvironment();
+            env.SetEnvironmentVariable(envVarName, appName);
+            Assert.Equal(opNamePrefix + ":" + appName, BuildCommand.BuildOperationName(env));
         }
 
         private string CreateNewDir()

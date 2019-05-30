@@ -327,15 +327,10 @@ namespace Microsoft.Oryx.Tests.Common
                         aiKeyOverride));
             }
 
-            var appServiceAppName = Environment.GetEnvironmentVariable(
-                LoggingConstants.AppServiceAppNameEnvironmentVariableName);
+            var appServiceAppName = Environment.GetEnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName);
             if (!string.IsNullOrWhiteSpace(appServiceAppName))
             {
-                AddEnvVarArg(
-                    args,
-                    new EnvironmentVariable(
-                        LoggingConstants.AppServiceAppNameEnvironmentVariableName,
-                        appServiceAppName));
+                AddEnvVarArg(args, new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appServiceAppName));
             }
 
             if (dockerRunArguments.Volumes?.Count > 0)

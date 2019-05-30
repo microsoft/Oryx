@@ -258,14 +258,7 @@ paket-files/
 launchSettings.json
 
 # Node and .NET Core runtime images dockerfiles, that are auto generated
-images/runtime/node/*.*/Dockerfile
-!images/runtime/node/4.*/
-!images/runtime/node/6.*/
-!images/runtime/node/8.0/
-!images/runtime/node/8.1/
-!images/runtime/node/8.2/
-!images/runtime/node/8.8/
-!images/runtime/node/8.9/
+images/runtime/node/*/Dockerfile
 images/runtime/dotnetcore/*.*/
 images/runtime/python/*.*/
 images/runtime/php/*.*/

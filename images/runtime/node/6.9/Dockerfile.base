@@ -1,7 +1,7 @@
 # The official Node 6.9 image has vulnerabilities, so we build our own version
 # to fetch the latest stretch release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID a0c6d581ef9724999c5c8e2a21a387e741d677cc
-FROM buildpack-deps:stretch AS node-original-image
+FROM buildpack-deps:stretch AS node-original
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -37,6 +37,10 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
+CMD [ "node" ]
+
+FROM node-original AS main
+
 # This is a way to avoid using caches for the next stages, since we want the remaining steps
 # to always run
 ARG CACHEBUST=0
@@ -53,5 +57,3 @@ RUN mkdir -p /node_modules \
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.
 RUN npm install -g pm2
-
-CMD [ "node" ]

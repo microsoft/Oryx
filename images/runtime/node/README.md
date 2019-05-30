@@ -14,13 +14,11 @@ ones used in the official Node image for each particular version.
 # Generate images from template
 
 Since our node images are identical except for the base image, which determines the node version,
-some of our node images are generated from a template file, `./Dockerfile.template`, which contains the placeholder
-for the base image name. File `./nodeVersions.txt` has a list of the supported node versions as their tags for the official node images.
+our final node images are generated from a template file, `./Dockerfile.template`, which contains the placeholder
+for the base image name. 
 
 To generate the dockerfiles for all the images, run `./generateDockerfiles.sh`.
 
 ## Adding new versions of Node
 
-To add a new Node version, simply add a line to `./nodeVersions.txt`, or update the patch version of one of the
-existing ones, and run the script `./generateDockerfiles.sh`. This script already computes the target folder as well,
-and creates it if it doesn't exist.
+To add a new Node version, add a new directory with the version name, and a base Dockerfile named `./Dockerfile.base`, that should contain the node binaries. The script `./generateDockerfiles.sh` will then produce the Dockerfile for the final image using the `./Dockerfile.base` image as its base.

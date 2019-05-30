@@ -9,18 +9,35 @@
       namespace: Microsoft.Oryx.Common
     - type: go
       directory: src/startupscriptgenerator/common/consts
-- name: dot-net-core-versions
+- name: dot-net-core-sdk-versions
   constants:
-    dot-net-core-11-version: 1.1.14
-    dot-net-core-21-version: 2.1.604
-    dot-net-core-21-sha512: ad57d8c2a6b5bfaccb69270af0478a6717717e41672e52b96149a710626972983d8d5b10ce42201b306c57948435ec388545672a8c726c06f803d3c1d5a61860
-    dot-net-core-22-version: 2.2.204
-    dot-net-core-22-sha512: 1add882c32a96ad564ef3f2a38fdc9282c6ee1c851bc59c22ada911d36dbe5f2f839b428307510e3f93900246e0bbd4a277a9bd45f778df4b889782d6867bf01
+    dot-net-core-11-sdk-version: 1.1.14
+    dot-net-core-11-sdk-sha512: E36AA4B278B936E1E2989B5E556F4EC3AEF2CB1EBB5ABD1BD6011D511873FC3E72101D035CF4DAF1563C7A3C43C193863D38CBF24288D375DD143AB42AFAE524
+    dot-net-core-21-sdk-version: 2.1.700
+    dot-net-core-21-sdk-sha512: 44258B4FB59927D9977900F0724EEB82248A3CC46EF3067088F8F78EB092C09DA88BBA9B7A488F1549A240E0DD3FEA465FF1FFA6CDABB543B6BB536A12A549D3
+    dot-net-core-22-sdk-version: 2.2.300
+    dot-net-core-22-sdk-sha512: 1D660A323180DF3DA8C6E0EA3F439D6BBEC29670D498AC884F38BF3CDFFBB041C7AFFF66171CDFD24C82394B845B135B057404DEF1FCE9F206853726382BC42B
     # Since preview names of .NET Core break the semver norms, it does not work well with the code
     # that we depend on for semantic version checks, so having two constants here.
-    dot-net-core-30-version-preview-name: 3.0.100-preview5-011568
-    dot-net-core-30-version: 3.0.100
-    dot-net-core-30-sha512: 207af1f3161cbd0864902370475fcad5b500bf2b7199b06445e7c338053bc7cb0157ee1b4d00a37a351eae6e209417ee4a15eeacee086aac0ac1be7a62f3ad0b
+    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview5-011568
+    dot-net-core-30-sdk-version: 3.0.100
+    dot-net-core-30-sdk-sha512: 207af1f3161cbd0864902370475fcad5b500bf2b7199b06445e7c338053bc7cb0157ee1b4d00a37a351eae6e209417ee4a15eeacee086aac0ac1be7a62f3ad0b
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/DotNetCore
+      namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: dot-net-core-runtime-versions
+  constants:
+    net-core-app-10: 1.0.16
+    net-core-app-11: 1.1.14
+    net-core-app-20: 2.0.9
+    net-core-app-21: 2.1.11
+    net-core-app-22: 2.2.5
+    net-core-app-30: 3.0.0
+    net-core-app-30-preview-name: 3.0.0-preview5-27626-15
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -87,7 +104,16 @@
     yarn-version: 1.13.0
     yarn-minor-version: 1.13
     yarn-major-version: 1
+    node6-version: 6.17.1
+    node6-major-minor-version: 6.17
+    node8-version: 8.16.0
+    node8-major-minor-version: 8.16
+    node10-version: 10.16.0
+    node10-major-minor-version: 10.16
   outputs:
     - type: shell
       directory: build
       file-name-prefix: __
+    - type: csharp
+      directory: tests/Oryx.Tests.Common
+      namespace: Microsoft.Oryx.Tests.Common

@@ -56,32 +56,34 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
-COPY build/__dot-net-core-versions.sh /tmp
+COPY build/__dot-net-core-sdk-versions.sh /tmp
+COPY build/__dot-net-core-runtime-versions.sh /tmp
 COPY images/build/dotnetcore-install.sh /
 RUN chmod +x /dotnetcore-install.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
-RUN . /tmp/__dot-net-core-versions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_11_VERSION \
+RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
     /dotnetcore-install.sh
 
-RUN . /tmp/__dot-net-core-versions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_21_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_21_SHA512 \
+RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
     /dotnetcore-install.sh
 
-RUN . /tmp/__dot-net-core-versions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_22_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_22_SHA512 \
+RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
     /dotnetcore-install.sh
 
-RUN . /tmp/__dot-net-core-versions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_30_VERSION_PREVIEW_NAME \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_30_SHA512 \
+RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
     /dotnetcore-install.sh
 
 RUN set -ex \
@@ -89,15 +91,58 @@ RUN set -ex \
     && find /var/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
- && ln -s 1.1 /opt/dotnet/1 \
- && ln -s 2.1 /opt/dotnet/2 \
- && ln -s 3.0 /opt/dotnet/3 \
- && ln -s 2 /opt/dotnet/lts \
- && ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
+ && sdksDir=/opt/dotnet/sdks \
+ && cd $sdksDir \
+ && ln -s 1.1 1 \
+ && ln -s 2.1 2 \
+ && ln -s 3.0 3
+
+RUN set -ex \
+ && dotnetDir=/opt/dotnet \
+ && sdksDir=$dotnetDir/sdks \
+ && runtimesDir=$dotnetDir/runtimes \
+ && mkdir -p $runtimesDir \
+ && cd $runtimesDir \
+ && . /tmp/__dot-net-core-sdk-versions.sh \
+ && . /tmp/__dot-net-core-runtime-versions.sh \
+ # 1.1 sdk <-- 1.0 runtime's sdk
+ && mkdir $NET_CORE_APP_10 \
+ && ln -s $NET_CORE_APP_10 1.0 \
+ && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_10/sdk \
+ # 1.1 sdk <-- 1.1 runtime's sdk
+ && mkdir $NET_CORE_APP_11 \
+ && ln -s $NET_CORE_APP_11 1.1 \
+ && ln -s 1.1 1 \
+ && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_11/sdk \
+ # 2.1 sdk <-- 2.0 runtime's sdk
+ && mkdir $NET_CORE_APP_20 \
+ && ln -s $NET_CORE_APP_20 2.0 \
+ && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_20/sdk \
+ # 2.1 sdk <-- 2.1 runtime's sdk
+ && mkdir $NET_CORE_APP_21 \
+ && ln -s $NET_CORE_APP_21 2.1 \
+ && ln -s 2.1 2 \
+ && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
+ # 2.2 sdk <-- 2.2 runtime's sdk
+ && mkdir $NET_CORE_APP_22 \
+ && ln -s $NET_CORE_APP_22 2.2 \
+ && ln -s $sdksDir/$DOT_NET_CORE_22_SDK_VERSION $NET_CORE_APP_22/sdk \
+ # 3.0 sdk <-- 3.0 runtime's sdk
+ && mkdir $NET_CORE_APP_30 \
+ && ln -s $NET_CORE_APP_30 3.0 \
+ && ln -s 3.0 3 \
+ && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
+ # LTS sdk <-- LTS runtime's sdk
+ && ln -s 2.1 lts \
+ && ltsSdk=$(readlink lts/sdk) \
+ && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
-RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
+COPY build/__node-versions.sh /tmp
+RUN chmod a+x /tmp/__node-versions.sh \
+ && . /tmp/__node-versions.sh \
+ && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
  && ~/n/bin/n -d 4.8.0 \
@@ -118,7 +163,9 @@ RUN curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.2 \
- && ~/n/bin/n -d 10.15.2 \
+ && ~/n/bin/n -d $NODE6_VERSION \
+ && ~/n/bin/n -d $NODE8_VERSION \
+ && ~/n/bin/n -d $NODE10_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -e \
@@ -147,7 +194,6 @@ RUN set -ex \
         fi; \
     done
 
-COPY build/__node-versions.sh /tmp
 RUN set -ex \
  && . /tmp/__node-versions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -174,8 +220,7 @@ RUN set -ex \
  && ln -s 6.6.0 /opt/nodejs/6.6 \
  && ln -s 6.9.3 /opt/nodejs/6.9 \
  && ln -s 6.10.3 /opt/nodejs/6.10 \
- && ln -s 6.11.0 /opt/nodejs/6.11 \
- && ln -s 6.11 /opt/nodejs/6 \
+ && ln -s 6.11.0 /opt/nodejs/6.11 \ 
  && ln -s 8.0.0 /opt/nodejs/8.0 \
  && ln -s 8.1.4 /opt/nodejs/8.1 \
  && ln -s 8.2.1 /opt/nodejs/8.2 \
@@ -184,14 +229,18 @@ RUN set -ex \
  && ln -s 8.11.2 /opt/nodejs/8.11 \
  && ln -s 8.12.0 /opt/nodejs/8.12 \
  && ln -s 8.15.1 /opt/nodejs/8.15 \
- && ln -s 8.15 /opt/nodejs/8 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
  && ln -s 9.4 /opt/nodejs/9 \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && ln -s 10.15.2 /opt/nodejs/10.15 \
- && ln -s 10.15 /opt/nodejs/10 \
+ && . /tmp/__node-versions.sh \
+ && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
+ && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
+ && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
+ && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
+ && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
  && ln -s 10 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
@@ -295,10 +344,10 @@ ENV NUGET_XMLDOC_MODE=skip \
 	NUGET_PACKAGES=/var/nuget
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
+COPY --from=dotnet-install /usr/local/bin /usr/local/bin
 # Grant read-write permissions to the nuget folder so that dotnet restore
 # can write into it.
 RUN chmod a+rw /var/nuget
-RUN ln -s /opt/dotnet/lts/dotnet /usr/local/bin/dotnet
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt

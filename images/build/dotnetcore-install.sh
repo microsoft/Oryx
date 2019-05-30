@@ -29,7 +29,8 @@ globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 # Example: 3.0.100-preview4-011223 will be changed to 3.0.100
 DOTNET_SDK_VER=${DOTNET_SDK_VER%%-*}
 
-DOTNET_DIR=/opt/dotnet/$DOTNET_SDK_VER
+SDK_DIR=/opt/dotnet/sdks
+DOTNET_DIR=$SDK_DIR/$DOTNET_SDK_VER
 mkdir -p $DOTNET_DIR
 tar -xzf dotnet.tar.gz -C $DOTNET_DIR
 rm dotnet.tar.gz
@@ -39,14 +40,14 @@ IFS='.' read -ra SDK_VERSION_PARTS <<< "$DOTNET_SDK_VER"
 MAJOR_MINOR="${SDK_VERSION_PARTS[0]}.${SDK_VERSION_PARTS[1]}"
 echo
 echo "Created link from $MAJOR_MINOR to $DOTNET_SDK_VER"
-ln -s $DOTNET_SDK_VER /opt/dotnet/$MAJOR_MINOR
+ln -s $DOTNET_SDK_VER $SDK_DIR/$MAJOR_MINOR
 
 # Install MVC template based packages
 if [ "$INSTALL_PACKAGES" != "false" ]
 then
     echo
     echo Installing MVC template based packages ...
-    dotnet=/opt/dotnet/$DOTNET_SDK_VER/dotnet
+    dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
     mkdir warmup
     cd warmup
     echo "$globalJsonContent" > global.json
