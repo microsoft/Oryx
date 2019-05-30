@@ -13,6 +13,12 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerVolume
     {
+        private const string DockerSocket = "/var/run/docker.sock";
+        public static readonly DockerVolume DockerDaemonSocket = new DockerVolume(
+            originalHostDir: null,
+            mountedHostDir: DockerSocket,
+            containerDir: DockerSocket);
+
         // VSTS variable used to identify if the tests are running in VSTS or not (for example, on dev machines)
         public const string VstsAgentNameEnivronmentVariable = "AGENT_NAME";
 
@@ -42,22 +48,12 @@ namespace Microsoft.Oryx.Tests.Common
         public string ContainerDir { get; }
 
         /// <summary>
-        /// Allows a container to use host's docker engine.
-        /// </summary>
-        /// <returns></returns>
-        public static DockerVolume CreateDockerSocket()
-        {
-            var dockerSocket = "/var/run/docker.sock";
-            return new DockerVolume(originalHostDir: null, dockerSocket, dockerSocket);
-        }
-
-        /// <summary>
         /// Creates a copy of a local directory, and returns a DockerVolume instance for mounting that copy in a
         /// container.
         /// </summary>
         /// <param name="hostDir">local directory to be used in a container</param>
         /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
-        public static DockerVolume Create(string hostDir)
+        public static DockerVolume CreateMirror(string hostDir)
         {
             if (string.IsNullOrEmpty(hostDir))
             {

@@ -48,14 +48,13 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
 
-	const oryxManifestFile string = consts.BuildManifestFileName
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
-	scriptBuilder.WriteString("if [ -f ./" + oryxManifestFile + " ]; then\n")
-	scriptBuilder.WriteString("    echo \"Found '" + oryxManifestFile + "'\"\n")
-	scriptBuilder.WriteString("    . ./" + oryxManifestFile + "\n")
+	scriptBuilder.WriteString("if [ -f ./" + consts.BuildManifestFileName + " ]; then\n")
+	scriptBuilder.WriteString("    echo \"Found '" + consts.BuildManifestFileName + "'\"\n")
+	scriptBuilder.WriteString("    . ./" + consts.BuildManifestFileName + "\n")
 	scriptBuilder.WriteString("fi\n\n")
 
 

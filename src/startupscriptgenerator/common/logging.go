@@ -35,7 +35,7 @@ func SetGlobalOperationId(appRootPath string) {
 	if buildManifest.OperationId != "" {
 		buildOpId = strings.TrimSpace(buildManifest.OperationId)
 	}
-	fmt.Println("Operation Id: " + buildOpId)
+	fmt.Println("Build Operation ID: " + buildOpId)
 }
 
 func GetLogger(name string) *Logger {
