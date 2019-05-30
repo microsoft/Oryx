@@ -13,19 +13,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultEnvironment : IEnvironment
     {
+        private EnvironmentType? _type; // Cache for the Type property
+
         public EnvironmentType Type
         {
             get
             {
-                foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
+                if (!_type.HasValue) // Cache needs to be initialized
                 {
-                    if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Key)))
+                    foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
                     {
-                        return entry.Value;
+                        if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Key)))
+                        {
+                            _type = entry.Value;
+                            return _type.Value;
+                        }
                     }
+
+                    _type = EnvironmentType.Unknown;
                 }
 
-                return EnvironmentType.Unknown;
+                return _type.Value;
+
             }
         }
 
