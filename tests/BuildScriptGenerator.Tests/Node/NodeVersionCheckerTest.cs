@@ -6,6 +6,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Tests.Common;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -25,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.Single(messages);
-            Assert.Contains("outdated version of Node.js was used", messages.First().Content);
+            Assert.Contains("outdated version of Node.js was detected", messages.First().Content);
         }
 
         [Fact]
@@ -51,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeToolName, "10.15.3" } });
+                new Dictionary<string, string> { { NodeConstants.NodeToolName, NodeVersions.Node10Version } });
 
             // Assert
             Assert.Empty(messages);
