@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 ProjectFile = projectFile,
                 PublishDirectory = publishDir,
                 BuildProperties = buildProperties,
-                BenvArgs = $"dotnet={context.DotnetCoreVersion}",
+                BenvArgs = $"dotnet={context.DotNetCoreVersion}",
                 DirectoriesToExcludeFromCopyToIntermediateDir = GetDirectoriesToExcludeFromCopyToIntermediateDir(
                     context),
                 PreBuildCommand = preBuildCommand,
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
-            context.DotnetCoreVersion = version;
+            context.DotNetCoreVersion = version;
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
