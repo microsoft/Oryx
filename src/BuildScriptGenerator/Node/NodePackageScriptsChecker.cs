@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -12,6 +13,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     [Checker(NodeConstants.NodeToolName)]
     public class NodePackageScriptsChecker : IChecker
     {
+        public static readonly Regex NpmGlobalPattern =
+            new Regex(@"npm[^&|;#]+\s\-?\-g(lobal)?");
+
         private readonly IEnvironment _env;
 
         public NodePackageScriptsChecker([CanBeNull] IEnvironment env)
@@ -56,13 +60,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private void CheckScript(IDictionary<string, string> scripts, string scriptKey, List<ICheckerMessage> result)
         {
-            if (!scripts.ContainsKey(scriptKey))
-            {
-                return;
-            }
-
-            string script = scripts[scriptKey];
-            if (script?.Contains("-g") == true || script?.Contains("--global") == true)
+            scripts.TryGetValue(scriptKey, out var script);
+            if (script != null && NpmGlobalPattern.IsMatch(script))
             {
                 result.Add(new CheckerMessage(string.Format(Resources.Labels.NodePackageGlobalInstallMessageFormat,
                     scriptKey)));

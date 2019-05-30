@@ -30,5 +30,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Act & Assert
             Assert.Single(checker.CheckScriptsForGlobalInstallationAttempts(scripts));
         }
+
+        [Theory]
+        [InlineData("npm install -g pkg",       true)]
+        [InlineData("npm install --global pkg", true)]
+        [InlineData("npm i -g pkg",             true)]
+        [InlineData("npm i --global pkg",       true)]
+        [InlineData("npm install pkg",                  false)]
+        [InlineData("npm install pkg && grep -g bla",   false)]
+        [InlineData("npm install endswith-g",           false)]
+        [InlineData("npm install endswith-global",      false)]
+        public void Checker_NpmGlobalPattern_MatchesCorrectly(string script, bool shouldMatch)
+        {
+            // Act & Assert
+            Assert.Equal(shouldMatch, NodePackageScriptsChecker.NpmGlobalPattern.IsMatch(script));
+        }
     }
 }
