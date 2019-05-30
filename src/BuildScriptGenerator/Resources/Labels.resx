@@ -121,6 +121,10 @@
     <value>The package '{0}', specified in package.json's {1},\nis known to have been superseded by '{2}'. Consider switching over.</value>
     <comment>{0} - detected package; {1} - key of object in package.json; {2} - alternative package</comment>
   </data>
+  <data name="NodePackageGlobalInstallMessageFormat" xml:space="preserve">
+    <value>The script '{0}', defined in package.json, seems to be trying to install packages globally. This could have unexpected results, as global packages might not be available in the runtime container.</value>
+    <comment>{0} - script key in package.json</comment>
+  </data>
   <data name="NodeVersionCheckerMessageFormat" xml:space="preserve">
     <value>An outdated version of Node.js was detected ({0}). Consider updating.\nVersions supported by Oryx: {1}</value>
     <comment>{0} - detected Node.js version; {1} - Oryx GitHub URL</comment>

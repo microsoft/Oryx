@@ -64,9 +64,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string script = scripts[scriptKey];
             if (script?.Contains("-g") == true || script?.Contains("--global") == true)
             {
-                result.Add(new CheckerMessage(
-                    $"The script '{scriptKey}', defined in {NodeConstants.PackageJsonFileName}, seems to be trying " +
-                    $"to install packages globally. This is unsupported by Oryx."));
+                result.Add(new CheckerMessage(string.Format(Resources.Labels.NodePackageGlobalInstallMessageFormat,
+                    scriptKey)));
             }
         }
     }
