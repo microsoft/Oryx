@@ -3,50 +3,174 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Integration.Tests.Fixtures;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    //// NOTE:
-    //// Commenting out the tests here as the test fixture is still run and we want to avoid that as stopping the
-    //// SQL Server container on the build agent fails sometimes requiring a reboot of the agent machine.
+    [Trait("category", "db")]
+    [Trait("db", "sqlserver")]
+    public class SqlServerIntegrationTests : PlatformEndToEndTestsBase
+    {
+        private const string DbServerHostnameEnvVarName = "SQLSERVER_DATABASE_HOST";
+        private const string DbServerUsernameEnvVarName = "SQLSERVER_DATABASE_USERNAME";
+        private const string DbServerPasswordEnvVarName = "SQLSERVER_DATABASE_PASSWORD";
+        private const string DbServerDatabaseEnvVarName = "SQLSERVER_DATABASE_NAME";
 
-    //[Trait("category", "db")]
-    //[Trait("db", "sqlserver")]
-    //public class SqlServerIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.SqlServerDbContainerFixture>
-    //{
-    //    public SqlServerIntegrationTests(ITestOutputHelper output, Fixtures.SqlServerDbContainerFixture dbFixture)
-    //        : base(output, dbFixture)
-    //    {
-    //    }
+        private const int ContainerPort = 3000;
+        private const string DefaultStartupFilePath = "./run.sh";
 
-    //    [Fact]
-    //    public async Task NodeApp_MicrosoftSqlServerDB()
-    //    {
-    //        await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mssql"));
-    //    }
+        private readonly ITestOutputHelper _output;
+        private readonly string _hostSamplesDir;
 
-    //    [Fact]
-    //    public async Task Python37App_MicrosoftSqlServerDB()
-    //    {
-    //        await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "mssqlserver-sample"));
-    //    }
+        public SqlServerIntegrationTests(ITestOutputHelper output)
+        {
+            _output = output;
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+        }
 
-    //    [Theory]
-    //    [InlineData("7.3")]
-    //    [InlineData("7.2")]
-    //    // pdo_sqlsrv only supports PHP >= 7.1
-    //    public async Task PhpApp_UsingPdo(string phpVersion)
-    //    {
-    //        await RunTestAsync(
-    //            "php",
-    //            phpVersion,
-    //            Path.Combine(HostSamplesDir, "php", "sqlsrv-example"),
-    //            8080,
-    //            specifyBindPortFlag: false);
-    //    }
-    //}
+        [Fact]
+        public async Task NodeApp_MicrosoftSqlServerDB()
+        {
+            // Arrange
+            var appName = "node-mssql";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                Settings.BuildImageName,
+                "oryx",
+                new[] { "build", appDir, "-l", "nodejs", "--language-version", "10.14" },
+                "oryxdevms/node-10.14",
+                GetEnvironmentVariables(),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal(
+                        DbContainerFixtureBase.GetSampleDataAsJson(),
+                        data.Trim(),
+                        ignoreLineEndingDifferences: true,
+                        ignoreWhiteSpaceDifferences: true);
+                });
+        }
+
+        [Fact]
+        public async Task Python37App_MicrosoftSqlServerDB()
+        {
+            // Arrange
+            var appName = "mssqlserver-sample";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                Settings.BuildImageName,
+                "oryx",
+                new[] { "build", appDir, "-l", "python", "--language-version", "3.7" },
+                "oryxdevms/python-3.7",
+                GetEnvironmentVariables(),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal(
+                        DbContainerFixtureBase.GetSampleDataAsJson(),
+                        data.Trim(),
+                        ignoreLineEndingDifferences: true,
+                        ignoreWhiteSpaceDifferences: true);
+                });
+        }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        // pdo_sqlsrv only supports PHP >= 7.1
+        public async Task PhpApp_UsingPdo(string phpVersion)
+        {
+            // Arrange
+            var appName = "sqlsrv-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                Settings.BuildImageName,
+                "oryx",
+                new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
+                $"oryxdevms/php-{phpVersion}",
+                GetEnvironmentVariables(),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal(
+                        DbContainerFixtureBase.GetSampleDataAsJson(),
+                        data.Trim(),
+                        ignoreLineEndingDifferences: true,
+                        ignoreWhiteSpaceDifferences: true);
+                });
+        }
+
+        private List<EnvironmentVariable> GetEnvironmentVariables()
+        {
+            return new List<EnvironmentVariable>
+            {
+                new EnvironmentVariable(
+                    DbServerHostnameEnvVarName, Environment.GetEnvironmentVariable(DbServerHostnameEnvVarName)),
+                new EnvironmentVariable(
+                    DbServerDatabaseEnvVarName, Environment.GetEnvironmentVariable(DbServerDatabaseEnvVarName)),
+                new EnvironmentVariable(
+                    DbServerUsernameEnvVarName, Environment.GetEnvironmentVariable(DbServerUsernameEnvVarName)),
+                new EnvironmentVariable(
+                    DbServerPasswordEnvVarName, Environment.GetEnvironmentVariable(DbServerPasswordEnvVarName)),
+            };
+        }
+    }
 }
