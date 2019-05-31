@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -70,16 +71,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static string BuildOperationName(IEnvironment env)
         {
-            foreach (var srcType in LoggingConstants.OperationNameSourceEnvVars)
+            string result = LoggingConstants.DefaultOperationName;
+
+            LoggingConstants.EnvTypeOperationNamePrefix.TryGetValue(env.Type, out string prefix);
+            LoggingConstants.OperationNameSourceEnvVars.TryGetValue(env.Type, out string opNameSrcVarName);
+            if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(opNameSrcVarName))
             {
-                var opName = env.GetEnvironmentVariable(srcType.Key);
-                if (!string.IsNullOrWhiteSpace(opName))
-                {
-                    return $"{srcType.Value}:{opName}";
-                }
+                return result;
             }
 
-            return LoggingConstants.DefaultOperationName;
+            string opName = env.GetEnvironmentVariable(opNameSrcVarName);
+            if (!string.IsNullOrWhiteSpace(opName))
+            {
+                result = $"{prefix}:{opName}";
+            }
+
+            return result;
         }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
