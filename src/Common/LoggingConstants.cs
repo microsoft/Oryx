@@ -21,15 +21,17 @@ namespace Microsoft.Oryx.Common
         public static readonly IDictionary<EnvironmentType, string> OperationNameSourceEnvVars =
             new Dictionary<EnvironmentType, string>
         {
-            { EnvironmentType.AzureAppService, ExtVarNames.AppServiceAppNameEnvVarName },
-            { EnvironmentType.AzureContainerRegistry, "REGISTRY_NAME" }
+            { EnvironmentType.AzureAppService,        ExtVarNames.AppServiceAppNameEnvVarName },
+            { EnvironmentType.AzureContainerRegistry, "REGISTRY_NAME" },
+            { EnvironmentType.VisualStudioOnline,     ExtVarNames.EnvironmentType } // Currently exported only by VSO
         };
 
         public static readonly IDictionary<EnvironmentType, string> EnvTypeOperationNamePrefix =
             new Dictionary<EnvironmentType, string>
         {
-            { EnvironmentType.AzureAppService, "AAS" },
-            { EnvironmentType.AzureContainerRegistry, "ACR" }
+            { EnvironmentType.AzureAppService,        "AAS" },
+            { EnvironmentType.AzureContainerRegistry, "ACR" },
+            { EnvironmentType.VisualStudioOnline,     "VSO" } // Currently exported only by VSO
         };
 
         public static readonly TimeSpan FlushTimeout = TimeSpan.FromSeconds(3);
