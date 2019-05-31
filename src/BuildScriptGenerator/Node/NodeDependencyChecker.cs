@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (packageJson == null)
             {
                 _logger.LogDebug("packageJson is null; skipping checking for superseded packages");
-                return null;
+                return Enumerable.Empty<ICheckerMessage>();
             }
 
             var result = new List<ICheckerMessage>();

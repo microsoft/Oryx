@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -15,6 +16,22 @@ namespace Microsoft.Oryx.Tests.Common
     {
         // Environment variables in Linux are case-sensitive
         public Dictionary<string, string> Variables { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        public EnvironmentType Type
+        {
+            get
+            {
+                foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
+                {
+                    if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Value)))
+                    {
+                        return entry.Key;
+                    }
+                }
+
+                return EnvironmentType.Unknown;
+            }
+        }
 
         public bool? GetBoolEnvironmentVariable(string name)
         {

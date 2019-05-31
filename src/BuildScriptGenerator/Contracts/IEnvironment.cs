@@ -5,6 +5,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -13,6 +14,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public interface IEnvironment
     {
+        EnvironmentType Type { get; }
+
         /// <summary>
         /// Gets the value of an environment variable.
         /// </summary>
