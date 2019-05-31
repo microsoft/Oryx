@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public ShellScriptBuilder CreateFile(string file, string content)
         {
-            return Append($"echo \"{content}\" > \"{file}\"");
+            return Append($"echo {content} > \"{file}\"");
         }
 
         public ShellScriptBuilder SetExecutePermissionOnFile(string file)
@@ -104,16 +104,16 @@ namespace Microsoft.Oryx.Tests.Common
         public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file)
         {
             return Append(
-                $"grep '{searchString}' '{file}' && if [ $? -eq 1 ]; then " +
-                $"echo '{searchString}' not found 1>&2 && " +
+                $"if ! grep -q '{searchString}' '{file}'; then " +
+                $"echo '{searchString}' not found 1>&2; " +
                 "exit 1; fi");
         }
 
         public ShellScriptBuilder AddStringDoesNotExistInFileCheck(string searchString, string file)
         {
             return Append(
-                $"grep '{searchString}' '{file}' && if [ $? -eq 0 ]; then " +
-                $"echo '{searchString}' found 1>&2 && " +
+                $"if grep -q '{searchString}' '{file}'; then " +
+                $"echo '{searchString}' still found 1>&2; " +
                 "exit 1; fi");
         }
 

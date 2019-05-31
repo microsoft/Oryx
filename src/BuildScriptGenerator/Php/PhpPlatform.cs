@@ -43,6 +43,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
+            var buildProperties = new Dictionary<string, string>();
+            buildProperties[ManifestFilePropertyKeys.OperationId] = ctx.OperationId;
+
             _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);
             bool composerFileExists = false;
 
@@ -70,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
             string snippet = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PhpBuildSnippet, props, _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet };
+            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
 
         public bool IsEnabled(BuildScriptGeneratorContext ctx)

@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -96,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var buildOpId = logger.StartOperation(
+            var buildOperationId = logger.StartOperation(
                 BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
@@ -107,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var buildInfo = new DefinitionListFormatter();
             buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
-            buildInfo.AddDefinition("Build Operation ID", buildOpId);
+            buildInfo.AddDefinition("Build Operation ID", buildOperationId);
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
             var commitId = GetSourceRepoCommitId(
@@ -121,21 +120,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             console.WriteLine(buildInfo.ToString());
 
-            // Try writing the ID to a file in the source directory
-            try
-            {
-                using (logger.LogTimedEvent("WriteBuildIdFile"))
-                using (var idFileWriter = new StreamWriter(
-                    Path.Combine(sourceRepo.RootPath, Common.FilePaths.BuildIdFileName)))
-                {
-                    idFileWriter.Write(buildOpId);
-                }
-            }
-            catch (Exception exc)
-            {
-                logger.LogError(exc, "Exception caught while trying to write build ID file");
-            }
-
             var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
             if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
             {
@@ -147,7 +131,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
                 var checkerMessages = new List<ICheckerMessage>();
-                var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
+                var scriptGenerator = new BuildScriptGenerator(
+                    serviceProvider, console, checkerMessages, buildOperationId);
 
                 var generated = scriptGenerator.TryGenerateScript(out scriptContent);
                 stopwatch.AddProperty("generateSucceeded", generated.ToString());

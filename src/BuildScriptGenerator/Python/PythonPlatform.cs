@@ -68,6 +68,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
+            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
             if (string.IsNullOrEmpty(packageDir))
@@ -105,13 +107,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             bool enableCollectStatic = IsCollectStaticEnabled();
 
-            string compressVirtualEnvCommand = null;
-            string compressedVirtualEnvFileName = null;
             GetVirtualEnvPackOptions(
                 context,
                 virtualEnvName,
-                out compressVirtualEnvCommand,
-                out compressedVirtualEnvFileName);
+                out var compressVirtualEnvCommand,
+                out var compressedVirtualEnvFileName);
 
             if (!string.IsNullOrWhiteSpace(compressedVirtualEnvFileName))
             {

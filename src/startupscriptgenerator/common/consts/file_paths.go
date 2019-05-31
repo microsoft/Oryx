@@ -2,4 +2,4 @@
 
 package consts
 
-const BuildIdFileName string = ".oryx_build_id"
+const BuildManifestFileName string = "oryx-manifest.toml"

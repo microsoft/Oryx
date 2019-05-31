@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -141,12 +142,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddCommand("printenv")
-                .AddCommand($"oryx build {appDir} -o {nestedOutputDir} --log-file {appDir}/1.log")
+                .AddCommand($"oryx build {appDir} -o {nestedOutputDir}")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .AddFileExistsCheck($"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{NodeConstants.InjectedAppInsights}=\"True\"",
+                $"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -233,7 +235,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .CreateFile($"{appDir}/1.log", "hello1")
                 .CreateFile($"{appDir}/app2/2.log", "hello2")
                 .CreateFile($"{appDir}/app2/app3/3.log", "hello3")
-                .CreateFile($"{appDir}/idea.js", nodeCode)
+                .CreateFile($"{appDir}/idea.js", $"\"{nodeCode}\"")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --log-file {logFile}");
 
             return script;
@@ -639,7 +641,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .AddStringExistsInFileCheck(
                 "compressedNodeModulesFile=\"node_modules.zip\"",
-                $"{appOutputDir}/oryx-manifest.toml")
+                $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -713,8 +715,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryx-manifest.toml")
-                .AddStringExistsInFileCheck("injectedAppInsights=\"True\"", $"{nestedOutputDir}/oryx-manifest.toml")
+                .AddFileExistsCheck($"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{NodeConstants.InjectedAppInsights}=\"True\"",
+                $"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -762,7 +766,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringDoesNotExistInFileCheck(
+                NodeConstants.InjectedAppInsights,
+                $"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -810,7 +816,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileDoesNotExistCheck($"{nestedOutputDir}/oryx-manifest.toml")
+                .AddStringDoesNotExistInFileCheck(
+                NodeConstants.InjectedAppInsights, $"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
