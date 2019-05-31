@@ -17,10 +17,19 @@ namespace Microsoft.Oryx.Common
 
         public const string DefaultLogPath = "/tmp/oryx.log";
 
-        public static readonly IDictionary<string, string> OperationNameSourceEnvVars = new Dictionary<string, string>
+        // Maps from environment variable names to environment type that they imply
+        public static readonly IDictionary<EnvironmentType, string> OperationNameSourceEnvVars =
+            new Dictionary<EnvironmentType, string>
         {
-            { ExtVarNames.AppServiceAppNameEnvVarName, "AAS" },
-            { "REGISTRY_NAME", "ACR" }
+            { EnvironmentType.AzureAppService, ExtVarNames.AppServiceAppNameEnvVarName },
+            { EnvironmentType.AzureContainerRegistry, "REGISTRY_NAME" }
+        };
+
+        public static readonly IDictionary<EnvironmentType, string> EnvTypeOperationNamePrefix =
+            new Dictionary<EnvironmentType, string>
+        {
+            { EnvironmentType.AzureAppService, "AAS" },
+            { EnvironmentType.AzureContainerRegistry, "ACR" }
         };
 
         public static readonly TimeSpan FlushTimeout = TimeSpan.FromSeconds(3);

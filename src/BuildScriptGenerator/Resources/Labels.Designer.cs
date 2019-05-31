@@ -70,6 +70,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The script &apos;{0}&apos;, defined in package.json, seems to be trying to install packages globally. This could have unexpected results, as global packages might not be available in the runtime container..
+        /// </summary>
+        internal static string NodePackageGlobalInstallMessageFormat {
+            get {
+                return ResourceManager.GetString("NodePackageGlobalInstallMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An outdated version of Node.js was detected ({0}). Consider updating.\nVersions supported by Oryx: {1}.
         /// </summary>
         internal static string NodeVersionCheckerMessageFormat {
