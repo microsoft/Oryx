@@ -33,9 +33,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         [Theory]
         [InlineData("npm install -g pkg",       true)]
+        [InlineData("npm install pkg -g",       true)]
         [InlineData("npm install --global pkg", true)]
+        [InlineData("npm install pkg --global", true)]
         [InlineData("npm i -g pkg",             true)]
+        [InlineData("npm i pkg -g",             true)]
         [InlineData("npm i --global pkg",       true)]
+        [InlineData("npm i pkg --global",       true)]
         [InlineData("cd abc && npm install -g", true)]
         [InlineData("npm install pkg",                false)]
         [InlineData("npm install pkg && grep -g bla", false)]
