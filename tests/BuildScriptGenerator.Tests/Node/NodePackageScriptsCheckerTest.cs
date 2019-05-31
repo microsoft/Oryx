@@ -36,10 +36,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         [InlineData("npm install --global pkg", true)]
         [InlineData("npm i -g pkg",             true)]
         [InlineData("npm i --global pkg",       true)]
-        [InlineData("npm install pkg",                  false)]
-        [InlineData("npm install pkg && grep -g bla",   false)]
-        [InlineData("npm install endswith-g",           false)]
-        [InlineData("npm install endswith-global",      false)]
+        [InlineData("cd abc && npm install -g", true)]
+        [InlineData("npm install pkg",                false)]
+        [InlineData("npm install pkg && grep -g bla", false)]
+        [InlineData("npm install endswith-g",         false)]
+        [InlineData("npm install endswith-global",    false)]
+        [InlineData("npm install --globally bla",     false)]
         public void Checker_NpmGlobalPattern_MatchesCorrectly(string script, bool shouldMatch)
         {
             // Act & Assert
