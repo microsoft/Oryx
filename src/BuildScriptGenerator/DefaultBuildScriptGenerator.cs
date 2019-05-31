@@ -334,7 +334,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PostBuildCommand = postBuildCommand,
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
-                ManifestFileName = Constants.ManifestFileName,
+                ManifestFileName = FilePaths.BuildManifestFileName,
                 BuildProperties = buildProperties
             };
 
