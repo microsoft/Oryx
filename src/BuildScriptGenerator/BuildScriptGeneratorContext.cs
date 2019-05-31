@@ -12,6 +12,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public partial class BuildScriptGeneratorContext
     {
+        /// <summary>
+        /// Gets or sets the information which is used to correlate log messages.
+        /// </summary>
+        public string OperationId { get; set; }
+
         public ISourceRepo SourceRepo { get; set; }
 
         /// <summary>

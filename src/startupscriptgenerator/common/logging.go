@@ -7,9 +7,7 @@ package common
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path"
 	"startupscriptgenerator/common/consts"
 	"strings"
 	"time"
@@ -32,12 +30,12 @@ type Logger struct {
 var buildOpId string
 
 func SetGlobalOperationId(appRootPath string) {
-	if buildOpId == "" {
-		rawId, err := ioutil.ReadFile(path.Join(appRootPath, consts.BuildIdFileName))
-		if err == nil { // Silently ignore errors
-			buildOpId = strings.TrimSpace(string(rawId))
-		}
+	buildManifest := GetBuildManifest(appRootPath)
+
+	if buildManifest.OperationId != "" {
+		buildOpId = strings.TrimSpace(buildManifest.OperationId)
 	}
+	fmt.Println("Build Operation ID: " + buildOpId)
 }
 
 func GetLogger(name string) *Logger {
