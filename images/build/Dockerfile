@@ -357,10 +357,10 @@ COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN . /tmp/php/install-prereqs.sh
-COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:5.6-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:7.0-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:7.2-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:7.3-20190530.1 /opt /opt
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
