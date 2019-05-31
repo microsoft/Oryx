@@ -9,6 +9,7 @@ namespace Microsoft.Oryx.Common
     {
         Unknown,
         AzureAppService,
-        AzureContainerRegistry
+        AzureContainerRegistry,
+        VisualStudioOnline
     }
 }
