@@ -34,7 +34,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 return _type.Value;
-
             }
         }
 
