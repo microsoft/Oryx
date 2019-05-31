@@ -366,7 +366,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public static IEnumerable<object[]> GetOperationNameEnvVarNames()
         {
             return Common.LoggingConstants.OperationNameSourceEnvVars
-                .Select(e => new[] { e.Key, Common.LoggingConstants.EnvTypeOperationNamePrefix[e.Value] });
+                .Select(e => new[] { e.Value, Common.LoggingConstants.EnvTypeOperationNamePrefix[e.Key] });
         }
 
         [Theory]

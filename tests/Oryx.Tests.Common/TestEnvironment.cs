@@ -23,9 +23,9 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
                 {
-                    if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Key)))
+                    if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Value)))
                     {
-                        return entry.Value;
+                        return entry.Key;
                     }
                 }
 

@@ -23,9 +23,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
                     {
-                        if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Key)))
+                        if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Value)))
                         {
-                            _type = entry.Value;
+                            _type = entry.Key;
                             return _type.Value;
                         }
                     }
