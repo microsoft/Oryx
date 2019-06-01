@@ -68,7 +68,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
-            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);

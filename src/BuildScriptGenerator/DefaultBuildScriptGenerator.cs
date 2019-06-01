@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 directoriesToExcludeFromCopyToBuildOutputDir.Add(".git");
 
                 script = BuildScriptFromSnippets(
-                    context.SourceRepo,
+                    context,
                     snippets,
                     new ReadOnlyDictionary<string, string>(toolsToVersion),
                     directoriesToExcludeFromCopyToIntermediateDir,
@@ -307,7 +307,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <returns>Finalized build script as a string.</returns>
         private string BuildScriptFromSnippets(
-            ISourceRepo sourceRepo,
+            BuildScriptGeneratorContext context,
             IList<BuildScriptSnippet> snippets,
             IDictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
@@ -321,9 +321,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .Where(s => s.BuildProperties != null)
                 .SelectMany(s => s.BuildProperties)
                 .ToDictionary(p => p.Key, p => p.Value);
+            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
-                sourceRepo,
+                context.SourceRepo,
                 environmentSettings);
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
