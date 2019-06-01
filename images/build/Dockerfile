@@ -277,9 +277,9 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-2.7:20190402.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-3.6:20190402.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-3.7:20190402.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
