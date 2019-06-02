@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -28,6 +29,50 @@ namespace Microsoft.Oryx.Integration.Tests
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
+        }
+
+        [Fact]
+        public async Task CanRunPythonApp_WithoutBuildManifestFile()
+        {
+            // This is AppService's scenario where previously built apps can still run
+            // fine.
+
+            // Arrange
+            var appName = "flask-app";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var virtualEnvName = "antenv";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -p virtualenv_name={virtualEnvName}")
+                // App should run fine even with manifest file not present
+                .AddCommand($"rm -f {appDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                "oryxdevms/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
         }
 
         [Fact]
@@ -83,7 +128,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -193,7 +238,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -246,7 +291,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -342,7 +387,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -613,7 +658,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -packagedir {packageDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var imageVersion = "oryxdevms/python-" + pythonVersion;
