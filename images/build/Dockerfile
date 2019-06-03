@@ -277,9 +277,9 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-2.7:20190402.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-3.6:20190402.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-3.7:20190402.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
@@ -357,10 +357,10 @@ COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN . /tmp/php/install-prereqs.sh
-COPY --from=mcr.microsoft.com/oryx/php-build-5.6:20190504.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.0:20190504.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.2:20190504.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-7.3:20190504.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:5.6-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:7.0-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:7.2-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/php-build-base:7.3-20190530.1 /opt /opt
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
