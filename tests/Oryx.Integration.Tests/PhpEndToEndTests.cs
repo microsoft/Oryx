@@ -71,6 +71,41 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("<h1>Hello World!</h1>", data);
                 });
         }
+
+        [Theory]
+        [InlineData("oryxdevms/pack-builder")]
+        // Twig does not support PHP < 7
+        public async Task TwigExample_WithBuildpack(string builder)
+        {
+            // Arrange
+            var appName = "twig-example";
+            var appImageName = "testphpapp";
+            var appVolume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", appName));
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appVolume, DockerVolume.DockerDaemonSocket },
+                Constants.PackImageName,
+                null, // `pack` is already in the image's ENTRYPOINT
+                new[]
+                {
+                    "build", appImageName,
+                    "--no-color",
+                    "--path", appVolume.ContainerDir,
+                    "--builder", builder
+                },
+                appImageName,
+                8080,
+                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
+                runArgs: null,
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<h1>Hello World!</h1>", data);
+                });
+        }
     }
 
     [Trait("category", "php")]
