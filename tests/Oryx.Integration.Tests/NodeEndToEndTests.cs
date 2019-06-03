@@ -253,8 +253,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_NodeApp_WithBuildpack()
+        [Theory]
+        [InlineData("oryxdevms/pack-builder")]
+        [InlineData("heroku/buildpacks")]
+        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
         {
             // Arrange
             var appName = "webfrontend";
@@ -275,7 +277,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "build", appImageName,
                     "--no-pull", "--no-color",
                     "--path", appVolume.ContainerDir,
-                    "--builder", "oryxdevms/pack-builder"
+                    "--builder", builder
                 },
                 appImageName,
                 8080,
