@@ -259,15 +259,13 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "webfrontend";
             var appVolume = CreateAppVolume(appName);
-            // Allows `pack` to use the host's Docker engine
-            var dockerPort = DockerVolume.DockerDaemonSocket;
             var appImageName = "testnodeapp";
 
-            // Act
+            // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new List<DockerVolume> { appVolume, dockerPort },
+                new List<DockerVolume> { appVolume, DockerVolume.DockerDaemonSocket },
                 Constants.PackImageName,
                 null, // `pack` is already in the image's ENTRYPOINT
                 new[]
@@ -582,7 +580,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
-        public async Task Node_CreateReactAppSample_singleImage()
+        public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
             var appName = "create-react-app-sample";
