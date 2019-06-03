@@ -227,17 +227,7 @@ namespace Microsoft.Oryx.Tests.Common
                 throw new ArgumentException($"'{nameof(containerName)}' cannot be null or empty.");
             }
 
-            var arguments = PrepareArguments();
-            return ExecuteCommand(arguments);
-
-            IEnumerable<string> PrepareArguments()
-            {
-                var args = new List<string>();
-                args.Add("port");
-                args.Add(containerName);
-                args.Add(portInContainer.ToString());
-                return args;
-            }
+            return ExecuteCommand(new[] { "port", containerName, portInContainer.ToString() });
         }
 
         private DockerCommandResult ExecuteCommand(IEnumerable<string> arguments)
