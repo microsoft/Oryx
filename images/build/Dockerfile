@@ -319,6 +319,26 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
+###
+# Build various run script generators
+###
+FROM golang:1.11-stretch as runScriptGens
+
+WORKDIR /go/src/startupscriptgenerator/
+COPY src/startupscriptgenerator .
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+
+# GOPATH is set to "/go" in the base image, so no need to set it again
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+
+
 FROM python AS final
 WORKDIR /
 
@@ -358,11 +378,7 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
-# Build various run script generators
-RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen-dotnetcore
-RUN ./build.sh node       /opt/startupcmdgen/startupcmdgen-node
-RUN ./build.sh php        /opt/startupcmdgen/startupcmdgen-php
-RUN ./build.sh python     /opt/startupcmdgen/startupcmdgen-python
+COPY --from=runScriptGens /opt/startupcmdgen /opt/startupcmdgen
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
