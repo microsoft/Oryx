@@ -6,10 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -93,7 +95,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
         {
-            return string.Empty;
+            var tmpScriptPath = "/tmp/run.sh";
+
+            (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
+                FilePaths.RunScriptGeneratorDir + "/" + "startupcmdgen-php",
+                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", tmpScriptPath },
+                Environment.CurrentDirectory,
+                TimeSpan.FromSeconds(10));
+
+            return File.ReadAllText(tmpScriptPath);
         }
 
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
