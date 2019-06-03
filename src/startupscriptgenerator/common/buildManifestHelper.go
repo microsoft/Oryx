@@ -13,9 +13,12 @@ import (
 )
 
 type BuildManifest struct {
-    StartupFileName     string
-    ZipAllOutput        string
-    OperationId         string
+    StartupFileName             string
+    ZipAllOutput                string
+    OperationId                 string
+    VirtualEnvName              string
+    PackageDir                  string
+    CompressedVirtualEnvFile    string
 }
 
 var _buildManifest = BuildManifest{}
