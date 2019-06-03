@@ -71,16 +71,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static string BuildOperationName(IEnvironment env)
         {
-            foreach (var srcType in LoggingConstants.OperationNameSourceEnvVars)
+            string result = LoggingConstants.DefaultOperationName;
+
+            LoggingConstants.EnvTypeOperationNamePrefix.TryGetValue(env.Type, out string prefix);
+            LoggingConstants.OperationNameSourceEnvVars.TryGetValue(env.Type, out string opNameSrcVarName);
+            if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(opNameSrcVarName))
             {
-                var opName = env.GetEnvironmentVariable(srcType.Key);
-                if (!string.IsNullOrWhiteSpace(opName))
-                {
-                    return $"{srcType.Value}:{opName}";
-                }
+                return result;
             }
 
-            return LoggingConstants.DefaultOperationName;
+            string opName = env.GetEnvironmentVariable(opNameSrcVarName);
+            if (!string.IsNullOrWhiteSpace(opName))
+            {
+                result = $"{prefix}:{opName}";
+            }
+
+            return result;
         }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
@@ -96,7 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             DataReceivedEventHandler stdErrHandler)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var buildOpId = logger.StartOperation(
+            var buildOperationId = logger.StartOperation(
                 BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
@@ -107,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var buildInfo = new DefinitionListFormatter();
             buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
-            buildInfo.AddDefinition("Build Operation ID", buildOpId);
+            buildInfo.AddDefinition("Build Operation ID", buildOperationId);
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
             var commitId = GetSourceRepoCommitId(
@@ -121,21 +127,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             console.WriteLine(buildInfo.ToString());
 
-            // Try writing the ID to a file in the source directory
-            try
-            {
-                using (logger.LogTimedEvent("WriteBuildIdFile"))
-                using (var idFileWriter = new StreamWriter(
-                    Path.Combine(sourceRepo.RootPath, Common.FilePaths.BuildIdFileName)))
-                {
-                    idFileWriter.Write(buildOpId);
-                }
-            }
-            catch (Exception exc)
-            {
-                logger.LogError(exc, "Exception caught while trying to write build ID file");
-            }
-
             var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
             if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
             {
@@ -147,7 +138,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
                 var checkerMessages = new List<ICheckerMessage>();
-                var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessages);
+                var scriptGenerator = new BuildScriptGenerator(
+                    serviceProvider, console, checkerMessages, buildOperationId);
 
                 var generated = scriptGenerator.TryGenerateScript(out scriptContent);
                 stopwatch.AddProperty("generateSucceeded", generated.ToString());

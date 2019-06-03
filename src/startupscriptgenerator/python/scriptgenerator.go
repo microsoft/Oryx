@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"startupscriptgenerator/common"
+	"startupscriptgenerator/common/consts"
 	"strings"
 )
 
@@ -92,13 +93,12 @@ func logReadDirError(logger *common.Logger, path string, err error) {
 // Builds the commands to setup the Python packages, using virtual env or a package folder.
 func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	scriptBuilder := strings.Builder{}
-	const buildManifestFile string = "oryx-manifest.toml"
-	manifesFilePath := filepath.Join(gen.SourcePath, buildManifestFile)
+	manifesFilePath := filepath.Join(gen.SourcePath, consts.BuildManifestFileName)
 	// If a manifest file is present, it takes precedence.
 	if common.FileExists(manifesFilePath) {
 		virtualEnvVarPath := filepath.Join(gen.SourcePath, "$virtualEnvName")
-		scriptBuilder.WriteString("echo \"Using '" + buildManifestFile + "'.\"\n")
-		scriptBuilder.WriteString(". ./" + buildManifestFile + "\n")
+		scriptBuilder.WriteString("echo \"Using '" + consts.BuildManifestFileName + "'.\"\n")
+		scriptBuilder.WriteString(". ./" + consts.BuildManifestFileName + "\n")
 
 		if !gen.SkipVirtualEnvExtraction {
 			scriptBuilder.WriteString("echo \"Checking if virtual environment was compressed...\"\n")

@@ -363,16 +363,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 testConsole.StdError);
         }
 
-        public static IEnumerable<object[]> GetOperationNameEnvVarNames() =>
-            Microsoft.Oryx.Common.LoggingConstants.OperationNameSourceEnvVars.Select(e => new[] { e.Key, e.Value });
+        public static IEnumerable<object[]> GetOperationNameEnvVarNames()
+        {
+            return Common.LoggingConstants.OperationNameSourceEnvVars
+                .Select(e => new[] { e.Value, Common.LoggingConstants.EnvTypeOperationNamePrefix[e.Key] });
+        }
 
         [Theory]
         [MemberData(nameof(GetOperationNameEnvVarNames))]
         public void BuildOperationName_ReturnsCorrectPrefix(string envVarName, string opNamePrefix)
         {
+            // Arrange
             var appName = "bla";
             var env = new TestEnvironment();
             env.SetEnvironmentVariable(envVarName, appName);
+
+            // Act & Assert
             Assert.Equal(opNamePrefix + ":" + appName, BuildCommand.BuildOperationName(env));
         }
 

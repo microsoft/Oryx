@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -52,6 +53,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
+            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+
             (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context.SourceRepo);
             if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
             {
@@ -72,12 +75,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 ProjectFile = projectFile,
                 PublishDirectory = publishDir,
                 BuildProperties = buildProperties,
-                BenvArgs = $"dotnet={context.DotnetCoreVersion}",
+                BenvArgs = $"dotnet={context.DotNetCoreVersion}",
                 DirectoriesToExcludeFromCopyToIntermediateDir = GetDirectoriesToExcludeFromCopyToIntermediateDir(
                     context),
                 PreBuildCommand = preBuildCommand,
                 PostBuildCommand = postBuildCommand,
-                ManifestFileName = Constants.ManifestFileName,
+                ManifestFileName = FilePaths.BuildManifestFileName,
                 ZipAllOutput = zipAllOutput,
                 Configuration = GetBuildConfiguration()
             };
@@ -125,7 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
-            context.DotnetCoreVersion = version;
+            context.DotNetCoreVersion = version;
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
@@ -148,6 +151,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return dirs;
         }
 
+        private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
+        {
+            return BuildPropertiesHelper.IsTrue(
+                Constants.ZipAllOutputBuildPropertyKey,
+                context,
+                valueIsRequired: false);
+        }
+
         private string GetBuildConfiguration()
         {
             var configuration = _options.MSBuildConfiguration;
@@ -157,14 +168,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return configuration;
-        }
-
-        private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
-        {
-            return BuildPropertiesHelper.IsTrue(
-                Constants.ZipAllOutputBuildPropertyKey,
-                context,
-                valueIsRequired: false);
         }
 
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)
@@ -177,19 +180,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var publishDir = Path.Combine(repo.RootPath, DotnetCoreConstants.OryxOutputPublishDirectory);
             return (projectFile, publishDir);
-        }
-
-        private string GetCommandOrScript(string commandOrScript)
-        {
-            if (!string.IsNullOrEmpty(commandOrScript))
-            {
-                if (File.Exists(commandOrScript))
-                {
-                    return $"\"{commandOrScript}\"";
-                }
-            }
-
-            return commandOrScript;
         }
     }
 }

@@ -3,12 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+namespace Microsoft.Oryx.Common
 {
-    public static class ManifestFilePropertyKeys
+    public enum EnvironmentType
     {
-        public const string ZipAllOutput = nameof(ZipAllOutput);
-
-        public const string OperationId = nameof(OperationId);
+        Unknown,
+        AzureAppService,
+        AzureContainerRegistry,
+        VisualStudioOnline
     }
 }

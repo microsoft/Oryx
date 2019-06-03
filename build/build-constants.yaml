@@ -1,5 +1,6 @@
 - name: ext-var-names
   constants:
+    environment-type: ORYX_ENV_TYPE # Currently exported only in the Visual Studio Online build image
     application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
@@ -83,7 +84,7 @@
       file-name-prefix: __
 - name: file-paths
   constants:
-    build-id-file-name: .oryx_build_id
+    build-manifest-file-name: oryx-manifest.toml
   outputs:
     - type: csharp
       directory: src/Common
