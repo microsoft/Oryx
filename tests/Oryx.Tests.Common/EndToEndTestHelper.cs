@@ -276,8 +276,8 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 await Task.Delay(DelayBetweenRetriesInSeconds);
 
-                // Example output that is ouput when "docker port <container-name> <container-port>" is run:
-                // 0.0.0.0:32774
+                // Example output from `docker port <container-name> <container-port>`:
+                // "0.0.0.0:32774"
                 var getPortMappingResult = dockerCli.GetPortMapping(containerName, portInContainer);
                 if (getPortMappingResult.ExitCode == 0)
                 {
