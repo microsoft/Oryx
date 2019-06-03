@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[]
                 {
                     "build", appImageName,
-                    "--no-pull", "--no-color",
+                    "--no-color",
                     "--path", appVolume.ContainerDir,
                     "--builder", builder
                 },
