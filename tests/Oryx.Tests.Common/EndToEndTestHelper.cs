@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 10;
-        private static readonly TimeSpan DelayBetweenRetriesInSeconds = TimeSpan.FromSeconds(6);
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(6);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -244,7 +244,7 @@ namespace Microsoft.Oryx.Tests.Common
                             throw;
                         }
 
-                        await Task.Delay(DelayBetweenRetriesInSeconds);
+                        await Task.Delay(DelayBetweenRetries);
                     }
                 }
             }
@@ -274,7 +274,7 @@ namespace Microsoft.Oryx.Tests.Common
             // before trying to invoke the 'docker port' command.
             for (var i = 0; i < MaxRetryCount; i++)
             {
-                await Task.Delay(DelayBetweenRetriesInSeconds);
+                await Task.Delay(DelayBetweenRetries);
 
                 // Example output from `docker port <container-name> <container-port>`:
                 // "0.0.0.0:32774"
