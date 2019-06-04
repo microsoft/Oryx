@@ -67,7 +67,7 @@ folder there, Go should be able to find the packages and produce builds.
 
 ### Run images
 
-We have a set of runtime images, and their Dockerfiles are located in [`/images/runtime`](../images/runtime).
+We have a set of runtime images, and their Dockerfiles are located in [/images/runtime](../images/runtime).
 Some of the Dockerfiles are generated from a template, also located in this folder, with a corresponding 
 script to turn those scripts into actual Dockerfiles. Having templates helps us maintain consistency
 across the Dockerfiles.
