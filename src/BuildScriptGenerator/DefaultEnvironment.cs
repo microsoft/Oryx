@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -40,16 +41,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool? GetBoolEnvironmentVariable(string name)
         {
             var variable = GetEnvironmentVariable(name);
-            if (!string.IsNullOrEmpty(variable))
+            if (StringExtensions.EqualsIgnoreCase(variable, "true"))
             {
-                if (variable.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return true;
-                }
-                else if (variable.Equals("false", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return false;
-                }
+                return true;
+            }
+            else if (StringExtensions.EqualsIgnoreCase(variable, "false"))
+            {
+                return false;
             }
 
             return null;

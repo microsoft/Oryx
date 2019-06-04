@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
-                if (string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
+                if (StringExtensions.EqualsIgnoreCase("true", value))
                 {
                     return true;
                 }

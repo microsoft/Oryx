@@ -10,6 +10,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -369,7 +370,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (context.Properties != null &&
                 context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
             {
-                if (string.IsNullOrWhiteSpace(value) || string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
+                if (string.IsNullOrWhiteSpace(value) || StringExtensions.EqualsIgnoreCase(value, "true"))
                 {
                     ret = true;
                 }
@@ -429,13 +430,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 // default to tar.gz if the property was provided with no value.
                 if (string.IsNullOrEmpty(compressNodeModulesOption) ||
-                    string.Equals(compressNodeModulesOption, TarGzNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
+                    StringExtensions.EqualsIgnoreCase(compressNodeModulesOption, TarGzNodeModulesOption))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesTarGzFileName;
                     compressNodeModulesCommand = $"tar -zcf";
                     isNodeModulesPackaged = true;
                 }
-                else if (string.Equals(compressNodeModulesOption, ZipNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
+                else if (StringExtensions.EqualsIgnoreCase(compressNodeModulesOption, ZipNodeModulesOption))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesZippedFileName;
                     compressNodeModulesCommand = $"zip -y -q -r";
