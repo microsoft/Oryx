@@ -274,12 +274,13 @@ namespace Microsoft.Oryx.Tests.Common
             string builderImageName,
             Func<int, Task> assertAction)
         {
-            return EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
+            const int port = 8080;
+
+            return BuildRunAndAssertAppAsync(
                 output,
-                new List<DockerVolume> { appVolume, DockerVolume.DockerDaemonSocket },
+                new[] { appVolume, DockerVolume.DockerDaemonSocket },
                 Settings.PackImageName,
-                null, // `pack` is already in the image's ENTRYPOINT
+                buildCmd: null, // `pack` is already in the image's ENTRYPOINT
                 new[]
                 {
                     "build", appImageName,
@@ -288,7 +289,12 @@ namespace Microsoft.Oryx.Tests.Common
                     "--builder", builderImageName
                 },
                 appImageName,
-                8080,
+                new List<EnvironmentVariable>()
+                {
+                    new EnvironmentVariable("PORT", port.ToString()) // Used by some of the apps or their run scripts
+                },
+                port,
+                link: null,
                 runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
                 runArgs: null,
                 assertAction);
