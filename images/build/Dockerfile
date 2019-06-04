@@ -378,6 +378,8 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
+# Oryx depends on the run script generators for most of its
+# `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=runScriptGens /opt/startupcmdgen /opt/startupcmdgen
 
 # Bake Application Insights key from pipeline variable into final image
