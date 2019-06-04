@@ -11,9 +11,9 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
     [Trait("platform", "dotnet")]
-    public class DotnetCoreImageVersionsTest : TestBase
+    public class DotNetCoreImageVersionsTest : TestBase
     {
-        public DotnetCoreImageVersionsTest(ITestOutputHelper output) : base(output)
+        public DotNetCoreImageVersionsTest(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.1")]
         [InlineData("2.2")]
         [InlineData("3.0")]
-        public void DotnetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        public void DotNetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
             var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("1.0", "Version  : 1.0.1")]
         [InlineData("1.1", "Version  : 1.1.13")]
-        public void RuntimeImage_HasExecptedDotnetVersion_NetCoreApp10Versions(string version, string expectedOutput)
+        public void RuntimeImage_HasExecptedDotNetVersion_NetCoreApp10Versions(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.1", "Version: 2.1.11")]
         [InlineData("2.2", "Version: 2.2.5")]
         [InlineData("3.0", "Version: 3.0.0-preview5-27626-15")]
-        public void RuntimeImage_HasExecptedDotnetVersion(string version, string expectedOutput)
+        public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments

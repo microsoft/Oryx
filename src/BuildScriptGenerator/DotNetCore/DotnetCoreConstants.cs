@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public static class DotnetCoreConstants
+    public static class DotNetCoreConstants
     {
         public const string LanguageName = "dotnet";
         public const string CSharpProjectFileExtension = "csproj";

@@ -84,7 +84,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
 	source $REPO_DIR/build/build-buildpacks-images.sh
 else
 	echo
-	echo "Skipping building 'Buildpacks images' as platform '$OSTYPE' is not supported."
+	echo "Skipping building Buildpacks images as platform '$OSTYPE' is not supported."
 fi
 
 # Retag build image with DockerHub and ACR tags

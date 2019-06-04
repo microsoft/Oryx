@@ -157,9 +157,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetRelativePathToProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent(string projectFileExtension)
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
+        public void GetRelativePathToProjectFile_ReturnsProjectFile_PresentAtRoot_IfPresent(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -282,9 +283,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetRelativePathToProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject(string projectFileExtension)
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
+        public void GetRelativePathToProjectFile_ReturnsNull_IfRootProject_IsNotWebSdkProject(
+            string projectFileExtension)
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -303,9 +305,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         // This is a scenario where our probing of a project could be incorrect. In this case a user can explicitly
         // specify the project file to use and we use it without checking further.
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
-        public void GetRelativePathToProjectFile_ReturnsFile_IfProjectEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp(
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
+        public void GetRelativePathToProjectFile_ReturnsFile_IfProjEnvVariableIsSet_AndProjectFileIsNotAspNetCoreApp(
             string projectFileExtension)
         {
             // Arrange
@@ -316,7 +318,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp1", $"WebApp1.{projectFileExtension}");
-            var options = new DotnetCoreScriptGeneratorOptions();
+            var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
 
@@ -339,7 +341,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", "WebApp2-doesnotexist.csproj");
-            var options = new DotnetCoreScriptGeneratorOptions();
+            var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
 
@@ -350,8 +352,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
         public void GetRelativePathToProjectFile_ReturnsNull_IfNoWebSdkProjectFound_AllAcrossRepo(
             string projectFileExtension)
         {
@@ -373,8 +375,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
         public void GetRelativePathToProjectFile_Throws_IfSourceRepo_HasMultipleWebSdkProjects(
             string projectFileExtension)
         {
@@ -397,8 +399,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
         public void GetRelativePathToProjectFile_Throws_IfSourceRepo_HasMultipleWebAppProjects_AtDifferentDirLevels(
             string projectFileExtension)
         {
@@ -422,8 +424,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
         public void GetRelativePathToProjectFile_DoesNotThrow_IfRepoHasMultipleWebApps_AndProjectEnvVariableIsSet(
             string projectFileExtension)
         {
@@ -437,7 +439,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, webApp1Dir);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
-            var options = new DotnetCoreScriptGeneratorOptions();
+            var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var provider = CreateProjectFileProvider(options);
 
@@ -449,8 +451,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData(DotnetCoreConstants.CSharpProjectFileExtension)]
-        [InlineData(DotnetCoreConstants.FSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.CSharpProjectFileExtension)]
+        [InlineData(DotNetCoreConstants.FSharpProjectFileExtension)]
         public void GetRelativePathToProjectFile_ReturnsProjectFile_ByProbingAllAcrossRepo(string projectFileExtension)
         {
             // Arrange
@@ -518,11 +520,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
         private DefaultAspNetCoreWebAppProjectFileProvider CreateProjectFileProvider()
         {
-            return CreateProjectFileProvider(new DotnetCoreScriptGeneratorOptions());
+            return CreateProjectFileProvider(new DotNetCoreScriptGeneratorOptions());
         }
 
         private DefaultAspNetCoreWebAppProjectFileProvider CreateProjectFileProvider(
-            DotnetCoreScriptGeneratorOptions options)
+            DotNetCoreScriptGeneratorOptions options)
         {
             return new DefaultAspNetCoreWebAppProjectFileProvider(
                 Options.Create(options),

@@ -75,7 +75,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var optionsSetup = new PythonScriptGeneratorOptionsSetup(testEnv);
             optionsSetup.Configure(scriptGeneratorOptions.Value);
 
-            return new PythonPlatform(scriptGeneratorOptions, nodeVersionProvider, testEnv, NullLogger<PythonPlatform>.Instance, null);
+            return new PythonPlatform(
+                scriptGeneratorOptions,
+                nodeVersionProvider,
+                testEnv,
+                NullLogger<PythonPlatform>.Instance,
+                detector: null);
         }
     }
 }

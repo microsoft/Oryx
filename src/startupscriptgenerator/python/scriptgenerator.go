@@ -187,7 +187,7 @@ func getVirtualEnvironmentCommand() string {
 func (gen *PythonStartupScriptGenerator) getDjangoStartupModule(buildManifest common.BuildManifest) string {
 	logger := common.GetLogger("python.scriptgenerator.getDjangoStartupModule")
 	defer logger.Shutdown()
-	
+
 	appRootFiles, err := ioutil.ReadDir(gen.SourcePath)
 	if err != nil {
 		logReadDirError(logger, gen.SourcePath, err)

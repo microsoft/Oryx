@@ -3,10 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.IO;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.Common.Test
@@ -18,9 +17,12 @@ namespace Microsoft.Oryx.Common.Test
         {
             _tempDirRoot = testFixture.RootDirPath;
         }
+
         private string CreateNewDir(string dirName)
         {
-            return !string.IsNullOrEmpty(dirName) && !string.IsNullOrWhiteSpace(dirName) && Directory.Exists(_tempDirRoot)
+            return !string.IsNullOrEmpty(dirName)
+                && !string.IsNullOrWhiteSpace(dirName)
+                && Directory.Exists(_tempDirRoot)
                 ? Directory.CreateDirectory(Path.Combine(_tempDirRoot, dirName)).FullName
                 : Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
         }

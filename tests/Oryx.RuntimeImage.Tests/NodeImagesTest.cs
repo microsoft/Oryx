@@ -218,7 +218,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound : NodeImagesTestBase
     {
-        public NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -285,7 +286,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageContainsRequiredPrograms : NodeImagesTestBase
     {
-        public NodeRuntimeImageContainsRequiredPrograms(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageContainsRequiredPrograms(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -313,7 +315,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageRunAppUsingConfigYml : NodeImagesTestBase
     {
-        public NodeRuntimeImageRunAppUsingConfigYml(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageRunAppUsingConfigYml(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -357,7 +360,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageRunAppUsingProcessJson : NodeImagesTestBase
     {
-        public NodeRuntimeImageRunAppUsingProcessJson(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageRunAppUsingProcessJson(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -402,7 +406,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageRunAppUsingConfigJs : NodeImagesTestBase
     {
-        public NodeRuntimeImageRunAppUsingConfigJs(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageRunAppUsingConfigJs(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -447,7 +452,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageContainsVersionAndCommitInfo : NodeImagesTestBase
     {
-        public NodeRuntimeImageContainsVersionAndCommitInfo(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageContainsVersionAndCommitInfo(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }

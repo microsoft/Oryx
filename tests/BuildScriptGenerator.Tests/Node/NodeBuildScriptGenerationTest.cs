@@ -228,7 +228,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void GeneratedScript_UsesYarnInstallAndRunsNpmBuild_IfYarnLockFileIsPresent_AndBuildNodeIsPresentUnderScripts()
+        public void GeneratedScript_UsesYarnInstallAndRunsNpmBuild_IfYarnLockIsPresent_AndHasBuildNodeUnderScripts()
         {
             // Arrange
             var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
@@ -456,7 +456,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_DoesNotSupportDebugging),
             MemberType = typeof(TestValueGenerator))]
-        public void GeneratedScript_DoesNotConfigureAppInsights_IfAppInsightsEnvironmentVariable_NotSet(string nodeVersion)
+        public void GeneratedScript_DoesNotConfigureAppInsights_IfAppInsightsEnvironmentVariable_NotSet(
+            string nodeVersion)
         {
             // Arrange
             var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion);
@@ -497,7 +498,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var otherEnvironment = new Dictionary<string, string> { { Constants.AppInsightsKey, "xyz" } };
-            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: nodeVersion, otherEnvironment: otherEnvironment);
+            var scriptGenerator = GetNodePlatformInstance(
+                defaultNodeVersion: nodeVersion, otherEnvironment: otherEnvironment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
@@ -537,7 +539,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // As we don't support 6.12.0 in our build image we condition remains node 8 or newer
             // Arrange
             var otherEnvironment = new Dictionary<string, string> { { Constants.AppInsightsKey, "xyz" } };
-            var scriptGenerator = GetNodePlatformInstance(defaultNodeVersion: version, otherEnvironment: otherEnvironment);
+            var scriptGenerator = GetNodePlatformInstance(
+                defaultNodeVersion: version, otherEnvironment: otherEnvironment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
