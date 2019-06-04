@@ -79,7 +79,13 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 # Build buildpack images
-source $REPO_DIR/build/build-buildpacks-images.sh
+# 'pack create-builder' is not supported on Windows
+if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+	source $REPO_DIR/build/build-buildpacks-images.sh
+else
+	echo
+	echo "Skipping building 'Buildpacks images' as platform '$OSTYPE' is not supported."
+fi
 
 # Retag build image with DockerHub and ACR tags
 if [ -n "$BUILD_NUMBER" ]
