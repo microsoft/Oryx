@@ -13,7 +13,7 @@ if needed. We focus on the specifics for App Service; for how we support each la
 general, please refer to their specific entry in our [docs page](../README.md).
 
 [Azure App Service on Linux]: https://docs.microsoft.com/en-us/azure/app-service/containers/app-service-linux-intro
-[continuos deployment]: https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment?toc=%2fazure%2fapp-service%2fcontainers%2ftoc.json
+[continuous deployment]: https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment?toc=%2fazure%2fapp-service%2fcontainers%2ftoc.json
 
 ## Overview
 
