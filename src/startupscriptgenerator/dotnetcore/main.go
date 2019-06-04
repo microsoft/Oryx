@@ -20,8 +20,8 @@ func main() {
 	appPathPtr := flag.String(
 		"appPath",
 		".",
-		"The path to the published output of the application or the root of the source that is going to be run, e.g. '/home/site/wwwroot/'. or '/home/site/repository' "+
-			"Default is current directory.")
+		"The path to the published output of the application or the root of the source that is going to be run," +
+		" e.g. '/home/site/wwwroot/' or '/home/site/repository'. Default is current directory.")
 	runFromPathPtr := flag.String(
 		"runFromPath",
 		"",
@@ -72,7 +72,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("Building the startup script...")
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/bash\n")
 	scriptBuilder.WriteString("set -e\n\n")
