@@ -5,44 +5,41 @@ steps:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
 - powershell: |
-   Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
-  name: setSignTypeVariable
+   Write-Host "##vso[task.setvariable variable=SignType]real"
   displayName: 'Set sign binary variable'
   condition: >
    and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
-- script: |
-    echo $(setSignTypeVariable.SignType)
-  name: SignType
-
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.6.2'
   inputs:
     versionSpec: 4.6.2
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
 - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
   displayName: 'Install Signing Plugin'
   inputs:
-    signType: '$(setSignTypeVariable.SignType)'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+    signType: '$(SignType)'
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: Oryx.sln
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
-- powershell: |
-   Write-Host "Setting up git_commit and build_number as env variable"
-   $env:GIT_COMMIT=$(git rev-parse HEAD)
-   $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
-   $env:GIT_COMMIT
-   $env:BUILD_NUMBER
-   dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
-  displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish linux'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: |
+     src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
+    arguments: '-c $(BuildConfiguration) -r linux-x64'
+    zipAfterPublish: false
+    modifyOutputPath: false
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
@@ -50,7 +47,7 @@ steps:
     solution: 'src/BuildScriptGeneratorCli/Oryx_sign.signproj'
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/binaries'
@@ -59,11 +56,11 @@ steps:
     Contents: '**\*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
     CleanTargetFolder: true
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
   inputs:
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.ArtifactStagingDirectory)'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+  condition: and(succeeded(), eq(variables['SignType'], 'real'))

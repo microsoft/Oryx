@@ -13,18 +13,17 @@ source $REPO_DIR/build/__variables.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
+declare BUILDSCRIPT_SOURCE="buildscriptbuilder"
 declare BUILD_SIGNED=""
 
-echo "SignType is: "$SIGNTYPE
-
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
-if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
+if [ "$SignType" == "real" ] || [ "$SignType" == "Real" ]
 then
 # "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
+    BUILDSCRIPT_SOURCE="copybuildscriptbinaries"
 	BUILD_SIGNED="true"
-	ls -l $BUILD_IMAGES_BUILD_CONTEXT_DIR
 else
-	# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
+# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
     mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
@@ -58,11 +57,14 @@ BuildAndTagStage node-install
 BuildAndTagStage dotnet-install
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
+BuildAndTagStage copybuildscriptbinaries
+BuildAndTagStage buildscriptbinaries
 
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE \
 	$ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo

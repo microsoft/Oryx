@@ -1,12 +1,15 @@
 parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
-  pushToDockerHub: 'false'
 
 steps:
-- ${{ if eq(parameters.pushToDockerHub, 'true') }}:
-  - script: |
-      echo "##vso[task.setvariable variable=PushToDockerHub;]true"
+- task: DownloadPipelineArtifact@0
+  displayName: 'Download Pipeline Artifact'
+  inputs:
+    pipelineId: 'Oryx-CI'
+    artifactName: 'drop-$(Build.BuildNumber)'
+    targetPath: '$(Build.SourcesDirectory)'
+  condition: and(eq(variables['Build.DefinitionName'], 'Oryx-CI'), in(variables['Build.Reason'], 'Schedule', 'Manual'))
 
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ] && [ "$(TestIntegration)" != "true" ]
@@ -20,14 +23,6 @@ steps:
 - checkout: self
   clean: true
 
-- task: DownloadPipelineArtifact@0
-  displayName: 'Download Pipeline Artifact'
-  inputs:
-    pipelineId: 'Oryx-CI'
-    artifactName: 'drop-$(Build.BuildNumber)'
-    targetPath: '$(Build.SourcesDirectory)'
-  condition: and(succeeded(), or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')))
-     
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
@@ -110,6 +105,14 @@ steps:
     scriptPath: ./build/test-integration.sh
     args: $(TestIntegrationCaseFilter)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Create File to Notify Integration Test has run successfully'
+  inputs:
+    type: InlineScript
+    script: 'echo "success">$(Build.SourcesDirectory)/artifacts/$(Build.BuildNumber).txt'
+  condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'))
+
 
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
