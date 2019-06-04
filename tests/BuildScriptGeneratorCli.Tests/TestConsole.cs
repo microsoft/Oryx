@@ -76,8 +76,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         public bool IsErrorRedirected => throw new NotImplementedException();
 
-        public ConsoleColor ForegroundColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ConsoleColor BackgroundColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ConsoleColor ForegroundColor
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
+        public ConsoleColor BackgroundColor
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
 #pragma warning disable 0067
         public event ConsoleCancelEventHandler CancelKeyPress;

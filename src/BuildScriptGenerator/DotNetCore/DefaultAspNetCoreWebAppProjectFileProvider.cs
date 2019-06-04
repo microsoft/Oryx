@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DefaultAspNetCoreWebAppProjectFileProvider : IAspNetCoreWebAppProjectFileProvider
     {
-        private readonly DotnetCoreScriptGeneratorOptions _options;
+        private readonly DotNetCoreScriptGeneratorOptions _options;
         private readonly ILogger<DefaultAspNetCoreWebAppProjectFileProvider> _logger;
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string _projectFileRelativePath;
 
         public DefaultAspNetCoreWebAppProjectFileProvider(
-            IOptions<DotnetCoreScriptGeneratorOptions> options,
+            IOptions<DotNetCoreScriptGeneratorOptions> options,
             ILogger<DefaultAspNetCoreWebAppProjectFileProvider> logger)
         {
             _options = options.Value;
@@ -64,8 +64,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             // Check if root of the repo has a .csproj or a .fsproj file
-            projectFile = GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.CSharpProjectFileExtension) ??
-                GetProjectFileAtRoot(sourceRepo, DotnetCoreConstants.FSharpProjectFileExtension);
+            projectFile = GetProjectFileAtRoot(sourceRepo, DotNetCoreConstants.CSharpProjectFileExtension) ??
+                GetProjectFileAtRoot(sourceRepo, DotNetCoreConstants.FSharpProjectFileExtension);
 
             if (projectFile != null)
             {
@@ -84,24 +84,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // search for .csproj files
                 var projectFiles = GetAllProjectFilesInRepo(
                         sourceRepo,
-                        DotnetCoreConstants.CSharpProjectFileExtension);
+                        DotNetCoreConstants.CSharpProjectFileExtension);
 
                 if (!projectFiles.Any())
                 {
                     _logger.LogDebug(
                         "Could not find any files with extension " +
-                        $"'{DotnetCoreConstants.CSharpProjectFileExtension}' in repo.");
+                        $"'{DotNetCoreConstants.CSharpProjectFileExtension}' in repo.");
 
                     // search for .fsproj files
                     projectFiles = GetAllProjectFilesInRepo(
                         sourceRepo,
-                        DotnetCoreConstants.FSharpProjectFileExtension);
+                        DotNetCoreConstants.FSharpProjectFileExtension);
 
                     if (!projectFiles.Any())
                     {
                         _logger.LogDebug(
                             "Could not find any files with extension " +
-                            $"'{DotnetCoreConstants.FSharpProjectFileExtension}' in repo.");
+                            $"'{DotNetCoreConstants.FSharpProjectFileExtension}' in repo.");
                         return null;
                     }
                 }
@@ -150,9 +150,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             // Look for the attribute value on Project element first as that is more common
             // Example: <Project Sdk="Microsoft.NET.Sdk.Web/1.0.0">
-            var expectedWebSdkName = DotnetCoreConstants.WebSdkName.ToLowerInvariant();
+            var expectedWebSdkName = DotNetCoreConstants.WebSdkName.ToLowerInvariant();
             var sdkAttributeValue = projectFileDoc.XPathEvaluate(
-                DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
+                DotNetCoreConstants.ProjectSdkAttributeValueXPathExpression);
             var sdkName = sdkAttributeValue as string;
             if (!string.IsNullOrEmpty(sdkName) &&
                 sdkName.StartsWith(expectedWebSdkName, StringComparison.OrdinalIgnoreCase))
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // <Project>
             //    <Sdk Name="Microsoft.NET.Sdk.Web" Version="1.0.0" />
             var sdkNameAttributeValue = projectFileDoc.XPathEvaluate(
-                DotnetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
+                DotNetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
             sdkName = sdkNameAttributeValue as string;
 
             return StringExtensions.EqualsIgnoreCase(sdkName, expectedWebSdkName);
@@ -206,11 +206,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private static bool IsAspNetCore30App(XDocument projectFileDoc)
         {
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
-            if (string.Equals(targetFrameworkElement.Value, DotnetCoreConstants.NetCoreApp30))
+                DotNetCoreConstants.TargetFrameworkElementXPathExpression);
+            if (string.Equals(targetFrameworkElement.Value, DotNetCoreConstants.NetCoreApp30))
             {
                 var projectElement = projectFileDoc.XPathSelectElement(
-                    DotnetCoreConstants.ProjectSdkAttributeValueXPathExpression);
+                    DotNetCoreConstants.ProjectSdkAttributeValueXPathExpression);
                 return projectElement != null;
             }
 

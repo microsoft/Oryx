@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "dotnet")]
         [Fact]
-        public void DotnetAlias_UsesLtsVersion_ByDefault()
+        public void DotNetAlias_UsesLtsVersion_ByDefault()
         {
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData("3", DotNetCoreSdkVersions.DotNetCore30SdkVersionPreviewName)]
         [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersionPreviewName)]
-        public void DotnetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
+        public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
         {
             // Arrange
             var script = new ShellScriptBuilder()

@@ -6,11 +6,10 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Moq;
-using Microsoft.Oryx.Tests.Common;
-using Xunit;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using System.Collections.Generic;
+using Microsoft.Oryx.Tests.Common;
+using Moq;
+using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -57,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         {
             // Arrange
             var sourceRepo = new Mock<ISourceRepo>();
-            var detector = CreateDotnetCoreLanguageDetector(
+            var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile: null);
 
@@ -80,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithNoTargetFramework);
-            var detector = CreateDotnetCoreLanguageDetector(
+            var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
@@ -114,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
-            var detector = CreateDotnetCoreLanguageDetector(
+            var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
@@ -123,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(DotnetCoreConstants.LanguageName, result.Language);
+            Assert.Equal(DotNetCoreConstants.LanguageName, result.Language);
             Assert.Equal(expectedSdkVersion, result.LanguageVersion);
         }
 
@@ -139,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithMultipleProperties);
-            var detector = CreateDotnetCoreLanguageDetector(
+            var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
@@ -148,7 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(DotnetCoreConstants.LanguageName, result.Language);
+            Assert.Equal(DotNetCoreConstants.LanguageName, result.Language);
             Assert.Equal(DotNetCoreRuntimeVersions.NetCoreApp21, result.LanguageVersion);
         }
 
@@ -167,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
-            var detector = CreateDotnetCoreLanguageDetector(
+            var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
@@ -190,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithTargetFrameworkPlaceHolder.Replace("#TargetFramework#", "netcoreapp2.1"));
-            var detector = CreateDotnetCoreLanguageDetector(
+            var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: new[] { "2.2" },
                 projectFile);
 
@@ -202,30 +201,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 exception.Message);
         }
 
-        private DotnetCoreLanguageDetector CreateDotnetCoreLanguageDetector(
+        private DotNetCoreLanguageDetector CreateDotNetCoreLanguageDetector(
             string[] supportedVersions,
             string projectFile)
         {
-            return CreateDotnetCoreLanguageDetector(
+            return CreateDotNetCoreLanguageDetector(
                 supportedVersions,
                 projectFile,
                 new TestEnvironment());
         }
 
-        private DotnetCoreLanguageDetector CreateDotnetCoreLanguageDetector(
+        private DotNetCoreLanguageDetector CreateDotNetCoreLanguageDetector(
             string[] supportedVersions,
             string projectFile,
             IEnvironment environment)
         {
-            var optionsSetup = new DotnetCoreScriptGeneratorOptionsSetup(environment);
-            var options = new DotnetCoreScriptGeneratorOptions();
+            var optionsSetup = new DotNetCoreScriptGeneratorOptionsSetup(environment);
+            var options = new DotNetCoreScriptGeneratorOptions();
             optionsSetup.Configure(options);
 
-            return new DotnetCoreLanguageDetector(
+            return new DotNetCoreLanguageDetector(
                 new TestVersionProvider(supportedVersions),
                 Options.Create(options),
                 new TestAspNetCoreWebAppProjectFileProvider(projectFile),
-                NullLogger<DotnetCoreLanguageDetector>.Instance);
+                NullLogger<DotNetCoreLanguageDetector>.Instance);
         }
 
         private string[] GetAllSupportedRuntimeVersions()

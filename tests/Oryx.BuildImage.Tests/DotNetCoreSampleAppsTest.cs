@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact]
-        public void Builds_NetCore10App_UsingNetCore11_DotnetSdkVersion()
+        public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
             var appName = "aspnetcore10";
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Builds_NetCore11App_UsingNetCore11_DotnetSdkVersion()
+        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Publishes_DotnetCore11App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
+        public void Publishes_DotNetCore11App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
                 .ToString();
 
             // Act
@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Builds_NetCore20App_UsingNetCore21_DotnetSdkVersion()
+        public void Builds_NetCore20App_UsingNetCore21_DotNetSdkVersion()
         {
             // Arrange
             var appName = "aspnetcore20";
@@ -173,7 +173,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Builds_NetCore21App_UsingNetCore21_DotnetSdkVersion()
+        public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
@@ -208,7 +208,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Publishes_DotnetCore21App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
+        public void Publishes_DotNetCore21App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
                 .ToString();
 
             // Act
@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Builds_NetCore22App_UsingNetCore22_DotnetSdkVersion()
+        public void Builds_NetCore22App_UsingNetCore22_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp22WebApp";
@@ -277,7 +277,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Builds_NetCore30App_UsingNetCore30_DotnetSdkVersion()
+        public void Builds_NetCore30App_UsingNetCore30_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp30.WebApp";
@@ -314,7 +314,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Publishes_DotnetCore22App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
+        public void Publishes_DotNetCore22App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
             var appName = "NetCoreApp22WebApp";
@@ -322,7 +322,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
                 .ToString();
 
             // Act
@@ -505,7 +505,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
             var appDir = volume.ContainerDir;
-            var outputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var outputDir = $"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -l dotnet --language-version 2.1")
                 .AddFileExistsCheck($"{outputDir}/pre-{fileName}")
@@ -658,7 +658,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
             var appDir = volume.ContainerDir;
-            var outputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var outputDir = $"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} -l dotnet --language-version 2.1 " +
@@ -842,7 +842,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(EnvironmentSettingsKeys.Project, "src/WebApp1/WebApp1.csproj")
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/MyWebApp.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/MyWebApp.dll")
                 .ToString();
 
             // Act

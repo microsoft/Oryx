@@ -59,7 +59,8 @@ namespace Microsoft.Oryx.Common.Extensions
 
             Assert.Equal(
                 "before https://***@example.com/ and then ftp://***@example.org/subdir",
-                "before https://bla:123bla@example.com/ and then ftp://user:pass@example.org/subdir".ReplaceUrlUserInfo());
+                "before https://bla:123bla@example.com/ and " +
+                "then ftp://user:pass@example.org/subdir".ReplaceUrlUserInfo());
         }
     }
 }

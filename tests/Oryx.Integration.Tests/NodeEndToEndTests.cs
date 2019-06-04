@@ -30,8 +30,8 @@ namespace Microsoft.Oryx.Integration.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        protected DockerVolume CreateAppVolume(string appName) => DockerVolume.CreateMirror(
-            Path.Combine(_hostSamplesDir, "nodejs", appName));
+        protected DockerVolume CreateAppVolume(string appName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
