@@ -39,9 +39,9 @@ designed for [storage][], which might also include backups, replication, and muc
 
 In general, node.js applications have a large number of package dependencies, either directly or indirectly,
 i.e. the dependencies of their dependencies. Since each package might contain several `.js` files, fetching 
-dependencies means a lot of disk IO operations. Since in the App Service model the application is stored in a 
+dependencies means a lot of disk I/O operations. Since in the App Service model the application is stored in a 
 network volume, the `/home` directory, fetching and storing the packages alongside the application in 
-`/home/site/wwwroot` means a lot of IO operations would have to go through the network. 
+`/home/site/wwwroot` means a lot of I/O operations would have to go through the network. 
 
 ### Compressing node modules
 
