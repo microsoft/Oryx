@@ -115,7 +115,9 @@ steps:
   displayName: 'Copy source projects output to artifacts folder'
   inputs:
     sourceFolder: $(Build.SourcesDirectory)
-    contents: 'src/**/bin/**/*.*'
+    contents: |
+      src/**/bin/**/*.*
+      vsts/scripts/*.*
     targetFolder: $(Build.ArtifactStagingDirectory)
     cleanTargetFolder: true
     overWrite: true
