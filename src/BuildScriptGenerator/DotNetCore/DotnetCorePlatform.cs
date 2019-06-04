@@ -16,22 +16,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// .NET Core platform.
     /// </summary>
     [BuildProperty(Constants.ZipAllOutputBuildPropertyKey, Constants.ZipAllOutputBuildPropertyKeyDocumentation)]
-    internal class DotnetCorePlatform : IProgrammingPlatform
+    internal class DotNetCorePlatform : IProgrammingPlatform
     {
-        private readonly IDotnetCoreVersionProvider _versionProvider;
+        private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
-        private readonly ILogger<DotnetCorePlatform> _logger;
-        private readonly DotnetCoreLanguageDetector _detector;
-        private readonly DotnetCoreScriptGeneratorOptions _options;
+        private readonly ILogger<DotNetCorePlatform> _logger;
+        private readonly DotNetCoreLanguageDetector _detector;
+        private readonly DotNetCoreScriptGeneratorOptions _options;
 
-        public DotnetCorePlatform(
-            IDotnetCoreVersionProvider versionProvider,
+        public DotNetCorePlatform(
+            IDotNetCoreVersionProvider versionProvider,
             IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
             IEnvironmentSettingsProvider environmentSettingsProvider,
-            ILogger<DotnetCorePlatform> logger,
-            DotnetCoreLanguageDetector detector,
-            IOptions<DotnetCoreScriptGeneratorOptions> options)
+            ILogger<DotNetCorePlatform> logger,
+            DotNetCoreLanguageDetector detector,
+            IOptions<DotNetCoreScriptGeneratorOptions> options)
         {
             _versionProvider = versionProvider;
             _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _options = options.Value;
         }
 
-        public string Name => DotnetCoreConstants.LanguageName;
+        public string Name => DotNetCoreConstants.LanguageName;
 
         public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedDotNetCoreVersions;
 
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             dirs.Add(".git");
             dirs.Add("obj");
             dirs.Add("bin");
-            dirs.Add(DotnetCoreConstants.OryxOutputPublishDirectory);
+            dirs.Add(DotNetCoreConstants.OryxOutputPublishDirectory);
             return dirs;
         }
 
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var configuration = _options.MSBuildConfiguration;
             if (string.IsNullOrEmpty(configuration))
             {
-                configuration = DotnetCoreConstants.DefaultMSBuildConfiguration;
+                configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
             }
 
             return configuration;
@@ -173,7 +173,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return (null, null);
             }
 
-            var publishDir = Path.Combine(repo.RootPath, DotnetCoreConstants.OryxOutputPublishDirectory);
+            var publishDir = Path.Combine(repo.RootPath, DotNetCoreConstants.OryxOutputPublishDirectory);
             return (projectFile, publishDir);
         }
     }

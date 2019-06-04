@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -87,7 +87,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         //    // Assert
         //    Assert.NotNull(snippet);
-        //    Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+        //    Assert.Equal(TemplateHelpers.Render(
+        //        TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         //}
 
         //[Fact]
@@ -109,7 +110,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         //    // Assert
         //    Assert.NotNull(snippet);
-        //    Assert.Equal(TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
+        //    Assert.Equal(TemplateHelpers.Render(
+        //        TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         //}
 
         private IProgrammingPlatform GetScriptGenerator(string defaultVersion = null)

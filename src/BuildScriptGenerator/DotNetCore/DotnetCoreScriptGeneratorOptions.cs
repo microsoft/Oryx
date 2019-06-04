@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public class DotnetCoreScriptGeneratorOptions
+    public class DotNetCoreScriptGeneratorOptions
     {
         public string DefaultVersion { get; set; }
 

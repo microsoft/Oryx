@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     /// <summary>
-    /// Build script template for DotnetCore in Bash.
+    /// Build script template for DotNetCore in Bash.
     /// </summary>
     public class DotNetCoreBashBuildSnippetProperties
     {
