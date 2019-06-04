@@ -54,7 +54,7 @@ func GetValidatedFullPath(filePath string) string {
 
 // Writes the entrypoint command to an executable file
 func WriteScript(filePath string, command string) {
-	fmt.Println("Writing output script to '" + filePath + "'")
+	fmt.Println("Writing output script to '" + filePath + "'\n")
 
 	// Ensure directory
 	dir := filepath.Dir(filePath)

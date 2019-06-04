@@ -122,6 +122,7 @@ if [ -z "$startUpCommand" ]; then
 fi
 
 echo "Running the command '$startUpCommand'..."
+echo
 eval "$startUpCommand"
 `
 	scriptBuilder.WriteString(script)

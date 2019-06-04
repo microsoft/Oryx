@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -243,28 +242,27 @@ namespace Microsoft.Oryx.Integration.Tests
 
     [Trait("category", "dotnetcore")]
     [Trait("platform", "dotnet")]
-    public class DotNetCoreRuntimeVersion21Tests : DotNetCoreEndToEndTestsBase
+    public class DotNetCoreTestsUsingDefaultPublishOutuptDirectory : DotNetCoreEndToEndTestsBase
     {
-        public DotNetCoreRuntimeVersion21Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public DotNetCoreTestsUsingDefaultPublishOutuptDirectory(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_UsingDefaultPublishOutputDirectory()
+        public async Task CanBuildAndRunWebApp_UsingDefaultPublishOutputDirectory()
         {
             // Arrange
-            var dotnetcoreVersion = "2.1";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                $"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -278,7 +276,7 @@ namespace Microsoft.Oryx.Integration.Tests
                         "-c",
                         buildImageScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryxdevms/dotnetcore-2.1",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -291,6 +289,190 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunWebApp_UsingDefaultPublishOutputDirectory_AndIntermediateDirIsUsed()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appDir} -runFromPath /tmp/output -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                        "-c",
+                        buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                        "-c",
+                        runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_MultiWebAppRepo_UsingDefaultPublishOutputDirectory()
+        {
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var repoDir = volume.ContainerDir;
+            var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
+            var appOutputDir = $"{repoDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand(setProjectEnvVariable)
+                .AddCommand($"oryx build {repoDir}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(setProjectEnvVariable)
+                .AddCommand(
+                $"oryx -appPath {repoDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World! from WebApp1", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunWebApp_UsingDefaultPublishOutputDirectory_AndOutputIsZipped()
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                        "-c",
+                        buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                        "-c",
+                        runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_MultiWebAppRepo_UsingDefaultPublishOutputDirectory_AndOutputIsZipped()
+        {
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var repoDir = volume.ContainerDir;
+            var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
+            var appOutputDir = $"{repoDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand(setProjectEnvVariable)
+                .AddCommand($"oryx build {repoDir} -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(setProjectEnvVariable)
+                .AddCommand(
+                $"oryx -appPath {repoDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World! from WebApp1", data);
+                });
+        }
+    }
+
+    [Trait("category", "dotnetcore")]
+    [Trait("platform", "dotnet")]
+    public class DotNetCoreRuntimeVersion21Tests : DotNetCoreEndToEndTestsBase
+    {
+        public DotNetCoreRuntimeVersion21Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
         }
 
         [Fact]
