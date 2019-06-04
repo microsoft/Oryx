@@ -347,7 +347,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx build {repoDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand(setProjectEnvVariable)
                 .AddCommand(
                 $"oryx -appPath {repoDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -434,7 +433,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx build {repoDir} -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand(setProjectEnvVariable)
                 .AddCommand(
                 $"oryx -appPath {repoDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
