@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Common;
 using Xunit;
@@ -35,7 +37,7 @@ namespace Microsoft.Oryx.Tests.Common
             return BuildRunAndAssertAppAsync(
                 appName,
                 output,
-                new List<DockerVolume> { volume },
+                new[] { volume },
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
@@ -48,7 +50,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
@@ -74,7 +76,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildImage,
             string buildCmd,
             string[] buildArgs,
@@ -105,7 +107,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildImage,
             string buildCmd,
             string[] buildArgs,
@@ -142,7 +144,7 @@ namespace Microsoft.Oryx.Tests.Common
         //  4.  A func supplied by the user is retried to the max of 10 retries between a delay of 1 second.
         public static async Task BuildRunAndAssertAppAsync(
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildImage,
             string buildCmd,
             string[] buildArgs,
@@ -193,7 +195,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static async Task RunAndAssertAppAsync(
             string imageName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             List<EnvironmentVariable> environmentVariables,
             int port,
             string link,

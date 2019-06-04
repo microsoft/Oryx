@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.Tests.Common
     {
         public string ImageId { get; set; }
         public List<EnvironmentVariable> EnvironmentVariables { get; set; }
-        public List<DockerVolume> Volumes { get; set; }
+        public IEnumerable<DockerVolume> Volumes { get; set; }
         public int? PortInContainer { get; set; }
         public string Link { get; set; }
         public bool RunContainerInBackground { get; set; }

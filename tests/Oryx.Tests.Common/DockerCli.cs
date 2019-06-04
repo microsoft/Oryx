@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.Oryx.Common;
@@ -323,7 +324,7 @@ namespace Microsoft.Oryx.Tests.Common
                 AddEnvVarArg(args, new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appServiceAppName));
             }
 
-            if (dockerRunArguments.Volumes?.Count > 0)
+            if (dockerRunArguments.Volumes?.Count() > 0)
             {
                 foreach (var volume in dockerRunArguments.Volumes)
                 {
