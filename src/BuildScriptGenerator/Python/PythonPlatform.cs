@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
         internal const string ZipOption = "zip";
         internal const string TarGzOption = "tar-gz";
-        
+
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
