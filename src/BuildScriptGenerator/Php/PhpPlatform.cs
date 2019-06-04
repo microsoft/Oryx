@@ -95,13 +95,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
         {
+            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + Name;
             var tmpScriptPath = "/tmp/run.sh";
 
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
-                FilePaths.RunScriptGeneratorDir + "/" + "startupcmdgen-php",
+                scriptGenPath,
                 new[] { "-appPath", opts.SourceRepo.RootPath, "-output", tmpScriptPath },
                 Environment.CurrentDirectory,
                 TimeSpan.FromSeconds(10));
+
+            if (exitCode != ProcessConstants.ExitSuccess)
+            {
+                _logger.LogError("{scriptGenPath} failed", scriptGenPath);
+                return string.Empty;
+            }
 
             return File.ReadAllText(tmpScriptPath);
         }
