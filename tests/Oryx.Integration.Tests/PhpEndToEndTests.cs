@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appVolume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", appName));
 
             // Act & Assert
-            await EndToEndTestHelper.RunBuildpackAndAssertAppAsync(
+            await EndToEndTestHelper.RunPackAndAssertAppAsync(
                 _output,
                 appName,
                 appVolume,

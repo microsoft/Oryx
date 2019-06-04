@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public static Task RunBuildpackAndAssertAppAsync(
+        public static Task RunPackAndAssertAppAsync(
             ITestOutputHelper output,
             string appName,
             DockerVolume appVolume,

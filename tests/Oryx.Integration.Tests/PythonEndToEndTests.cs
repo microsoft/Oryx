@@ -269,7 +269,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             var appName = "flask-app";
 
-            await EndToEndTestHelper.RunBuildpackAndAssertAppAsync(
+            await EndToEndTestHelper.RunPackAndAssertAppAsync(
                 _output,
                 appName,
                 CreateAppVolume(appName),
