@@ -58,7 +58,12 @@ func (logger *Logger) makeTraceItem(message string, sev contracts.SeverityLevel)
 }
 
 func (logger *Logger) logTrace(sev contracts.SeverityLevel, format string, a ...interface{}) {
-	logger.AiClient.Track(logger.makeTraceItem(fmt.Sprintf(format, a...), sev))
+	message := fmt.Sprintf(format, a...)
+
+	// Uncomment the follwing line to see the trace messages on standard out
+	//fmt.Println(message)
+
+	logger.AiClient.Track(logger.makeTraceItem(message, sev))
 }
 
 func (logger *Logger) LogVerbose(format string, a ...interface{}) {

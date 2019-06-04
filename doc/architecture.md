@@ -64,7 +64,6 @@ Set the `GOPATH` variable to include the Oryx repo, for example
 `GOPATH=$GOPATH:c:\src\oryx`. Since the applications are inside the `src`
 folder there, Go should be able to find the packages and produce builds.
 
-
 ### Run images
 
 We have a set of runtime images, and their Dockerfiles are located in [/images/runtime](../images/runtime).
