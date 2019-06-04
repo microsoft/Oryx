@@ -89,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCodeGenerator", "buil
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2AA826A1-5647-46B2-9885-20E89050653F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Common.Test", "tests\Oryx.Common.Test\Oryx.Common.Test.csproj", "{48391B54-0D43-4E49-94C6-727B47F7C416}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Common.Tests", "tests\Oryx.Common.Tests\Oryx.Common.Tests.csproj", "{48391B54-0D43-4E49-94C6-727B47F7C416}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

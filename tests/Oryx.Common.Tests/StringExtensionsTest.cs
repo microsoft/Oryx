@@ -12,6 +12,16 @@ namespace Microsoft.Oryx.Common.Extensions
         [Fact]
         public void Chunkify_Sanity()
         {
+            Assert.True(StringExtensions.EqualsIgnoreCase("abc", "aBc"));
+
+            Assert.True(StringExtensions.EqualsIgnoreCase("abc", "ABC"));
+
+            Assert.False(StringExtensions.EqualsIgnoreCase("bl", "bla"));
+        }
+
+        [Fact]
+        public void Chunkify_Sanity()
+        {
             // Empty string
             Assert.Equal(0, "".Chunkify(3).Count);
 
