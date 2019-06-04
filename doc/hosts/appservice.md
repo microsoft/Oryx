@@ -5,7 +5,7 @@ In [Azure App Service on Linux][] the user has many options to deploy their appl
 the application. If no custom deployment script is provided, Oryx will run behind the scenes and perform
 the required steps to build and configure the application. 
 
-Even if the application is built outside of App Service, e.g. through an external CI/CD pipeline,
+Even if the application is built outside of App Service, for example through an external CI/CD pipeline,
 Oryx is still invoked to detect how to start an application if no start up command was specified.
 
 Here we describe some details of this process, and how you might configure them and fix issues
@@ -17,7 +17,7 @@ general, please refer to their specific entry in our [docs page](../README.md).
 
 ## Overview
 
-When an application is pushed to App Service, e.g. through local git or GitHub integration, the
+When an application is pushed to App Service, for example through local git or GitHub integration, the
 source code will be available in `/home/site/repository`. Through a hook in the git repository,
 after the code is pushed App Service will call Oryx to build the application if a deployment
 script wasn't provided. After the build step the web app is placed in `/home/site/wwwroot`,
@@ -37,13 +37,13 @@ designed for [storage][], which might also include backups, replication, and muc
 
 ## Node.js
 
-In general, node.js applications have a large number of package dependencies, either directly or indirectly,
-i.e. the dependencies of their dependencies. Since each package might contain several `.js` files, fetching 
+In general, Node.js applications have a large number of package dependencies, either directly or indirectly,
+that is, the dependencies of their dependencies. Since each package might contain several `.js` files, fetching
 dependencies means a lot of disk I/O operations. Since in the App Service model the application is stored in a 
 network volume, the `/home` directory, fetching and storing the packages alongside the application in 
 `/home/site/wwwroot` means a lot of I/O operations would have to go through the network. 
 
-### Compressing node modules
+### Compressing Node.js modules
 
 Recently we've made some build performance improvements that made the builds run up to ten times faster. We achieved
 this by fetching the packages outside of the network location, compress its contents, and maintain all the dependencies
@@ -51,11 +51,11 @@ in a single file, `node_modules.tar.gz`, that is located in `/home/site/wwwroot`
 `node_modules` folder in this `/home/site/wwwroot`.
 
 As part of the application startup process, we extract the contents of `node_modules.tar.gz` to `/node_modules`, which
-is outside of the volume share. Since the node runtime looks for packages inside directories called `node_modules`
+is outside of the volume share. Since the Node.js runtime looks for packages inside directories called `node_modules`
 starting at the application directory (`/home/site/wwwroot`) all the way to `/`, it is able to find the extracted
 packages.
 
-If for some reason you want to disable this behavior, e.g. you have hardcoded references to files inside 
+If for some reason you want to disable this behavior, for example there are hardcoded references to files inside 
 `node_modules`, you can set the app setting `BUILD_FLAGS` to `Off`. Note that casing matters, so `off` won't work.
 This flag will disable the performance optimizations and put the `node_modules` directory back inside the application's
 directory in the network volume.
@@ -68,5 +68,6 @@ use it, set the application setting `APP_SVC_RUN_FROM_COPY` to `true`. This will
 location other than `/home/site/wwwroot`. 
 
 When using this solution, you should not have hardcoded references to files that include `/home/site/wwwroot` in 
-the path, e.g. in custom startup scripts. Alternatively, you can just reference those files by its relative path,
-removing `/home/site/wwwroot` from it.
+the path, for example in custom startup scripts. Alternatively, you can just reference those files by its relative
+path, removing `/home/site/wwwroot` from it.
+git lo
