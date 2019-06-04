@@ -26,6 +26,15 @@ jobs:
       overWrite: true
     condition: true
 
+  - task: CopyFiles@2
+    displayName: Copy vsts scripts to staging directory
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/vsts/scripts'
+      contents: '**/*.*'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+      overWrite: true
+    condition: true
+
   - task: Docker@1
     displayName: Push built base images to dev ACR
     inputs:
