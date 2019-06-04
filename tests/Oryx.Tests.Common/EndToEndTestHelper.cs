@@ -264,6 +264,34 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
+        public static Task RunBuildpackAndAssertAppAsync(
+            ITestOutputHelper output,
+            string appName,
+            DockerVolume appVolume,
+            string appImageName,
+            string builderImageName,
+            Func<int, Task> assertAction)
+        {
+            return EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                output,
+                new List<DockerVolume> { appVolume, DockerVolume.DockerDaemonSocket },
+                Settings.PackImageName,
+                null, // `pack` is already in the image's ENTRYPOINT
+                new[]
+                {
+                    "build", appImageName,
+                    "--no-pull", "--no-color",
+                    "--path", appVolume.ContainerDir,
+                    "--builder", builderImageName
+                },
+                appImageName,
+                8080,
+                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
+                runArgs: null,
+                assertAction);
+        }
+
         private static async Task<int> GetHostPortAsync(DockerCli dockerCli, string containerName, int portInContainer)
         {
             // We are depending on Docker to open ports in the host dynamically in order for our tests to be able to

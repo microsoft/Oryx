@@ -258,29 +258,14 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("heroku/buildpacks")]
         public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
         {
-            // Arrange
             var appName = "webfrontend";
-            var appVolume = CreateAppVolume(appName);
-            var appImageName = "testnodeapp";
 
-            // Act & Assert
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
+            await EndToEndTestHelper.RunBuildpackAndAssertAppAsync(
                 _output,
-                new List<DockerVolume> { appVolume, DockerVolume.DockerDaemonSocket },
-                Constants.PackImageName,
-                null, // `pack` is already in the image's ENTRYPOINT
-                new[]
-                {
-                    "build", appImageName,
-                    "--no-color",
-                    "--path", appVolume.ContainerDir,
-                    "--builder", builder
-                },
-                appImageName,
-                8080,
-                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
-                runArgs: null,
+                appName,
+                CreateAppVolume(appName),
+                "testnodeapp",
+                builder,
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
