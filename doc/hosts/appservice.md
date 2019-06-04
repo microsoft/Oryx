@@ -2,13 +2,13 @@
 
 In [Azure App Service on Linux][] the user has many options to deploy their application, including 
 [continuous deployment][] - in which the source code is uploaded to App Service that in turn builds
-the application. If no custom build script is provided, Oryx will run behind the scenes and perform
+the application. If no custom deployment script is provided, Oryx will run behind the scenes and perform
 the required steps to build and configure the application. 
 
 Even if the application is built outside of App Service, e.g. through an external CI/CD pipeline,
 Oryx is still invoked to detect how to start an application if no start up command was specified.
 
-Here you we describe some details of this process, and how you might configure them and fix issues
+Here we describe some details of this process, and how you might configure them and fix issues
 if needed. We focus on the specifics for App Service; for how we support each language/runtime in
 general, please refer to their specific entry in our [docs page](../README.md).
 
@@ -20,14 +20,12 @@ general, please refer to their specific entry in our [docs page](../README.md).
 When an application is pushed to App Service, e.g. through local git or GitHub integration, the
 source code will be available in `/home/site/repository`. Through a hook in the git repository,
 after the code is pushed App Service will call Oryx to build the application if a deployment
-script wasn't provided. 
+script wasn't provided. After the build step the web app is placed in `/home/site/wwwroot`,
+location from which it will be executed.
 
-After the build step, the web app is placed in `/home/site/wwwroot`, location from which it
-will be executed.
-
-App Service has two components that are relevant in this discussion: the so called [Kudu][] service,
+App Service has two components that are relevant in this discussion: the [Kudu][] service,
 where the build happens, and the runtime environments where the web apps are executed. Both environments
-share files through the `/home` directory.
+share files through the `/home` network directory.
 
 As a side note, since `/home` is a shared location for both build and runtime, and is also a 
 persistent storage location, some web apps use it to store state. We don't recomment this since
@@ -39,9 +37,9 @@ designed for [storage][], which might also include backups, replication, and muc
 
 ## Node.js
 
-In general, node.js applications end up with a large number of package dependencies, either directly or indirectly,
+In general, node.js applications have a large number of package dependencies, either directly or indirectly,
 i.e. the dependencies of their dependencies. Since each package might contain several `.js` files, fetching 
-dependencies mean a lot of disk IO operations. Since in the App Service model the application is stored in a 
+dependencies means a lot of disk IO operations. Since in the App Service model the application is stored in a 
 network volume, the `/home` directory, fetching and storing the packages alongside the application in 
 `/home/site/wwwroot` means a lot of IO operations would have to go through the network. 
 
