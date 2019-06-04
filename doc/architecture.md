@@ -27,11 +27,11 @@ It analyzes the codebase, detecting which programming platforms are being used a
 We have a single build image which supports all of the SDKs and their versions. This allows developers to use 
 multiple languages in their build, for instance run a Python setup script when building their .NET Core app, 
 or have a TypeScript frontend for their Python app. You can take a look at its 
-[Dockerfile](./images/build/Dockerfile) to better understand its contents.
+[Dockerfile](../images/build/Dockerfile) to better understand its contents.
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
 modularization and for faster build times. You can see what are those images and how they are built in their
-[build script](./build/build-buildimage-bases.sh).
+[build script](../build/build-buildimage-bases.sh).
 
 To help the user select which version they want for each platform, they can use the `benv` script pre-installed
 in the build image. For example, `source benv python=3.6 node=8` will make Python 3.6 and the latest supported
@@ -39,8 +39,8 @@ version of Node 8 the default ones.
 
 The build image also contains the build script generator, which can be accessed by its alias, `oryx`.
 
-The `build` image manifest is at
-[./images/build/Dockerfile](./images/build/Dockerfile). It is built and
+The build image manifest is at
+[/images/build/Dockerfile](../images/build/Dockerfile). It is built and
 published via the Microsoft Container Registry (MCR) ([info][]) as
 `mcr.microsoft.com/oryx/build` and syndicated to Docker Hub as
 [index.docker.io/oryxprod/build:latest][]. Pull with `docker pull
