@@ -30,8 +30,8 @@ namespace Microsoft.Oryx.Integration.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        protected DockerVolume CreateAppVolume(string appName) => DockerVolume.CreateMirror(
-            Path.Combine(_hostSamplesDir, "nodejs", appName));
+        protected DockerVolume CreateAppVolume(string appName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
@@ -253,8 +253,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_NodeApp_WithBuildpack()
+        [Theory]
+        [InlineData("oryxdevms/pack-builder")]
+        [InlineData("heroku/buildpacks")]
+        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
         {
             // Arrange
             var appName = "webfrontend";
@@ -271,9 +273,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[]
                 {
                     "build", appImageName,
-                    "--no-pull", "--no-color",
+                    "--no-color",
                     "--path", appVolume.ContainerDir,
-                    "--builder", "oryxdevms/pack-builder"
+                    "--builder", builder
                 },
                 appImageName,
                 8080,

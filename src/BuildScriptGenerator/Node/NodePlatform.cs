@@ -61,7 +61,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
-            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             string runBuildCommand = null;

@@ -53,8 +53,9 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
         protected override void InsertSampleData()
         {
             const string sqlFile = "/tmp/postgres_setup.sql";
+            var sqlQuery = GetSampleDataInsertionSql();
             var dbSetupScript = new ShellScriptBuilder()
-                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                .CreateFile(sqlFile, $"\"{sqlQuery}\"")
                 .AddCommand(
                 $"PGPASSWORD={Constants.DatabaseUserPwd} psql -h localhost " +
                 $"-d {Constants.DatabaseName} -U{Constants.DatabaseUserName} < {sqlFile}")

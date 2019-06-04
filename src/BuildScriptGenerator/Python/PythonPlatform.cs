@@ -15,7 +15,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     [BuildProperty(
-        VirtualEnvironmentNamePropertyKey, "Name of the virtual environment to be created. Defaults to 'pythonenv<Python version>'.")]
+        VirtualEnvironmentNamePropertyKey,
+        "Name of the virtual environment to be created. Defaults to 'pythonenv<Python version>'.")]
     [BuildProperty(
         CompressVirtualEnvPropertyKey,
         "Indicates how and if virtual environment folder should be compressed into a single file in the output " +
@@ -33,9 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
         internal const string ZipOption = "zip";
         internal const string TarGzOption = "tar-gz";
-
-        private const string DefaultTargetPackageDirectory = "__oryx_packages__";
-
+        
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
@@ -67,12 +66,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            var buildProperties = new Dictionary<string, string>();
-            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+            var manifestFileProperties = new Dictionary<string, string>();
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
-            if (string.IsNullOrEmpty(packageDir))
+
+            if (!string.IsNullOrWhiteSpace(packageDir) && !string.IsNullOrWhiteSpace(virtualEnvName))
+            {
+                throw new InvalidUsageException($"Options '{TargetPackageDirectoryPropertyKey}' and " +
+                    $"'{VirtualEnvironmentNamePropertyKey}' are mutually exclusive. Please provide " +
+                    $"only the target package directory or virtual environment name.");
+            }
+
+            if (string.IsNullOrWhiteSpace(packageDir))
             {
                 // If the package directory was not provided, we default to virtual envs
                 if (string.IsNullOrWhiteSpace(virtualEnvName))
@@ -80,13 +86,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     virtualEnvName = GetDefaultVirtualEnvName(context);
                 }
 
-                buildProperties[PythonConstants.VirtualEnvNameBuildProperty] = virtualEnvName;
+                manifestFileProperties[ManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
             }
-            else if (!string.IsNullOrWhiteSpace(virtualEnvName))
+            else
             {
-                throw new InvalidUsageException($"Options '{TargetPackageDirectoryPropertyKey}' and " +
-                    $"'{VirtualEnvironmentNamePropertyKey}' are mutually exclusive. Please provide " +
-                    $"only the target package directory or virtual environment name.");
+                manifestFileProperties[ManifestFilePropertyKeys.PackageDir] = packageDir;
             }
 
             var virtualEnvModule = string.Empty;
@@ -115,7 +119,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (!string.IsNullOrWhiteSpace(compressedVirtualEnvFileName))
             {
-                buildProperties[PythonConstants.CompressedVirtualEnvFileBuildProperty] = compressedVirtualEnvFileName;
+                manifestFileProperties[ManifestFilePropertyKeys.CompressedVirtualEnvFile]
+                    = compressedVirtualEnvFileName;
             }
 
             TryLogDependencies(pythonVersion, context.SourceRepo);
@@ -136,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return new BuildScriptSnippet()
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = buildProperties
+                BuildProperties = manifestFileProperties
             };
         }
 
@@ -207,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public bool IsCleanRepo(ISourceRepo repo)
         {
             // TODO: support venvs
-            return !repo.DirExists(DefaultTargetPackageDirectory);
+            return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
@@ -242,7 +247,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             context.PythonVersion = version;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext context)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext context)
         {
             var dirs = new List<string>();
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -267,7 +273,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var excludeDirs = new List<string>();
 
-            excludeDirs.Add(DefaultTargetPackageDirectory);
+            excludeDirs.Add(PythonConstants.DefaultTargetPackageDirectory);
 
             var virtualEnvName = GetVirtualEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))

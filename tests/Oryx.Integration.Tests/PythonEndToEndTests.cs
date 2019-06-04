@@ -3,31 +3,142 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
-    public class PythonEndToEndTests : PlatformEndToEndTestsBase
+    public abstract class PythonEndToEndTestsBase : PlatformEndToEndTestsBase
     {
-        private const int ContainerPort = 3000;
-        private const string DefaultStartupFilePath = "./run.sh";
+        protected const int ContainerPort = 3000;
+        protected const string DefaultStartupFilePath = "./run.sh";
 
-        private readonly ITestOutputHelper _output;
-        private readonly string _hostSamplesDir;
-        private readonly string _tempRootDir;
+        protected readonly ITestOutputHelper _output;
+        protected readonly string _hostSamplesDir;
+        protected readonly string _tempRootDir;
 
-        public PythonEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public PythonEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
+        }
+
+        protected DockerVolume CreateAppVolume(string appName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", appName));
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests_BackCompat : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests_BackCompat(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [Fact]
+        public async Task CanRunPythonApp_UsingEarlierBuiltPackagesDirectory()
+        {
+            // This is AppService's scenario where previously built apps can still run
+            // fine.
+
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var virtualEnvName = "antenv";
+            var buildScript = new ShellScriptBuilder()
+                // App should run fine even with manifest file not present
+                .AddCommand($"oryx build {appDir} -p packagedir={PythonConstants.DefaultTargetPackageDirectory}")
+                .AddCommand($"rm -f {appDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+
+                .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                "oryxdevms/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunPythonApp_WithoutBuildManifestFile()
+        {
+            // This is AppService's scenario where previously built apps can still run
+            // fine.
+
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var virtualEnvName = "antenv";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -p virtualenv_name={virtualEnvName}")
+                // App should run fine even with manifest file not present
+                .AddCommand($"rm -f {appDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                "oryxdevms/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests_Python27 : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests_Python27(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
         }
 
         [Fact]
@@ -35,8 +146,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "python2-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
@@ -71,8 +181,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "python2-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var buildScript = new ShellScriptBuilder()
@@ -83,7 +192,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -111,14 +220,22 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello World!", data);
                 });
         }
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests_Python37 : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests_Python37(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
 
         [Fact]
         public async Task CanBuildAndRunPythonApp_UsingPython37()
         {
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -148,52 +265,16 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython36()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
-                "oryxdevms/python-3.6",
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
-        [Fact]
         public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnv()
         {
             // Arrange
             var appName = "flask-app";
             var virtualEnvName = "antenv";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -228,8 +309,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "flask-app";
             var virtualEnvName = "antenv";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirPath = Directory.CreateDirectory(
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
@@ -246,7 +326,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -280,8 +360,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -324,8 +403,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appOutputDirPath = Directory.CreateDirectory(
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
@@ -342,7 +420,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName {virtualEnvName}")
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -379,6 +457,83 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
+        {
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingPython36()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
+                "oryxdevms/python-3.6",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_Tweeter3App()
+        {
+            // Arrange
+            var appName = "tweeter3";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir },
+                "oryxdevms/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("logged in as: bob", data);
+                });
+        }
 
         [Theory]
         [InlineData("3.6")]
@@ -387,8 +542,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv";
 
@@ -432,14 +586,22 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests_DjangoApp : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests_DjangoApp(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
+        }
 
         [Fact]
         public async Task CanBuildAndRun_DjangoPython36App_UsingVirtualEnv()
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv3.6";
             var buildScript = new ShellScriptBuilder()
@@ -490,8 +652,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -526,188 +687,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
-                });
-        }
-
-        [Fact]
-        public async Task CanBuildAndRun_Tweeter3App()
-        {
-            // Arrange
-            var appName = "tweeter3";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir },
-                "oryxdevms/python-3.7",
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("logged in as: bob", data);
-                });
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnv(string pythonVersion)
-        {
-            // Arrange
-            var appName = "shapely-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-            var imageVersion = "oryxdevms/python-" + pythonVersion;
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
-                imageVersion,
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello Shapely, Area is: 314", data);
-                });
-        }
-
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDir(string pythonVersion)
-        {
-            // Arrange
-            const string packageDir = "orx_packages";
-            var appName = "shapely-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -packagedir {packageDir}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-            var imageVersion = "oryxdevms/python-" + pythonVersion;
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion, "-p", $"packagedir={packageDir}" },
-                imageVersion,
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello Shapely, Area is: 314", data);
-                });
-        }
-
-        [Fact]
-        public async Task PythonStartupScript_UsesPortEnvironmentVariableValue()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"export PORT={ContainerPort}")
-                .AddCommand($"oryx -appPath {appDir}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir },
-                "oryxdevms/python-3.7",
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
-        [Fact]
-        public async Task PythonStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"export PORT=9095")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "oryx",
-                new[] { "build", appDir },
-                "oryxdevms/python-3.7",
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    script
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
                 });
         }
 
@@ -772,6 +751,167 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     data = await GetResponseDataAsync($"http://localhost:{hostPort}{link}");
                     Assert.Contains("!function(e){var t={};function n(r){if(t[r])return t[r].exports", data);
+                });
+        }
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests_ShapelyApp : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests_ShapelyApp(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnv(string pythonVersion)
+        {
+            // Arrange
+            var appName = "shapely-flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+            var imageVersion = "oryxdevms/python-" + pythonVersion;
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
+                imageVersion,
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello Shapely, Area is: 314", data);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDir(string pythonVersion)
+        {
+            // Arrange
+            const string packageDir = "orx_packages";
+            var appName = "shapely-flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+            var imageVersion = "oryxdevms/python-" + pythonVersion;
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion, "-p", $"packagedir={packageDir}" },
+                imageVersion,
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello Shapely, Area is: 314", data);
+                });
+        }
+    }
+
+    [Trait("category", "python")]
+    public class PythonEndToEndTests_PortEnvVariable : PythonEndToEndTestsBase
+    {
+        public PythonEndToEndTests_PortEnvVariable(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
+        }
+
+        [Fact]
+        public async Task PythonStartupScript_UsesPortEnvironmentVariableValue()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"export PORT={ContainerPort}")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir },
+                "oryxdevms/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task PythonStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"export PORT=9095")
+                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "oryx",
+                new[] { "build", appDir },
+                "oryxdevms/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    script
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
                 });
         }
     }
