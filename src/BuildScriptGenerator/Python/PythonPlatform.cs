@@ -6,11 +6,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -215,9 +217,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
         {
-            throw new NotImplementedException();
+            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + Name;
+            var tmpScriptPath = "/tmp/run.sh";
+
+            (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
+                scriptGenPath,
+                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", tmpScriptPath },
+                Environment.CurrentDirectory,
+                TimeSpan.FromSeconds(10));
+
+            if (exitCode != ProcessConstants.ExitSuccess)
+            {
+                _logger.LogError("{scriptGenPath} failed", scriptGenPath);
+                return string.Empty;
+            }
+
+            return File.ReadAllText(tmpScriptPath);
         }
 
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
