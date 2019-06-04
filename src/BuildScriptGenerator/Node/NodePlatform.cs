@@ -358,38 +358,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return isNodeModulesPackaged;
         }
 
-        private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)
-        {
-            var command = string.Empty;
-            if (!string.IsNullOrWhiteSpace(options.CustomServerCommand))
-            {
-                _logger.LogInformation("Using custom server command {nodeCommand}", options.CustomServerCommand);
-                command = $"{options.CustomServerCommand.Trim()} {file}";
-            }
-            else
-            {
-                switch (options.DebuggingMode)
-                {
-                    case DebuggingMode.Standard:
-                        _logger.LogInformation("Debugging in standard mode");
-                        command = $"node --inspect {file}";
-                        break;
-
-                    case DebuggingMode.Break:
-                        _logger.LogInformation("Debugging in break mode");
-                        command = $"node --inspect-brk {file}";
-                        break;
-
-                    case DebuggingMode.None:
-                        _logger.LogInformation("Running without debugging");
-                        command = $"node {file}";
-                        break;
-                }
-            }
-
-            return command;
-        }
-
         private string GetNpmVersion(dynamic packageJson)
         {
             string npmVersionRange = packageJson?.engines?.npm?.Value;
