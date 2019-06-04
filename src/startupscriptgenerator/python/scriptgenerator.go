@@ -121,6 +121,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest co
 				scriptBuilder.WriteString(virtualEnvCommand)
 
 			} else {
+				packageDirName = "__oryx_packages__"
 				// We just warn the user and don't error out, since we still can run the default website.
 				scriptBuilder.WriteString("  echo \"WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\"\n")
 			}
@@ -150,7 +151,9 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest co
 			virtualEnvCommand := getVirtualEnvironmentCommand()
 			scriptBuilder.WriteString(virtualEnvCommand)
 		}
-	} else if packageDirName != "" {
+	}
+
+	if packageDirName != "" {
 		packageDir := filepath.Join(gen.SourcePath, packageDirName)
 		if common.PathExists(packageDir) {
 			scriptBuilder.WriteString("packageDir=\"" + packageDir + "\"\n")
@@ -165,9 +168,6 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest co
 			// We just warn the user and don't error out, since we still can run the default website.
 			scriptBuilder.WriteString("  echo \"WARNING: Could not find package directory '" + packageDir + "'.\"\n")
 		}
-	} else {
-		// We just warn the user and don't error out, since we still can run the default website.
-		scriptBuilder.WriteString("  echo \"WARNING: Values for package directory name and virtual environment are empty.\"\n")
 	}
 
 	return scriptBuilder.String()

@@ -34,9 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
         internal const string ZipOption = "zip";
         internal const string TarGzOption = "tar-gz";
-
-        private const string DefaultTargetPackageDirectory = "__oryx_packages__";
-
+        
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
@@ -214,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public bool IsCleanRepo(ISourceRepo repo)
         {
             // TODO: support venvs
-            return !repo.DirExists(DefaultTargetPackageDirectory);
+            return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
         public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
@@ -275,7 +273,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var excludeDirs = new List<string>();
 
-            excludeDirs.Add(DefaultTargetPackageDirectory);
+            excludeDirs.Add(PythonConstants.DefaultTargetPackageDirectory);
 
             var virtualEnvName = GetVirtualEnvironmentName(context);
             if (!string.IsNullOrEmpty(virtualEnvName))
