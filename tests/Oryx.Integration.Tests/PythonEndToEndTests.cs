@@ -264,10 +264,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory(Skip = "AB#896178")]
-        [InlineData("oryxdevms/pack-builder")]
-        [InlineData("heroku/buildpacks")]
-        public async Task CanBuildAndRunPythonApp_WithBuildpack(string builder)
+        [Fact(Skip = "AB#896178")]
+        public async Task CanBuildAndRunPythonApp_WithBuildpack()
         {
             var appName = "flask-app";
 
@@ -276,7 +274,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 CreateAppVolume(appName),
                 "testpy37app",
-                builder,
+                Constants.OryxBuildpackBuilderImageName,
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");

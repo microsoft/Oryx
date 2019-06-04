@@ -7,6 +7,9 @@ namespace Microsoft.Oryx.Integration.Tests
 {
     internal class Constants
     {
+        public const string OryxBuildpackBuilderImageName = "oryxdevms/pack-builder";
+        public const string HerokuBuildpackBuilderImageName = "heroku/buildpacks:18";
+
         // Common database settings. Use these settings for all database related tests and also make sure
         // the sample apps use these to connect.
 

@@ -10,7 +10,7 @@ layersDir=$1
 platformDir=$2
 planPath=$3
 bpLaunchFile="$1/launch.toml"
-runFile="./oryx-run.sh"
+runFile="oryx-run.sh"
 
 # Extract the name of the first platform specified in the build plan
 firstPlatform=$(head -n 1 /dev/stdin)
@@ -22,5 +22,6 @@ oryx buildpack-build .
 
 echo "# Running 'oryx run-script' in '`pwd`'..."
 oryx run-script --platform $firstPlatform --output $runFile
+chmod +x $runFile
 
 echo "processes = [{ type = \"web\", command = \"$runFile\" }]" > $bpLaunchFile

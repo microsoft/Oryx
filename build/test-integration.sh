@@ -23,6 +23,10 @@ echo
 testProjectName="Oryx.Integration.Tests"
 cd "$TESTS_SRC_DIR/$testProjectName"
 
+# These two images are used in Buildpacks-related integration tests
+docker pull heroku/buildpacks:18
+docker pull heroku/pack:18
+
 dotnet test \
     $testCaseFilter \
     --test-adapter-path:. \

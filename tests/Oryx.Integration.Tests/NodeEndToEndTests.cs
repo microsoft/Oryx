@@ -254,8 +254,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("oryxdevms/pack-builder")]
-        [InlineData("heroku/buildpacks")]
+        [InlineData(Constants.OryxBuildpackBuilderImageName)]
+        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
         public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
         {
             var appName = "webfrontend";

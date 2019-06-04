@@ -72,8 +72,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory(Skip = "AB#896178")]
-        [InlineData("oryxdevms/pack-builder")]
+        [Theory]
+        // [InlineData(Constants.OryxBuildpackBuilderImageName)] // AB#896178
+        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
         // Twig does not support PHP < 7
         public async Task TwigExample_WithBuildpack(string builder)
         {
