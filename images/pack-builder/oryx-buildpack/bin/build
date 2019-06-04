@@ -12,18 +12,15 @@ planPath=$3
 bpLaunchFile="$1/launch.toml"
 runFile="./oryx-run.sh"
 
-echo "# Running 'oryx buildpack-build .' in '`pwd`'..."
+# Extract the name of the first platform specified in the build plan
+firstPlatform=$(head -n 1 /dev/stdin)
+firstPlatform=${firstPlatform:1} # Remove [
+firstPlatform=${firstPlatform%]} # Remove ]
 
+echo "# Running 'oryx buildpack-build .' in '`pwd`'..."
 oryx buildpack-build .
 
-cat $3
-
 echo "# Running 'oryx run-script' in '`pwd`'..."
-# TODO: make platform dynamic, based on build
-oryx run-script --platform nodejs --output $runFile
-
-echo "# Generated run script:"
-cat $runFile
-echo
+oryx run-script --platform $firstPlatform --output $runFile
 
 echo "processes = [{ type = \"web\", command = \"$runFile\" }]" > $bpLaunchFile

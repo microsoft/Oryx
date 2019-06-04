@@ -71,9 +71,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            console.WriteLine("# Stdin:");
-            console.WriteLine(console.In.ReadToEnd());
-            console.WriteLine("# End Stdin");
             return base.Execute(serviceProvider, console);
         }
     }
