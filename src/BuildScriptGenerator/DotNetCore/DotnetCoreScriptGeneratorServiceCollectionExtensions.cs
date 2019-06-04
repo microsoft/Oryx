@@ -10,18 +10,18 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal static class DotnetCoreScriptGeneratorServiceCollectionExtensions
+    internal static class DotNetCoreScriptGeneratorServiceCollectionExtensions
     {
-        public static IServiceCollection AddDotnetCoreScriptGeneratorServices(this IServiceCollection services)
+        public static IServiceCollection AddDotNetCoreScriptGeneratorServices(this IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<ILanguageDetector, DotnetCoreLanguageDetector>());
+                ServiceDescriptor.Singleton<ILanguageDetector, DotNetCoreLanguageDetector>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IProgrammingPlatform, DotnetCorePlatform>());
+                ServiceDescriptor.Singleton<IProgrammingPlatform, DotNetCorePlatform>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IConfigureOptions<DotnetCoreScriptGeneratorOptions>, DotnetCoreScriptGeneratorOptionsSetup>());
-            services.AddSingleton<IDotnetCoreVersionProvider, DotnetCoreVersionProvider>();
-            services.AddScoped<DotnetCoreLanguageDetector>();
+                ServiceDescriptor.Singleton<IConfigureOptions<DotNetCoreScriptGeneratorOptions>, DotNetCoreScriptGeneratorOptionsSetup>());
+            services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
+            services.AddScoped<DotNetCoreLanguageDetector>();
             services.AddSingleton<IAspNetCoreWebAppProjectFileProvider, DefaultAspNetCoreWebAppProjectFileProvider>();
             return services;
         }

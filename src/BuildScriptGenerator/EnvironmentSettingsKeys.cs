@@ -22,9 +22,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public const string PostBuildCommand = "POST_BUILD_COMMAND";
 
-        public const string DotnetCoreDefaultVersion = "ORYX_DOTNETCORE_DEFAULT_VERSION";
+        public const string DotNetCoreDefaultVersion = "ORYX_DOTNETCORE_DEFAULT_VERSION";
 
-        public const string DotnetCoreSupportedVersions = "DOTNETCORE_SUPPORTED_VERSIONS";
+        public const string DotNetCoreSupportedVersions = "DOTNETCORE_SUPPORTED_VERSIONS";
 
         public const string Project = "PROJECT";
 

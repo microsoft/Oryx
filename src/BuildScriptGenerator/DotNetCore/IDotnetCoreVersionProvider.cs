@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// <summary>
     /// Abstraction listing the supported .NET Core versions.
     /// </summary>
-    public interface IDotnetCoreVersionProvider
+    public interface IDotNetCoreVersionProvider
     {
         IEnumerable<string> SupportedDotNetCoreVersions { get; }
     }

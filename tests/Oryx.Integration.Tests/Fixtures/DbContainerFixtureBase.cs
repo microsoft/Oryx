@@ -107,7 +107,8 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
 
         protected virtual string GetSampleDataInsertionSql()
         {
-            var sb = new StringBuilder($"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
+            var sb = new StringBuilder(
+                $"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
             foreach (var record in SampleData)
             {
                 sb.Append($" INSERT INTO Products VALUES('{record.Name}');");

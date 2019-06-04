@@ -15,7 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="ctx">The <see cref="BuildScriptGeneratorContext"/> with parameters for the script.</param>
         /// <param name="script">The generated script if the operation was successful.</param>
-        /// <param name="checkerMessageSink">If specified, messages from checkers will be appended to this list.</param>
+        /// <param name="checkerMessageSink">
+        /// If specified, messages from checkers will be appended to this list.
+        /// </param>
         void GenerateBashScript(
             BuildScriptGeneratorContext ctx,
             out string script,

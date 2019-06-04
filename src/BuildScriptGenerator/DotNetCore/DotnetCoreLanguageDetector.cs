@@ -14,18 +14,18 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotnetCoreLanguageDetector : ILanguageDetector
+    internal class DotNetCoreLanguageDetector : ILanguageDetector
     {
-        private readonly IDotnetCoreVersionProvider _versionProvider;
-        private readonly DotnetCoreScriptGeneratorOptions _scriptGeneratorOptions;
+        private readonly IDotNetCoreVersionProvider _versionProvider;
+        private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
         private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
-        private readonly ILogger<DotnetCoreLanguageDetector> _logger;
+        private readonly ILogger<DotNetCoreLanguageDetector> _logger;
 
-        public DotnetCoreLanguageDetector(
-            IDotnetCoreVersionProvider versionProvider,
-            IOptions<DotnetCoreScriptGeneratorOptions> options,
+        public DotNetCoreLanguageDetector(
+            IDotNetCoreVersionProvider versionProvider,
+            IOptions<DotNetCoreScriptGeneratorOptions> options,
             IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
-            ILogger<DotnetCoreLanguageDetector> logger)
+            ILogger<DotNetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
             _scriptGeneratorOptions = options.Value;
@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotnetCoreConstants.TargetFrameworkElementXPathExpression);
+                DotNetCoreConstants.TargetFrameworkElementXPathExpression);
             var targetFramework = targetFrameworkElement?.Value;
             if (string.IsNullOrEmpty(targetFramework))
             {
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             // If a repo explicitly specifies an sdk version, then just use it as it is.
             string languageVersion = null;
-            if (sourceRepo.FileExists(DotnetCoreConstants.GlobalJsonFileName))
+            if (sourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
             {
                 var globalJson = GetGlobalJsonObject(sourceRepo);
                 var sdkVersion = globalJson?.sdk?.version?.Value as string;
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (languageVersion == null)
             {
                 _logger.LogDebug(
-                    $"Could not find a {DotnetCoreConstants.LanguageName} version corresponding to 'TargetFramework'" +
+                    $"Could not find a {DotNetCoreConstants.LanguageName} version corresponding to 'TargetFramework'" +
                     $" '{targetFramework}'.");
                 return null;
             }
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             return new LanguageDetectorResult
             {
-                Language = DotnetCoreConstants.LanguageName,
+                Language = DotNetCoreConstants.LanguageName,
                 LanguageVersion = languageVersion
             };
         }
@@ -90,22 +90,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             switch (targetFramework)
             {
-                case DotnetCoreConstants.NetCoreApp10:
+                case DotNetCoreConstants.NetCoreApp10:
                     return DotNetCoreRuntimeVersions.NetCoreApp10;
 
-                case DotnetCoreConstants.NetCoreApp11:
+                case DotNetCoreConstants.NetCoreApp11:
                     return DotNetCoreRuntimeVersions.NetCoreApp11;
 
-                case DotnetCoreConstants.NetCoreApp20:
+                case DotNetCoreConstants.NetCoreApp20:
                     return DotNetCoreRuntimeVersions.NetCoreApp20;
 
-                case DotnetCoreConstants.NetCoreApp21:
+                case DotNetCoreConstants.NetCoreApp21:
                     return DotNetCoreRuntimeVersions.NetCoreApp21;
 
-                case DotnetCoreConstants.NetCoreApp22:
+                case DotNetCoreConstants.NetCoreApp22:
                     return DotNetCoreRuntimeVersions.NetCoreApp22;
 
-                case DotnetCoreConstants.NetCoreApp30:
+                case DotNetCoreConstants.NetCoreApp30:
                     return DotNetCoreRuntimeVersions.NetCoreApp30;
             }
 
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             dynamic globalJson = null;
             try
             {
-                var jsonContent = sourceRepo.ReadFile(DotnetCoreConstants.GlobalJsonFileName);
+                var jsonContent = sourceRepo.ReadFile(DotNetCoreConstants.GlobalJsonFileName);
                 globalJson = JsonConvert.DeserializeObject(jsonContent);
             }
             catch (Exception ex)
@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // in the package.json file.
                 _logger.LogError(
                     ex,
-                    $"An error occurred while trying to deserialize {DotnetCoreConstants.GlobalJsonFileName}");
+                    $"An error occurred while trying to deserialize {DotNetCoreConstants.GlobalJsonFileName}");
             }
 
             return globalJson;

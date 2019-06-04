@@ -1,4 +1,9 @@
-﻿using System.Linq;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using System.Linq;
 using Scriban.Syntax;
 using Xunit;
 
@@ -21,7 +26,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             foreach (string name in requiredTemplates)
             {
-                Assert.True(existingResources.Count(s => s.EndsWith(name)) == 1, $"Could not find resource \"{name}\"");
+                Assert.True(
+                    existingResources.Count(s => s.EndsWith(name)) == 1, $"Could not find resource \"{name}\"");
             }
         }
 
@@ -29,18 +35,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void ExtraFunctions()
         {
             string template = "{{ if IsNotBlank SomeVar }}not blank{{ else }}blank{{ end }}";
-            Assert.Equal("blank",     TemplateHelpers.RenderString(template,         new { SomeVar = "" }));
-            Assert.Equal("not blank", TemplateHelpers.RenderString(template,         new { SomeVar = "bla" }));
+            Assert.Equal("blank", TemplateHelpers.RenderString(template, new { SomeVar = "" }));
+            Assert.Equal("not blank", TemplateHelpers.RenderString(template, new { SomeVar = "bla" }));
 
             string templateWithPipe = "{{ if SomeVar | IsNotBlank }}not blank{{ else }}blank{{ end }}";
-            Assert.Equal("blank",     TemplateHelpers.RenderString(templateWithPipe, new { SomeVar = "" }));
+            Assert.Equal("blank", TemplateHelpers.RenderString(templateWithPipe, new { SomeVar = "" }));
             Assert.Equal("not blank", TemplateHelpers.RenderString(templateWithPipe, new { SomeVar = "bla" }));
         }
 
         [Fact]
         public void Render_Throws_WhenNonExistentVariableIsUsed()
         {
-            Assert.Throws<ScriptRuntimeException>(() => TemplateHelpers.RenderString("Hello {{ World }}!", new { Foo = "Bar" }));
+            Assert.Throws<ScriptRuntimeException>(
+                () => TemplateHelpers.RenderString("Hello {{ World }}!", new { Foo = "Bar" }));
         }
 
         [Fact]
