@@ -30,6 +30,9 @@ namespace Microsoft.Oryx.Integration.Tests
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
+
+        protected DockerVolume CreateAppVolume(string appName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", appName));
     }
 
     [Trait("category", "python")]
@@ -48,8 +51,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var virtualEnvName = "antenv";
             var buildScript = new ShellScriptBuilder()
@@ -94,8 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var virtualEnvName = "antenv";
             var buildScript = new ShellScriptBuilder()
@@ -145,8 +146,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "python2-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
             var script = new ShellScriptBuilder()
@@ -181,8 +181,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "python2-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var buildScript = new ShellScriptBuilder()
@@ -236,8 +235,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -272,8 +270,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "flask-app";
             var virtualEnvName = "antenv";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -312,8 +309,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "flask-app";
             var virtualEnvName = "antenv";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirPath = Directory.CreateDirectory(
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
@@ -364,8 +360,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -408,8 +403,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appOutputDirPath = Directory.CreateDirectory(
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
@@ -478,8 +472,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -513,8 +506,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "tweeter3";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -550,8 +542,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv";
 
@@ -610,8 +601,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv3.6";
             var buildScript = new ShellScriptBuilder()
@@ -662,8 +652,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -780,8 +769,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "shapely-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -818,8 +806,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             const string packageDir = "orx_packages";
             var appName = "shapely-flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -863,8 +850,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -899,8 +885,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "flask-app";
-            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
