@@ -5,8 +5,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -17,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultRunScriptGenerator> _logger;
 
-        public RunScriptGenerator(IEnumerable<IProgrammingPlatform> platforms, ILogger<DefaultRunScriptGenerator> logger)
+        public DefaultRunScriptGenerator(IEnumerable<IProgrammingPlatform> platforms, ILogger<DefaultRunScriptGenerator> logger)
         {
             _programmingPlatforms = platforms;
             _logger = logger;
@@ -42,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform platform, RunScriptGeneratorOptions opts)
         {
             var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + platform.Name;
-            
+
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
                 scriptGenPath,
                 new[] { "-appPath", opts.SourceRepo.RootPath, "-output", TempScriptPath },

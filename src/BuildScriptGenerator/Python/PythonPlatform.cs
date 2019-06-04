@@ -6,13 +6,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -36,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
         internal const string ZipOption = "zip";
         internal const string TarGzOption = "tar-gz";
-        
+
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
