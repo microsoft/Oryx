@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(scriptContent),
+                new TestProgrammingPlatform(scriptContent, new[] { "1.0.0" }),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
             var expected = scriptContentWithCRLF.Replace("\r\n", "\n");
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(scriptContentWithCRLF),
+                new TestProgrammingPlatform(scriptContentWithCRLF, new[] { "1.0.0" }),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
