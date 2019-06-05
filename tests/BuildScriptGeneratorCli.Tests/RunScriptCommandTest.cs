@@ -4,15 +4,27 @@
 // --------------------------------------------------------------------------------------------
 
 using McMaster.Extensions.CommandLineUtils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class RunScriptCommandTest
     {
+        [Fact]
+        public void OnExecute_ShowsErrorExits_WhenNoPlatformSpecified()
+        {
+            // Arrange
+            var cmd = new RunScriptCommand();
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
+
+            // Assert
+            Assert.NotEqual(0, exitCode);
+            Assert.Contains($"Platform name is required", testConsole.StdError);
+        }
+
         [Fact]
         public void OnExecute_ShowsErrorExits_WhenPlatformDoesNotExist()
         {
@@ -29,9 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.NotEqual(0, exitCode);
-            var error = testConsole.StdError;
-            Assert.DoesNotContain("Usage:", error);
-            Assert.Contains($"Platform '{nonexistentPlatformName}' is not supported", error);
+            Assert.Contains($"Platform '{nonexistentPlatformName}' is not supported", testConsole.StdError);
         }
     }
 }
