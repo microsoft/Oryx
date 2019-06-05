@@ -10,10 +10,10 @@ def exception_handler(exc):
 
 class Database:
     def listProductNames(self):
-        host = os.getenv('DATABASE_HOST')
-        databaseName = os.getenv('DATABASE_NAME')
-        user = os.getenv('DATABASE_USERNAME')
-        password = os.getenv('DATABASE_PASSWORD')
+        host = os.getenv('SQLSERVER_DATABASE_HOST')
+        databaseName = os.getenv('SQLSERVER_DATABASE_NAME')
+        user = os.getenv('SQLSERVER_DATABASE_USERNAME')
+        password = os.getenv('SQLSERVER_DATABASE_PASSWORD')
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+host+';DATABASE='+databaseName+';UID='+user+';PWD='+ password)
         try:
             c = conn.cursor()

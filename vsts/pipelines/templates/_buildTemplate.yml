@@ -109,6 +109,11 @@ steps:
   inputs:
     scriptPath: ./build/test-integration.sh
     args: $(TestIntegrationCaseFilter)
+  env:
+    SQLSERVER_DATABASE_HOST: $(SQLSERVER-DATABASE-HOST)
+    SQLSERVER_DATABASE_NAME: $(SQLSERVER-DATABASE-NAME)
+    SQLSERVER_DATABASE_USERNAME: $(SQLSERVER-DATABASE-USERNAME)
+    SQLSERVER_DATABASE_PASSWORD: $(SQLSERVER-DATABASE-PASSWORD)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: CopyFiles@2
