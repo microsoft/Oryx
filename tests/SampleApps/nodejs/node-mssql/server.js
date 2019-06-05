@@ -4,13 +4,14 @@ var connection = require('tedious').Connection;
 var request = require('tedious').Request;
 
 app.get('/', function (req, res) {
-    //set up the connection information
+    // Create connection to database
     var config = {
-        userName: 'sa',
-        password: process.env.DATABASE_PASSWORD,
-        server: 'dbserver',
+        userName: process.env.SQLSERVER_DATABASE_USERNAME,
+        password: process.env.SQLSERVER_DATABASE_PASSWORD,
+        server: process.env.SQLSERVER_DATABASE_HOST,
         options: {
-            database: 'oryxdb'
+            database: process.env.SQLSERVER_DATABASE_NAME,
+            encrypt: true
         }
     }
     var conn = new connection(config);
@@ -42,6 +43,6 @@ app.get('/', function (req, res) {
     });
 })  
 
-var server = app.listen(8000, function () {
+var server = app.listen(process.env.PORT, function () {
     console.log("Listening on port %s...", server.address().port);
 });
