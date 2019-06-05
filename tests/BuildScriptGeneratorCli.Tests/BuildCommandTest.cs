@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
+        public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
             var buildCommand = new BuildCommand
