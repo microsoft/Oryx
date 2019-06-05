@@ -44,11 +44,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             return new BuildScriptSnippet { BashBuildScriptSnippet = script };
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {

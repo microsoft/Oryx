@@ -728,11 +728,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 return null;
             }
 
-            public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
-            {
-                throw new NotImplementedException();
-            }
-
             public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
                 BuildScriptGeneratorContext scriptGeneratorContext)
             {
