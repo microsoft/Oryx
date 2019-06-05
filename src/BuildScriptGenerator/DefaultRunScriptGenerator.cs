@@ -10,12 +10,13 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultRunScriptGenerator : IRunScriptGenerator
     {
-        private const string TempScriptPath = "/tmp/run.sh";
+        private readonly string _tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
 
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultRunScriptGenerator> _logger;
@@ -46,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
                 scriptGenPath,
-                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", TempScriptPath },
+                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", _tempScriptPath },
                 Environment.CurrentDirectory,
                 TimeSpan.FromSeconds(10));
 
@@ -56,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new Exception("{scriptGenPath} failed");
             }
 
-            return File.ReadAllText(TempScriptPath);
+            return File.ReadAllText(_tempScriptPath);
         }
     }
 }
