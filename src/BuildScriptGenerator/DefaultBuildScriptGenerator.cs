@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -133,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (!string.IsNullOrEmpty(ctx.Language))
             {
                 var selectedPlatform = enabledPlatforms
-                    .Where(p => string.Equals(ctx.Language, p.Name, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => ctx.Language.EqualsIgnoreCase(p.Name))
                     .FirstOrDefault();
 
                 if (selectedPlatform == null)

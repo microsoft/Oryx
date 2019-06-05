@@ -17,6 +17,11 @@ namespace Microsoft.Oryx.Common.Extensions
 
         private static readonly string UrlUserInfoReplacement = "***";
 
+        public static bool EqualsIgnoreCase(this string a, string b)
+        {
+            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// Replaces the userinfo subcomponent of URLs in a string with asterisks.
         /// </summary>

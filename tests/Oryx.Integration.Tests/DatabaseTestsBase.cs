@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -68,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal(
-                        _dbFixture.GetSampleDataAsJson(),
+                        DbContainerFixtureBase.GetSampleDataAsJson(),
                         data.Trim(),
                         ignoreLineEndingDifferences: true,
                         ignoreWhiteSpaceDifferences: true);

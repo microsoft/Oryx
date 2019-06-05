@@ -13,6 +13,7 @@ using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -166,7 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 DotNetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
             sdkName = sdkNameAttributeValue as string;
 
-            return string.Equals(sdkName, expectedWebSdkName, StringComparison.OrdinalIgnoreCase);
+            return sdkName.EqualsIgnoreCase(expectedWebSdkName);
         }
 
         // To enable unit testing

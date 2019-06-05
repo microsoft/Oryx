@@ -48,35 +48,3 @@ README](../README.md#supported-runtimes).
 
 [Node.js]: https://github.com/nodejs/docker-node
 [Python]: https://github.com/docker-library/python
-
-# Azure Web Apps runtimes and versions
-
-Runtime types and versions in Azure Web Apps are not necessarily the same as
-those supported by Oryx.  Web App runtimes and versions can be listed with `az
-webapp list-runtimes --linux`.
-
-The ultimate type and version of your app's runtime in App Service is
-determined by the value of `LinuxFxVersion` in your [site config][]. Set the
-type and version during app creation through the `--runtime` parameter of `az
-webapp create`, e.g. `az webapp create --name my-app --runtime 'NODE|10.14'`.
-
-Check the current configured runtime type and version with `az webapp config
-show ...`.
-
-Change the runtime type and version with the following script:
-
-```bash
-app_name="your_app_name"
-app_group="your_app_group"
-web_id=$(az webapp show \
-    --name "$app_name" \
-    --resource-group "$app_group" \
-    --output tsv --query id)
-
-runtime='NODE|10.14'
-az webapp config set \
-    --ids $web_id \
-    --linux-fx-version "$runtime"
-```
-
-[site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig

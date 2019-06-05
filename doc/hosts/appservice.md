@@ -35,10 +35,87 @@ designed for [storage][], which might also include backups, replication, and muc
 [Kudu]: https://github.com/azure-App-Service/kudulite
 [storage]: https://azure.microsoft.com/en-us/product-categories/storage/
 
+## Configuration
+
+Within Azure App Service, Oryx's environment variables are set via [App
+Settings][].
+
+List and modify these App Settings with the [az CLI][] using the following
+commands:
+
+```bash
+app_group=your-group
+app_name=your-app
+
+# list current settings
+az webapp config appsettings list \
+  --resource-group $app_group --name $app_name \
+  --output table
+
+# replace current settings
+az webapp config appsettings set \
+    --resource-group $app_group --name $app_name \
+    --settings \
+      "settingA=${settingA}" \
+      "settingB=${settingB}"
+```
+
+App Service adds the following settings that govern build:
+
+Setting name                        | Description                                                    | Example
+------------------------------------|----------------------------------------------------------------|------------
+COMMAND                             | provide an alternate build-and-run script. Bypasses automatic build completely. | "repo/path/to/script.sh"
+ENABLE\_ORYX\_BUILD                 | if `true`, use the Oryx build system instead of the legacy Kudu system | 
+SCM\_DO\_BUILD\_DURING\_DEPLOYMENT` | if `false`, bypass automatic build |
+
+For the complete list of configuration options available, including how to enable
+multiple platforms, please check our [configuration page](../configuration.md).
+
+### Startup file
+
+Within App Service, to explicitly specify a start script use the
+`--startup-file` parameter of `az webapp create ...` or `az webapp config set
+...`.
+
+[App Settings]: https://docs.microsoft.com/en-us/azure/app-service/web-sites-configure#app-settings
+[az CLI]: https://github.com/Azure/azure-cli
+
+## Runtimes and versions
+
+Runtime types and versions in Azure Web Apps are not necessarily the same as
+those supported by Oryx.  Web App runtimes and versions can be listed with `az
+webapp list-runtimes --linux`.
+
+The ultimate type and version of your app's runtime in App Service is
+determined by the value of `LinuxFxVersion` in your [site config][]. Set the
+type and version during app creation through the `--runtime` parameter of `az
+webapp create`, e.g. `az webapp create --name my-app --runtime 'NODE|10.14'`.
+
+Check the current configured runtime type and version with `az webapp config
+show ...`.
+
+Change the runtime type and version with the following script:
+
+```bash
+app_name="your_app_name"
+app_group="your_app_group"
+web_id=$(az webapp show \
+    --name "$app_name" \
+    --resource-group "$app_group" \
+    --output tsv --query id)
+
+runtime='NODE|10.14'
+az webapp config set \
+    --ids $web_id \
+    --linux-fx-version "$runtime"
+```
+
+[site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig
+
 ## Node.js
 
-In general, Node.js applications have a large number of package dependencies, either directly or indirectly,
-that is, the dependencies of their dependencies. Since each package might contain several `.js` files, fetching
+In general, Node.js applications have a large number of direct and indirect dependencies, that is, 
+the packages it uses and their dependencies. Each package might contain several `.js` files, thus fetching
 dependencies means a lot of disk I/O operations. Since in the App Service model the application is stored in a 
 network volume, the `/home` directory, fetching and storing the packages alongside the application in 
 `/home/site/wwwroot` means a lot of I/O operations would have to go through the network. 
@@ -70,4 +147,3 @@ location other than `/home/site/wwwroot`.
 When using this solution, you should not have hardcoded references to files that include `/home/site/wwwroot` in 
 the path, for example in custom startup scripts. Alternatively, you can just reference those files by its relative
 path, removing `/home/site/wwwroot` from it.
-git lo
