@@ -97,7 +97,7 @@ docker run --detach --rm \
 
 # Components
 
-Oryx is consists of a build image, a collection of runtime images, a build script generator, and a collection of
+Oryx consists of a build image, a collection of runtime images, a build script generator, and a collection of
 startup script generators. For more details, refer to our [architecture](./doc/architecture.md) page.
 
 # Contributing
