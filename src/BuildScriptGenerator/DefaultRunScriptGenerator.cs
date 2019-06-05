@@ -35,6 +35,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions opts)
         {
+            if (opts.SourceRepo == null)
+            {
+                throw new ArgumentNullException(nameof(opts.SourceRepo), "Source repository must be supplied.");
+            }
+
             var targetPlatform = _programmingPlatforms
                 .Where(p => p.Name.EqualsIgnoreCase(targetPlatformName))
                 .FirstOrDefault();
