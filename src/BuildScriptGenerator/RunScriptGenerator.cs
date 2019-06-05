@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -21,11 +22,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions options)
         {
-            var targetPlatform = _programmingPlatforms.Where(
-                p => string.Equals(
-                    p.Name,
-                    targetPlatformName,
-                    StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            var targetPlatform = _programmingPlatforms
+                .Where(p => p.Name.EqualsIgnoreCase(targetPlatformName))
+                .FirstOrDefault();
 
             if (targetPlatform == null)
             {
