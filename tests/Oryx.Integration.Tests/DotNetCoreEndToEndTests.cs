@@ -840,6 +840,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"cd {defaultAppDir} && dotnet publish -c Release -o {defaultAppDir}/output")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddCommand(
                 $"oryx -appPath {appOutputDir} -defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
                 $"-bindPort {ContainerPort}")
@@ -918,6 +919,55 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("Running default web app", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenaming()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var renamedAppName = $"{NetCoreApp21WebApp}-renamed";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               // Rename the project file to get different set of publish output from the earlier build
+               .AddCommand($"mv {appDir}/{NetCoreApp21WebApp}.csproj {appDir}/{renamedAppName}.csproj")
+               // Rebuild again
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .AddFileExistsCheck($"{appOutputDir}/{NetCoreApp21WebApp}.dll")
+               .AddFileExistsCheck($"{appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json")
+               .AddFileExistsCheck($"{appOutputDir}/{renamedAppName}.dll")
+               .AddFileExistsCheck($"{appOutputDir}/{renamedAppName}.runtimeconfig.json")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
+                    Assert.Contains($"Location: {appOutputDir}/{renamedAppName}.dll", data);
                 });
         }
     }
