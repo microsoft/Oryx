@@ -12,11 +12,15 @@ namespace Microsoft.Oryx.Common.Extensions
         [Fact]
         public void EqualsIgnoreCase_Sanity()
         {
-            Assert.True(StringExtensions.EqualsIgnoreCase("abc", "aBc"));
+            Assert.True("abc".EqualsIgnoreCase("aBc"));
 
-            Assert.True(StringExtensions.EqualsIgnoreCase("abc", "ABC"));
+            Assert.True("abc".EqualsIgnoreCase("ABC"));
 
-            Assert.False(StringExtensions.EqualsIgnoreCase("bl", "bla"));
+            Assert.False("bl".EqualsIgnoreCase("bla"));
+
+            string s = null;
+            Assert.False(s.EqualsIgnoreCase("bla"));
+            Assert.False("bla".EqualsIgnoreCase(s));
         }
 
         [Fact]

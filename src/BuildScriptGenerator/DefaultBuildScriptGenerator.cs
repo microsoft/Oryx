@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (!string.IsNullOrEmpty(ctx.Language))
             {
                 var selectedPlatform = enabledPlatforms
-                    .Where(p => StringExtensions.EqualsIgnoreCase(ctx.Language, p.Name))
+                    .Where(p => ctx.Language.EqualsIgnoreCase(p.Name))
                     .FirstOrDefault();
 
                 if (selectedPlatform == null)

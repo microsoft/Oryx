@@ -167,7 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 DotNetCoreConstants.ProjectSdkElementNameAttributeValueXPathExpression);
             sdkName = sdkNameAttributeValue as string;
 
-            return StringExtensions.EqualsIgnoreCase(sdkName, expectedWebSdkName);
+            return sdkName.EqualsIgnoreCase(expectedWebSdkName);
         }
 
         // To enable unit testing

@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Common.Extensions
 
         private static readonly string UrlUserInfoReplacement = "***";
 
-        public static bool EqualsIgnoreCase(string a, string b)
+        public static bool EqualsIgnoreCase(this string a, string b)
         {
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
         }

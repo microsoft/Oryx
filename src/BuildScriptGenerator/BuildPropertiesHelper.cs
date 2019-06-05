@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
-                if (StringExtensions.EqualsIgnoreCase("true", value))
+                if (value.EqualsIgnoreCase("true"))
                 {
                     return true;
                 }

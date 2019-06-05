@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 // default to tar.gz if the property was provided with no value.
                 if (string.IsNullOrEmpty(compressVirtualEnvOption) ||
-                    StringExtensions.EqualsIgnoreCase(compressVirtualEnvOption, TarGzOption))
+                    compressVirtualEnvOption.EqualsIgnoreCase(TarGzOption))
                 {
                     compressedVirtualEnvFileName = string.Format(
                         PythonConstants.TarGzVirtualEnvFileNameFormat,
@@ -269,7 +269,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     compressVirtualEnvCommand = $"tar -zcf";
                     isVirtualEnvPackaged = true;
                 }
-                else if (StringExtensions.EqualsIgnoreCase(compressVirtualEnvOption, ZipOption))
+                else if (compressVirtualEnvOption.EqualsIgnoreCase(ZipOption))
                 {
                     compressedVirtualEnvFileName = string.Format(
                         PythonConstants.ZipVirtualEnvFileNameFormat,
@@ -288,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var enableCollectStatic = true;
             var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
                 EnvironmentSettingsKeys.DisableCollectStatic);
-            if (StringExtensions.EqualsIgnoreCase(disableCollectStaticEnvValue, "true"))
+            if (disableCollectStaticEnvValue.EqualsIgnoreCase("true"))
             {
                 enableCollectStatic = false;
             }

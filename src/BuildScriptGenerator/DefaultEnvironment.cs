@@ -41,11 +41,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool? GetBoolEnvironmentVariable(string name)
         {
             var variable = GetEnvironmentVariable(name);
-            if (StringExtensions.EqualsIgnoreCase(variable, "true"))
+            if (variable.EqualsIgnoreCase("true"))
             {
                 return true;
             }
-            else if (StringExtensions.EqualsIgnoreCase(variable, "false"))
+            else if (variable.EqualsIgnoreCase("false"))
             {
                 return false;
             }
