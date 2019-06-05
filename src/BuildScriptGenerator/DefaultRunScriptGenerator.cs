@@ -14,6 +14,10 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
+    /// <summary>
+    /// Runs the run script generator for the target platform.
+    /// Assumes these external binaries are named exactly as their corresponding platforms.
+    /// </summary>
     internal class DefaultRunScriptGenerator : IRunScriptGenerator
     {
         private readonly string _tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
@@ -21,7 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultRunScriptGenerator> _logger;
 
-        public DefaultRunScriptGenerator(IEnumerable<IProgrammingPlatform> platforms, ILogger<DefaultRunScriptGenerator> logger)
+        public DefaultRunScriptGenerator(
+            IEnumerable<IProgrammingPlatform> platforms,
+            ILogger<DefaultRunScriptGenerator> logger)
         {
             _programmingPlatforms = platforms;
             _logger = logger;
@@ -41,9 +47,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return RunStartupScriptGeneratorForPlatform(targetPlatform, opts);
         }
 
-        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform platform, RunScriptGeneratorOptions opts)
+        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform plat, RunScriptGeneratorOptions opts)
         {
-            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + platform.Name;
+            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + plat.Name;
 
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
                 scriptGenPath,
