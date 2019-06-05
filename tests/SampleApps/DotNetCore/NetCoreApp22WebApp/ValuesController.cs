@@ -23,11 +23,5 @@ namespace NetCoreApp22WebApp.Controllers
 
                 return responseContent;
         }
-
-        [HttpGet("executingDir")]
-        public ActionResult<string> ExecutingDir()
-        {
-            return $"App is running from directory: {Directory.GetCurrentDirectory()}";
-        }
     }
 }
