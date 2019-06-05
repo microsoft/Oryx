@@ -149,11 +149,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnablePython;

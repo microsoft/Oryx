@@ -5,21 +5,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal class RunScriptGenerator : IRunScriptGenerator
+    internal class DefaultRunScriptGenerator : IRunScriptGenerator
     {
-        private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
+        private const string TempScriptPath = "/tmp/run.sh";
 
-        public RunScriptGenerator(IEnumerable<IProgrammingPlatform> programmingPlatforms)
+        private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
+        private readonly ILogger<DefaultRunScriptGenerator> _logger;
+
+        public DefaultRunScriptGenerator(IEnumerable<IProgrammingPlatform> platforms, ILogger<DefaultRunScriptGenerator> logger)
         {
-            _programmingPlatforms = programmingPlatforms;
+            _programmingPlatforms = platforms;
+            _logger = logger;
         }
 
-        public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions options)
+        public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions opts)
         {
             var targetPlatform = _programmingPlatforms.Where(
                 p => string.Equals(
@@ -32,8 +39,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new UnsupportedLanguageException($"Platform '{targetPlatformName}' is not supported.");
             }
 
-            var runScript = targetPlatform.GenerateBashRunScript(options);
-            return runScript;
+            return RunStartupScriptGeneratorForPlatform(targetPlatform, opts);
+        }
+
+        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform platform, RunScriptGeneratorOptions opts)
+        {
+            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + platform.Name;
+
+            (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
+                scriptGenPath,
+                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", TempScriptPath },
+                Environment.CurrentDirectory,
+                TimeSpan.FromSeconds(10));
+
+            if (exitCode != ProcessConstants.ExitSuccess)
+            {
+                _logger.LogError("{scriptGenPath} returned {exitCode}", scriptGenPath, exitCode);
+                throw new Exception("{scriptGenPath} failed");
+            }
+
+            return File.ReadAllText(TempScriptPath);
         }
     }
 }

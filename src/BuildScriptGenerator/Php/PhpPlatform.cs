@@ -88,11 +88,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return true;
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
-        {
-            return string.Empty;
-        }
-
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
