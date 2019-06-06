@@ -14,20 +14,14 @@ namespace NetCoreApp22WebApp.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-                var responseContent = "Hello World!";
+            var responseContent = "Hello World!";
 
-// For verifying scenarios where we want to make sure this app is being using Debug configuration.
+            // For verifying scenarios where we want to make sure this app is being using Debug configuration.
 #if DEBUG
                 responseContent += " from Debug build.";
 #endif
 
-                return responseContent;
-        }
-
-        [HttpGet("executingDir")]
-        public ActionResult<string> ExecutingDir()
-        {
-            return $"App is running from directory: {Directory.GetCurrentDirectory()}";
+            return responseContent;
         }
     }
 }
