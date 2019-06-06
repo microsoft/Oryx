@@ -583,8 +583,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
-        public async Task Node_CreateReactAppSample_singleImage()
+        [Fact]
+        public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
             var appName = "create-react-app-sample";
@@ -605,7 +605,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "oryx",
                 buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -620,7 +620,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
         {
             // Arrange
@@ -650,7 +650,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "oryx",
                 buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -665,7 +665,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
@@ -691,7 +691,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "oryx",
                 buildArgs: new[] { "build", appDir, "-l", "nodejs", "--language-version", nodeVersion },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
