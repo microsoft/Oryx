@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             "--output",
             CommandOptionType.SingleValue,
-            Description = "[Optional] Path to the script to be generated. If not specified, will default to STDOUT.")]
+            Description = "[Optional] Path to which the script will be written. If not specified, will default to STDOUT.")]
         public string OutputPath { get; set; }
 
         public string[] RemainingArgs { get; }
