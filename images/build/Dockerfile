@@ -322,7 +322,7 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
-FROM golang:1.11-stretch as runScriptGens
+FROM golang:1.11-stretch as startupScriptGens
 
 WORKDIR /go/src/startupscriptgenerator/
 COPY src/startupscriptgenerator .
@@ -376,6 +376,8 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
+
+COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

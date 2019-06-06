@@ -632,9 +632,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --bindPort {ContainerPort}")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -678,9 +677,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"chmod -x ./{customStartupScriptName}")
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {customStartupScriptName} -- -userStartupCommand {customStartupScriptName}")
                 .AddCommand($"./{customStartupScriptName}")
                 .ToString();
 
@@ -715,14 +713,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
-            const string customStartupScriptCommand = "'npm start'";
+            const string customRunCommand = "'npm start'";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort} " +
+                            $"-userStartupCommand {customRunCommand}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
