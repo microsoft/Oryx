@@ -20,6 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class DefaultRunScriptGenerator : IRunScriptGenerator
     {
+        private static readonly TimeSpan RunScriptGeneratorTimeout = TimeSpan.FromSeconds(5);
+
         private readonly string _tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
 
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
@@ -56,11 +58,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + plat.Name;
 
+            var scriptGenArgs = new List<string> { "-appPath", opts.SourceRepo.RootPath, "-output", _tempScriptPath };
+            scriptGenArgs.AddRange(opts.PassThruArguments);
+
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
-                scriptGenPath,
-                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", _tempScriptPath },
-                Environment.CurrentDirectory,
-                TimeSpan.FromSeconds(10));
+                scriptGenPath, scriptGenArgs, Environment.CurrentDirectory, RunScriptGeneratorTimeout);
 
             if (exitCode != ProcessConstants.ExitSuccess)
             {

@@ -13,9 +13,13 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("run-script", Description = "Generate startup script.")]
+    [Command("run-script", Description = "Generate startup script.",
+        ThrowOnUnexpectedArgument = false, AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
+        [Argument(0, Description = "The application directory.")]
+        public string AppDir { get; set; } = ".";
+
         [Option(
             "--platform",
             CommandOptionType.SingleValue,
@@ -31,54 +35,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string PlatformVersion { get; set; }
 
         [Option(
-            "--appPath",
-            CommandOptionType.SingleValue,
-            Description = "The path to the application folder, e.g. '/home/site/wwwroot/'.")]
-        public string AppPath { get; set; } = ".";
-
-        [Option(
-            "--bindPort",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Port where the application will bind to.")]
-        public int BindPort { get; set; } = 8080;
-
-        [Option(
-            "--userStartupCommand",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Command that will be executed to start the application up.")]
-        public string UserStartupCommand { get; set; }
-
-        [Option(
-            "--defaultApp",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Path to a default file that will be executed if the entrypoint" +
-            " is not found. Ex: '/opt/startup/default-static-site.js'.")]
-        public string DefaultApp { get; set; }
-
-        [Option(
-            "--serverCmd",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Command to start the server, if different than the default," +
-            " e.g. 'pm2 start --no-daemon'.")]
-        public string ServerCmd { get; set; }
-
-        [Option(
-            "--debugMode",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Run the app in debug mode.")]
-        public DebuggingMode DebugMode { get; set; }
-
-        [Option(
-            "--debugPort",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Debug port.")]
-        public int DebugPort { get; set; }
-
-        [Option(
             "--output",
             CommandOptionType.SingleValue,
             Description = "[Optional] Path to the script to be generated. If not specified, will default to STDOUT.")]
         public string OutputPath { get; set; }
+
+        public string[] RemainingArgs { get; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -88,22 +50,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitFailure;
             }
 
-            AppPath = string.IsNullOrWhiteSpace(AppPath) ? "." : AppPath;
-            string appFullPath = Path.GetFullPath(AppPath);
-            string defaultAppFullPath = string.IsNullOrWhiteSpace(DefaultApp) ? null : Path.GetFullPath(DefaultApp);
+            string appPath = Path.GetFullPath(AppDir);
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var sourceRepo = new LocalSourceRepo(appFullPath, loggerFactory);
+            var sourceRepo = new LocalSourceRepo(appPath, loggerFactory);
 
             var options = new RunScriptGeneratorOptions
             {
-                CustomServerCommand = ServerCmd,
-                DebuggingMode = DebugMode,
-                DebugPort = DebugPort,
-                DefaultAppPath = defaultAppFullPath,
                 SourceRepo = sourceRepo,
-                UserStartupCommand = UserStartupCommand,
                 PlatformVersion = PlatformVersion,
-                BindPort = BindPort
+                PassThruArguments = RemainingArgs
             };
 
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
@@ -128,6 +83,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return ProcessConstants.ExitSuccess;
+        }
+
+        internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
+        {
+            if (!Directory.Exists(AppDir))
+            {
+                console.Error.WriteLine($"Error: Could not find the directory '{AppDir}'.");
+                return false;
+            }
+
+            return true;
         }
     }
 }
