@@ -10,17 +10,24 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
+    /// <summary>
+    /// Runs the run script generator for the target platform.
+    /// Assumes these external binaries are named exactly as their corresponding platforms.
+    /// </summary>
     internal class DefaultRunScriptGenerator : IRunScriptGenerator
     {
-        private const string TempScriptPath = "/tmp/run.sh";
+        private readonly string _tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
 
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultRunScriptGenerator> _logger;
 
-        public DefaultRunScriptGenerator(IEnumerable<IProgrammingPlatform> platforms, ILogger<DefaultRunScriptGenerator> logger)
+        public DefaultRunScriptGenerator(
+            IEnumerable<IProgrammingPlatform> platforms,
+            ILogger<DefaultRunScriptGenerator> logger)
         {
             _programmingPlatforms = platforms;
             _logger = logger;
@@ -28,11 +35,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions opts)
         {
-            var targetPlatform = _programmingPlatforms.Where(
-                p => string.Equals(
-                    p.Name,
-                    targetPlatformName,
-                    StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (opts.SourceRepo == null)
+            {
+                throw new ArgumentNullException(nameof(opts.SourceRepo), "Source repository must be supplied.");
+            }
+
+            var targetPlatform = _programmingPlatforms
+                .Where(p => p.Name.EqualsIgnoreCase(targetPlatformName))
+                .FirstOrDefault();
 
             if (targetPlatform == null)
             {
@@ -42,13 +52,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return RunStartupScriptGeneratorForPlatform(targetPlatform, opts);
         }
 
-        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform platform, RunScriptGeneratorOptions opts)
+        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform plat, RunScriptGeneratorOptions opts)
         {
-            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + platform.Name;
+            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + plat.Name;
 
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
                 scriptGenPath,
-                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", TempScriptPath },
+                new[] { "-appPath", opts.SourceRepo.RootPath, "-output", _tempScriptPath },
                 Environment.CurrentDirectory,
                 TimeSpan.FromSeconds(10));
 
@@ -58,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new Exception("{scriptGenPath} failed");
             }
 
-            return File.ReadAllText(TempScriptPath);
+            return File.ReadAllText(_tempScriptPath);
         }
     }
 }

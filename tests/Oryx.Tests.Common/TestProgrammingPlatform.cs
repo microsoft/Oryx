@@ -8,45 +8,52 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator;
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.Tests.Common
 {
-    internal class TestProgrammingPlatform : IProgrammingPlatform
+    public class TestProgrammingPlatform : IProgrammingPlatform
     {
-        private const string DefaultScriptContent = "#!/bin/bash\necho Hello World\n";
+        private readonly bool? _canGenerateScript;
         private readonly string _scriptContent;
+        private readonly ILanguageDetector _detector;
+        private bool _enabled;
+        private bool _platformIsEnabledForMultiPlatformBuild;
 
-        public TestProgrammingPlatform()
-            : this(scriptContent: null)
+        public TestProgrammingPlatform(
+            string languageName,
+            string[] languageVersions,
+            bool? canGenerateScript = null,
+            string scriptContent = null,
+            ILanguageDetector detector = null,
+            bool enabled = true,
+            bool platformIsEnabledForMultiPlatformBuild = true)
         {
-        }
-
-        public TestProgrammingPlatform(string scriptContent)
-        {
+            Name = languageName;
+            SupportedLanguageVersions = languageVersions;
+            _canGenerateScript = canGenerateScript;
             _scriptContent = scriptContent;
+            _detector = detector;
+            _enabled = enabled;
+            _platformIsEnabledForMultiPlatformBuild = platformIsEnabledForMultiPlatformBuild;
         }
 
-        public string Name => "test";
+        public string Name { get; }
 
-        public IEnumerable<string> SupportedLanguageVersions => new[] { "1.0.0" };
+        public IEnumerable<string> SupportedLanguageVersions { get; }
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            return new LanguageDetectorResult
+            return _detector.Detect(sourceRepo);
+        }
+
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            if (_canGenerateScript == true)
             {
-                Language = Name,
-                LanguageVersion = SupportedLanguageVersions.First()
-            };
-        }
+                return new BuildScriptSnippet { BashBuildScriptSnippet = _scriptContent };
+            }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            string script = string.IsNullOrEmpty(_scriptContent) ? DefaultScriptContent : _scriptContent;
-            return new BuildScriptSnippet { BashBuildScriptSnippet = script };
-        }
-
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
-        {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
@@ -68,7 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            return true;
+            return _enabled;
         }
 
         public void SetRequiredTools(
@@ -76,6 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             string targetPlatformVersion,
             IDictionary<string, string> toolsToVersion)
         {
+            toolsToVersion.Add(Name, SupportedLanguageVersions.First());
         }
 
         public void SetVersion(BuildScriptGeneratorContext context, string version)
@@ -84,7 +92,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            throw new NotImplementedException();
+            return _platformIsEnabledForMultiPlatformBuild;
         }
     }
 }

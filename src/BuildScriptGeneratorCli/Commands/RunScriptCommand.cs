@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (string.IsNullOrWhiteSpace(PlatformName))
             {
-                console.WriteLine("Platform name is required.");
+                console.Error.WriteLine("Platform name is required.");
                 return ProcessConstants.ExitFailure;
             }
 

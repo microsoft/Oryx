@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -61,8 +61,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-
                 .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -106,7 +104,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -149,8 +146,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -l python --language-version 2.7")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
                 .AddCommand(startupFile)
                 .ToString();
@@ -159,15 +158,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "2.7" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-2.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -191,7 +194,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -237,8 +239,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l python --language-version 3.7")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -247,15 +251,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -272,8 +280,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -p virtualenv_name={virtualEnvName}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -282,15 +292,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-p", $"virtualenv_name={virtualEnvName}" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -325,7 +339,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -362,7 +375,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -372,15 +388,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -418,8 +438,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -440,7 +459,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -474,8 +493,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l python --language-version 3.6")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -484,15 +505,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -508,8 +533,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "tweeter3";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -518,15 +545,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -555,7 +586,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddDirectoryDoesNotExistCheck("__oryx_packages__")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
@@ -608,7 +638,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddBuildCommand($"{appDir} -l python --language-version 3.6 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -654,8 +683,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l python --language-version 3.6")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -664,15 +695,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", "3.6" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -701,12 +736,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
-                .AddCommand($"cd {appDir}")
                 .AddBuildCommand($"{appDir} -l python --language-version 3.7")
                 .ToString();
 
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 // User would do this through app settings
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
@@ -771,8 +804,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "shapely-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l python --language-version {pythonVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -782,15 +817,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 imageVersion,
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -808,8 +847,11 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "shapely-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -l python --language-version {pythonVersion} -p packagedir={packageDir}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -819,15 +861,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir, "-l", "python", "--language-version", pythonVersion, "-p", $"packagedir={packageDir}" },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 imageVersion,
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -852,8 +898,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
                 .AddCommand($"oryx -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
@@ -863,15 +911,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {
@@ -887,8 +939,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -898,15 +952,19 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "oryx",
-                new[] { "build", appDir },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
                 "oryxdevms/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
                 {
                     "-c",
-                    script
+                    runScript
                 },
                 async (hostPort) =>
                 {

@@ -39,7 +39,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "dotnetcore")]
-    [Trait("platform", "dotnet")]
     public class DotNetCoreRuntimeVersion10Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion10Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -92,7 +91,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "dotnetcore")]
-    [Trait("platform", "dotnet")]
     public class DotNetCoreRuntimeVersion11Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion11Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -189,7 +187,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "dotnetcore")]
-    [Trait("platform", "dotnet")]
     public class DotNetCoreRuntimeVersion20Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion20Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -242,7 +239,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "dotnetcore")]
-    [Trait("platform", "dotnet")]
     public class DotNetCoreRuntimeVersion21Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion21Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -710,7 +706,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "dotnetcore")]
-    [Trait("platform", "dotnet")]
     public class DotNetCoreRuntimeVersion22Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion22Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -994,7 +989,6 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "dotnetcore")]
-    [Trait("platform", "dotnet")]
     public class DotNetCoreRuntimeVersion30Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion30Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
