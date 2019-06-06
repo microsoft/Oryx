@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
             var volume = DockerVolume.Create(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/oryx_publish_output";
+            var appOutputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
                 .ToString();
@@ -203,10 +203,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
-                .AddFileExistsCheck($"{appOutputDir}/oryx-manifest.toml")
+                .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
-                .AddCommand($"rm -f {appOutputDir}/oryx-manifest.toml")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/oryx-manifest.toml")
+                .AddCommand($"rm -f {appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -250,10 +250,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
-                .AddFileExistsCheck($"{appOutputDir}/oryx-manifest.toml")
+                .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
-                .AddCommand($"rm -f {appOutputDir}/oryx-manifest.toml")
-                .AddFileDoesNotExistCheck($"{appOutputDir}/oryx-manifest.toml")
+                .AddCommand($"rm -f {appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
