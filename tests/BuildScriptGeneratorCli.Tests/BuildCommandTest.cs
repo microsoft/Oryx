@@ -293,7 +293,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform("test", new[] { "1.0.0" }),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, detector: new TestLanguageDetector()),
                 scriptOnly: false);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);

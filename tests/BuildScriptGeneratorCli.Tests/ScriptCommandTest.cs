@@ -83,9 +83,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
-            var expected = scriptContentWithCRLF.Replace("\r\n", "\n");
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(scriptContentWithCRLF, new[] { "1.0.0" }),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF, new TestLanguageDetector()),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -95,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Contains(expected, testConsole.StdOutput);
+            Assert.Contains(scriptContentWithCRLF.Replace("\r\n", "\n"), testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
         }
 
