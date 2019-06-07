@@ -20,19 +20,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string SourceDir { get; set; }
 
         [Option(
-            "-l|--language <name>",
+            OptionTemplates.Platform,
             CommandOptionType.SingleValue,
             Description = "The name of the programming language being used in the provided source directory.")]
         public string Language { get; set; }
 
         [Option(
-            "--language-version <version>",
+            OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
             Description = "The version of programming language being used in the provided source directory.")]
         public string LanguageVersion { get; set; }
 
         [Option(
-            "-p|--property <key-value>",
+            OptionTemplates.Property,
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
