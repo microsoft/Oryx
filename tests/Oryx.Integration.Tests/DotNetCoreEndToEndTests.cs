@@ -107,7 +107,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
-                .AddCommand("cat /tmp/logfile.txt")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
