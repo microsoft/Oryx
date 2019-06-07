@@ -21,14 +21,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string AppDir { get; set; } = ".";
 
         [Option(
-            "--platform",
+            OptionTemplates.Platform,
             CommandOptionType.SingleValue,
             Description = "The name of the programming platform, e.g. 'nodejs'.",
             ValueName = "Platform name")]
         public string PlatformName { get; set; }
 
         [Option(
-            "--platform-version|-v",
+            OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
             Description = "The version of the platform to run the application on, e.g. '10' for nodejs.",
             ValueName = "PlatformVersion")]
