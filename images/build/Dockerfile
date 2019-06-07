@@ -333,6 +333,8 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 
 # GOPATH is set to "/go" in the base image, so no need to set it again
+RUN ./prepare-go-env.sh
+
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
 RUN ./build.sh php        /opt/startupcmdgen/php
