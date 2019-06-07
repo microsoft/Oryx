@@ -1,0 +1,114 @@
+parameters:
+  ascName: OryxMCR
+  acrName: oryxdevmcr.azurecr.io
+  acrProdName: oryxmcr.azurecr.io
+
+steps:
+
+- checkout: self
+  clean: true
+
+- script: |
+    echo "BuildNumber********"
+    echo "$(Build.BuildNumber)"
+    echo "********"
+    if [ "$(ReleaseBuildImages)" != "true" ] && [ "$(ReleaseRuntimeImages)" != "true" ]
+    then
+      echo "Invalid configuration."
+      echo "Variable 'ReleaseBuildImages' or 'ReleaseRuntimeImages' needs to be 'true' to run this"
+      exit 1
+    fi
+  displayName: 'Validate release pipeline run'
+
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Build Artifacts'
+  inputs:
+    artifactName: drop
+  condition: true
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for build images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/create-releasetags-buildimage.sh
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for runtime images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/create-releasetags-buildimage.sh
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
+- task: Docker@0
+  displayName: 'Push Build image to DockerHub'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: oryx
+    action: 'Push images'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/build-images-dockerhub.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: Docker@1
+  displayName: 'Push build image to ACR'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/build-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: Docker@0
+  displayName: 'Push runtime images to DockerHub'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: oryx
+    action: 'Push images'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-dockerhub.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: false
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
+- task: Docker@1
+  displayName: 'Push runtime images to ACR'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: false
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Clean up Docker containers and images'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerCleanup.sh
+  condition: true
+
+- task: ShellScript@2
+  displayName: 'Clean up Docker mounted directories'
+  inputs:
+    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
+  condition: true
+
+- task: GitHubRelease@0
+  displayName: 'GitHub release (create)'
+  inputs:
+    gitHubConnection: 'Oryx-GitHub'
+    repositoryName: Microsoft/Oryx
+    tagSource: manual
+    tag: '$(Build.BuildNumber)'
