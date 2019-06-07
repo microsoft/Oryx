@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.NotEqual(0, exitCode);
             var error = testConsole.StdError;
             Assert.DoesNotContain("Usage:", error);
-            Assert.Contains("Could not find the source code folder", error);
+            Assert.Contains("Could not find the source directory", error);
         }
 
         [Fact]
