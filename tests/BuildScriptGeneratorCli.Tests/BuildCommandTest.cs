@@ -292,8 +292,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void OnSuccess_Execute_WritesOnlyBuildOutput_ToStandardOutput()
         {
             // Arrange
+            var stringToPrint = "Hello World";
+            var script = $"#!/bin/bash\necho {stringToPrint}\n";
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, detector: new TestLanguageDetector()),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script, new TestLanguageDetector()),
                 scriptOnly: false);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -304,7 +306,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(0, exitCode);
             Assert.Equal(string.Empty, testConsole.StdError);
-            Assert.Contains("Hello World", testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
+            Assert.Contains(stringToPrint, testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
         }
 
         [Theory]
