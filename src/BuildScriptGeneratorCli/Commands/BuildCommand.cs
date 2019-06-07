@@ -48,13 +48,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
             Description = "The name of the programming language being used in the provided source directory.")]
-        public string Language { get; set; }
+        public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
             Description = "The version of programming language being used in the provided source directory.")]
-        public string LanguageVersion { get; set; }
+        public string PlatformVersion { get; set; }
 
         [Option(
             "-o|--output <dir>",
@@ -292,8 +292,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceDir,
                 DestinationDir,
                 IntermediateDir,
-                Language,
-                LanguageVersion,
+                PlatformName,
+                PlatformVersion,
                 scriptOnly: false,
                 Properties);
         }
