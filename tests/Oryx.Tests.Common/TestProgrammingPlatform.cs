@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
-            return _detector.Detect(sourceRepo);
+            return _detector?.Detect(sourceRepo);
         }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(
