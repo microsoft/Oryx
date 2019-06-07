@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(scriptContent, new[] { "1.0.0" }),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent, new TestLanguageDetector()),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
