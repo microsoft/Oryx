@@ -98,11 +98,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Node.NodeBashBuildSnippet.sh.tpl");
             }
 
-            public static TemplateResource NodeRunScript
-            {
-                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Node.NodeBashRunScript.sh.tpl");
-            }
-
             public static TemplateResource DotNetCoreSnippet
             {
                 get => new TemplateResource(

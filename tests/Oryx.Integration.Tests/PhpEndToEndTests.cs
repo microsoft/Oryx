@@ -52,8 +52,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l php --language-version {phpVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
@@ -61,10 +63,10 @@ namespace Microsoft.Oryx.Integration.Tests
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
-                "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
+                "/bin/sh", new[] { "-c", buildScript },
                 $"oryxdevms/php-{phpVersion}",
                 ContainerPort,
-                "/bin/sh", new[] { "-c", script },
+                "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
@@ -128,8 +130,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "wordpress";
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l php --language-version {phpVersion}")
+               .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
@@ -137,7 +141,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
-                "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
+                "/bin/sh", new[] { "-c", buildScript },
                 $"oryxdevms/php-{phpVersion}",
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
@@ -169,8 +173,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l php --language-version {phpVersion}")
+               .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
                 .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
@@ -178,7 +184,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
-                "oryx", new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
+                "/bin/sh", new[] { "-c", buildScript },
                 $"oryxdevms/php-{phpVersion}",
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },

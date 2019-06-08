@@ -10,6 +10,20 @@ namespace Microsoft.Oryx.Common.Extensions
     public class StringExtensionsTest
     {
         [Fact]
+        public void EqualsIgnoreCase_Sanity()
+        {
+            Assert.True("abc".EqualsIgnoreCase("aBc"));
+
+            Assert.True("abc".EqualsIgnoreCase("ABC"));
+
+            Assert.False("bl".EqualsIgnoreCase("bla"));
+
+            string s = null;
+            Assert.False(s.EqualsIgnoreCase("bla"));
+            Assert.False("bla".EqualsIgnoreCase(s));
+        }
+
+        [Fact]
         public void Chunkify_Sanity()
         {
             // Empty string

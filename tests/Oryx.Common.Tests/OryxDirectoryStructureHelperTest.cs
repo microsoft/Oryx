@@ -8,7 +8,7 @@ using System.IO;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Common.Test
+namespace Microsoft.Oryx.Common.Tests
 {
     public class OryxDirectoryStructureHelperTest : IClassFixture<TestTempDirTestFixture>
     {

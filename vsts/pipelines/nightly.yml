@@ -1,6 +1,10 @@
 resources:
 - repo: self
   fetchDepth: 15
+
+variables:
+- group: Oryx
+
 jobs:
 - job: Job_Security
   displayName: Security
