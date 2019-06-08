@@ -20,14 +20,14 @@ jobs:
 
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
-    displayName: Build and push PHP base images for build
+    displayName: Build and push PHP build base images
     scriptPath: ./build/build-buildimage-bases.sh
     imageDir: php
     artifactsFileName: php-buildimage-bases.txt
 
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
-    displayName: Build and push PHP base images for runtime
+    displayName: Build and push PHP runtime base images
     scriptPath: ./build/build-runtimeimages-bases.sh
     imageDir: php
     artifactsFileName: php-runtimeimage-bases.txt
