@@ -319,6 +319,27 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
+###
+# Build run script generators (to be used by the `oryx run-script` command)
+###
+FROM golang:1.11-stretch as startupScriptGens
+
+WORKDIR /go/src/startupscriptgenerator/
+COPY src/startupscriptgenerator .
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+
+# GOPATH is set to "/go" in the base image, so no need to set it again
+RUN ./prepare-go-env.sh
+
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+
 FROM python AS final
 WORKDIR /
 
@@ -357,6 +378,8 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
+
+COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
