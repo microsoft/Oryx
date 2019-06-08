@@ -276,9 +276,10 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190608.2 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190608.2 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190608.2 /opt /opt
+COPY --from=mcr.microsoft.com/oryx/python-build-base:3.8-20190608.2 /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
@@ -290,6 +291,7 @@ RUN . /tmp/__python-versions.sh && set -ex \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
  && cd /usr/local/bin \
