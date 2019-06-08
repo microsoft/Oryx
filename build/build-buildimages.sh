@@ -10,6 +10,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__php-versions.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
@@ -61,8 +62,9 @@ BuildAndTagStage buildscriptbuilder
 
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
-	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo

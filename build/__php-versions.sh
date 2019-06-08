@@ -1,5 +1,6 @@
 # This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
 
+PHP_BUILD_BASE_TAG='20190530.1'
 PHP_RUNTIME_BASE_TAG='20190530.1'
 COMPOSER_VERSION='1.8.4'
 COMPOSER_SHA384='48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5'
