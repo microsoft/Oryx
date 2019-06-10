@@ -1,5 +1,6 @@
 # Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
+ARG PYTHON_BUILD_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
