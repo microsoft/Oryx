@@ -63,13 +63,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
 
         /// <summary>
-        /// Generate a bash script that can run the application.
-        /// </summary>
-        /// <param name="runScriptGeneratorOptions">Options to generate the run script with.</param>
-        /// <returns>The bash run script.</returns>
-        string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions);
-
-        /// <summary>
         /// Checks if the programming platform should be included in a build script.
         /// </summary>
         /// <param name="scriptGeneratorContext">The script generator context.</param>

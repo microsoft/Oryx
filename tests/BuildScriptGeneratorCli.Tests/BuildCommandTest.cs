@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
+        public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
             var buildCommand = new BuildCommand
@@ -292,7 +292,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void OnSuccess_Execute_WritesOnlyBuildOutput_ToStandardOutput()
         {
             // Arrange
-            var serviceProvider = CreateServiceProvider(new TestProgrammingPlatform(), scriptOnly: false);
+            var stringToPrint = "Hello World";
+            var script = $"#!/bin/bash\necho {stringToPrint}\n";
+            var serviceProvider = CreateServiceProvider(
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script, new TestLanguageDetector()),
+                scriptOnly: false);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
@@ -302,7 +306,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(0, exitCode);
             Assert.Equal(string.Empty, testConsole.StdError);
-            Assert.Contains("Hello World", testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
+            Assert.Contains(stringToPrint, testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
         }
 
         [Theory]
