@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.VisualBasic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -283,7 +284,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var enableCollectStatic = true;
             var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
                 EnvironmentSettingsKeys.DisableCollectStatic);
-            if (disableCollectStaticEnvValue.EqualsIgnoreCase("true"))
+            if (disableCollectStaticEnvValue.EqualsIgnoreCase(Constants.True))
             {
                 enableCollectStatic = false;
             }
