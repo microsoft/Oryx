@@ -281,7 +281,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 appName,
                 CreateAppVolume(appName),
-                "testpy37app",
+                "test-py37app",
                 Constants.OryxBuildpackBuilderImageName,
                 async (hostPort) =>
                 {

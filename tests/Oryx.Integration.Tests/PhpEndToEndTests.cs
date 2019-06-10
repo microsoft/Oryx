@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 appName,
                 appVolume,
-                "testphpapp",
+                "test-phpapp",
                 builder,
                 async (hostPort) =>
                 {

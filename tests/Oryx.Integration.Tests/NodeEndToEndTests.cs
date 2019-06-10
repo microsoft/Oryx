@@ -265,7 +265,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 appName,
                 CreateAppVolume(appName),
-                "testnodeapp",
+                "test-nodeapp",
                 builder,
                 async (hostPort) =>
                 {
