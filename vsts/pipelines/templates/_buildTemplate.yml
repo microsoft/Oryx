@@ -26,7 +26,10 @@ steps:
     pipelineId: 'Oryx-CI'
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.SourcesDirectory)'
-  condition: and(succeeded(), or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')))
+  condition: >
+    and(succeeded(), 
+    or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
+    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
      
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
@@ -218,4 +221,8 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
+  condition: true
+
+- task: mspremier.PostBuildCleanup.PostBuildCleanup-task.PostBuildCleanup@3
+  displayName: 'Clean Agent Directories'
   condition: true

@@ -1,9 +1,3 @@
-resources:
-- repo: self
-
-variables:
-- group: Oryx
-
 jobs:
 - job: Release_BuildImage
   displayName: Release Build Image to MCR and DockerHub
@@ -34,5 +28,3 @@ jobs:
     displayName: 'Set variables'
       
   - template: templates/_releaseTemplate.yml
-
-trigger: none

@@ -6,14 +6,16 @@
 
 set -o pipefail
 
-while read sourceImage; do
+sourceImageName="oryxdevmcr.azurecr.io/public/oryx/build"
+#while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-  if [[ $sourceImage == oryxdevmcr.azurecr.io/public/oryx/build* ]]; then
+  #if [[ $sourceImage == oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI* ]]; then
+    buildNumber=$BUILD_BUILDNUMBER
+    sourceImage="$sourceImageName:Oryx-CI.$buildNumber"
     echo "Pulling the source image $sourceImage ..."
     docker pull "$sourceImage" | sed 's/^/     /'
     
-    #buildNumber="20190606.01"
-		buildNumber=$(Build.BuildNumber)
+		
     acrProdRepo="oryxmcr.azurecr.io/public/oryx/build"
     acrLatest="$acrProdRepo:latest"
     acrSpecific="$acrProdRepo:$buildNumber"
@@ -25,19 +27,19 @@ while read sourceImage; do
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."
-    echo "$acrSpecific">>"$(Build.ArtifactStagingDirectory)/drop/images/build-images-mcr.txt"
-    docker tag "$sourceImage" "$acrSpecific" 
+    echo "$acrSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
+    #docker tag "$sourceImage" "$acrSpecific" 
     echo "Tagging the source image with tag $acrLatest..."
-    echo "$acrLatest">>"$(Build.ArtifactStagingDirectory)/drop/images/build-images-mcr.txt"
-    docker tag "$sourceImage" "$acrLatest"
+    echo "$acrLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
+    #docker tag "$sourceImage" "$acrLatest"
 
     echo "Tagging the source image with tag $dockerHubLatest..."
-    echo "$dockerHubLatest">>"$(Build.ArtifactStagingDirectory)/drop/images/build-images-dockerhub.txt"
-    docker tag "$sourceImage" "$dockerHubLatest"
+    echo "$dockerHubLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
+    #docker tag "$sourceImage" "$dockerHubLatest"
     echo "Tagging the source image with tag $dockerHubSpecific..."
-    echo "$dockerHubSpecific">>"$(Build.ArtifactStagingDirectory)/drop/images/build-images-dockerhub.txt"
-    docker tag "$sourceImage" "$dockerHubSpecific"
+    echo "$dockerHubSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
+    #docker tag "$sourceImage" "$dockerHubSpecific"
     echo -------------------------------------------------------------------------------
-  fi
+  #fi
 #done <"$1"
-done <"$(Build.StagingDirectory)/drop/images/build-images-acr.txt"
+#done <"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-acr.txt"

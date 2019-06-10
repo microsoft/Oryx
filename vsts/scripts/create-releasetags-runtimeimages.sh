@@ -35,18 +35,18 @@ while read sourceImage; do
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."
-    echo "$acrSpecific">>"$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-mcr.txt"
-    docker tag "$sourceImage" "$acrSpecific" 
+    echo "$acrSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+    #docker tag "$sourceImage" "$acrSpecific" 
     echo "Tagging the source image with tag $acrLatest..."
-    echo "$acrLatest">>"$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-mcr.txt"
-    docker tag "$sourceImage" "$acrLatest"
+    echo "$acrLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+    #docker tag "$sourceImage" "$acrLatest"
 
     echo "Tagging the source image with tag $dockerHubLatest..."
-    echo "$dockerHubLatest">>"$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-dockerhub.txt"
-    docker tag "$sourceImage" "$dockerHubLatest"
+    echo "$dockerHubLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
+    #docker tag "$sourceImage" "$dockerHubLatest"
     echo "Tagging the source image with tag $dockerHubSpecific..."
-    echo "$dockerHubSpecific">>"$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-dockerhub.txt"
-    docker tag "$sourceImage" "$dockerHubSpecific"
+    echo "$dockerHubSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
+    #docker tag "$sourceImage" "$dockerHubSpecific"
     echo -------------------------------------------------------------------------------
   fi
-done <"$(Build.StagingDirectory)/drop/images/runtime-images-acr.txt"
+done <"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
