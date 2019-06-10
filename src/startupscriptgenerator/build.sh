@@ -17,8 +17,6 @@ LANGUAGE=$1
 TARGET_OUTPUT=$2
 DIR=$(dirname "$0")
 
-. $DIR/prepare-go-env.sh
-
 echo "Trying to find the language..."
 cd "$DIR/$LANGUAGE"
 go build -ldflags "-X startupscriptgenerator/common.BuildNumber=$BUILD_NUMBER -X startupscriptgenerator/common.Commit=$GIT_COMMIT" -v -o "$TARGET_OUTPUT" .

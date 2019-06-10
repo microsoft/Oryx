@@ -620,8 +620,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
-        public async Task Node_CreateReactAppSample_singleImage()
+        [Fact]
+        public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
             var appName = "create-react-app-sample";
@@ -632,9 +632,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --bindPort {ContainerPort}")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -644,7 +643,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -659,7 +658,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
         {
             // Arrange
@@ -669,19 +668,17 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
-            const string customStartupScriptName = "customStartup.sh";
-            File.WriteAllText(Path.Join(volume.MountedHostDir, customStartupScriptName),
+            const string customRunScriptName = "customStartup.sh";
+            File.WriteAllText(Path.Join(volume.MountedHostDir, customRunScriptName),
                 "#!/bin/bash\n" +
                 $"PORT={ContainerPort} node server.js\n");
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"chmod -x ./{customStartupScriptName}")
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
-                .AddCommand($"./{customStartupScriptName}")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {customRunScriptName} -- -userStartupCommand {customRunScriptName}")
+                .AddCommand($"./{customRunScriptName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -690,7 +687,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -705,7 +702,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
@@ -715,14 +712,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
-            const string customStartupScriptCommand = "'npm start'";
+            const string customRunCommand = "'npm start'";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort} " +
+                            $"-userStartupCommand {customRunCommand}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -732,7 +729,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]

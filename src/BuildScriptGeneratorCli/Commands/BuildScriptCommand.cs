@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.Error.WriteLine($"Error: Could not find the source code folder '{options.SourceDir}'.");
+                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
