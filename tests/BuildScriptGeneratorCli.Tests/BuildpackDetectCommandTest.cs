@@ -48,7 +48,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Directory.CreateDirectory(srcDir);
             File.WriteAllText(Path.Combine(srcDir, NodeConstants.PackageJsonFileName), "\n");
 
-            var cmd = new BuildpackDetectCommand { SourceDir = srcDir };
+            var cmd = new BuildpackDetectCommand
+            {
+                SourceDir = srcDir,
+                PlanPath = Path.Combine(_testDirPath, "plan.toml")
+            };
             var console = new TestConsole();
 
             // Act
@@ -69,7 +73,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Directory.CreateDirectory(srcDir);
             File.WriteAllText(Path.Combine(srcDir, PhpConstants.ComposerFileName), "\n");
 
-            var cmd = new BuildpackDetectCommand { SourceDir = srcDir };
+            var cmd = new BuildpackDetectCommand
+            {
+                SourceDir = srcDir,
+                PlanPath = Path.Combine(_testDirPath, "plan.toml")
+            };
             var console = new TestConsole();
 
             // Act
