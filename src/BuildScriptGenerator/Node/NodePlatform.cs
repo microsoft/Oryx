@@ -278,17 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
         {
-            bool ret = false;
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
-            {
-                if (string.IsNullOrWhiteSpace(value) || value.EqualsIgnoreCase("true"))
-                {
-                    ret = true;
-                }
-            }
-
-            return ret;
+            return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, false);
         }
 
         private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
