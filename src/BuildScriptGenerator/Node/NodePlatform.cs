@@ -278,7 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
         {
-            return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, false);
+            return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, valueIsRequired: false);
         }
 
         private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
