@@ -87,6 +87,7 @@
 - name: file-paths
   constants:
     build-manifest-file-name: oryx-manifest.toml
+    run-script-generator-dir: /opt/startupcmdgen
   outputs:
     - type: csharp
       directory: src/Common
