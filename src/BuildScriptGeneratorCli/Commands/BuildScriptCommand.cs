@@ -22,13 +22,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming language being used in the provided source directory.")]
+            Description = "The name of the programming platform used in the provided source directory.")]
         public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of programming language being used in the provided source directory.")]
+            Description = "The version of the programming platform used in the provided source directory.")]
         public string PlatformVersion { get; set; }
 
         [Option(
