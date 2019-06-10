@@ -63,6 +63,7 @@ BuildAndTagStage buildscriptbuilder
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg PYTHON_BUILD_BASE_TAG=$PYTHON_BUILD_BASE_TAG \
 	--build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .

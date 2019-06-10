@@ -267,6 +267,11 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
+# Docker doesn't support variables in --from, so we're using an intermediate stage
+FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BUILD_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BUILD_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BUILD_BASE_TAG} AS py37-build-base
+
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -277,9 +282,9 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
+COPY --from=py27-build-base /opt /opt
+COPY --from=py36-build-base /opt /opt
+COPY --from=py37-build-base /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
