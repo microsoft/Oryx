@@ -10,8 +10,8 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__python-versions.sh
-source $REPO_DIR/build/__php-versions.sh
+source $REPO_DIR/build/__python-versions.sh # For PYTHON_BUILD_BASE_TAG
+source $REPO_DIR/build/__php-versions.sh    # For PHP_BUILD_BASE_TAG
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
