@@ -61,6 +61,12 @@ BuildAndTagStage dotnet-install
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 
+echo
+echo Base tags:
+echo PYTHON_BUILD_BASE_TAG=$PYTHON_BUILD_BASE_TAG
+echo PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG
+echo
+
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
