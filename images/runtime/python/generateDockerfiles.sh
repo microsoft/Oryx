@@ -9,7 +9,6 @@ set -e
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r PYTHON_VERSIONS_PATH=$DIR/../../../build/__python-versions.sh
 declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
-. $DIR/../../../build/__python-versions.sh
 # Python major version, e.g. '2', '3'
 declare -r PYTHON_MAJOR_VERSION_PLACEHOLDER="%PYTHON_MAJOR_VERSION%"
 # Python version as we usually refer to, e.g. '2.7', '3.6'
