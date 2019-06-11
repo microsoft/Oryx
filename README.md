@@ -105,7 +105,7 @@ We provide zero-config multi-language "source to web app" and "source to contain
 
  * **[Azure AppService for Linux](./README.md)** - Provides build capabilities for supported arbitrary languages
  * **[ACR Buildpack Tasks](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-pack)** - Brings buildpack support to Azure Container Registry (ACR) with the '[az acr pack](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-pack)' commands
- * **Oryx Buildpack** - Cloud Native buildpack automatically builds from arbitrary source and generates OCI images. 
+ * **Oryx Buildpack** - [Cloud Native buildpack](https://buildpacks.io/) automatically builds from arbitrary source and generates [OCI images](https://www.opencontainers.org/). 
  * **Oryx Images** - Base images with required tools for building supported langages and reduced size runtime images: [Docker Hub](https://hub.docker.com/_/microsoft-oryx-images), [Microsoft Container Registry (MCR)](https://azure.microsoft.com/en-us/blog/microsoft-syndicates-container-catalog/)
 
 
