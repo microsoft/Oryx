@@ -1,7 +1,8 @@
-# Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+# Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
+ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
-# End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+# End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -319,6 +320,12 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
+# Docker doesn't support variables in --from, so we're using an intermediate stage
+FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
@@ -368,16 +375,18 @@ COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN . /tmp/php/install-prereqs.sh
-COPY --from=mcr.microsoft.com/oryx/php-build-base:5.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.0-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.2-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.3-20190530.1 /opt /opt
+
+COPY --from=php56-build-base /opt /opt
+COPY --from=php70-build-base /opt /opt
+COPY --from=php72-build-base /opt /opt
+COPY --from=php73-build-base /opt /opt
+
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
  && ln -s /opt/php/lts/bin/php /usr/local/bin/php
 
-# Build script generator content, currently docker doesn't support variables in --from
+# Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
