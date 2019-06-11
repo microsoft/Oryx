@@ -268,10 +268,16 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-# Docker doesn't support variables in --from, so we're using an intermediate stage
+###
+# Python intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
 FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BUILD_BASE_TAG} AS py27-build-base
 FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BUILD_BASE_TAG} AS py36-build-base
 FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BUILD_BASE_TAG} AS py37-build-base
+###
+# End Python intermediate stages
+###
 
 FROM main AS python
 # It's not clear whether these are needed at runtime...
@@ -326,11 +332,17 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
-# Docker doesn't support variables in --from, so we're using an intermediate stage
+###
+# PHP intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
 FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+###
+# End PHP intermediate stages
+###
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
