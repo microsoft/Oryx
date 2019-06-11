@@ -16,5 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.";
 
         public const string OryxGitHubUrl = "https://github.com/microsoft/Oryx";
+
+        public const string True = "true";
+        public const string False = "false";
     }
 }
