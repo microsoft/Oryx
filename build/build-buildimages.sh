@@ -62,9 +62,8 @@ BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 
 echo
-echo Base tags:
-echo PYTHON_BUILD_BASE_TAG=$PYTHON_BUILD_BASE_TAG
-echo PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG
+echo Base tags used:
+echo PYTHON_BUILD_BASE_TAG=$PYTHON_BUILD_BASE_TAG PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG
 echo
 
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
@@ -76,7 +75,7 @@ docker build -t $builtImageTag \
 	$ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
-echo Building a base image for tests ...
+echo Building a base image for tests...
 # Do not write this image tag to the artifacts file as we do not intend to push it
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
@@ -127,7 +126,8 @@ then
 fi
 
 echo
-echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
+echo "Cleanup:"
+echo "Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
 if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
 then
 	docker system prune -f
