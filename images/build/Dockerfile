@@ -95,7 +95,8 @@ RUN set -ex \
  && cd $sdksDir \
  && ln -s 1.1 1 \
  && ln -s 2.1 2 \
- && ln -s 3.0 3
+ && ln -s 2.2 3 \
+ && ln -s 3.0 4
 
 RUN set -ex \
  && dotnetDir=/opt/dotnet \
@@ -133,7 +134,7 @@ RUN set -ex \
  && ln -s 3.0 3 \
  && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
  # LTS sdk <-- LTS runtime's sdk
- && ln -s 2.1 lts \
+ && ln -s 2.2 lts \
  && ltsSdk=$(readlink lts/sdk) \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
