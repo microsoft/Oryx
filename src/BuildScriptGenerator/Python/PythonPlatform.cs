@@ -283,7 +283,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var enableCollectStatic = true;
             var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
                 EnvironmentSettingsKeys.DisableCollectStatic);
-            if (disableCollectStaticEnvValue.EqualsIgnoreCase("true"))
+            if (disableCollectStaticEnvValue.EqualsIgnoreCase(Constants.True))
             {
                 enableCollectStatic = false;
             }
