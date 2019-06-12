@@ -4,7 +4,7 @@ Oryx provides a buildpack that runs it, so that Oryx can also be used via the Cl
 
 # Usage
 
-```console
+```bash
 $ az group create -n MyGroup
 $ az acr create -n MyRegistry -g MyGroup --sku basic
 
