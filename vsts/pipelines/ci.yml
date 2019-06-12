@@ -6,7 +6,7 @@ variables:
 
 stages:
   - stage: Build
-    displayName: Build and Test Oryx Build and Runtime Images
+    displayName: Build and Test Oryx Images
     jobs:
     - job: Job_Security
       displayName: Security
@@ -79,8 +79,8 @@ stages:
         parameters:
           pushToDockerHub: 'true'
 
-    #- template: templates/_integration.yml
-
+    - template: templates/_integration.yml
+  
   - stage: Release
     displayName: Release Oryx Build and Runtime Images
     dependsOn: Build

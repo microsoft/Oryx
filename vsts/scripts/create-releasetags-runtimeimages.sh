@@ -36,17 +36,17 @@ while read sourceImage; do
     echo
     echo "Tagging the source image with tag $acrSpecific..."
     echo "$acrSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
-    #docker tag "$sourceImage" "$acrSpecific" 
+    docker tag "$sourceImage" "$acrSpecific" 
     echo "Tagging the source image with tag $acrLatest..."
     echo "$acrLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
-    #docker tag "$sourceImage" "$acrLatest"
+    docker tag "$sourceImage" "$acrLatest"
 
     echo "Tagging the source image with tag $dockerHubLatest..."
     echo "$dockerHubLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
-    #docker tag "$sourceImage" "$dockerHubLatest"
+    docker tag "$sourceImage" "$dockerHubLatest"
     echo "Tagging the source image with tag $dockerHubSpecific..."
     echo "$dockerHubSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
-    #docker tag "$sourceImage" "$dockerHubSpecific"
+    docker tag "$sourceImage" "$dockerHubSpecific"
     echo -------------------------------------------------------------------------------
   fi
 done <"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
