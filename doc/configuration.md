@@ -3,7 +3,7 @@
 Oryx provides configuration options through environment variables so that you
 can apply minor adjustments and still utilize the automatic build process. The following variables are supported today:
 
-> NOTE: In Azure Web Apps, these variables are set as App Settings [App Settings](https://docs.microsoft.com/en-us/azure/app-service/configure-common).
+> NOTE: In Azure Web Apps, these variables are set with [App Settings](https://docs.microsoft.com/en-us/azure/app-service/configure-common).
 
 Setting name                 | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
