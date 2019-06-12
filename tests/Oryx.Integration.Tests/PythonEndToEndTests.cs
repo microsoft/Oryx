@@ -225,22 +225,24 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "python")]
-    public class PythonEndToEndTests_Python37 : PythonEndToEndTestsBase
+    public class Python37EndToEndTests : PythonEndToEndTestsBase
     {
-        public PythonEndToEndTests_Python37(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public Python37EndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
 
-        [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython37()
+        [Theory]
+        [InlineData("3.7")]
+        [InlineData("3.8")]
+        public async Task CanBuildAndRunPythonApp(string pythonVersion)
         {
             // Arrange
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l python --language-version 3.7")
+               .AddCommand($"oryx build {appDir} -l python --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -251,20 +253,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 volume,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    buildScript
-                },
-                "oryxdevms/python-3.7",
+                "/bin/bash", new[] { "-c", buildScript },
+                $"oryxdevms/python-{pythonVersion}",
                 ContainerPort,
                 "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    runScript
-                },
+                new[] { "-c", runScript },
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
