@@ -4,13 +4,14 @@ Oryx provides a buildpack that runs it, so that Oryx can also be used via the Cl
 
 # Usage
 
-    // setup
-    az group create -n MyGroup
-    az acr create -n MyRegistry -g MyGroup --sku basic
-    
-    // run buildpack with source pulled from current directory
-    // will be deployed to az
-    az acr pack -r MyRegistry -t sample-app .
+```console
+az group create -n MyGroup
+az acr create -n MyRegistry -g MyGroup --sku basic
+
+# run buildpack with source pulled from current directory
+# will be deployed to az
+az acr pack -r MyRegistry -t sample-app .
+```
 
 See the primary Oryx page for an up-to-date [list of languages supported](/README.md). 
 
