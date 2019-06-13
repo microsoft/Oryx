@@ -6,7 +6,7 @@ variables:
 
 stages:
   - stage: Build
-    displayName: Build and Test Oryx Images
+    displayName: Build Stage-
     jobs:
     - job: Job_Security
       displayName: Security
@@ -17,7 +17,7 @@ stages:
       - template: templates/_securityChecks.yml
 
     - job: Job_SignBinaries
-      displayName: Build and Sign Oryx Binaries
+      displayName: Sign Oryx Binaries
       pool:
         name: VSEng-MicroBuildVS2017
         demands:
@@ -51,8 +51,6 @@ stages:
         displayName: 'Set variables'
       
       - template: templates/_buildTemplate.yml
-        parameters:
-          pushToDockerHub: 'true'
 
     - job: Job_RuntimeImages
       displayName: Build and Test Runtime Images
@@ -76,19 +74,17 @@ stages:
         displayName: 'Set variables'
 
       - template: templates/_buildTemplate.yml
-        parameters:
-          pushToDockerHub: 'true'
 
     - template: templates/_integration.yml
   
-  - stage: Release
-    displayName: Release Oryx Build and Runtime Images
+  - stage: Release Stage-
+    displayName: Release
     dependsOn: Build
     condition: >
       and(succeeded(),
       or(eq(variables['Build.SourceBranch'], 'refs/heads/arroyc/update-release-yaml'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
     jobs:
-    - template: release.yml
+    - template: templates/_releaseJobTemplate.yml
 
 trigger: none

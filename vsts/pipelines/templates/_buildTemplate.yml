@@ -1,13 +1,8 @@
 parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
-  pushToDockerHub: 'false'
 
 steps:
-- ${{ if eq(parameters.pushToDockerHub, 'true') }}:
-  - script: |
-      echo "##vso[task.setvariable variable=PushToDockerHub;]true"
-
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ] && [ "$(TestIntegration)" != "true" ]
     then
@@ -123,9 +118,7 @@ steps:
   displayName: 'Copy source projects output to artifacts folder'
   inputs:
     sourceFolder: $(Build.SourcesDirectory)
-    contents: |
-      src/**/bin/**/*.*
-      vsts/scripts/*.*
+    contents: src/**/bin/**/*.*
     targetFolder: $(Build.ArtifactStagingDirectory)
     cleanTargetFolder: true
     overWrite: true
@@ -148,17 +141,6 @@ steps:
     mergeTestResults: true
   condition: true
 
-- task: Docker@0
-  displayName: 'Push Build image to DockerHub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'), eq(variables['PushToDockerHub'], 'true'))
-
 - task: Docker@1
   displayName: 'Push build images to ACR'
   inputs:
@@ -170,17 +152,6 @@ steps:
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
-
-- task: Docker@0
-  displayName: 'Push runtime images to DockerHub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'), eq(variables['PushToDockerHub'], 'true'))
 
 - task: Docker@1
   displayName: 'Push runtime images to ACR'

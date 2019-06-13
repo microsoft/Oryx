@@ -24,13 +24,9 @@ steps:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
 
-- task: DownloadBuildArtifacts@0
-  displayName: 'Download Build Artifacts'
+- task: DownloadPipelineArtifact@1
+  displayName: 'Download Pipeline Artifacts for release'
   inputs:
-    buildType: specific
-    project: '0bdbc590-a062-4c3f-b0f6-9383f67865ee'
-    pipeline: 11021
-    specificBuildWithTriggering: true
     artifactName: drop
 
 - task: CopyFiles@2
@@ -103,12 +99,6 @@ steps:
   displayName: 'Clean up Docker containers and images'
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
-  condition: true
-
-- task: ShellScript@2
-  displayName: 'Clean up Docker mounted directories'
-  inputs:
-    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
   condition: true
 
 - task: GitHubRelease@0

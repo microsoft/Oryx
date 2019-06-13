@@ -1,6 +1,6 @@
 jobs:
 - job: Release_BuildImage
-  displayName: Release Build Image to MCR and DockerHub
+  displayName: Push Build Image to MCR and DockerHub
   pool:
     name: OryxLinux
   variables:
@@ -12,10 +12,10 @@ jobs:
       echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]false"
     displayName: 'Set variables'
       
-  - template: templates/_releaseTemplate.yml
+  - template: _releaseStepTemplate.yml
 
 - job: Release_RuntimeImages
-  displayName: Release Runtime Images to MCR and DockerHub
+  displayName: Push Runtime Images to MCR and DockerHub
   pool:
     name: OryxLinux
   variables:
@@ -27,4 +27,4 @@ jobs:
       echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]true"
     displayName: 'Set variables'
       
-  - template: templates/_releaseTemplate.yml
+  - template: _releaseStepTemplate.yml
