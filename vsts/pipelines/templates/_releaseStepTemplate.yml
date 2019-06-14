@@ -100,11 +100,3 @@ steps:
   inputs:
     scriptPath: ./vsts/scripts/dockerCleanup.sh
   condition: true
-
-- task: GitHubRelease@0
-  displayName: 'GitHub release (create)'
-  inputs:
-    gitHubConnection: 'Oryx-GitHub'
-    repositoryName: Microsoft/Oryx
-    tagSource: manual
-    tag: '$(Build.BuildNumber)'
