@@ -28,3 +28,27 @@ jobs:
     displayName: 'Set variables'
       
   - template: _releaseStepTemplate.yml
+
+- job: Release_GitHub
+  displayName: Create GitHub release
+  dependsOn: 
+    - Release_BuildImage
+    - Release_RuntimeImages
+  pool:
+    name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
+
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Artifacts for release'
+    inputs:
+      artifactName: drop
+
+  - task: GitHubRelease@0
+    displayName: 'GitHub release (create)'
+    inputs:
+      gitHubConnection: 'Oryx-GitHub'
+      repositoryName: Microsoft/Oryx
+      tagSource: manual
+      tag: '$(Build.BuildNumber)'
