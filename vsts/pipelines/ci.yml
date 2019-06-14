@@ -6,7 +6,7 @@ variables:
 
 stages:
   - stage: Build
-    displayName: Build Stage-
+    displayName: Build Stage
     jobs:
     - job: Job_Security
       displayName: Security
@@ -75,14 +75,14 @@ stages:
 
       - template: templates/_buildTemplate.yml
 
-    - template: templates/_integration.yml
+    - template: templates/_integrationJobTemplate.yml
   
-  - stage: Release Stage-
-    displayName: Release
+  - stage: Release
+    displayName: Release Stage
     dependsOn: Build
     condition: >
-      and(succeeded(),
-      or(eq(variables['Build.SourceBranch'], 'refs/heads/arroyc/update-release-yaml'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
+      and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), 
+      startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
     jobs:
     - template: templates/_releaseJobTemplate.yml

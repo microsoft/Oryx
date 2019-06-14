@@ -49,6 +49,6 @@ jobs:
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
 
-- template: templates/_integration.yml
+- template: templates/_integrationJobTemplate.yml
 
 trigger: none
