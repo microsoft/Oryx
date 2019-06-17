@@ -2,12 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using System;
 using System.IO;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     internal class TestConsole : IConsole
     {
@@ -75,8 +76,17 @@ namespace BuildScriptGeneratorCli.Tests
 
         public bool IsErrorRedirected => throw new NotImplementedException();
 
-        public ConsoleColor ForegroundColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ConsoleColor BackgroundColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ConsoleColor ForegroundColor
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
+        public ConsoleColor BackgroundColor
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
 #pragma warning disable 0067
         public event ConsoleCancelEventHandler CancelKeyPress;

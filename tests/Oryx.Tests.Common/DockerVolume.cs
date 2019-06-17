@@ -13,6 +13,12 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerVolume
     {
+        private const string DockerSocket = "/var/run/docker.sock";
+        public static readonly DockerVolume DockerDaemonSocket = new DockerVolume(
+            originalHostDir: null,
+            mountedHostDir: DockerSocket,
+            containerDir: DockerSocket);
+
         // VSTS variable used to identify if the tests are running in VSTS or not (for example, on dev machines)
         public const string VstsAgentNameEnivronmentVariable = "AGENT_NAME";
 
@@ -22,10 +28,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public const string ContainerDirRoot = "/oryxtests";
 
-        private DockerVolume(
-            string originalHostDir,
-            string mountedHostDir,
-            string containerDir)
+        private DockerVolume(string originalHostDir, string mountedHostDir, string containerDir)
         {
             OriginalHostDir = originalHostDir;
             MountedHostDir = mountedHostDir;
@@ -44,11 +47,22 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         public string ContainerDir { get; }
 
-        public static DockerVolume Create(string hostDir)
+        /// <summary>
+        /// Creates a copy of a local directory, and returns a DockerVolume instance for mounting that copy in a
+        /// container.
+        /// </summary>
+        /// <param name="hostDir">local directory to be used in a container</param>
+        /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
+        public static DockerVolume CreateMirror(string hostDir)
         {
             if (string.IsNullOrEmpty(hostDir))
             {
                 throw new ArgumentException($"'{nameof(hostDir)}' cannot be null or empty.");
+            }
+
+            if (!Directory.Exists(hostDir))
+            {
+                throw new ArgumentException($"'{nameof(hostDir)}' must point to an existing directory.");
             }
 
             var dirInfo = new DirectoryInfo(hostDir);

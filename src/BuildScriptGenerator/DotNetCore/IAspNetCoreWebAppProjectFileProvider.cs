@@ -11,6 +11,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// </summary>
     public interface IAspNetCoreWebAppProjectFileProvider
     {
-        string GetProjectFile(ISourceRepo sourceRepo);
+        string GetRelativePathToProjectFile(ISourceRepo sourceRepo);
     }
 }

@@ -10,6 +10,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -61,6 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
+
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
@@ -203,11 +205,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var packageJson = GetPackageJsonObject(sourceRepo, _logger);
             if (packageJson != null)
             {
-                var npmVersion = GetNpmVersion(packageJson);
+                string npmVersion = GetNpmVersion(packageJson);
+                _logger.LogDebug("GetNpmVersion returned {npmVersion}", npmVersion);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
                     toolsToVersion[NodeConstants.NpmToolName] = npmVersion;
                 }
+            }
+            else
+            {
+                _logger.LogDebug($"packageJson is null; skipping setting {NodeConstants.NpmToolName} tool");
             }
         }
 
@@ -216,6 +223,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             context.NodeVersion = version;
         }
 
+<<<<<<< HEAD
         public string GenerateBashRunScript(RunScriptGeneratorOptions options)
         {
             if (options.SourceRepo == null)
@@ -308,6 +316,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             throw new NotImplementedException();
         }
 
+=======
+>>>>>>> master
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
@@ -363,17 +373,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
         {
-            bool ret = false;
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
-            {
-                if (string.IsNullOrWhiteSpace(value) || string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    ret = true;
-                }
-            }
-
-            return ret;
+            return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, valueIsRequired: false);
         }
 
         private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
@@ -427,13 +427,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 // default to tar.gz if the property was provided with no value.
                 if (string.IsNullOrEmpty(compressNodeModulesOption) ||
-                    string.Equals(compressNodeModulesOption, TarGzNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
+                    compressNodeModulesOption.EqualsIgnoreCase(TarGzNodeModulesOption))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesTarGzFileName;
                     compressNodeModulesCommand = $"tar -zcf";
                     isNodeModulesPackaged = true;
                 }
-                else if (string.Equals(compressNodeModulesOption, ZipNodeModulesOption, StringComparison.InvariantCultureIgnoreCase))
+                else if (compressNodeModulesOption.EqualsIgnoreCase(ZipNodeModulesOption))
                 {
                     compressedNodeModulesFileName = NodeConstants.NodeModulesZippedFileName;
                     compressNodeModulesCommand = $"zip -y -q -r";
@@ -442,38 +442,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return isNodeModulesPackaged;
-        }
-
-        private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)
-        {
-            var command = string.Empty;
-            if (!string.IsNullOrWhiteSpace(options.CustomServerCommand))
-            {
-                _logger.LogInformation("Using custom server command {nodeCommand}", options.CustomServerCommand);
-                command = $"{options.CustomServerCommand.Trim()} {file}";
-            }
-            else
-            {
-                switch (options.DebuggingMode)
-                {
-                    case DebuggingMode.Standard:
-                        _logger.LogInformation("Debugging in standard mode");
-                        command = $"node --inspect {file}";
-                        break;
-
-                    case DebuggingMode.Break:
-                        _logger.LogInformation("Debugging in break mode");
-                        command = $"node --inspect-brk {file}";
-                        break;
-
-                    case DebuggingMode.None:
-                        _logger.LogInformation("Running without debugging");
-                        command = $"node {file}";
-                        break;
-                }
-            }
-
-            return command;
         }
 
         private string GetNpmVersion(dynamic packageJson)
@@ -488,10 +456,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (!string.IsNullOrWhiteSpace(npmVersionRange))
             {
                 var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
-                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    npmVersionRange,
-                    supportedNpmVersions);
-                if (string.IsNullOrWhiteSpace(npmVersion))
+                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(npmVersionRange, supportedNpmVersions);
+                if (string.IsNullOrEmpty(npmVersion))
                 {
                     _logger.LogWarning(
                         "User requested npm version {npmVersion} but it wasn't resolved",

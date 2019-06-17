@@ -1,7 +1,7 @@
 # The official Node 8.2 image has vulnerabilities, so we build our own version
 # to fetch the latest strech release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 9b863beddf7dee9b8a6eba0dd8334b1d7980f958.
-FROM buildpack-deps:stretch as node-original-image
+FROM buildpack-deps:stretch as node-original
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -66,6 +66,10 @@ RUN set -ex \
   && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarnpkg \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
+CMD [ "node" ]
+
+FROM node-original AS main
+
 # All users need access to node_modules at the root, as this is the location
 # for packages valid for all apps.
 RUN mkdir -p /node_modules \
@@ -78,5 +82,3 @@ ARG CACHEBUST=0
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.
 RUN npm install -g pm2
-
-CMD [ "node" ]

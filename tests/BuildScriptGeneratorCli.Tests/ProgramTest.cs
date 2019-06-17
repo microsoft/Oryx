@@ -4,10 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class ProgramTest
     {

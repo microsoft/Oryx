@@ -22,12 +22,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public const string PostBuildCommand = "POST_BUILD_COMMAND";
 
-        public const string DotnetCoreDefaultVersion = "ORYX_DOTNETCORE_DEFAULT_VERSION";
+        public const string DotNetCoreDefaultVersion = "ORYX_DOTNETCORE_DEFAULT_VERSION";
 
-        public const string DotnetCoreSupportedVersions = "DOTNETCORE_SUPPORTED_VERSIONS";
+        public const string DotNetCoreSupportedVersions = "DOTNETCORE_SUPPORTED_VERSIONS";
 
         public const string Project = "PROJECT";
 
         public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";
+
+        /// <summary>
+        /// Represents the 'Configuration' switch of a build, for example: dotnet build --configuration Release
+        /// </summary>
+        public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";
     }
 }

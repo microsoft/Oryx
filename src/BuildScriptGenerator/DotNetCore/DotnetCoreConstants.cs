@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public static class DotnetCoreConstants
+    public static class DotNetCoreConstants
     {
         public const string LanguageName = "dotnet";
         public const string CSharpProjectFileExtension = "csproj";
@@ -27,9 +27,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public const string ProjectFileLanguageDetectorProperty = "ProjectFile";
 
-        public const string WebSdkProjectXPathExpression = "/Project[@Sdk='Microsoft.NET.Sdk.Web']";
-        public const string ProjectReferenceXPathExpression = "/Project/ItemGroup/PackageReference";
-        public const string AssemblyNameXPathExpression = "/Project/PropertyGroup/AssemblyName";
-        public const string TargetFrameworkXPathExpression = "/Project/PropertyGroup/TargetFramework";
+        public const string WebSdkName = "Microsoft.NET.Sdk.Web";
+        public const string ProjectSdkAttributeValueXPathExpression = "string(/Project/@Sdk)";
+        public const string ProjectSdkElementNameAttributeValueXPathExpression = "string(/Project/Sdk/@Name)";
+        public const string TargetFrameworkElementXPathExpression = "/Project/PropertyGroup/TargetFramework";
+
+        public const string DefaultMSBuildConfiguration = "Release";
     }
 }

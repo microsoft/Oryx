@@ -10,20 +10,31 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__python-versions.sh # For PYTHON_BASE_TAG
+source $REPO_DIR/build/__php-versions.sh    # For PHP_BUILD_BASE_TAG
+
+declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
+                                --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG"
+
+echo
+echo Base tag args used:
+echo $BASE_TAG_BUILD_ARGS
+echo
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
-declare BUILDSCRIPT_SOURCE="buildscriptbuilder"
 declare BUILD_SIGNED=""
 
+echo "SignType is: $SIGNTYPE"
+
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
-if [ "$SignType" == "real" ] || [ "$SignType" == "Real" ]
+if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
 then
 # "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
-    BUILDSCRIPT_SOURCE="copybuildscriptbinaries"
 	BUILD_SIGNED="true"
+	ls -l $BUILD_IMAGES_BUILD_CONTEXT_DIR
 else
-# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
+	# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
     mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
@@ -42,7 +53,7 @@ function BuildAndTagStage()
 	echo
 	echo
 	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build --target $stageName -t $stageTagName $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --target $stageName -t $stageTagName $ctxArgs $BASE_TAG_BUILD_ARGS -f "$BUILD_IMAGES_DOCKERFILE" .
 }
 
 docker pull buildpack-deps:stretch
@@ -57,20 +68,36 @@ BuildAndTagStage node-install
 BuildAndTagStage dotnet-install
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
-BuildAndTagStage copybuildscriptbinaries
-BuildAndTagStage buildscriptbinaries
+
 
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
-	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
-	--build-arg BUILDSCRIPT_SOURCE=$BUILDSCRIPT_SOURCE \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
-echo Building a base image for tests ...
+echo Building a base image for tests...
 # Do not write this image tag to the artifacts file as we do not intend to push it
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+
+# Create artifact dir & files
+mkdir -p "$ARTIFACTS_DIR/images"
+
+touch $BUILD_IMAGES_ARTIFACTS_FILE
+> $BUILD_IMAGES_ARTIFACTS_FILE
+touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
+# Build buildpack images
+# 'pack create-builder' is not supported on Windows
+if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+	source $REPO_DIR/build/build-buildpacks-images.sh
+else
+	echo
+	echo "Skipping building Buildpacks images as platform '$OSTYPE' is not supported."
+fi
 
 # Retag build image with DockerHub and ACR tags
 if [ -n "$BUILD_NUMBER" ]
@@ -87,16 +114,12 @@ then
 	# Write the list of images that were built to artifacts folder
 	echo
 	echo "Writing the list of build images built to artifacts folder..."
-	mkdir -p "$ARTIFACTS_DIR/images"
 
 	# Write image list to artifacts file
-	echo "$DOCKER_BUILD_IMAGES_REPO:latest" > $BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$DOCKER_BUILD_IMAGES_REPO:latest" >> $BUILD_IMAGES_ARTIFACTS_FILE
 	echo "$DOCKER_BUILD_IMAGES_REPO:$uniqueTag" >> $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "$ACR_BUILD_IMAGES_REPO:latest" > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$ACR_BUILD_IMAGES_REPO:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	echo "$ACR_BUILD_IMAGES_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-	# Build buildpack images
-	source $REPO_DIR/build/build-buildpacks-images.sh
 
 	echo
 	echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
@@ -106,7 +129,8 @@ then
 fi
 
 echo
-echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
+echo "Cleanup:"
+echo "Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
 if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
 then
 	docker system prune -f

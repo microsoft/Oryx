@@ -8,12 +8,12 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotnetCoreVersionProvider : IDotnetCoreVersionProvider
+    internal class DotNetCoreVersionProvider : IDotNetCoreVersionProvider
     {
-        private readonly DotnetCoreScriptGeneratorOptions _options;
+        private readonly DotNetCoreScriptGeneratorOptions _options;
         private IEnumerable<string> _supportedVersions;
 
-        public DotnetCoreVersionProvider(IOptions<DotnetCoreScriptGeneratorOptions> options)
+        public DotNetCoreVersionProvider(IOptions<DotNetCoreScriptGeneratorOptions> options)
         {
             _options = options.Value;
         }

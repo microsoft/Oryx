@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,26 +20,30 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string SourceDir { get; set; }
 
         [Option(
-            "-l|--language <name>",
+            OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming language being used in the provided source directory.")]
-        public string Language { get; set; }
+            Description = "The name of the programming platform used in the provided source directory.")]
+        public string PlatformName { get; set; }
 
         [Option(
-            "--language-version <version>",
+            OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of programming language being used in the provided source directory.")]
-        public string LanguageVersion { get; set; }
+            Description = "The version of the programming platform used in the provided source directory.")]
+        public string PlatformVersion { get; set; }
 
         [Option(
-            "-p|--property <key-value>",
+            OptionTemplates.Property,
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var scriptGenerator = new BuildScriptGenerator(serviceProvider, console, checkerMessageSink: null);
+            var scriptGenerator = new BuildScriptGenerator(
+                serviceProvider,
+                console,
+                checkerMessageSink: null,
+                operationId: null);
 
             if (!scriptGenerator.TryGenerateScript(out var generatedScript))
             {
@@ -58,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.Error.WriteLine($"Error: Could not find the source code folder '{options.SourceDir}'.");
+                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
@@ -79,8 +82,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceDir,
                 destinationDir: null,
                 intermediateDir: null,
-                Language,
-                LanguageVersion,
+                PlatformName,
+                PlatformVersion,
                 scriptOnly: true,
                 Properties);
         }

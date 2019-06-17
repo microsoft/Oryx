@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
         public const string DbServerPasswordEnvVarName = "DATABASE_PASSWORD";
         public const string DbServerDatabaseEnvVarName = "DATABASE_NAME";
 
-        protected readonly IList<ProductRecord> SampleData = new List<ProductRecord> {
+        private static readonly IList<ProductRecord> SampleData = new List<ProductRecord> {
             new ProductRecord { Name = "Car" },
             new ProductRecord { Name = "Camera" },
             new ProductRecord { Name = "Computer" }
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
             };
         }
 
-        public string GetSampleDataAsJson()
+        public static string GetSampleDataAsJson()
         {
             return JsonConvert.SerializeObject(SampleData);
         }
@@ -107,7 +107,8 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
 
         protected virtual string GetSampleDataInsertionSql()
         {
-            var sb = new StringBuilder($"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
+            var sb = new StringBuilder(
+                $"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
             foreach (var record in SampleData)
             {
                 sb.Append($" INSERT INTO Products VALUES('{record.Name}');");

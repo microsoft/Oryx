@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -12,14 +12,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static bool IsTrue(string propertyKeyName, BuildScriptGeneratorContext context, bool valueIsRequired)
         {
             if (context.Properties != null &&
-                context.Properties.TryGetValue(propertyKeyName, out string value))
+                context.Properties.TryGetValue(propertyKeyName, out string val))
             {
-                if (!valueIsRequired && string.IsNullOrWhiteSpace(value))
+                if (!valueIsRequired && string.IsNullOrWhiteSpace(val))
                 {
                     return true;
                 }
 
-                if (string.Equals("true", value, StringComparison.InvariantCultureIgnoreCase))
+                if (val.EqualsIgnoreCase(Constants.True))
                 {
                     return true;
                 }

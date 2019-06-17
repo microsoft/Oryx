@@ -7,9 +7,7 @@ package common
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path"
 	"startupscriptgenerator/common/consts"
 	"strings"
 	"time"
@@ -32,12 +30,12 @@ type Logger struct {
 var buildOpId string
 
 func SetGlobalOperationId(appRootPath string) {
-	if buildOpId == "" {
-		rawId, err := ioutil.ReadFile(path.Join(appRootPath, consts.BuildIdFileName))
-		if err == nil { // Silently ignore errors
-			buildOpId = strings.TrimSpace(string(rawId))
-		}
+	buildManifest := GetBuildManifest(appRootPath)
+
+	if buildManifest.OperationId != "" {
+		buildOpId = strings.TrimSpace(buildManifest.OperationId)
 	}
+	fmt.Println("Build Operation ID: " + buildOpId)
 }
 
 func GetLogger(name string) *Logger {
@@ -60,7 +58,12 @@ func (logger *Logger) makeTraceItem(message string, sev contracts.SeverityLevel)
 }
 
 func (logger *Logger) logTrace(sev contracts.SeverityLevel, format string, a ...interface{}) {
-	logger.AiClient.Track(logger.makeTraceItem(fmt.Sprintf(format, a...), sev))
+	message := fmt.Sprintf(format, a...)
+
+	// Uncomment the follwing line to see the trace messages on standard out
+	//fmt.Println(message)
+
+	logger.AiClient.Track(logger.makeTraceItem(message, sev))
 }
 
 func (logger *Logger) LogVerbose(format string, a ...interface{}) {

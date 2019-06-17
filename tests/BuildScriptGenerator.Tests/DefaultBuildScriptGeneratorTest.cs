@@ -682,6 +682,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             }
         }
 
+<<<<<<< HEAD
         private class TestProgrammingPlatform : IProgrammingPlatform
         {
             private readonly bool? _canGenerateScript;
@@ -778,6 +779,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             }
         }
 
+=======
+>>>>>>> master
         [Checker(TestPlatformName)]
         private class TestChecker : IChecker
         {

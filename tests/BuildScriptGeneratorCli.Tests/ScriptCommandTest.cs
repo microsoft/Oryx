@@ -9,11 +9,10 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class ScriptCommandTest : IClassFixture<TestTempDirTestFixture>
     {
@@ -41,7 +40,7 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.NotEqual(0, exitCode);
             var error = testConsole.StdError;
             Assert.DoesNotContain("Usage:", error);
-            Assert.Contains("Could not find the source code folder", error);
+            Assert.Contains("Could not find the source directory", error);
         }
 
         [Fact]
@@ -65,7 +64,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Arrange
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(scriptContent),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent, new TestLanguageDetector()),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -84,9 +83,8 @@ namespace BuildScriptGeneratorCli.Tests
         {
             // Arrange
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
-            var expected = scriptContentWithCRLF.Replace("\r\n", "\n");
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform(scriptContentWithCRLF),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF, new TestLanguageDetector()),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -96,7 +94,7 @@ namespace BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.Contains(expected, testConsole.StdOutput);
+            Assert.Contains(scriptContentWithCRLF.Replace("\r\n", "\n"), testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
         }
 

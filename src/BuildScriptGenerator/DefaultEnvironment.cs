@@ -7,24 +7,47 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultEnvironment : IEnvironment
     {
+        private EnvironmentType? _type; // Cache for the Type property
+
+        public EnvironmentType Type
+        {
+            get
+            {
+                if (!_type.HasValue) // Cache needs to be initialized
+                {
+                    foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
+                    {
+                        if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Value)))
+                        {
+                            _type = entry.Key;
+                            return _type.Value;
+                        }
+                    }
+
+                    _type = EnvironmentType.Unknown;
+                }
+
+                return _type.Value;
+            }
+        }
+
         public bool? GetBoolEnvironmentVariable(string name)
         {
             var variable = GetEnvironmentVariable(name);
-            if (!string.IsNullOrEmpty(variable))
+            if (variable.EqualsIgnoreCase(Constants.True))
             {
-                if (variable.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return true;
-                }
-                else if (variable.Equals("false", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return false;
-                }
+                return true;
+            }
+            else if (variable.EqualsIgnoreCase(Constants.False))
+            {
+                return false;
             }
 
             return null;

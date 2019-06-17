@@ -8,24 +8,30 @@ set -e
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r PYTHON_VERSIONS_PATH=$DIR/../../../build/__python-versions.sh
-declare -r VERSIONS_FILE="$DIR/pythonVersions.txt"
 declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
-declare -r IMAGE_NAME_PLACEHOLDER="%PYTHON_BASE_IMAGE%"
-declare -r IMAGE_SUFFIX="-slim-stretch"
+# Python major version, e.g. '2', '3'
+declare -r PYTHON_MAJOR_VERSION_PLACEHOLDER="%PYTHON_MAJOR_VERSION%"
+# Python version as we usually refer to, e.g. '2.7', '3.6'
+declare -r PYTHON_VERSION_PLACEHOLDER="%PYTHON_VERSION%"
+# Python full version, including patch, e.g. '3.7.3'
+declare -r PYTHON_FULL_VERSION_PLACEHOLDER="%PYTHON_FULL_VERSION%"
+declare -r ORYX_IMAGE_TAG_PLACEHOLDER="%IMAGE_TAG%"
 
 source "$PYTHON_VERSIONS_PATH"
 while IFS= read -r PYTHON_VERSION_VAR_NAME || [[ -n $PYTHON_VERSION_VAR_NAME ]]
 do
 	PYTHON_VERSION=${!PYTHON_VERSION_VAR_NAME}
-	PYTHON_IMAGE_NAME=$PYTHON_VERSION$IMAGE_SUFFIX
 	IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
-	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
-	echo "Generating Dockerfile for image '$PYTHON_IMAGE_NAME' in directory '$VERSION_DIRECTORY'..."
+	MAJOR_MINOR_VERSION="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	mkdir -p "$DIR/$VERSION_DIRECTORY/"
-	TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/Dockerfile"
+	mkdir -p "$DIR/$MAJOR_MINOR_VERSION/"
+	TARGET_DOCKERFILE="$DIR/$MAJOR_MINOR_VERSION/Dockerfile"
 	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
 	# Replace placeholders
-	sed -i "s|$IMAGE_NAME_PLACEHOLDER|$PYTHON_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+	sed -i "s|$PYTHON_VERSION_PLACEHOLDER|$MAJOR_MINOR_VERSION|g" "$TARGET_DOCKERFILE"
+	sed -i "s|$PYTHON_FULL_VERSION_PLACEHOLDER|$PYTHON_VERSION|g" "$TARGET_DOCKERFILE"
+	sed -i "s|$PYTHON_MAJOR_VERSION_PLACEHOLDER|${SPLIT_VERSION[0]}|g" "$TARGET_DOCKERFILE"
+	sed -i "s|$ORYX_IMAGE_TAG_PLACEHOLDER|$PYTHON_BASE_TAG|g" "$TARGET_DOCKERFILE"
+
 done < <(compgen -A variable | grep 'PYTHON[0-9]\{2,\}_VERSION')

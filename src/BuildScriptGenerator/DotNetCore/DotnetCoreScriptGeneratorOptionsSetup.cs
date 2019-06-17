@@ -3,26 +3,25 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.IO;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotnetCoreScriptGeneratorOptionsSetup : IConfigureOptions<DotnetCoreScriptGeneratorOptions>
+    internal class DotNetCoreScriptGeneratorOptionsSetup : IConfigureOptions<DotNetCoreScriptGeneratorOptions>
     {
-        internal const string DefaultVersion = DotNetCoreVersions.DotNetCore21Version;
-        internal const string InstalledVersionsDir = "/opt/dotnet/"; // TODO: remove hard-coded path
+        internal const string DefaultVersion = DotNetCoreRuntimeVersions.NetCoreApp21;
+        internal const string InstalledVersionsDir = "/opt/dotnet/runtimes";
 
         private readonly IEnvironment _environment;
 
-        public DotnetCoreScriptGeneratorOptionsSetup(IEnvironment environment)
+        public DotNetCoreScriptGeneratorOptionsSetup(IEnvironment environment)
         {
             _environment = environment;
         }
 
-        public void Configure(DotnetCoreScriptGeneratorOptions options)
+        public void Configure(DotNetCoreScriptGeneratorOptions options)
         {
-            var defaultVersion = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.DotnetCoreDefaultVersion);
+            var defaultVersion = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.DotNetCoreDefaultVersion);
             if (string.IsNullOrEmpty(defaultVersion))
             {
                 defaultVersion = DefaultVersion;
@@ -31,8 +30,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             options.DefaultVersion = defaultVersion;
             options.InstalledVersionsDir = InstalledVersionsDir;
             options.SupportedVersions = _environment.GetEnvironmentVariableAsList(
-                EnvironmentSettingsKeys.DotnetCoreSupportedVersions);
+                EnvironmentSettingsKeys.DotNetCoreSupportedVersions);
             options.Project = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.Project);
+            options.MSBuildConfiguration = _environment.GetEnvironmentVariable(
+                EnvironmentSettingsKeys.MSBuildConfiguration);
         }
     }
 }

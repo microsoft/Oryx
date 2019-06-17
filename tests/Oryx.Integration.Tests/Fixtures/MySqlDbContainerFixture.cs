@@ -54,8 +54,9 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
         protected override void InsertSampleData()
         {
             const string sqlFile = "/tmp/mysql_setup.sql";
+            var sqlQuery = GetSampleDataInsertionSql();
             var dbSetupScript = new ShellScriptBuilder()
-                .CreateFile(sqlFile, GetSampleDataInsertionSql())
+                .CreateFile(sqlFile, $"\"{sqlQuery}\"")
                 // No space after the '-p' on purpose:
                 // https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password
                 .AddCommand($"mysql -u {Constants.DatabaseUserName} -p{Constants.DatabaseUserPwd} < {sqlFile}")

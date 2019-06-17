@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -34,6 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
+            _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
         }
 
         public void GenerateBashScript(
@@ -64,12 +66,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 try
                 {
+                    _logger.LogDebug("Running checkers");
                     RunCheckers(context, toolsToVersion, checkerMessageSink);
                 }
                 catch (Exception exc)
                 {
                     _logger.LogError(exc, "Exception caught while running checkers");
                 }
+            }
+            else
+            {
+                _logger.LogInformation("Not running checkers - condition evaluates to " +
+                                       "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
+                                       _checkers != null, checkerMessageSink != null, context.EnableCheckers);
             }
 
             if (snippets != null)
@@ -91,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 directoriesToExcludeFromCopyToBuildOutputDir.Add(".git");
 
                 script = BuildScriptFromSnippets(
-                    context.SourceRepo,
+                    context,
                     snippets,
                     new ReadOnlyDictionary<string, string>(toolsToVersion),
                     directoriesToExcludeFromCopyToIntermediateDir,
@@ -125,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (!string.IsNullOrEmpty(ctx.Language))
             {
                 var selectedPlatform = enabledPlatforms
-                    .Where(p => string.Equals(ctx.Language, p.Name, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => ctx.Language.EqualsIgnoreCase(p.Name))
                     .FirstOrDefault();
 
                 if (selectedPlatform == null)
@@ -208,16 +217,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IDictionary<string, string> tools,
             [NotNull] List<ICheckerMessage> checkerMessageSink)
         {
-            var checkers = _checkers.WhereApplicable(tools);
+            var checkers = _checkers.WhereApplicable(tools).ToArray();
+
+            _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
+                checkers.Length, tools.Keys.Count, string.Join(',', tools.Keys));
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
             {
-                timedEvent.AddProperty(
-                    "checkersApplied",
-                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
+                var repoMessages = checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo));
+                checkerMessageSink.AddRange(repoMessages);
 
-                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo)));
-                checkerMessageSink.AddRange(checkers.SelectMany(checker => checker.CheckToolVersions(tools)));
+                var toolMessages = checkers.SelectMany(checker => checker.CheckToolVersions(tools));
+                checkerMessageSink.AddRange(toolMessages);
+
+                timedEvent.AddProperty("repoMsgCount", repoMessages.Count().ToString());
+                timedEvent.AddProperty("toolMsgCount", toolMessages.Count().ToString());
+
+                timedEvent.AddProperty("checkersApplied",
+                    string.Join(',', checkers.Select(checker => checker.GetType().Name)));
             }
         }
 
@@ -255,13 +272,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var snippet = platform.GenerateBashBuildScriptSnippet(context);
                 if (snippet != null)
                 {
-                    _logger.LogDebug("Script generator {scriptGenType} was used", platform.GetType());
+                    _logger.LogDebug("Platform {platformType} was used", platform.GetType());
                     snippets.Add(snippet);
                     platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
                 }
                 else
                 {
-                    _logger.LogDebug("Script generator {scriptGenType} cannot be used", platform.GetType());
+                    _logger.LogWarning("{platformType}.GenerateBashBuildScriptSnippet() returned null",
+                        platform.GetType());
                 }
             }
 
@@ -290,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <returns>Finalized build script as a string.</returns>
         private string BuildScriptFromSnippets(
-            ISourceRepo sourceRepo,
+            BuildScriptGeneratorContext context,
             IList<BuildScriptSnippet> snippets,
             IDictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
@@ -304,9 +322,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .Where(s => s.BuildProperties != null)
                 .SelectMany(s => s.BuildProperties)
                 .ToDictionary(p => p.Key, p => p.Value);
+            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
-                sourceRepo,
+                context.SourceRepo,
                 environmentSettings);
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
@@ -317,7 +336,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PostBuildCommand = postBuildCommand,
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
-                ManifestFileName = Constants.ManifestFileName,
+                ManifestFileName = FilePaths.BuildManifestFileName,
                 BuildProperties = buildProperties
             };
 

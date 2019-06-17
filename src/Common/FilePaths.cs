@@ -4,6 +4,7 @@ namespace Microsoft.Oryx.Common
 {
     public static class FilePaths
     {
-        public const string BuildIdFileName = ".oryx_build_id";
+        public const string BuildManifestFileName = "oryx-manifest.toml";
+        public const string RunScriptGeneratorDir = "/opt/startupcmdgen";
     }
 }

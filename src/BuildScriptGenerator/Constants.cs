@@ -9,7 +9,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
         public const string BuildEnvironmentFileName = "build.env";
-        public const string ManifestFileName = "oryx-manifest.toml";
         public const string AppInsightsKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string ZipAllOutputBuildPropertyKey = "zip_all_output";
         public const string ZipAllOutputBuildPropertyKeyDocumentation =
@@ -17,5 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.";
 
         public const string OryxGitHubUrl = "https://github.com/microsoft/Oryx";
+
+        public const string True = "true";
+        public const string False = "false";
     }
 }

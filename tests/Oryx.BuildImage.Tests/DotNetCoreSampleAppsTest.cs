@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -16,6 +17,7 @@ using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
+    [Trait("platform", "dotnet")]
     public class DotNetCoreSampleAppsTest : SampleAppsTestBase
     {
         public DotNetCoreSampleAppsTest(ITestOutputHelper output) : base(output)
@@ -23,10 +25,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
-            DockerVolume.Create(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
+
+        private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact]
-        public void Builds_NetCore11App_UsingNetCore11_DotnetSdkVersion()
+        public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
+        {
+            // Arrange
+            var appName = "aspnetcore10";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/aspnetcore10-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/app.dll")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
@@ -36,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
-                .AddFileExistsCheck($"{appOutputDir}/{ScriptGenerator.Constants.ManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -54,13 +94,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore11Version, result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Publishes_DotnetCore11App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
+        public void Publishes_DotNetCore11App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
@@ -68,7 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
                 .ToString();
 
             // Act
@@ -86,13 +128,52 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore11Version, result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        result.StdOut);
+
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Builds_NetCore21App_UsingNetCore21_DotnetSdkVersion()
+        public void Builds_NetCore20App_UsingNetCore21_DotNetSdkVersion()
+        {
+            // Arrange
+            var appName = "aspnetcore20";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/aspnetcore10-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/app.dll")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
@@ -119,13 +200,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore21Version, result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Publishes_DotnetCore21App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
+        public void Publishes_DotNetCore21App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
@@ -133,7 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
                 .ToString();
 
             // Act
@@ -151,13 +234,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore21Version, result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Builds_NetCore22App_UsingNetCore22_DotnetSdkVersion()
+        public void Builds_NetCore22App_UsingNetCore22_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp22WebApp";
@@ -184,13 +269,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore22Version, result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore22SdkVersion),
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Builds_NetCore30App_UsingNetCore30_DotnetSdkVersion()
+        public void Builds_NetCore30App_UsingNetCore30_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp30.WebApp";
@@ -218,14 +305,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        ".NET Core Version: " + DotNetCoreVersions.DotNetCore30VersionPreviewName,
+                        string.Format(
+                            SdkVersionMessageFormat,
+                            DotNetCoreSdkVersions.DotNetCore30SdkVersionPreviewName),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Publishes_DotnetCore22App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
+        public void Publishes_DotNetCore22App_ToOryxOutputDirectory_WhenSourceAndDestinationDir_AreSame()
         {
             // Arrange
             var appName = "NetCoreApp22WebApp";
@@ -233,7 +322,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddFileExistsCheck($"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/{appName}.dll")
                 .ToString();
 
             // Act
@@ -251,7 +340,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(".NET Core Version: " + DotNetCoreVersions.DotNetCore22Version, result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore22SdkVersion),
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -310,8 +401,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/dotnet/2.1.\d+", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/dotnet/2.1.\d+", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/dotnet/sdks/2.1.700/dotnet", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/dotnet/sdks/2.1.700/dotnet", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -414,7 +505,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
             var appDir = volume.ContainerDir;
-            var outputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var outputDir = $"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -l dotnet --language-version 2.1")
                 .AddFileExistsCheck($"{outputDir}/pre-{fileName}")
@@ -567,7 +658,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
             var appDir = volume.ContainerDir;
-            var outputDir = $"{appDir}/{DotnetCoreConstants.OryxOutputPublishDirectory}";
+            var outputDir = $"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} -l dotnet --language-version 2.1 " +
@@ -602,7 +693,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appName = "dotnetreact";
             var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
@@ -645,6 +736,113 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{extraFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApplication_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
+        {
+            // Arrange
+            var appName = "NetCoreApp21WebApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
+            var intermediateDir = "/tmp/int";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"rm -rf {appDir}/bin")
+                .AddBuildCommand($"{appDir} -i {intermediateDir} -o {appOutputDir}")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/bin")
+                .AddDirectoryExistsCheck($"{intermediateDir}/bin")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsMultiWebAppRepoApp_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
+        {
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var projectDir = $"{appDir}/src/WebApp1";
+            var appOutputDir = "/tmp/MultiWebAppRepo-output";
+            var intermediateDir = "/tmp/int";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(EnvironmentSettingsKeys.Project, "src/WebApp1/WebApp1.csproj")
+                .AddCommand($"rm -rf {projectDir}/bin")
+                .AddBuildCommand($"{appDir} -i {intermediateDir} -o {appOutputDir}")
+                .AddDirectoryDoesNotExistCheck($"{projectDir}/bin")
+                .AddDirectoryExistsCheck($"{intermediateDir}/src/WebApp1/bin")
+                .AddFileExistsCheck($"{appOutputDir}/MyWebApp.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildPublishesOutput_ToImplicitOutputDirectoryAtRoot_WhenMultiWebAppRepoIsBuilt()
+        {
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var projectDir = $"{appDir}/src/WebApp1";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(EnvironmentSettingsKeys.Project, "src/WebApp1/WebApp1.csproj")
+                .AddBuildCommand($"{appDir}")
+                .AddFileExistsCheck($"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}/MyWebApp.dll")
                 .ToString();
 
             // Act

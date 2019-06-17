@@ -4,17 +4,18 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace BuildScriptGeneratorCli.Tests
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
@@ -26,7 +27,7 @@ namespace BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
+        public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
             var buildCommand = new BuildCommand
@@ -291,7 +292,11 @@ namespace BuildScriptGeneratorCli.Tests
         public void OnSuccess_Execute_WritesOnlyBuildOutput_ToStandardOutput()
         {
             // Arrange
-            var serviceProvider = CreateServiceProvider(new TestProgrammingPlatform(), scriptOnly: false);
+            var stringToPrint = "Hello World";
+            var script = $"#!/bin/bash\necho {stringToPrint}\n";
+            var serviceProvider = CreateServiceProvider(
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script, new TestLanguageDetector()),
+                scriptOnly: false);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
@@ -301,7 +306,7 @@ namespace BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(0, exitCode);
             Assert.Equal(string.Empty, testConsole.StdError);
-            Assert.Contains("Hello World", testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
+            Assert.Contains(stringToPrint, testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
         }
 
         [Theory]
@@ -360,6 +365,25 @@ namespace BuildScriptGeneratorCli.Tests
             Assert.Contains(
                 "Cannot use language version without specifying language name also.",
                 testConsole.StdError);
+        }
+
+        public static IEnumerable<object[]> GetOperationNameEnvVarNames()
+        {
+            return Common.LoggingConstants.OperationNameSourceEnvVars
+                .Select(e => new[] { e.Value, Common.LoggingConstants.EnvTypeOperationNamePrefix[e.Key] });
+        }
+
+        [Theory]
+        [MemberData(nameof(GetOperationNameEnvVarNames))]
+        public void BuildOperationName_ReturnsCorrectPrefix(string envVarName, string opNamePrefix)
+        {
+            // Arrange
+            var appName = "bla";
+            var env = new TestEnvironment();
+            env.SetEnvironmentVariable(envVarName, appName);
+
+            // Act & Assert
+            Assert.Equal(opNamePrefix + ":" + appName, BuildCommand.BuildOperationName(env));
         }
 
         private string CreateNewDir()

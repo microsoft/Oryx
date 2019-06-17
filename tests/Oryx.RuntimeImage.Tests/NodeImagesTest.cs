@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -147,13 +149,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                        console.error(e); 
                     } 
                 }";
-            var manifestFileContent = "injectedAppInsight=\"True\"";
+            var manifestFileContent = $"'{NodeConstants.InjectedAppInsights}=\"True\"'";
 
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
-                .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
-                .CreateFile(appPath + "/oryx-manifest.toml", manifestFileContent)
-                .CreateFile(appPath + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .CreateFile($"{appPath}/entry.sh", $"exit {exitCodeSentinel}")
+                .CreateFile($"{appPath}/{FilePaths.BuildManifestFileName}", manifestFileContent)
+                .CreateFile($"{appPath}/oryx-appinsightsloader.js", $"\"{aiNodesdkLoaderContent}\"")
                 .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
                 .AddCommand(". ./run.sh") // Source the default output path
                 .AddStringExistsInFileCheck("export NODE_OPTIONS='--require ./oryx-appinsightsloader.js'", "./run.sh")
@@ -183,7 +185,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerDebugPort = 8080;
 
@@ -216,7 +218,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound : NodeImagesTestBase
     {
-        public NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageCanRunWhenAppInsightsModuleNotFound(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -234,11 +237,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // and additionally print the exception message
 
             // Arrange
-            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
-            var hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            var volume = DockerVolume.Create(Path.Combine(hostSamplesDir, "nodejs", "linxnodeexpress"));
+            var appName = "linxnodeexpress";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var manifestFileContent = "injectedAppInsight=\"True\"";
+            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
+            var manifestFileContent = $"'{NodeConstants.InjectedAppInsights}=\"True\"'";
             var aiNodesdkLoaderContent = @"try {
                 var appInsights = require('applicationinsights');  
                 if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
@@ -252,8 +256,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
-                .CreateFile(appDir + "/oryx-manifest.toml", manifestFileContent)
-                .CreateFile(appDir + "/oryx-appinsightsloader.js", aiNodesdkLoaderContent)
+                .CreateFile($"{appDir}/{FilePaths.BuildManifestFileName}", manifestFileContent)
+                .CreateFile($"{appDir}/oryx-appinsightsloader.js", $"\"{aiNodesdkLoaderContent}\"")
                 .AddCommand($"cd {appDir}")
                 .AddCommand("npm install")
                 .AddCommand($"oryx -appPath {appDir}")
@@ -282,7 +286,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageContainsRequiredPrograms : NodeImagesTestBase
     {
-        public NodeRuntimeImageContainsRequiredPrograms(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageContainsRequiredPrograms(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -310,7 +315,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageRunAppUsingConfigYml : NodeImagesTestBase
     {
-        public NodeRuntimeImageRunAppUsingConfigYml(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageRunAppUsingConfigYml(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -322,7 +328,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var appName = "express-config-yaml";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerPort = 80;
 
@@ -354,7 +360,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageRunAppUsingProcessJson : NodeImagesTestBase
     {
-        public NodeRuntimeImageRunAppUsingProcessJson(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageRunAppUsingProcessJson(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -366,7 +373,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerPort = 80;
 
@@ -399,7 +406,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageRunAppUsingConfigJs : NodeImagesTestBase
     {
-        public NodeRuntimeImageRunAppUsingConfigJs(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageRunAppUsingConfigJs(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -411,7 +419,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var appName = "express-config-js";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.Create(hostDir);
+            var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerPort = 80;
 
@@ -444,7 +452,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
     public class NodeRuntimeImageContainsVersionAndCommitInfo : NodeImagesTestBase
     {
-        public NodeRuntimeImageContainsVersionAndCommitInfo(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeRuntimeImageContainsVersionAndCommitInfo(
+            ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }

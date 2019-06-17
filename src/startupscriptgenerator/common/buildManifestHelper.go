@@ -6,17 +6,23 @@
 package common
 
 import (
+    "startupscriptgenerator/common/consts"
     "github.com/BurntSushi/toml"
     "log"
     "path/filepath"
 )
 
 type BuildManifest struct {
-    StartupFileName string
-    ZipAllOutput    string
+    StartupFileName             string
+    ZipAllOutput                string
+    OperationId                 string
+    VirtualEnvName              string
+    PackageDir                  string
+    CompressedVirtualEnvFile    string
 }
 
-const ManifestFileName = "oryx-manifest.toml"
+var _buildManifest = BuildManifest{}
+var _readManifest = false
 
 func DeserializeBuildManifest(manifestFile string) BuildManifest {
     var manifest BuildManifest
@@ -27,11 +33,15 @@ func DeserializeBuildManifest(manifestFile string) BuildManifest {
 }
 
 func GetBuildManifest(appPath string) BuildManifest {
-    buildManifest := BuildManifest{}
-    
-    tomlFile := filepath.Join(appPath, ManifestFileName)
-    if FileExists(tomlFile) {
-        buildManifest = DeserializeBuildManifest(tomlFile)
+    if _readManifest {
+        return _buildManifest
     }
-    return buildManifest
+    
+    tomlFile := filepath.Join(appPath, consts.BuildManifestFileName)
+    if FileExists(tomlFile) {
+        _buildManifest = DeserializeBuildManifest(tomlFile)
+        _readManifest = true
+    }
+
+    return _buildManifest
 }

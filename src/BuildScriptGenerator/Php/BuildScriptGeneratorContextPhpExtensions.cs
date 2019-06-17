@@ -8,7 +8,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public partial class BuildScriptGeneratorContext
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the detection and build of PHP code in the repo should be enabled.
+        /// Gets or sets a value indicating whether the detection and build of PHP code
+        /// in the repo should be enabled.
         /// Defaults to true.
         /// </summary>
         public bool EnablePhp { get; set; } = true;

@@ -10,6 +10,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__node-versions.sh
 
 # Folder structure is used to come up with the tag name
 # For example, if a docker file was located at
@@ -88,7 +89,13 @@ for dockerFile in $dockerFiles; do
     cd $REPO_DIR
 
     echo
-    docker build -f $dockerFile -t $localImageTagName --build-arg CACHEBUST=$(date +%s) $labels . 
+    docker build -f $dockerFile \
+        -t $localImageTagName \
+        --build-arg CACHEBUST=$(date +%s) \
+        --build-arg NODE6_VERSION=$NODE6_VERSION \
+        --build-arg NODE8_VERSION=$NODE8_VERSION \
+        --build-arg NODE10_VERSION=$NODE10_VERSION \
+        $labels . 
 
     # Retag build image with DockerHub & ACR tags
     if [ -n "$BUILD_NUMBER" ]

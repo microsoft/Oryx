@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             int containerPort = 8000,
             bool specifyBindPortFlag = true)
         {
-            var volume = DockerVolume.Create(samplePath);
+            var volume = DockerVolume.CreateMirror(samplePath);
             var appDir = volume.ContainerDir;
             var entrypointScript = "./run.sh";
             var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
@@ -57,6 +58,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
                 new List<DockerVolume> { volume },
+                Settings.BuildImageName,
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),
@@ -67,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal(
-                        _dbFixture.GetSampleDataAsJson(),
+                        DbContainerFixtureBase.GetSampleDataAsJson(),
                         data.Trim(),
                         ignoreLineEndingDifferences: true,
                         ignoreWhiteSpaceDifferences: true);
