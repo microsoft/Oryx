@@ -11,13 +11,13 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("oryx", Description = "Generates and runs build scripts for multiple languages.")]
-    [Subcommand("build", typeof(BuildCommand))]
-    [Subcommand("languages", typeof(LanguagesCommand))]
-    [Subcommand("build-script", typeof(BuildScriptCommand))]
-    [Subcommand("run-script", typeof(RunScriptCommand))]
-    [Subcommand("install-runtime", typeof(InstallRunTimeCommand))]
-    [Subcommand("buildpack-detect", typeof(BuildpackDetectCommand))]
-    [Subcommand("buildpack-build", typeof(BuildpackBuildCommand))]
+    [Subcommand(BuildCommand.Name,           typeof(BuildCommand))]
+    [Subcommand(LanguagesCommand.Name,       typeof(LanguagesCommand))]
+    [Subcommand(BuildScriptCommand.Name,     typeof(BuildScriptCommand))]
+    [Subcommand(RunScriptCommand.Name,       typeof(RunScriptCommand))]
+    [Subcommand(InstallRunTimeCommand.Name,  typeof(InstallRunTimeCommand))]
+    [Subcommand(BuildpackDetectCommand.Name, typeof(BuildpackDetectCommand))]
+    [Subcommand(BuildpackBuildCommand.Name,  typeof(BuildpackBuildCommand))]
     internal class Program
     {
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]
