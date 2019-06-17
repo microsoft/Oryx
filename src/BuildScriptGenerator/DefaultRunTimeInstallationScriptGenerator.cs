@@ -11,11 +11,11 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class RunTimeInstallationScriptGenerator : IRunTimeInstallationScriptGenerator
+    public class DefaultRunTimeInstallationScriptGenerator : IRunTimeInstallationScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
 
-        public RunTimeInstallationScriptGenerator(IEnumerable<IProgrammingPlatform> programmingPlatforms)
+        public DefaultRunTimeInstallationScriptGenerator(IEnumerable<IProgrammingPlatform> programmingPlatforms)
         {
             _programmingPlatforms = programmingPlatforms;
         }
