@@ -45,36 +45,27 @@ namespace Microsoft.Oryx.Tests.Common
             return _detector?.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext _)
         {
             if (_canGenerateScript == true)
             {
                 return new BuildScriptSnippet { BashBuildScriptSnippet = _scriptContent };
             }
 
-<<<<<<< HEAD:tests/BuildScriptGeneratorCli.Tests/TestProgrammingPlatform.cs
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
-        {
-            throw new NotImplementedException();
+            return null;
         }
 
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
-=======
-            return null;
->>>>>>> master:tests/Oryx.Tests.Common/TestProgrammingPlatform.cs
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext _)
         {
             return Array.Empty<string>();
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext _)
         {
             return Array.Empty<string>();
         }
