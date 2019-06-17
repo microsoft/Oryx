@@ -1,5 +1,6 @@
 # Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
+ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
@@ -267,6 +268,17 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
+###
+# Python intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
+FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
+###
+# End Python intermediate stages
+###
+
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -277,9 +289,9 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
+COPY --from=py27-build-base /opt /opt
+COPY --from=py36-build-base /opt /opt
+COPY --from=py37-build-base /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
@@ -320,11 +332,17 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
-# Docker doesn't support variables in --from, so we're using an intermediate stage
+###
+# PHP intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
 FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+###
+# End PHP intermediate stages
+###
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
