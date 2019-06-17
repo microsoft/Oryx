@@ -34,6 +34,33 @@ namespace Microsoft.Oryx.Integration.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
+    public class NodeBuildpackTests : NodeEndToEndTestsBase
+    {
+        public NodeBuildpackTests(ITestOutputHelper output, TestTempDirTestFixture fixture) : base(output, fixture)
+        {
+        }
+
+        [Theory]
+        [InlineData(Constants.OryxBuildpackBuilderImageName)]
+        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
+        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
+        {
+            var appName = "webfrontend";
+
+            await EndToEndTestHelper.RunPackAndAssertAppAsync(
+                _output,
+                appName,
+                CreateAppVolume(appName),
+                "test-nodeapp",
+                builder,
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+    }
+
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -247,26 +274,6 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     runScript
                 },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
-                });
-        }
-
-        [Theory]
-        [InlineData(Constants.OryxBuildpackBuilderImageName)]
-        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
-        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
-        {
-            var appName = "webfrontend";
-
-            await EndToEndTestHelper.RunPackAndAssertAppAsync(
-                _output,
-                appName,
-                CreateAppVolume(appName),
-                "test-nodeapp",
-                builder,
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
