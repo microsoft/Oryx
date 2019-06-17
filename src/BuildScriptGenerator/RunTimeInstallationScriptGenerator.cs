@@ -19,20 +19,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _programmingPlatforms = programmingPlatforms;
         }
 
-        public string GenerateBashScript(string targetPlatformName, RunTimeInstallationScriptGeneratorOptions options)
+        public string GenerateBashScript(string targetPlatformName, RunTimeInstallationScriptGeneratorOptions opts)
         {
-            var targetPlatform = _programmingPlatforms.Where(
-                p => string.Equals(
-                    p.Name,
-                    targetPlatformName,
-                    StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            var targetPlatform = _programmingPlatforms
+                .Where(p => p.Name.EqualsIgnoreCase(targetPlatformName))
+                .FirstOrDefault();
 
             if (targetPlatform == null)
             {
                 throw new UnsupportedLanguageException($"Platform '{targetPlatformName}' is not supported.");
             }
 
-            var runScript = targetPlatform.GenerateBashRunTimeInstallationScript(options);
+            var runScript = targetPlatform.GenerateBashRunTimeInstallationScript(opts);
             return runScript;
         }
     }
