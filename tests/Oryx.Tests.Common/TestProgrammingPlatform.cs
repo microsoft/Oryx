@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Tests.Common
             return null;
         }
 
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions _)
         {
             throw new NotImplementedException();
         }
