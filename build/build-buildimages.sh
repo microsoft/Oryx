@@ -10,10 +10,10 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__python-versions.sh # For PYTHON_BUILD_BASE_TAG
+source $REPO_DIR/build/__python-versions.sh # For PYTHON_BASE_TAG
 source $REPO_DIR/build/__php-versions.sh    # For PHP_BUILD_BASE_TAG
 
-declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BUILD_BASE_TAG=$PYTHON_BUILD_BASE_TAG \
+declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
                                 --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG"
 
 echo
