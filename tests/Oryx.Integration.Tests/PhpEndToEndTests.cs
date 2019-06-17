@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    public class PhpEndToEndTests : PlatformEndToEndTestsBase
+    public abstract class PhpEndToEndTests : PlatformEndToEndTestsBase
     {
         public readonly int ContainerPort = 8080;
         public readonly string RunScriptPath = "/tmp/startup.sh";
@@ -76,9 +76,9 @@ namespace Microsoft.Oryx.Integration.Tests
     }
 
     [Trait("category", "php")]
-    public class PhpWordPress51Test : PhpEndToEndTests
+    public class PhpWordPressTest : PhpEndToEndTests
     {
-        public PhpWordPress51Test(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public PhpWordPressTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -168,6 +168,39 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("64x64", imagickOutput);
+                });
+        }
+    }
+
+    [Trait("category", "php")]
+    public class PhpBuildpackTest : PhpEndToEndTests
+    {
+        public PhpBuildpackTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
+        {
+        }
+
+        [Theory]
+        // [InlineData(Constants.OryxBuildpackBuilderImageName)] // AB#896178
+        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
+        // Twig does not support PHP < 7
+        public async Task TwigExample_WithBuildpack(string builder)
+        {
+            // Arrange
+            var appName = "twig-example";
+            var appVolume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", appName));
+
+            // Act & Assert
+            await EndToEndTestHelper.RunPackAndAssertAppAsync(
+                _output,
+                appName,
+                appVolume,
+                "test-phpapp",
+                builder,
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<h1>Hello World!</h1>", data);
                 });
         }
     }

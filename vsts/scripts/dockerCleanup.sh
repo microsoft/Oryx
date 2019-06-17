@@ -48,6 +48,7 @@ docker images
 #	b. oryxdevms/node-<major.minor>:latest
 #	b. oryxdevms/dotnetcore-<major.minor>:latest
 # - We should untag these images only after they have been pushed to a remote repository.
+UntagImages "test-*"
 UntagImages "oryxdevms/*:*.*"
 UntagImages "oryxtests/*:latest"
 UntagImages "oryxprod/*:latest"
