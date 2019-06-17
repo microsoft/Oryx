@@ -98,19 +98,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return !repo.DirExists(expectedPublishDir);
         }
 
-<<<<<<< HEAD
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
-        {
-            throw new NotImplementedException();
-        }
-
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
-=======
->>>>>>> master
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return scriptGeneratorContext.EnableDotNetCore;
