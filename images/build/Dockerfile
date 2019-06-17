@@ -367,6 +367,9 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
 RUN ./build.sh php        /opt/startupcmdgen/php
 RUN ./build.sh python     /opt/startupcmdgen/python
+###
+# End build run script generators
+###
 
 FROM python AS final
 WORKDIR /
@@ -409,6 +412,8 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
 
+# Oryx depends on the run script generators for most of its
+# `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # Bake Application Insights key from pipeline variable into final image

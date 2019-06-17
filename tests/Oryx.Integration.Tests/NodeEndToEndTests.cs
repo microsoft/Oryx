@@ -254,43 +254,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("oryxdevms/pack-builder")]
-        [InlineData("heroku/buildpacks")]
-        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
-        {
-            // Arrange
-            var appName = "webfrontend";
-            var appVolume = CreateAppVolume(appName);
-            // Allows `pack` to use the host's Docker engine
-            var dockerPort = DockerVolume.DockerDaemonSocket;
-            var appImageName = "testnodeapp";
-
-            // Act
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                new List<DockerVolume> { appVolume, dockerPort },
-                Constants.PackImageName,
-                null, // `pack` is already in the image's ENTRYPOINT
-                new[]
-                {
-                    "build", appImageName,
-                    "--no-color",
-                    "--path", appVolume.ContainerDir,
-                    "--builder", builder
-                },
-                appImageName,
-                8080,
-                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
-                runArgs: null,
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
-                });
-        }
-
         [Fact]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {
@@ -980,6 +943,34 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/json/list");
                     Assert.Contains("devtoolsFrontendUrl", data);
+                });
+        }
+    }
+
+    [Trait("category", "node")]
+    public class NodeBuildpackTests : NodeEndToEndTestsBase
+    {
+        public NodeBuildpackTests(ITestOutputHelper output, TestTempDirTestFixture fixture) : base(output, fixture)
+        {
+        }
+
+        [Theory]
+        [InlineData(Constants.OryxBuildpackBuilderImageName)]
+        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
+        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
+        {
+            var appName = "webfrontend";
+
+            await EndToEndTestHelper.RunPackAndAssertAppAsync(
+                _output,
+                appName,
+                CreateAppVolume(appName),
+                "test-nodeapp",
+                builder,
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
                 });
         }
     }

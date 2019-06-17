@@ -10,6 +10,7 @@ using System.IO;
 using Xunit;
 using Microsoft.Oryx.Tests.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 
@@ -47,7 +48,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Directory.CreateDirectory(srcDir);
             File.WriteAllText(Path.Combine(srcDir, NodeConstants.PackageJsonFileName), "\n");
 
-            var cmd = new BuildpackDetectCommand { SourceDir = srcDir };
+            var cmd = new BuildpackDetectCommand
+            {
+                SourceDir = srcDir,
+                PlanPath = Path.Combine(_testDirPath, "plan.toml")
+            };
             var console = new TestConsole();
 
             // Act
@@ -57,6 +62,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
                 $"{NodeConstants.NodeJsName}=\"{NodeScriptGeneratorOptionsSetup.NodeLtsVersion}\"",
+                console.StdOutput);
+        }
+
+        [Fact]
+        public void Execute_OutputsPhp_WhenComposerFileExists()
+        {
+            // Arrange
+            var srcDir = Path.Combine(_testDirPath, "phpappdir");
+            Directory.CreateDirectory(srcDir);
+            File.WriteAllText(Path.Combine(srcDir, PhpConstants.ComposerFileName), "\n");
+
+            var cmd = new BuildpackDetectCommand
+            {
+                SourceDir = srcDir,
+                PlanPath = Path.Combine(_testDirPath, "plan.toml")
+            };
+            var console = new TestConsole();
+
+            // Act
+            int exitCode = cmd.Execute(GetServiceProvider(cmd), console);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+                $"{PhpConstants.PhpName}=\"{PhpConstants.DefaultPhpRuntimeVersion}\"",
                 console.StdOutput);
         }
 

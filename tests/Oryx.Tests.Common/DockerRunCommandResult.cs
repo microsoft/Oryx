@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,23 +14,23 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerRunCommandResult : DockerCommandResult
     {
+        private readonly IEnumerable<DockerVolume> _volumes;
+
         public DockerRunCommandResult(
             string containerName,
             int exitCode,
             Exception exception,
             string output,
             string error,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string executedRunCommand)
             : base(exitCode, exception, output, error, executedRunCommand)
         {
             ContainerName = containerName;
-            Volumes = volumes;
+            _volumes = volumes;
         }
 
         public string ContainerName { get; }
-
-        private List<DockerVolume> Volumes { get; }
 
         public override string GetDebugInfo(IDictionary<string, string> extraDefs = null)
         {
@@ -45,9 +46,11 @@ namespace Microsoft.Oryx.Tests.Common
             sb.AppendLine();
 
             var volumeList = string.Empty;
-            if (Volumes?.Count > 0)
+            if (_volumes?.Count() > 0)
             {
-                volumeList = string.Join(" ", Volumes.Select(kvp => $"-v {kvp.MountedHostDir}:/{kvp.ContainerDir.TrimStart('/')}"));
+                volumeList = string.Join(
+                    " ",
+                    _volumes.Select(kvp => $"-v {kvp.MountedHostDir}:/{kvp.ContainerDir.TrimStart('/')}"));
             }
             sb.AppendLine($"docker run -it {volumeList} investigate_{ContainerName} /bin/bash");
 
