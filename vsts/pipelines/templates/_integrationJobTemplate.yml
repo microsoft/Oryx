@@ -7,6 +7,8 @@ jobs:
   pool:
     name: OryxLinux
   timeoutInMinutes: 100
+  variables:
+    skipComponentGovernanceDetection: true
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
@@ -28,6 +30,8 @@ jobs:
     - Job_RuntimeImages
   pool:
     name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
@@ -49,6 +53,8 @@ jobs:
     - Job_RuntimeImages
   pool:
     name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -71,6 +77,8 @@ jobs:
     - Job_RuntimeImages
   pool:
     name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
@@ -92,6 +100,8 @@ jobs:
     - Job_RuntimeImages
   pool:
     name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"

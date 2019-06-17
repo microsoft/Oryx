@@ -1,6 +1,6 @@
 # Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
-ARG PYTHON_BUILD_BASE_TAG
+ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
@@ -272,10 +272,10 @@ RUN set -ex \
 # Python intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BUILD_BASE_TAG} AS py27-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BUILD_BASE_TAG} AS py36-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BUILD_BASE_TAG} AS py37-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BUILD_BASE_TAG} AS py38-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
 ###
 # End Python intermediate stages
 ###
