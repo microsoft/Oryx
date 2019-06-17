@@ -10,13 +10,22 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__php-versions.sh
+source $REPO_DIR/build/__python-versions.sh # For PYTHON_BASE_TAG
+source $REPO_DIR/build/__php-versions.sh    # For PHP_BUILD_BASE_TAG
+
+declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
+                                --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG"
+
+echo
+echo Base tag args used:
+echo $BASE_TAG_BUILD_ARGS
+echo
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 declare BUILD_SIGNED=""
 
-echo "SignType is: "$SIGNTYPE
+echo "SignType is: $SIGNTYPE"
 
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
@@ -44,7 +53,7 @@ function BuildAndTagStage()
 	echo
 	echo
 	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build --target $stageName -t $stageTagName $ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build --target $stageName -t $stageTagName $ctxArgs $BASE_TAG_BUILD_ARGS -f "$BUILD_IMAGES_DOCKERFILE" .
 }
 
 docker pull buildpack-deps:stretch
@@ -60,15 +69,16 @@ BuildAndTagStage dotnet-install
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 
+
 builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
-	--build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
+	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$ctxArgs -f "$BUILD_IMAGES_DOCKERFILE" .
 
 echo
-echo Building a base image for tests ...
+echo Building a base image for tests...
 # Do not write this image tag to the artifacts file as we do not intend to push it
 docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 
@@ -119,7 +129,8 @@ then
 fi
 
 echo
-echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
+echo "Cleanup:"
+echo "Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
 if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
 then
 	docker system prune -f
