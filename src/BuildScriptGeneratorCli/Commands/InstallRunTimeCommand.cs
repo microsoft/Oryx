@@ -16,13 +16,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class InstallRunTimeCommand : CommandBase
     {
         [Option(
-            "-p|--platform <name>",
+            OptionTemplates.Platform,
             CommandOptionType.SingleValue,
             Description = "The name of the platform for which the runtime components should be installed.")]
         public string Platform { get; set; }
 
         [Option(
-            "--platform-version <version>",
+            OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
             Description = "The version of the platform for which the runtime components should be installed.")]
         public string PlatformVersion { get; set; }
