@@ -6,8 +6,8 @@
 package main
 
 import (
+	"common"
 	"flag"
-	"startupscriptgenerator/common"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
-	common.SetGlobalOperationId(fullAppPath)
+	common.SetGlobalOperationID(fullAppPath)
 
 	entrypointGenerator := PythonStartupScriptGenerator{
 		SourcePath:               fullAppPath,

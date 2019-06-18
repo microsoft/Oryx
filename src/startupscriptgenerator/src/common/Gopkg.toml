@@ -26,8 +26,16 @@
 
 
 [[constraint]]
-  name = "github.com/Microsoft/ApplicationInsights-Go"
-  revision = "91c278ebf40dacf87986074aed81db50551e0009"
+  name = "github.com/BurntSushi/toml"
+  version = "0.3.1"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/microsoft/ApplicationInsights-Go"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "1.3.0"
 
 [prune]
   go-tests = true

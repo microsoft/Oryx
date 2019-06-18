@@ -2,10 +2,12 @@
 **/obj/*
 **/.vs/
 **/.git/
+artifacts/
 tests/
 vsts/
-src/golang.org/
-src/github.com/
-pkg/
-bin/
-artifacts/
+**/golang.org/
+**/github.com/
+**/gotest.tools/
+**/pkg/
+**/bin/
+**/vendor/

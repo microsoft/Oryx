@@ -6,7 +6,7 @@
 package main
 
 import (
-	"startupscriptgenerator/common"
+	"common"
 	"strings"
 )
 
