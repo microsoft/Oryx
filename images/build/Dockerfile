@@ -1,7 +1,9 @@
-# Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+# Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
+ARG PYTHON_BASE_TAG
+ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
-# End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+# End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -266,6 +268,18 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
+###
+# Python intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
+FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
+###
+# End Python intermediate stages
+###
+
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -276,9 +290,10 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
+COPY --from=py27-build-base /opt /opt
+COPY --from=py36-build-base /opt /opt
+COPY --from=py37-build-base /opt /opt
+COPY --from=py38-build-base /opt /opt
 RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
@@ -290,6 +305,7 @@ RUN . /tmp/__python-versions.sh && set -ex \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
  && cd /usr/local/bin \
@@ -319,6 +335,42 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
+###
+# PHP intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
+FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+###
+# End PHP intermediate stages
+###
+
+###
+# Build run script generators (to be used by the `oryx run-script` command)
+###
+FROM golang:1.11-stretch as startupScriptGens
+
+WORKDIR /go/src/startupscriptgenerator/
+COPY src/startupscriptgenerator .
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+
+# GOPATH is set to "/go" in the base image, so no need to set it again
+RUN ./prepare-go-env.sh
+
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+###
+# End build run script generators
+###
+
 FROM python AS final
 WORKDIR /
 
@@ -344,19 +396,25 @@ COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/
 # Copy PHP versions
 COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
 RUN . /tmp/php/install-prereqs.sh
-COPY --from=mcr.microsoft.com/oryx/php-build-base:5.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.0-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.2-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.3-20190530.1 /opt /opt
+
+COPY --from=php56-build-base /opt /opt
+COPY --from=php70-build-base /opt /opt
+COPY --from=php72-build-base /opt /opt
+COPY --from=php73-build-base /opt /opt
+
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
  && ln -s /opt/php/lts/bin/php /usr/local/bin/php
 
-# Build script generator content, currently docker doesn't support variables in --from
+# Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
+
+# Oryx depends on the run script generators for most of its
+# `IProgrammingPlatform.GenerateBashRunScript()` implementations
+COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

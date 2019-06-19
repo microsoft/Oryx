@@ -43,6 +43,9 @@ case $IMAGE_DIR_TO_BUILD in
 
 		docker build -f $BUILD_IMAGE_PREFIX/python/3.7/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG" $__REPO_DIR
 		echo "$PYTHON_IMAGE_PREFIX-3.7:$IMAGE_TAG" >> $ARTIFACTS_FILE
+
+		docker build -f $BUILD_IMAGE_PREFIX/python/3.8/Dockerfile -t "$PYTHON_IMAGE_PREFIX-3.8:$IMAGE_TAG" $__REPO_DIR
+		echo "$PYTHON_IMAGE_PREFIX-3.8:$IMAGE_TAG" >> $ARTIFACTS_FILE
 		;;
 	'php')
 		echo "Building PHP base images"

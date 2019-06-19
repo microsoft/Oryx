@@ -32,20 +32,27 @@ fi
 
 echo
 
+integrationTestPlatform=""
+
 if [ -n "$1" ]; then
     testCaseFilter="--filter $1"
-	echo "Running integration tests with filter '$testCaseFilter'..."
+    integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
+	echo "Running integration tests for '$integrationTestPlatform' with filter '$testCaseFilter'..."
 else
 	echo "Running all integration tests..."
 fi
 
 echo
 
-testProjectName="Oryx.Integration.Tests"
-cd "$TESTS_SRC_DIR/$testProjectName"
+testProjectName="Oryx.Integration"
+cd "$TESTS_SRC_DIR/$testProjectName.Tests"
+
+# These two images are used in Buildpacks-related integration tests
+docker pull heroku/buildpacks:18
+docker pull heroku/pack:18
 
 dotnet test \
     $testCaseFilter \
     --test-adapter-path:. \
-    --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName.xml" \
+    --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION

@@ -223,93 +223,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             context.NodeVersion = version;
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions options)
-        {
-            if (options.SourceRepo == null)
-            {
-                throw new ArgumentNullException(nameof(RunScriptGeneratorOptions.SourceRepo));
-            }
-
-            string startupCommand = null;
-
-            // Log how we detected the entrypoint command
-            var commandSource = string.Empty;
-            if (!string.IsNullOrWhiteSpace(options.UserStartupCommand))
-            {
-                startupCommand = options.UserStartupCommand.Trim();
-                _logger.LogInformation("Using user-provided startup command");
-                commandSource = "User";
-            }
-            else
-            {
-                var packageJson = GetPackageJsonObject(options.SourceRepo, _logger);
-                startupCommand = packageJson?.scripts?.start;
-                if (string.IsNullOrWhiteSpace(startupCommand))
-                {
-                    string mainJsFile = packageJson?.main;
-                    if (string.IsNullOrEmpty(mainJsFile))
-                    {
-                        var candidateFiles = new[]
-                        {
-                            "bin/www",
-                            "server.js",
-                            "app.js",
-                            "index.js",
-                            "hostingstart.js"
-                        };
-                        foreach (var file in candidateFiles)
-                        {
-                            if (options.SourceRepo.FileExists(file))
-                            {
-                                startupCommand = GetStartupCommandFromJsFile(options, file);
-                                _logger.LogInformation("Found startup candidate {nodeStartupFile}", file);
-                                commandSource = "CandidateFile";
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        startupCommand = GetStartupCommandFromJsFile(options, mainJsFile);
-                        commandSource = "PackageJsonMain";
-                    }
-                }
-                else
-                {
-                    if (options.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
-                    {
-                        commandSource = "PackageJsonStartYarn";
-                        startupCommand = NodeConstants.YarnStartCommand;
-                        _logger.LogInformation("Found startup command in package.json, and will use Yarn");
-                    }
-                    else
-                    {
-                        commandSource = "PackageJsonStartNpm";
-                        startupCommand = NodeConstants.NpmStartCommand;
-                        _logger.LogInformation("Found startup command in package.json, and will use npm");
-                    }
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(startupCommand))
-            {
-                startupCommand = GetStartupCommandFromJsFile(options, options.DefaultAppPath);
-                commandSource = "DefaultApp";
-            }
-
-            _logger.LogInformation("Finalizing entrypoint script using {commandSource}", commandSource);
-            var templateValues = new NodeBashRunScriptProperties
-            {
-                AppDirectory = options.SourceRepo.RootPath,
-                StartupCommand = startupCommand,
-                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion)
-                ? null : $"node={options.PlatformVersion}",
-                BindPort = options.BindPort
-            };
-            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
-            return script;
-        }
-
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
@@ -365,17 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
         {
-            bool ret = false;
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
-            {
-                if (string.IsNullOrWhiteSpace(value) || value.EqualsIgnoreCase("true"))
-                {
-                    ret = true;
-                }
-            }
-
-            return ret;
+            return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, valueIsRequired: false);
         }
 
         private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
@@ -444,38 +347,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return isNodeModulesPackaged;
-        }
-
-        private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)
-        {
-            var command = string.Empty;
-            if (!string.IsNullOrWhiteSpace(options.CustomServerCommand))
-            {
-                _logger.LogInformation("Using custom server command {nodeCommand}", options.CustomServerCommand);
-                command = $"{options.CustomServerCommand.Trim()} {file}";
-            }
-            else
-            {
-                switch (options.DebuggingMode)
-                {
-                    case DebuggingMode.Standard:
-                        _logger.LogInformation("Debugging in standard mode");
-                        command = $"node --inspect {file}";
-                        break;
-
-                    case DebuggingMode.Break:
-                        _logger.LogInformation("Debugging in break mode");
-                        command = $"node --inspect-brk {file}";
-                        break;
-
-                    case DebuggingMode.None:
-                        _logger.LogInformation("Running without debugging");
-                        command = $"node {file}";
-                        break;
-                }
-            }
-
-            return command;
         }
 
         private string GetNpmVersion(dynamic packageJson)

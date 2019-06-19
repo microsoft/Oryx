@@ -254,43 +254,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("oryxdevms/pack-builder")]
-        [InlineData("heroku/buildpacks")]
-        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
-        {
-            // Arrange
-            var appName = "webfrontend";
-            var appVolume = CreateAppVolume(appName);
-            // Allows `pack` to use the host's Docker engine
-            var dockerPort = DockerVolume.DockerDaemonSocket;
-            var appImageName = "testnodeapp";
-
-            // Act
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                new List<DockerVolume> { appVolume, dockerPort },
-                Constants.PackImageName,
-                null, // `pack` is already in the image's ENTRYPOINT
-                new[]
-                {
-                    "build", appImageName,
-                    "--no-color",
-                    "--path", appVolume.ContainerDir,
-                    "--builder", builder
-                },
-                appImageName,
-                8080,
-                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
-                runArgs: null,
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
-                });
-        }
-
         [Fact]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {
@@ -620,8 +583,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
-        public async Task Node_CreateReactAppSample_singleImage()
+        [Fact]
+        public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
             var appName = "create-react-app-sample";
@@ -632,9 +595,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --bindPort {ContainerPort}")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -644,7 +606,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -659,7 +621,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
         {
             // Arrange
@@ -669,19 +631,17 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
-            const string customStartupScriptName = "customStartup.sh";
-            File.WriteAllText(Path.Join(volume.MountedHostDir, customStartupScriptName),
+            const string customRunScriptName = "customStartup.sh";
+            File.WriteAllText(Path.Join(volume.MountedHostDir, customRunScriptName),
                 "#!/bin/bash\n" +
                 $"PORT={ContainerPort} node server.js\n");
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"chmod -x ./{customStartupScriptName}")
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptName} --debug")
-                .AddCommand($"./{customStartupScriptName}")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {customRunScriptName} -- -userStartupCommand {customRunScriptName}")
+                .AddCommand($"./{customRunScriptName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -690,7 +650,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -705,7 +665,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "#824174: Sync the Node Go startup code with the C# 'run-script' code")]
+        [Fact]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
@@ -715,14 +675,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
 
             // Create a custom startup command
-            const string customStartupScriptCommand = "'npm start'";
+            const string customRunCommand = "'npm start'";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx run-script --appPath {appDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} --userStartupCommand {customStartupScriptCommand} --debug")
+                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                            $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort} " +
+                            $"-userStartupCommand {customRunCommand}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -732,7 +692,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: $"oryxdevms/build",
+                runtimeImageName: "oryxdevms/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -983,6 +943,34 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/json/list");
                     Assert.Contains("devtoolsFrontendUrl", data);
+                });
+        }
+    }
+
+    [Trait("category", "node")]
+    public class NodeBuildpackTests : NodeEndToEndTestsBase
+    {
+        public NodeBuildpackTests(ITestOutputHelper output, TestTempDirTestFixture fixture) : base(output, fixture)
+        {
+        }
+
+        [Theory]
+        [InlineData(Constants.OryxBuildpackBuilderImageName)]
+        [InlineData(Constants.HerokuBuildpackBuilderImageName)]
+        public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
+        {
+            var appName = "webfrontend";
+
+            await EndToEndTestHelper.RunPackAndAssertAppAsync(
+                _output,
+                appName,
+                CreateAppVolume(appName),
+                "test-nodeapp",
+                builder,
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
                 });
         }
     }
