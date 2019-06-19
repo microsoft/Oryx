@@ -36,7 +36,9 @@ integrationTestPlatform=""
 
 if [ -n "$1" ]; then
     testCaseFilter="--filter $1"
-    integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
+	if [ -n "$BUILD_NUMBER" ]; then
+		integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
+	fi
 	echo "Running integration tests for '$integrationTestPlatform' with filter '$testCaseFilter'..."
 else
 	echo "Running all integration tests..."

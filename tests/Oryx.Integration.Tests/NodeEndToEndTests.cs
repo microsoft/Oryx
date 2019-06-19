@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
+    [Trait("category", "node")]
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -954,7 +955,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip ="this will be re-enabled when this is fixed, disabling temporarily")]
+        [Theory(Skip = "Node BuildPack Integration tests needs to be fixed")]
         [InlineData(Constants.OryxBuildpackBuilderImageName)]
         [InlineData(Constants.HerokuBuildpackBuilderImageName)]
         public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
