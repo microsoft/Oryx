@@ -212,9 +212,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return resultPlatforms;
         }
 
-        public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
+        public IReadOnlyDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
         {
-            throw new NotImplementedException();
+            var toolsToVersion = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            GetBuildSnippets(ctx, toolsToVersion, null, null);
+            return new ReadOnlyDictionary<string, string>(toolsToVersion);
         }
 
         private void RunCheckers(
@@ -246,8 +248,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private IList<BuildScriptSnippet> GetBuildSnippets(
             BuildScriptGeneratorContext context,
             Dictionary<string, string> toolsToVersion,
-            List<string> directoriesToExcludeFromCopyToIntermediateDir,
-            List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
+            [CanBeNull] List<string> directoriesToExcludeFromCopyToIntermediateDir,
+            [CanBeNull] List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
         {
             var snippets = new List<BuildScriptSnippet>();
 
@@ -256,16 +258,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 var (platform, targetVersionSpec) = platformAndVersion;
 
-                var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
-                if (excludedDirs.Any())
+                if (directoriesToExcludeFromCopyToIntermediateDir != null)
                 {
-                    directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
+                    var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
+                    if (excludedDirs.Any())
+                    {
+                        directoriesToExcludeFromCopyToIntermediateDir.AddRange(excludedDirs);
+                    }
                 }
 
-                excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
-                if (excludedDirs.Any())
+                if (directoriesToExlcudeFromCopyToBuildOutputDir != null)
                 {
-                    directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
+                    var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
+                    if (excludedDirs.Any())
+                    {
+                        directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
+                    }
                 }
 
                 string targetVersion = GetMatchingTargetVersion(platform, targetVersionSpec);

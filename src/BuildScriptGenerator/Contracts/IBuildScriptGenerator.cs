@@ -35,6 +35,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="ctx">A <see cref="BuildScriptGeneratorContext"/>.</param>
         /// <returns>a dictionary of tool name and version pairs.</returns>
-        IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx);
+        IReadOnlyDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx);
     }
 }
