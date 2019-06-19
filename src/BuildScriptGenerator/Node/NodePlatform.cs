@@ -223,8 +223,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             context.NodeVersion = version;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             var dirs = new List<string>
             {
@@ -233,7 +232,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
-            if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
+            if (GetNodeModulesPackOptions(ctx, out string compressCommand, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }
@@ -245,8 +244,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return dirs;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return new[]
             {
