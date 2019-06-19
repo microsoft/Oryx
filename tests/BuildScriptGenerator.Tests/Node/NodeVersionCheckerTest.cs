@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
 
             // Act
-            var ltsVer = NodeScriptGeneratorOptionsSetup.NodeLtsVersion;
+            var ltsVer = NodeConstants.NodeLtsVersion;
             var messages = checker.CheckToolVersions(
                 new Dictionary<string, string> { { NodeConstants.NodeToolName, ltsVer } });
 

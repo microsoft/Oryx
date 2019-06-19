@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             optionsSetup.Configure(options);
 
             // Assert
-            Assert.Equal("8.11.2", options.NodeJsDefaultVersion);
+            Assert.Equal(NodeVersions.Node10Version, options.NodeJsDefaultVersion);
         }
 
         [Fact]
