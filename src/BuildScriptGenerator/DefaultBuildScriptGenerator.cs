@@ -212,6 +212,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return resultPlatforms;
         }
 
+        public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
+        {
+            throw new NotImplementedException();
+        }
+
         private void RunCheckers(
             BuildScriptGeneratorContext ctx,
             IDictionary<string, string> tools,
