@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return resultPlatforms;
         }
 
-        public IReadOnlyDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
+        public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
         {
             var toolsToVersion = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             GetBuildSnippets(ctx, toolsToVersion, null, null);

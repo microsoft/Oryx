@@ -19,11 +19,13 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(ExecCommand.Name, Description = "Execute an arbitrary command in an environment with the best-matching " +
-        "platform tool versions.")]
+    [Command(ExecCommand.Name, Description = "Execute an arbitrary command in the default shell, in an environment " +
+        "with the best-matching platform tool versions.")]
     internal class ExecCommand : CommandBase
     {
         public const string Name = "exec";
+
+        public const string ShellEnvVarName = "SHELL";
 
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
@@ -34,7 +36,35 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            Console.WriteLine($"Running {Command}");
+            var env = serviceProvider.GetRequiredService<IEnvironment>();
+            var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
+
+            var shellPath = env.GetEnvironmentVariable(ShellEnvVarName);
+            logger.LogInformation("Using shell {shell}", shellPath);
+
+            var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
+            var tools = generator.GetRequiredToolVersions(ctx);
+
+            var printer = new DefinitionListFormatter();
+            printer.AddDefinitions(tools);
+            console.WriteLine(printer.ToString());
+            /*
+            var benvCommand = string.Empty;
+            int exitCode;
+            using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
+            {
+                exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
+                    shellPath,
+                    new[] { "-c", $"{benvCommand} {Command}" },
+                    SourceDir,
+                    stdOutHandler,
+                    stdErrHandler);
+
+                timedEvent.AddProperty("exitCode", exitCode.ToString());
+            }
+
+            return exitCode;
+            */
             return ProcessConstants.ExitSuccess;
         }
 
