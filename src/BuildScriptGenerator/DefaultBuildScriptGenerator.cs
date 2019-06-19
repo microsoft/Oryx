@@ -38,6 +38,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
         }
 
+        public static string GetBenvArgs(IDictionary<string, string> benvArgsMap)
+        {
+            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
+            var benvArgs = string.Join(' ', listOfBenvArgs);
+            return benvArgs;
+        }
+
         public void GenerateBashScript(
             BuildScriptGeneratorContext context,
             out string script,
@@ -203,13 +210,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return resultPlatforms;
-        }
-
-        private static string GetBenvArgs(IDictionary<string, string> benvArgsMap)
-        {
-            var listOfBenvArgs = benvArgsMap.Select(t => $"{t.Key}={t.Value}");
-            var benvArgs = string.Join(' ', listOfBenvArgs);
-            return benvArgs;
         }
 
         private void RunCheckers(
