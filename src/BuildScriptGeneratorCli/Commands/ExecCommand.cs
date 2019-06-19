@@ -19,10 +19,12 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("exec", Description = "Execute an arbitrary command in an environment with the best-matching platform " +
-        "tool versions.")]
+    [Command(ExecCommand.Name, Description = "Execute an arbitrary command in an environment with the best-matching " +
+        "platform tool versions.")]
     internal class ExecCommand : CommandBase
     {
+        public const string Name = "exec";
+
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
 
