@@ -26,8 +26,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Determines which platforms can be used to build the given application.
         /// </summary>
-        /// <param name="ctx">The <see cref="BuildScriptGeneratorContext"/> with parameters for check.</param>
+        /// <param name="ctx">A <see cref="BuildScriptGeneratorContext"/>.</param>
         /// <returns>a list of platform and version pairs.</returns>
         IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx);
+
+        /// <summary>
+        /// Determines the versions of the tools required for building the given application.
+        /// </summary>
+        /// <param name="ctx">A <see cref="BuildScriptGeneratorContext"/>.</param>
+        /// <returns>a dictionary of tool name and version pairs.</returns>
+        IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx);
     }
 }
