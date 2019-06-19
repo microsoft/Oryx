@@ -31,5 +31,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
         internal const string NodeAppInsightsPackageName = "applicationinsights";
         internal const string InjectedAppInsights = "injectedAppInsights";
+        internal const string NodeLtsVersion = NodeVersions.Node10Version;
     }
 }
