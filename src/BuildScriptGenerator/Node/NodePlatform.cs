@@ -226,9 +226,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
-            var dirs = new List<string>();
-            dirs.Add(NodeConstants.AllNodeModulesDirName);
-            dirs.Add(NodeConstants.ProdNodeModulesDirName);
+            var dirs = new List<string>
+            {
+                NodeConstants.AllNodeModulesDirName,
+                NodeConstants.ProdNodeModulesDirName
+            };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
             if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
