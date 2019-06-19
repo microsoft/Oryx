@@ -116,5 +116,5 @@
       directory: build
       file-name-prefix: __
     - type: csharp
-      directory: tests/Oryx.Tests.Common
-      namespace: Microsoft.Oryx.Tests.Common
+      directory: src/BuildScriptGenerator/Node
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node      
