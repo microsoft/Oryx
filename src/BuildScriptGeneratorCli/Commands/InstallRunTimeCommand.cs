@@ -41,7 +41,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var options = new RunTimeInstallationScriptGeneratorOptions
             {
-                Platform = Platform,
                 PlatformVersion = PlatformVersion,
                 InstallationDir = InstallationPrefix
             };
