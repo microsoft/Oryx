@@ -13,10 +13,12 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("run-script", Description = "Generate startup script.",
+    [Command(RunScriptCommand.Name, Description = "Generate startup script.",
         ThrowOnUnexpectedArgument = false, AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
+        public const string Name = "run-script";
+
         [Argument(0, Description = "The application directory.")]
         public string AppDir { get; set; } = ".";
 

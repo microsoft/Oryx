@@ -11,10 +11,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("buildpack-build", Description = "Builds an app in the current working directory " +
+    [Command(BuildpackBuildCommand.Name, Description = "Build an app in the current working directory " +
         "(for use in a Buildpack).")]
     internal class BuildpackBuildCommand : BuildCommand
     {
+        public new const string Name = "buildpack-build";
+
         [Option("--layers-dir <dir>", CommandOptionType.SingleValue, Description = "Layers directory path.")]
         public string LayersDir { get; set; }
 
