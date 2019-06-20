@@ -13,7 +13,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(RunScriptCommand.Name, Description = "Generate startup script.",
+    [Command(Name, Description = "Generate startup script.",
         ThrowOnUnexpectedArgument = false, AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
