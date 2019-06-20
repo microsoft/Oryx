@@ -16,8 +16,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(LanguagesCommand.Name, Description = "Show the list of supported platforms and other information " +
-        "like versions, properties etc.")]
+    [Command(Name, Description = "Show a list of supported platforms along with their versions and build properties.")]
     internal class LanguagesCommand : CommandBase
     {
         public const string Name = "languages";

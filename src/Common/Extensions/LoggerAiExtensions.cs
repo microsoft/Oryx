@@ -24,7 +24,12 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Logs dependency specifications for a processed repository.
         /// </summary>
-        public static void LogDependencies(this ILogger logger, string platform, string platformVersion, IEnumerable<string> dependencySpecs)
+        public static void LogDependencies(
+            this ILogger logger,
+            string platform,
+            string platformVersion,
+            IEnumerable<string> depSpecs,
+            bool devDeps = false)
         {
             var client = GetTelemetryClient();
             var props = new Dictionary<string, string>
@@ -33,10 +38,11 @@ namespace Microsoft.Extensions.Logging
                 { nameof(platformVersion), platformVersion }
             };
 
-            foreach (string dep in dependencySpecs)
+            string devPrefix = devDeps ? "Dev " : string.Empty;
+            foreach (string dep in depSpecs)
             {
                 client.TrackTrace(
-                    $"Dependency: {dep.ReplaceUrlUserInfo()}",
+                    $"{devPrefix}Dependency: {dep.ReplaceUrlUserInfo()}",
                     ApplicationInsights.DataContracts.SeverityLevel.Information,
                     props);
             }
