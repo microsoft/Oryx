@@ -11,8 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(BuildpackBuildCommand.Name, Description = "Build an app in the current working directory " +
-        "(for use in a Buildpack).")]
+    [Command(Name, Description = "Build an app in the current working directory (for use in a Buildpack).")]
     internal class BuildpackBuildCommand : BuildCommand
     {
         public new const string Name = "buildpack-build";
