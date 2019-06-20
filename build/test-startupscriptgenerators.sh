@@ -7,12 +7,7 @@
 set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-
-if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
-	declare -r GEN_DIR="$REPO_DIR/src/startupscriptgenerator/src"
-else
-	declare -r GEN_DIR="c:\oryx\src\startupscriptgenerator\src"
-fi
+declare -r GEN_DIR="$REPO_DIR/src/startupscriptgenerator/src"
 
 # When volume mounting a directory from the host machine, we host it as a readonly folder because any modifications by a
 # container in that folder would be owned by 'root' user(as containers run as 'root' by default). Since CI build agents
@@ -23,7 +18,7 @@ declare -r GEN_DIR_CONTAINER="/go/src"
 declare -r MODULE_TO_TEST="..."
 declare -r CONTAINER_NAME="oryxtests_$RANDOM"
 
-runTests="echo Running tests..."
+runTests="echo && echo Running tests..."
 runTests="$runTests && cd $GEN_DIR_CONTAINER/common && go test -v "
 runTests="$runTests && cd $GEN_DIR_CONTAINER/dotnetcore && go test -v "
 runTests="$runTests && cd $GEN_DIR_CONTAINER/node && go test -v "
