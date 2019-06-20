@@ -8,6 +8,7 @@ using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 
@@ -65,8 +66,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
-            if (!Directory.Exists(SourceDir))
+            if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", SourceDir);
                 console.Error.WriteLine($"Error: Could not find the source directory '{SourceDir}'.");
@@ -80,6 +82,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return true;
+        }
+
+        internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
+        {
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
+                options,
+                SourceDir,
+                null,
+                null,
+                null,
+                null,
+                scriptOnly: false,
+                null);
         }
     }
 }
