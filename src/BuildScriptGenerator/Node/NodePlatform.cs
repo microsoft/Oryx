@@ -226,6 +226,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             context.NodeVersion = version;
         }
 
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             var dirs = new List<string>

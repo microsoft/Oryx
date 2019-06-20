@@ -15,10 +15,12 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("buildpack-detect", Description = "Determines whether Oryx can be applied as a buildpack to " +
+    [Command(BuildpackDetectCommand.Name, Description = "Determine whether Oryx can be applied as a buildpack to " +
         "an app in the current working directory.")]
     internal class BuildpackDetectCommand : CommandBase
     {
+        public const string Name = "buildpack-detect";
+
         // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 

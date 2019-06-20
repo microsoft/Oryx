@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -95,6 +96,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             (_, string expectedPublishDir) = GetProjectFileAndPublishDir(repo);
             return !repo.DirExists(expectedPublishDir);
+        }
+
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)

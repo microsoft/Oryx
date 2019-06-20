@@ -90,6 +90,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return true;
         }
 
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");

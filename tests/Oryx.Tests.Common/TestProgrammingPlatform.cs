@@ -45,8 +45,7 @@ namespace Microsoft.Oryx.Tests.Common
             return _detector?.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext _)
         {
             if (_canGenerateScript == true)
             {
@@ -56,14 +55,17 @@ namespace Microsoft.Oryx.Tests.Common
             return null;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions _)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext _)
         {
             return Array.Empty<string>();
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext _)
         {
             return Array.Empty<string>();
         }
