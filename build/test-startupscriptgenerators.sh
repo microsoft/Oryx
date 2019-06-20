@@ -4,20 +4,32 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-declare -r GEN_DIR="$REPO_DIR/src/startupscriptgenerator/"
+
+if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+	declare -r GEN_DIR="$REPO_DIR/src/startupscriptgenerator/src"
+else
+	declare -r GEN_DIR="c:\oryx\src\startupscriptgenerator\src"
+fi
+
 # When volume mounting a directory from the host machine, we host it as a readonly folder because any modifications by a
 # container in that folder would be owned by 'root' user(as containers run as 'root' by default). Since CI build agents
 # run as non-root cleaning these files would be a problem. So we copy the mounted directory in the container
 # to a different directory within the container itself and run tests on it.
-declare -r GEN_DIR_CONTAINER_RO="/src"
-declare -r GEN_DIR_CONTAINER="/go/src/startupscriptgenerator"
-declare -r MODULE_TO_TEST="startupscriptgenerator/..."
+declare -r GEN_DIR_CONTAINER_RO="/startupscriptgenerator"
+declare -r GEN_DIR_CONTAINER="/go/src"
+declare -r MODULE_TO_TEST="..."
 declare -r CONTAINER_NAME="oryxtests_$RANDOM"
+
+runTests="echo Running tests..."
+runTests="$runTests && cd $GEN_DIR_CONTAINER/common && go test -v "
+runTests="$runTests && cd $GEN_DIR_CONTAINER/dotnetcore && go test -v "
+runTests="$runTests && cd $GEN_DIR_CONTAINER/node && go test -v "
+runTests="$runTests && cd $GEN_DIR_CONTAINER/python && go test -v "
+runTests="$runTests && cd $GEN_DIR_CONTAINER/php && go test -v "
 
 echo "Running tests in golang docker image..."
 docker run -v $GEN_DIR:$GEN_DIR_CONTAINER_RO:ro --name $CONTAINER_NAME golang:1.11-stretch bash -c \
-	"cp -rf $GEN_DIR_CONTAINER_RO $GEN_DIR_CONTAINER && cd $GEN_DIR_CONTAINER && ./prepare-go-env.sh && \
-	go test $MODULE_TO_TEST -v"
+	"cp -rf $GEN_DIR_CONTAINER_RO/* $GEN_DIR_CONTAINER && cd $GEN_DIR_CONTAINER && ./restorePackages.sh && $runTests"
