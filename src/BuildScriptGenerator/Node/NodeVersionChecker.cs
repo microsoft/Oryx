@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
             var used = tools[NodeConstants.NodeToolName];
-            var comparison = SemanticVersionResolver.CompareVersions(used, NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
+            var comparison = SemanticVersionResolver.CompareVersions(used, NodeConstants.NodeLtsVersion);
             _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {

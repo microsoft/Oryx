@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
+                supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "server.js");
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("8.11.2", result.LanguageVersion);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
+                supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile("app.js content", "app.js");
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("8.11.2", result.LanguageVersion);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
+                supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
@@ -196,7 +196,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("8.11.2", result.LanguageVersion);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
         [Fact]
@@ -224,7 +224,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Arrange
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
+                supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithOnlyNpmVersion, NodeConstants.PackageJsonFileName);
@@ -235,7 +235,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("8.11.2", result.LanguageVersion);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
         [Fact]
@@ -287,7 +287,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
+                supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
@@ -298,7 +298,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("8.11.2", result.LanguageVersion);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
         [Fact]

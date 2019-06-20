@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"{NodeConstants.NodeJsName}=\"{NodeScriptGeneratorOptionsSetup.NodeLtsVersion}\"",
+                $"{NodeConstants.NodeJsName}=\"{NodeConstants.NodeLtsVersion}\"",
                 console.StdOutput);
         }
 
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         private static IServiceProvider GetServiceProvider(BuildpackDetectCommand cmd)
         {
             var env = new TestEnvironment();
-            env.SetEnvironmentVariable("NODE_SUPPORTED_VERSIONS", NodeScriptGeneratorOptionsSetup.NodeLtsVersion);
+            env.SetEnvironmentVariable("NODE_SUPPORTED_VERSIONS", NodeConstants.NodeLtsVersion);
 
             var svcProvider = new ServiceProviderBuilder()
                 .ConfigureServices(svcs => svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env)))
