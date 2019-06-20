@@ -7,7 +7,13 @@
 set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-declare -r GEN_DIR="$REPO_DIR/src/startupscriptgenerator/src"
+
+if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+	declare -r GEN_DIR="$REPO_DIR/src/startupscriptgenerator/src"
+else
+	# When running this script on Windows, for example on dev machines
+	declare -r GEN_DIR=$(cmd.exe /C  "echo %CD%\..\src\startupscriptgenerator\src")
+fi
 
 # When volume mounting a directory from the host machine, we host it as a readonly folder because any modifications by a
 # container in that folder would be owned by 'root' user(as containers run as 'root' by default). Since CI build agents
