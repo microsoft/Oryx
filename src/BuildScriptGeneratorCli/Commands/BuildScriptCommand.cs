@@ -63,14 +63,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
             // Invalid to specify language version without language name
             if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
             {
-                console.Error.WriteLine("Cannot use language version without specifying language name also.");
+                console.WriteErrorLine("Cannot use language version without specifying language name also.");
                 return false;
             }
 
