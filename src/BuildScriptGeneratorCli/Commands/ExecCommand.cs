@@ -4,22 +4,16 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
-using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(ExecCommand.Name, Description = "Execute an arbitrary command in the default shell, in an environment " +
+    [Command(Name, Description = "Execute an arbitrary command in the default shell, in an environment " +
         "with the best-matching platform tool versions.")]
     internal class ExecCommand : CommandBase
     {
