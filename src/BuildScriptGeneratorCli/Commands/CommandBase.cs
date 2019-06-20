@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (InvalidUsageException e)
             {
-                console.Error.WriteLine(e.Message);
+                console.WriteErrorLine(e.Message);
                 return ProcessConstants.ExitFailure;
             }
             catch (Exception exc)
