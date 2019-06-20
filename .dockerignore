@@ -5,9 +5,7 @@
 artifacts/
 tests/
 vsts/
-**/golang.org/
 **/github.com/
-**/gotest.tools/
 **/pkg/
 **/bin/
 **/vendor/

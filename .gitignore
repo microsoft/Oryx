@@ -257,9 +257,11 @@ images/runtime/python/*.*/
 images/runtime/php/*.*/
 
 # Go packages from GitHub
-src/startupscriptgenerator/src/github.com/
-src/startupscriptgenerator/src/golang.org/
-src/startupscriptgenerator/src/gotest.tools/
 src/startupscriptgenerator/bin/
+src/startupscriptgenerator/src/github.com/
 src/startupscriptgenerator/pkg/
 src/startupscriptgenerator/**/vendor/
+
+# Go debugging related generated files
+src/startupscriptgenerator/src/**/__debug_bin
+src/startupscriptgenerator/src/**/run.sh
