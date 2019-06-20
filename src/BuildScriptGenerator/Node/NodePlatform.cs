@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -59,18 +60,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             var buildProperties = new Dictionary<string, string>();
 
-            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
+            var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
             bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
 
-            if (context.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
+            if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
@@ -112,27 +113,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             if (packageJson?.dependencies != null)
             {
-                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
-                var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(
-                    context.Language,
-                    context.NodeVersion,
-                    depSpecs.Select(kv => kv.Key + kv.Value));
+                var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
+                _logger.LogDependencies(ctx.Language, ctx.NodeVersion, depSpecs.Select(d => d.Key + d.Value));
+            }
+
+            if (packageJson?.devDependencies != null)
+            {
+                var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
+                _logger.LogDependencies(ctx.Language, ctx.NodeVersion, depSpecs.Select(d => d.Key + d.Value), true);
             }
 
             string compressNodeModulesCommand = null;
             string compressedNodeModulesFileName = null;
-            GetNodeModulesPackOptions(context, out compressNodeModulesCommand, out compressedNodeModulesFileName);
+            GetNodeModulesPackOptions(ctx, out compressNodeModulesCommand, out compressedNodeModulesFileName);
 
             if (!string.IsNullOrWhiteSpace(compressedNodeModulesFileName))
             {
                 buildProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
             }
 
-            bool pruneDevDependencies = ShouldPruneDevDependencies(context);
+            bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
             var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
-            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, context, appInsightsKey);
+            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, ctx, appInsightsKey);
 
             // node_options is only supported in version 8.0.0 or newer and in 6.12.0
             // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
@@ -223,15 +226,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             context.NodeVersion = version;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
-            var dirs = new List<string>();
-            dirs.Add(NodeConstants.AllNodeModulesDirName);
-            dirs.Add(NodeConstants.ProdNodeModulesDirName);
+            var dirs = new List<string>
+            {
+                NodeConstants.AllNodeModulesDirName,
+                NodeConstants.ProdNodeModulesDirName
+            };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
-            if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
+            if (GetNodeModulesPackOptions(ctx, out string compressCommand, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }
@@ -243,8 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return dirs;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return new[]
             {
@@ -285,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             if (packageJson?.dependencies != null)
             {
-                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
+                JObject deps = packageJson.dependencies;
                 var pkgDependencies = deps.ToObject<IDictionary<string, string>>();
                 if (pkgDependencies.ContainsKey(packageName))
                 {
