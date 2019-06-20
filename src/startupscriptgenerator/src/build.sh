@@ -33,5 +33,5 @@ echo
 echo "Building package..."
 cd "$PLATFORM_DIR"
 go build \
-    -ldflags "-X startupscriptgenerator/common.BuildNumber=$BUILD_NUMBER -X startupscriptgenerator/common.Commit=$GIT_COMMIT" \
+    -ldflags "-X common.BuildNumber=$BUILD_NUMBER -X common.Commit=$GIT_COMMIT" \
     -v -o "$TARGET_OUTPUT" .
