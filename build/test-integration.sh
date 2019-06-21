@@ -11,7 +11,7 @@ source $REPO_DIR/build/__variables.sh
 
 # When this script is run in CI agent these environment variables are already set
 if [ -z "$SQLSERVER_DATABASE_HOST" ]; then
-    function getValueFromKeyVault() {
+    function getSecretFromKeyVault() {
         local secretName="$1"
         result=`az.cmd keyvault secret show \
                                         --name "$secretName" \
@@ -24,10 +24,10 @@ if [ -z "$SQLSERVER_DATABASE_HOST" ]; then
 
     echo
     echo Retrieving secrets from Azure Key Vault...
-    export SQLSERVER_DATABASE_HOST=$(getValueFromKeyVault "SQLSERVER-DATABASE-HOST")
-    export SQLSERVER_DATABASE_NAME=$(getValueFromKeyVault "SQLSERVER-DATABASE-NAME")
-    export SQLSERVER_DATABASE_USERNAME=$(getValueFromKeyVault "SQLSERVER-DATABASE-USERNAME")
-    export SQLSERVER_DATABASE_PASSWORD=$(getValueFromKeyVault "SQLSERVER-DATABASE-PASSWORD")
+    export SQLSERVER_DATABASE_HOST=$(getSecretFromKeyVault "SQLSERVER-DATABASE-HOST")
+    export SQLSERVER_DATABASE_NAME=$(getSecretFromKeyVault "SQLSERVER-DATABASE-NAME")
+    export SQLSERVER_DATABASE_USERNAME=$(getSecretFromKeyVault "SQLSERVER-DATABASE-USERNAME")
+    export SQLSERVER_DATABASE_PASSWORD=$(getSecretFromKeyVault "SQLSERVER-DATABASE-PASSWORD")
 fi
 
 echo
@@ -48,8 +48,8 @@ testProjectName="Oryx.Integration"
 cd "$TESTS_SRC_DIR/$testProjectName.Tests"
 
 # These two images are used in Buildpacks-related integration tests
-docker pull heroku/buildpacks:18
-docker pull heroku/pack:18
+docker pull "heroku/buildpacks:18"
+docker pull "heroku/pack:18"
 
 dotnet test \
     $testCaseFilter \
