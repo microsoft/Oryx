@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         private ISourceRepoProvider GetSourceRepoProvider(BuildScriptGeneratorOptions options)
         {
-            return new DefaultSourceRepoProvider(Options.Create(options));
+            return new DefaultSourceRepoProvider(Options.Create(options), NullLoggerFactory.Instance);
         }
 
         private class TestTempDirectoryProvider : ITempDirectoryProvider
