@@ -1,4 +1,8 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 # This script is intended to be copied with the startup command generator to the container to
 # build it, thus avoiding having repeat commands in each Dockerfile. It assumes that the source
@@ -27,7 +31,7 @@ fi
 
 echo "Building the package for platform '$PLATFORM'..."
 
-./restorePackages.sh
+./restore-packages.sh
 
 echo
 echo "Building package..."
