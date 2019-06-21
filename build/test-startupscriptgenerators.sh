@@ -24,13 +24,11 @@ declare -r GEN_DIR_CONTAINER="/go/src"
 declare -r MODULE_TO_TEST="..."
 declare -r CONTAINER_NAME="oryxtests_$RANDOM"
 
-runTests="echo && echo Running tests..."
-runTests="$runTests && cd $GEN_DIR_CONTAINER/common && go test -v "
-runTests="$runTests && cd $GEN_DIR_CONTAINER/dotnetcore && go test -v "
-runTests="$runTests && cd $GEN_DIR_CONTAINER/node && go test -v "
-runTests="$runTests && cd $GEN_DIR_CONTAINER/python && go test -v "
-runTests="$runTests && cd $GEN_DIR_CONTAINER/php && go test -v "
-
 echo "Running tests in golang docker image..."
 docker run -v $GEN_DIR:$GEN_DIR_CONTAINER_RO:ro --name $CONTAINER_NAME golang:1.11-stretch bash -c \
-	"cp -rf $GEN_DIR_CONTAINER_RO/* $GEN_DIR_CONTAINER && cd $GEN_DIR_CONTAINER && ./restorePackages.sh && $runTests"
+	"cp -rf $GEN_DIR_CONTAINER_RO/* $GEN_DIR_CONTAINER && \
+	cd $GEN_DIR_CONTAINER && \
+	./restorePackages.sh && \
+	echo && \
+	echo Running tests... && \
+	go test ./... -v"
