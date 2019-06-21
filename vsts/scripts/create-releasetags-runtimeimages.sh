@@ -6,11 +6,20 @@
 
 set -o pipefail
 
+outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+outFileDocker="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
+
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
   if [[ $sourceImage != *:latest ]]; then
     echo "Pulling the source image $sourceImage ..."
     docker pull "$sourceImage" | sed 's/^/     /'
+    
+    # We tag out runtime images in dev differently than in tag. In dev we have builddefnitionname as part of tag. 
+    # We don't want that in our prod tag. Also we want versions (like node-10.10:latest to be tagged as 
+    # node:10.10-latest) as part of tag. We need to parse the tags so that we can reconstruct tags suitable for our 
+    # prod images.
     
     IFS=':'
     read -ra imageNameParts <<< "$sourceImage"
@@ -35,18 +44,18 @@ while read sourceImage; do
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."
-    echo "$acrSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+    echo "$acrSpecific">>"$outFileMCR"
     docker tag "$sourceImage" "$acrSpecific" 
     echo "Tagging the source image with tag $acrLatest..."
-    echo "$acrLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+    echo "$acrLatest">>"$outFileMCR"
     docker tag "$sourceImage" "$acrLatest"
 
     echo "Tagging the source image with tag $dockerHubLatest..."
-    echo "$dockerHubLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
+    echo "$dockerHubLatest">>"$outFileDocker"
     docker tag "$sourceImage" "$dockerHubLatest"
     echo "Tagging the source image with tag $dockerHubSpecific..."
-    echo "$dockerHubSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
+    echo "$dockerHubSpecific">>"$outFileDocker"
     docker tag "$sourceImage" "$dockerHubSpecific"
     echo -------------------------------------------------------------------------------
   fi
-done <"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
+done <"$sourceFile"
