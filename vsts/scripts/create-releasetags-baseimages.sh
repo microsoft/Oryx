@@ -34,7 +34,8 @@ function retagYarnCacheImage()
     done <"$artifactsFile"
 }
 
-function retagNodeRuntimeBaseImages()
+# Tagging for Python build base and PHP build base images are similar so we can reuse this
+function retagNodePHPRuntimeBaseImages()
 {
     echo "Pulling and retagging bases images for '$1'..."
 
@@ -83,9 +84,8 @@ function retagNodeRuntimeBaseImages()
     done <"$artifactsFile"
 }
 
-#retagNodeRuntimeBaseImages node-runtimeimage-bases.txt
-
-function retagPythonBaseImages()
+# Tagging for Python build base and PHP build base images are similar so we can reuse this
+function retagPythonPHPBuildBaseImages()
 {
     echo "Pulling and retagging bases images for '$1'..."
 
@@ -119,103 +119,6 @@ function retagPythonBaseImages()
         acrLatest="$acrProdRepo:$version"
         acrSpecific="$acrProdRepo:$version-$buildNumber"
 
-        echo
-        echo "Tagging the source image with tag $acrSpecific "
-        echo "$acrSpecific">>"$outFile"
-        docker tag "$sourceImage" "$acrSpecific"
-        echo "Tagging the source image with tag $acrLatest "
-        docker tag "$sourceImage" "$acrLatest"
-        echo "$acrLatest">>"$outFile"
-        echo -------------------------------------------------------------------------------
-    fi
-    done <"$artifactsFile"
-}
-
-
-function retagPHPBuildBaseImages()
-{
-    echo "Pulling and retagging bases images for '$1'..."
-
-    local artifactsFile="$filePath/$1"
-    local outFile="$filePath/$2/$outFileName"
-
-    echo "output tags to be written to: '$outFile'"
-
-    while read sourceImage; do
-    # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-    if [[ $sourceImage != *:latest ]]; then
-        echo "Pulling the source image $sourceImage ..."
-        docker pull "$sourceImage" | sed 's/^/     /'
-        
-        IFS=':'
-        read -ra imageNameParts <<< "$sourceImage"
-        repo=${imageNameParts[0]}
-        tag=${imageNameParts[1]}
-        replaceText="Oryx-BaseImages."
-        buildNumber=$(echo $tag | sed "s/$replaceText//g")
-
-        IFS='-'
-        read -ra repoParts <<< "$repo"
-        acrRepoName=${repoParts[0]}
-        acrImageName=${repoParts[1]}
-        imageVersion=${repoParts[2]}
-        acrProdRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/oryxmcr/g")
-        acrProdRepo="$acrProdRepo-$acrImageName-base"
-        
-        version="$imageVersion"
-        acrLatest="$acrProdRepo:$version"
-        acrSpecific="$acrProdRepo:$version-$buildNumber"
-
-        echo
-        echo "Tagging the source image with tag $acrSpecific "
-        echo "$acrSpecific">>"$outFile"
-        docker tag "$sourceImage" "$acrSpecific"
-        echo "Tagging the source image with tag $acrLatest "
-        docker tag "$sourceImage" "$acrLatest"
-        echo "$acrLatest">>"$outFile"
-        echo -------------------------------------------------------------------------------
-    fi
-    done <"$artifactsFile"
-}
-#pullAndRetagImages yarn-cache-buildimage-bases.txt
-
-function retagPHPRuntimeBaseImages()
-{
-    echo "Pulling and retagging bases images for '$1'..."
-
-    local artifactsFile="$filePath/$1"
-    local outFile="$filePath/$2/$outFileName"
-
-    echo "output tags to be written to: '$outFile'"
-
-    while read sourceImage; do
-    # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-    if [[ $sourceImage != *:latest ]]; then
-        echo "Pulling the source image $sourceImage ..."
-        docker pull "$sourceImage" | sed 's/^/     /'
-        
-        IFS=':'
-        read -ra imageNameParts <<< "$sourceImage"
-        repo=${imageNameParts[0]}
-        tag=${imageNameParts[1]}
-        replaceText="Oryx-BaseImages."
-        buildNumber=$(echo $tag | sed "s/$replaceText//g")
-
-        IFS='-'
-        read -ra repoParts <<< "$repo"
-        acrRepoName=${repoParts[0]}
-        acrImageName=${repoParts[1]}
-        imageType=${repoParts[2]}
-        
-        acrProdRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/oryxmcr/g")
-        acrProdRepo="$acrProdRepo-$imageType"
-        echo "prod acr name: "$acrProdRepo
-        version=${repoParts[1]}
-        acrLatest="$acrProdRepo:$version"
-        acrSpecific="$acrProdRepo:$version-$buildNumber"
-        
-        echo "acr latest tag: $acrLatest"
-        echo "acr specific tag: $acrSpecific"
         echo
         echo "Tagging the source image with tag $acrSpecific "
         echo "$acrSpecific">>"$outFile"
@@ -247,19 +150,19 @@ then
 elif [ $imageName == 'node' ]
 then
   echo ""
-  retagNodeRuntimeBaseImages node-runtimeimage-bases.txt $imageName
+  retagNodePHPRuntimeBaseImages node-runtimeimage-bases.txt $imageName
 elif [ $imageName == 'python-build' ]
 then
   echo ""
-  retagPythonBaseImages python-buildimage-bases.txt $imageName
+  retagPythonPHPBuildBaseImages python-buildimage-bases.txt $imageName
 elif [ $imageName == 'php-build' ]
 then
   echo ""
-  retagPHPBuildBaseImages php-buildimage-bases.txt $imageName
+  retagPythonPHPBuildBaseImages php-buildimage-bases.txt $imageName
 elif [ $imageName == 'php' ]
 then
   echo ""
-  retagPHPRuntimeBaseImages php-runtimeimage-bases.txt $imageName
+  retagNodePHPRuntimeBaseImages php-runtimeimage-bases.txt $imageName
 else
   echo "ImageName $imageName is invalid/not supported.. "
   exit 1
