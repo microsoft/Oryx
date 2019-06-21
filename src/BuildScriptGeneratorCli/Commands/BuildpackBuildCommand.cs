@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(LayersDir))
                 {
                     logger.LogError("Could not find layers directory {layersDir}", LayersDir);
-                    console.Error.WriteLine($"Error: Could not find layers directory '{LayersDir}'.");
+                    console.WriteErrorLine($"Could not find layers directory '{LayersDir}'.");
                     result = false;
                 }
             }
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", PlanPath);
-                    console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
+                    console.WriteErrorLine($"Could not find build plan file '{PlanPath}'.");
                     result = false;
                 }
             }
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", PlatformDir);
-                    console.Error.WriteLine($"Error: Could not find platform directory '{PlatformDir}'.");
+                    console.WriteErrorLine($"Could not find platform directory '{PlatformDir}'.");
                     result = false;
                 }
             }

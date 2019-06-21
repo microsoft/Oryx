@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
-                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }
 
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", PlanPath);
-                    console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
+                    console.WriteErrorLine($"Could not find build plan file '{PlanPath}'.");
                     result = false;
                 }
             }
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", PlatformDir);
-                    console.Error.WriteLine($"Error: Could not find platform directory '{PlatformDir}'.");
+                    console.WriteErrorLine($"Could not find platform directory '{PlatformDir}'.");
                     result = false;
                 }
             }

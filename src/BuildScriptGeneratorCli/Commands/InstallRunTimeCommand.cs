@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var script = scriptGenerator.GenerateBashScript(Platform, options);
             if (string.IsNullOrEmpty(script))
             {
-                console.Error.WriteLine("Error: Couldn't generate startup script.");
+                console.WriteErrorLine("Couldn't generate startup script.");
                 return ProcessConstants.ExitFailure;
             }
 
@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!Directory.Exists(InstallationPrefix))
             {
-                console.Error.WriteLine($"Error: Could not find the installation prefix directory '{InstallationPrefix}'.");
+                console.WriteErrorLine($"Could not find the installation prefix directory '{InstallationPrefix}'.");
                 return false;
             }
 

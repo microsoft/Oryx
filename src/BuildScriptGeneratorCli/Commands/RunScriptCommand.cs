@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (string.IsNullOrWhiteSpace(PlatformName))
             {
-                console.Error.WriteLine("Platform name is required.");
+                console.WriteErrorLine("Platform name is required.");
                 return ProcessConstants.ExitFailure;
             }
 
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var script = runScriptGenerator.GenerateBashScript(PlatformName, options);
             if (string.IsNullOrEmpty(script))
             {
-                console.Error.WriteLine("Error: Couldn't generate startup script.");
+                console.WriteErrorLine("Couldn't generate startup script.");
                 return ProcessConstants.ExitFailure;
             }
 
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!Directory.Exists(AppDir))
             {
-                console.Error.WriteLine($"Error: Could not find the directory '{AppDir}'.");
+                console.WriteErrorLine($"Could not find the directory '{AppDir}'.");
                 return false;
             }
 
