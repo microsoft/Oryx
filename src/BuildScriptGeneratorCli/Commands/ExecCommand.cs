@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             logger.LogInformation("Using shell {shell}", shellPath);
 
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
+            ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
 
             var printer = new DefinitionListFormatter();
