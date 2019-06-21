@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,10 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IEnumerable<DirectoryInfo> versionDirectories;
             try
             {
-                versionDirectories = Directory.EnumerateDirectories(
-                    versionsDir,
-                    "*",
-                    listOptions).Select(versionDir => new DirectoryInfo(versionDir));
+                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
+                    .Select(versionDir => new DirectoryInfo(versionDir));
             }
             catch (IOException)
             {

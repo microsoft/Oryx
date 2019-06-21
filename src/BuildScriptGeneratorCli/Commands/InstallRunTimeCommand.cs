@@ -12,7 +12,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(InstallRunTimeCommand.Name, Description = "Install the required runtime components for a platform.")]
+    [Command(Name, Description = "Install the required runtime components for a platform.")]
     internal class InstallRunTimeCommand : CommandBase
     {
         public const string Name = "install-runtime";

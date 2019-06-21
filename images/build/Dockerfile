@@ -298,13 +298,16 @@ RUN . /tmp/__python-versions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
+# The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
 RUN . /tmp/__python-versions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8.0 \
  && ln -s $PYTHON38_VERSION /opt/python/3.8 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \

@@ -19,7 +19,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(BuildCommand.Name, Description = "Build an app.")]
+    [Command(Name, Description = "Build an app.")]
     internal class BuildCommand : CommandBase
     {
         public const string Name = "build";

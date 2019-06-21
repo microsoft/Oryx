@@ -15,8 +15,8 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(BuildpackDetectCommand.Name, Description = "Determine whether Oryx can be applied as a buildpack to " +
-        "an app in the current working directory.")]
+    [Command(Name, Description = "Determine whether Oryx can be applied as a buildpack to an app in the current " +
+        "working directory.")]
     internal class BuildpackDetectCommand : CommandBase
     {
         public const string Name = "buildpack-detect";
