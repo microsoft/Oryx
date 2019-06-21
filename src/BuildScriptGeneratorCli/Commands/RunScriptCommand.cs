@@ -25,15 +25,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming platform, e.g. 'nodejs'.",
-            ValueName = "Platform name")]
+            Description = "The name of the programming platform, e.g. 'nodejs'.")]
         public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.",
-            ValueName = "PlatformVersion")]
+            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.")]
         public string PlatformVersion { get; set; }
 
         [Option(
@@ -46,12 +44,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            if (string.IsNullOrWhiteSpace(PlatformName))
-            {
-                console.WriteErrorLine("Platform name is required.");
-                return ProcessConstants.ExitFailure;
-            }
-
             string appPath = Path.GetFullPath(AppDir);
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var sourceRepo = new LocalSourceRepo(appPath, loggerFactory);
@@ -89,6 +81,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
+            if (string.IsNullOrWhiteSpace(PlatformName))
+            {
+                console.WriteErrorLine("Platform name is required.");
+                return false;
+            }
+
             if (!Directory.Exists(AppDir))
             {
                 console.WriteErrorLine($"Could not find the directory '{AppDir}'.");
