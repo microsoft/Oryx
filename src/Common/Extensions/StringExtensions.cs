@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -20,6 +21,11 @@ namespace Microsoft.Oryx.Common.Extensions
         public static bool EqualsIgnoreCase(this string a, string b)
         {
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string JoinKeyValuePairs(IDictionary<string, string> pairs, char pairSep = ' ', char kvSep = '=')
+        {
+            return string.Join(pairSep, pairs.Select(pair => pair.Key + kvSep + pair.Value));
         }
 
         /// <summary>

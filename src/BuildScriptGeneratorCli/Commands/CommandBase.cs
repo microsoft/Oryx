@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string LogFilePath { get; set; }
 
         [Option("--debug", Description = "Print stack traces for exceptions.")]
-        public bool ShowStackTrace { get; set; }
+        public bool DebugMode { get; set; }
 
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return ProcessConstants.ExitFailure;
                 }
 
-                if (ShowStackTrace)
+                if (DebugMode)
                 {
                     console.WriteLine("Debug mode enabled");
                 }
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogError(exc, "Exception caught");
 
                 console.WriteErrorLine(Constants.GenericErrorMessage);
-                if (ShowStackTrace)
+                if (DebugMode)
                 {
                     console.WriteErrorLine(exc.ToString());
                 }

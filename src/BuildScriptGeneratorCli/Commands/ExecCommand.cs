@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -41,27 +43,28 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
 
-            var printer = new DefinitionListFormatter();
-            printer.AddDefinitions(tools);
-            console.WriteLine(printer.ToString());
-            /*
-            var benvCommand = string.Empty;
+            if (DebugMode)
+            {
+                var printer = new DefinitionListFormatter();
+                printer.AddDefinitions(tools);
+                console.WriteLine(printer.ToString());
+            }
+
+            var benvArgs = StringExtensions.JoinKeyValuePairs(tools);
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     shellPath,
-                    new[] { "-c", $"{benvCommand} {Command}" },
+                    new[] { "-c", $"benv {benvArgs} {Command}" },
                     SourceDir,
-                    stdOutHandler,
-                    stdErrHandler);
+                    (sender, args) => console.WriteLine(args.Data),
+                    (sender, args) => console.Error.WriteLine(args.Data));
 
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
             return exitCode;
-            */
-            return ProcessConstants.ExitSuccess;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
