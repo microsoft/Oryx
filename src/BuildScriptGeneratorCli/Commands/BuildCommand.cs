@@ -209,6 +209,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return;
                 }
 
+                // Not using IConsole.WriteErrorLine intentionally, to keep the child's error stream intact
                 console.Error.WriteLine(args.Data);
                 buildScriptOutput.AppendLine(args.Data);
             };
@@ -256,7 +257,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
-                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
@@ -264,7 +265,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
             {
                 logger.LogError("Cannot use lang version without lang name");
-                console.Error.WriteLine("Cannot use language version without specifying language name also.");
+                console.WriteErrorLine("Cannot use language version without specifying language name also.");
                 return false;
             }
 
@@ -277,7 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         "Intermediate directory {intermediateDir} cannot be a child of {srcDir}",
                         options.IntermediateDir,
                         options.SourceDir);
-                    console.Error.WriteLine(
+                    console.WriteErrorLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");
                     return false;
