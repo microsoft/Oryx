@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         public const string Name = "exec";
 
-        public const string ShellEnvVarName = "SHELL";
+        public const string DefaultBashPath = "/bin/bash";
 
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
@@ -36,27 +36,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var env = serviceProvider.GetRequiredService<IEnvironment>();
             var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
 
-            var shellPath = env.GetEnvironmentVariable(ShellEnvVarName);
+            var shellPath = env.GetEnvironmentVariable("BASH") ?? DefaultBashPath;
             logger.LogInformation("Using shell {shell}", shellPath);
 
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
             ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
 
-            if (DebugMode)
-            {
-                var printer = new DefinitionListFormatter();
-                printer.AddDefinitions(tools);
-                console.WriteLine(printer.ToString());
-            }
-
-            var benvArgs = StringExtensions.JoinKeyValuePairs(tools);
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
+                var cmd = $"benv {StringExtensions.JoinKeyValuePairs(tools)} {Command}";
+
+                logger.LogInformation("Running {shell} -c {cmd}", shellPath, cmd);
+                if (DebugMode)
+                {
+                    console.WriteLine($"> {shellPath} -c '{cmd}'");
+                }
+
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     shellPath,
-                    new[] { "-c", $"benv {benvArgs} {Command}" },
+                    new[] { "-c", cmd },
                     SourceDir,
                     (sender, args) => console.WriteLine(args.Data),
                     (sender, args) => console.Error.WriteLine(args.Data));
