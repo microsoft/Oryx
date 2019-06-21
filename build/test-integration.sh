@@ -23,7 +23,7 @@ if [ -z "$SQLSERVER_DATABASE_HOST" ]; then
     }
 
     echo
-    echo Retreiving values from keyvault...
+    echo Retrieving secrets from Azure Key Vault...
     export SQLSERVER_DATABASE_HOST=$(getValueFromKeyVault "SQLSERVER-DATABASE-HOST")
     export SQLSERVER_DATABASE_NAME=$(getValueFromKeyVault "SQLSERVER-DATABASE-NAME")
     export SQLSERVER_DATABASE_USERNAME=$(getValueFromKeyVault "SQLSERVER-DATABASE-USERNAME")
