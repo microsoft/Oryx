@@ -15,10 +15,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ILoggerFactory _loggerFactory;
         private LocalSourceRepo _sourceRepo;
 
-        public DefaultSourceRepoProvider(IOptions<BuildScriptGeneratorOptions> options)
+        public DefaultSourceRepoProvider(IOptions<BuildScriptGeneratorOptions> options, ILoggerFactory loggerFactory)
         {
-            var genOptions = options.Value;
-            _sourceDirectory = genOptions.SourceDir;
+            _sourceDirectory = options.Value.SourceDir;
+            _loggerFactory = loggerFactory;
         }
 
         public ISourceRepo GetSourceRepo()
