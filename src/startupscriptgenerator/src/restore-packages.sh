@@ -1,7 +1,10 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 declare -r WORKSPACE_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-tomlFileName="Gopkg.toml"
 
 echo "Restoring packages..."
 echo "Installing dep..."
