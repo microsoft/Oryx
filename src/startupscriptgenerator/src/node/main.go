@@ -6,9 +6,9 @@
 package main
 
 import (
+	"common"
 	"flag"
 	"os"
-	"startupscriptgenerator/common"
 	"strconv"
 	"strings"
 )
@@ -36,7 +36,7 @@ func main() {
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 	useLegacyDebugger := isLegacyDebuggerNeeded()
 
-	common.SetGlobalOperationId(fullAppPath)
+	common.SetGlobalOperationID(fullAppPath)
 
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,

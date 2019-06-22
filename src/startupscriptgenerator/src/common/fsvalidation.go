@@ -34,9 +34,8 @@ func GetSubPath(parentDir string, subDir string) string {
 	subDir = filepath.Clean(subDir)
 	if len(parentDir) >= len(subDir) {
 		return ""
-	} else {
-		return subDir[len(parentDir)+1:]
 	}
+	return subDir[len(parentDir)+1:]
 }
 
 // Gets the full path from a relative path, and ensure the path exists.
@@ -58,7 +57,7 @@ func WriteScript(filePath string, command string) {
 
 	// Ensure directory
 	dir := filepath.Dir(filePath)
-	if !PathExists(dir){
+	if !PathExists(dir) {
 		os.MkdirAll(dir, os.ModePerm)
 	}
 

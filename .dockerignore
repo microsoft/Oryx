@@ -2,10 +2,10 @@
 **/obj/*
 **/.vs/
 **/.git/
+artifacts/
 tests/
 vsts/
-src/golang.org/
-src/github.com/
-pkg/
-bin/
-artifacts/
+**/github.com/
+**/pkg/
+**/bin/
+**/vendor/
