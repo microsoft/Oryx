@@ -6,36 +6,36 @@
 package common
 
 import (
+	"common/consts"
 	"fmt"
 	"os"
-	"startupscriptgenerator/common/consts"
 	"strings"
 	"time"
 
-	"github.com/Microsoft/ApplicationInsights-Go/appinsights"
-	"github.com/Microsoft/ApplicationInsights-Go/appinsights/contracts"
+	"github.com/microsoft/ApplicationInsights-Go/appinsights"
+	"github.com/microsoft/ApplicationInsights-Go/appinsights/contracts"
 )
 
-const SHUTDOWN_CLOSE_TIMEOUT time.Duration = 3 * time.Second
-const SHUTDOWN_EXIT_TIMEOUT time.Duration = 6 * time.Second
+const ShutDownCloseTimeOut time.Duration = 3 * time.Second
+const ShutDownExitTimeOut time.Duration = 6 * time.Second
 
 type Logger struct {
 	AiClient    appinsights.TelemetryClient
 	LoggerName  string
 	AppName     string
-	OperationId string
+	OperationID string
 }
 
 // Represents unique identifier that can be used to correlate messages with the build logs
-var buildOpId string
+var buildOpID string
 
-func SetGlobalOperationId(appRootPath string) {
+func SetGlobalOperationID(appRootPath string) {
 	buildManifest := GetBuildManifest(appRootPath)
 
-	if buildManifest.OperationId != "" {
-		buildOpId = strings.TrimSpace(buildManifest.OperationId)
+	if buildManifest.OperationID != "" {
+		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}
-	fmt.Println("Build Operation ID: " + buildOpId)
+	fmt.Println("Build Operation ID: " + buildOpID)
 }
 
 func GetLogger(name string) *Logger {
@@ -44,14 +44,14 @@ func GetLogger(name string) *Logger {
 		AiClient:    appinsights.NewTelemetryClient(key),
 		LoggerName:  name,
 		AppName:     os.Getenv(consts.AppServiceAppNameEnvVarName),
-		OperationId: buildOpId,
+		OperationID: buildOpID,
 	}
 	return &logger
 }
 
 func (logger *Logger) makeTraceItem(message string, sev contracts.SeverityLevel) *appinsights.TraceTelemetry {
 	trace := appinsights.NewTraceTelemetry(message, sev)
-	trace.BaseTelemetry.Tags.Operation().SetId(logger.OperationId)
+	trace.BaseTelemetry.Tags.Operation().SetId(logger.OperationID)
 	trace.Properties["LoggerName"] = logger.LoggerName
 	trace.Properties["AppName"] = logger.AppName
 	return trace
@@ -99,12 +99,12 @@ func (logger *Logger) LogCritical(format string, a ...interface{}) {
 
 func (logger *Logger) Shutdown() {
 	select {
-	case <-logger.AiClient.Channel().Close(SHUTDOWN_CLOSE_TIMEOUT):
+	case <-logger.AiClient.Channel().Close(ShutDownCloseTimeOut):
 		// Two second timeout for retries.
 
 		// If we got here, then all telemetry was submitted
 		// successfully, and we can proceed to exiting.
-	case <-time.After(SHUTDOWN_EXIT_TIMEOUT):
+	case <-time.After(ShutDownExitTimeOut):
 		// Five second absolute timeout.  This covers any
 		// previous telemetry submission that may not have
 		// completed before Close was called.

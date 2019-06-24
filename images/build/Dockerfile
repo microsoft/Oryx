@@ -355,16 +355,14 @@ FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-bu
 ###
 FROM golang:1.11-stretch as startupScriptGens
 
-WORKDIR /go/src/startupscriptgenerator/
-COPY src/startupscriptgenerator .
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-
-# GOPATH is set to "/go" in the base image, so no need to set it again
-RUN ./prepare-go-env.sh
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs

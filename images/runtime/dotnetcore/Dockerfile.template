@@ -1,13 +1,12 @@
 # Startup script generator
 FROM golang:1.11-stretch as startupCmdGen
-WORKDIR /go/src/startupscriptgenerator/
-COPY src/startupscriptgenerator .
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-# GOPATH is set to "/go" in the base image, so no need to set it again
-RUN ./prepare-go-env.sh
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 FROM %DOTNETCORE_BASE_IMAGE%

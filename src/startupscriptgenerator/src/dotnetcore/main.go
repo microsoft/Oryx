@@ -6,11 +6,11 @@
 package main
 
 import (
+	"common"
 	"flag"
 	"fmt"
 	"log"
 	"path/filepath"
-	"startupscriptgenerator/common"
 	"strings"
 )
 
@@ -44,7 +44,7 @@ func main() {
 		fullAppPath = common.GetValidatedFullPath(*appPathPtr)
 	}
 
-	common.SetGlobalOperationId(fullAppPath)
+	common.SetGlobalOperationID(fullAppPath)
 
 	fullRunFromPath := ""
 	if *runFromPathPtr != "" {
