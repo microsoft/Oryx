@@ -170,19 +170,19 @@ steps:
 - task: ShellScript@2
   displayName: 'Clean up docker artifacts'
   inputs:
-    scriptPath: ./vsts/scripts/dockerCleanup.sh
+    scriptPath: ./vsts/scripts/cleanDocker.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Clean up Docker mounted directories'
   inputs:
-    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
+    scriptPath: ./vsts/scripts/removeDockerArtifacts.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
   
 - task: ShellScript@2
   displayName: 'Generate release notes'
   inputs:
-    scriptPath: ./vsts/scripts/generate-release-notes.sh
+    scriptPath: ./vsts/scripts/generateReleaseNotes.sh
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ArchiveFiles@2

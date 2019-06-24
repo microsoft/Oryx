@@ -59,8 +59,8 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 RUN mkdir /var/nuget
 COPY build/__dot-net-core-sdk-versions.sh /tmp
 COPY build/__dot-net-core-runtime-versions.sh /tmp
-COPY images/build/dotnetcore-install.sh /
-RUN chmod +x /dotnetcore-install.sh
+COPY images/build/installDotNetCore.sh /
+RUN chmod +x /installDotNetCore.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
@@ -70,22 +70,22 @@ RUN . /tmp/__dot-net-core-sdk-versions.sh && \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
 RUN . /tmp/__dot-net-core-sdk-versions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
 RUN . /tmp/__dot-net-core-sdk-versions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
 RUN . /tmp/__dot-net-core-sdk-versions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
