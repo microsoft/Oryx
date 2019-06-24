@@ -9,7 +9,7 @@
       directory: src/Common
       namespace: Microsoft.Oryx.Common
     - type: go
-      directory: src/startupscriptgenerator/common/consts
+      directory: src/startupscriptgenerator/src/common/consts
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
@@ -95,7 +95,7 @@
       directory: src/Common
       namespace: Microsoft.Oryx.Common
     - type: go
-      directory: src/startupscriptgenerator/common/consts
+      directory: src/startupscriptgenerator/src/common/consts
 - name: node-app-insights-loader
   constants:
     node-app-insights-loader-file-name: oryx-appinsightsloader.js
@@ -104,7 +104,7 @@
       directory: src/BuildScriptGenerator/Node
       namespace: Microsoft.Oryx.BuildScriptGenerator.Node
     - type: go
-      directory: src/startupscriptgenerator/common/consts
+      directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
     yarn-version: 1.13.0
