@@ -9,6 +9,15 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class DockerRunArguments
     {
+        public DockerRunArguments() { }
+
+        public DockerRunArguments(string image, string command, string[] args)
+        {
+            ImageId = image;
+            CommandToExecuteOnRun = command;
+            CommandArguments = args;
+        }
+
         public string ImageId { get; set; }
         public List<EnvironmentVariable> EnvironmentVariables { get; set; }
         public IEnumerable<DockerVolume> Volumes { get; set; }
