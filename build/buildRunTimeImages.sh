@@ -94,7 +94,7 @@ for dockerFile in $dockerFiles; do
         $args $labels .
 
     # Retag build image with DockerHub & ACR tags
-    if [ -n "$BUILD_NUMBER" ]
+    if [ -n "$AGENT_BUILD" ]
     then
         uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
@@ -126,7 +126,7 @@ for dockerFile in $dockerFiles; do
     cd $RUNTIME_IMAGES_SRC_DIR
 done
 
-if [ -n "$BUILD_NUMBER" ]
+if [ -n "$AGENT_BUILD" ]
 then
     echo
     echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
