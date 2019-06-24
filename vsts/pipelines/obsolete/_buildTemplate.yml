@@ -57,7 +57,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test script generator'
   inputs:
-    scriptPath: ./build/test-buildscriptgenerator.sh
+    scriptPath: ./build/testBuildScriptGenerator.sh
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
