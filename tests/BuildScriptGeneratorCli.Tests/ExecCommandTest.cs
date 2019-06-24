@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void IsValidInput_ReturnsFalse_WhenSourceDirDoesNotExist()
+        public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
             var cmd = new ExecCommand
@@ -36,11 +36,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var retVal = cmd.IsValidInput(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
 
             // Assert
-            Assert.False(retVal);
-            Assert.Contains("Could not find the source directory", testConsole.StdError);
+            Assert.NotEqual(0, exitCode);
+            var error = testConsole.StdError;
+            Assert.DoesNotContain("Usage:", error);
+            Assert.Contains("Could not find the source directory", error);
         }
     }
 }
