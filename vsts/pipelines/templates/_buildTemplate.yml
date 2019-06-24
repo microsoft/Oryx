@@ -52,7 +52,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Build runtime images'
   inputs:
-    scriptPath: ./build/build-runtimeimages.sh
+    scriptPath: ./build/buildRunTimeImages.sh
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
