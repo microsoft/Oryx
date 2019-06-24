@@ -7,7 +7,7 @@ jobs:
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
     displayName: Build and push Node base images for runtime
-    scriptPath: ./build/build-runtimeimages-bases.sh
+    scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
     artifactsFileName: node-runtimeimage-bases.txt
 
@@ -28,7 +28,7 @@ jobs:
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
     displayName: Build and push PHP runtime base images
-    scriptPath: ./build/build-runtimeimages-bases.sh
+    scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php
     artifactsFileName: php-runtimeimage-bases.txt
 
