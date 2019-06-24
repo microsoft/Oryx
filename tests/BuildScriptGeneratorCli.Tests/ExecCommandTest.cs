@@ -53,5 +53,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
             Assert.Contains("A command is required", console.StdError);
         }
+
+        [Fact]
+        public void OnExecute_ShowsErrorAndExits_WhenNoUsableToolsAreDetected()
+        {
+            // Arrange
+            var cmd = new ExecCommand { SourceDir = _testDir.CreateChildDir(), Command = "bla" };
+            var console = new TestConsole();
+
+            // Act
+            var exitCode = cmd.OnExecute(new CommandLineApplication(console), console);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitFailure, exitCode);
+            Assert.Contains("No usable tools detected for source directory", console.StdError);
+        }
     }
 }
