@@ -5,13 +5,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -39,10 +39,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
 
             // Assert
-            Assert.NotEqual(0, exitCode);
-            var error = testConsole.StdError;
-            Assert.DoesNotContain("Usage:", error);
-            Assert.Contains("Could not find the source directory", error);
+            Assert.Equal(ProcessConstants.ExitFailure, exitCode);
+            Assert.Contains("Could not find the source directory", testConsole.StdError);
         }
     }
 }
