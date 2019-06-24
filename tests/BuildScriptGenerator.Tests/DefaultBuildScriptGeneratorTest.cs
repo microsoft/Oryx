@@ -390,7 +390,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void GeneratesScript_UsingTheFirstplatform_WhichCanGenerateScript()
+        public void GeneratesScript_UsingTheFirstPlatform_WhichCanGenerateScript()
         {
             // Arrange
             var detector = new TestLanguageDetectorUsingLangName(
@@ -579,6 +579,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.True(checkerRan);
+        }
+
+        [Fact]
+        public void GetRequiredToolVersions_ReturnPlatformTools()
+        {
+            // Arrange
+            var platName = "test";
+            var platVer = "1.0.0";
+            var detector = new TestLanguageDetectorUsingLangName(platName, platVer);
+            var platform = new TestProgrammingPlatform(
+                platName,
+                new[] { platVer },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: detector);
+            var generator = CreateDefaultScriptGenerator(platform);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
+
+            // Act
+            var result = generator.GetRequiredToolVersions(context);
+
+            // Assert
+            Assert.Equal(platName, result.First().Key);
+            Assert.Equal(platVer, result.First().Value);
         }
 
         private string CreateNewDir()
