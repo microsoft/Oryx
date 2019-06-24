@@ -582,7 +582,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void GetRequiredToolVersions_ReturnPlatformTools()
+        public void GetRequiredToolVersions_ReturnsPlatformTools()
         {
             // Arrange
             var platName = "test";
