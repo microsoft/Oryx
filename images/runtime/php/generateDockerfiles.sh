@@ -11,7 +11,7 @@ declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
 declare -r DOCKERFILE_BASE_TEMPLATE="$DIR/Dockerfile.base.template"
 declare -r IMAGE_NAME_PLACEHOLDER="%PHP_BASE_IMAGE%"
 declare -r PHP_VERSION_PLACEHOLDER="%PHP_VERSION%"
-. $DIR/../../../build/__php-versions.sh
+. $DIR/../../../build/__phpVersions.sh
 declare -r VERSION_ARRAY=($PHP73_VERSION $PHP72_VERSION $PHP70_VERSION $PHP56_VERSION)
 declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
 
