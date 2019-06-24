@@ -14,14 +14,14 @@ jobs:
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
     displayName: Build and push Python base images for build
-    scriptPath: ./build/build-buildimage-bases.sh
+    scriptPath: ./build/buildBuildImageBases.sh
     imageDir: python
     artifactsFileName: python-buildimage-bases.txt
 
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
     displayName: Build and push PHP build base images
-    scriptPath: ./build/build-buildimage-bases.sh
+    scriptPath: ./build/buildBuildImageBases.sh
     imageDir: php
     artifactsFileName: php-buildimage-bases.txt
 
@@ -35,7 +35,7 @@ jobs:
 - template: templates/_buildimage-bases.job-template.yml
   parameters:
     displayName: Build and push Yarn Cache base image
-    scriptPath: ./build/build-buildimage-bases.sh
+    scriptPath: ./build/buildBuildImageBases.sh
     imageDir: yarn-cache
     artifactsFileName: yarn-cache-buildimage-bases.txt
 
