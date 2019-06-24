@@ -25,6 +25,13 @@ namespace WebApp1
                 app.UseDeveloperExceptionPage();
             }
 
+            app.Map(
+                new PathString("/appDllLocation"),
+                a => a.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync("Location: " + typeof(Startup).Assembly.Location);
+                }));
+
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync(Greeter.Greeting.Get() + " from WebApp1");

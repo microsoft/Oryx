@@ -29,12 +29,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             new TextSpan(
                 "RunPreBuildScript",
-                BaseBashBuildScriptProperties.PreBuildCommandPrologue,
-                BaseBashBuildScriptProperties.PreBuildCommandEpilogue),
+                Oryx.BuildScriptGenerator.Constants.PreBuildCommandPrologue,
+                Oryx.BuildScriptGenerator.Constants.PreBuildCommandEpilogue),
             new TextSpan(
                 "RunPostBuildScript",
-                BaseBashBuildScriptProperties.PostBuildCommandPrologue,
-                BaseBashBuildScriptProperties.PostBuildCommandEpilogue)
+                Oryx.BuildScriptGenerator.Constants.PostBuildCommandPrologue,
+                Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue)
         };
 
         [Argument(0, Description = "The source directory.")]

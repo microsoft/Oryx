@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NetCoreApp21.WebApp
+namespace DefaultWebApp
 {
     public class Startup
     {
@@ -26,15 +27,16 @@ namespace NetCoreApp21.WebApp
             }
 
             app.Map(
-                new PathString("/appDllLocation"),
+                new PathString("/executingDir"),
                 a => a.Run(async (context) =>
                 {
-                    await context.Response.WriteAsync("Location: " + typeof(Startup).Assembly.Location);
+                    await context.Response.WriteAsync(
+                        $"App is running from directory: {Directory.GetCurrentDirectory()}");
                 }));
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                await context.Response.WriteAsync("Running default web app");
             });
         }
     }
