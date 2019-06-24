@@ -64,7 +64,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test startup script generators'
   inputs:
-    scriptPath: ./build/test-startupscriptgenerators.sh
+    scriptPath: ./build/testStartupScriptGenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
@@ -77,7 +77,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test runtime images'
   inputs:
-    scriptPath: ./build/test-runtimeimages.sh
+    scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
