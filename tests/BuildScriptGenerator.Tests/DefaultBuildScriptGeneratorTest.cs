@@ -607,6 +607,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(platVer, result.First().Value);
         }
 
+        [Fact]
+        public void GetRequiredToolVersions_ReturnsOnlyFirstPlatformTools_IfMultiPlatformIsDisabled()
+        {
+            // Arrange
+            var mainPlatformName = "main";
+            var platform1 = new TestProgrammingPlatform(
+                mainPlatformName,
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: new TestLanguageDetectorSimpleMatch(shouldMatch: true));
+            var platform2 = new TestProgrammingPlatform(
+                "anotherPlatform",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "some code",
+                detector: new TestLanguageDetectorSimpleMatch(shouldMatch: true));
+            var generator = CreateDefaultScriptGenerator(new[] { platform1, platform2 });
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: mainPlatformName,
+                suppliedLanguageVersion: "1.0.0");
+            context.DisableMultiPlatformBuild = true;
+
+            // Act
+            var result = generator.GetRequiredToolVersions(context);
+
+            // Assert
+            Assert.Equal(1, result.Count);
+            Assert.Equal(mainPlatformName, result.First().Key);
+        }
+
         private string CreateNewDir()
         {
             return Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N"))).FullName;
