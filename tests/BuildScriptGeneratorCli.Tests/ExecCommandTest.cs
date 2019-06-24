@@ -28,11 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
-            var cmd = new ExecCommand
-            {
-                SourceDir = _testDir.GenerateRandomChildDirPath(),
-                Command = "bla",
-            };
+            var cmd = new ExecCommand { SourceDir = _testDir.GenerateRandomChildDirPath(), Command = "bla" };
             var testConsole = new TestConsole();
 
             // Act
@@ -41,6 +37,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
             Assert.Contains("Could not find the source directory", testConsole.StdError);
+        }
+
+        [Fact]
+        public void OnExecute_ShowsErrorAndExits_WhenCommandIsEmpty()
+        {
+            // Arrange
+            var cmd = new ExecCommand { SourceDir = _testDir.RootDirPath };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitFailure, exitCode);
+            Assert.Contains("A command is required", testConsole.StdError);
         }
     }
 }
