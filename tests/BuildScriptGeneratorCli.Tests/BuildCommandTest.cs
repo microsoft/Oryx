@@ -19,10 +19,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
-        private static string _testDirPath;
+        private readonly string _testDirPath;
+        private readonly TestTempDirTestFixture _testDir;
 
         public BuildCommandTest(TestTempDirTestFixture testFixture)
         {
+            _testDir = testFixture;
             _testDirPath = testFixture.RootDirPath;
         }
 
@@ -32,8 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var buildCommand = new BuildCommand
             {
-                SourceDir = CreatePathForNewDir(),
-                DestinationDir = CreatePathForNewDir(),
+                SourceDir = _testDir.GenerateRandomChildDirPath(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
             };
             var testConsole = new TestConsole();
 
@@ -69,8 +71,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var serviceProvider = new ServiceProviderBuilder()
                 .ConfigureScriptGenerationOptions(o =>
                 {
-                    o.SourceDir = CreateNewDir();
-                    o.DestinationDir = CreatePathForNewDir();
+                    o.SourceDir = _testDir.CreateChildDir();
+                    o.DestinationDir = _testDir.GenerateRandomChildDirPath();
                 })
                 .Build();
             var testConsole = new TestConsole();
@@ -92,8 +94,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var serviceProvider = new ServiceProviderBuilder()
                 .ConfigureScriptGenerationOptions(o =>
                 {
-                    o.SourceDir = CreateNewDir();
-                    o.DestinationDir = CreateNewDir();
+                    o.SourceDir = _testDir.CreateChildDir();
+                    o.DestinationDir = _testDir.CreateChildDir();
                 })
                 .Build();
             var testConsole = new TestConsole();
@@ -266,10 +268,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var buildCommand = new CustomBuildCommand
             {
-                SourceDir = CreateNewDir(),
-                DestinationDir = CreateNewDir(),
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.CreateChildDir(),
                 // New directory which does not exist yet
-                IntermediateDir = CreatePathForNewDir()
+                IntermediateDir = _testDir.GenerateRandomChildDirPath()
             };
             var testConsole = new TestConsole();
 
@@ -316,7 +318,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void IsValid_IsFalse_IfIntermediateDir_IsSubDirectory_OfSourceDir(params string[] paths)
         {
             // Arrange
-            var sourceDir = CreateNewDir();
+            var sourceDir = _testDir.CreateChildDir();
             var subPaths = Path.Combine(paths);
             var intermediateDir = Path.Combine(sourceDir, subPaths);
             var serviceProvider = new ServiceProviderBuilder()
@@ -324,7 +326,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 {
                     o.SourceDir = sourceDir;
                     o.IntermediateDir = intermediateDir;
-                    o.DestinationDir = CreateNewDir();
+                    o.DestinationDir = _testDir.CreateChildDir();
                 })
                 .Build();
             var testConsole = new TestConsole();
@@ -348,8 +350,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var serviceProvider = new ServiceProviderBuilder()
                 .ConfigureScriptGenerationOptions(o =>
                 {
-                    o.SourceDir = CreateNewDir();
-                    o.DestinationDir = CreateNewDir();
+                    o.SourceDir = _testDir.CreateChildDir();
+                    o.DestinationDir = _testDir.CreateChildDir();
                     o.Language = null;
                     o.LanguageVersion = "1.0.0";
                 })
@@ -384,16 +386,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Act & Assert
             Assert.Equal(opNamePrefix + ":" + appName, BuildCommand.BuildOperationName(env));
-        }
-
-        private string CreateNewDir()
-        {
-            return Directory.CreateDirectory(CreatePathForNewDir()).FullName;
-        }
-
-        private string CreatePathForNewDir()
-        {
-            return Path.Combine(_testDirPath, Guid.NewGuid().ToString());
         }
 
         private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
