@@ -216,6 +216,30 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void IsValidInput_IsTrue_EvenIfDestinationDirIsNotEmpty()
+        {
+            // Arrange
+            var dstDir = _testDir.CreateChildDir();
+            File.WriteAllText(Path.Combine(dstDir, "bla.txt"), "bla");
+
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = _testDir.CreateChildDir();
+                    o.DestinationDir = dstDir;
+                })
+                .Build();
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand();
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.True(isValid);
+        }
+
+        [Fact]
         public void DoesNotShowHelp_EvenIfIntermediateDir_DoesNotExistYet()
         {
             // Arrange
