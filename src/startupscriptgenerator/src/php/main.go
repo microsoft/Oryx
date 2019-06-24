@@ -6,8 +6,8 @@
 package main
 
 import (
+	"common"
 	"flag"
-	"startupscriptgenerator/common"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 
-	common.SetGlobalOperationId(fullAppPath)
+	common.SetGlobalOperationID(fullAppPath)
 
 	entrypointGenerator := PhpStartupScriptGenerator{
 		SourcePath: fullAppPath,

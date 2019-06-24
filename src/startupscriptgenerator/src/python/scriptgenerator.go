@@ -6,9 +6,9 @@
 package main
 
 import (
+	"common"
 	"io/ioutil"
 	"path/filepath"
-	"startupscriptgenerator/common"
 	"strings"
 )
 
@@ -93,7 +93,7 @@ func logReadDirError(logger *common.Logger, path string, err error) {
 // Builds the commands to setup the Python packages, using virtual env or a package folder.
 func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest common.BuildManifest) string {
 	scriptBuilder := strings.Builder{}
-	
+
 	// Values in manifest file takes precedence over values supplied at command line
 	virtualEnvironmentName := buildManifest.VirtualEnvName
 	if virtualEnvironmentName == "" {

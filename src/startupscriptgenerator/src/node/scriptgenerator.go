@@ -6,12 +6,12 @@
 package main
 
 import (
+	"common"
+	"common/consts"
 	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"startupscriptgenerator/common"
-	"startupscriptgenerator/common/consts"
 	"strings"
 )
 
@@ -56,7 +56,6 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("    echo \"Found '" + consts.BuildManifestFileName + "'\"\n")
 	scriptBuilder.WriteString("    . ./" + consts.BuildManifestFileName + "\n")
 	scriptBuilder.WriteString("fi\n\n")
-
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -179,7 +178,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString(startupCommand + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
-	
+
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript

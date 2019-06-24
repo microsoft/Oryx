@@ -1,0 +1,11 @@
+{
+    "files.exclude": {
+        "**/startupscriptgenerator/bin": true,
+        "**/startupscriptgenerator/pkg": true,
+        "**/startupscriptgenerator/**/vendor": true,
+        "**/startupscriptgenerator/src/github.com": true,
+        "**/startupscriptgenerator/src/gotest.tools": true,
+        "**/startupscriptgenerator/src/golang.org": true
+    },
+    "go.toolsGopath": "${env:HOME}/go"
+}
