@@ -12,6 +12,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// </summary>
     public class DotNetCoreBashBuildSnippetProperties
     {
+        public const string PreBuildCommandPrologue = Constants.PreBuildCommandPrologue;
+        public const string PreBuildCommandEpilogue = Constants.PreBuildCommandEpilogue;
+
+        public const string PostBuildCommandPrologue = Constants.PostBuildCommandPrologue;
+        public const string PostBuildCommandEpilogue = Constants.PostBuildCommandEpilogue;
+
         public string ProjectFile { get; set; }
 
         public string PublishDirectory { get; set; }
