@@ -7,35 +7,35 @@ stages:
 - stage: Build
   displayName: Build Stage
   jobs:
-  - template: templates/_buildimage-bases.job-template.yml
+  - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
       displayName: Build and push Node base images for runtime
       scriptPath: ./build/build-runtimeimages-bases.sh
       imageDir: node
       artifactsFileName: node-runtimeimage-bases.txt
 
-  - template: templates/_buildimage-bases.job-template.yml
+  - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
       displayName: Build and push Python base images for build
       scriptPath: ./build/build-buildimage-bases.sh
       imageDir: python
       artifactsFileName: python-buildimage-bases.txt
 
-  - template: templates/_buildimage-bases.job-template.yml
+  - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
       displayName: Build and push PHP build base images
       scriptPath: ./build/build-buildimage-bases.sh
       imageDir: php
       artifactsFileName: php-buildimage-bases.txt
 
-  - template: templates/_buildimage-bases.job-template.yml
+  - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
       displayName: Build and push PHP runtime base images
       scriptPath: ./build/build-runtimeimages-bases.sh
       imageDir: php
       artifactsFileName: php-runtimeimage-bases.txt
 
-  - template: templates/_buildimage-bases.job-template.yml
+  - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
       displayName: Build and push Yarn Cache base image
       scriptPath: ./build/build-buildimage-bases.sh
