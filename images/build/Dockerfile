@@ -57,14 +57,14 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
-COPY build/__dot-net-core-sdk-versions.sh /tmp
-COPY build/__dot-net-core-runtime-versions.sh /tmp
+COPY build/__dotNetCoreSdkVersions.sh /tmp
+COPY build/__dotNetCoreRunTimeVersions.sh /tmp
 COPY images/build/installDotNetCore.sh /
 RUN chmod +x /installDotNetCore.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
@@ -72,17 +72,17 @@ RUN . /tmp/__dot-net-core-sdk-versions.sh && \
     INSTALL_PACKAGES=false \
     /installDotNetCore.sh
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
     /installDotNetCore.sh
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
     /installDotNetCore.sh
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
     /installDotNetCore.sh
@@ -104,8 +104,8 @@ RUN set -ex \
  && runtimesDir=$dotnetDir/runtimes \
  && mkdir -p $runtimesDir \
  && cd $runtimesDir \
- && . /tmp/__dot-net-core-sdk-versions.sh \
- && . /tmp/__dot-net-core-runtime-versions.sh \
+ && . /tmp/__dotNetCoreSdkVersions.sh \
+ && . /tmp/__dotNetCoreRunTimeVersions.sh \
  # 1.1 sdk <-- 1.0 runtime's sdk
  && mkdir $NET_CORE_APP_10 \
  && ln -s $NET_CORE_APP_10 1.0 \

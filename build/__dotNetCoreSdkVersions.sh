@@ -1,4 +1,4 @@
-# This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+# This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 DOT_NET_CORE_11_SDK_VERSION='1.1.14'
 DOT_NET_CORE_11_SDK_SHA512='E36AA4B278B936E1E2989B5E556F4EC3AEF2CB1EBB5ABD1BD6011D511873FC3E72101D035CF4DAF1563C7A3C43C193863D38CBF24288D375DD143AB42AFAE524'

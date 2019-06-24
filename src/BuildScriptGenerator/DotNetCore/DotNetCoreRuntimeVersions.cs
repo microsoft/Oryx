@@ -1,8 +1,8 @@
-// This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+// This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public static class DotNetCoreRuntimeVersions
+    public static class DotNetCoreRunTimeVersions
     {
         public const string NetCoreApp10 = "1.0.16";
         public const string NetCoreApp11 = "1.1.14";

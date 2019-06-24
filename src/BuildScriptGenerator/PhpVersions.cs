@@ -1,4 +1,4 @@
-// This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+// This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 namespace Microsoft.Oryx.Common
 {
