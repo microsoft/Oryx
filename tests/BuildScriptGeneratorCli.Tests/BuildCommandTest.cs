@@ -215,53 +215,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.False(isSubDirectory);
         }
 
-        public static TheoryData<string> DestinationDirectoryPathData
-        {
-            get
-            {
-                var data = new TheoryData<string>();
-
-                // Sub-directory with a file
-                var destinationDir = Directory.CreateDirectory(
-                    Path.Combine(_testDirPath, Guid.NewGuid().ToString()));
-                var subDir = Directory.CreateDirectory(
-                    Path.Combine(destinationDir.FullName, Guid.NewGuid().ToString()));
-                File.WriteAllText(Path.Combine(subDir.FullName, "file1.txt"), "file1 content");
-                data.Add(destinationDir.FullName);
-
-                // Sub-directory which is empty
-                destinationDir = Directory.CreateDirectory(
-                    Path.Combine(_testDirPath, Guid.NewGuid().ToString()));
-                subDir = Directory.CreateDirectory(
-                    Path.Combine(destinationDir.FullName, Guid.NewGuid().ToString()));
-                data.Add(destinationDir.FullName);
-
-                return data;
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(DestinationDirectoryPathData))]
-        public void IsValidInput_IsTrue_IfDestinationDirIsNotEmpty(string destinationDir)
-        {
-            // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = CreateNewDir();
-                    o.DestinationDir = destinationDir;
-                })
-                .Build();
-            var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
-
-            // Assert
-            Assert.True(isValid);
-        }
-
         [Fact]
         public void DoesNotShowHelp_EvenIfIntermediateDir_DoesNotExistYet()
         {
