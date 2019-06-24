@@ -64,6 +64,6 @@ if [ "$testCaseFilter"=="db" ];then
 		dotnet test \
 			--filter "category!=node&category!=python&category!=php&category!=dotnetcore&category!=db" \
 			--test-adapter-path:. \
-			--logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
+			--logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName.leftover.Tests.xml" \
 			-c $BUILD_CONFIGURATION
 fi
