@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
             var env = serviceProvider.GetRequiredService<IEnvironment>();
             var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
 
@@ -42,6 +41,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
             ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
+
+            if (tools.Count == 0)
+            {
+                console.WriteErrorLine("No usable tools detected for source directory.");
+                return ProcessConstants.ExitFailure;
+            }
 
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
@@ -69,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             if (!Directory.Exists(options.SourceDir))
