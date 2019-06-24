@@ -10,6 +10,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -41,7 +42,13 @@ func main() {
 
 	fullAppPath := ""
 	if *appPathPtr != "" {
-		fullAppPath = common.GetValidatedFullPath(*appPathPtr)
+		providedPath := *appPathPtr
+		absPath, err := filepath.Abs(providedPath)
+		if err != nil || !common.PathExists(absPath) {
+			fmt.Printf("Provided app path '%s' is not valid or does not exist.\n", providedPath)
+			os.Exit(1)
+		}
+		fullAppPath = absPath
 	}
 
 	common.SetGlobalOperationID(fullAppPath)
@@ -52,14 +59,21 @@ func main() {
 		fullRunFromPath, _ = filepath.Abs(*runFromPathPtr)
 	}
 
-	fullDefaultAppFilePath := ""
-	if *defaultAppFilePathPtr != "" {
-		fullDefaultAppFilePath = common.GetValidatedFullPath(*defaultAppFilePathPtr)
+	fullOutputPath := ""
+	if *outputPathPtr != "" {
+		// NOTE: This path might not exist, so do not try to validate it yet.
+		fullOutputPath, _ = filepath.Abs(*outputPathPtr)
 	}
 
-	if fullDefaultAppFilePath != "" && !common.FileExists(fullDefaultAppFilePath) {
-		fmt.Printf("Supplied default app file path '%s' does not exist", fullDefaultAppFilePath)
-		return
+	fullDefaultAppFilePath := ""
+	if *defaultAppFilePathPtr != "" {
+		providedPath := *defaultAppFilePathPtr
+		absPath, err := filepath.Abs(providedPath)
+		if err != nil || !common.FileExists(absPath) {
+			fmt.Printf("Provided default app file path '%s' is not valid or does not exist.\n", providedPath)
+			os.Exit(1)
+		}
+		fullDefaultAppFilePath = absPath
 	}
 
 	scriptBuilder := strings.Builder{}
@@ -99,5 +113,5 @@ func main() {
 		log.Fatal("Could not generate a startup script.")
 	}
 
-	common.WriteScript(*outputPathPtr, command)
+	common.WriteScript(fullOutputPath, command)
 }

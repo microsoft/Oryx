@@ -93,9 +93,11 @@ fi
 mkdir -p "$DESTINATION_DIR"
 
 {{ if PreBuildCommand | IsNotBlank }}
+echo "{{ PreBuildCommandPrologue }}"
 # Make sure to cd to the source directory so that the pre-build script runs from there
 cd "$SOURCE_DIR"
 {{ PreBuildCommand }}
+echo "{{ PreBuildCommandEpilogue }}"
 {{ end }}
 
 echo
@@ -113,12 +115,17 @@ dotnet restore "{{ ProjectFile }}"
 	publishToDirectory "$tmpDestinationPublishDir"
 
 	{{ if PostBuildCommand | IsNotBlank }}
+	echo
+	echo "{{ PostBuildCommandPrologue }}"
 	# Make sure to cd to the source directory so that the post-build script runs from there
 	cd "$SOURCE_DIR"
 	{{ PostBuildCommand }}
+	echo "{{ PostBuildCommandEpilogue }}"
 	{{ end }}
 
 	# Zip only the contents and not the parent directory
+	echo
+	echo "Compressing the contents of the output directory..."
 	mkdir -p "$ORIGINAL_DESTINATION_DIR"
 	cd "$tmpDestinationPublishDir"
 	tar -zcf ../$zippedOutputFileName .
@@ -130,9 +137,12 @@ dotnet restore "{{ ProjectFile }}"
 	publishToDirectory "$DESTINATION_DIR"
 
 	{{ if PostBuildCommand | IsNotBlank }}
+	echo
+	echo "{{ PostBuildCommandPrologue }}"
 	# Make sure to cd to the source directory so that the post-build script runs from there
 	cd $SOURCE_DIR
 	{{ PostBuildCommand }}
+	echo "{{ PostBuildCommandEpilogue }}"
 	{{ end }}
 {{ end }}
 
