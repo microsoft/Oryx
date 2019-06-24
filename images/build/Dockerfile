@@ -140,9 +140,9 @@ RUN set -ex \
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
-COPY build/__node-versions.sh /tmp
-RUN chmod a+x /tmp/__node-versions.sh \
- && . /tmp/__node-versions.sh \
+COPY build/__nodeVersions.sh /tmp
+RUN chmod a+x /tmp/__nodeVersions.sh \
+ && . /tmp/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
@@ -196,7 +196,7 @@ RUN set -ex \
     done
 
 RUN set -ex \
- && . /tmp/__node-versions.sh \
+ && . /tmp/__nodeVersions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
  && for i in {1..5}; do \
       gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
@@ -235,7 +235,7 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && . /tmp/__node-versions.sh \
+ && . /tmp/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
  && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
  && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
@@ -258,7 +258,7 @@ RUN set -ex \
  && ln -s 6.9 /opt/npm/6 \
  && ln -s 6 /opt/npm/latest
 RUN set -ex \
- && . /tmp/__node-versions.sh \
+ && . /tmp/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
