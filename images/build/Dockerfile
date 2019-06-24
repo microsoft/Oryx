@@ -289,19 +289,19 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__python-versions.sh /tmp
+COPY build/__pythonVersions.sh /tmp
 COPY --from=py27-build-base /opt /opt
 COPY --from=py36-build-base /opt /opt
 COPY --from=py37-build-base /opt /opt
 COPY --from=py38-build-base /opt /opt
-RUN . /tmp/__python-versions.sh && set -ex \
+RUN . /tmp/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 # The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
-RUN . /tmp/__python-versions.sh && set -ex \
+RUN . /tmp/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
