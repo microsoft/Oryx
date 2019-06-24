@@ -105,7 +105,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test integration'
   inputs:
-    scriptPath: ./build/test-integration.sh
+    scriptPath: ./build/testIntegration.sh
     args: $(TestIntegrationCaseFilter)
   env:
     SQLSERVER_DATABASE_HOST: $(SQLSERVER-DATABASE-HOST)
