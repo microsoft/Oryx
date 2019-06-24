@@ -32,7 +32,7 @@ fi
 
 echo
 
-integrationTestPlatform=""
+integrationTestPlatform=".default"
 
 if [ -n "$1" ]; then
     testCaseFilter="--filter $1"
@@ -58,3 +58,12 @@ dotnet test \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION
+
+if [ "$testCaseFilter"=="db" ];then
+		echo "Running integration tests with no categories (tests missed to be tagged in their categories)..."
+		dotnet test \
+			--filter "category!=node&category!=python&category!=php&category!=dotnetcore&category!=db" \
+			--test-adapter-path:. \
+			--logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
+			-c $BUILD_CONFIGURATION
+fi
