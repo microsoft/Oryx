@@ -70,7 +70,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
-    scriptPath: ./build/test-buildimages.sh
+    scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
