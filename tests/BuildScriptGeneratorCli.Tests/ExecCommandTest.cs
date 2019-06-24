@@ -29,14 +29,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var cmd = new ExecCommand { SourceDir = _testDir.GenerateRandomChildDirPath(), Command = "bla" };
-            var testConsole = new TestConsole();
+            var console = new TestConsole();
 
             // Act
-            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = cmd.OnExecute(new CommandLineApplication(console), console);
 
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains("Could not find the source directory", testConsole.StdError);
+            Assert.Contains("Could not find the source directory", console.StdError);
         }
 
         [Fact]
@@ -44,14 +44,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var cmd = new ExecCommand { SourceDir = _testDir.RootDirPath };
-            var testConsole = new TestConsole();
+            var console = new TestConsole();
 
             // Act
-            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = cmd.OnExecute(new CommandLineApplication(console), console);
 
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains("A command is required", testConsole.StdError);
+            Assert.Contains("A command is required", console.StdError);
         }
     }
 }
