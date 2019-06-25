@@ -4,24 +4,19 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class CheckerMessage : ICheckerMessage
     {
-        private readonly LogLevel _level;
-
-        private readonly string _content;
-
         public CheckerMessage(string content, LogLevel level = LogLevel.Warning)
         {
-            _level = level;
-            _content = content;
+            Level = level;
+            Content = content;
         }
 
-        public LogLevel Level => _level;
+        public LogLevel Level { get; }
 
-        public string Content => _content;
+        public string Content { get; }
     }
 }
