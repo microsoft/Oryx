@@ -49,6 +49,13 @@ steps:
     scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for buildpack images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/create-releasetags-buildpacks.sh
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
 - task: Docker@0
   displayName: 'Push Build image to DockerHub'
   inputs:
@@ -68,6 +75,18 @@ steps:
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/build-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: Docker@1
+  displayName: 'Push buildpack images to ACR'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/buildpack-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
