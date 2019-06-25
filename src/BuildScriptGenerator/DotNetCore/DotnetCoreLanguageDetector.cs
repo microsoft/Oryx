@@ -91,22 +91,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             switch (targetFramework)
             {
                 case DotNetCoreConstants.NetCoreApp10:
-                    return DotNetCoreRuntimeVersions.NetCoreApp10;
+                    return DotNetCoreRunTimeVersions.NetCoreApp10;
 
                 case DotNetCoreConstants.NetCoreApp11:
-                    return DotNetCoreRuntimeVersions.NetCoreApp11;
+                    return DotNetCoreRunTimeVersions.NetCoreApp11;
 
                 case DotNetCoreConstants.NetCoreApp20:
-                    return DotNetCoreRuntimeVersions.NetCoreApp20;
+                    return DotNetCoreRunTimeVersions.NetCoreApp20;
 
                 case DotNetCoreConstants.NetCoreApp21:
-                    return DotNetCoreRuntimeVersions.NetCoreApp21;
+                    return DotNetCoreRunTimeVersions.NetCoreApp21;
 
                 case DotNetCoreConstants.NetCoreApp22:
-                    return DotNetCoreRuntimeVersions.NetCoreApp22;
+                    return DotNetCoreRunTimeVersions.NetCoreApp22;
 
                 case DotNetCoreConstants.NetCoreApp30:
-                    return DotNetCoreRuntimeVersions.NetCoreApp30;
+                    return DotNetCoreRunTimeVersions.NetCoreApp30;
             }
 
             return null;
