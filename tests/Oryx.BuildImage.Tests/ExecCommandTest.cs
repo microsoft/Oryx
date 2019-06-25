@@ -28,8 +28,7 @@ namespace Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(
-                new DockerRunArguments(Settings.BuildImageName, "/bin/bash", new[] { "-c", script }));
+            var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", "-c", script);
 
             // Assert
         }
