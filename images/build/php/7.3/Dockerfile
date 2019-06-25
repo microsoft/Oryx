@@ -1,9 +1,9 @@
 # Build PHP 7.3
 FROM php-build-prereqs AS php73-build
-RUN set -eux && . /php/__php-versions.sh && PHP_VERSION=$PHP73_VERSION GPG_KEYS=$PHP73_KEYS PHP_SHA256=$PHP73_TAR_SHA256 /php/build.sh
+RUN set -eux && . /php/__phpVersions.sh && PHP_VERSION=$PHP73_VERSION GPG_KEYS=$PHP73_KEYS PHP_SHA256=$PHP73_TAR_SHA256 /php/build.sh
 
 # Install Composer so that it can be copied to the final build image later
-RUN set -eux && . /php/__php-versions.sh && \
+RUN set -eux && . /php/__phpVersions.sh && \
     mkdir /opt/php-composer && \
     export phpbin="/opt/php/$PHP73_VERSION/bin/php" && \
     $phpbin -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \

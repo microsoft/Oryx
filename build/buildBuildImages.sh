@@ -10,8 +10,8 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__python-versions.sh # For PYTHON_BASE_TAG
-source $REPO_DIR/build/__php-versions.sh    # For PHP_BUILD_BASE_TAG
+source $REPO_DIR/build/__pythonVersions.sh # For PYTHON_BASE_TAG
+source $REPO_DIR/build/__phpVersions.sh    # For PHP_BUILD_BASE_TAG
 
 declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
                                 --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG"
@@ -93,7 +93,7 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 # Build buildpack images
 # 'pack create-builder' is not supported on Windows
 if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
-	source $REPO_DIR/build/build-buildpacks-images.sh
+	source $REPO_DIR/build/buildBuildpacksImages.sh
 else
 	echo
 	echo "Skipping building Buildpacks images as platform '$OSTYPE' is not supported."

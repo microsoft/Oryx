@@ -1,6 +1,6 @@
 # Install Python build prerequisites
 FROM buildpack-deps:stable
-COPY build/__python-versions.sh /tmp/
+COPY build/__pythonVersions.sh /tmp/
 COPY images/build/python/prereqs/build.sh /tmp/
 RUN chmod +x /tmp/build.sh && \
 	apt-get update && \

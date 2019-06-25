@@ -1,4 +1,4 @@
-# This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+# This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 PYTHON_BASE_TAG='20190610.2'
 PIP_VERSION='19.0.3'

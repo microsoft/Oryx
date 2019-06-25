@@ -3,7 +3,7 @@
 # Yarn cache will be placed in /usr/local/share/yarn-cache, that is the folder
 # that must be copied to the build image.
 FROM node:lts
-COPY node-cache-packages.sh /tmp/
-RUN chmod +x /tmp/node-cache-packages.sh
-RUN /tmp/node-cache-packages.sh
-RUN rm /tmp/node-cache-packages.sh
+COPY cacheNodePackages.sh /tmp/
+RUN chmod +x /tmp/cacheNodePackages.sh
+RUN /tmp/cacheNodePackages.sh
+RUN rm /tmp/cacheNodePackages.sh

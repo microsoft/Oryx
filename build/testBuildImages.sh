@@ -7,7 +7,7 @@
 set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-declare -r buildBuildImagesScript="$REPO_DIR/build/build-buildimages.sh"
+declare -r buildBuildImagesScript="$REPO_DIR/build/buildBuildImages.sh"
 declare -r testProjectName="Oryx.BuildImage.Tests"
 
 # Load all variables

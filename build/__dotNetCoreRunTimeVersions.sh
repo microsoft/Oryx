@@ -1,4 +1,4 @@
-# This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+# This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 NET_CORE_APP_10='1.0.16'
 NET_CORE_APP_11='1.1.14'

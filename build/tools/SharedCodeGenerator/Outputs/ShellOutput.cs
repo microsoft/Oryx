@@ -26,7 +26,9 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 
         public string GetPath()
         {
-            return Path.Combine(_directory, _fileNamePrefix + _collection.Name + ".sh");
+            var name = _collection.Name.Camelize();
+            name = char.ToLowerInvariant(name[0]) + name.Substring(1);
+            return Path.Combine(_directory, _fileNamePrefix + name + ".sh");
         }
 
         public string GetContent()
