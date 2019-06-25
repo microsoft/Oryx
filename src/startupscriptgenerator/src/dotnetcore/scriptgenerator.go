@@ -40,6 +40,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	scriptBuilder.WriteString("startUpCommand=\"\"\n")
 	scriptBuilder.WriteString("readonly defaultAppFileDir=\"" + defaultAppFileDir + "\"\n")
 	scriptBuilder.WriteString("readonly defaultAppFilePath=\"" + gen.DefaultAppFilePath + "\"\n")
+	scriptBuilder.WriteString("readonly startupDllFileNameFromManifest=\"" + gen.Manifest.StartupDllFileName + "\"\n")
 
 	script := `
 isLinuxExecutable() {
@@ -76,32 +77,38 @@ if [ $len -ne 0 ]; then
 	fi
 else
 	echo "Startup command was not provided, finding the startup file name..."
-	runtimeConfigJsonFiles=()
-	for file in *; do
-		if [ -f "$file" ]; then
-			case $file in
-				*.runtimeconfig.json)
-					runtimeConfigJsonFiles+=("$file")
-				;;
-			esac
-		fi
-	done
+	if [ "$startupDllFileNameFromManifest" == "" ]; then
+		runtimeConfigJsonFiles=()
+		for file in *; do
+			if [ -f "$file" ]; then
+				case $file in
+					*.runtimeconfig.json)
+						runtimeConfigJsonFiles+=("$file")
+					;;
+				esac
+			fi
+		done
 
-	fileCount=${#runtimeConfigJsonFiles[@]}
-	if [ $fileCount -eq 1 ]; then
-		file=${runtimeConfigJsonFiles[0]}
-		startupDllFileNamePrefix=${file%%.runtimeconfig.json}
-		startupExecutableFileName="$startupDllFileNamePrefix"
-		startupDllFileName="$startupDllFileNamePrefix.dll"
+		fileCount=${#runtimeConfigJsonFiles[@]}
+		if [ $fileCount -eq 1 ]; then
+			file=${runtimeConfigJsonFiles[0]}
+			startupDllFileNamePrefix=${file%%.runtimeconfig.json}
+			startupExecutableFileName="$startupDllFileNamePrefix"
+			startupDllFileName="$startupDllFileNamePrefix.dll"
+		else
+			echo "WARNING: Unable to find the startup dll file name."
+			echo "WARNING: Expected to find only one file with extension 'runtimeconfig.json' but found $fileCount"
+
+			if [ $fileCount -gt 1 ]; then
+				echo "WARNING: Found files: ${runtimeConfigJsonFiles[@]}"
+				echo "WARNING: To fix this issue you can set the startup command to point to a particular startup file"
+				echo "         For example: 'dotnet myapp.dll'"
+			fi
+		fi
 	else
-		echo "WARNING: Unable to find the startup dll file name."
-		echo "WARNING: Expected to find only one file with extension 'runtimeconfig.json' but found $fileCount"
-
-		if [ $fileCount -gt 1 ]; then
-			echo "WARNING: Found files: ${runtimeConfigJsonFiles[@]}"
-			echo "WARNING: To fix this issue you can set the startup command to point to a particular startup file"
-			echo "         For example: 'dotnet myapp.dll'"
-		fi
+		echo "Using the startup file name from manifest file."
+		startupExecutableFileName=""
+		startupDllFileName="$startupDllFileNameFromManifest"
 	fi
 
 	if [ -f "$startupExecutableFileName" ]; then

@@ -27,7 +27,7 @@ stages:
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
-      - template: templates/_signbinary.yml
+      - template: templates/_signBinary.yml
 
     - job: Job_BuildImage
       displayName: Build and Test Build Image

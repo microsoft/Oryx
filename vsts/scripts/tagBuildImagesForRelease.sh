@@ -9,6 +9,9 @@ set -o pipefail
 sourceImageName="oryxdevmcr.azurecr.io/public/oryx/build"
 buildNumber=$BUILD_BUILDNUMBER
 sourceImage="$sourceImageName:Oryx-CI.$buildNumber"
+outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
+outFileDocker="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
+
 echo "Pulling the source image $sourceImage ..."
 docker pull "$sourceImage" | sed 's/^/     /'
     
@@ -22,16 +25,16 @@ dockerHubSpecific="$dockerHubRepoName:$buildNumber"
 
 echo
 echo "Tagging the source image with tag $acrSpecific..."
-echo "$acrSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
+echo "$acrSpecific">>"$outFileMCR"
 docker tag "$sourceImage" "$acrSpecific" 
 echo "Tagging the source image with tag $acrLatest..."
-echo "$acrLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
+echo "$acrLatest">>"$outFileMCR"
 docker tag "$sourceImage" "$acrLatest"
 
 echo "Tagging the source image with tag $dockerHubLatest..."
-echo "$dockerHubLatest">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
+echo "$dockerHubLatest">>"$outFileDocker"
 docker tag "$sourceImage" "$dockerHubLatest"
 echo "Tagging the source image with tag $dockerHubSpecific..."
-echo "$dockerHubSpecific">>"$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
+echo "$dockerHubSpecific">>"$outFileDocker"
 docker tag "$sourceImage" "$dockerHubSpecific"
 echo -------------------------------------------------------------------------------

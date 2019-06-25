@@ -35,7 +35,7 @@ docker build -f "$PACK_STACK_BASE_IMAGE_DOCKERFILE" $noCacheFlag \
 
 cd /tmp
 
-$REPO_DIR/images/pack-builder/install-pack.sh
+$REPO_DIR/images/pack-builder/installPack.sh
 
 echo "-> Creating builder image: $DOCKER_PACK_BUILDER_IMAGE_REPO"
 echo
