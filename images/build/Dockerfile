@@ -395,8 +395,8 @@ COPY --from=node-install /links/ /usr/local/bin
 COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
-COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
-RUN . /tmp/php/install-prereqs.sh
+COPY images/build/php/prereqs/installPrereqs.sh /tmp/php/installPrereqs.sh
+RUN . /tmp/php/installPrereqs.sh
 
 COPY --from=php56-build-base /opt /opt
 COPY --from=php70-build-base /opt /opt
