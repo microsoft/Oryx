@@ -61,7 +61,7 @@ func (logger *Logger) logTrace(sev contracts.SeverityLevel, format string, a ...
 	message := fmt.Sprintf(format, a...)
 
 	// Uncomment the follwing line to see the trace messages on standard out
-	//fmt.Println(message)
+	fmt.Println(message)
 
 	logger.AiClient.Track(logger.makeTraceItem(message, sev))
 }

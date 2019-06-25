@@ -47,3 +47,8 @@ func GetBuildManifest(appPath string) BuildManifest {
 
 	return _buildManifest
 }
+
+func ManifestFileExists(appPath string) bool {
+	tomlFile := filepath.Join(appPath, consts.BuildManifestFileName)
+	return FileExists(tomlFile)
+}

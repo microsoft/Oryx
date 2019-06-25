@@ -88,6 +88,7 @@
       file-name-prefix: __
 - name: file-paths
   constants:
+    compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
     run-script-generator-dir: /opt/startupcmdgen
   outputs:

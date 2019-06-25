@@ -87,16 +87,12 @@ func main() {
 		common.AppendScriptToCopyToDir(&scriptBuilder, fullAppPath, fullRunFromPath)
 	}
 
-	if fullRunFromPath == "" {
-		fullRunFromPath = fullAppPath
-	}
-
 	buildManifest := common.GetBuildManifest(fullAppPath)
 	if buildManifest.ZipAllOutput == "true" {
 		fmt.Println(
 			"Read build manifest file and found output has been zipped, so adding " +
 				"script to extract it...")
-		common.AppendScriptToExtractZippedOutput(&scriptBuilder, fullRunFromPath)
+		common.AppendScriptToExtractZippedOutput(&scriptBuilder, fullAppPath, fullRunFromPath)
 	}
 
 	entrypointGenerator := DotnetCoreStartupScriptGenerator{
@@ -108,7 +104,7 @@ func main() {
 		Manifest:           buildManifest,
 	}
 
-	command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)
+	command := entrypointGenerator.DraftGenerateEntrypointScript(&scriptBuilder)
 	if command == "" {
 		log.Fatal("Could not generate a startup script.")
 	}
