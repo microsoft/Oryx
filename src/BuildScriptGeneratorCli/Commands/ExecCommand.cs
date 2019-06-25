@@ -23,6 +23,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public const string DefaultBashPath = "/bin/bash";
 
+        public const string SrcDirDoesNotExistErrorMessageFmt = "Could not find the source directory '{0}'.";
+        public const string CommandMissingErrorMessage = "A command is required.";
+        public const string NoToolsDetectedErrorMessage = "No usable tools detected for source directory.";
+
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
 
@@ -44,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (tools.Count == 0)
             {
-                console.WriteErrorLine("No usable tools detected for source directory.");
+                console.WriteErrorLine(NoToolsDetectedErrorMessage);
                 return ProcessConstants.ExitFailure;
             }
 
@@ -80,13 +84,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", SourceDir);
-                console.Error.WriteLine($"Error: Could not find the source directory '{SourceDir}'.");
+                console.WriteErrorLine(string.Format(SrcDirDoesNotExistErrorMessageFmt, SourceDir));
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(Command))
             {
-                console.Error.WriteLine("Error: A command is required.");
+                console.WriteErrorLine(CommandMissingErrorMessage);
                 return false;
             }
 

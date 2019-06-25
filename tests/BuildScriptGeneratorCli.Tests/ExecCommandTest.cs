@@ -28,7 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
-            var cmd = new ExecCommand { SourceDir = _testDir.GenerateRandomChildDirPath(), Command = "bla" };
+            var srcDirPath = _testDir.GenerateRandomChildDirPath();
+            var cmd = new ExecCommand { SourceDir = srcDirPath, Command = "bla" };
             var console = new TestConsole();
 
             // Act
@@ -36,7 +37,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains("Could not find the source directory", console.StdError);
+            var expectedMessage = string.Format(ExecCommand.SrcDirDoesNotExistErrorMessageFmt, srcDirPath);
+            Assert.Contains(expectedMessage, console.StdError);
         }
 
         [Fact]
@@ -51,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains("A command is required", console.StdError);
+            Assert.Contains(ExecCommand.CommandMissingErrorMessage, console.StdError);
         }
 
         [Fact]
@@ -66,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains("No usable tools detected for source directory", console.StdError);
+            Assert.Contains(ExecCommand.NoToolsDetectedErrorMessage, console.StdError);
         }
     }
 }
