@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotNetAlias_UsesLtsVersion_ByDefault()
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore22SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
