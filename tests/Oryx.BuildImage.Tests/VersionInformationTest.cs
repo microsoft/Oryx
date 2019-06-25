@@ -31,7 +31,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void OryxBuildImage_Contains_VersionAndCommit_Information()
         {
             var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
-            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
+
+
+            // On a pull request, Azure DevOps does not build the exact version of the code that has
+            // been pushed, but rather a version merged with the target branch; When the target branch 
+            // pointer has advanced, it creates different commit-ids and this test fails. This only 
+            // happens in PR-validation build, so this is a check for that. For more details, refer to
+            // https://github.com/microsoft/azure-pipelines-tasks/issues/9801
+
+            var gitCommitID = Environment.GetEnvironmentVariable("SYSTEM_PULLREQUEST_SOURCECOMMITID") ??
+                Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
+
             var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
