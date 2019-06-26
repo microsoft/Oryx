@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 SourceRepo = sourceRepo,
                 PlatformVersion = PlatformVersion,
-                PassThruArguments = RemainingArgs
+                PassThruArguments = RemainingArgs,
             };
 
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();

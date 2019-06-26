@@ -54,6 +54,31 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void RunScriptCommand_PassesArgsThru()
+        {
+            // Arrange
+            var appName = "twig-example";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "run-script", "--platform", "php", "--", "-passThruArg" }
+            });
+
+            // Assert
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+            },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void GeneratesScript_AndBuilds_WithoutComposerFile()
         {
             // Arrange
