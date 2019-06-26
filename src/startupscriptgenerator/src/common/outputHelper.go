@@ -23,12 +23,10 @@ func AppendScriptToExtractZippedOutput(scriptBuilder *strings.Builder, appDir st
 	}
 
 	if FileExists(fullZipFilePath) {
+		scriptBuilder.WriteString("\n")
 		scriptBuilder.WriteString("echo Extracting '" + consts.CompressedOutputFileName + "' contents...\n")
 		scriptBuilder.WriteString("cd \"" + intermediateDir + "\"\n")
 		scriptBuilder.WriteString("tar -xzf \"" + consts.CompressedOutputFileName + "\"\n")
-		scriptBuilder.WriteString("echo Done.\n")
-		scriptBuilder.WriteString("echo Deleting the file '" + consts.CompressedOutputFileName + "'...\n")
-		scriptBuilder.WriteString("rm -f \"" + consts.CompressedOutputFileName + "\"\n")
 		scriptBuilder.WriteString("echo Done.\n")
 	} else {
 		fmt.Printf("Could not find the compressed file '%s'\n", fullZipFilePath)
@@ -36,14 +34,16 @@ func AppendScriptToExtractZippedOutput(scriptBuilder *strings.Builder, appDir st
 }
 
 func AppendScriptToCopyToDir(scriptBuilder *strings.Builder, srcDir string, destDir string) {
-	if PathExists(destDir) {
-		scriptBuilder.WriteString("echo Directory '" + destDir + "' already exists. Deleting it...\n")
-		scriptBuilder.WriteString("rm -rf \"" + destDir + "\"\n")
-		scriptBuilder.WriteString("echo Done.\n")
-	}
-
-	scriptBuilder.WriteString("mkdir -p \"" + destDir + "\"\n")
-	scriptBuilder.WriteString("echo Copying content from '" + srcDir + "' to directory '" + destDir + "'...\n")
-	scriptBuilder.WriteString("cp -rf \"" + srcDir + "\"/* \"" + destDir + "\"\n")
+	scriptBuilder.WriteString("\n")
+	scriptBuilder.WriteString("declare -r srcDir=\"" + srcDir + "\"\n")
+	scriptBuilder.WriteString("declare -r destDir=\"" + destDir + "\"\n")
+	scriptBuilder.WriteString("if [ -d \"$destDir\" ]; then\n")
+	scriptBuilder.WriteString("    echo \"Directory '$destDir' already exists. Deleting it...\"\n")
+	scriptBuilder.WriteString("    rm -rf \"$destDir\"\n")
+	scriptBuilder.WriteString("    echo Done.\n")
+	scriptBuilder.WriteString("fi\n")
+	scriptBuilder.WriteString("mkdir -p \"$destDir\"\n")
+	scriptBuilder.WriteString("echo \"Copying content from '$srcDir' to directory '$destDir'...\"\n")
+	scriptBuilder.WriteString("cp -rf \"$srcDir\"/* \"$destDir\"\n")
 	scriptBuilder.WriteString("echo Done.\n")
 }

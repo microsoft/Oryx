@@ -50,5 +50,6 @@ func GetBuildManifest(appPath string) BuildManifest {
 
 func ManifestFileExists(appPath string) bool {
 	tomlFile := filepath.Join(appPath, consts.BuildManifestFileName)
-	return FileExists(tomlFile)
+	fileExists := FileExists(tomlFile)
+	return fileExists
 }

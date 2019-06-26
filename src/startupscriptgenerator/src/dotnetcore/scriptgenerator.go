@@ -64,7 +64,12 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 			scriptBuilder.WriteString("fi\n")
 		}
 	} else {
-		if !builtByOryx {
+		if builtByOryx {
+			startupCommand := "dotnet \"" + gen.Manifest.StartupDllFileName + "\""
+			scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
+			scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
+			scriptBuilder.WriteString(startupCommand + "\n")
+		} else {
 			scriptBuilder.WriteString("echo Trying to find the startup dll name...\n")
 			runtimeConfigFiles := gen.getRuntimeConfigJsonFiles()
 
@@ -83,18 +88,24 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 				fmt.Println("         For example: 'dotnet myapp.dll'")
 				runDefaultApp = true
 			} else {
-				startupDllName := strings.TrimSuffix(runtimeConfigFiles[0], RuntimeConfigJsonExtension) + ".dll"
-				startupCommand := "dotnet \"" + startupDllName + "\""
-				scriptBuilder.WriteString("echo 'Found the startup dll name: " + startupDllName + "'\n")
-				scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
-				scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
-				scriptBuilder.WriteString(startupCommand + "\n")
+				runtimeConfigFile := runtimeConfigFiles[0]
+				startupDllName := strings.TrimSuffix(runtimeConfigFile, RuntimeConfigJsonExtension) + ".dll"
+				startupDllFullPath := filepath.Join(appPath, startupDllName)
+				if common.FileExists(startupDllFullPath) {
+					startupCommand := "dotnet \"" + startupDllName + "\""
+					scriptBuilder.WriteString("echo 'Found the startup dll name: " + startupDllName + "'\n")
+					scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
+					scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
+					scriptBuilder.WriteString(startupCommand + "\n")
+				} else {
+					fmt.Printf(
+						"WARNING: Unable to figure out startup dll name. Found file '%s', but could not find startup file '%s' on disk.\n",
+						runtimeConfigFile,
+						startupDllFullPath)
+					runDefaultApp = true
+				}
+
 			}
-		} else {
-			startupCommand := "dotnet \"" + gen.Manifest.StartupDllFileName + "\""
-			scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
-			scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
-			scriptBuilder.WriteString(startupCommand + "\n")
 		}
 	}
 
@@ -115,22 +126,14 @@ func (gen *DotnetCoreStartupScriptGenerator) getRuntimeConfigJsonFiles() []strin
 
 	fileList := make([]string, 0)
 
-	appDir, err := os.Open(gen.AppPath)
-	if err != nil {
-		fmt.Printf(
-			"An error occurred while trying to look for '%s' files under '%s'.\n",
-			RuntimeConfigJsonExtension,
-			appDir.Name())
-		logger.LogError("An error occurred while trying to look for '%s' files under '%s'. Exception: '%s'",
-			RuntimeConfigJsonExtension,
-			appDir.Name(),
-			err)
-		return fileList
-	}
+	var appDir *os.File
+	var files []os.FileInfo
+	var err error
+	appDir, err = os.Open(gen.AppPath)
 	defer appDir.Close()
-
-	files, err := appDir.Readdir(-1)
-	if err != nil {
+	if err == nil {
+		files, err = appDir.Readdir(-1)
+	} else {
 		fmt.Printf(
 			"An error occurred while trying to look for '%s' files under '%s'.\n",
 			RuntimeConfigJsonExtension,
