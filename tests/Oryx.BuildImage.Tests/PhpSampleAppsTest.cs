@@ -72,9 +72,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             // Assert
             RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-            },
+                {
+                    Assert.True(result.IsSuccess);
+                },
                 result.GetDebugInfo());
         }
 
