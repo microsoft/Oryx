@@ -133,7 +133,9 @@ func (gen *DotnetCoreStartupScriptGenerator) getRuntimeConfigJsonFiles() []strin
 	defer appDir.Close()
 	if err == nil {
 		files, err = appDir.Readdir(-1)
-	} else {
+	}
+
+	if err != nil {
 		fmt.Printf(
 			"An error occurred while trying to look for '%s' files under '%s'.\n",
 			RuntimeConfigJsonExtension,
