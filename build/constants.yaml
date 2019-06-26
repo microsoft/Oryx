@@ -9,7 +9,7 @@
       directory: src/Common
       namespace: Microsoft.Oryx.Common
     - type: go
-      directory: src/startupscriptgenerator/common/consts
+      directory: src/startupscriptgenerator/src/common/consts
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
@@ -20,9 +20,9 @@
     dot-net-core-22-sdk-sha512: 1D660A323180DF3DA8C6E0EA3F439D6BBEC29670D498AC884F38BF3CDFFBB041C7AFFF66171CDFD24C82394B845B135B057404DEF1FCE9F206853726382BC42B
     # Since preview names of .NET Core break the semver norms, it does not work well with the code
     # that we depend on for semantic version checks, so having two constants here.
-    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview5-011568
+    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview6-012264
     dot-net-core-30-sdk-version: 3.0.100
-    dot-net-core-30-sdk-sha512: 207af1f3161cbd0864902370475fcad5b500bf2b7199b06445e7c338053bc7cb0157ee1b4d00a37a351eae6e209417ee4a15eeacee086aac0ac1be7a62f3ad0b
+    dot-net-core-30-sdk-sha512: 047e295f3d7d4c590c906334ec28b844bef90c2b3fefe395a23e37e2a7d13955a11cbcf2fc2ee9ffcfd6fd44cede4ecd72a6b92258f568d5b328ad46bf0a7bb8
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -30,7 +30,7 @@
     - type: shell
       directory: build
       file-name-prefix: __
-- name: dot-net-core-runtime-versions
+- name: dot-net-core-run-time-versions
   constants:
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.14
@@ -38,7 +38,7 @@
     net-core-app-21: 2.1.11
     net-core-app-22: 2.2.5
     net-core-app-30: 3.0.0
-    net-core-app-30-preview-name: 3.0.0-preview5-27626-15
+    net-core-app-30-preview-name: 3.0.0-preview6-27804-01
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -95,7 +95,7 @@
       directory: src/Common
       namespace: Microsoft.Oryx.Common
     - type: go
-      directory: src/startupscriptgenerator/common/consts
+      directory: src/startupscriptgenerator/src/common/consts
 - name: node-app-insights-loader
   constants:
     node-app-insights-loader-file-name: oryx-appinsightsloader.js
@@ -104,7 +104,7 @@
       directory: src/BuildScriptGenerator/Node
       namespace: Microsoft.Oryx.BuildScriptGenerator.Node
     - type: go
-      directory: src/startupscriptgenerator/common/consts
+      directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
     yarn-version: 1.13.0

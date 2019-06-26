@@ -55,6 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.False(value);
         }
 
+        #pragma warning disable
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]
         public void DisableFeature_DontDisable_IfNotSet(string envVariableName, FlagGetter valueGetter)
@@ -69,6 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.False(value);
         }
+        #pragma warning restore
 
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]

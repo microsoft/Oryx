@@ -20,6 +20,7 @@ type BuildManifest struct {
 	VirtualEnvName           string
 	PackageDir               string
 	CompressedVirtualEnvFile string
+	StartupDllFileName       string
 }
 
 var _buildManifest = BuildManifest{}

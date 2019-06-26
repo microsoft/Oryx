@@ -10,7 +10,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__node-versions.sh
+source $REPO_DIR/build/__nodeVersions.sh
 
 # Folder structure is used to come up with the tag name
 # For example, if a docker file was located at

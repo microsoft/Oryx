@@ -1,4 +1,4 @@
-# This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+# This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 PHP_BUILD_BASE_TAG='20190530.1'
 PHP_RUNTIME_BASE_TAG='20190530.1'
