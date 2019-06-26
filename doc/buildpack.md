@@ -31,12 +31,16 @@ At Microsoft, we're excited by the creation of the [Buildpacks](http://buildpack
 Information, including docker files for both build and run images, can be [found here](https://github.com/Microsoft/Oryx/tree/master/images/pack-builder).
 
 # About the Oryx Project
-We provide zero-config multi-language "source to web app" and "source to container" build tools.  Our tools are used across Microsoft projects and services to enable consistent and reliable builds of arbitrary source:
+We provide zero-config multi-language "source to web app" and "source to container" build tools.  Our tools are used across Microsoft tools to enable consistent and reliable builds of arbitrary source:
 
  * **[Azure AppService for Linux](/doc/appservice.md)** - Supports building and running websites written in various languages, directly from their source code
- * **[ACR Buildpack Tasks](/doc/buildpack.md)** - Brings buildpack support to Azure Container Registry (ACR) with the '[az acr pack](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-pack)' commands
+ * **[ACR Buildpack Tasks](/doc/buildpack.md)** - Brings buildpack support to Azure Container Registry (ACR) with the '[az acr pack][acrpack]' commands
  * **[Oryx Buildpack](/doc/buildpack.md)** - Cloud Native buildpack automatically builds from arbitrary source and generates OCI/Docker images 
- * **Oryx Images** - Base images with required tools for building supported langages and reduced size runtime images: [Docker Hub](https://hub.docker.com/_/microsoft-oryx-images), [Microsoft Container Registry (MCR)](https://azure.microsoft.com/en-us/blog/microsoft-syndicates-container-catalog/)
+ * **Oryx Images** - Base images with required tools for building supported langages and reduced size runtime images: [Docker Hub][dockerimages], [Microsoft Container Registry (MCR)][mcrimages]
+
+[acrpack]: https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-pack
+[dockerimages]: https://hub.docker.com/_/microsoft-oryx-images
+[mcrimages]: https://azure.microsoft.com/en-us/blog/microsoft-syndicates-container-catalog/
 
 # Contributing and License
 
