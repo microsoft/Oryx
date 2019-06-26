@@ -104,7 +104,7 @@ func main() {
 		Manifest:           buildManifest,
 	}
 
-	command := entrypointGenerator.DraftGenerateEntrypointScript(&scriptBuilder)
+	command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)
 	if command == "" {
 		log.Fatal("Could not generate a startup script.")
 	}

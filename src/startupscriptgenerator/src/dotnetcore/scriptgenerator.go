@@ -25,7 +25,7 @@ type DotnetCoreStartupScriptGenerator struct {
 const DefaultBindPort = "8080"
 const RuntimeConfigJsonExtension = ".runtimeconfig.json"
 
-func (gen *DotnetCoreStartupScriptGenerator) DraftGenerateEntrypointScript(scriptBuilder *strings.Builder) string {
+func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *strings.Builder) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
