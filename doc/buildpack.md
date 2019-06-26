@@ -1,6 +1,6 @@
 # Oryx Buildpack
 
-Oryx provides a buildpack that runs it, so that Oryx can also be used via the Cloud Native `[pack](https://github.com/buildpack/pack)` tool, with your own Azure Container Registry (ACR) using ACR Tasks with the Azure CLI `az acr pack` command.  
+Oryx provides a buildpack that runs it, so that Oryx can also be used via the Cloud Native `[pack][]` tool, with your own Azure Container Registry (ACR) using ACR Tasks with the Azure CLI `az acr pack` command.  
 
 # Usage
 
@@ -22,29 +22,25 @@ $ az group delete -n MyGroup
 
 See the primary Oryx page for an up-to-date [list of languages supported](/README.md). 
 
-# Motovation
+# Motivation
 
-At Microsoft, we're excited by the creation of the [Buildpack](http://buildpacks.io) effort to standardize 'source to container' tools and resources.  Because Oryx provides zero-configuration 'source to web application' capability for Azure App Service for Linux, and Azure Container Registry supports OCI images, its a natural fit to offer Oryx as a standalone buildpack.
+At Microsoft, we're excited by the creation of the [Buildpacks](http://buildpacks.io) effort to standardize 'source to container' tools and resources.  Because Oryx provides zero-configuration 'source to web application' capability for Azure App Service for Linux, and Azure Container Registry supports OCI images, it's a natural fit to offer Oryx as a standalone buildpack.
 
 # Related images
 
 Information, including docker files for both build and run images, can be [found here](https://github.com/Microsoft/Oryx/tree/master/images/pack-builder).
 
 # About the Oryx Project
-We provide zero-config multi-language "source to web app" and "source to container" build tools.  Our tools are used across Microsoft tools to enable consistent and reliable builds of arbitrary source:
+We provide zero-config multi-language "source to web app" and "source to container" build tools.  Our tools are used across Microsoft projects and services to enable consistent and reliable builds of arbitrary source:
 
- * **[Azure AppService for Linux](/README.md)** - Provides build capabilities for supported arbitrary languages
+ * **[Azure AppService for Linux](/doc/appservice.md)** - Supports building and running websites written in various languages, directly from their source code
  * **[ACR Buildpack Tasks](/doc/buildpack.md)** - Brings buildpack support to Azure Container Registry (ACR) with the '[az acr pack](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-pack)' commands
  * **[Oryx Buildpack](/doc/buildpack.md)** - Cloud Native buildpack automatically builds from arbitrary source and generates OCI/Docker images 
  * **Oryx Images** - Base images with required tools for building supported langages and reduced size runtime images: [Docker Hub](https://hub.docker.com/_/microsoft-oryx-images), [Microsoft Container Registry (MCR)](https://azure.microsoft.com/en-us/blog/microsoft-syndicates-container-catalog/)
 
-# Contributing
+# Contributing and License
 
-See [CONTRIBUTING.md](/CONTRIBUTING.md).
-
-# License
-
-MIT, see [LICENSE.md](/LICENSE.md).
+For information on contributing and licensing, please visit our [readme](/README.md).
 
 # Security
 
@@ -73,3 +69,4 @@ more information see the [Code of Conduct FAQ][cocfaq]. Contact
 [coc]: https://opensource.microsoft.com/codeofconduct/
 [cocfaq]: https://opensource.microsoft.com/codeofconduct/faq/
 [cocmail]: mailto:opencode@microsoft.com
+[pack]: https://github.com/buildpack/pack

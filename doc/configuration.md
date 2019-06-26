@@ -3,7 +3,7 @@
 Oryx provides configuration options through environment variables so that you
 can apply minor adjustments and still utilize the automatic build process. The following variables are supported today:
 
-> NOTE: In Azure Web Apps, these variables are set with [App Settings](https://docs.microsoft.com/en-us/azure/app-service/configure-common).
+> NOTE: In Azure Web Apps, these variables are set with [App Settings][].
 
 Setting name                 | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
@@ -16,3 +16,5 @@ DISABLE\_DOTNETCORE\_BUILD   | do not apply .NET Core build even if repo indicat
 DISABLE\_PYTHON\_BUILD       | do not apply Python build even if repo indicates it            | `false` | `true`, `false`
 DISABLE\_NODEJS\_BUILD       | do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
 MSBUILD\_CONFIGURATION       | Configuration (Debug or Relase) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
+
+[App Settings]: https://docs.microsoft.com/en-us/azure/app-service/configure-common
