@@ -10,7 +10,7 @@ Oryx is still invoked to detect how to start an application if no start up comma
 
 Here we describe some details of this process, and how you might configure them and fix issues
 if needed. We focus on the specifics for App Service; for how we support each language/runtime in
-general, please refer to their specific entry in our [docs page](../README.md).
+general, please refer to their specific entry in our [docs page](/README.md).
 
 [Azure App Service on Linux]: https://docs.microsoft.com/en-us/azure/app-service/containers/app-service-linux-intro
 [continuous deployment]: https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment?toc=%2fazure%2fapp-service%2fcontainers%2ftoc.json
@@ -68,8 +68,19 @@ COMMAND                             | provide an alternate build-and-run script.
 ENABLE\_ORYX\_BUILD                 | if `true`, use the Oryx build system instead of the legacy Kudu system | 
 SCM\_DO\_BUILD\_DURING\_DEPLOYMENT` | if `false`, bypass automatic build |
 
-For the complete list of configuration options available, including how to enable
-multiple platforms, please check our [configuration page](../configuration.md).
+In addition to the above App Service configurations, Oryx supports the following additional configurations:
+
+Setting name                 | Description                                                    | Default | Example
+-----------------------------|----------------------------------------------------------------|---------|----------------
+PRE\_BUILD\_COMMAND          | Command or a repo-relative path to a shell script to be run before build   | ""      | `echo foo`, `scripts/prebuild.sh`
+POST\_BUILD\_COMMAND         | Command or a repo-relative path to a shell script to be run after build    | ""      | `echo foo`, `scripts/postbuild.sh`
+DISABLE\_COLLECTSTATIC       | Disable running `collecstatic` when building Django apps.      | `false` | `true`, `false`
+PROJECT                      | repo-relative path to directory with `.csproj` file for build  | ""      | src/WebApp1/WebApp1.csproj
+ENABLE\_MULTIPLATFORM\_BUILD | apply more than one toolset if repo indicates it               | `false` | `true`, `false`
+DISABLE\_DOTNETCORE\_BUILD   | do not apply .NET Core build even if repo indicates it         | `false` | `true`, `false`
+DISABLE\_PYTHON\_BUILD       | do not apply Python build even if repo indicates it            | `false` | `true`, `false`
+DISABLE\_NODEJS\_BUILD       | do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
+MSBUILD\_CONFIGURATION       | Configuration (Debug or Relase) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
 
 ### Startup file
 
