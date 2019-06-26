@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Name = "run-script";
 
         [Argument(0, Description = "The application directory.")]
+        [DirectoryExists]
         public string AppDir { get; set; } = ".";
 
         [Option(
@@ -84,12 +85,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrWhiteSpace(PlatformName))
             {
                 console.WriteErrorLine("Platform name is required.");
-                return false;
-            }
-
-            if (!Directory.Exists(AppDir))
-            {
-                console.WriteErrorLine($"Could not find the directory '{AppDir}'.");
                 return false;
             }
 
