@@ -47,7 +47,8 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	runDefaultApp := false
 	if gen.UserStartupCommand != "" {
-		scriptBuilder.WriteString("echo Running the provided startup command: '" + gen.UserStartupCommand + "'\n")
+		// NOTE: do NOT try printing the command itself
+		scriptBuilder.WriteString("echo Running user provided startup command...\n")
 		scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
 
 		if gen.DefaultAppFilePath == "" {
@@ -93,7 +94,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 				startupDllFullPath := filepath.Join(appPath, startupDllName)
 				if common.FileExists(startupDllFullPath) {
 					startupCommand := "dotnet \"" + startupDllName + "\""
-					scriptBuilder.WriteString("echo 'Found the startup dll name: " + startupDllName + "'\n")
+					scriptBuilder.WriteString("echo Found the startup dll name: " + startupDllName + "\n")
 					scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
 					scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
 					scriptBuilder.WriteString(startupCommand + "\n")
@@ -104,15 +105,16 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 						startupDllFullPath)
 					runDefaultApp = true
 				}
-
 			}
 		}
 	}
 
 	if runDefaultApp && gen.DefaultAppFilePath != "" {
 		defaultAppFileDir := filepath.Dir(gen.DefaultAppFilePath)
+		startupCommand := "dotnet \"" + gen.DefaultAppFilePath + "\""
+		scriptBuilder.WriteString("echo 'Running the default app using command: " + startupCommand + "'\n")
 		scriptBuilder.WriteString("cd \"" + defaultAppFileDir + "\"\n")
-		scriptBuilder.WriteString("dotnet \"" + gen.DefaultAppFilePath + "\"\n")
+		scriptBuilder.WriteString(startupCommand + "\n")
 	}
 
 	var runScript = scriptBuilder.String()
