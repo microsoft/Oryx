@@ -43,4 +43,43 @@ jobs:
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
 
+- job: Job_ValidateIntegrationTests
+  displayName: Validate Integration Tests
+  dependsOn: 
+    - Job_BuildImage
+    - Job_RuntimeImages
+  condition: succeeded()
+  pool:
+    name: OryxLinux
+  timeoutInMinutes: 100
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Build Artifacts'
+    inputs:
+      artifactName: drop
+
+  - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    displayName: 'Pull and Retag recently built oryx build and runtime images'
+    inputs:
+      type: FilePath
+      scriptPath: ./vsts/scripts/pullAndTag.sh
+      args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+  
+  - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    displayName: 'Find and Run Uncategorized Integration Tests'
+    inputs:
+      type: FilePath
+      scriptPath: ./build/testIntegrationValidation.sh
+      args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+  
+  - task: ShellScript@2
+    displayName: 'Clean up Docker containers and images'
+    inputs:
+      scriptPath: ./vsts/scripts/cleanDocker.sh
+
+  - task: ShellScript@2
+    displayName: 'Clean up Docker mounted directories'
+    inputs:
+      scriptPath: ./vsts/scripts/removeDockerArtifacts.sh
+
 trigger: none
