@@ -86,8 +86,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 PreBuildCommand = preBuildCommand,
                 PostBuildCommand = postBuildCommand,
                 ManifestFileName = FilePaths.BuildManifestFileName,
+                ManifestDir = context.ManifestDir,
                 ZipAllOutput = zipAllOutput,
-                Configuration = GetBuildConfiguration()
+                Configuration = GetBuildConfiguration(),
             };
             var script = TemplateHelpers.Render(
                 TemplateHelpers.TemplateResource.DotNetCoreSnippet,

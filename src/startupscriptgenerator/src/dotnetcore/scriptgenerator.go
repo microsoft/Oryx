@@ -35,11 +35,6 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
 
-	builtByOryx := false
-	if common.ManifestFileExists(gen.AppPath) {
-		builtByOryx = true
-	}
-
 	appPath := gen.AppPath
 	if gen.RunFromPath != "" {
 		appPath = gen.RunFromPath
@@ -65,8 +60,8 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 			scriptBuilder.WriteString("fi\n")
 		}
 	} else {
-		if builtByOryx {
-			startupCommand := "dotnet \"" + gen.Manifest.StartupDllFileName + "\""
+		if gen.Manifest.Exists {
+			startupCommand := "dotnet \"" + gen.Manifest.Properties.StartupDllFileName + "\""
 			scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
 			scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
 			scriptBuilder.WriteString(startupCommand + "\n")

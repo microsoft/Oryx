@@ -343,7 +343,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 DirectoriesToExcludeFromCopyToIntermediateDir = directoriesToExcludeFromCopyToIntermediateDir,
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
                 ManifestFileName = FilePaths.BuildManifestFileName,
-                BuildProperties = buildProperties
+                ManifestDir = context.ManifestDir,
+                BuildProperties = buildProperties,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

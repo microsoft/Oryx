@@ -27,6 +27,7 @@ func main() {
 		"runFromPath",
 		"",
 		"The path to the directory where the output is copied and run from there.")
+	manifestDirPtr := common.GetManifestDirSwitch()
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",
@@ -51,7 +52,8 @@ func main() {
 		fullAppPath = absPath
 	}
 
-	common.SetGlobalOperationID(fullAppPath)
+	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+	common.SetGlobalOperationID(buildManifest)
 
 	fullRunFromPath := ""
 	if *runFromPathPtr != "" {
@@ -87,8 +89,7 @@ func main() {
 		common.AppendScriptToCopyToDir(&scriptBuilder, fullAppPath, fullRunFromPath)
 	}
 
-	buildManifest := common.GetBuildManifest(fullAppPath)
-	if buildManifest.ZipAllOutput == "true" {
+	if buildManifest.Properties.ZipAllOutput == "true" {
 		fmt.Println(
 			"Read build manifest file and found output has been zipped, so adding " +
 				"script to extract it...")
