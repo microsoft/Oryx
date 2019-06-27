@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string NoToolsDetectedErrorMessage = "No usable tools detected for source directory.";
 
         [Argument(0, Description = "The source directory.")]
+        [DirectoryExists]
         public string SourceDir { get; set; }
 
         [Argument(1, Description = "The command to execute in an app-specific environment.")]
@@ -70,6 +71,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     (sender, args) => console.WriteLine(args.Data),
                     (sender, args) => console.Error.WriteLine(args.Data));
 
+                if (DebugMode)
+                {
+                    console.WriteLine($"> Shell returned {exitCode}");
+                }
+
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
@@ -80,13 +86,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-
-            if (!Directory.Exists(options.SourceDir))
-            {
-                logger.LogError("Could not find the source directory {srcDir}", SourceDir);
-                console.WriteErrorLine(string.Format(SrcDirDoesNotExistErrorMessageFmt, SourceDir));
-                return false;
-            }
 
             if (string.IsNullOrWhiteSpace(Command))
             {
