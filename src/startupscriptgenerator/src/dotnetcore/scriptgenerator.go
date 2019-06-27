@@ -25,7 +25,7 @@ type DotnetCoreStartupScriptGenerator struct {
 const DefaultBindPort = "8080"
 const RuntimeConfigJsonExtension = ".runtimeconfig.json"
 
-func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *strings.Builder) string {
+func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *common.ScriptBuilder) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
@@ -33,7 +33,8 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
-	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
+	scriptBuilder.ExportVariable("ASPNETCORE_URLS", "http://*:$PORT")
+	scriptBuilder.AppendEmptyLine()
 
 	builtByOryx := false
 	if common.ManifestFileExists(gen.AppPath) {
@@ -48,30 +49,30 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	runDefaultApp := false
 	if gen.UserStartupCommand != "" {
 		// NOTE: do NOT try printing the command itself
-		scriptBuilder.WriteString("echo Running user provided startup command...\n")
-		scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
+		scriptBuilder.Echo("Running user provided startup command...")
+		scriptBuilder.ChangeDirectory(appPath)
 
 		if gen.DefaultAppFilePath == "" {
-			scriptBuilder.WriteString(gen.UserStartupCommand)
+			scriptBuilder.AppendLine(gen.UserStartupCommand)
 		} else {
 			defaultAppFileDir := filepath.Dir(gen.DefaultAppFilePath)
-			scriptBuilder.WriteString("EXIT_CODE=0\n")
-			scriptBuilder.WriteString(gen.UserStartupCommand + " || EXIT_CODE=$?\n")
-			scriptBuilder.WriteString("if [ $EXIT_CODE != 0 ]; then\n")
-			scriptBuilder.WriteString("    echo \"WARNING: Startup command execution failed with exit code $EXIT_CODE\"\n")
-			scriptBuilder.WriteString("    echo \"Running the default application instead...\"\n")
-			scriptBuilder.WriteString("    cd \"" + defaultAppFileDir + "\"\n")
-			scriptBuilder.WriteString("    dotnet \"" + gen.DefaultAppFilePath + "\"\n")
-			scriptBuilder.WriteString("fi\n")
+			scriptBuilder.AppendLine("EXIT_CODE=0")
+			scriptBuilder.AppendLine(gen.UserStartupCommand + " || EXIT_CODE=$?")
+			scriptBuilder.AppendLine("if [ $EXIT_CODE != 0 ]; then")
+			scriptBuilder.AppendLine("    echo \"WARNING: Startup command execution failed with exit code $EXIT_CODE\"")
+			scriptBuilder.AppendLine("    echo \"Running the default application instead...\"")
+			scriptBuilder.AppendLine("    cd \"" + defaultAppFileDir + "\"")
+			scriptBuilder.AppendLine("    dotnet \"" + gen.DefaultAppFilePath + "\"")
+			scriptBuilder.AppendLine("fi")
 		}
 	} else {
 		if builtByOryx {
 			startupCommand := "dotnet \"" + gen.Manifest.StartupDllFileName + "\""
-			scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
-			scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
-			scriptBuilder.WriteString(startupCommand + "\n")
+			scriptBuilder.Echo("'Running the command: " + startupCommand + "'")
+			scriptBuilder.ChangeDirectory(appPath)
+			scriptBuilder.AppendLine(startupCommand)
 		} else {
-			scriptBuilder.WriteString("echo Trying to find the startup dll name...\n")
+			scriptBuilder.AppendLine("echo Trying to find the startup dll name...")
 			runtimeConfigFiles := gen.getRuntimeConfigJsonFiles()
 
 			if len(runtimeConfigFiles) == 0 {
@@ -94,10 +95,10 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 				startupDllFullPath := filepath.Join(appPath, startupDllName)
 				if common.FileExists(startupDllFullPath) {
 					startupCommand := "dotnet \"" + startupDllName + "\""
-					scriptBuilder.WriteString("echo Found the startup dll name: " + startupDllName + "\n")
-					scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
-					scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
-					scriptBuilder.WriteString(startupCommand + "\n")
+					scriptBuilder.Echo("Found the startup dll name: " + startupDllName)
+					scriptBuilder.Echo("'Running the command: " + startupCommand + "'")
+					scriptBuilder.ChangeDirectory(appPath)
+					scriptBuilder.AppendLine(startupCommand)
 				} else {
 					fmt.Printf(
 						"WARNING: Unable to figure out startup dll name. Found file '%s', but could not find startup file '%s' on disk.\n",
@@ -112,12 +113,12 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	if runDefaultApp && gen.DefaultAppFilePath != "" {
 		defaultAppFileDir := filepath.Dir(gen.DefaultAppFilePath)
 		startupCommand := "dotnet \"" + gen.DefaultAppFilePath + "\""
-		scriptBuilder.WriteString("echo 'Running the default app using command: " + startupCommand + "'\n")
-		scriptBuilder.WriteString("cd \"" + defaultAppFileDir + "\"\n")
-		scriptBuilder.WriteString(startupCommand + "\n")
+		scriptBuilder.Echo("'Running the default app using command: " + startupCommand + "'")
+		scriptBuilder.ChangeDirectory(defaultAppFileDir)
+		scriptBuilder.AppendLine(startupCommand)
 	}
 
-	var runScript = scriptBuilder.String()
+	var runScript = scriptBuilder.ToString()
 	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }

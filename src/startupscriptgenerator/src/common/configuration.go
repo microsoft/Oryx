@@ -5,18 +5,19 @@
 
 package common
 
-import (
-	"strings"
-)
-
 // Order of precedence for value of settings: Explicit command like argument => Environment Variable
-func SetEnvironmentVariableInScript(scriptBuilder *strings.Builder, environmentVariableName string, explicitValue string, defaultValue string) {
+func SetEnvironmentVariableInScript(
+	scriptBuilder *ScriptBuilder,
+	environmentVariableName string,
+	explicitValue string,
+	defaultValue string) {
+
 	if explicitValue != "" {
-		scriptBuilder.WriteString("export " + environmentVariableName + "=" + explicitValue)
+		scriptBuilder.ExportVariable(environmentVariableName, explicitValue)
 	} else {
-		scriptBuilder.WriteString("if [ -z \"$" + environmentVariableName + "\" ]; then" + "\n");
-		scriptBuilder.WriteString("		export " + environmentVariableName + "=" + defaultValue + "\n")
-		scriptBuilder.WriteString("fi")
+		scriptBuilder.AppendLine("if [ -z \"$" + environmentVariableName + "\" ]; then")
+		scriptBuilder.AppendLine("		export " + environmentVariableName + "=" + defaultValue)
+		scriptBuilder.AppendLine("fi")
 	}
-	scriptBuilder.WriteString("\n\n")
+	scriptBuilder.AppendEmptyLine()
 }

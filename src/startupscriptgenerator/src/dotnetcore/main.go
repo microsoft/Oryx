@@ -12,7 +12,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func main() {
@@ -76,9 +75,10 @@ func main() {
 		fullDefaultAppFilePath = absPath
 	}
 
-	scriptBuilder := strings.Builder{}
-	scriptBuilder.WriteString("#!/bin/bash\n")
-	scriptBuilder.WriteString("set -e\n\n")
+	scriptBuilder := common.ScriptBuilder{}
+	scriptBuilder.AppendLine("#!/bin/bash")
+	scriptBuilder.AppendLine("set -e")
+	scriptBuilder.AppendEmptyLine()
 
 	if fullRunFromPath != "" {
 		fmt.Println(
