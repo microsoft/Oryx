@@ -90,6 +90,7 @@
   constants:
     build-manifest-file-name: oryx-manifest.toml
     run-script-generator-dir: /opt/startupcmdgen
+    benv-script: /usr/local/bin/benv
   outputs:
     - type: csharp
       directory: src/Common

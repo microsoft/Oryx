@@ -6,5 +6,6 @@ namespace Microsoft.Oryx.Common
     {
         public const string BuildManifestFileName = "oryx-manifest.toml";
         public const string RunScriptGeneratorDir = "/opt/startupcmdgen";
+        public const string BenvScript = "/usr/local/bin/benv";
     }
 }
