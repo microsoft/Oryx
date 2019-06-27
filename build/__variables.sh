@@ -43,6 +43,11 @@ declare -r ACR_PACK_STACK_BASE_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_STACK_BASE_I
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
-declare -r GIT_COMMIT=$(git rev-parse HEAD)
+
+# On a pull request, Azure DevOps does not build the exact version of the code that has
+# been pushed, but rather a version merged with the target branch; When the target branch
+# pointer has advanced, it creates different commit-ids.
+# For more details, refer to https://github.com/microsoft/azure-pipelines-tasks/issues/9801
+declare -r GIT_COMMIT="${SYSTEM_PULLREQUEST_SOURCECOMMITID:-$BUILD_SOURCEVERSION}"
 
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
