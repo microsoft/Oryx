@@ -49,18 +49,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (InvalidUsageException e)
             {
-                console.Error.WriteLine(e.Message);
+                console.WriteErrorLine(e.Message);
                 return ProcessConstants.ExitFailure;
             }
             catch (Exception exc)
             {
                 _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogError(exc, "Exception caught");
 
-                console.Error.WriteLine(Constants.GenericErrorMessage);
+                console.WriteErrorLine(Constants.GenericErrorMessage);
                 if (ShowStackTrace)
                 {
-                    console.Error.WriteLine("Exception.ToString():");
-                    console.Error.WriteLine(exc.ToString());
+                    console.WriteErrorLine(exc.ToString());
                 }
 
                 return ProcessConstants.ExitFailure;

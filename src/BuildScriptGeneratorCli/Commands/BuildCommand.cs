@@ -19,20 +19,22 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("build", Description = "Generate and run build scripts.")]
+    [Command(Name, Description = "Build an app.")]
     internal class BuildCommand : CommandBase
     {
+        public const string Name = "build";
+
         // Beginning and ending markers for build script output spans that should be time measured
         private readonly TextSpan[] _measurableStdOutSpans =
         {
             new TextSpan(
                 "RunPreBuildScript",
-                BaseBashBuildScriptProperties.PreBuildCommandPrologue,
-                BaseBashBuildScriptProperties.PreBuildCommandEpilogue),
+                Oryx.BuildScriptGenerator.Constants.PreBuildCommandPrologue,
+                Oryx.BuildScriptGenerator.Constants.PreBuildCommandEpilogue),
             new TextSpan(
                 "RunPostBuildScript",
-                BaseBashBuildScriptProperties.PostBuildCommandPrologue,
-                BaseBashBuildScriptProperties.PostBuildCommandEpilogue)
+                Oryx.BuildScriptGenerator.Constants.PostBuildCommandPrologue,
+                Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue)
         };
 
         [Argument(0, Description = "The source directory.")]
@@ -47,14 +49,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming language being used in the provided source directory.")]
-        public string Language { get; set; }
+            Description = "The name of the programming platform used in the provided source directory.")]
+        public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of programming language being used in the provided source directory.")]
-        public string LanguageVersion { get; set; }
+            Description = "The version of the programming platform used in the provided source directory.")]
+        public string PlatformVersion { get; set; }
 
         [Option(
             "-o|--output <dir>",
@@ -207,6 +209,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return;
                 }
 
+                // Not using IConsole.WriteErrorLine intentionally, to keep the child's error stream intact
                 console.Error.WriteLine(args.Data);
                 buildScriptOutput.AppendLine(args.Data);
             };
@@ -254,7 +257,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
-                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
@@ -262,7 +265,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
             {
                 logger.LogError("Cannot use lang version without lang name");
-                console.Error.WriteLine("Cannot use language version without specifying language name also.");
+                console.WriteErrorLine("Cannot use language version without specifying language name also.");
                 return false;
             }
 
@@ -275,7 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         "Intermediate directory {intermediateDir} cannot be a child of {srcDir}",
                         options.IntermediateDir,
                         options.SourceDir);
-                    console.Error.WriteLine(
+                    console.WriteErrorLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");
                     return false;
@@ -292,8 +295,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceDir,
                 DestinationDir,
                 IntermediateDir,
-                Language,
-                LanguageVersion,
+                PlatformName,
+                PlatformVersion,
                 scriptOnly: false,
                 Properties);
         }

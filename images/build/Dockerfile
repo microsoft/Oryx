@@ -1,7 +1,9 @@
-# Start declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+# Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
+ARG PYTHON_BASE_TAG
+ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
-# End declaration of Build-Arg to determine where the image is getting built (devops agents or local)
+# End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -55,35 +57,35 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
-COPY build/__dot-net-core-sdk-versions.sh /tmp
-COPY build/__dot-net-core-runtime-versions.sh /tmp
-COPY images/build/dotnetcore-install.sh /
-RUN chmod +x /dotnetcore-install.sh
+COPY build/__dotNetCoreSdkVersions.sh /tmp
+COPY build/__dotNetCoreRunTimeVersions.sh /tmp
+COPY images/build/installDotNetCore.sh /
+RUN chmod +x /installDotNetCore.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
-RUN . /tmp/__dot-net-core-sdk-versions.sh && \
+RUN . /tmp/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
-    /dotnetcore-install.sh
+    /installDotNetCore.sh
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
@@ -102,8 +104,8 @@ RUN set -ex \
  && runtimesDir=$dotnetDir/runtimes \
  && mkdir -p $runtimesDir \
  && cd $runtimesDir \
- && . /tmp/__dot-net-core-sdk-versions.sh \
- && . /tmp/__dot-net-core-runtime-versions.sh \
+ && . /tmp/__dotNetCoreSdkVersions.sh \
+ && . /tmp/__dotNetCoreRunTimeVersions.sh \
  # 1.1 sdk <-- 1.0 runtime's sdk
  && mkdir $NET_CORE_APP_10 \
  && ln -s $NET_CORE_APP_10 1.0 \
@@ -138,9 +140,9 @@ RUN set -ex \
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
-COPY build/__node-versions.sh /tmp
-RUN chmod a+x /tmp/__node-versions.sh \
- && . /tmp/__node-versions.sh \
+COPY build/__nodeVersions.sh /tmp
+RUN chmod a+x /tmp/__nodeVersions.sh \
+ && . /tmp/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d 4.4.7 \
  && ~/n/bin/n -d 4.5.0 \
@@ -194,7 +196,7 @@ RUN set -ex \
     done
 
 RUN set -ex \
- && . /tmp/__node-versions.sh \
+ && . /tmp/__nodeVersions.sh \
  && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
  && for i in {1..5}; do \
       gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
@@ -233,7 +235,7 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && . /tmp/__node-versions.sh \
+ && . /tmp/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
  && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
  && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
@@ -256,7 +258,7 @@ RUN set -ex \
  && ln -s 6.9 /opt/npm/6 \
  && ln -s 6 /opt/npm/latest
 RUN set -ex \
- && . /tmp/__node-versions.sh \
+ && . /tmp/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
@@ -265,6 +267,18 @@ RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+
+###
+# Python intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
+FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
+###
+# End Python intermediate stages
+###
 
 FROM main AS python
 # It's not clear whether these are needed at runtime...
@@ -275,21 +289,26 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__python-versions.sh /tmp
-COPY --from=mcr.microsoft.com/oryx/python-build-base:2.7-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/python-build-base:3.7-20190530.1 /opt /opt
-RUN . /tmp/__python-versions.sh && set -ex \
+COPY build/__pythonVersions.sh /tmp
+COPY --from=py27-build-base /opt /opt
+COPY --from=py36-build-base /opt /opt
+COPY --from=py37-build-base /opt /opt
+COPY --from=py38-build-base /opt /opt
+RUN . /tmp/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-RUN . /tmp/__python-versions.sh && set -ex \
+# The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
+RUN . /tmp/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8.0 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
  && cd /usr/local/bin \
@@ -314,10 +333,46 @@ ARG AGENTBUILD=${AGENTBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
+COPY images/build/benv.sh /usr/local/bin/benv
+RUN chmod +x /usr/local/bin/benv
 RUN if [ -z "$AGENTBUILD" ]; then \
         dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+
+###
+# PHP intermediate stages
+# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
+###
+FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+###
+# End PHP intermediate stages
+###
+
+###
+# Build run script generators (to be used by the `oryx run-script` command)
+###
+FROM golang:1.11-stretch as startupScriptGens
+
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+###
+# End build run script generators
+###
 
 FROM python AS final
 WORKDIR /
@@ -342,21 +397,27 @@ COPY --from=node-install /links/ /usr/local/bin
 COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
-COPY images/build/php/prereqs/install-prereqs.sh /tmp/php/install-prereqs.sh
-RUN . /tmp/php/install-prereqs.sh
-COPY --from=mcr.microsoft.com/oryx/php-build-base:5.6-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.0-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.2-20190530.1 /opt /opt
-COPY --from=mcr.microsoft.com/oryx/php-build-base:7.3-20190530.1 /opt /opt
+COPY images/build/php/prereqs/installPrereqs.sh /tmp/php/installPrereqs.sh
+RUN . /tmp/php/installPrereqs.sh
+
+COPY --from=php56-build-base /opt /opt
+COPY --from=php70-build-base /opt /opt
+COPY --from=php72-build-base /opt /opt
+COPY --from=php73-build-base /opt /opt
+
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
  && ln -s /opt/php/lts/bin/php /usr/local/bin/php
 
-# Build script generator content, currently docker doesn't support variables in --from
+# Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
+
+# Oryx depends on the run script generators for most of its
+# `IProgrammingPlatform.GenerateBashRunScript()` implementations
+COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

@@ -15,10 +15,12 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("buildpack-detect", Description = "Determines whether Oryx can be applied as a buildpack to " +
-        "an app in the current working directory.")]
+    [Command(Name, Description = "Determine whether Oryx can be applied as a buildpack to an app in the current " +
+        "working directory.")]
     internal class BuildpackDetectCommand : CommandBase
     {
+        public const string Name = "buildpack-detect";
+
         // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 
@@ -41,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
-                console.Error.WriteLine($"Error: Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }
 
@@ -51,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", PlanPath);
-                    console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
+                    console.WriteErrorLine($"Could not find build plan file '{PlanPath}'.");
                     result = false;
                 }
             }
@@ -62,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", PlatformDir);
-                    console.Error.WriteLine($"Error: Could not find platform directory '{PlatformDir}'.");
+                    console.WriteErrorLine($"Could not find platform directory '{PlatformDir}'.");
                     result = false;
                 }
             }
@@ -96,8 +98,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (compatPlats != null && compatPlats.Any())
             {
-                console.WriteLine("# Detected platforms:");
+                console.WriteLine("Detected platforms:");
                 console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Item1.Name}=\"{pair.Item2}\"")));
+
+                // Write the detected platforms into the build plan as TOML
+                File.WriteAllLines(PlanPath, compatPlats.Select(pair => $"{pair.Item1.Name} = {{ version = \"{pair.Item2}\" }}"));
+
                 return ProcessConstants.ExitSuccess;
             }
 

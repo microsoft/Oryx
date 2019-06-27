@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             catch (InvalidUsageException ex)
             {
                 _logger.LogError(ex, "Invalid usage");
-                _console.Error.WriteLine(ex.Message);
+                _console.WriteErrorLine(ex.Message);
                 return false;
             }
         }

@@ -16,11 +16,11 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(
-        "languages",
-        Description = "Show the list of supported platforms and other information like versions, properties etc.")]
+    [Command(Name, Description = "Show a list of supported platforms along with their versions and build properties.")]
     internal class LanguagesCommand : CommandBase
     {
+        public const string Name = "languages";
+
         [Option("--json", Description = "Output the supported platform data in JSON format.")]
         public bool OutputJson { get; set; }
 

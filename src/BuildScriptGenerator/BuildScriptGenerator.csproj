@@ -21,9 +21,9 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Scriban.Signed" Version="1.2.9" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
@@ -70,7 +70,6 @@
     <Content Remove="BaseBashBuildScript.sh.tpl" />
     <Content Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <Content Remove="Node\NodeBashBuildSnippet.sh.tpl" />
-    <Content Remove="Node\NodeBashRunScript.sh.tpl" />
     <Content Remove="Php\PhpBashBuildSnippet.sh.tpl" />
     <Content Remove="Python\PythonBashBuildSnippet.sh.tpl" />
   </ItemGroup>
@@ -79,7 +78,6 @@
     <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" />
     <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
-    <EmbeddedResource Include="Node\NodeBashRunScript.sh.tpl" />
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
   </ItemGroup>

@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions runScriptGeneratorOptions)
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
@@ -288,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var enableCollectStatic = true;
             var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
                 EnvironmentSettingsKeys.DisableCollectStatic);
-            if (disableCollectStaticEnvValue.EqualsIgnoreCase("true"))
+            if (disableCollectStaticEnvValue.EqualsIgnoreCase(Constants.True))
             {
                 enableCollectStatic = false;
             }

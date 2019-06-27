@@ -11,10 +11,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("buildpack-build", Description = "Builds an app in the current working directory " +
-        "(for use in a Buildpack).")]
+    [Command(Name, Description = "Build an app in the current working directory (for use in a Buildpack).")]
     internal class BuildpackBuildCommand : BuildCommand
     {
+        public new const string Name = "buildpack-build";
+
         [Option("--layers-dir <dir>", CommandOptionType.SingleValue, Description = "Layers directory path.")]
         public string LayersDir { get; set; }
 
@@ -35,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(LayersDir))
                 {
                     logger.LogError("Could not find layers directory {layersDir}", LayersDir);
-                    console.Error.WriteLine($"Error: Could not find layers directory '{LayersDir}'.");
+                    console.WriteErrorLine($"Could not find layers directory '{LayersDir}'.");
                     result = false;
                 }
             }
@@ -46,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", PlanPath);
-                    console.Error.WriteLine($"Error: Could not find build plan file '{PlanPath}'.");
+                    console.WriteErrorLine($"Could not find build plan file '{PlanPath}'.");
                     result = false;
                 }
             }
@@ -57,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", PlatformDir);
-                    console.Error.WriteLine($"Error: Could not find platform directory '{PlatformDir}'.");
+                    console.WriteErrorLine($"Could not find platform directory '{PlatformDir}'.");
                     result = false;
                 }
             }
@@ -67,9 +68,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            console.WriteLine("# Stdin:");
-            console.WriteLine(console.In.ReadToEnd());
-            console.WriteLine("# End Stdin");
             return base.Execute(serviceProvider, console);
         }
     }

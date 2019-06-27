@@ -13,23 +13,25 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("build-script", Description = "Generate build script to standard output.")]
+    [Command(Name, Description = "Generate build script to standard output.")]
     internal class BuildScriptCommand : CommandBase
     {
+        public const string Name = "build-script";
+
         [Argument(0, Description = "The source directory.")]
         public string SourceDir { get; set; }
 
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming language being used in the provided source directory.")]
-        public string Language { get; set; }
+            Description = "The name of the programming platform used in the provided source directory.")]
+        public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of programming language being used in the provided source directory.")]
-        public string LanguageVersion { get; set; }
+            Description = "The version of the programming platform used in the provided source directory.")]
+        public string PlatformVersion { get; set; }
 
         [Option(
             OptionTemplates.Property,
@@ -61,14 +63,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.Error.WriteLine($"Error: Could not find the source code folder '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
             // Invalid to specify language version without language name
             if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
             {
-                console.Error.WriteLine("Cannot use language version without specifying language name also.");
+                console.WriteErrorLine("Cannot use language version without specifying language name also.");
                 return false;
             }
 
@@ -82,8 +84,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceDir,
                 destinationDir: null,
                 intermediateDir: null,
-                Language,
-                LanguageVersion,
+                PlatformName,
+                PlatformVersion,
                 scriptOnly: true,
                 Properties);
         }

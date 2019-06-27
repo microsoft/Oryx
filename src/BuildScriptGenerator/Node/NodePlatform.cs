@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -59,18 +60,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return _detector.Detect(sourceRepo);
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             var buildProperties = new Dictionary<string, string>();
 
-            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
+            var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
             bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
 
-            if (context.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
+            if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
@@ -112,27 +113,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             if (packageJson?.dependencies != null)
             {
-                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
-                var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(
-                    context.Language,
-                    context.NodeVersion,
-                    depSpecs.Select(kv => kv.Key + kv.Value));
+                var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
+                _logger.LogDependencies(ctx.Language, ctx.NodeVersion, depSpecs.Select(d => d.Key + d.Value));
+            }
+
+            if (packageJson?.devDependencies != null)
+            {
+                var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
+                _logger.LogDependencies(ctx.Language, ctx.NodeVersion, depSpecs.Select(d => d.Key + d.Value), true);
             }
 
             string compressNodeModulesCommand = null;
             string compressedNodeModulesFileName = null;
-            GetNodeModulesPackOptions(context, out compressNodeModulesCommand, out compressedNodeModulesFileName);
+            GetNodeModulesPackOptions(ctx, out compressNodeModulesCommand, out compressedNodeModulesFileName);
 
             if (!string.IsNullOrWhiteSpace(compressedNodeModulesFileName))
             {
                 buildProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
             }
 
-            bool pruneDevDependencies = ShouldPruneDevDependencies(context);
+            bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
             var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
-            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, context, appInsightsKey);
+            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, ctx, appInsightsKey);
 
             // node_options is only supported in version 8.0.0 or newer and in 6.12.0
             // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
@@ -223,102 +226,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             context.NodeVersion = version;
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions options)
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
-            if (options.SourceRepo == null)
-            {
-                throw new ArgumentNullException(nameof(RunScriptGeneratorOptions.SourceRepo));
-            }
-
-            string startupCommand = null;
-
-            // Log how we detected the entrypoint command
-            var commandSource = string.Empty;
-            if (!string.IsNullOrWhiteSpace(options.UserStartupCommand))
-            {
-                startupCommand = options.UserStartupCommand.Trim();
-                _logger.LogInformation("Using user-provided startup command");
-                commandSource = "User";
-            }
-            else
-            {
-                var packageJson = GetPackageJsonObject(options.SourceRepo, _logger);
-                startupCommand = packageJson?.scripts?.start;
-                if (string.IsNullOrWhiteSpace(startupCommand))
-                {
-                    string mainJsFile = packageJson?.main;
-                    if (string.IsNullOrEmpty(mainJsFile))
-                    {
-                        var candidateFiles = new[]
-                        {
-                            "bin/www",
-                            "server.js",
-                            "app.js",
-                            "index.js",
-                            "hostingstart.js"
-                        };
-                        foreach (var file in candidateFiles)
-                        {
-                            if (options.SourceRepo.FileExists(file))
-                            {
-                                startupCommand = GetStartupCommandFromJsFile(options, file);
-                                _logger.LogInformation("Found startup candidate {nodeStartupFile}", file);
-                                commandSource = "CandidateFile";
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        startupCommand = GetStartupCommandFromJsFile(options, mainJsFile);
-                        commandSource = "PackageJsonMain";
-                    }
-                }
-                else
-                {
-                    if (options.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
-                    {
-                        commandSource = "PackageJsonStartYarn";
-                        startupCommand = NodeConstants.YarnStartCommand;
-                        _logger.LogInformation("Found startup command in package.json, and will use Yarn");
-                    }
-                    else
-                    {
-                        commandSource = "PackageJsonStartNpm";
-                        startupCommand = NodeConstants.NpmStartCommand;
-                        _logger.LogInformation("Found startup command in package.json, and will use npm");
-                    }
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(startupCommand))
-            {
-                startupCommand = GetStartupCommandFromJsFile(options, options.DefaultAppPath);
-                commandSource = "DefaultApp";
-            }
-
-            _logger.LogInformation("Finalizing entrypoint script using {commandSource}", commandSource);
-            var templateValues = new NodeBashRunScriptProperties
-            {
-                AppDirectory = options.SourceRepo.RootPath,
-                StartupCommand = startupCommand,
-                ToolsVersions = string.IsNullOrWhiteSpace(options.PlatformVersion)
-                ? null : $"node={options.PlatformVersion}",
-                BindPort = options.BindPort
-            };
-            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeRunScript, templateValues);
-            return script;
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
-            var dirs = new List<string>();
-            dirs.Add(NodeConstants.AllNodeModulesDirName);
-            dirs.Add(NodeConstants.ProdNodeModulesDirName);
+            var dirs = new List<string>
+            {
+                NodeConstants.AllNodeModulesDirName,
+                NodeConstants.ProdNodeModulesDirName
+            };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
-            if (GetNodeModulesPackOptions(scriptGeneratorContext, out string compressCommand, out string compressedFileName))
+            if (GetNodeModulesPackOptions(ctx, out string compressCommand, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }
@@ -330,8 +252,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return dirs;
         }
 
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return new[]
             {
@@ -365,24 +286,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
         {
-            bool ret = false;
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(PruneDevDependenciesPropertyKey, out string value))
-            {
-                if (string.IsNullOrWhiteSpace(value) || value.EqualsIgnoreCase("true"))
-                {
-                    ret = true;
-                }
-            }
-
-            return ret;
+            return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, valueIsRequired: false);
         }
 
         private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
         {
             if (packageJson?.dependencies != null)
             {
-                Newtonsoft.Json.Linq.JObject deps = packageJson.dependencies;
+                JObject deps = packageJson.dependencies;
                 var pkgDependencies = deps.ToObject<IDictionary<string, string>>();
                 if (pkgDependencies.ContainsKey(packageName))
                 {
@@ -444,38 +355,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return isNodeModulesPackaged;
-        }
-
-        private string GetStartupCommandFromJsFile(RunScriptGeneratorOptions options, string file)
-        {
-            var command = string.Empty;
-            if (!string.IsNullOrWhiteSpace(options.CustomServerCommand))
-            {
-                _logger.LogInformation("Using custom server command {nodeCommand}", options.CustomServerCommand);
-                command = $"{options.CustomServerCommand.Trim()} {file}";
-            }
-            else
-            {
-                switch (options.DebuggingMode)
-                {
-                    case DebuggingMode.Standard:
-                        _logger.LogInformation("Debugging in standard mode");
-                        command = $"node --inspect {file}";
-                        break;
-
-                    case DebuggingMode.Break:
-                        _logger.LogInformation("Debugging in break mode");
-                        command = $"node --inspect-brk {file}";
-                        break;
-
-                    case DebuggingMode.None:
-                        _logger.LogInformation("Running without debugging");
-                        command = $"node {file}";
-                        break;
-                }
-            }
-
-            return command;
         }
 
         private string GetNpmVersion(dynamic packageJson)

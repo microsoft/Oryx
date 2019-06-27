@@ -1,9 +1,11 @@
-// This file was auto-generated from 'build-constants.yaml'. Changes may be overridden.
+// This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
 namespace Microsoft.Oryx.Common
 {
     public static class PhpVersions
     {
+        public const string PhpBuildBaseTag = "20190530.1";
+        public const string PhpRuntimeBaseTag = "20190530.1";
         public const string ComposerVersion = "1.8.4";
         public const string ComposerSha384 = "48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5";
         public const string Php73Version = "7.3.5";

@@ -6,10 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -88,9 +90,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return true;
         }
 
-        public string GenerateBashRunScript(RunScriptGeneratorOptions opts)
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
-            return string.Empty;
+            throw new NotImplementedException();
         }
 
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)

@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Common;
 using Xunit;
@@ -18,7 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 10;
-        private static readonly TimeSpan DelayBetweenRetriesInSeconds = TimeSpan.FromSeconds(6);
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(6);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -35,7 +37,7 @@ namespace Microsoft.Oryx.Tests.Common
             return BuildRunAndAssertAppAsync(
                 appName,
                 output,
-                new List<DockerVolume> { volume },
+                new[] { volume },
                 buildCmd,
                 buildArgs,
                 runtimeImageName,
@@ -48,7 +50,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildCmd,
             string[] buildArgs,
             string runtimeImageName,
@@ -74,7 +76,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildImage,
             string buildCmd,
             string[] buildArgs,
@@ -105,7 +107,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static Task BuildRunAndAssertAppAsync(
             string appName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildImage,
             string buildCmd,
             string[] buildArgs,
@@ -142,7 +144,7 @@ namespace Microsoft.Oryx.Tests.Common
         //  4.  A func supplied by the user is retried to the max of 10 retries between a delay of 1 second.
         public static async Task BuildRunAndAssertAppAsync(
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             string buildImage,
             string buildCmd,
             string[] buildArgs,
@@ -193,7 +195,7 @@ namespace Microsoft.Oryx.Tests.Common
         public static async Task RunAndAssertAppAsync(
             string imageName,
             ITestOutputHelper output,
-            List<DockerVolume> volumes,
+            IEnumerable<DockerVolume> volumes,
             List<EnvironmentVariable> environmentVariables,
             int port,
             string link,
@@ -244,7 +246,7 @@ namespace Microsoft.Oryx.Tests.Common
                             throw;
                         }
 
-                        await Task.Delay(DelayBetweenRetriesInSeconds);
+                        await Task.Delay(DelayBetweenRetries);
                     }
                 }
             }
@@ -264,6 +266,40 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
+        public static Task RunPackAndAssertAppAsync(
+            ITestOutputHelper output,
+            string appName,
+            DockerVolume appVolume,
+            string appImageName,
+            string builderImageName,
+            Func<int, Task> assertAction)
+        {
+            const int port = 8080;
+
+            return BuildRunAndAssertAppAsync(
+                output,
+                new[] { appVolume, DockerVolume.DockerDaemonSocket },
+                Settings.PackImageName,
+                buildCmd: null, // `pack` is already in the image's ENTRYPOINT
+                new[]
+                {
+                    "build", appImageName,
+                    "--no-pull", "--no-color",
+                    "--path", appVolume.ContainerDir,
+                    "--builder", builderImageName
+                },
+                appImageName,
+                new List<EnvironmentVariable>()
+                {
+                    new EnvironmentVariable("PORT", port.ToString()) // Used by some of the apps or their run scripts
+                },
+                port,
+                link: null,
+                runCmd: null, // It should already be embedded in the image as the ENTRYPOINT
+                runArgs: null,
+                assertAction);
+        }
+
         private static async Task<int> GetHostPortAsync(DockerCli dockerCli, string containerName, int portInContainer)
         {
             // We are depending on Docker to open ports in the host dynamically in order for our tests to be able to
@@ -274,10 +310,10 @@ namespace Microsoft.Oryx.Tests.Common
             // before trying to invoke the 'docker port' command.
             for (var i = 0; i < MaxRetryCount; i++)
             {
-                await Task.Delay(DelayBetweenRetriesInSeconds);
+                await Task.Delay(DelayBetweenRetries);
 
-                // Example output that is ouput when "docker port <container-name> <container-port>" is run:
-                // 0.0.0.0:32774
+                // Example output from `docker port <container-name> <container-port>`:
+                // "0.0.0.0:32774"
                 var getPortMappingResult = dockerCli.GetPortMapping(containerName, portInContainer);
                 if (getPortMappingResult.ExitCode == 0)
                 {

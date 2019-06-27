@@ -1,13 +1,8 @@
 parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
-  pushToDockerHub: 'false'
 
 steps:
-- ${{ if eq(parameters.pushToDockerHub, 'true') }}:
-  - script: |
-      echo "##vso[task.setvariable variable=PushToDockerHub;]true"
-
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ] && [ "$(TestIntegration)" != "true" ]
     then
@@ -26,12 +21,15 @@ steps:
     pipelineId: 'Oryx-CI'
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.SourcesDirectory)'
-  condition: and(succeeded(), or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')))
+  condition: >
+    and(succeeded(), 
+    or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
+    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
      
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
-    scriptPath: ./build/build-solution.sh
+    scriptPath: ./build/buildSln.sh
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
@@ -48,38 +46,38 @@ steps:
 - task: ShellScript@2
   displayName: 'Build build images'
   inputs:
-    scriptPath: ./build/build-buildimages.sh
+    scriptPath: ./build/buildBuildImages.sh
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build runtime images'
   inputs:
-    scriptPath: ./build/build-runtimeimages.sh
+    scriptPath: ./build/buildRunTimeImages.sh
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Test script generator'
+  displayName: 'Test build script generator'
   inputs:
-    scriptPath: ./build/test-buildscriptgenerator.sh
+    scriptPath: ./build/testBuildScriptGenerator.sh
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test startup script generators'
   inputs:
-    scriptPath: ./build/test-startupscriptgenerators.sh
+    scriptPath: ./build/testStartupScriptGenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
-    scriptPath: ./build/test-buildimages.sh
+    scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test runtime images'
   inputs:
-    scriptPath: ./build/test-runtimeimages.sh
+    scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
@@ -93,7 +91,7 @@ steps:
   displayName: 'Pull and Retag recently built oryx build and runtime images'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/pullandretag.sh
+    scriptPath: ./vsts/scripts/pullAndTag.sh
     args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
@@ -101,13 +99,13 @@ steps:
   displayName: 'Build a build image for tests'
   inputs:
     type: FilePath
-    scriptPath: ./build/build-testimage.sh
+    scriptPath: ./build/buildTestBuildImage.sh
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test integration'
   inputs:
-    scriptPath: ./build/test-integration.sh
+    scriptPath: ./build/testIntegration.sh
     args: $(TestIntegrationCaseFilter)
   env:
     SQLSERVER_DATABASE_HOST: $(SQLSERVER-DATABASE-HOST)
@@ -120,9 +118,7 @@ steps:
   displayName: 'Copy source projects output to artifacts folder'
   inputs:
     sourceFolder: $(Build.SourcesDirectory)
-    contents: |
-      src/**/bin/**/*.*
-      vsts/scripts/*.*
+    contents: src/**/bin/**/*.*
     targetFolder: $(Build.ArtifactStagingDirectory)
     cleanTargetFolder: true
     overWrite: true
@@ -145,17 +141,6 @@ steps:
     mergeTestResults: true
   condition: true
 
-- task: Docker@0
-  displayName: 'Push Build image to DockerHub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'), eq(variables['PushToDockerHub'], 'true'))
-
 - task: Docker@1
   displayName: 'Push build images to ACR'
   inputs:
@@ -167,17 +152,6 @@ steps:
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
-
-- task: Docker@0
-  displayName: 'Push runtime images to DockerHub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'), eq(variables['PushToDockerHub'], 'true'))
 
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
@@ -194,19 +168,19 @@ steps:
 - task: ShellScript@2
   displayName: 'Clean up Docker containers and images'
   inputs:
-    scriptPath: ./vsts/scripts/dockerCleanup.sh
+    scriptPath: ./vsts/scripts/cleanDocker.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Clean up Docker mounted directories'
   inputs:
-    scriptPath: ./vsts/scripts/dockerArtifactsRemoval.sh
+    scriptPath: ./vsts/scripts/removeDockerArtifacts.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Generate release notes'
   inputs:
-    scriptPath: ./vsts/scripts/generate-release-notes.sh
+    scriptPath: ./vsts/scripts/generateReleaseNotes.sh
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ArchiveFiles@2
@@ -218,4 +192,8 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
+  condition: true
+
+- task: mspremier.PostBuildCleanup.PostBuildCleanup-task.PostBuildCleanup@3
+  displayName: 'Clean Agent Directories'
   condition: true

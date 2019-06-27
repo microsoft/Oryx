@@ -250,23 +250,18 @@ paket-files/
 .idea/
 *.sln.iml
 
-# Visual Studio Code
-.vscode/launch.json
-.vscode/tasks.json
-
-# launchSettings.json
-launchSettings.json
-
 # Node and .NET Core runtime images dockerfiles, that are auto generated
 images/runtime/node/*/Dockerfile
 images/runtime/dotnetcore/*.*/
 images/runtime/python/*.*/
 images/runtime/php/*.*/
 
-# Go packages, if Oryx is added to GOPATH (which it should)
-pkg/
-
 # Go packages from GitHub
-src/github.com/
-src/startupscriptgenerator/vendor/
-src/golang.org/
+src/startupscriptgenerator/bin/
+src/startupscriptgenerator/src/github.com/
+src/startupscriptgenerator/pkg/
+src/startupscriptgenerator/**/vendor/
+
+# Go debugging related generated files
+src/startupscriptgenerator/src/**/__debug_bin
+src/startupscriptgenerator/src/**/run.sh

@@ -31,6 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string ProjectSdkAttributeValueXPathExpression = "string(/Project/@Sdk)";
         public const string ProjectSdkElementNameAttributeValueXPathExpression = "string(/Project/Sdk/@Name)";
         public const string TargetFrameworkElementXPathExpression = "/Project/PropertyGroup/TargetFramework";
+        public const string AssemblyNameXPathExpression = "/Project/PropertyGroup/AssemblyName";
 
         public const string DefaultMSBuildConfiguration = "Release";
     }

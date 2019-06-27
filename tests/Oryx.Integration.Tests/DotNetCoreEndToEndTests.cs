@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         protected const string NetCoreApp21WebApp = "NetCoreApp21.WebApp";
         protected const string NetCoreApp22WebApp = "NetCoreApp22WebApp";
         protected const string NetCoreApp30WebApp = "NetCoreApp30.WebApp";
+        protected const string DefaultWebApp = "DefaultWebApp";
         protected const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
         protected const string DefaultStartupFilePath = "./run.sh";
 
@@ -35,6 +36,11 @@ namespace Microsoft.Oryx.Integration.Tests
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;
+        }
+
+        protected DockerVolume CreateDefaultWebAppVolume()
+        {
+            return DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", DefaultWebApp));
         }
     }
 
@@ -271,16 +277,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -318,16 +324,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -365,16 +371,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -410,16 +416,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -454,16 +460,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -481,18 +487,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/run.sh";
-            var startupCommand = "\"dotnet foo.dll\"";
             var appOutputDir = $"{appDir}/myoutputdir";
+            var tempAppDir = "/tmp/app";
+            var startupCommand = $"\"dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll\"";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"cp {appOutputDir}/{NetCoreApp21WebApp}.dll {appOutputDir}/foo.dll")
-                .AddCommand($"rm -f {appOutputDir}/{NetCoreApp21WebApp}.dll")
-                .AddCommand(
-                $"cp {appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json {appOutputDir}/foo.runtimeconfig.json")
-                .AddCommand($"rm -f {appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json")
+                .AddCommand($"mkdir -p {tempAppDir}")
+                .AddCommand($"cp -rf {appOutputDir}/* {tempAppDir}")
                 .AddCommand(
                 $"oryx -appPath {appOutputDir} -output {startupFilePath} " +
                 $"-userStartupCommand {startupCommand} -bindPort {ContainerPort}")
@@ -519,8 +522,59 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
+                    Assert.Equal($"Location: {tempAppDir}/{NetCoreApp21WebApp}.dll", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_UsingExplicitStartupScriptFile()
+        {
+            // Arrange
+            var dotnetcoreVersion = "2.1";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var userStartupFile = "/tmp/userStartup.sh";
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var tempAppDir = "/tmp/app";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {tempAppDir}")
+                .AddCommand($"cp -rf {appOutputDir}/* {tempAppDir}")
+                .AddCommand($"echo '#!/bin/bash' >> {userStartupFile}")
+                .AddCommand($"echo 'cd {tempAppDir}' >> {userStartupFile}")
+                .AddCommand($"echo 'dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll' >> {userStartupFile}")
+                .AddCommand($"chmod +x {userStartupFile}")
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -userStartupCommand {userStartupFile} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
+                    Assert.Equal($"Location: {tempAppDir}/{NetCoreApp21WebApp}.dll", data);
                 });
         }
 
@@ -703,6 +757,219 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello World!", data);
                 });
         }
+
+        [Fact]
+        public async Task CanRunApp_HavingMultipleRuntimeConfigJsonFiles_AndExplicitStartupCommand()
+        {
+            // Scenario: When a user does a rename of a project and publishes it, there would be new files
+            // (.dll and .runtimeconfig.json) having this new name. If the user does not clean the output directory
+            // having the old files, then we would be having multiple runtimeconfig.json files in which case we will
+            // be unable to choose. This scenario happens with VS Publish but can also happen with any app which does
+            // not go through Oryx's build.
+            // Here we are trying to simulate that scenario and verifying that in this kind of situation, a user could
+            // workaround by supplying an explicit startup command.
+
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .SetEnvironmentVariable("PROJECT", "src/WebApp1/WebApp1.csproj")
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .SetEnvironmentVariable("PROJECT", "src/WebApp2/WebApp2.csproj")
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .AddFileExistsCheck($"{appOutputDir}/MyWebApp.dll")
+               .AddFileExistsCheck($"{appOutputDir}/MyWebApp.runtimeconfig.json")
+               .AddFileExistsCheck($"{appOutputDir}/WebApp2.dll")
+               .AddFileExistsCheck($"{appOutputDir}/WebApp2.runtimeconfig.json")
+               .ToString();
+            var startupCommand = $"\"dotnet WebApp2.dll\"";
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -userStartupCommand {startupCommand} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
+                    Assert.Contains($"Location: {appOutputDir}/WebApp2.dll", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunApp_UsingDefaultApp_WhenHavingMultipleRuntimeConfigJsonFiles()
+        {
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var defaultAppVolume = CreateDefaultWebAppVolume();
+            var defaultAppDir = defaultAppVolume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+               .SetEnvironmentVariable("PROJECT", "src/WebApp1/WebApp1.csproj")
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .SetEnvironmentVariable("PROJECT", "src/WebApp2/WebApp2.csproj")
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .AddFileExistsCheck($"{appOutputDir}/MyWebApp.dll")
+               .AddFileExistsCheck($"{appOutputDir}/MyWebApp.runtimeconfig.json")
+               .AddFileExistsCheck($"{appOutputDir}/WebApp2.dll")
+               .AddFileExistsCheck($"{appOutputDir}/WebApp2.runtimeconfig.json")
+               // Create a default web app
+               .AddCommand($"cd {defaultAppDir} && dotnet publish -c Release -o {defaultAppDir}/output")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
+                $"-bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                new List<DockerVolume> { volume, defaultAppVolume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Running default web app", data);
+                });
+        }
+
+        [Theory]
+        [InlineData("doestnotexist")]
+        [InlineData("./doestnotexist")]
+        [InlineData("dotnet doesnotexist.dll")]
+        public async Task CanRunApp_UsingDefaultApp_WhenStartupCommand_IsNotValid(string command)
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var defaultAppVolume = CreateDefaultWebAppVolume();
+            var defaultAppDir = defaultAppVolume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               // Create a default web app
+               .AddCommand($"cd {defaultAppDir} && dotnet publish -c Release -o {defaultAppDir}/output")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -userStartupCommand \"{command}\" " +
+                $"-defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
+                $"-bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                new List<DockerVolume> { volume, defaultAppVolume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Running default web app", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenaming()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var renamedAppName = $"{NetCoreApp21WebApp}-renamed";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               // Rename the project file to get different set of publish output from the earlier build
+               .AddCommand($"mv {appDir}/{NetCoreApp21WebApp}.csproj {appDir}/{renamedAppName}.csproj")
+               // Rebuild again
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .AddFileExistsCheck($"{appOutputDir}/{NetCoreApp21WebApp}.dll")
+               .AddFileExistsCheck($"{appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json")
+               .AddFileExistsCheck($"{appOutputDir}/{renamedAppName}.dll")
+               .AddFileExistsCheck($"{appOutputDir}/{renamedAppName}.runtimeconfig.json")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
+                    Assert.Contains($"Location: {appOutputDir}/{renamedAppName}.dll", data);
+                });
+        }
     }
 
     [Trait("category", "dotnetcore")]
@@ -743,16 +1010,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -787,16 +1054,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -939,25 +1206,21 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_UsingDefaultAppPath()
+        public async Task CanBuildAndRun_UsingDefaultApp_WhenCannotFindAnyStartupFile()
         {
             // Arrange
-            var dotnetcoreVersion = "2.2";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp22WebApp);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var defaultAppVolume = CreateDefaultWebAppVolume();
+            var defaultAppDir = defaultAppVolume.ContainerDir;
             var doesNotContainApp = "/tmp/does-not-contain-app";
-            var defaultApp = "/tmp/defaultApp";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               // create a default web app
+               .AddCommand($"cd {defaultAppDir} && dotnet publish -c Release -o {defaultAppDir}/output")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand($"mkdir -p {defaultApp}")
-                .AddCommand($"cp -rf {appOutputDir}/* {defaultApp}")
                 .AddCommand($"mkdir -p {doesNotContainApp}")
                 .AddCommand(
-                $"oryx -appPath {doesNotContainApp} -defaultAppFilePath {defaultApp}/{NetCoreApp22WebApp}.dll " +
+                $"oryx -appPath {doesNotContainApp} " +
+                $"-defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
                 $"-bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -965,14 +1228,14 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp22WebApp,
                 _output,
-                volume,
+                defaultAppVolume,
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryxdevms/dotnetcore-2.1",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -983,7 +1246,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/executingDir");
-                    Assert.Contains($"App is running from directory: {defaultApp}", data);
+                    Assert.Contains($"App is running from directory: {defaultAppDir}", data);
+                    data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Running default web app", data);
                 });
         }
     }
@@ -1019,16 +1284,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-2.1",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -1063,16 +1328,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -1119,16 +1384,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/bash",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 "oryxdevms/dotnetcore-1.1",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -1162,8 +1427,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -1173,10 +1438,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 new DockerCli());
         }
 
-        [Theory]
-        [InlineData("NetCoreApp30.WebApp")]
-        [InlineData("./NetCoreApp30.WebApp")]
-        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommand(string startupCommand)
+        [Fact]
+        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommand()
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
@@ -1184,6 +1447,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
+            var startupCommand = "./NetCoreApp30.WebApp";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
                .ToString();
@@ -1200,16 +1464,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {
@@ -1244,16 +1508,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        buildImageScript
+                    "-c",
+                    buildImageScript
                 },
                 $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
                 {
-                        "-c",
-                        runtimeImageScript
+                    "-c",
+                    runtimeImageScript
                 },
                 async (hostPort) =>
                 {

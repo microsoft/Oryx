@@ -1,0 +1,125 @@
+- name: ext-var-names
+  constants:
+    environment-type: ORYX_ENV_TYPE # Currently exported only in the Visual Studio Online build image
+    application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
+    app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
+    scm-commit-id-env-var-name: SCM_COMMIT_ID
+  outputs:
+    - type: csharp
+      directory: src/Common
+      namespace: Microsoft.Oryx.Common
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
+- name: dot-net-core-sdk-versions
+  constants:
+    dot-net-core-11-sdk-version: 1.1.14
+    dot-net-core-11-sdk-sha512: E36AA4B278B936E1E2989B5E556F4EC3AEF2CB1EBB5ABD1BD6011D511873FC3E72101D035CF4DAF1563C7A3C43C193863D38CBF24288D375DD143AB42AFAE524
+    dot-net-core-21-sdk-version: 2.1.700
+    dot-net-core-21-sdk-sha512: 44258B4FB59927D9977900F0724EEB82248A3CC46EF3067088F8F78EB092C09DA88BBA9B7A488F1549A240E0DD3FEA465FF1FFA6CDABB543B6BB536A12A549D3
+    dot-net-core-22-sdk-version: 2.2.300
+    dot-net-core-22-sdk-sha512: 1D660A323180DF3DA8C6E0EA3F439D6BBEC29670D498AC884F38BF3CDFFBB041C7AFFF66171CDFD24C82394B845B135B057404DEF1FCE9F206853726382BC42B
+    # Since preview names of .NET Core break the semver norms, it does not work well with the code
+    # that we depend on for semantic version checks, so having two constants here.
+    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview6-012264
+    dot-net-core-30-sdk-version: 3.0.100
+    dot-net-core-30-sdk-sha512: 047e295f3d7d4c590c906334ec28b844bef90c2b3fefe395a23e37e2a7d13955a11cbcf2fc2ee9ffcfd6fd44cede4ecd72a6b92258f568d5b328ad46bf0a7bb8
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/DotNetCore
+      namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: dot-net-core-run-time-versions
+  constants:
+    net-core-app-10: 1.0.16
+    net-core-app-11: 1.1.14
+    net-core-app-20: 2.0.9
+    net-core-app-21: 2.1.11
+    net-core-app-22: 2.2.5
+    net-core-app-30: 3.0.0
+    net-core-app-30-preview-name: 3.0.0-preview6-27804-01
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/DotNetCore
+      namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: python-versions
+  constants:
+    python-base-tag: 20190610.2
+    pip-version: 19.0.3
+    python27-version: 2.7.16
+    python36-version: 3.6.8
+    python37-version: 3.7.3
+    python38-version: 3.8.0b1
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.Common
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: php-versions
+  constants:
+    php-build-base-tag: 20190530.1
+    php-runtime-base-tag: 20190530.1
+    composer-version: 1.8.4
+    composer-sha384: 48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5
+    php73-version: 7.3.5
+    php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
+    php73-tar-sha256: e1011838a46fd4a195c8453b333916622d7ff5bce4aca2d9d99afac142db2472
+    php72-version: 7.2.18
+    php72-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+    php72-tar-sha256: 9970dbb3ab1298c9e6aac54bebfa841c8ad14b18eead65594a68fa841364cb8d
+    php70-version: 7.0.33
+    php70-keys: 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+    php70-tar-sha256: ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96
+    php56-version: 5.6.40
+    php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+    php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.Common
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: file-paths
+  constants:
+    build-manifest-file-name: oryx-manifest.toml
+    run-script-generator-dir: /opt/startupcmdgen
+  outputs:
+    - type: csharp
+      directory: src/Common
+      namespace: Microsoft.Oryx.Common
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
+- name: node-app-insights-loader
+  constants:
+    node-app-insights-loader-file-name: oryx-appinsightsloader.js
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/Node
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
+- name: node-versions
+  constants:
+    yarn-version: 1.13.0
+    yarn-minor-version: 1.13
+    yarn-major-version: 1
+    node6-version: 6.17.1
+    node6-major-minor-version: 6.17
+    node8-version: 8.16.0
+    node8-major-minor-version: 8.16
+    node10-version: 10.16.0
+    node10-major-minor-version: 10.16
+  outputs:
+    - type: shell
+      directory: build
+      file-name-prefix: __
+    - type: csharp
+      directory: src/BuildScriptGenerator/Node
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node      
