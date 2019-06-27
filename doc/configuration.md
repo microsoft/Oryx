@@ -16,3 +16,5 @@ DISABLE\_DOTNETCORE\_BUILD   | do not apply .NET Core build even if repo indicat
 DISABLE\_PYTHON\_BUILD       | do not apply Python build even if repo indicates it            | `false` | `true`, `false`
 DISABLE\_NODEJS\_BUILD       | do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
 MSBUILD\_CONFIGURATION       | Configuration (Debug or Relase) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
+
+[App Settings]: https://docs.microsoft.com/en-us/azure/app-service/web-sites-configure#app-settings
