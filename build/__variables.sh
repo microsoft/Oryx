@@ -40,7 +40,6 @@ declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
 declare -r ACR_PACK_BUILDER_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_BUILDER_IMAGE_NAME"
 declare -r ACR_PACK_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_IMAGE_NAME"
 declare -r ACR_PACK_STACK_BASE_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_STACK_BASE_IMAGE_NAME"
-declare -r AGENT_BUILD=""
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
@@ -50,5 +49,5 @@ declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
 # If build_number has value that means we are building in build agent and not locally
 if [ -n "$BUILD_NUMBER" ]; then
-    AGENT_BUILD="true"
+    declare -r AGENT_BUILD="true"
 fi

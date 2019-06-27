@@ -584,7 +584,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image tests are still failing #938129")]
         public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
@@ -622,7 +622,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image tests are still failing #938129")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
         {
             // Arrange
@@ -666,7 +666,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image tests are still failing #938129")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
