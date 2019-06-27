@@ -4,4 +4,5 @@ package consts
 
 const BuildManifestFileName string = "oryx-manifest.toml"
 const RunScriptGeneratorDir string = "/opt/startupcmdgen"
-const BenvScript string = "/usr/local/bin/benv"
+const Bash string = "/bin/bash"
+const Benv string = "/usr/local/bin/benv"
