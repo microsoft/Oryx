@@ -49,4 +49,4 @@ declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 
 # Filter to find any uncategorized integration tests
 declare -r MISSING_CATEGORY_FILTER="category!=node&category!=python&category!=php&category!=dotnetcore&category!=db"
-declare -r INTEGRATION_TEST_PROJECT="category!=node&category!=python&category!=php&category!=dotnetcore&category!=db"
+declare -r INTEGRATION_TEST_PROJECT="Oryx.Integration.Tests"
