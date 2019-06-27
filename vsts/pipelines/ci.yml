@@ -31,7 +31,9 @@ stages:
 
     - job: Job_BuildImage
       displayName: Build and Test Build Image
-      dependsOn: Job_SignBinaries
+      dependsOn: 
+        - Job_SignBinaries
+        - Job_Security
       condition: succeeded()
       pool:
         name: OryxLinux
@@ -54,7 +56,9 @@ stages:
 
     - job: Job_RuntimeImages
       displayName: Build and Test Runtime Images
-      dependsOn: Job_SignBinaries
+      dependsOn: 
+        - Job_SignBinaries
+        - Job_Security
       condition: succeeded()
       pool:
         name: OryxLinux

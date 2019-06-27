@@ -16,6 +16,8 @@ jobs:
 
 - job: Job_BuildImage
   displayName: Build and Test Build Image
+  dependsOn: Job_Security
+  condition: succeeded()
   pool:
     name: OryxLinux
   steps:
@@ -32,6 +34,7 @@ jobs:
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
+  dependsOn: Job_Security
   condition: succeeded()
   pool:
     name: OryxLinux
