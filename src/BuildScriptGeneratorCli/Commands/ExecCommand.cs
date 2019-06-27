@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,8 +21,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class ExecCommand : CommandBase
     {
         public const string Name = "exec";
-
-        public const string DefaultBashPath = "/bin/bash";
 
         public const string SrcDirDoesNotExistErrorMessageFmt = "Could not find the source directory '{0}'.";
         public const string CommandMissingErrorMessage = "A command is required.";
@@ -40,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var env = serviceProvider.GetRequiredService<IEnvironment>();
             var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
 
-            var shellPath = env.GetEnvironmentVariable("BASH") ?? DefaultBashPath;
+            var shellPath = env.GetEnvironmentVariable("BASH") ?? FilePaths.Bash;
             logger.LogInformation("Using shell {shell}", shellPath);
 
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
@@ -56,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
-                var cmd = $"benv {StringExtensions.JoinKeyValuePairs(tools)} {Command}";
+                var cmd = $"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)} {Command}";
 
                 logger.LogInformation("Running {shell} -c {cmd}", shellPath, cmd);
                 if (DebugMode)
@@ -68,13 +67,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     shellPath,
                     new[] { "-c", cmd },
                     SourceDir,
-                    (sender, args) => console.WriteLine(args.Data),
-                    (sender, args) => console.Error.WriteLine(args.Data));
-
-                if (DebugMode)
-                {
-                    console.WriteLine($"> Shell returned {exitCode}");
-                }
+                    (sender, args) => { if (args.Data != null) console.WriteLine(args.Data); },
+                    (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); } );
 
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
@@ -84,9 +78,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-
             if (string.IsNullOrWhiteSpace(Command))
             {
                 console.WriteErrorLine(CommandMissingErrorMessage);
