@@ -72,9 +72,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         public bool IsInputRedirected => throw new NotImplementedException();
 
-        public bool IsOutputRedirected => throw new NotImplementedException();
+        public bool IsOutputRedirected => true;
 
-        public bool IsErrorRedirected => throw new NotImplementedException();
+        public bool IsErrorRedirected => true;
 
         public ConsoleColor ForegroundColor
         {
