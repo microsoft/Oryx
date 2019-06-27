@@ -478,8 +478,23 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_UsingExplicitStartupCommand()
+        public static TheoryData<string> StartupCommandData
+        {
+            get
+            {
+                var tempAppDir = "/tmp/app";
+                var data = new TheoryData<string>();
+
+                data.Add($"'dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
+                data.Add($"'echo \"foo bar\" && dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
+
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(StartupCommandData))]
+        public async Task CanBuildAndRun_NetCore21WebApp_UsingExplicitStartupCommand(string startupCommand)
         {
             // Arrange
             var dotnetcoreVersion = "2.1";
@@ -489,7 +504,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var startupFilePath = "/tmp/run.sh";
             var appOutputDir = $"{appDir}/myoutputdir";
             var tempAppDir = "/tmp/app";
-            var startupCommand = $"\"dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll\"";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();

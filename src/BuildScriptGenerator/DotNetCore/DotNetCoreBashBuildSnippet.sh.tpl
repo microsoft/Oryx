@@ -73,7 +73,7 @@ echo
 
 tmpDestinationDir="/tmp/puboutput"
 tmpDestinationPublishDir="$tmpDestinationDir/publish"
-zippedOutputFileName=oryx_output.tar.gz
+zippedOutputFileName={{ ZippedOutputFileName }}
 {{ if ZipAllOutput }}
 ORIGINAL_DESTINATION_DIR="$DESTINATION_DIR"
 DESTINATION_DIR="$tmpDestinationPublishDir"

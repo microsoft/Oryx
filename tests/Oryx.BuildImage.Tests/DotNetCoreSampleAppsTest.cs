@@ -606,7 +606,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -o {tempOutputDir} -l dotnet --language-version 2.1 " +
                 $"-p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .AddFileDoesNotExistCheck($"{tempOutputDir}/post-{fileName}")
-                .AddCommand($"cd {tempOutputDir} && tar -xvf oryx_output.tar.gz")
+                .AddCommand($"cd {tempOutputDir} && tar -xvf {FilePaths.CompressedOutputFileName}")
                 .AddFileExistsCheck($"{tempOutputDir}/post-{fileName}")
                 .ToString();
 
@@ -664,7 +664,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -l dotnet --language-version 2.1 " +
                 $"-p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .AddFileDoesNotExistCheck($"{outputDir}/post-{fileName}")
-                .AddCommand($"cd {outputDir} && tar -xvf oryx_output.tar.gz")
+                .AddCommand($"cd {outputDir} && tar -xvf {FilePaths.CompressedOutputFileName}")
                 .AddFileExistsCheck($"{outputDir}/post-{fileName}")
                 .ToString();
 
