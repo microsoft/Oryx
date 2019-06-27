@@ -23,6 +23,15 @@ else
     $buildRuntimeImagesScript "$@"
 fi
 
+testResult=$(dotnet test --filter "$MISSING_CATEGORY_FILTER" "$TESTS_SRC_DIR/$INTEGRATION_TEST_PROJECT/$INTEGRATION_TEST_PROJECT.csproj")
+
+if [ "$testResult" == "No test matches the given testcase filter" ]; then 
+    echo
+    echo "All integration tests have category: No missing category tests found..."  
+else 
+    echo "$testResult"
+fi
+
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
