@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -31,6 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string PostBuildCommand { get; set; }
 
         public bool ZipAllOutput { get; set; }
+
+        public string ZippedOutputFileName { get; set; } = FilePaths.CompressedOutputFileName;
 
         public string ManifestFileName { get; set; }
 

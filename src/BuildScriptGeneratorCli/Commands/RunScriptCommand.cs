@@ -13,27 +13,26 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Generate startup script.",
+    [Command(Name, Description = "Generate startup script for an app.",
         ThrowOnUnexpectedArgument = false, AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
         public const string Name = "run-script";
 
         [Argument(0, Description = "The application directory.")]
+        [DirectoryExists]
         public string AppDir { get; set; } = ".";
 
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming platform, e.g. 'nodejs'.",
-            ValueName = "Platform name")]
+            Description = "The name of the programming platform, e.g. 'nodejs'.")]
         public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.",
-            ValueName = "PlatformVersion")]
+            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.")]
         public string PlatformVersion { get; set; }
 
         [Option(
@@ -46,12 +45,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            if (string.IsNullOrWhiteSpace(PlatformName))
-            {
-                console.WriteErrorLine("Platform name is required.");
-                return ProcessConstants.ExitFailure;
-            }
-
             string appPath = Path.GetFullPath(AppDir);
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var sourceRepo = new LocalSourceRepo(appPath, loggerFactory);
@@ -60,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 SourceRepo = sourceRepo,
                 PlatformVersion = PlatformVersion,
-                PassThruArguments = RemainingArgs
+                PassThruArguments = RemainingArgs,
             };
 
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
@@ -89,9 +82,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            if (!Directory.Exists(AppDir))
+            if (string.IsNullOrWhiteSpace(PlatformName))
             {
-                console.WriteErrorLine($"Could not find the directory '{AppDir}'.");
+                console.WriteErrorLine("Platform name is required.");
                 return false;
             }
 

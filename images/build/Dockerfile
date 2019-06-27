@@ -336,7 +336,6 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
 RUN if [ -z "$AGENTBUILD" ]; then \
-        benv dotnet=2.2 \
         dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript

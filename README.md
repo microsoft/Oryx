@@ -1,6 +1,6 @@
 # Oryx
 
-[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Oryx/Oryx-BuildImage?branchName=master)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=9922?branchName=master)
+[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Oryx/Oryx-Nightly?branchName=master)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=10393?branchName=master)
 
 Oryx is a build system which automatically compiles source code repos into
 runnable artifacts. It is used to build web apps for [Azure App Service][] and

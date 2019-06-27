@@ -4,6 +4,7 @@ namespace Microsoft.Oryx.Common
 {
     public static class FilePaths
     {
+        public const string CompressedOutputFileName = "oryx_output.tar.gz";
         public const string BuildManifestFileName = "oryx-manifest.toml";
         public const string RunScriptGeneratorDir = "/opt/startupcmdgen";
         public const string Bash = "/bin/bash";

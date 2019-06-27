@@ -20,7 +20,7 @@ firstPlatform=${firstPlatform%]} # Remove ]
 echo "# Running 'oryx buildpack-build .' in '`pwd`'..."
 oryx buildpack-build .
 
-echo "# Running 'oryx run-script' in '`pwd`'..."
+echo "# Running 'oryx run-script --platform $firstPlatform --output $runFile' in '`pwd`'..."
 oryx run-script --platform $firstPlatform --output $runFile
 chmod +x $runFile
 

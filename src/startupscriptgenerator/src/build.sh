@@ -31,7 +31,7 @@ fi
 
 echo "Building the package for platform '$PLATFORM'..."
 
-./restore-packages.sh
+./restorePackages.sh
 
 echo
 echo "Building package..."
