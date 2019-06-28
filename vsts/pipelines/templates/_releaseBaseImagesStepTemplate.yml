@@ -43,7 +43,7 @@ steps:
   displayName: 'Pull and create release tags'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/create-releasetags-baseimages.sh
+    scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
     args: ${{ parameters.baseImageName }}
 
 - task: Docker@1
