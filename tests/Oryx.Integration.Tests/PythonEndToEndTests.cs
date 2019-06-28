@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l python --language-version 2.7")
+                .AddCommand($"oryx build {appDir} --platform python --language-version 2.7")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -l python --language-version 2.7 -p virtualenv_name={virtualEnvName}")
+                .AddBuildCommand($"{appDir} --platform python --language-version 2.7 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l python --language-version {pythonVersion}")
+               .AddCommand($"oryx build {appDir} --platform python --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -444,7 +444,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out -l python --language-version 3.7 " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform python --language-version 3.7 " +
                 $"-p virtualenv_name={virtualEnvName}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
@@ -505,7 +505,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l python --language-version 3.6")
+               .AddCommand($"oryx build {appDir} --platform python --language-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -590,10 +590,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Simulate apps that were built using package directory, and then virtual env
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -l python --language-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} --platform python --language-version {pythonVersion}")
                 .AddBuildCommand(
                 $"{appDir} -p virtualenv_name={virtualEnvName} " +
-                $"-l python --language-version {pythonVersion}")
+                $"--platform python --language-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -646,7 +646,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv3.6";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -l python --language-version 3.6 -p virtualenv_name={virtualEnvName}")
+                .AddBuildCommand($"{appDir} --platform python --language-version 3.6 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -695,7 +695,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l python --language-version 3.6")
+               .AddCommand($"oryx build {appDir} --platform python --language-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -747,7 +747,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
-                .AddBuildCommand($"{appDir} -l python --language-version 3.7")
+                .AddBuildCommand($"{appDir} --platform python --language-version 3.7")
                 .ToString();
 
             var runAppScript = new ShellScriptBuilder()
@@ -816,7 +816,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l python --language-version {pythonVersion}")
+               .AddCommand($"oryx build {appDir} --platform python --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
@@ -860,7 +860,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -l python --language-version {pythonVersion} -p packagedir={packageDir}")
+                $"oryx build {appDir} --platform python --language-version {pythonVersion} -p packagedir={packageDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
