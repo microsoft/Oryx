@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsErrorAndExits_WhenCommandIsEmpty()
+        public void OnExecute_ExitsSuccessfully_WhenCommandIsEmpty()
         {
             // Arrange
             var cmd = new ExecCommand { DebugMode = true, SourceDir = _testDir.RootDirPath };
@@ -35,8 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var exitCode = cmd.OnExecute(new CommandLineApplication(console), console);
 
             // Assert
-            Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains(ExecCommand.CommandMissingErrorMessage, console.StdError);
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
         }
 
         [Fact]

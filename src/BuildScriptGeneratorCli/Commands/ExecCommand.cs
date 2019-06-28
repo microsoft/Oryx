@@ -22,8 +22,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         public const string Name = "exec";
 
-        public const string SrcDirDoesNotExistErrorMessageFmt = "Could not find the source directory '{0}'.";
-        public const string CommandMissingErrorMessage = "A command is required.";
         public const string NoToolsDetectedErrorMessage = "No usable tools detected for source directory.";
 
         [Argument(0, Description = "The source directory.")]
