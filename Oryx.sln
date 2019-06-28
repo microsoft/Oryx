@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{33D6DAAC
 	ProjectSection(SolutionItems) = preProject
 		images\build\benv.sh = images\build\benv.sh
 		images\build\Dockerfile = images\build\Dockerfile
-		images\build\openssl-build.sh = images\build\openssl-build.sh
-		images\build\python-build.sh = images\build\python-build.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C0150C21-3EC8-4973-B57C-26BC27A4ED57}"
@@ -26,15 +24,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{0FEBE7DD-10C0-4650-89E4-69DDB0930C56}"
 	ProjectSection(SolutionItems) = preProject
 		build\__variables.sh = build\__variables.sh
-		build\build-buildimages.sh = build\build-buildimages.sh
-		build\build-constants.yaml = build\build-constants.yaml
-		build\build-runtimeimages.sh = build\build-runtimeimages.sh
-		build\build-solution.sh = build\build-solution.sh
-		build\build-testimage.sh = build\build-testimage.sh
-		build\test-buildimages.sh = build\test-buildimages.sh
-		build\test-buildscriptgenerator.sh = build\test-buildscriptgenerator.sh
-		build\test-integration.sh = build\test-integration.sh
-		build\test-runtimeimages.sh = build\test-runtimeimages.sh
+		build\buildBuildImageBases.sh = build\buildBuildImageBases.sh
+		build\buildBuildImages.sh = build\buildBuildImages.sh
+		build\buildBuildpacksImages.sh = build\buildBuildpacksImages.sh
+		build\buildRunTimeImageBases.sh = build\buildRunTimeImageBases.sh
+		build\buildRunTimeImages.sh = build\buildRunTimeImages.sh
+		build\buildSln.sh = build\buildSln.sh
+		build\buildTestBuildImage.sh = build\buildTestBuildImage.sh
+		build\constants.yaml = build\constants.yaml
+		build\testBuildImages.sh = build\testBuildImages.sh
+		build\testBuildScriptGenerator.sh = build\testBuildScriptGenerator.sh
+		build\testIntegration.sh = build\testIntegration.sh
+		build\testRunTimeImages.sh = build\testRunTimeImages.sh
+		build\testStartupScriptGenerators.sh = build\testStartupScriptGenerators.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{45542CEB-0A3B-42DF-95AE-D13A673D3183}"
@@ -55,13 +57,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsts", "vsts", "{D7D9E386-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D}"
 	ProjectSection(SolutionItems) = preProject
-		vsts\pipelines\_buildParallel.yml = vsts\pipelines\_buildParallel.yml
-		vsts\pipelines\_buildTemplate.yml = vsts\pipelines\_buildTemplate.yml
-		vsts\pipelines\buildimage.yml = vsts\pipelines\buildimage.yml
+		vsts\pipelines\buildImageBases.yml = vsts\pipelines\buildImageBases.yml
 		vsts\pipelines\ci.yml = vsts\pipelines\ci.yml
 		vsts\pipelines\nightly.yml = vsts\pipelines\nightly.yml
-		vsts\pipelines\release.yml = vsts\pipelines\release.yml
-		vsts\pipelines\runtime.yml = vsts\pipelines\runtime.yml
 		vsts\pipelines\validation.yml = vsts\pipelines\validation.yml
 	EndProjectSection
 EndProject
@@ -73,9 +71,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885C6A7-0C9A-406C-89E9-D06A3A03C52D}"
 	ProjectSection(SolutionItems) = preProject
-		vsts\scripts\dockerArtifactsRemoval.sh = vsts\scripts\dockerArtifactsRemoval.sh
-		vsts\scripts\dockerCleanup.sh = vsts\scripts\dockerCleanup.sh
-		vsts\scripts\release-runtimeimages.sh = vsts\scripts\release-runtimeimages.sh
+		vsts\scripts\cleanDocker.sh = vsts\scripts\cleanDocker.sh
+		vsts\scripts\removeDockerArtifacts.sh = vsts\scripts\removeDockerArtifacts.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles", "{7475604B-12AC-4765-9259-505BF742FDEF}"
