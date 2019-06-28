@@ -53,7 +53,7 @@ steps:
   displayName: 'Pull and create release tags for buildpack images'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/create-releasetags-buildpacks.sh
+    scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: Docker@0
