@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             BuildScriptGeneratorContext context,
             Dictionary<string, string> toolsToVersion,
             [CanBeNull] List<string> directoriesToExcludeFromCopyToIntermediateDir,
-            [CanBeNull] List<string> directoriesToExlcudeFromCopyToBuildOutputDir)
+            [CanBeNull] List<string> directoriesToExcludeFromCopyToBuildOutputDir)
         {
             var snippets = new List<BuildScriptSnippet>();
 
@@ -260,12 +260,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     }
                 }
 
-                if (directoriesToExlcudeFromCopyToBuildOutputDir != null)
+                if (directoriesToExcludeFromCopyToBuildOutputDir != null)
                 {
                     var excludedDirs = platform.GetDirectoriesToExcludeFromCopyToBuildOutputDir(context);
                     if (excludedDirs.Any())
                     {
-                        directoriesToExlcudeFromCopyToBuildOutputDir.AddRange(excludedDirs);
+                        directoriesToExcludeFromCopyToBuildOutputDir.AddRange(excludedDirs);
                     }
                 }
 

@@ -39,6 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var env = serviceProvider.GetRequiredService<IEnvironment>();
             var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
 
+            if (string.IsNullOrWhiteSpace(Command))
+            {
+                logger.LogDebug("Command is empty; exiting");
+                return ProcessConstants.ExitSuccess;
+            }
+
             var shellPath = env.GetEnvironmentVariable("BASH") ?? FilePaths.Bash;
             logger.LogInformation("Using shell {shell}", shellPath);
 
@@ -74,17 +80,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return exitCode;
-        }
-
-        internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
-        {
-            if (string.IsNullOrWhiteSpace(Command))
-            {
-                console.WriteErrorLine(CommandMissingErrorMessage);
-                return false;
-            }
-
-            return true;
         }
 
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)

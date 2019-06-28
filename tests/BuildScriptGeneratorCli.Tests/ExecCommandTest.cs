@@ -25,23 +25,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
-        {
-            // Arrange
-            var srcDirPath = _testDir.GenerateRandomChildDirPath();
-            var cmd = new ExecCommand { DebugMode = true, SourceDir = srcDirPath, Command = "bla" };
-            var console = new TestConsole();
-
-            // Act
-            var exitCode = cmd.OnExecute(new CommandLineApplication(console), console);
-
-            // Assert
-            Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            var expectedMessage = string.Format(ExecCommand.SrcDirDoesNotExistErrorMessageFmt, srcDirPath);
-            Assert.Contains(expectedMessage, console.StdError);
-        }
-
-        [Fact]
         public void OnExecute_ShowsErrorAndExits_WhenCommandIsEmpty()
         {
             // Arrange
