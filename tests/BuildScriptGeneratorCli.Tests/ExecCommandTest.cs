@@ -12,6 +12,7 @@ using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -50,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(ProcessConstants.ExitFailure, exitCode);
-            Assert.Contains(ExecCommand.NoToolsDetectedErrorMessage, console.StdError);
+            Assert.Contains(Labels.ExecCommandNoToolsDetectedErrorMessage, console.StdError);
         }
     }
 }

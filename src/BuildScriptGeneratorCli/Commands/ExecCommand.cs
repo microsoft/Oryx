@@ -4,13 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
-using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Resources;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -21,8 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class ExecCommand : CommandBase
     {
         public const string Name = "exec";
-
-        public const string NoToolsDetectedErrorMessage = "No usable tools detected for source directory.";
 
         [Option("-s|--src <dir>", CommandOptionType.SingleValue, Description = "Source directory.")]
         [DirectoryExists]
@@ -52,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (tools.Count == 0)
             {
-                console.WriteErrorLine(NoToolsDetectedErrorMessage);
+                console.WriteErrorLine(Labels.ExecCommandNoToolsDetectedErrorMessage);
                 return ProcessConstants.ExitFailure;
             }
 
