@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
+    [Trait("category", "node")]
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)

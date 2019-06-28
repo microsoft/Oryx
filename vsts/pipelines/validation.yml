@@ -24,7 +24,7 @@ jobs:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
       echo "##vso[task.setvariable variable=TestBuildImages;]true"
-      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
     displayName: 'Set variables'
@@ -42,7 +42,7 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
@@ -55,12 +55,19 @@ jobs:
   condition: succeeded()
   pool:
     name: OryxLinux
-  timeoutInMinutes: 100
+  timeoutInMinutes: 30
   steps:
   - script: |
       echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=db"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
     displayName: 'Set variables'
+
+  - task: Docker@1
+    displayName: Container registry login
+    inputs:
+      command: login
+      azureSubscriptionEndpoint: OryxMCR
+      azureContainerRegistry: oryxdevmcr.azurecr.io
 
   - task: DownloadBuildArtifacts@0
     displayName: 'Download Build Artifacts'
@@ -73,7 +80,15 @@ jobs:
       type: FilePath
       scriptPath: ./vsts/scripts/pullAndTag.sh
       args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
-  
+    condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
+  - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+    displayName: 'Build a build image for tests'
+    inputs:
+      type: FilePath
+      scriptPath: ./build/buildTestBuildImage.sh
+    condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
+
   - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
     displayName: 'Find and Run Uncategorized Integration Tests'
     inputs:
