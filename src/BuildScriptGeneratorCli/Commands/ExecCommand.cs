@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public const string NoToolsDetectedErrorMessage = "No usable tools detected for source directory.";
 
-        [Argument(0, Description = "The source directory.")]
+        [Option("-s|--src <dir>", CommandOptionType.SingleValue, Description = "Source directory.")]
         [DirectoryExists]
         public string SourceDir { get; set; }
 

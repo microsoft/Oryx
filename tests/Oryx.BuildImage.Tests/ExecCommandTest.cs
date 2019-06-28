@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
             var script = scriptBuilder
-                .AddCommand($"oryx exec {appPath} '{cmd}' --debug") // '--debug' makes sure the benv command is printed
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' makes sure the benv command is printed
                 .ToString();
 
             // Act
