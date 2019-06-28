@@ -6,6 +6,7 @@
 
 set -o pipefail
 
+sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
 outFileDocker="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
