@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var srcDirPath = _testDir.GenerateRandomChildDirPath();
-            var cmd = new ExecCommand { SourceDir = srcDirPath, Command = "bla" };
+            var cmd = new ExecCommand { DebugMode = true, SourceDir = srcDirPath, Command = "bla" };
             var console = new TestConsole();
 
             // Act
@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsErrorAndExits_WhenCommandIsEmpty()
         {
             // Arrange
-            var cmd = new ExecCommand { SourceDir = _testDir.RootDirPath };
+            var cmd = new ExecCommand { DebugMode = true, SourceDir = _testDir.RootDirPath };
             var console = new TestConsole();
 
             // Act
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void OnExecute_ShowsErrorAndExits_WhenNoUsableToolsAreDetected()
         {
             // Arrange
-            var cmd = new ExecCommand { SourceDir = _testDir.CreateChildDir(), Command = "bla" };
+            var cmd = new ExecCommand { DebugMode = true, SourceDir = _testDir.CreateChildDir(), Command = "bla" };
             var console = new TestConsole();
 
             // Act
