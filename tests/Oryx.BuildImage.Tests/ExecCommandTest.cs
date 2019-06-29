@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var appPath = "/tmp/app";
-            var cmd = "node --version && npm --version";
+            var cmd = "node --version";
 
             var scriptBuilder = new ShellScriptBuilder()
                 .AddCommand($"mkdir {appPath}")
