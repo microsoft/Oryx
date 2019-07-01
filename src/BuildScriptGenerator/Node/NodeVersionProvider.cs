@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using SemVer;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -24,12 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNodeVersions == null)
                 {
-                    _supportedNodeVersions = _options.SupportedNodeVersions;
-                    if (_supportedNodeVersions == null)
-                    {
-                        _supportedNodeVersions = VersionProviderHelpers.GetVersionsFromDirectory(
-                            _options.InstalledNodeVersionsDir);
-                    }
+                    _supportedNodeVersions = VersionProviderHelpers.GetSupportedVersions(
+                        _options.SupportedNodeVersions,
+                        _options.InstalledNodeVersionsDir);
                 }
 
                 return _supportedNodeVersions;
@@ -42,12 +40,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNpmVersions == null)
                 {
-                    _supportedNpmVersions = _options.SupportedNpmVersions;
-                    if (_supportedNpmVersions == null)
-                    {
-                        _supportedNpmVersions = VersionProviderHelpers.GetVersionsFromDirectory(
-                            _options.InstalledNpmVersionsDir);
-                    }
+                    _supportedNpmVersions = VersionProviderHelpers.GetSupportedVersions(
+                        _options.SupportedNpmVersions,
+                        _options.InstalledNpmVersionsDir);
                 }
 
                 return _supportedNpmVersions;

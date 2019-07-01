@@ -12,6 +12,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class VersionProviderHelpers
     {
+        internal static IEnumerable<string> GetSupportedVersions(
+            IEnumerable<string> optionsVersions,
+            string versionsDir)
+        {
+            return optionsVersions != null ? optionsVersions : GetVersionsFromDirectory(versionsDir);
+        }
+
         internal static IEnumerable<string> GetVersionsFromDirectory(string versionsDir)
         {
             var listOptions = new EnumerationOptions()

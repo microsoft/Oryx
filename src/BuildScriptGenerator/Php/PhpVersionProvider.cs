@@ -23,16 +23,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             get
             {
-                if (_supportedPhpVersions == null &&
-                    _opts.SupportedPhpVersions != null &&
-                    _opts.SupportedPhpVersions.Any())
-                {
-                    _supportedPhpVersions = _opts.SupportedPhpVersions;
-                }
-
                 if (_supportedPhpVersions == null)
                 {
-                    _supportedPhpVersions = VersionProviderHelpers.GetVersionsFromDirectory(_opts.InstalledPhpVersionsDir);
+                    _supportedPhpVersions = VersionProviderHelpers.GetSupportedVersions(
+                        _opts.SupportedPhpVersions,
+                        _opts.InstalledPhpVersionsDir);
                 }
 
                 return _supportedPhpVersions;
