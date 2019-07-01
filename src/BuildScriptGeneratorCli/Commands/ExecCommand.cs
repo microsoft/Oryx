@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -56,21 +57,34 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
-                var cmd = $"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)} {Command}";
+                var benvCmd = $"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}";
 
-                logger.LogInformation("Running {shell} -c {cmd}", shellPath, cmd);
+                // Build envelope script
+                var script = new ShellScriptBuilder()
+                    .AddShebang(shellPath)
+                    .Source(benvCmd)
+                    .AddCommand(Command)
+                    .ToString();
+                logger.LogDebug("Script content:\n{script}", script);
                 if (DebugMode)
                 {
-                    console.WriteLine($"> {shellPath} -c '{cmd}'");
+                    console.WriteLine("Temporary script content:");
+                    console.WriteLine(script);
                 }
+
+                // Create temporary file to store script
+                var tempScriptPath = Path.GetTempFileName();
+                timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
+
+                File.WriteAllText(tempScriptPath, script);
+                timedEvent.AddProperty("chmodExitCode", ProcessHelper.TrySetExecutableMode(tempScriptPath).ToString());
 
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     shellPath,
-                    new[] { "-c", cmd },
+                    new[] { "-c", tempScriptPath },
                     serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value.SourceDir,
                     (sender, args) => { if (args.Data != null) console.WriteLine(args.Data); },
-                    (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); } );
-
+                    (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); });
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 

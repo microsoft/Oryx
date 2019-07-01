@@ -8,7 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData(null)]
         [InlineData("/bin/dash")]
-        public void Exec_NodeVersion(string altBashPath)
+        public void Exec_NodeLtsVersion(string altBashPath)
         {
             // Arrange
             var appPath = "/tmp/app";
@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var scriptBuilder = new ShellScriptBuilder()
                 .AddCommand($"mkdir {appPath}")
-                .CreateFile($"{appPath}/package.json", "{}");
+                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}");
 
             var expectedBashPath = FilePaths.Bash;
             if (!string.IsNullOrEmpty(altBashPath))
@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
             var script = scriptBuilder
-                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' makes sure the benv command is printed
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
                 .ToString();
 
             // Act
@@ -47,9 +47,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    Assert.Contains($"{expectedBashPath} -c '{FilePaths.Benv} node={NodeConstants.NodeLtsVersion} {cmd}'", result.StdOut);
+                    var nodeArg = $"node={NodeConstants.NodeLtsVersion}";
+                    Assert.Contains($"{expectedBashPath} -c '{FilePaths.Benv} {nodeArg} {cmd}'", result.StdOut);
                     Assert.True(result.IsSuccess);
+                    // Actual output from 'node --version' starts with a 'v'
+                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Exec_NodeVersionAndPhpVersion()
+        {
+            // Arrange
+            var appPath = "/tmp/app";
+            var cmd = "node --version && php --version";
+
+            var scriptBuilder = new ShellScriptBuilder()
+                .AddCommand($"mkdir {appPath}")
+                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
+                .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}", "{}");
+
+            var script = scriptBuilder
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    var benvArgs = $"node={NodeConstants.NodeLtsVersion} php={PhpConstants.DefaultPhpRuntimeVersion}";
+                    Assert.Contains($"{FilePaths.Bash} -c '{FilePaths.Benv} {benvArgs} {cmd}'", result.StdOut);
+                    Assert.True(result.IsSuccess);
+                    // Actual output from 'node --version' starts with a 'v'
                     Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut); // Actual output from 'node --version'
+                    Assert.Contains($"php{NodeConstants.NodeLtsVersion}", result.StdOut); // Actual output from '`php --version'
                 },
                 result.GetDebugInfo());
         }
