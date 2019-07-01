@@ -48,9 +48,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     var nodeArg = $"node={NodeConstants.NodeLtsVersion}";
-                    Assert.Contains($"{expectedBashPath} -c '{FilePaths.Benv} {nodeArg} {cmd}'", result.StdOut);
+                    Assert.Contains("#!" + expectedBashPath, result.StdOut);
+                    Assert.Contains(nodeArg, result.StdOut);
                     Assert.True(result.IsSuccess);
-                    // Actual output from 'node --version' starts with a 'v'
+                    // Actual output from `node --version` starts with a 'v'
                     Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -80,11 +81,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     var benvArgs = $"node={NodeConstants.NodeLtsVersion} php={PhpConstants.DefaultPhpRuntimeVersion}";
-                    Assert.Contains($"{FilePaths.Bash} -c '{FilePaths.Benv} {benvArgs} {cmd}'", result.StdOut);
+                    Assert.Contains(benvArgs, result.StdOut);
                     Assert.True(result.IsSuccess);
-                    // Actual output from 'node --version' starts with a 'v'
-                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut); // Actual output from 'node --version'
-                    Assert.Contains($"php{NodeConstants.NodeLtsVersion}", result.StdOut); // Actual output from '`php --version'
+                    // Actual output from `node --version` starts with a 'v'
+                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
+                    Assert.Contains($"php{NodeConstants.NodeLtsVersion}", result.StdOut); // Actual output from `php --version`
                 },
                 result.GetDebugInfo());
         }
