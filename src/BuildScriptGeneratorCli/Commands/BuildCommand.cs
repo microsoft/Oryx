@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             new TextSpan(
                 "RunPostBuildScript",
                 Oryx.BuildScriptGenerator.Constants.PostBuildCommandPrologue,
-                Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue)
+                Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue),
         };
 
         [Argument(0, Description = "The source directory.")]
@@ -228,7 +228,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         sourceRepo.RootPath,
                         options.DestinationDir ?? string.Empty,
-                        options.IntermediateDir ?? string.Empty
+                        options.IntermediateDir ?? string.Empty,
                     },
                     workingDirectory: sourceRepo.RootPath,
                     stdOutHandler == null ? stdOutBaseHandler : stdOutBaseHandler + stdOutHandler,

@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var options = new RunTimeInstallationScriptGeneratorOptions
             {
                 PlatformVersion = PlatformVersion,
-                InstallationDir = InstallationPrefix
+                InstallationDir = InstallationPrefix,
             };
 
             var script = scriptGenerator.GenerateBashScript(Platform, options);

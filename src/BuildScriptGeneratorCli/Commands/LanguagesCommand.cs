@@ -29,35 +29,32 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var logger = serviceProvider.GetRequiredService<ILogger<LanguagesCommand>>();
             var platformInfo = new List<PlatformResult>();
 
-            using (logger.LogTimedEvent("ListPlatforms"))
+            var availableIPlatforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>()
+                .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var iPlatform in availableIPlatforms)
             {
-                var availableIPlatforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>()
-                    .Where(p => !string.IsNullOrWhiteSpace(p.Name))
-                    .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase);
+                var platform = new PlatformResult { Name = iPlatform.Name };
 
-                foreach (var iPlatform in availableIPlatforms)
+                if (iPlatform.SupportedLanguageVersions != null && iPlatform.SupportedLanguageVersions.Any())
                 {
-                    var platform = new PlatformResult { Name = iPlatform.Name };
-
-                    if (iPlatform.SupportedLanguageVersions != null && iPlatform.SupportedLanguageVersions.Any())
-                    {
-                        platform.Versions = SortVersions(iPlatform.SupportedLanguageVersions);
-                    }
-
-                    var props = iPlatform.GetType().GetCustomAttributes(
-                        typeof(BuildPropertyAttribute),
-                        inherit: true).OfType<BuildPropertyAttribute>();
-                    if (props.Any())
-                    {
-                        platform.Properties = new Dictionary<string, string>();
-                        foreach (var prop in props)
-                        {
-                            platform.Properties[prop.Name] = prop.Description;
-                        }
-                    }
-
-                    platformInfo.Add(platform);
+                    platform.Versions = SortVersions(iPlatform.SupportedLanguageVersions);
                 }
+
+                var props = iPlatform.GetType().GetCustomAttributes(
+                    typeof(BuildPropertyAttribute),
+                    inherit: true).OfType<BuildPropertyAttribute>();
+                if (props.Any())
+                {
+                    platform.Properties = new Dictionary<string, string>();
+                    foreach (var prop in props)
+                    {
+                        platform.Properties[prop.Name] = prop.Description;
+                    }
+                }
+
+                platformInfo.Add(platform);
             }
 
             console.WriteLine(OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
