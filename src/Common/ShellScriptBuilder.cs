@@ -3,9 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Text;
+using JetBrains.Annotations;
 
-namespace Microsoft.Oryx.Tests.Common
+namespace Microsoft.Common
 {
     /// <summary>
     /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
@@ -23,10 +25,25 @@ namespace Microsoft.Oryx.Tests.Common
             _scriptBuilder = new StringBuilder();
         }
 
+        public ShellScriptBuilder AddShebang([NotNull] string interpreterPath)
+        {
+            if (!interpreterPath.StartsWith('/'))
+            {
+                throw new ArgumentException("Interpreter path must be absolute");
+            }
+
+            return Append("#!" + interpreterPath);
+        }
+
         public ShellScriptBuilder AddCommand(string command)
         {
             command = command.Trim(' ', '&');
             return Append(command);
+        }
+
+        public ShellScriptBuilder Source(string command)
+        {
+            return AddCommand("source " + command);
         }
 
         /// <summary>
