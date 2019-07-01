@@ -88,6 +88,28 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void IsValidInput_ShowsWarning_WhenDeprecatedOptionUsed()
+        {
+            // Arrange
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = _testDir.CreateChildDir();
+                    o.DestinationDir = _testDir.GenerateRandomChildDirPath();
+                })
+                .Build();
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand { LanguageName = "test" };
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.True(isValid);
+            Assert.Contains("deprecated option", testConsole.StdOutput);
+        }
+
+        [Fact]
         public void IsValidInput_IsTrue_EvenIfDestinationDirExists_AndIsEmpty()
         {
             // Arrange
