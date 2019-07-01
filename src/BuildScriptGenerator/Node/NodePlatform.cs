@@ -324,7 +324,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return true;
             }
 
-                return false;
+            return false;
         }
 
         private static bool GetNodeModulesPackOptions(
