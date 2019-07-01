@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public string Name => PythonConstants.PythonName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPythonVersions;
+        public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPythonVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
