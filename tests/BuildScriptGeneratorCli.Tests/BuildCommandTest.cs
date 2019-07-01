@@ -351,8 +351,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 {
                     o.SourceDir = _testDir.CreateChildDir();
                     o.DestinationDir = _testDir.CreateChildDir();
-                    o.Language = null;
-                    o.LanguageVersion = "1.0.0";
+                    o.PlatformName = null;
+                    o.PlatformVersion = "1.0.0";
                 })
                 .Build();
             var testConsole = new TestConsole();
