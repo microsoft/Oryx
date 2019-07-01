@@ -14,16 +14,14 @@ source $REPO_DIR/build/__integrationTestCategory.sh
 
 integrationTestProject="Oryx.Integration.Tests"
 
-missingCategoryFilter="category!=$FILTER_NODE& \
-						 category!=$FILTER_PYTHON& \
-						 category!=$FILTER_PHP& \
-						 category!=$FILTER_DOTNETCORE& \
-						 category!=$FILTER_DB"
+missingCategoryFilter="category!=$FILTER_NODE&category!=$FILTER_PYTHON&category!=$FILTER_PHP&category!=$FILTER_DOTNETCORE&category!=$FILTER_DB"
 
-dotnetTestArg="$missingCategoryFilter $TESTS_SRC_DIR/$integrationTestProject/$integrationTestProject.csproj"
+testProject="$TESTS_SRC_DIR/$integrationTestProject/$integrationTestProject.csproj"
 
 # Success or Failure we should let the tests to run.
-testResult=$(dotnet test --filter $dotnetTestArg)
+testResult=$(dotnet test --filter $missingCategoryFilter $testProject)
+
+echo "after dotnet test"
 
 if [[ $testResult == *"No test matches the given testcase filter"* ]]; then 
     echo
