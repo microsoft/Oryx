@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public string Name => PhpConstants.PhpName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _pythonVersionProvider.SupportedPhpVersions;
+        public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPhpVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {

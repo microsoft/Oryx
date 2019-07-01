@@ -17,16 +17,16 @@ using Newtonsoft.Json;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command(Name, Description = "Show a list of supported platforms along with their versions and build properties.")]
-    internal class LanguagesCommand : CommandBase
+    internal class PlatformsCommand : CommandBase
     {
-        public const string Name = "languages";
+        public const string Name = "platforms";
 
         [Option("--json", Description = "Output the supported platform data in JSON format.")]
         public bool OutputJson { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<LanguagesCommand>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<PlatformsCommand>>();
             var platformInfo = new List<PlatformResult>();
 
             using (logger.LogTimedEvent("ListPlatforms"))
@@ -39,9 +39,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     var platform = new PlatformResult { Name = iPlatform.Name };
 
-                    if (iPlatform.SupportedLanguageVersions != null && iPlatform.SupportedLanguageVersions.Any())
+                    if (iPlatform.SupportedVersions != null && iPlatform.SupportedVersions.Any())
                     {
-                        platform.Versions = SortVersions(iPlatform.SupportedLanguageVersions);
+                        platform.Versions = SortVersions(iPlatform.SupportedVersions);
                     }
 
                     var props = iPlatform.GetType().GetCustomAttributes(
