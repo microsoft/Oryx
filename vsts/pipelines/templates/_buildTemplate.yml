@@ -81,6 +81,19 @@ steps:
     args: skipBuildingImages
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
+- task: ShellScript@2
+  displayName: 'Validating integration tests'
+  inputs:
+    scriptPath: ./build/testIntegrationValidation.sh
+  condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Find and Run Uncategorized Integration Tests'
+  inputs:
+      type: FilePath
+      scriptPath: ./build/testIntegrationValidation.sh
+      args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+
 - task: DownloadBuildArtifacts@0
   displayName: 'Download Build Artifacts'
   inputs:

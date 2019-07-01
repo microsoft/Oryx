@@ -3,18 +3,19 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Integration.Tests.Fixtures;
+using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Integration.Tests.Fixtures;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "db")]
+    [Trait("category", IntegrationTestCategory.FilterDb)]
     [Trait("db", "sqlserver")]
     public class SqlServerIntegrationTests : PlatformEndToEndTestsBase
     {

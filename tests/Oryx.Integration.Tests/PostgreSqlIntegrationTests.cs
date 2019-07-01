@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "db")]
+    [Trait("category", IntegrationTestCategory.FilterDb)]
     [Trait("db", "postgres")]
     public class PostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {

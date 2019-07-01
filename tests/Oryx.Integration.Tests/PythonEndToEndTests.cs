@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Integration.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", appName));
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class PythonEndToEndTests_BackCompat : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests_BackCompat(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class PythonEndToEndTests_Python27 : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests_Python27(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -224,7 +224,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class Python37EndToEndTests : PythonEndToEndTestsBase
     {
         public Python37EndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -489,7 +489,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class PythonEndToEndTests : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -629,7 +629,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class PythonEndToEndTests_DjangoApp : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests_DjangoApp(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -799,7 +799,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class PythonEndToEndTests_ShapelyApp : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests_ShapelyApp(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -894,7 +894,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "python")]
+    [Trait("category", IntegrationTestCategory.FilterPython)]
     public class PythonEndToEndTests_PortEnvVariable : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests_PortEnvVariable(ITestOutputHelper output, TestTempDirTestFixture fixture)

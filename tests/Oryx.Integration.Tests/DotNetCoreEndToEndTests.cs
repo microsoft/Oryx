@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "dotnetcore")]
+    [Trait("category", IntegrationTestCategory.FilterDotnetcore)]
     public class DotNetCoreRuntimeVersion10Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion10Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "dotnetcore")]
+    [Trait("category", IntegrationTestCategory.FilterDotnetcore)]
     public class DotNetCoreRuntimeVersion11Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion11Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -192,7 +192,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "dotnetcore")]
+    [Trait("category", IntegrationTestCategory.FilterDotnetcore)]
     public class DotNetCoreRuntimeVersion20Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion20Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -244,7 +244,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "dotnetcore")]
+    [Trait("category", IntegrationTestCategory.FilterDotnetcore)]
     public class DotNetCoreRuntimeVersion21Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion21Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -986,7 +986,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "dotnetcore")]
+    [Trait("category", IntegrationTestCategory.FilterDotnetcore)]
     public class DotNetCoreRuntimeVersion22Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion22Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -1267,7 +1267,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "dotnetcore")]
+    [Trait("category", IntegrationTestCategory.FilterDotnetcore)]
     public class DotNetCoreRuntimeVersion30Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion30Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)

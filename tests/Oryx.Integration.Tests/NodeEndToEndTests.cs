@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
-    [Trait("category", "node")]
+    [Trait("category", IntegrationTestCategory.FilterNode)]
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -709,7 +709,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "node")]
+    [Trait("category", IntegrationTestCategory.FilterNode)]
     public class NodeSassExampleTest : NodeEndToEndTestsBase
     {
         public NodeSassExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -759,7 +759,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "node")]
+    [Trait("category", IntegrationTestCategory.FilterNode)]
     public class NodeTestUsingZippedNodeModules : NodeEndToEndTestsBase
     {
         public NodeTestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -823,7 +823,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "node")]
+    [Trait("category", IntegrationTestCategory.FilterNode)]
     public class NodeTestWithAppInsightsConfigured : NodeEndToEndTestsBase
     {
         public NodeTestWithAppInsightsConfigured(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -889,7 +889,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "node")]
+    [Trait("category", IntegrationTestCategory.FilterNode)]
     public class NodeTestBuildAndRunAppWithDebugger : NodeEndToEndTestsBase
     {
         public NodeTestBuildAndRunAppWithDebugger(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -948,7 +948,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "node")]
+    [Trait("category", IntegrationTestCategory.FilterNode)]
     public class NodeBuildpackTests : NodeEndToEndTestsBase
     {
         public NodeBuildpackTests(ITestOutputHelper output, TestTempDirTestFixture fixture) : base(output, fixture)

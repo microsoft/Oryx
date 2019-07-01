@@ -3,12 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +33,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "php")]
+    [Trait("category", IntegrationTestCategory.FilterPhp)]
     public class PhpTwigExampleTest : PhpEndToEndTests
     {
         public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -75,7 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "php")]
+    [Trait("category", IntegrationTestCategory.FilterPhp)]
     public class PhpWordPressTest : PhpEndToEndTests
     {
         public PhpWordPressTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -129,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "php")]
+    [Trait("category", IntegrationTestCategory.FilterPhp)]
     public class PhpImagickExampleTest : PhpEndToEndTests
     {
         public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -172,7 +173,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     }
 
-    [Trait("category", "php")]
+    [Trait("category", IntegrationTestCategory.FilterPhp)]
     public class PhpBuildpackTest : PhpEndToEndTests
     {
         public PhpBuildpackTest(ITestOutputHelper output, TestTempDirTestFixture fixture)

@@ -10,9 +10,20 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__integrationTestCategory.sh
+
+integrationTestProject="Oryx.Integration.Tests"
+
+missingCategoryFilter="category!=$FILTER_NODE& \
+						 category!=$FILTER_PYTHON& \
+						 category!=$FILTER_PHP& \
+						 category!=$FILTER_DOTNETCORE& \
+						 category!=$FILTER_DB"
+
+dotnetTestArg="$missingCategoryFilter $TESTS_SRC_DIR/$integrationTestProject/$integrationTestProject.csproj"
 
 # Success or Failure we should let the tests to run.
-testResult=$(dotnet test --filter "$MISSING_CATEGORY_FILTER" "$TESTS_SRC_DIR/$INTEGRATION_TEST_PROJECT/$INTEGRATION_TEST_PROJECT.csproj")
+testResult=$(dotnet test --filter $dotnetTestArg)
 
 if [[ $testResult == *"No test matches the given testcase filter"* ]]; then 
     echo

@@ -124,3 +124,17 @@
     - type: csharp
       directory: src/BuildScriptGenerator/Node
       namespace: Microsoft.Oryx.BuildScriptGenerator.Node      
+- name: integration-test-category
+  constants:
+    filter-node: node
+    filter-php: php
+    filter-python: python
+    filter-db: db
+    filter-dotnetcore: dotnetcore
+  outputs:
+    - type: shell
+      directory: build
+      file-name-prefix: __
+    - type: csharp
+      directory: src/Common
+      namespace: Microsoft.Oryx.Common
