@@ -2,9 +2,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
-using SemVer;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
