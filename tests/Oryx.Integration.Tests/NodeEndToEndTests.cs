@@ -955,7 +955,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "Node BuildPack Integration tests needs to be fixed")]
+        [Theory]
         [InlineData(Constants.OryxBuildpackBuilderImageName)]
         [InlineData(Constants.HerokuBuildpackBuilderImageName)]
         public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)
