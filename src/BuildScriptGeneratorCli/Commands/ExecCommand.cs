@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var benvCmd = $"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}";
 
                 // Build envelope script
-                var script = new ShellScriptBuilder()
+                var script = new ShellScriptBuilder("\n")
                     .AddShebang(shellPath)
                     .Source(benvCmd)
                     .AddCommand(Command)
