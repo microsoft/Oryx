@@ -7,7 +7,7 @@ using System;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Microsoft.Common
+namespace Microsoft.Oryx.Common
 {
     /// <summary>
     /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
