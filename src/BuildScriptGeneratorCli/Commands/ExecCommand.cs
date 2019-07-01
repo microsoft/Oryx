@@ -7,6 +7,7 @@ using System;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Resources;
 using Microsoft.Oryx.Common;
@@ -66,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     shellPath,
                     new[] { "-c", cmd },
-                    SourceDir,
+                    serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value.SourceDir,
                     (sender, args) => { if (args.Data != null) console.WriteLine(args.Data); },
                     (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); } );
 
