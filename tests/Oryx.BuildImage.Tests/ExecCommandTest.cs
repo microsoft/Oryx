@@ -85,7 +85,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     // Actual output from `node --version` starts with a 'v'
                     Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
-                    Assert.Contains($"php{NodeConstants.NodeLtsVersion}", result.StdOut); // Actual output from `php --version`
+                    // Actual output from `php --version`
+                    Assert.Contains($"PHP {PhpConstants.DefaultPhpRuntimeVersion}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
