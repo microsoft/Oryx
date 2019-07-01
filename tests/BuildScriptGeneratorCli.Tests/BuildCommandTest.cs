@@ -99,7 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 })
                 .Build();
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand { LanguageName = "test" };
+            var expectedPlatformName = "test";
+            var buildCommand = new BuildCommand { LanguageName = expectedPlatformName };
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -107,6 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.True(isValid);
             Assert.Contains("deprecated option", testConsole.StdOutput);
+            Assert.Contains(expectedPlatformName, buildCommand.PlatformName);
         }
 
         [Fact]
