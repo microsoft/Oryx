@@ -9,7 +9,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM buildpack-deps:stretch AS main
+FROM oryx-run-base AS main
 
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 

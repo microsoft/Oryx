@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("oryx", Description = "Generates and runs build scripts for multiple languages.")]
     [Subcommand(typeof(BuildCommand))]
-    [Subcommand(typeof(LanguagesCommand))]
+    [Subcommand(typeof(PlatformsCommand))]
     [Subcommand(typeof(BuildScriptCommand))]
     [Subcommand(typeof(RunScriptCommand))]
     [Subcommand(typeof(InstallRunTimeCommand))]
