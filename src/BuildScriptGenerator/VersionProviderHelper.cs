@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal static class VersionProviderHelpers
+    internal static class VersionProviderHelper
     {
         internal static IEnumerable<string> GetSupportedVersions(
             IEnumerable<string> optionsVersions,

@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNodeVersions == null)
                 {
-                    _supportedNodeVersions = VersionProviderHelpers.GetSupportedVersions(
+                    _supportedNodeVersions = VersionProviderHelper.GetSupportedVersions(
                         _options.SupportedNodeVersions,
                         _options.InstalledNodeVersionsDir);
                 }
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNpmVersions == null)
                 {
-                    _supportedNpmVersions = VersionProviderHelpers.GetSupportedVersions(
+                    _supportedNpmVersions = VersionProviderHelper.GetSupportedVersions(
                         _options.SupportedNpmVersions,
                         _options.InstalledNpmVersionsDir);
                 }

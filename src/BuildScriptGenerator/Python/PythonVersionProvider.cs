@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 if (_supportedPythonVersions == null)
                 {
-                    _supportedPythonVersions = VersionProviderHelpers.GetSupportedVersions(
+                    _supportedPythonVersions = VersionProviderHelper.GetSupportedVersions(
                         _options.SupportedPythonVersions,
                         _options.InstalledPythonVersionsDir);
                 }
