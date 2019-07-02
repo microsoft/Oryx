@@ -487,6 +487,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
                 data.Add($"'dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
                 data.Add($"'echo \"foo bar\" && dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
+                data.Add($"'bash -c \"echo foo && dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll\"'");
+                data.Add($"'key=\"a;b;c\" dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
 
                 return data;
             }
