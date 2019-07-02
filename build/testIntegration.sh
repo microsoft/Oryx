@@ -32,14 +32,21 @@ fi
 
 echo
 
-integrationTestPlatform=""
+# This is needed because when we are running tests in multiple agent machines
+# this variable will be used to name the testresults file and that way we can
+# avoid overwriting test results file.
+integrationTestPlatform=".default"
 
 if [ -n "$1" ]; then
     testCaseFilter="--filter $1"
-    integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
-	echo "Running integration tests for '$integrationTestPlatform' with filter '$testCaseFilter'..."
+    if [ -n "$AGENT_BUILD" ]; then
+        # Extract platform name for which the integration tests are running
+        # for example, for node it will be ".node", for php ".php" etc.
+        integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
+    fi
+    echo "Running integration tests for '$integrationTestPlatform' with filter '$testCaseFilter'..."
 else
-	echo "Running all integration tests..."
+    echo "Running all integration tests..."
 fi
 
 echo
