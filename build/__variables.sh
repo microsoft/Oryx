@@ -48,3 +48,8 @@ declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
 declare -r GIT_COMMIT=$(git rev-parse HEAD)
 
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
+
+# If build_number has value that means we are building in build agent and not locally
+if [ -n "$BUILD_NUMBER" ]; then
+    declare -r AGENT_BUILD="true"
+fi

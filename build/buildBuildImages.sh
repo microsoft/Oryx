@@ -100,7 +100,7 @@ else
 fi
 
 # Retag build image with DockerHub and ACR tags
-if [ -n "$BUILD_NUMBER" ]
+if [ -n "$AGENT_BUILD" ]
 then
 	uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
