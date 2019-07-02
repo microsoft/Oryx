@@ -89,8 +89,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 ZipAllOutput = zipAllOutput,
                 Configuration = GetBuildConfiguration()
             };
-            var script = TemplateHelpers.Render(
-                TemplateHelpers.TemplateResource.DotNetCoreSnippet,
+            var script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.DotNetCoreSnippet,
                 templateProperties,
                 _logger);
             return new BuildScriptSnippet { BashBuildScriptSnippet = script, IsFullScript = true };

@@ -164,8 +164,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
                 appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName);
 
-            string script = TemplateHelpers.Render(
-                TemplateHelpers.TemplateResource.NodeBuildSnippet,
+            string script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.NodeBuildSnippet,
                 scriptProps,
                 _logger);
 

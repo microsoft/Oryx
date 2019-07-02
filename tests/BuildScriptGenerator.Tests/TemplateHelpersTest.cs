@@ -35,25 +35,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void ExtraFunctions()
         {
             string template = "{{ if IsNotBlank SomeVar }}not blank{{ else }}blank{{ end }}";
-            Assert.Equal("blank", TemplateHelpers.RenderString(template, new { SomeVar = "" }));
-            Assert.Equal("not blank", TemplateHelpers.RenderString(template, new { SomeVar = "bla" }));
+            Assert.Equal("blank", TemplateHelper.RenderString(template, new { SomeVar = "" }));
+            Assert.Equal("not blank", TemplateHelper.RenderString(template, new { SomeVar = "bla" }));
 
             string templateWithPipe = "{{ if SomeVar | IsNotBlank }}not blank{{ else }}blank{{ end }}";
-            Assert.Equal("blank", TemplateHelpers.RenderString(templateWithPipe, new { SomeVar = "" }));
-            Assert.Equal("not blank", TemplateHelpers.RenderString(templateWithPipe, new { SomeVar = "bla" }));
+            Assert.Equal("blank", TemplateHelper.RenderString(templateWithPipe, new { SomeVar = "" }));
+            Assert.Equal("not blank", TemplateHelper.RenderString(templateWithPipe, new { SomeVar = "bla" }));
         }
 
         [Fact]
         public void Render_Throws_WhenNonExistentVariableIsUsed()
         {
             Assert.Throws<ScriptRuntimeException>(
-                () => TemplateHelpers.RenderString("Hello {{ World }}!", new { Foo = "Bar" }));
+                () => TemplateHelper.RenderString("Hello {{ World }}!", new { Foo = "Bar" }));
         }
 
         [Fact]
         public void Render_ProducesUnixLineEndings()
         {
-            Assert.Equal("Hello\nWorld!", TemplateHelpers.RenderString("Hello\r\nWorld!", null));
+            Assert.Equal("Hello\nWorld!", TemplateHelper.RenderString("Hello\r\nWorld!", null));
         }
     }
 }
