@@ -4,11 +4,12 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 # libpq-dev is for PostgreSQL
 apt-get update \
     && apt-get install -y --no-install-recommends \
+        libexpat1 \
         curl \
         gnupg \
         libpq-dev \
@@ -17,17 +18,16 @@ apt-get update \
     && rm -rf /var/lib/apt/lists/*
  
 # Microsoft SQL Server 2017
-export ACCEPT_EULA=Y
-apt-get update \
+export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && curl https://packages.microsoft.com/config/debian/9/prod.list \
         > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         locales \
         apt-transport-https \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
-    && apt-get update \
     && apt-get -y --no-install-recommends install \
         unixodbc-dev \
         msodbcsql17
@@ -46,3 +46,6 @@ pip install --upgrade pip
 pip install gunicorn
 
 ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
+
+# Clean up for apt. Keeping at the very end to make sure it runs after every apt-get install.
+rm -rf /var/lib/apt/lists/*

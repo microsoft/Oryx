@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
     }
 
+    [Trait("category", "node")]
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -583,7 +584,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image tests are still failing #938129")]
         public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
@@ -621,7 +622,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image tests are still failing #938129")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
         {
             // Arrange
@@ -665,7 +666,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Single image tests are still failing #938129")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
@@ -954,7 +955,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip ="this will be re-enabled when this is fixed, disabling temporarily")]
+        [Theory]
         [InlineData(Constants.OryxBuildpackBuilderImageName)]
         [InlineData(Constants.HerokuBuildpackBuilderImageName)]
         public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)

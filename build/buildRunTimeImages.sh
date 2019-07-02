@@ -74,6 +74,11 @@ then
     exit 1
 fi
 
+# Build the common base image first, so other images that depend on it get the latest version.
+# We don't retrieve this image from a repository but rather build locally to make sure we get
+# the latest version of its own base image.
+docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" -t "$RUNTIME_BASE_IMAGE_NAME" $REPO_DIR
+
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
 
@@ -94,7 +99,7 @@ for dockerFile in $dockerFiles; do
         $args $labels .
 
     # Retag build image with DockerHub & ACR tags
-    if [ -n "$BUILD_NUMBER" ]
+    if [ -n "$AGENT_BUILD" ]
     then
         uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
@@ -126,7 +131,7 @@ for dockerFile in $dockerFiles; do
     cd $RUNTIME_IMAGES_SRC_DIR
 done
 
-if [ -n "$BUILD_NUMBER" ]
+if [ -n "$AGENT_BUILD" ]
 then
     echo
     echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
