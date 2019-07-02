@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             console.CancelKeyPress += Console_CancelKeyPress;
 
-            ILogger<CommandBase> logger;
+            ILogger<CommandBase> logger = null;
 
             try
             {
@@ -49,10 +49,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("Debug mode enabled");
                 }
 
-                using (var timedEvent = logger.LogTimedEvent(GetType().Name))
+                using (var timedEvent = logger?.LogTimedEvent(GetType().Name))
                 {
                     var exitCode = Execute(_serviceProvider, console);
-                    timedEvent.AddProperty(nameof(exitCode), exitCode.ToString());
+                    timedEvent?.AddProperty(nameof(exitCode), exitCode.ToString());
+                    return exitCode;
                 }
             }
             catch (InvalidUsageException e)
