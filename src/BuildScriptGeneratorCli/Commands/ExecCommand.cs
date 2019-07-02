@@ -68,8 +68,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logger.LogDebug("Script content:\n{script}", script);
                 if (DebugMode)
                 {
-                    console.WriteLine("Temporary script content:");
+                    console.WriteLine("Temporary script @ {tempScriptPath}:");
+                    console.WriteLine("---");
                     console.WriteLine(script);
+                    console.WriteLine("---");
                 }
 
                 // Create temporary file to store script
@@ -77,7 +79,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
 
                 File.WriteAllText(tempScriptPath, script);
-                timedEvent.AddProperty("chmodExitCode", ProcessHelper.TrySetExecutableMode(tempScriptPath).ToString());
+                var chmodExitCode = ProcessHelper.TrySetExecutableMode(tempScriptPath).ToString();
+                if (DebugMode)
+                {
+                    console.WriteLine("chmod exited with " + chmodExitCode);
+                }
+                timedEvent.AddProperty("chmodExitCode", chmodExitCode);
 
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     shellPath,
