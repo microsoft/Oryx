@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.Tests.Common
     public class DockerCli
     {
         private const string CreatedContainerPrefix = "oryxtests_";
-        private const string DockerExe = "docker";
+        private const string DockerCmd = "docker";
 
         private readonly TimeSpan _waitTimeForExit;
         private readonly IEnumerable<EnvironmentVariable> _globalEnvVars;
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Tests.Common
             try
             {
                 (exitCode, output, error) = ProcessHelper.RunProcess(
-                        DockerExe,
+                        DockerCmd,
                         arguments,
                         workingDirectory: null,
                         _waitTimeForExit);
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Tests.Common
                 output,
                 error,
                 dockerRunArguments.Volumes,
-                $"{DockerExe} {string.Join(" ", arguments)}");
+                $"{DockerCmd} {string.Join(" ", arguments)}");
         }
 
         public DockerRunCommandProcessResult RunAndDoNotWaitForProcessExit(DockerRunArguments dockerRunArguments)
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.Tests.Common
             try
             {
                 process = ProcessHelper.StartProcess(
-                    DockerExe,
+                    DockerCmd,
                     arguments,
                     workingDirectory: null,
                     // Preserve the output structure and use AppendLine as these handlers
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.Tests.Common
                 exception,
                 outputBuilder,
                 errorBuilder,
-                $"{DockerExe} {string.Join(" ", arguments)}");
+                $"{DockerCmd} {string.Join(" ", arguments)}");
         }
 
         public DockerCommandResult RemoveContainer(string containerName, bool forceRemove)
@@ -239,7 +239,7 @@ namespace Microsoft.Oryx.Tests.Common
             try
             {
                 (exitCode, output, error) = ProcessHelper.RunProcess(
-                    DockerExe,
+                    DockerCmd,
                     arguments,
                     workingDirectory: null,
                     _waitTimeForExit);
@@ -254,7 +254,7 @@ namespace Microsoft.Oryx.Tests.Common
                 exception,
                 output,
                 error,
-                $"{DockerExe} {string.Join(" ", arguments)}");
+                $"{DockerCmd} {string.Join(" ", arguments)}");
         }
 
         private static void AddEnvVarArg([NotNull] List<string> args, EnvironmentVariable newVar)
