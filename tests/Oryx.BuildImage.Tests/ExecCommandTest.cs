@@ -22,11 +22,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Exec_NodeLtsVersion(string altBashPath)
         {
             // Arrange
-            var appPath = "/tmp/app";
+            var appPath = "/tmp";
             var cmd = "node --version";
 
             var scriptBuilder = new ShellScriptBuilder()
-                .CreateDirectory(appPath)
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}");
 
             var expectedBashPath = FilePaths.Bash;
@@ -61,11 +60,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Exec_NodeVersionAndPhpVersion()
         {
             // Arrange
-            var appPath = "/tmp/app";
+            var appPath = "/tmp";
             var cmd = "node --version && php --version";
 
             var scriptBuilder = new ShellScriptBuilder()
-                .CreateDirectory(appPath)
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}", "{}");
 
