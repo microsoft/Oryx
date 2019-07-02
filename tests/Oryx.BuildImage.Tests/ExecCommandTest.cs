@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var cmd = "node --version";
 
             var scriptBuilder = new ShellScriptBuilder()
-                .AddCommand($"mkdir {appPath}")
+                .CreateDirectory(appPath)
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}");
 
             var expectedBashPath = FilePaths.Bash;
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var cmd = "node --version && php --version";
 
             var scriptBuilder = new ShellScriptBuilder()
-                .AddCommand($"mkdir {appPath}")
+                .CreateDirectory(appPath)
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}", "{}");
 
