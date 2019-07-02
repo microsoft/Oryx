@@ -1,7 +1,7 @@
 # The official Node 8.9 image has vulnerabilities, so we build our own version
 # to fetch the latest strech release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 8498ff5302c19506c9edc3ce152f2bd4aa6b26b3.
-FROM buildpack-deps:stretch as node-original
+FROM oryx-run-base AS node-original
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -80,6 +80,10 @@ RUN mkdir -p /node_modules \
 # This is a way to avoid using caches for the next stages, since we want the remaining steps
 # to always run
 ARG CACHEBUST=0
+
+RUN apt-get update \
+  && apt-get install -y unzip \
+  && rm -rf /var/lib/apt/lists/*
 
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.

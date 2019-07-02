@@ -954,7 +954,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip ="this will be re-enabled when this is fixed, disabling temporarily")]
+        [Theory]
         [InlineData(Constants.OryxBuildpackBuilderImageName)]
         [InlineData(Constants.HerokuBuildpackBuilderImageName)]
         public async Task CanBuildAndRun_NodeApp_WithBuildpack(string builder)

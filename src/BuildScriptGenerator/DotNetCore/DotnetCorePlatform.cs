@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string Name => DotNetCoreConstants.LanguageName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedDotNetCoreVersions;
+        public IEnumerable<string> SupportedVersions => _versionProvider.SupportedDotNetCoreVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {

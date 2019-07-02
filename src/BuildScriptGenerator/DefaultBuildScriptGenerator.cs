@@ -383,13 +383,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string targetVersion;
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                targetVersionSpec,
-               platform.SupportedLanguageVersions);
+               platform.SupportedVersions);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
                     $"The '{platform.Name}' version '{targetVersionSpec}' is not supported. " +
-                    $"Supported versions are: {string.Join(", ", platform.SupportedLanguageVersions)}");
+                    $"Supported versions are: {string.Join(", ", platform.SupportedVersions)}");
                 _logger.LogError(exc, "Exception caught");
                 throw exc;
             }

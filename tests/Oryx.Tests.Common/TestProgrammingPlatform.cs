@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Tests.Common
             bool platformIsEnabledForMultiPlatformBuild = true)
         {
             Name = languageName;
-            SupportedLanguageVersions = languageVersions;
+            SupportedVersions = languageVersions;
             _canGenerateScript = canGenerateScript;
             _scriptContent = scriptContent;
             _detector = detector;
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string Name { get; }
 
-        public IEnumerable<string> SupportedLanguageVersions { get; }
+        public IEnumerable<string> SupportedVersions { get; }
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.Tests.Common
             string targetPlatformVersion,
             IDictionary<string, string> toolsToVersion)
         {
-            toolsToVersion.Add(Name, SupportedLanguageVersions.First());
+            toolsToVersion.Add(Name, SupportedVersions.First());
         }
 
         public void SetVersion(BuildScriptGeneratorContext context, string version)
