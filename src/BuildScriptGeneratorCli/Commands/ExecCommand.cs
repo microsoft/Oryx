@@ -66,19 +66,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     .AddCommand(Command)
                     .ToString();
                 logger.LogDebug("Script content:\n{script}", script);
+
+                // Create temporary file to store script
+                var tempScriptPath = Path.GetTempFileName();
+                timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
+                File.WriteAllText(tempScriptPath, script);
+
                 if (DebugMode)
                 {
-                    console.WriteLine("Temporary script @ {tempScriptPath}:");
+                    console.WriteLine($"Temporary script @ {tempScriptPath}:");
                     console.WriteLine("---");
                     console.WriteLine(script);
                     console.WriteLine("---");
                 }
 
-                // Create temporary file to store script
-                var tempScriptPath = Path.GetTempFileName();
-                timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
-
-                File.WriteAllText(tempScriptPath, script);
                 var chmodExitCode = ProcessHelper.TrySetExecutableMode(tempScriptPath).ToString();
                 if (DebugMode)
                 {
