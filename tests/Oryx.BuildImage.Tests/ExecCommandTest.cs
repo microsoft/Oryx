@@ -61,10 +61,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appPath = "/tmp";
             var repoScriptPath = "userScript.sh";
+            var absScriptPath = $"{appPath}/{repoScriptPath}";
+
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
-                .CreateFile($"{appPath}/{repoScriptPath}", "node --version")
-                .AddCommand($"oryx exec --debug --src {appPath} {repoScriptPath}")
+                .CreateFile(absScriptPath, "node --version")
+                .SetExecutePermissionOnFile(absScriptPath)
+                .AddCommand($"oryx exec --debug --src {appPath} ./{repoScriptPath}")
                 .ToString();
 
             // Act
