@@ -196,8 +196,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(sourceRepo.Object));
             Assert.Equal(
-                $"Target .NET Core runtime version '{DotNetCoreRunTimeVersions.NetCoreApp21}' is unsupported. " +
-                "Supported versions are: 2.2",
+                $"Platform 'dotnet' version '{DotNetCoreRunTimeVersions.NetCoreApp21}' is unsupported. " +
+                "Supported versions: 2.2",
                 exception.Message);
         }
 

@@ -388,7 +388,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanthrowException_ForInvalidPythonVersion()
+        public void ThrowsException_ForInvalidPythonVersion()
         {
             // Arrange
             var appName = "flask-app";
@@ -418,9 +418,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    string errorMessage =
-                    "The 'python' version '4.0.1' is not supported. Supported versions are: " +
-                    $"{Settings.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
+                    string errorMessage = "Platform 'python' version '4.0.1' is unsupported. Supported versions: " +
+                        $"{Settings.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.StdErr);
                 },

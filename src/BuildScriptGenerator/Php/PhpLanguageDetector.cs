@@ -64,8 +64,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(version, _versionProvider.SupportedPhpVersions);
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exc = new UnsupportedVersionException($"Target PHP version '{version}' is unsupported. " +
-                    $"Supported versions are: {string.Join(", ", _versionProvider.SupportedPhpVersions)}");
+                var exc = new UnsupportedVersionException(
+                    PhpConstants.PhpName,
+                    version,
+                    _versionProvider.SupportedPhpVersions);
                 _logger.LogError(exc, "Exception caught");
                 throw exc;
             }
