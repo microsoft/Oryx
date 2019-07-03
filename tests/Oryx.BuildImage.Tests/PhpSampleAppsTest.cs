@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddBuildCommand($"{appDir} --platform php --language-version {PhpVersions.Php73Version}")
+                .AddBuildCommand($"{appDir} --platform php --platform-version {PhpVersions.Php73Version}")
                 .ToString();
 
             // Act
