@@ -15,11 +15,6 @@ import (
 )
 
 type BuildManifest struct {
-	Exists     bool
-	Properties buildManifestProperties
-}
-
-type buildManifestProperties struct {
 	StartupFileName           string
 	ZipAllOutput              string
 	OperationID               string
@@ -40,15 +35,11 @@ func GetBuildManifest(manifestDir *string, fullAppPath string) BuildManifest {
 	}
 
 	manifestFileFullPath := getManifestFile(manifestDir, fullAppPath)
-	_buildManifest = BuildManifest{}
 	if FileExists(manifestFileFullPath) {
 		fmt.Printf("Found build manifest file at '%s'. Deserializing it...\n", manifestFileFullPath)
-		_buildManifest.Properties = deserializeBuildManifest(manifestFileFullPath)
-		_buildManifest.Exists = true
+		_buildManifest = deserializeBuildManifest(manifestFileFullPath)
 	} else {
 		fmt.Printf("Cound not find build manifest file at '%s'\n", manifestFileFullPath)
-		_buildManifest.Properties = buildManifestProperties{}
-		_buildManifest.Exists = false
 	}
 
 	_hasResult = true
@@ -78,8 +69,8 @@ func getManifestFile(manifestDir *string, fullAppPath string) string {
 	return manifestFileFullPath
 }
 
-func deserializeBuildManifest(manifestFile string) buildManifestProperties {
-	var manifest buildManifestProperties
+func deserializeBuildManifest(manifestFile string) BuildManifest {
+	var manifest BuildManifest
 	if _, err := toml.DecodeFile(manifestFile, &manifest); err != nil {
 		fmt.Printf(
 			"Error occurred when trying to deserialize the manifest file '%s'. Error: '%s'.\n",

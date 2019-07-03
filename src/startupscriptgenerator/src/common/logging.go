@@ -30,8 +30,8 @@ type Logger struct {
 var buildOpID string
 
 func SetGlobalOperationID(buildManifest BuildManifest) {
-	if buildManifest.Properties.OperationID != "" {
-		buildOpID = strings.TrimSpace(buildManifest.Properties.OperationID)
+	if buildManifest.OperationID != "" {
+		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}
 	fmt.Println("Build Operation ID: " + buildOpID)
 }

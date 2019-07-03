@@ -60,8 +60,9 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 			scriptBuilder.WriteString("fi\n")
 		}
 	} else {
-		if gen.Manifest.Exists {
-			startupCommand := "dotnet \"" + gen.Manifest.Properties.StartupDllFileName + "\""
+		if gen.Manifest.StartupDllFileName != "" {
+			scriptBuilder.WriteString("echo Found startup dll name from manifest file\n")
+			startupCommand := "dotnet \"" + gen.Manifest.StartupDllFileName + "\""
 			scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
 			scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
 			scriptBuilder.WriteString(startupCommand + "\n")

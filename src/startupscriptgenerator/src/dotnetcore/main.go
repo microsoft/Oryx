@@ -89,7 +89,7 @@ func main() {
 		common.AppendScriptToCopyToDir(&scriptBuilder, fullAppPath, fullRunFromPath)
 	}
 
-	if buildManifest.Properties.ZipAllOutput == "true" {
+	if buildManifest.ZipAllOutput == "true" {
 		fmt.Println(
 			"Read build manifest file and found output has been zipped, so adding " +
 				"script to extract it...")

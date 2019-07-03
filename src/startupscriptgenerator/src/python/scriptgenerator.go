@@ -84,7 +84,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		map[string]string{
 			"appType":   appType,
 			"appModule": appModule,
-			"venv":      gen.Manifest.Properties.VirtualEnvName,
+			"venv":      gen.Manifest.VirtualEnvName,
 		})
 
 	var runScript = scriptBuilder.String()
@@ -101,11 +101,11 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	scriptBuilder := strings.Builder{}
 
 	// Values in manifest file takes precedence over values supplied at command line
-	virtualEnvironmentName := gen.Manifest.Properties.VirtualEnvName
+	virtualEnvironmentName := gen.Manifest.VirtualEnvName
 	if virtualEnvironmentName == "" {
 		virtualEnvironmentName = gen.VirtualEnvironmentName
 	}
-	packageDirName := gen.Manifest.Properties.PackageDir
+	packageDirName := gen.Manifest.PackageDir
 	if packageDirName == "" {
 		packageDirName = gen.PackageDirectory
 	}
@@ -116,7 +116,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
-		if gen.Manifest.Properties.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+		if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
 			if common.PathExists(virtualEnvDir) {
 				// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
@@ -132,7 +132,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				scriptBuilder.WriteString("  echo \"WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\"\n")
 			}
 		} else {
-			scriptBuilder.WriteString("compressedVirtualEnvFile=\"" + gen.Manifest.Properties.CompressedVirtualEnvFile + "\"\n")
+			scriptBuilder.WriteString("compressedVirtualEnvFile=\"" + gen.Manifest.CompressedVirtualEnvFile + "\"\n")
 			scriptBuilder.WriteString("virtualEnvDir=\"/$virtualEnvName\"\n")
 			scriptBuilder.WriteString("echo \"Checking if virtual environment was compressed...\"\n")
 			scriptBuilder.WriteString("case $compressedVirtualEnvFile in \n")
@@ -200,7 +200,7 @@ func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 		panic("Couldn't read application folder '" + gen.SourcePath + "'")
 	}
 	for _, appRootFile := range appRootFiles {
-		if appRootFile.IsDir() && appRootFile.Name() != gen.Manifest.Properties.VirtualEnvName {
+		if appRootFile.IsDir() && appRootFile.Name() != gen.Manifest.VirtualEnvName {
 			subDirPath := filepath.Join(gen.SourcePath, appRootFile.Name())
 			subDirFiles, subDirErr := ioutil.ReadDir(subDirPath)
 			if subDirErr != nil {

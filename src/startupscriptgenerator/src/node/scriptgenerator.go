@@ -58,7 +58,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
 	if !gen.SkipNodeModulesExtraction {
-		scriptBuilder.WriteString("compressedNodeModulesFile=\"" + gen.Manifest.Properties.CompressedNodeModulesFile + "\"\n")
+		scriptBuilder.WriteString("compressedNodeModulesFile=\"" + gen.Manifest.CompressedNodeModulesFile + "\"\n")
 		scriptBuilder.WriteString("echo \"Checking if node_modules was compressed...\"\n")
 		scriptBuilder.WriteString("case $compressedNodeModulesFile in \n")
 		scriptBuilder.WriteString("    *\".zip\")\n")
@@ -166,7 +166,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	}
 
 	logger.LogInformation("Looking for App-Insights loader injected by Oryx and export to NODE_OPTIONS if needed")
-	scriptBuilder.WriteString("injectedAppInsights=\"" + gen.Manifest.Properties.InjectedAppInsights + "\"\n")
+	scriptBuilder.WriteString("injectedAppInsights=\"" + gen.Manifest.InjectedAppInsights + "\"\n")
 	scriptBuilder.WriteString("if [ -n $injectedAppInsights ]; then\n")
 	scriptBuilder.WriteString("    if [ -f ./oryx-appinsightsloader.js ]; then\n")
 	var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " '$NODE_OPTIONS"
