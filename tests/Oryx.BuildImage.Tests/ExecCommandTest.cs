@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -19,7 +18,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData(null)]
         [InlineData("/bin/dash")]
-        public void Exec_NodeLtsVersion(string altBashPath)
+        public void CanExec_SingleCommand(string altBashPath)
         {
             // Arrange
             var appPath = "/tmp";
@@ -57,17 +56,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Exec_NodeVersionAndPhpVersion()
+        public void CanExec_MultipleCommands()
         {
             // Arrange
             var appPath = "/tmp";
             var cmd = "node --version && php --version";
 
-            var scriptBuilder = new ShellScriptBuilder()
+            var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
-                .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}", "{}");
-
-            var script = scriptBuilder
+                .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}", "{}")
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
                 .ToString();
 
@@ -85,6 +82,32 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
                     // Actual output from `php --version`
                     Assert.Contains($"PHP {PhpConstants.DefaultPhpRuntimeVersion}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Exec_PropagatesFailures()
+        {
+            // Arrange
+            var appPath = "/tmp";
+            var expectedExitCode = 123;
+            var cmd = $"exit {expectedExitCode}";
+
+            var script = new ShellScriptBuilder()
+                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.Equal(expectedExitCode, result.ExitCode);
                 },
                 result.GetDebugInfo());
         }

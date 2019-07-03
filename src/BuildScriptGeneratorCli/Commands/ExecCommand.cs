@@ -62,6 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 // Build envelope script
                 var script = new ShellScriptBuilder("\n")
                     .AddShebang(shellPath)
+                    .AddCommand("set -e")
                     .Source(benvCmd)
                     .AddCommand(Command)
                     .ToString();
