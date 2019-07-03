@@ -393,9 +393,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exc = new UnsupportedVersionException(
-                    $"The '{platform.Name}' version '{targetVersionSpec}' is not supported. " +
-                    $"Supported versions are: {string.Join(", ", platform.SupportedVersions)}");
+                var exc = new UnsupportedVersionException(platform.Name, targetVersionSpec, platform.SupportedVersions);
                 _logger.LogError(exc, "Exception caught");
                 throw exc;
             }
