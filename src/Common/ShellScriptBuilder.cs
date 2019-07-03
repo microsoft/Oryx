@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Common
 
         public ShellScriptBuilder Source(string command)
         {
-            return AddCommand("source " + command);
+            return AddCommand(". " + command); // Dot is preferable to `source` as it's supported in more shells
         }
 
         /// <summary>
