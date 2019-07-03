@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class VersionInformationTest
     {
         private const string Python27VersionInfo = "Python " + Settings.Python27Version;
-        private const string Python36VersionInfo = "Python " + Settings.Python36Version;
+        private const string Python36VersionInfo = "Python " + Common.PythonVersions.Python36Version;
         private const string Python37VersionInfo = "Python " + Common.PythonVersions.Python37Version;
 
         private readonly ITestOutputHelper _output;
@@ -408,7 +408,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("latest", Python37VersionInfo)]
         [InlineData("3", Python37VersionInfo)]
         [InlineData("3.6", Python36VersionInfo)]
-        [InlineData(Settings.Python36Version, Python36VersionInfo)]
+        [InlineData(Common.PythonVersions.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
         [InlineData(Common.PythonVersions.Python37Version, Python37VersionInfo)]
         public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
