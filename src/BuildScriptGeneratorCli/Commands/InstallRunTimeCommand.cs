@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             "--installation-prefix <prefix>",
             CommandOptionType.SingleValue,
             Description = "The prefix into which the components will be installed.")]
+        [DirectoryExists]
         public string InstallationPrefix { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
@@ -59,12 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            if (!Directory.Exists(InstallationPrefix))
-            {
-                console.WriteErrorLine($"Could not find the installation prefix directory '{InstallationPrefix}'.");
-                return false;
-            }
-
+            // TODO: validate?
             return true;
         }
     }
