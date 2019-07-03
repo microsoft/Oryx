@@ -324,7 +324,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {Settings.Python36Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python36Version}")
                 .ToString();
 
             // Act
@@ -343,7 +343,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{Settings.Python36Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -361,7 +361,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 .AddScriptCommand(
-                $"{appDir} --platform python --platform-version {Settings.Python36Version} > {generatedScript}")
+                $"{appDir} --platform python --platform-version {PythonVersions.Python36Version} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -419,7 +419,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     string errorMessage = "Platform 'python' version '4.0.1' is unsupported. Supported versions: " +
-                        $"{Settings.Python27Version}, {Settings.Python36Version}, {PythonVersions.Python37Version}";
+                        $"{Settings.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.StdErr);
                 },
