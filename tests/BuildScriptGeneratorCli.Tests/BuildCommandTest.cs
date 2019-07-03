@@ -88,6 +88,38 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void IsValidInput_ShowsWarning_WhenDeprecatedOptionUsed()
+        {
+            // Arrange
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = _testDir.CreateChildDir();
+                    o.DestinationDir = _testDir.GenerateRandomChildDirPath();
+                })
+                .Build();
+            var testConsole = new TestConsole();
+
+            var expectedPlatformName = "test";
+            var expectedPlatformVersion = "1.0.0";
+            var buildCommand = new BuildCommand
+            {
+                LanguageName = expectedPlatformName,
+                LanguageVersion = expectedPlatformVersion,
+            };
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.True(isValid);
+            Assert.Contains("deprecated option '--language'", testConsole.StdOutput);
+            Assert.Contains("deprecated option '--language-version'", testConsole.StdOutput);
+            Assert.Contains(expectedPlatformName, buildCommand.PlatformName);
+            Assert.Contains(expectedPlatformVersion, buildCommand.PlatformVersion);
+        }
+
+        [Fact]
         public void IsValidInput_IsTrue_EvenIfDestinationDirExists_AndIsEmpty()
         {
             // Arrange
@@ -329,8 +361,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 {
                     o.SourceDir = _testDir.CreateChildDir();
                     o.DestinationDir = _testDir.CreateChildDir();
-                    o.Language = null;
-                    o.LanguageVersion = "1.0.0";
+                    o.PlatformName = null;
+                    o.PlatformVersion = "1.0.0";
                 })
                 .Build();
             var testConsole = new TestConsole();

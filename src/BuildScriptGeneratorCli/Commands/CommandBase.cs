@@ -30,11 +30,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             console.CancelKeyPress += Console_CancelKeyPress;
 
+            ILogger<CommandBase> logger = null;
+
             try
             {
                 _serviceProvider = GetServiceProvider();
-                _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogInformation(
-                    "Oryx command line: {cmdLine}", Environment.CommandLine);
+
+                logger = _serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
+                logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
+
                 if (!IsValidInput(_serviceProvider, console))
                 {
                     return ProcessConstants.ExitFailure;
@@ -45,7 +49,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("Debug mode enabled");
                 }
 
-                return Execute(_serviceProvider, console);
+                using (var timedEvent = logger?.LogTimedEvent(GetType().Name))
+                {
+                    var exitCode = Execute(_serviceProvider, console);
+                    timedEvent?.AddProperty(nameof(exitCode), exitCode.ToString());
+                    return exitCode;
+                }
             }
             catch (InvalidUsageException e)
             {
@@ -54,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (Exception exc)
             {
-                _serviceProvider?.GetRequiredService<ILogger<CommandBase>>()?.LogError(exc, "Exception caught");
+                logger?.LogError(exc, "Exception caught");
 
                 console.WriteErrorLine(Constants.GenericErrorMessage);
                 if (DebugMode)

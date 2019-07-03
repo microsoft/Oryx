@@ -18,15 +18,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string sourceDir,
             string destinationDir,
             string intermediateDir,
-            string language,
-            string languageVersion,
+            string platform,
+            string platformVersion,
             bool scriptOnly,
             string[] properties)
         {
             options.SourceDir = string.IsNullOrEmpty(sourceDir)
                 ? Directory.GetCurrentDirectory() : Path.GetFullPath(sourceDir);
-            options.Language = language;
-            options.LanguageVersion = languageVersion;
+            options.PlatformName = platform;
+            options.PlatformVersion = platformVersion;
 
             if (!string.IsNullOrEmpty(destinationDir))
             {

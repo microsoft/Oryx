@@ -11,14 +11,14 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command("oryx", Description = "Generates and runs build scripts for multiple languages.")]
-    [Subcommand(BuildCommand.Name,           typeof(BuildCommand))]
-    [Subcommand(PlatformsCommand.Name,       typeof(PlatformsCommand))]
-    [Subcommand(BuildScriptCommand.Name,     typeof(BuildScriptCommand))]
-    [Subcommand(RunScriptCommand.Name,       typeof(RunScriptCommand))]
-    [Subcommand(InstallRunTimeCommand.Name,  typeof(InstallRunTimeCommand))]
-    [Subcommand(ExecCommand.Name,            typeof(ExecCommand))]
-    [Subcommand(BuildpackDetectCommand.Name, typeof(BuildpackDetectCommand))]
-    [Subcommand(BuildpackBuildCommand.Name,  typeof(BuildpackBuildCommand))]
+    [Subcommand(typeof(BuildCommand))]
+    [Subcommand(typeof(PlatformsCommand))]
+    [Subcommand(typeof(BuildScriptCommand))]
+    [Subcommand(typeof(RunScriptCommand))]
+    [Subcommand(typeof(InstallRunTimeCommand))]
+    [Subcommand(typeof(ExecCommand))]
+    [Subcommand(typeof(BuildpackDetectCommand))]
+    [Subcommand(typeof(BuildpackBuildCommand))]
     internal class Program
     {
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]

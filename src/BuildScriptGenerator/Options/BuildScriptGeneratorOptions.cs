@@ -15,9 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string DestinationDir { get; set; }
 
-        public string Language { get; set; }
+        public string PlatformName { get; set; }
 
-        public string LanguageVersion { get; set; }
+        public string PlatformVersion { get; set; }
 
         public bool ScriptOnly { get; set; }
 
