@@ -80,19 +80,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("---");
                 }
 
-                var chmodExitCode = ProcessHelper.TrySetExecutableMode(tempScriptPath).ToString();
-                timedEvent.AddProperty("chmodExitCode", chmodExitCode);
-                if (DebugMode)
-                {
-                    console.WriteLine("chmod exited with " + chmodExitCode);
-                }
-
-                exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
+                exitCode = ProcessHelper.RunProcess(
                     shellPath,
                     new[] { tempScriptPath },
                     serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value.SourceDir,
                     (sender, args) => { if (args.Data != null) console.WriteLine(args.Data); },
-                    (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); });
+                    (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); },
+                    waitTimeForExit: null);
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
