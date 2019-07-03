@@ -5,6 +5,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -29,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             "app.js"
         };
 
-        private readonly INodeVersionProvider _nodeVersionProvider;
+        private readonly INodeVersionProvider _versionProvider;
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly ILogger<NodeLanguageDetector> _logger;
 
@@ -38,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IOptions<NodeScriptGeneratorOptions> options,
             ILogger<NodeLanguageDetector> logger)
         {
-            _nodeVersionProvider = nodeVersionProvider;
+            _versionProvider = nodeVersionProvider;
             _nodeScriptGeneratorOptions = options.Value;
             _logger = logger;
         }
@@ -129,13 +130,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 nodeVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                     nodeVersionRange,
-                    _nodeVersionProvider.SupportedNodeVersions);
+                    _versionProvider.SupportedNodeVersions);
 
                 if (string.IsNullOrWhiteSpace(nodeVersion))
                 {
                     var exc = new UnsupportedVersionException(
-                        $"Target Node.js version '{nodeVersionRange}' is unsupported. " +
-                        $"Supported versions are: {string.Join(", ", _nodeVersionProvider.SupportedNodeVersions)}");
+                        NodeConstants.NodeJsName,
+                        nodeVersionRange,
+                        _versionProvider.SupportedNodeVersions);
                     _logger.LogError(exc, "Exception caught");
                     throw exc;
                 }

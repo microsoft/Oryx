@@ -29,22 +29,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The version of the platform for which the runtime components should be installed.")]
         public string PlatformVersion { get; set; }
 
-        [Option(
-            "--installation-prefix <prefix>",
-            CommandOptionType.SingleValue,
-            Description = "The prefix into which the components will be installed.")]
-        [DirectoryExists]
-        public string InstallationPrefix { get; set; }
-
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var scriptGenerator = serviceProvider.GetRequiredService<IRunTimeInstallationScriptGenerator>();
 
-            var options = new RunTimeInstallationScriptGeneratorOptions
-            {
-                PlatformVersion = PlatformVersion,
-                InstallationDir = InstallationPrefix,
-            };
+            var options = new RunTimeInstallationScriptGeneratorOptions { PlatformVersion = PlatformVersion };
 
             var script = scriptGenerator.GenerateBashScript(Platform, options);
             if (string.IsNullOrEmpty(script))

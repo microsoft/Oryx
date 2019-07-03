@@ -127,8 +127,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (string.IsNullOrEmpty(maxSatisfyingVersion))
                 {
                     var exc = new UnsupportedVersionException(
-                        $"Target .NET Core runtime version '{version}' is unsupported. Supported versions are:" +
-                        $" {string.Join(", ", _versionProvider.SupportedDotNetCoreVersions)}");
+                        DotNetCoreConstants.LanguageName,
+                        version,
+                        _versionProvider.SupportedDotNetCoreVersions);
                     _logger.LogError(exc, "Exception caught");
                     throw exc;
                 }
