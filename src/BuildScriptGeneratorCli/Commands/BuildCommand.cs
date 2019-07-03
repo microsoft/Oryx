@@ -46,11 +46,45 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The path to a temporary directory to be used by this tool.")]
         public string IntermediateDir { get; set; }
 
+        private bool _languageWasSet;
+
+        [Option(
+            OptionTemplates.Language,
+            CommandOptionType.SingleValue,
+            Description = "The name of the programming platform used in the provided source directory.",
+            ShowInHelpText = false)]
+        public string LanguageName
+        {
+            get => PlatformName;
+            set
+            {
+                PlatformName = value;
+                _languageWasSet = true;
+            }
+        }
+
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
             Description = "The name of the programming platform used in the provided source directory.")]
         public string PlatformName { get; set; }
+
+        private bool _languageVersionWasSet;
+
+        [Option(
+            OptionTemplates.LanguageVersion,
+            CommandOptionType.SingleValue,
+            Description = "The version of the programming platform used in the provided source directory.",
+            ShowInHelpText = false)]
+        public string LanguageVersion
+        {
+            get => PlatformVersion;
+            set
+            {
+                PlatformVersion = value;
+                _languageVersionWasSet = true;
+            }
+        }
 
         [Option(
             OptionTemplates.PlatformVersion,
@@ -254,6 +288,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
 
+            if (_languageWasSet)
+            {
+                logger.LogWarning("Deprecated option '--language' used");
+                console.WriteLine("Warning: the deprecated option '--language' was used.");
+            }
+
+            if (_languageVersionWasSet)
+            {
+                logger.LogWarning("Deprecated option '--language-version' used");
+                console.WriteLine("Warning: the deprecated option '--language-version' was used.");
+            }
+
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
@@ -262,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             // Invalid to specify language version without language name
-            if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
+            if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
                 logger.LogError("Cannot use lang version without lang name");
                 console.WriteErrorLine("Cannot use language version without specifying language name also.");
