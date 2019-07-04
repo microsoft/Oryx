@@ -85,9 +85,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}",
-                    "{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}")
+                    "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
-                    "{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}")
+                    "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
                 .ToString();
 
