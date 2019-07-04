@@ -15,26 +15,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         public ExecCommandTest(ITestOutputHelper output) : base(output) { }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("/bin/dash")]
-        public void CanExec_SingleCommand(string altBashPath)
+        [Fact]
+        public void CanExec_SingleCommand()
         {
             // Arrange
             var appPath = "/tmp";
             var cmd = "node --version";
-
-            var scriptBuilder = new ShellScriptBuilder()
-                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}");
-
             var expectedBashPath = FilePaths.Bash;
-            if (!string.IsNullOrEmpty(altBashPath))
-            {
-                scriptBuilder.SetEnvironmentVariable("BASH", altBashPath);
-                expectedBashPath = altBashPath;
-            }
-
-            var script = scriptBuilder
+            var script = new ShellScriptBuilder()
+                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}");
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
                 .ToString();
 
