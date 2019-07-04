@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var cmd = "node --version";
             var expectedBashPath = FilePaths.Bash;
             var script = new ShellScriptBuilder()
-                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}");
+                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
                 .ToString();
 
