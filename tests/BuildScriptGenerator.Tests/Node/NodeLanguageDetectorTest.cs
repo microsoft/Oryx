@@ -314,7 +314,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                $"Target Node.js version '20.20.20' is unsupported. Supported versions are: 6.11.0",
+                $"Platform '{NodeConstants.NodeJsName}' version '20.20.20' is unsupported. Supported versions: 6.11.0",
                 exception.Message);
         }
 

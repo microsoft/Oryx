@@ -209,7 +209,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var exception = Assert.Throws<UnsupportedVersionException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
-                "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
+                "Platform 'test' version '2.0.0' is unsupported. Supported versions: 1.0.0",
                 exception.Message);
             Assert.True(detector.DetectInvoked);
         }
@@ -263,7 +263,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var exception = Assert.Throws<UnsupportedVersionException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
-                "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
+                "Platform 'test' version '2.0.0' is unsupported. Supported versions: 1.0.0",
                 exception.Message);
             Assert.False(detector.DetectInvoked);
         }

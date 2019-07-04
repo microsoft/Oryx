@@ -31,6 +31,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new UnsupportedLanguageException($"Platform '{targetPlatformName}' is not supported.");
             }
 
+            if (!targetPlatform.SupportedVersions.Contains(opts.PlatformVersion))
+            {
+                throw new UnsupportedVersionException(
+                    targetPlatformName,
+                    opts.PlatformVersion,
+                    targetPlatform.SupportedVersions);
+            }
+
             var runScript = targetPlatform.GenerateBashRunTimeInstallationScript(opts);
             return runScript;
         }
