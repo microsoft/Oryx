@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
             var env = serviceProvider.GetRequiredService<IEnvironment>();
             var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
+            var opts = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             if (string.IsNullOrWhiteSpace(Command))
             {
@@ -84,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 exitCode = ProcessHelper.RunProcess(
                     shellPath,
                     new[] { tempScriptPath },
-                    serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value.SourceDir,
+                    opts.SourceDir,
                     (sender, args) => { if (args.Data != null) console.WriteLine(args.Data); },
                     (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); },
                     waitTimeForExit: null);
