@@ -16,6 +16,7 @@ apt-get update \
         default-libmysqlclient-dev \
         unzip \
         libodbc1 \
+        apt-transport-https \
     && rm -rf /var/lib/apt/lists/*
  
 # Microsoft SQL Server 2017
