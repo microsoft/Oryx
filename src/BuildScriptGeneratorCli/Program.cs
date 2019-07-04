@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand(typeof(BuildScriptCommand))]
     [Subcommand(typeof(RunScriptCommand))]
     [Subcommand(typeof(InstallRunTimeCommand))]
+    [Subcommand(typeof(ExecCommand))]
     [Subcommand(typeof(BuildpackDetectCommand))]
     [Subcommand(typeof(BuildpackBuildCommand))]
     internal class Program

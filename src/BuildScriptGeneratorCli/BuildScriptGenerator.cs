@@ -35,16 +35,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             _operationId = operationId;
         }
 
-        public static BuildScriptGeneratorContext CreateContext(
-            BuildScriptGeneratorOptions options,
-            CliEnvironmentSettings envSettings,
-            ISourceRepo sourceRepo,
-            string operationId)
+        public static BuildScriptGeneratorContext CreateContext(IServiceProvider serviceProvider, string operationId)
         {
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+            var sourceRepoProvider = serviceProvider.GetRequiredService<ISourceRepoProvider>();
+            var envSettings = serviceProvider.GetRequiredService<CliEnvironmentSettings>();
+
             return new BuildScriptGeneratorContext
             {
                 OperationId = operationId,
-                SourceRepo = sourceRepo,
+                SourceRepo = sourceRepoProvider.GetSourceRepo(),
                 Language = options.PlatformName,
                 LanguageVersion = options.PlatformVersion,
                 Properties = options.Properties,
@@ -63,12 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             try
             {
-                var options = _serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+                var scriptGenCtx = CreateContext(_serviceProvider, _operationId);
                 var scriptGen = _serviceProvider.GetRequiredService<IBuildScriptGenerator>();
-                var sourceRepoProvider = _serviceProvider.GetRequiredService<ISourceRepoProvider>();
-                var environment = _serviceProvider.GetRequiredService<CliEnvironmentSettings>();
-                var sourceRepo = sourceRepoProvider.GetSourceRepo();
-                var scriptGenCtx = CreateContext(options, environment, sourceRepo, _operationId);
 
                 scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink);
                 return true;

@@ -3,30 +3,54 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Text;
+using JetBrains.Annotations;
 
-namespace Microsoft.Oryx.Tests.Common
+namespace Microsoft.Oryx.Common
 {
     /// <summary>
     /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
     /// </summary>
     public class ShellScriptBuilder
     {
-        private bool _contentPresent = false;
+        private const string DefaultCommandSeparator = " && ";
         private readonly StringBuilder _scriptBuilder;
+        private string _commandSeparator = DefaultCommandSeparator;
+        private bool _contentPresent = false;
 
         /// <summary>
         /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
         /// </summary>
-        public ShellScriptBuilder()
+        public ShellScriptBuilder(string cmdSeparator = null)
         {
             _scriptBuilder = new StringBuilder();
+
+            if (cmdSeparator != null)
+            {
+                _commandSeparator = cmdSeparator;
+            }
+        }
+
+        public ShellScriptBuilder AddShebang([NotNull] string interpreterPath)
+        {
+            if (!interpreterPath.StartsWith('/'))
+            {
+                throw new ArgumentException("Interpreter path must be absolute");
+            }
+
+            return Append("#!" + interpreterPath);
         }
 
         public ShellScriptBuilder AddCommand(string command)
         {
             command = command.Trim(' ', '&');
             return Append(command);
+        }
+
+        public ShellScriptBuilder Source(string command)
+        {
+            return AddCommand(". " + command); // Dot is preferable to `source` as it's supported in more shells
         }
 
         /// <summary>
@@ -117,22 +141,22 @@ namespace Microsoft.Oryx.Tests.Common
                 "exit 1; fi");
         }
 
+        public override string ToString()
+        {
+            return _scriptBuilder.ToString();
+        }
+
         private ShellScriptBuilder Append(string content)
         {
             // NOTE: do not use AppendLine as this script must be in one line
             if (_contentPresent)
             {
-                _scriptBuilder.Append(" && ");
+                _scriptBuilder.Append(_commandSeparator);
             }
 
             _scriptBuilder.Append(content);
             _contentPresent = true;
             return this;
-        }
-
-        public override string ToString()
-        {
-            return _scriptBuilder.ToString();
         }
     }
 }

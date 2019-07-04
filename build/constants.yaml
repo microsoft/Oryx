@@ -91,6 +91,8 @@
     compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
     run-script-generator-dir: /opt/startupcmdgen
+    bash: /bin/bash
+    benv: /usr/local/bin/benv
   outputs:
     - type: csharp
       directory: src/Common

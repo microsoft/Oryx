@@ -6,6 +6,7 @@
 using System;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -104,7 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv dotnet={runtimeVersion}")
+                .Source($"benv dotnet={runtimeVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -237,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv node={specifiedVersion}")
+                .Source($"benv node={specifiedVersion}")
                 .AddCommand("node --version")
                 .ToString();
 
@@ -272,7 +273,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv node={nodeVersion}")
+                .Source($"benv node={nodeVersion}")
                 .AddCommand("npm --version")
                 .ToString();
 
@@ -314,7 +315,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv npm={specifiedVersion}")
+                .Source($"benv npm={specifiedVersion}")
                 .AddCommand("npm --version")
                 .ToString();
 
@@ -346,7 +347,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv python={specifiedVersion}")
+                .Source($"benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
 
@@ -379,7 +380,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv python={specifiedVersion}")
+                .Source($"benv python={specifiedVersion}")
                 .AddCommand("python2 --version")
                 .ToString();
 
@@ -414,7 +415,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv python={specifiedVersion}")
+                .Source($"benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
 

@@ -89,11 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
 
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
-            var env = serviceProvider.GetRequiredService<CliEnvironmentSettings>();
-            var repo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-
-            var ctx = BuildScriptGenerator.CreateContext(options, env, repo, operationId: null);
+            var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
             var compatPlats = generator.GetCompatiblePlatforms(ctx);
 
             if (compatPlats != null && compatPlats.Any())

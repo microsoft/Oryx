@@ -32,6 +32,16 @@ namespace Microsoft.Oryx.Tests.Common
             _globalEnvVars = globalEnvVars;
         }
 
+        public DockerRunCommandResult Run(string image, string command, params string[] args)
+        {
+            return Run(new DockerRunArguments
+            {
+                ImageId = image,
+                CommandToExecuteOnRun = command,
+                CommandArguments = args
+            });
+        }
+
         public DockerRunCommandResult Run(DockerRunArguments dockerRunArguments)
         {
             if (dockerRunArguments == null)

@@ -244,8 +244,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 // Not using IConsole.WriteErrorLine intentionally, to keep the child's error stream intact
-                console.Error.WriteLine(args.Data);
-                buildScriptOutput.AppendLine(args.Data);
+                console.Error.WriteLine(line);
+                buildScriptOutput.AppendLine(line);
             };
 
             // Try make the pre-build & post-build scripts executable
