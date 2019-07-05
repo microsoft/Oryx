@@ -104,6 +104,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 null,
                 null,
                 null,
+                null,
                 scriptOnly: false,
                 null);
         }
