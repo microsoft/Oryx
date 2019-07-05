@@ -53,7 +53,7 @@
     python27-version: 2.7.16
     python36-version: 3.6.9
     python37-version: 3.7.3
-    python38-version: 3.8.0b1
+    python38-version: 3.8.0b2
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
