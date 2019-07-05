@@ -81,13 +81,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                SourceDir,
+                sourceDir: SourceDir,
                 destinationDir: null,
                 intermediateDir: null,
-                PlatformName,
-                PlatformVersion,
+                manifestDir: null,
+                platform: PlatformName,
+                platformVersion: PlatformVersion,
                 scriptOnly: true,
-                Properties);
+                properties: Properties);
         }
     }
 }

@@ -16,6 +16,7 @@ type PhpStartupScriptGenerator struct {
 	SourcePath string
 	StartupCmd string
 	BindPort   string
+	Manifest   common.BuildManifest
 }
 
 func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {

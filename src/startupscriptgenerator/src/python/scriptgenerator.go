@@ -21,6 +21,7 @@ type PythonStartupScriptGenerator struct {
 	VirtualEnvironmentName   string
 	PackageDirectory         string
 	SkipVirtualEnvExtraction bool
+	Manifest                 common.BuildManifest
 }
 
 const DefaultHost = "0.0.0.0"
@@ -38,8 +39,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
 
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
-	buildManifest := common.GetBuildManifest(gen.SourcePath)
-	packageSetupBlock := gen.getPackageSetupCommand(buildManifest)
+	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
 	appType := ""
@@ -47,7 +47,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	command := gen.UserStartupCommand
 	if command == "" {
 		appDirectory := gen.SourcePath
-		appModule = gen.getDjangoStartupModule(buildManifest)
+		appModule = gen.getDjangoStartupModule()
 
 		if appModule == "" {
 			appModule = gen.getFlaskStartupModule()
@@ -79,7 +79,13 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder.WriteString(command + "\n")
 
-	logger.LogProperties("Finalizing script", map[string]string{"appType": appType, "appModule": appModule, "venv": buildManifest.VirtualEnvName})
+	logger.LogProperties(
+		"Finalizing script",
+		map[string]string{
+			"appType":   appType,
+			"appModule": appModule,
+			"venv":      gen.Manifest.VirtualEnvName,
+		})
 
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
@@ -91,15 +97,15 @@ func logReadDirError(logger *common.Logger, path string, err error) {
 }
 
 // Builds the commands to setup the Python packages, using virtual env or a package folder.
-func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest common.BuildManifest) string {
+func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	scriptBuilder := strings.Builder{}
 
 	// Values in manifest file takes precedence over values supplied at command line
-	virtualEnvironmentName := buildManifest.VirtualEnvName
+	virtualEnvironmentName := gen.Manifest.VirtualEnvName
 	if virtualEnvironmentName == "" {
 		virtualEnvironmentName = gen.VirtualEnvironmentName
 	}
-	packageDirName := buildManifest.PackageDir
+	packageDirName := gen.Manifest.PackageDir
 	if packageDirName == "" {
 		packageDirName = gen.PackageDirectory
 	}
@@ -110,7 +116,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest co
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
-		if buildManifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+		if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
 			if common.PathExists(virtualEnvDir) {
 				// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
@@ -126,7 +132,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand(buildManifest co
 				scriptBuilder.WriteString("  echo \"WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\"\n")
 			}
 		} else {
-			scriptBuilder.WriteString("compressedVirtualEnvFile=\"" + buildManifest.CompressedVirtualEnvFile + "\"\n")
+			scriptBuilder.WriteString("compressedVirtualEnvFile=\"" + gen.Manifest.CompressedVirtualEnvFile + "\"\n")
 			scriptBuilder.WriteString("virtualEnvDir=\"/$virtualEnvName\"\n")
 			scriptBuilder.WriteString("echo \"Checking if virtual environment was compressed...\"\n")
 			scriptBuilder.WriteString("case $compressedVirtualEnvFile in \n")
@@ -184,7 +190,7 @@ func getVirtualEnvironmentCommand() string {
 }
 
 // Checks if the app is based on Django, and returns a startup command if so.
-func (gen *PythonStartupScriptGenerator) getDjangoStartupModule(buildManifest common.BuildManifest) string {
+func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 	logger := common.GetLogger("python.scriptgenerator.getDjangoStartupModule")
 	defer logger.Shutdown()
 
@@ -194,7 +200,7 @@ func (gen *PythonStartupScriptGenerator) getDjangoStartupModule(buildManifest co
 		panic("Couldn't read application folder '" + gen.SourcePath + "'")
 	}
 	for _, appRootFile := range appRootFiles {
-		if appRootFile.IsDir() && appRootFile.Name() != buildManifest.VirtualEnvName {
+		if appRootFile.IsDir() && appRootFile.Name() != gen.Manifest.VirtualEnvName {
 			subDirPath := filepath.Join(gen.SourcePath, appRootFile.Name())
 			subDirFiles, subDirErr := ioutil.ReadDir(subDirPath)
 			if subDirErr != nil {

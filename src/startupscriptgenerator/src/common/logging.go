@@ -29,9 +29,7 @@ type Logger struct {
 // Represents unique identifier that can be used to correlate messages with the build logs
 var buildOpID string
 
-func SetGlobalOperationID(appRootPath string) {
-	buildManifest := GetBuildManifest(appRootPath)
-
+func SetGlobalOperationID(buildManifest BuildManifest) {
 	if buildManifest.OperationID != "" {
 		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}

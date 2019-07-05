@@ -48,5 +48,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Defaults to true.
         /// </summary>
         public bool EnableCheckers { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value of a directory where the build manifest file should be put into.
+        /// </summary>
+        public string ManifestDir { get; set; }
     }
 }

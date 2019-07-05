@@ -49,5 +49,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the name of the manifest file.
         /// </summary>
         public string ManifestFileName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path to the directory where the manifest file needs to be put.
+        /// </summary>
+        public string ManifestDir { get; set; }
     }
 }

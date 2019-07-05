@@ -107,13 +107,20 @@ fi
 
 {{ if ManifestFileName | IsNotBlank }}
 MANIFEST_FILE={{ ManifestFileName }}
+
+MANIFEST_DIR={{ ManifestDir }}
+if [ -z "$MANIFEST_DIR" ];then
+	MANIFEST_DIR="$DESTINATION_DIR"
+fi
+mkdir -p "$MANIFEST_DIR"
+
 echo
 echo "Removing existing manifest file"
-rm -f "$DESTINATION_DIR/$MANIFEST_FILE"
+rm -f "$MANIFEST_DIR/$MANIFEST_FILE"
 {{ if BuildProperties != empty }}
 echo "Creating a manifest file..."
 {{ for prop in BuildProperties }}
-echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$DESTINATION_DIR/$MANIFEST_FILE"
+echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$MANIFEST_DIR/$MANIFEST_FILE"
 {{ end }}
 echo "Manifest file created."
 {{ end }}

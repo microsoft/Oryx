@@ -37,6 +37,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string ManifestFileName { get; set; }
 
+        public string ManifestDir { get; set; }
+
         public Dictionary<string, string> BuildProperties { get; set; }
 
         public string Configuration { get; set; }

@@ -43,6 +43,60 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocation()
+        {
+            // Arrange
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var manifestDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
+            var manifestDir = manifestDirVolume.ContainerDir;
+            var nodeVersion = "10.14";
+            var appName = "webfrontend";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var runScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -manifestDir {manifestDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"--language-version {nodeVersion} --manifest-dir {manifestDir} " +
+                "-p compress_node_modules=tar-gz")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume, manifestDirVolume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevms/node-{nodeVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+
+        [Fact]
         public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules_WithoutExtracting()
         {
             // NOTE:
