@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -196,7 +196,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -252,7 +252,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -294,7 +294,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -336,7 +336,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -378,7 +378,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -415,7 +415,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 volume,
                  "/bin/sh", new[] { "-c", buildScript },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -452,7 +452,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -493,7 +493,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -535,7 +535,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -627,7 +627,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -661,7 +661,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: "mcr.microsoft.com/public/oryx/build",
+                runtimeImageName: "oryxdevmcr.azurecr.io/public/oryx/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -705,7 +705,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: "mcr.microsoft.com/public/oryx/build",
+                runtimeImageName: "oryxdevmcr.azurecr.io/public/oryx/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -747,7 +747,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: "mcr.microsoft.com/public/oryx/build",
+                runtimeImageName: "oryxdevmcr.azurecr.io/public/oryx/build",
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -797,7 +797,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -861,7 +861,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -926,7 +926,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda") },
                 ContainerPort,
                 "/bin/sh",
@@ -986,7 +986,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"mcr.microsoft.com/public/oryx/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -26,5 +26,5 @@ docker build .
 
 ### Oryx build this app
 ```bash
-docker run -v c:\temp\demo:/app-original:ro mcr.microsoft.com/public/oryx/build /bin/bash -c "cp -r /app-original /app && oryx build /app"
+docker run -v c:\temp\demo:/app-original:ro oryxdevmcr.azurecr.io/public/oryx/build /bin/bash -c "cp -r /app-original /app && oryx build /app"
 ```
