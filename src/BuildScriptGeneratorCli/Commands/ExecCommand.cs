@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli.Resources;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -49,16 +48,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
 
-            if (tools.Count == 0)
-            {
-                console.WriteErrorLine(Labels.ExecCommandNoToolsDetectedErrorMessage);
-                return ProcessConstants.ExitFailure;
-            }
-
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
-                var benvCmd = $"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}";
+                var benvArgs = tools.Count == 0 ? string.Empty : StringExtensions.JoinKeyValuePairs(tools);
+                var benvCmd = $"{FilePaths.Benv} {benvArgs}";
 
                 // Build envelope script
                 var script = new ShellScriptBuilder("\n")
