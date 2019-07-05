@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeTag}:latest",
                 CommandToExecuteOnRun = "node",
                 CommandArguments = new[] { "--version" }
             });
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeTag}:latest",
                 CommandToExecuteOnRun = "npm",
                 CommandArguments = new[] { "--version" }
             });
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = "oryxdevms/node-10.14",
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/node-10.14",
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = "oryxdevms/node-10.14",
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/node-10.14",
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "asdas")
@@ -198,7 +198,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
+                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -241,7 +241,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = string.Concat("oryxdevms/node-", nodeVersion);
+            var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);
             var manifestFileContent = $"'{NodeConstants.InjectedAppInsights}=\"True\"'";
             var aiNodesdkLoaderContent = @"try {
                 var appInsights = require('applicationinsights');  
@@ -267,7 +267,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
+                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -299,7 +299,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/node-{nodeTag}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeTag}:latest",
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {
@@ -341,7 +341,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
+                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -386,7 +386,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
+                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -432,7 +432,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevms/node-{nodeVersion}",
+                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -476,7 +476,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/node-{version}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{version}:latest",
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

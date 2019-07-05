@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/dotnetcore-{version}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{version}:latest",
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/dotnetcore-{version}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{version}:latest",
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--version" }
             });
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevms/dotnetcore-{version}:latest",
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{version}:latest",
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });
