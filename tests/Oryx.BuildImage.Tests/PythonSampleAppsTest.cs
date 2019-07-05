@@ -289,7 +289,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
+                .AddScriptCommand($"{appDir} --platform python --platform-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -324,7 +324,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {Settings.Python36Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python36Version}")
                 .ToString();
 
             // Act
@@ -343,7 +343,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{Settings.Python36Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -361,7 +361,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 .AddScriptCommand(
-                $"{appDir} -l python --language-version {Settings.Python36Version} > {generatedScript}")
+                $"{appDir} --platform python --platform-version {PythonVersions.Python36Version} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -388,7 +388,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanthrowException_ForInvalidPythonVersion()
+        public void ThrowsException_ForInvalidPythonVersion()
         {
             // Arrange
             var appName = "flask-app";
@@ -398,7 +398,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} -l python --language-version 4.0.1 > {generatedScript}")
+                .AddScriptCommand($"{appDir} --platform python --platform-version 4.0.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -418,9 +418,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    string errorMessage =
-                    "The 'python' version '4.0.1' is not supported. Supported versions are: " +
-                    $"{Settings.Python27Version}, {Settings.Python36Version}, {PythonVersions.Python37Version}";
+                    string errorMessage = "Platform 'python' version '4.0.1' is unsupported. Supported versions: " +
+                        $"{Settings.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.StdErr);
                 },
@@ -439,7 +438,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} -l python --language-version {langVersion} > {generatedScript}")
+                .AddScriptCommand($"{appDir} --platform python --platform-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -626,7 +625,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7/lib/python3.7/site-packages/flask")
                 .ToString();
 
@@ -965,7 +964,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python37Version}")
                 .ToString();
 
             // Act
@@ -1031,7 +1030,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {version}")
                 .ToString();
 
             // Act
@@ -1091,7 +1090,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             var script = scriptBuilder
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python37Version}")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")
@@ -1133,7 +1132,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} -l python --language-version {version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {version}")
                 .ToString();
 
             // Act
@@ -1176,7 +1175,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} -l python --language-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python37Version}")
                 // These css files should NOT be available since 'collectstatic' is set off
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/uservoice.css")

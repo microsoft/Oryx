@@ -345,7 +345,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -l nodejs --language-version 8.2.1")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform nodejs --platform-version 8.2.1")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -412,7 +412,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} -l nodejs --language-version 8.2.1 > {generatedScript}")
+                .AddScriptCommand($"{appDir} --platform nodejs --platform-version 8.2.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -564,7 +564,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -l nodejs --language-version 6")
+                .AddBuildCommand($"{appDir} --platform nodejs --platform-version 6")
                 .ToString();
 
             // Act
@@ -708,7 +708,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + version;
             var nestedOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
                 .AddCommand(
@@ -760,7 +760,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output";
-            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + version;
             var script = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
@@ -810,7 +810,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/output";
-            var spcifyNodeVersionCommand = "-l nodejs --language-version=" + version;
+            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + version;
             var script = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -o {nestedOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")

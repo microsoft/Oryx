@@ -34,8 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: ".",
                 destinationDir: ".",
                 intermediateDir: ".",
-                language: null,
-                languageVersion: null,
+                platform: null,
+                platformVersion: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -61,8 +61,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: providedPath,
                 destinationDir: providedPath,
                 intermediateDir: providedPath,
-                language: null,
-                languageVersion: null,
+                platform: null,
+                platformVersion: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -85,8 +85,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: absolutePath,
                 destinationDir: absolutePath,
                 intermediateDir: absolutePath,
-                language: null,
-                languageVersion: null,
+                platform: null,
+                platformVersion: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -110,8 +110,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: "..",
                 destinationDir: "..",
                 intermediateDir: "..",
-                language: null,
-                languageVersion: null,
+                platform: null,
+                platformVersion: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -136,8 +136,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: Path.Combine(dir2, "..", "subDir2"),
                 destinationDir: Path.Combine(dir2, "..", "subDir2"),
                 intermediateDir: Path.Combine(dir2, "..", "subDir2"),
-                language: null,
-                languageVersion: null,
+                platform: null,
+                platformVersion: null,
                 scriptOnly: false,
                 properties: null);
 

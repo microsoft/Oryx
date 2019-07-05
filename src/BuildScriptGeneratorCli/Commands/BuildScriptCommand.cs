@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             // Invalid to specify language version without language name
-            if (string.IsNullOrEmpty(options.Language) && !string.IsNullOrEmpty(options.LanguageVersion))
+            if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
                 console.WriteErrorLine("Cannot use language version without specifying language name also.");
                 return false;

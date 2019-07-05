@@ -22,6 +22,16 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string RootDirPath { get; }
 
+        public string CreateChildDir()
+        {
+            return Directory.CreateDirectory(GenerateRandomChildDirPath()).FullName;
+        }
+
+        public string GenerateRandomChildDirPath()
+        {
+            return Path.Combine(RootDirPath, Guid.NewGuid().ToString());
+        }
+
         public void Dispose()
         {
             if (Directory.Exists(RootDirPath))

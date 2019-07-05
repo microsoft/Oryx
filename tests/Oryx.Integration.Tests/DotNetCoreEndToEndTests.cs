@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotNetCoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotNetCoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -158,7 +158,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotNetCoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotNetCoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -262,7 +262,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/{DotNetCoreConstants.OryxOutputPublishDirectory}";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -305,7 +305,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform dotnet --language-version {dotnetcoreVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
                 .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -352,7 +352,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform dotnet --language-version {dotnetcoreVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
                 .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -400,7 +400,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 // NOTE: Make sure the current directory is the output directory
@@ -445,7 +445,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -478,8 +478,25 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_UsingExplicitStartupCommand()
+        public static TheoryData<string> StartupCommandData
+        {
+            get
+            {
+                var tempAppDir = "/tmp/app";
+                var data = new TheoryData<string>();
+
+                data.Add($"'dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
+                data.Add($"'echo \"foo bar\" && dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
+                data.Add($"'bash -c \"echo foo && dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll\"'");
+                data.Add($"'key=\"a;b;c\" dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll'");
+
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(StartupCommandData))]
+        public async Task CanBuildAndRun_NetCore21WebApp_UsingExplicitStartupCommand(string startupCommand)
         {
             // Arrange
             var dotnetcoreVersion = "2.1";
@@ -489,9 +506,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var startupFilePath = "/tmp/run.sh";
             var appOutputDir = $"{appDir}/myoutputdir";
             var tempAppDir = "/tmp/app";
-            var startupCommand = $"\"dotnet {tempAppDir}/{NetCoreApp21WebApp}.dll\"";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {tempAppDir}")
@@ -539,7 +555,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var tempAppDir = "/tmp/app";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {tempAppDir}")
@@ -679,7 +695,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}" +
+                $"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}" +
                 $" -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
@@ -724,7 +740,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}" +
+                $"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}" +
                 $" -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
@@ -840,6 +856,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"cd {defaultAppDir} && dotnet publish -c Release -o {defaultAppDir}/output")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddCommand(
                 $"oryx -appPath {appOutputDir} -defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
                 $"-bindPort {ContainerPort}")
@@ -920,6 +937,55 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Equal("Running default web app", data);
                 });
         }
+
+        [Fact]
+        public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenaming()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var renamedAppName = $"{NetCoreApp21WebApp}-renamed";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               // Rename the project file to get different set of publish output from the earlier build
+               .AddCommand($"mv {appDir}/{NetCoreApp21WebApp}.csproj {appDir}/{renamedAppName}.csproj")
+               // Rebuild again
+               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+               .AddFileExistsCheck($"{appOutputDir}/{NetCoreApp21WebApp}.dll")
+               .AddFileExistsCheck($"{appOutputDir}/{NetCoreApp21WebApp}.runtimeconfig.json")
+               .AddFileExistsCheck($"{appOutputDir}/{renamedAppName}.dll")
+               .AddFileExistsCheck($"{appOutputDir}/{renamedAppName}.runtimeconfig.json")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp21WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevms/dotnetcore-2.1",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
+                    Assert.Contains($"Location: {appOutputDir}/{renamedAppName}.dll", data);
+                });
+        }
     }
 
     [Trait("category", "dotnetcore")]
@@ -940,7 +1006,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
 
             // NOTE: Do NOT change this as we want to make sure that all the non-existent directories in the path
@@ -989,7 +1055,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(EnvironmentSettingsKeys.MSBuildConfiguration, "Debug")
-                .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -1032,7 +1098,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
@@ -1076,7 +1142,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
@@ -1121,7 +1187,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .AddFileExistsCheck($"{appOutputDir}/foo  bar.dll")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
@@ -1263,7 +1329,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -1317,7 +1383,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"source benv dotnet=3")
+               .Source($"benv dotnet=3")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
                .ToString();
@@ -1399,7 +1465,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var startupCommand = "./NetCoreApp30.WebApp";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -o {appOutputDir} -l dotnet --language-version {dotnetcoreVersion}")
+               .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform dotnet --language-version {dotnetcoreVersion}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -1443,7 +1509,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -l dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(

@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Gets the list of versions that the script generator supports.
         /// </summary>
-        IEnumerable<string> SupportedLanguageVersions { get; }
+        IEnumerable<string> SupportedVersions { get; }
 
         /// <summary>
         /// Detects the programming platform name and version required by the application in source directory.

@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string Name => NodeConstants.NodeJsName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _nodeVersionProvider.SupportedNodeVersions;
+        public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
@@ -324,7 +324,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return true;
             }
 
-                return false;
+            return false;
         }
 
         private static bool GetNodeModulesPackOptions(

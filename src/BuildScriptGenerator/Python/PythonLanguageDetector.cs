@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     internal class PythonLanguageDetector : ILanguageDetector
     {
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
-        private readonly IPythonVersionProvider _pythonVersionProvider;
+        private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonLanguageDetector> _logger;
 
         public PythonLanguageDetector(
@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             ILogger<PythonLanguageDetector> logger)
         {
             _pythonScriptGeneratorOptions = options.Value;
-            _pythonVersionProvider = pythonVersionProvider;
+            _versionProvider = pythonVersionProvider;
             _logger = logger;
         }
 
@@ -67,23 +67,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 return _pythonScriptGeneratorOptions.PythonDefaultVersion;
             }
-            else
+
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                _versionProvider.SupportedPythonVersions);
+
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                var exc = new UnsupportedVersionException(
+                    PythonConstants.PythonName,
                     version,
-                    _pythonVersionProvider.SupportedPythonVersions);
-
-                if (string.IsNullOrEmpty(maxSatisfyingVersion))
-                {
-                    var exc = new UnsupportedVersionException(
-                        $"Target Python version '{version}' is unsupported. Supported versions are:" +
-                        $" {string.Join(", ", _pythonVersionProvider.SupportedPythonVersions)}");
-                    _logger.LogError(exc, "Exception caught");
-                    throw exc;
-                }
-
-                return maxSatisfyingVersion;
+                    _versionProvider.SupportedPythonVersions);
+                _logger.LogError(exc, "Exception caught");
+                throw exc;
             }
+
+            return maxSatisfyingVersion;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

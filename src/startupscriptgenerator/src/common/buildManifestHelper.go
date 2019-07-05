@@ -20,6 +20,7 @@ type BuildManifest struct {
 	VirtualEnvName           string
 	PackageDir               string
 	CompressedVirtualEnvFile string
+	StartupDllFileName       string
 }
 
 var _buildManifest = BuildManifest{}
@@ -45,4 +46,10 @@ func GetBuildManifest(appPath string) BuildManifest {
 	}
 
 	return _buildManifest
+}
+
+func ManifestFileExists(appPath string) bool {
+	tomlFile := filepath.Join(appPath, consts.BuildManifestFileName)
+	fileExists := FileExists(tomlFile)
+	return fileExists
 }

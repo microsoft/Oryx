@@ -6,6 +6,7 @@
 using System;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +16,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class VersionInformationTest
     {
         private const string Python27VersionInfo = "Python " + Settings.Python27Version;
-        private const string Python36VersionInfo = "Python " + Settings.Python36Version;
+        private const string Python36VersionInfo = "Python " + Common.PythonVersions.Python36Version;
         private const string Python37VersionInfo = "Python " + Common.PythonVersions.Python37Version;
 
         private readonly ITestOutputHelper _output;
@@ -30,15 +31,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [SkippableFact]
         public void OryxBuildImage_Contains_VersionAndCommit_Information()
         {
-            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
-            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
-            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
-
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the test is happening in azure devops agent 
             // or locally, locally we need to skip this test
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
             Skip.If(string.IsNullOrEmpty(agentOS));
+
+            // Arrange
+            var gitCommitID = GitHelper.GetCommitID();
+            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -103,7 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv dotnet={runtimeVersion}")
+                .Source($"benv dotnet={runtimeVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -236,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv node={specifiedVersion}")
+                .Source($"benv node={specifiedVersion}")
                 .AddCommand("node --version")
                 .ToString();
 
@@ -271,7 +273,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv node={nodeVersion}")
+                .Source($"benv node={nodeVersion}")
                 .AddCommand("npm --version")
                 .ToString();
 
@@ -313,7 +315,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv npm={specifiedVersion}")
+                .Source($"benv npm={specifiedVersion}")
                 .AddCommand("npm --version")
                 .ToString();
 
@@ -345,7 +347,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv python={specifiedVersion}")
+                .Source($"benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
 
@@ -378,7 +380,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv python={specifiedVersion}")
+                .Source($"benv python={specifiedVersion}")
                 .AddCommand("python2 --version")
                 .ToString();
 
@@ -406,14 +408,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("latest", Python37VersionInfo)]
         [InlineData("3", Python37VersionInfo)]
         [InlineData("3.6", Python36VersionInfo)]
-        [InlineData(Settings.Python36Version, Python36VersionInfo)]
+        [InlineData(Common.PythonVersions.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
         [InlineData(Common.PythonVersions.Python37Version, Python37VersionInfo)]
         public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv python={specifiedVersion}")
+                .Source($"benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
 

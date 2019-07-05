@@ -39,15 +39,22 @@ steps:
   displayName: 'Pull and create release tags for build images'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/create-releasetags-buildimage.sh
+    scriptPath: ./vsts/scripts/tagBuildImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
   displayName: 'Pull and create release tags for runtime images'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/create-releasetags-runtimeimages.sh
+    scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for buildpack images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: Docker@0
   displayName: 'Push Build image to DockerHub'
@@ -68,6 +75,18 @@ steps:
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/build-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: Docker@1
+  displayName: 'Push buildpack images to ACR'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/buildpack-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
@@ -98,5 +117,5 @@ steps:
 - task: ShellScript@2
   displayName: 'Clean up Docker containers and images'
   inputs:
-    scriptPath: ./vsts/scripts/dockerCleanup.sh
+    scriptPath: ./vsts/scripts/cleanDocker.sh
   condition: true

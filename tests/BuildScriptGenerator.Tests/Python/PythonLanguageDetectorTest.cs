@@ -99,18 +99,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_Throws_WhenUnsupportedPythonVersion_FoundInRuntimeFile()
         {
             // Arrange
+            var badVersion = "100.100.100";
             var detector = CreatePythonLanguageDetector(
                 supportedPythonVersions: new[] { Common.PythonVersions.Python37Version });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
-            IOHelpers.CreateFile(sourceDir, "python-100.100.100", PythonConstants.RuntimeFileName);
+            IOHelpers.CreateFile(sourceDir, "python-" + badVersion, PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                "Target Python version '100.100.100' is unsupported. " +
-                $"Supported versions are: {Common.PythonVersions.Python37Version}",
+                $"Platform 'python' version '{badVersion}' is unsupported. " +
+                $"Supported versions: {Common.PythonVersions.Python37Version}",
                 exception.Message);
         }
 

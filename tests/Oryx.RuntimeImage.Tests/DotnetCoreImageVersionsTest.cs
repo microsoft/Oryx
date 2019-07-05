@@ -26,15 +26,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.0")]
         public void DotNetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
-            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
-            var gitCommitID = Environment.GetEnvironmentVariable("BUILD_SOURCEVERSION");
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
-            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
-
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
             // or locally, locally we need to skip this test
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
             Skip.If(string.IsNullOrEmpty(agentOS));
+
+            // Arrange
+            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
+            var gitCommitID = GitHelper.GetCommitID();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -85,7 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.0", "Version  : 2.0.9")]
         [InlineData("2.1", "Version: 2.1.11")]
         [InlineData("2.2", "Version: 2.2.5")]
-        [InlineData("3.0", "Version: 3.0.0-preview5-27626-15")]
+        [InlineData("3.0", "Version: 3.0.0-preview6-27804-01")]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act

@@ -27,14 +27,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var guid = Guid.NewGuid();
             var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
-            var tempDir = Path.Combine(_tempDirRootPath, $"temp-{guid}");
             Directory.CreateDirectory(appDir);
-            Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
                 SourceDir = appDir,
             };
-            var provider = GetSourceRepoProvider(options, tempDir);
+            var provider = GetSourceRepoProvider(options);
 
             // Act-1
             var sourceRepo1 = provider.GetSourceRepo();
@@ -56,14 +54,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var guid = Guid.NewGuid();
             var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
-            var tempDir = Path.Combine(_tempDirRootPath, $"temp-{guid}");
             Directory.CreateDirectory(appDir);
-            Directory.CreateDirectory(tempDir);
             var options = new BuildScriptGeneratorOptions
             {
                 SourceDir = appDir,
             };
-            var provider = GetSourceRepoProvider(options, tempDir);
+            var provider = GetSourceRepoProvider(options);
 
             // Act
             var sourceRepo = provider.GetSourceRepo();
@@ -72,12 +68,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(appDir, sourceRepo.RootPath);
         }
 
-        private ISourceRepoProvider GetSourceRepoProvider(BuildScriptGeneratorOptions options, string tempDir)
+        private ISourceRepoProvider GetSourceRepoProvider(BuildScriptGeneratorOptions options)
         {
-            return new DefaultSourceRepoProvider(
-                new TestTempDirectoryProvider(tempDir),
-                Options.Create(options),
-                NullLoggerFactory.Instance);
+            return new DefaultSourceRepoProvider(Options.Create(options), NullLoggerFactory.Instance);
         }
 
         private class TestTempDirectoryProvider : ITempDirectoryProvider

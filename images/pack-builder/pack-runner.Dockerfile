@@ -2,8 +2,8 @@ FROM buildpack-deps:stable
 
 WORKDIR /tmp
 
-COPY images/pack-builder/install-pack.sh install-pack.sh
-RUN ./install-pack.sh && mv pack /usr/local/bin && rm install-pack.sh
+COPY images/pack-builder/installPack.sh installPack.sh
+RUN ./installPack.sh && mv pack /usr/local/bin && rm installPack.sh
 
 ARG DEFAULT_BUILDER_NAME
 RUN pack set-default-builder $DEFAULT_BUILDER_NAME

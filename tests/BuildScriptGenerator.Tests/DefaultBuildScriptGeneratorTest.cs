@@ -209,7 +209,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var exception = Assert.Throws<UnsupportedVersionException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
-                "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
+                "Platform 'test' version '2.0.0' is unsupported. Supported versions: 1.0.0",
                 exception.Message);
             Assert.True(detector.DetectInvoked);
         }
@@ -263,7 +263,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var exception = Assert.Throws<UnsupportedVersionException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
-                "The 'test' version '2.0.0' is not supported. Supported versions are: 1.0.0",
+                "Platform 'test' version '2.0.0' is unsupported. Supported versions: 1.0.0",
                 exception.Message);
             Assert.False(detector.DetectInvoked);
         }
@@ -390,7 +390,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void GeneratesScript_UsingTheFirstplatform_WhichCanGenerateScript()
+        public void GeneratesScript_UsingTheFirstPlatform_WhichCanGenerateScript()
         {
             // Arrange
             var detector = new TestLanguageDetectorUsingLangName(
@@ -579,6 +579,63 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.True(checkerRan);
+        }
+
+        [Fact]
+        public void GetRequiredToolVersions_ReturnsPlatformTools()
+        {
+            // Arrange
+            var platName = "test";
+            var platVer = "1.0.0";
+            var detector = new TestLanguageDetectorUsingLangName(platName, platVer);
+            var platform = new TestProgrammingPlatform(
+                platName,
+                new[] { platVer },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: detector);
+            var generator = CreateDefaultScriptGenerator(platform);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: null,
+                suppliedLanguageVersion: null);
+
+            // Act
+            var result = generator.GetRequiredToolVersions(context);
+
+            // Assert
+            Assert.Equal(platName, result.First().Key);
+            Assert.Equal(platVer, result.First().Value);
+        }
+
+        [Fact]
+        public void GetRequiredToolVersions_ReturnsOnlyFirstPlatformTools_IfMultiPlatformIsDisabled()
+        {
+            // Arrange
+            var mainPlatformName = "main";
+            var platform1 = new TestProgrammingPlatform(
+                mainPlatformName,
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: new TestLanguageDetectorSimpleMatch(shouldMatch: true));
+            var platform2 = new TestProgrammingPlatform(
+                "anotherPlatform",
+                new[] { "1.0.0" },
+                canGenerateScript: true,
+                scriptContent: "some code",
+                detector: new TestLanguageDetectorSimpleMatch(shouldMatch: true));
+            var generator = CreateDefaultScriptGenerator(new[] { platform1, platform2 });
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: mainPlatformName,
+                suppliedLanguageVersion: "1.0.0");
+            context.DisableMultiPlatformBuild = true;
+
+            // Act
+            var result = generator.GetRequiredToolVersions(context);
+
+            // Assert
+            Assert.Equal(1, result.Count);
+            Assert.Equal(mainPlatformName, result.First().Key);
         }
 
         private string CreateNewDir()

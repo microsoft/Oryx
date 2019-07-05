@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common;
@@ -44,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string Name => DotNetCoreConstants.LanguageName;
 
-        public IEnumerable<string> SupportedLanguageVersions => _versionProvider.SupportedDotNetCoreVersions;
+        public IEnumerable<string> SupportedVersions => _versionProvider.SupportedDotNetCoreVersions;
 
         public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
         {
@@ -61,6 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 return null;
             }
+
+            SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
 
             bool zipAllOutput = ShouldZipAllOutput(context);
             buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = zipAllOutput.ToString().ToLowerInvariant();
@@ -90,6 +94,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 templateProperties,
                 _logger);
             return new BuildScriptSnippet { BashBuildScriptSnippet = script, IsFullScript = true };
+        }
+
+        /// <summary>
+        /// Even though the runtime container has the logic of finding out the startup file based on
+        /// 'runtimeconfig.json' prefix, we still set the name in the manifest file because of the following
+        /// scenario: let's say output directory currently has 'foo.dll' and user made a change to the project
+        /// name or assembly name property to 'bar' which causes 'bar.dll' to be published. If the output
+        /// directory was NOT cleaned, then we would now be having both 'foo.runtimeconfig.json' and
+        /// 'bar.runtimeconfig.json' which causes a problem for runtime container as it cannot figure out the
+        /// right startup dll. So, to help that scenario we always set the start-up file name in manifest file.
+        /// The runtime container will first look into manifest file to find the startup filename, if the
+        /// file name is not present or if a manifest file is not present at all(ex: in case of VS Publish where
+        /// the build does not happen with Oryx), then the runtime container's logic will fallback to looking at
+        /// runtimeconfig.json prefixes.
+        /// </summary>
+        private void SetStartupFileNameInfoInManifestFile(
+            BuildScriptGeneratorContext context,
+            string projectFile,
+            IDictionary<string, string> buildProperties)
+        {
+            string startupDllFileName;
+            var projectFileContent = context.SourceRepo.ReadFile(projectFile);
+            var projFileDoc = XDocument.Load(new StringReader(projectFileContent));
+            var assemblyNameElement = projFileDoc.XPathSelectElement(DotNetCoreConstants.AssemblyNameXPathExpression);
+            if (assemblyNameElement == null)
+            {
+                var name = Path.GetFileNameWithoutExtension(projectFile);
+                startupDllFileName = $"{name}.dll";
+            }
+            else
+            {
+                startupDllFileName = $"{assemblyNameElement.Value}.dll";
+            }
+
+            buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
         }
 
         public bool IsCleanRepo(ISourceRepo repo)

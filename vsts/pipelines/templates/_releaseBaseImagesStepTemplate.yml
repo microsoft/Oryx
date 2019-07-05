@@ -1,0 +1,64 @@
+parameters:
+  ascName: OryxMCR
+  acrName: oryxdevmcr.azurecr.io
+  acrProdName: oryxmcr.azurecr.io
+  baseImageName: ''  # defaults
+
+steps:
+
+- checkout: self
+  clean: true
+
+- script: |
+    if [ "$(ReleasePHPBuildBaseImage)" != "true" ] && [ "$(ReleasePythonBuildBaseImage)" != "true" ] && \
+       [ "$(ReleasePHPRunBaseImage)" != "true" ] && [ "$(ReleaseNodeRunBaseImage)" != "true" ] && \
+       [ "$(ReleaseYarnBuildCacheImage)" != "true" ]
+    then
+      echo "Invalid configuration."
+      echo "Variable 'ReleasePHPBuildBaseImage' or 'ReleasePythonBuildBaseImage' or 'ReleasePHPRunBaseImage'
+      or 'ReleaseNodeRunBaseImage' or 'ReleaseYarnBuildCacheImage' needs to be 'true' to run this "
+      exit 1
+    fi
+  displayName: 'Validate release pipeline run'
+
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Artifacts for release'
+  inputs:
+    artifactName: drop
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(System.ArtifactsDirectory)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
+    args: ${{ parameters.baseImageName }}
+
+- task: Docker@1
+  displayName: 'Push build image to ACR'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/base-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+
+- task: ShellScript@2
+  displayName: 'Clean up Docker containers and images'
+  inputs:
+    scriptPath: ./vsts/scripts/cleanDocker.sh
+  condition: true

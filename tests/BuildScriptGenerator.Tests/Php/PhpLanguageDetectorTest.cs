@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
             Assert.Equal(
-                $"Target PHP version '0' is unsupported. Supported versions are: {Common.PhpVersions.Php73Version}",
+                $"Platform 'php' version '0' is unsupported. Supported versions: {Common.PhpVersions.Php73Version}",
                 exception.Message);
         }
 

@@ -91,12 +91,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("netcoreapp1.0", DotNetCoreRuntimeVersions.NetCoreApp10)]
-        [InlineData("netcoreapp1.1", DotNetCoreRuntimeVersions.NetCoreApp11)]
-        [InlineData("netcoreapp2.0", DotNetCoreRuntimeVersions.NetCoreApp20)]
-        [InlineData("netcoreapp2.1", DotNetCoreRuntimeVersions.NetCoreApp21)]
-        [InlineData("netcoreapp2.2", DotNetCoreRuntimeVersions.NetCoreApp22)]
-        [InlineData("netcoreapp3.0", DotNetCoreRuntimeVersions.NetCoreApp30)]
+        [InlineData("netcoreapp1.0", DotNetCoreRunTimeVersions.NetCoreApp10)]
+        [InlineData("netcoreapp1.1", DotNetCoreRunTimeVersions.NetCoreApp11)]
+        [InlineData("netcoreapp2.0", DotNetCoreRunTimeVersions.NetCoreApp20)]
+        [InlineData("netcoreapp2.1", DotNetCoreRunTimeVersions.NetCoreApp21)]
+        [InlineData("netcoreapp2.2", DotNetCoreRunTimeVersions.NetCoreApp22)]
+        [InlineData("netcoreapp3.0", DotNetCoreRunTimeVersions.NetCoreApp30)]
         public void Detect_ReturnsExpectedLanguageVersion_ForTargetFrameworkVersions(
             string netCoreAppVersion,
             string expectedSdkVersion)
@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Assert
             Assert.NotNull(result);
             Assert.Equal(DotNetCoreConstants.LanguageName, result.Language);
-            Assert.Equal(DotNetCoreRuntimeVersions.NetCoreApp21, result.LanguageVersion);
+            Assert.Equal(DotNetCoreRunTimeVersions.NetCoreApp21, result.LanguageVersion);
         }
 
         [Fact]
@@ -196,8 +196,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(sourceRepo.Object));
             Assert.Equal(
-                $"Target .NET Core runtime version '{DotNetCoreRuntimeVersions.NetCoreApp21}' is unsupported. " +
-                "Supported versions are: 2.2",
+                $"Platform 'dotnet' version '{DotNetCoreRunTimeVersions.NetCoreApp21}' is unsupported. " +
+                "Supported versions: 2.2",
                 exception.Message);
         }
 
@@ -231,12 +231,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         {
             return new[]
             {
-                DotNetCoreRuntimeVersions.NetCoreApp10,
-                DotNetCoreRuntimeVersions.NetCoreApp11,
-                DotNetCoreRuntimeVersions.NetCoreApp20,
-                DotNetCoreRuntimeVersions.NetCoreApp21,
-                DotNetCoreRuntimeVersions.NetCoreApp22,
-                DotNetCoreRuntimeVersions.NetCoreApp30,
+                DotNetCoreRunTimeVersions.NetCoreApp10,
+                DotNetCoreRunTimeVersions.NetCoreApp11,
+                DotNetCoreRunTimeVersions.NetCoreApp20,
+                DotNetCoreRunTimeVersions.NetCoreApp21,
+                DotNetCoreRunTimeVersions.NetCoreApp22,
+                DotNetCoreRunTimeVersions.NetCoreApp30,
             };
         }
 

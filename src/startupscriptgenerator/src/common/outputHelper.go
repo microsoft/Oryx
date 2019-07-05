@@ -6,32 +6,37 @@
 package common
 
 import (
+	"common/consts"
+	"fmt"
+	"path/filepath"
 	"strings"
 )
 
-func AppendScriptToExtractZippedOutput(scriptBuilder *strings.Builder, appDir string) {
-	zipFileName := "oryx_output.tar.gz"
-	scriptBuilder.WriteString("\n")
-	// Cannot use 'declare' here as 'sh' does not support it
-	scriptBuilder.WriteString("readonly zipFileName=\"" + zipFileName + "\"\n")
-	scriptBuilder.WriteString("readonly appDir=\"" + appDir + "\"\n")
-	scriptBuilder.WriteString("cd \"$appDir\"\n")
-	scriptBuilder.WriteString("if [ -f \"$zipFileName\" ]; then\n")
-	scriptBuilder.WriteString(
-		"    echo \"Found '$zipFileName' under '$appDir'. Extracting it's contents into it...\"\n")
-	scriptBuilder.WriteString("    tar -xzf \"$zipFileName\"\n")
-	scriptBuilder.WriteString("    echo Done.\n")
-	scriptBuilder.WriteString("    echo \"Deleting the file '$zipFileName'...\"\n")
-	scriptBuilder.WriteString("    rm -f \"$zipFileName\"\n")
-	scriptBuilder.WriteString("    echo Done.\n")
-	scriptBuilder.WriteString("fi\n\n")
+func AppendScriptToExtractZippedOutput(scriptBuilder *strings.Builder, appDir string, intermediateDir string) {
+	// Since 'appDir' is the main directory containing the output try checking to see if the exists
+	// under that folder first
+	fullZipFilePath := filepath.Join(appDir, consts.CompressedOutputFileName)
+
+	// if intermediate directory is present, we want to extract content while in it
+	if intermediateDir == "" {
+		intermediateDir = appDir
+	}
+
+	if FileExists(fullZipFilePath) {
+		scriptBuilder.WriteString("\n")
+		scriptBuilder.WriteString("echo Extracting '" + consts.CompressedOutputFileName + "' contents...\n")
+		scriptBuilder.WriteString("cd \"" + intermediateDir + "\"\n")
+		scriptBuilder.WriteString("tar -xzf \"" + consts.CompressedOutputFileName + "\"\n")
+		scriptBuilder.WriteString("echo Done.\n")
+	} else {
+		fmt.Printf("Could not find the compressed file '%s'\n", fullZipFilePath)
+	}
 }
 
 func AppendScriptToCopyToDir(scriptBuilder *strings.Builder, srcDir string, destDir string) {
-	// Cannot use 'declare' here as 'sh' does not support it
 	scriptBuilder.WriteString("\n")
-	scriptBuilder.WriteString("readonly srcDir=\"" + srcDir + "\"\n")
-	scriptBuilder.WriteString("readonly destDir=\"" + destDir + "\"\n")
+	scriptBuilder.WriteString("declare -r srcDir=\"" + srcDir + "\"\n")
+	scriptBuilder.WriteString("declare -r destDir=\"" + destDir + "\"\n")
 	scriptBuilder.WriteString("if [ -d \"$destDir\" ]; then\n")
 	scriptBuilder.WriteString("    echo \"Directory '$destDir' already exists. Deleting it...\"\n")
 	scriptBuilder.WriteString("    rm -rf \"$destDir\"\n")

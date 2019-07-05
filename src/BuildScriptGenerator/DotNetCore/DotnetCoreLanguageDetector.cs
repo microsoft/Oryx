@@ -91,22 +91,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             switch (targetFramework)
             {
                 case DotNetCoreConstants.NetCoreApp10:
-                    return DotNetCoreRuntimeVersions.NetCoreApp10;
+                    return DotNetCoreRunTimeVersions.NetCoreApp10;
 
                 case DotNetCoreConstants.NetCoreApp11:
-                    return DotNetCoreRuntimeVersions.NetCoreApp11;
+                    return DotNetCoreRunTimeVersions.NetCoreApp11;
 
                 case DotNetCoreConstants.NetCoreApp20:
-                    return DotNetCoreRuntimeVersions.NetCoreApp20;
+                    return DotNetCoreRunTimeVersions.NetCoreApp20;
 
                 case DotNetCoreConstants.NetCoreApp21:
-                    return DotNetCoreRuntimeVersions.NetCoreApp21;
+                    return DotNetCoreRunTimeVersions.NetCoreApp21;
 
                 case DotNetCoreConstants.NetCoreApp22:
-                    return DotNetCoreRuntimeVersions.NetCoreApp22;
+                    return DotNetCoreRunTimeVersions.NetCoreApp22;
 
                 case DotNetCoreConstants.NetCoreApp30:
-                    return DotNetCoreRuntimeVersions.NetCoreApp30;
+                    return DotNetCoreRunTimeVersions.NetCoreApp30;
             }
 
             return null;
@@ -127,8 +127,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (string.IsNullOrEmpty(maxSatisfyingVersion))
                 {
                     var exc = new UnsupportedVersionException(
-                        $"Target .NET Core runtime version '{version}' is unsupported. Supported versions are:" +
-                        $" {string.Join(", ", _versionProvider.SupportedDotNetCoreVersions)}");
+                        DotNetCoreConstants.LanguageName,
+                        version,
+                        _versionProvider.SupportedDotNetCoreVersions);
                     _logger.LogError(exc, "Exception caught");
                     throw exc;
                 }
