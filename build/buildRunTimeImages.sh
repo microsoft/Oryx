@@ -77,6 +77,12 @@ then
     exit 1
 fi
 
+# Build the common base image first, so other images that depend on it get the latest version. 
+# We don't retrieve this image from a repository but rather build locally to make sure we get 
+# the latest version of its own base image. 
+
+docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" -t "$RUNTIME_BASE_IMAGE_NAME" $REPO_DIR
+
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
 
