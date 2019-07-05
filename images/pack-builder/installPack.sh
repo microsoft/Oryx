@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-declare -r PACK_VERSION='0.1.0'
+declare -r PACK_VERSION='0.2.1'
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	packPlatform='linux';
