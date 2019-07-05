@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
             var version = "0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "}\"}}", PhpConstants.ComposerFileName);
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
