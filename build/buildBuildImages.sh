@@ -100,7 +100,7 @@ fi
 echo "$ACR_BUILD_IMAGES_REPO:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 # Retag build image with build number tags
-if [ -n "$BUILD_NUMBER" ]
+if [ "$AGENT_BUILD" == "true" ]
 then
 	uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 

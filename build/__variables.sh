@@ -53,3 +53,9 @@ declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 if [ -n "$BUILD_NUMBER" ]; then
     declare -r AGENT_BUILD="true"
 fi
+
+# For local/dev environment we need to login to dev acr, userId is: oryxdevmcr
+# password can be found azure portal, accessing oryxdevmcr > access Keys
+if [ "$AGENT_BUILD" != "true" ]; then
+    docker login oryxdevmcr.azurecr.io
+fi

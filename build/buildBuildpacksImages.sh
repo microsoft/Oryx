@@ -62,7 +62,7 @@ docker build -f "$PACK_IMAGE_DOCKERFILE" $noCacheFlag \
 			 -t $DOCKER_PACK_IMAGE_REPO:latest \
 			 .
 
-if [ -n "$AGENT_BUILD" ]; then
+if [ "$AGENT_BUILD" == "true" ]; then
 	BUILD_SUFFIX="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
 	# Tag oryxdevms

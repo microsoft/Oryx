@@ -96,7 +96,7 @@ for dockerFile in $dockerFiles; do
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 
     # Retag image with build number (for images built in oryxlinux buildAgent)
-    if [ -n "$BUILD_NUMBER" ]
+    if [ -n "$AGENT_BUILD" ]
     then
         uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
         acrRuntimeImageTagNameRepo="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
@@ -119,7 +119,7 @@ for dockerFile in $dockerFiles; do
     cd $RUNTIME_IMAGES_SRC_DIR
 done
 
-if [ -n "$BUILD_NUMBER" ]
+if [ -n "$AGENT_BUILD" ]
 then
     echo
     echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
