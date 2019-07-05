@@ -350,8 +350,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);
             LogScriptIfGiven("post-build", buildScriptProps.PostBuildCommand);
 
-            script = TemplateHelpers.Render(
-                TemplateHelpers.TemplateResource.BaseBashScript,
+            script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.BaseBashScript,
                 buildScriptProps,
                 _logger);
             return script;
