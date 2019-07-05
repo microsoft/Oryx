@@ -7,6 +7,7 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"flag"
 	"fmt"
 	"log"
@@ -27,7 +28,7 @@ func main() {
 		"runFromPath",
 		"",
 		"The path to the directory where the output is copied and run from there.")
-	manifestDirPtr := common.GetManifestDirSwitch()
+	manifestDirPtr := common.ManifestDirFlag
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",
@@ -47,7 +48,7 @@ func main() {
 		absPath, err := filepath.Abs(providedPath)
 		if err != nil || !common.PathExists(absPath) {
 			fmt.Printf("Provided app path '%s' is not valid or does not exist.\n", providedPath)
-			os.Exit(1)
+			os.Exit(consts.FAILURE_EXIT_CODE)
 		}
 		fullAppPath = absPath
 	}
@@ -73,7 +74,7 @@ func main() {
 		absPath, err := filepath.Abs(providedPath)
 		if err != nil || !common.FileExists(absPath) {
 			fmt.Printf("Provided default app file path '%s' is not valid or does not exist.\n", providedPath)
-			os.Exit(1)
+			os.Exit(consts.FAILURE_EXIT_CODE)
 		}
 		fullDefaultAppFilePath = absPath
 	}

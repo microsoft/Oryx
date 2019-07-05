@@ -7,10 +7,8 @@ package common
 
 import "flag"
 
-func GetManifestDirSwitch() *string {
-	return flag.String(
-		"manifestDir",
-		"",
-		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
-			"it is assumed to be under the directory specified by 'appPath'.")
-}
+var ManifestDirFlag = flag.String(
+	"manifestDir",
+	"",
+	"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
+		"it is assumed to be under the directory specified by 'appPath'.")

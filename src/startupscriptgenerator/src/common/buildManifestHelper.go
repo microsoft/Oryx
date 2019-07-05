@@ -57,13 +57,13 @@ func getManifestFile(manifestDir *string, fullAppPath string) string {
 			fmt.Printf(
 				"Error: Provided manifest file directory path '%s' is not valid or does not exist.\n",
 				providedPath)
-			os.Exit(1)
+			os.Exit(consts.FAILURE_EXIT_CODE)
 		}
 
 		manifestFileFullPath = filepath.Join(absPath, consts.BuildManifestFileName)
 		if !FileExists(manifestFileFullPath) {
 			fmt.Printf("Error: Could not file manifest file '%s' at '%s'.\n", consts.BuildManifestFileName, absPath)
-			os.Exit(1)
+			os.Exit(consts.FAILURE_EXIT_CODE)
 		}
 	}
 	return manifestFileFullPath
@@ -76,7 +76,7 @@ func deserializeBuildManifest(manifestFile string) BuildManifest {
 			"Error occurred when trying to deserialize the manifest file '%s'. Error: '%s'.\n",
 			manifestFile,
 			err)
-		os.Exit(1)
+		os.Exit(consts.FAILURE_EXIT_CODE)
 	}
 	return manifest
 }

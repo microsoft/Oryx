@@ -61,18 +61,18 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 		}
 	} else {
 		if gen.Manifest.StartupDllFileName != "" {
-			scriptBuilder.WriteString("echo Found startup dll name from manifest file\n")
+			scriptBuilder.WriteString("echo Found startup DLL name from manifest file\n")
 			startupCommand := "dotnet \"" + gen.Manifest.StartupDllFileName + "\""
 			scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
 			scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
 			scriptBuilder.WriteString(startupCommand + "\n")
 		} else {
-			scriptBuilder.WriteString("echo Trying to find the startup dll name...\n")
+			scriptBuilder.WriteString("echo Trying to find the startup DLL name...\n")
 			runtimeConfigFiles := gen.getRuntimeConfigJsonFiles()
 
 			if len(runtimeConfigFiles) == 0 {
 				fmt.Printf(
-					"WARNING: Unable to find the startup dll name. Could not find any files with extension '%s'\n",
+					"WARNING: Unable to find the startup DLL name. Could not find any files with extension '%s'\n",
 					RuntimeConfigJsonExtension)
 				runDefaultApp = true
 			} else if len(runtimeConfigFiles) > 1 {
@@ -90,13 +90,13 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 				startupDllFullPath := filepath.Join(appPath, startupDllName)
 				if common.FileExists(startupDllFullPath) {
 					startupCommand := "dotnet \"" + startupDllName + "\""
-					scriptBuilder.WriteString("echo Found the startup dll name: " + startupDllName + "\n")
+					scriptBuilder.WriteString("echo Found the startup D name: " + startupDllName + "\n")
 					scriptBuilder.WriteString("echo 'Running the command: " + startupCommand + "'\n")
 					scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
 					scriptBuilder.WriteString(startupCommand + "\n")
 				} else {
 					fmt.Printf(
-						"WARNING: Unable to figure out startup dll name. Found file '%s', but could not find startup file '%s' on disk.\n",
+						"WARNING: Unable to figure out startup D name. Found file '%s', but could not find startup file '%s' on disk.\n",
 						runtimeConfigFile,
 						startupDllFullPath)
 					runDefaultApp = true

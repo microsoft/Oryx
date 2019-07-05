@@ -26,14 +26,6 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
-  name = "github.com/google/uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
-  version = "v1.1.1"
-
-[[projects]]
   branch = "master"
   digest = "1:2d54ea234b5487eb9c651f55d8ccf30978b1c2116e2f547ba7cf8cb0932bacc7"
   name = "github.com/microsoft/ApplicationInsights-Go"
@@ -73,7 +65,6 @@
   analyzer-version = 1
   input-imports = [
     "github.com/BurntSushi/toml",
-    "github.com/google/uuid",
     "github.com/microsoft/ApplicationInsights-Go/appinsights",
     "github.com/microsoft/ApplicationInsights-Go/appinsights/contracts",
     "github.com/stretchr/testify/assert",
