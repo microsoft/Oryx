@@ -8,10 +8,10 @@ namespace Microsoft.Oryx.Common
         public const string PhpRuntimeBaseTag = "20190530.1";
         public const string ComposerVersion = "1.8.4";
         public const string ComposerSha384 = "48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5";
-        public const string Php73Version = "7.3.5";
+        public const string Php73Version = "7.3.7";
         public const string Php73Keys = "CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D";
         public const string Php73TarSha256 = "e1011838a46fd4a195c8453b333916622d7ff5bce4aca2d9d99afac142db2472";
-        public const string Php72Version = "7.2.18";
+        public const string Php72Version = "7.2.20";
         public const string Php72Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F";
         public const string Php72TarSha256 = "9970dbb3ab1298c9e6aac54bebfa841c8ad14b18eead65594a68fa841364cb8d";
         public const string Php70Version = "7.0.33";
