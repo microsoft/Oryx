@@ -10,4 +10,4 @@
 [[groups]]
   [[groups.buildpacks]]
     id = "com.microsoft.oryx.buildpack"
-    version = "0.0.1"
+    version = "0.0.2"
