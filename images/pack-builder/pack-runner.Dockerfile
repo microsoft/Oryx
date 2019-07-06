@@ -1,4 +1,4 @@
-FROM buildpack-deps:stable
+FROM debian:stable-slim
 
 WORKDIR /tmp
 
