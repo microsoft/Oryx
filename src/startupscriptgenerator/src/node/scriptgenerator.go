@@ -9,6 +9,7 @@ import (
 	"common"
 	"common/consts"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -52,43 +53,48 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
+	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	if !gen.SkipNodeModulesExtraction {
-		scriptBuilder.WriteString("compressedNodeModulesFile=\"" + gen.Manifest.CompressedNodeModulesFile + "\"\n")
-		scriptBuilder.WriteString("echo \"Checking if node_modules was compressed...\"\n")
-		scriptBuilder.WriteString("case $compressedNodeModulesFile in \n")
-		scriptBuilder.WriteString("    *\".zip\")\n")
-		scriptBuilder.WriteString("        echo \"Found zip-based node_modules.\"\n")
-		scriptBuilder.WriteString("        extractionCommand=\"unzip -q $compressedNodeModulesFile -d /node_modules\"\n")
-		scriptBuilder.WriteString("        ;;\n")
-		scriptBuilder.WriteString("    *\".tar.gz\")\n")
-		scriptBuilder.WriteString("        echo \"Found tar.gz based node_modules.\"\n")
-		scriptBuilder.WriteString("        extractionCommand=\"tar -xzf $compressedNodeModulesFile -C /node_modules\"\n")
-		scriptBuilder.WriteString("         ;;\n")
-		scriptBuilder.WriteString("esac\n")
-		scriptBuilder.WriteString("if [ ! -z \"$extractionCommand\" ]; then\n")
-		scriptBuilder.WriteString("    echo \"Removing existing modules directory...\"\n")
-		scriptBuilder.WriteString("    rm -fr /node_modules\n")
-		scriptBuilder.WriteString("    mkdir -p /node_modules\n")
-		scriptBuilder.WriteString("    echo \"Extracting modules...\"\n")
-		scriptBuilder.WriteString("    $extractionCommand\n")
+	targetNodeModulesDir := "/node_modules"
+	if !gen.SkipNodeModulesExtraction && gen.Manifest.CompressedNodeModulesFile != "" {
+		if strings.HasSuffix(gen.Manifest.CompressedNodeModulesFile, ".zip") {
+			scriptBuilder.WriteString("echo Found zip-based node_modules.\n")
+			scriptBuilder.WriteString(
+				"extractionCommand=\"unzip -q " + gen.Manifest.CompressedNodeModulesFile +
+					" -d " + targetNodeModulesDir + "\"\n")
+
+		} else if strings.HasSuffix(gen.Manifest.CompressedNodeModulesFile, ".tar.gz") {
+			scriptBuilder.WriteString("echo Found tar.gz based node_modules.\n")
+			scriptBuilder.WriteString(
+				"extractionCommand=\"tar -xzf " + gen.Manifest.CompressedNodeModulesFile +
+					" -C " + targetNodeModulesDir + "\"\n")
+		} else {
+			fmt.Printf(
+				"Error: Unrecognizable file '%s'. Expected a file with an extesion '.zip' or '.tar.gz'\n",
+				gen.Manifest.CompressedNodeModulesFile)
+			os.Exit(consts.FAILURE_EXIT_CODE)
+		}
+
+		scriptBuilder.WriteString("echo \"Removing existing modules directory...\"\n")
+		scriptBuilder.WriteString("rm -fr " + targetNodeModulesDir + "\n")
+		scriptBuilder.WriteString("mkdir -p " + targetNodeModulesDir + "\n")
+		scriptBuilder.WriteString("echo Extracting modules...\n")
+		scriptBuilder.WriteString("$extractionCommand\n")
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
-		scriptBuilder.WriteString("    export NODE_PATH=/node_modules:$NODE_PATH\n")
+		scriptBuilder.WriteString("export NODE_PATH=" + targetNodeModulesDir + ":$NODE_PATH\n")
 		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
 		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
-		scriptBuilder.WriteString("    export PATH=/node_modules/.bin:$PATH\n")
+		scriptBuilder.WriteString("export PATH=" + targetNodeModulesDir + "/.bin:$PATH\n")
 		// To avoid having older versions of packages available, we delete existing node_modules folder.
 		// We do so in the background to not block the app's startup.
-		scriptBuilder.WriteString("    if [ -d node_modules ]; then\n")
+		scriptBuilder.WriteString("if [ -d node_modules ]; then\n")
 		// We move the directory first to prevent node from start using it
-		scriptBuilder.WriteString("        mv -f node_modules _del_node_modules || true\n")
-		scriptBuilder.WriteString("        nohup rm -fr _del_node_modules &> /dev/null &\n")
-		scriptBuilder.WriteString("    fi\n")
+		scriptBuilder.WriteString("    mv -f node_modules _del_node_modules || true\n")
+		scriptBuilder.WriteString("    nohup rm -fr _del_node_modules &> /dev/null &\n")
 		scriptBuilder.WriteString("fi\n")
 		scriptBuilder.WriteString("echo \"Done.\"\n")
 	}
@@ -166,14 +172,13 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	}
 
 	logger.LogInformation("Looking for App-Insights loader injected by Oryx and export to NODE_OPTIONS if needed")
-	scriptBuilder.WriteString("injectedAppInsights=\"" + gen.Manifest.InjectedAppInsights + "\"\n")
-	scriptBuilder.WriteString("if [ -n $injectedAppInsights ]; then\n")
-	scriptBuilder.WriteString("    if [ -f ./oryx-appinsightsloader.js ]; then\n")
-	var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " '$NODE_OPTIONS"
-	scriptBuilder.WriteString("        export NODE_OPTIONS=" + nodeOptions + "\n")
-	scriptBuilder.WriteString("")
-	scriptBuilder.WriteString("    fi\n")
-	scriptBuilder.WriteString("fi\n")
+	if gen.Manifest.InjectedAppInsights != "" {
+		loaderFile := filepath.Join(gen.SourcePath, consts.NodeAppInsightsLoaderFileName)
+		if common.FileExists(loaderFile) {
+			var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " '$NODE_OPTIONS"
+			scriptBuilder.WriteString("export NODE_OPTIONS=" + nodeOptions + "\n")
+		}
+	}
 	scriptBuilder.WriteString(startupCommand + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
