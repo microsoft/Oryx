@@ -3,6 +3,7 @@ FROM debian:stable-slim
 WORKDIR /tmp
 
 COPY images/pack-builder/installPack.sh installPack.sh
+RUN apt-get update && apt-get install wget --yes
 RUN ./installPack.sh && mv pack /usr/local/bin && rm installPack.sh
 
 ENTRYPOINT ["/usr/local/bin/pack"]
