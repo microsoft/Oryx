@@ -29,7 +29,7 @@ echo "-> Building stack base image: $ACR_PACK_STACK_BASE_IMAGE_REPO"
 echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_STACK_BASE_IMAGE_DOCKERFILE" $noCacheFlag \
-			 -t "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:latest" \
+			 -t "$ACR_PACK_STACK_BASE_IMAGE_REPO:latest" \
 			 -t "mcr.microsoft.com/oryx/$PACK_STACK_BASE_IMAGE_NAME" \
 			 .
 
@@ -46,7 +46,7 @@ echo
 # Even though the image isn't pushed to MCR yet,
 # its final name needs to be baked into the `pack` runner image ($PACK_IMAGE_DOCKERFILE)
 builderFqn="mcr.microsoft.com/oryx/$PACK_BUILDER_IMAGE_NAME"
-docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$builderFqn"
+docker tag "$ACR_PACK_BUILDER_IMAGE_REPO" "$builderFqn"
 
 # Remove pack & everything that was added by it
 rm -f   ./pack
@@ -66,12 +66,12 @@ if [ "$AGENT_BUILD" == "true" ]; then
 	BUILD_SUFFIX="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
 	# Tag for ACR
-	docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$ACR_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX"
+	docker tag "$ACR_PACK_BUILDER_IMAGE_REPO" "$ACR_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
-	docker tag "$DOCKER_PACK_IMAGE_REPO:latest" "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX"
+	docker tag "$ACR_PACK_IMAGE_REPO:latest" "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
-	docker tag "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:latest" "$ACR_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX"
+	docker tag "$ACR_PACK_STACK_BASE_IMAGE_REPO:latest" "$ACR_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 fi
