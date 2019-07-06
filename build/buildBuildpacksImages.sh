@@ -43,11 +43,6 @@ echo
 					  --builder-config $REPO_DIR/images/pack-builder/builder.toml \
 					  --no-pull
 
-# Even though the image isn't pushed to MCR yet,
-# its final name needs to be baked into the `pack` runner image ($PACK_IMAGE_DOCKERFILE)
-builderFqn="mcr.microsoft.com/oryx/$PACK_BUILDER_IMAGE_NAME"
-docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$builderFqn"
-
 # Remove pack & everything that was added by it
 rm -f   ./pack
 rm -rf ~/.pack
@@ -58,7 +53,6 @@ echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_IMAGE_DOCKERFILE" $noCacheFlag \
 			 --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
-			 --build-arg DEFAULT_BUILDER_NAME="$builderFqn" \
 			 -t $DOCKER_PACK_IMAGE_REPO:latest \
 			 .
 
