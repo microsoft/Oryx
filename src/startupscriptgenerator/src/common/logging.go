@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 	"github.com/microsoft/ApplicationInsights-Go/appinsights/contracts"
 )
@@ -30,7 +31,12 @@ type Logger struct {
 var buildOpID string
 
 func SetGlobalOperationID(buildManifest BuildManifest) {
-	if buildManifest.OperationID != "" {
+	if buildManifest.OperationID == "" {
+		// For apps which are not built by Oryx, there would not be a manifest file. So,
+		// generate a unique id for those scenarios.
+		fmt.Println("Could not find operation ID in manifest. Generating an operation id...")
+		buildOpID = uuid.New().String()
+	} else {
 		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}
 	fmt.Println("Build Operation ID: " + buildOpID)
