@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         };
 
         [Argument(0, Description = "The source directory.")]
+        [DirectoryExists]
         public string SourceDir { get; set; }
 
         [Option(
@@ -107,7 +108,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.ManifestDir,
             CommandOptionType.SingleValue,
-            Description = "The path to a directory where build manifest file is to be put into.")]
+            Description = "The path to a directory into which the build manifest file should be written.")]
+        [DirectoryExists]
         public string ManifestDir { get; set; }
 
         public static string BuildOperationName(IEnvironment env)
@@ -304,13 +306,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 logger.LogWarning("Deprecated option '--language-version' used");
                 console.WriteLine("Warning: the deprecated option '--language-version' was used.");
-            }
-
-            if (!Directory.Exists(options.SourceDir))
-            {
-                logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
-                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
-                return false;
             }
 
             // Invalid to specify language version without language name
