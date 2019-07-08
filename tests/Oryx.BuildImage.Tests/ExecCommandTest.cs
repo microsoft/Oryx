@@ -58,9 +58,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    var nodeArg = $"node={NodeConstants.NodeLtsVersion}";
                     Assert.Contains("#!" + expectedBashPath, result.StdOut);
-                    Assert.Contains(nodeArg, result.StdOut);
+                    Assert.Contains($"node={NodeConstants.NodeLtsVersion}", result.StdOut);
                     Assert.True(result.IsSuccess);
                     // Actual output from `node --version` starts with a 'v'
                     Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
