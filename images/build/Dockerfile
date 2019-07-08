@@ -164,7 +164,6 @@ RUN chmod a+x /tmp/__nodeVersions.sh \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.2 \
- && ~/n/bin/n -d 12.5.0 \
  && ~/n/bin/n -d $NODE6_VERSION \
  && ~/n/bin/n -d $NODE8_VERSION \
  && ~/n/bin/n -d $NODE10_VERSION \
@@ -237,7 +236,6 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && ln -s 12.5.0 /opt/nodejs/12.5 \
  && . /tmp/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
  && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
