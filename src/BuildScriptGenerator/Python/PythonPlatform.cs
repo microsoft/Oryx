@@ -132,8 +132,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 disableCollectStatic: !enableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName);
-            string script = TemplateHelpers.Render(
-                TemplateHelpers.TemplateResource.PythonSnippet,
+            string script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
                 _logger);
 

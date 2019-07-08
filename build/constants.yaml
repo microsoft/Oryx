@@ -48,12 +48,12 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20190703.2
+    python-base-tag: 20190705.1
     pip-version: 19.0.3
     python27-version: 2.7.16
     python36-version: 3.6.9
     python37-version: 3.7.3
-    python38-version: 3.8.0b1
+    python38-version: 3.8.0b2
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator

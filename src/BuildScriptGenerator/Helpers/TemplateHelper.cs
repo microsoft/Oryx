@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     using Scriban;
     using Scriban.Runtime;
 
-    internal static class TemplateHelpers
+    internal static class TemplateHelper
     {
         private static readonly MemberRenamerDelegate NoOpRenamer = member => member.Name;
 

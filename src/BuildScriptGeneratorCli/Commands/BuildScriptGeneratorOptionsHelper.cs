@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string sourceDir,
             string destinationDir,
             string intermediateDir,
+            string manifestDir,
             string platform,
             string platformVersion,
             bool scriptOnly,
@@ -36,6 +37,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!string.IsNullOrEmpty(intermediateDir))
             {
                 options.IntermediateDir = Path.GetFullPath(intermediateDir);
+            }
+
+            if (!string.IsNullOrEmpty(manifestDir))
+            {
+                options.ManifestDir = Path.GetFullPath(manifestDir);
             }
 
             options.ScriptOnly = scriptOnly;

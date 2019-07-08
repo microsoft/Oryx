@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             };
 
             // Act
-            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, scriptProps);
+            var script = TemplateHelper.Render(TemplateHelper.TemplateResource.BaseBashScript, scriptProps);
 
             // Assert
             Assert.Contains(
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             };
 
             // Act
-            var script = TemplateHelpers.Render(TemplateHelpers.TemplateResource.BaseBashScript, scriptProps);
+            var script = TemplateHelper.Render(TemplateHelper.TemplateResource.BaseBashScript, scriptProps);
 
             // Assert
             Assert.Contains("Executing pre-build command", script);

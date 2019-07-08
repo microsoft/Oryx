@@ -76,9 +76,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                SourceDir,
+                sourceDir: SourceDir,
                 destinationDir: null,
                 intermediateDir: null,
+                manifestDir: null,
                 platform: null,
                 platformVersion: null,
                 scriptOnly: false,

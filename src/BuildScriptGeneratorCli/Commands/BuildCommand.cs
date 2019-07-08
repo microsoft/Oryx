@@ -104,6 +104,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
 
+        [Option(
+            OptionTemplates.ManifestDir,
+            CommandOptionType.SingleValue,
+            Description = "The path to a directory where build manifest file is to be put into.")]
+        public string ManifestDir { get; set; }
+
         public static string BuildOperationName(IEnvironment env)
         {
             string result = LoggingConstants.DefaultOperationName;
@@ -338,13 +344,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                SourceDir,
-                DestinationDir,
-                IntermediateDir,
-                PlatformName,
-                PlatformVersion,
+                sourceDir: SourceDir,
+                destinationDir: DestinationDir,
+                intermediateDir: IntermediateDir,
+                manifestDir: ManifestDir,
+                platform: PlatformName,
+                platformVersion: PlatformVersion,
                 scriptOnly: false,
-                Properties);
+                properties: Properties);
         }
 
         /// <summary>

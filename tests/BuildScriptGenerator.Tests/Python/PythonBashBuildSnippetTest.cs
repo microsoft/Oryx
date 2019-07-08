@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 compressedVirtualEnvFileName: null);
 
             // Act
-            var text = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, snippetProps);
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
             Assert.Contains("manage.py collectstatic", text);
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 compressedVirtualEnvFileName: null);
 
             // Act
-            var text = TemplateHelpers.Render(TemplateHelpers.TemplateResource.PythonSnippet, snippetProps);
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
 
             // Assert
             Assert.DoesNotContain("manage.py collectstatic", text);
