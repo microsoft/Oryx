@@ -64,7 +64,6 @@ fi
 for generateDockerFile in $generateDockerFiles; do
     echo
     echo "Executing '$generateDockerFile'..."
-    chmod +x "$generateDockerFile"
     "$generateDockerFile"
 done
 
