@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (_currentDownload != null)
             {
+                _currentDownload.AddProperty("nextLine", line.Trim());
                 _currentDownload.Dispose();
                 _currentDownload = null;
             }
@@ -39,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 if (parts[1].StartsWith("http"))
                 {
                     _currentDownload = _logger.LogTimedEvent(EventName);
+                    _currentDownload.AddProperty("markerLine", line.Trim());
 
                     var url = parts[1];
                     _currentDownload.AddProperty(nameof(url), url);
