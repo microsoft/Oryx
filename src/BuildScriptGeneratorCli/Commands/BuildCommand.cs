@@ -109,7 +109,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             OptionTemplates.ManifestDir,
             CommandOptionType.SingleValue,
             Description = "The path to a directory into which the build manifest file should be written.")]
-        [DirectoryExists]
         public string ManifestDir { get; set; }
 
         public static string BuildOperationName(IEnvironment env)
