@@ -67,7 +67,8 @@ for generateDockerFile in $generateDockerFiles; do
     "$generateDockerFile"
 done
 
-dockerFiles=$(find $runtimeImagesSourceDir -type f -name "Dockerfile")
+# The common base image is built separately, so we ignore it
+dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )
 if [ -z "$dockerFiles" ]
 then
     echo "Couldn't find any Dockerfiles under '$runtimeImagesSourceDir' and its sub-directories."
