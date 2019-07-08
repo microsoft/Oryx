@@ -79,20 +79,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An outdated version of Node.js was detected ({0}). Consider updating.\nVersions supported by Oryx: {1}.
-        /// </summary>
-        internal static string NodeVersionCheckerMessageFormat {
-            get {
-                return ResourceManager.GetString("NodeVersionCheckerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Invalid options: &apos;virtualenv_name&apos; and &apos;packagedir&apos; cannot be used at the same time. Passing &apos;packagedir&apos; means that no virtual environment will be created, and instead all the packages will be downloaded to the given directory. If &apos;virtualenv_name&apos; is given, the virtual environment will be created and the packages downloaded there..
         /// </summary>
         internal static string PythonBuildCantHaveVirtualEnvAndTargetPackageDirErrorMessage {
             get {
                 return ResourceManager.GetString("PythonBuildCantHaveVirtualEnvAndTargetPackageDirErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An outdated version of {0} was detected ({1}). Consider updating.\nVersions supported by Oryx: {2}.
+        /// </summary>
+        internal static string ToolVersionCheckerMessageFormat {
+            get {
+                return ResourceManager.GetString("ToolVersionCheckerMessageFormat", resourceCulture);
             }
         }
     }

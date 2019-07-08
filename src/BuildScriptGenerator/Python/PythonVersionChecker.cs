@@ -8,14 +8,14 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Node
+namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    [Checker(NodeConstants.NodeToolName)]
-    public class NodeVersionChecker : IChecker
+    [Checker(PythonConstants.PythonName)]
+    public class PythonVersionChecker : IChecker
     {
-        private readonly ILogger<NodeVersionChecker> _logger;
+        private readonly ILogger<PythonVersionChecker> _logger;
 
-        public NodeVersionChecker(ILogger<NodeVersionChecker> logger)
+        public PythonVersionChecker(ILogger<PythonVersionChecker> logger)
         {
             _logger = logger;
         }
@@ -23,15 +23,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         [NotNull]
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
-            var used = tools[NodeConstants.NodeToolName];
-            var comparison = SemanticVersionResolver.CompareVersions(used, NodeConstants.NodeLtsVersion);
+            var used = tools[PythonConstants.PythonName];
+            var comparison = SemanticVersionResolver.CompareVersions(used, PythonConstants.PythonLtsVersion);
             _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {
                 return new[]
                 {
-                    new CheckerMessage(string.Format(Resources.Labels.PlatformVersionCheckerMessageFormat,
-                        NodeConstants.NodeToolName,
+                    new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
+                        PythonConstants.PythonName,
                         used,
                         Constants.OryxGitHubUrl))
                 };
