@@ -61,7 +61,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The package &apos;{0}&apos;, specified in package.json&apos;s {1},\nis known to have been superseded by &apos;{2}&apos;. Consider switching over..
+        ///   Looks up a localized string similar to The package &apos;{0}&apos;, specified in package.json&apos;s {1},
+        ///is known to have been superseded by &apos;{2}&apos;. Consider switching over..
         /// </summary>
         internal static string NodeDependencyCheckerMessageFormat {
             get {
@@ -79,7 +80,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An outdated version of Node.js was detected ({0}). Consider updating.\nVersions supported by Oryx: {1}.
+        ///   Looks up a localized string similar to An outdated version of Node.js was detected ({0}). Consider updating.
+        ///Versions supported by Oryx: {1}.
         /// </summary>
         internal static string NodeVersionCheckerMessageFormat {
             get {
