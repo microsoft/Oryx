@@ -1,4 +1,4 @@
-FROM buildpack-deps:stable
+FROM buildpack-deps:stretch
 
 WORKDIR /tmp
 
