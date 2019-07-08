@@ -51,16 +51,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
-                var benvArgs = tools.Count == 0 ? string.Empty : StringExtensions.JoinKeyValuePairs(tools);
-                var benvCmd = $"{FilePaths.Benv} {benvArgs}";
-
                 // Build envelope script
-                var script = new ShellScriptBuilder("\n")
+                var scriptBuilder = new ShellScriptBuilder("\n")
                     .AddShebang(shellPath)
-                    .AddCommand("set -e")
-                    .Source(benvCmd)
-                    .AddCommand(Command)
-                    .ToString();
+                    .AddCommand("set -e");
+
+                if (tools.Count > 0)
+                {
+                    scriptBuilder.Source($"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}");
+                }
+
+                var script = scriptBuilder.AddCommand(Command).ToString();
                 logger.LogDebug("Script content:\n{script}", script);
 
                 // Create temporary file to store script

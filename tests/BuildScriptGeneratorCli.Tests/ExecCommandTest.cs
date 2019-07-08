@@ -32,21 +32,5 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
         }
-
-        [Fact]
-        public void OnExecute_ExitsSuccessfully_WhenNoUsableToolsAreDetected()
-        {
-            // Arrange
-            var cmdArg = "echo bla";
-            var cmd = new ExecCommand { DebugMode = true, SourceDir = _testDir.CreateChildDir(), Command = cmdArg };
-            var console = new TestConsole();
-
-            // Act
-            var exitCode = cmd.OnExecute(new CommandLineApplication(console), console);
-
-            // Assert
-            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
-            Assert.Contains(cmdArg, console.StdOutput);
-        }
     }
 }

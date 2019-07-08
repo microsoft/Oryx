@@ -16,6 +16,30 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public ExecCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
+        public void CanExec_WithNoUsableToolsDetected()
+        {
+            // Arrange
+            var appPath = "/tmp";
+            var cmd = "node --version";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    // Actual output from `node --version` starts with a 'v'
+                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void CanExec_SingleCommand()
         {
             // Arrange
@@ -24,7 +48,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedBashPath = FilePaths.Bash;
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
-                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
             // Act
@@ -88,7 +112,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
                     "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
-                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
             // Act
