@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -57,7 +58,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("1.x")]
         [InlineData("1.x.x")]
         [InlineData("3")]
-        [InlineData("4")]
         public void MajorVersionProvided_MatchesMajorAndLatestMinorAndPatchVersion(string providedVersion)
         {
             // Arrange
@@ -95,6 +95,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert;
             Assert.Equal("1.2.3", returnedVersion);
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("1.2")]
+        [InlineData("1.3.4")]
+        [InlineData("2")]
+        [InlineData("4.5")]
+        public void CompareVersionsTest(string providedVersion)
+        {
+            // Arrange
+            var supportedVersions = new[] { "1.2.3", "2", "2.1", "2.1.1" };
+            List<int> comparisonResult = new List<int>();
+
+            // Act
+            foreach (var version in supportedVersions)
+            {
+                comparisonResult.Add(SemanticVersionResolver.CompareVersions(providedVersion, version));
+            }
+
+            // Assert
+            /* Testcase: "1"
+             * comparisonResult = {int.MinValue, int.MinValue, int.MinValue, int.MinValue}
+             * Testcase: "1.2" 
+             * comparisonResult = {-1, int.MinValue, -1 , -1}
+             * Testcase: "1.3.4" 
+             * comparisonResult = {-1, int.MinValue, -1 , -1}
+             * Testcase: "2" 
+             * comparisonResult = {int.MinValue, int.MinValue, int.MinValue, int.MinValue}
+             * Testcase: "4.5" 
+             * comparisonResult = {-1, int.MinValue, -1 , -1}
+             */
+
+            Assert.NotEqual(comparisonResult[0], int.MinValue);
+            Assert.NotEqual(comparisonResult[1], int.MinValue);
+            Assert.NotEqual(comparisonResult[2], int.MinValue);
+            Assert.NotEqual(comparisonResult[3], int.MinValue);
         }
     }
 }
