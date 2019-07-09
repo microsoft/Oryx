@@ -11,9 +11,25 @@ using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class ExecCommandTest : SampleAppsTestBase
+    public class OryxCommandTest : SampleAppsTestBase
     {
-        public ExecCommandTest(ITestOutputHelper output) : base(output) { }
+        public OryxCommandTest(ITestOutputHelper output) : base(output) { }
+
+        [Fact]
+        public void Build_UsesCwd_WhenNoSourceDirGiven()
+        {
+            // Act
+            var result = _dockerCli.Run(Settings.BuildImageName, "oryx", "build");
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.False(true);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact]
         public void CanExec_WithNoUsableToolsDetected()
