@@ -56,11 +56,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("1")]
         [InlineData("1.x")]
         [InlineData("1.x.x")]
+        [InlineData("3")]
+        [InlineData("4")]
         public void MajorVersionProvided_MatchesMajorAndLatestMinorAndPatchVersion(string providedVersion)
         {
             // Arrange
             var expectedVersion = "1.3.4";
-            var supportedVersions = new[] { "1.2.2", "1.2.4", "1.3.0", "1.3.4", "2.0.0", "2.3.0" };
+            var supportedVersions = new[] { "1.2.2", "1.2.4", "1.3.0", "1.3.4", "2.0.0", "2.3.0", "3.1" };
 
             // Act
             var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(providedVersion, supportedVersions);
