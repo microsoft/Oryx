@@ -6,14 +6,37 @@
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class ExecCommandTest : SampleAppsTestBase
+    public class OryxCommandTest : SampleAppsTestBase
     {
-        public ExecCommandTest(ITestOutputHelper output) : base(output) { }
+        public OryxCommandTest(ITestOutputHelper output) : base(output) { }
+
+        [Fact]
+        public void Build_UsesCwd_WhenNoSourceDirGiven()
+        {
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "build" },
+                WorkingDirectory = "/tmp"
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.Contains("Error: Could not detect", result.StdErr);
+                    Assert.DoesNotContain("does not exist", result.StdErr);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact]
         public void CanExec_WithNoUsableToolsDetected()

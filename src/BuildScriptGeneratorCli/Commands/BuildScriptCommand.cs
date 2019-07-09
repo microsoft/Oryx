@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Name = "build-script";
 
         [Argument(0, Description = "The source directory.")]
+        [DirectoryExists]
         public string SourceDir { get; set; }
 
         [Option(
