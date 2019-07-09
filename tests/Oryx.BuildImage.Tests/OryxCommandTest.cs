@@ -6,8 +6,9 @@
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -19,14 +20,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_UsesCwd_WhenNoSourceDirGiven()
         {
             // Act
-            var result = _dockerCli.Run(Settings.BuildImageName, "oryx", "build");
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "build" },
+                WorkingDirectory = "/tmp"
+            });
 
             // Assert
             RunAsserts(
                 () =>
                 {
-                    Assert.True(result.IsSuccess);
-                    Assert.False(true);
+                    Assert.Contains("Error: Could not detect", result.StdErr);
                 },
                 result.GetDebugInfo());
         }
