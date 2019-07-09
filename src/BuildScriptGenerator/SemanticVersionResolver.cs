@@ -15,9 +15,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             try
             {
-                var range = new Range(providedVersion, true);
-                var satisfying = new Range(supportedVersions);
-                var x = range.Intersect(new Range(satisfying));
+                var range = new Range(providedVersion);
+                var satisfying = range.MaxSatisfying(supportedVersions);
                 return satisfying;
             }
             catch
