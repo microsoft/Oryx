@@ -1,6 +1,6 @@
 jobs:
 - job: Release_BuildImage
-  displayName: Push Build Image to MCR and DockerHub
+  displayName: Push Build Image to MCR
   pool:
     name: OryxLinux
   variables:
@@ -15,7 +15,7 @@ jobs:
   - template: _releaseStepTemplate.yml
 
 - job: Release_RuntimeImages
-  displayName: Push Runtime Images to MCR and DockerHub
+  displayName: Push Runtime Images to MCR
   pool:
     name: OryxLinux
   variables:

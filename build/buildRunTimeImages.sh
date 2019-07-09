@@ -75,9 +75,10 @@ then
     exit 1
 fi
 
-# Build the common base image first, so other images that depend on it get the latest version.
-# We don't retrieve this image from a repository but rather build locally to make sure we get
-# the latest version of its own base image.
+# Build the common base image first, so other images that depend on it get the latest version. 
+# We don't retrieve this image from a repository but rather build locally to make sure we get 
+# the latest version of its own base image. 
+
 docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" -t "$RUNTIME_BASE_IMAGE_NAME" $REPO_DIR
 
 # Write the list of images that were built to artifacts folder
@@ -87,7 +88,7 @@ clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
-    localImageTagName="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result:latest"
+    localImageTagName="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result:latest"
     
     echo
     echo "Building image '$localImageTagName' for docker file located at '$dockerFile'..."
@@ -99,45 +100,34 @@ for dockerFile in $dockerFiles; do
         --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
         $args $labels .
 
-    # Retag build image with DockerHub & ACR tags
-    if [ -n "$AGENT_BUILD" ]
+    echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+
+    # Retag image with build number (for images built in oryxlinux buildAgent)
+    if [ "$AGENT_BUILD" == "true" ]
     then
         uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
-
-        dockerHubRuntimeImageTagNameRepo="$DOCKER_RUNTIME_IMAGES_REPO/$getTagName_result"
         acrRuntimeImageTagNameRepo="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
 
-        docker tag "$localImageTagName" "$dockerHubRuntimeImageTagNameRepo:latest"
-        docker tag "$localImageTagName" "$dockerHubRuntimeImageTagNameRepo:$uniqueTag"
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:latest"
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
 
         if [ $clearedOutput == "false" ]
         then
             # clear existing contents of the file, if any
-            > $RUNTIME_IMAGES_ARTIFACTS_FILE
             > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
             clearedOutput=true
         fi
 
         # add new content
         echo
-        echo "Updating artifacts file with the built runtime image information..."
-        echo "$dockerHubRuntimeImageTagNameRepo:latest" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
-        echo "$dockerHubRuntimeImageTagNameRepo:$uniqueTag" >> $RUNTIME_IMAGES_ARTIFACTS_FILE
-        echo "$acrRuntimeImageTagNameRepo:latest" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "Updating runtime image artifacts file with build number..."
         echo "$acrRuntimeImageTagNameRepo:$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
 done
 
-if [ -n "$AGENT_BUILD" ]
+if [ "$AGENT_BUILD" == "true" ]
 then
-    echo
-    echo "List of images built (from '$RUNTIME_IMAGES_ARTIFACTS_FILE'):"
-    cat $RUNTIME_IMAGES_ARTIFACTS_FILE
-    
     echo
     echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
     cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
