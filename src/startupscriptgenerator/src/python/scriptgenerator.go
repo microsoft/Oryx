@@ -240,19 +240,29 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 
 // Produces the gunicorn command to run the app
 func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, appDir string) string {
-	args := ""
+
+	// Default to AppService's timeout value (in seconds)
+	args := "--timeout 600"
+
 	if gen.BindPort != "" {
-		args += "--bind=" + DefaultHost + ":" + gen.BindPort
+		args = appendArgs(args, "--bind="+DefaultHost+":"+gen.BindPort)
 	}
+
 	if appDir != "" {
-		if args != "" {
-			args += " "
-		}
-		args += "--chdir=" + appDir
+		args = appendArgs(args, "--chdir="+appDir)
 	}
+
 	if args != "" {
 		return "GUNICORN_CMD_ARGS=\"" + args + "\" gunicorn " + module
-	} else {
-		return "gunicorn " + module
 	}
+
+	return "gunicorn " + module
+}
+
+func appendArgs(currentArgs string, argToAppend string) string {
+	if currentArgs != "" {
+		currentArgs += " "
+	}
+	currentArgs += argToAppend
+	return currentArgs
 }
