@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public interface ITextStreamProcessor
+    internal interface ITextStreamProcessor
     {
         void ProcessLine(string line);
     }
