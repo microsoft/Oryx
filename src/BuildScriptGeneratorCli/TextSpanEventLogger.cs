@@ -10,7 +10,7 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Measures time for events within a textual stream.
+    /// Detects and measures time for events within a textual stream, defined by a beginning and an ending marker.
     /// </summary>
     internal class TextSpanEventLogger : ITextStreamProcessor
     {

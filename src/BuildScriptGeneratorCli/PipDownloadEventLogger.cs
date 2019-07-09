@@ -10,6 +10,9 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
+    /// <summary>
+    /// Detects and measures time for `pip` package downloads in a stream of text.
+    /// </summary>
     internal class PipDownloadEventLogger : ITextStreamProcessor
     {
         private const string PipDownloadMarker = "Downloading";
@@ -26,9 +29,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public void ProcessLine(string line)
         {
+            var cleanLine = line.Trim().ReplaceUrlUserInfo();
+
             if (_currentDownload != null)
             {
-                _currentDownload.AddProperty("nextLine", line.Trim());
+                _currentDownload.AddProperty("nextLine", cleanLine);
                 _currentDownload.Dispose();
                 _currentDownload = null;
             }
@@ -40,9 +45,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 if (parts[1].StartsWith("http"))
                 {
                     _currentDownload = _logger.LogTimedEvent(EventName);
-                    _currentDownload.AddProperty("markerLine", line.Trim());
+                    _currentDownload.AddProperty("markerLine", cleanLine);
 
-                    var url = parts[1];
+                    var url = parts[1].ReplaceUrlUserInfo();
                     _currentDownload.AddProperty(nameof(url), url);
 
                     var size = parts.Last();
