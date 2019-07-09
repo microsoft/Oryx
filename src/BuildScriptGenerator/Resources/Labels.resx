@@ -125,12 +125,12 @@
     <value>The script '{0}', defined in package.json, seems to be trying to install packages globally. This could have unexpected results, as global packages might not be available in the runtime container.</value>
     <comment>{0} - script key in package.json</comment>
   </data>
-  <data name="NodeVersionCheckerMessageFormat" xml:space="preserve">
-    <value>An outdated version of Node.js was detected ({0}). Consider updating.\nVersions supported by Oryx: {1}</value>
-    <comment>{0} - detected Node.js version; {1} - Oryx GitHub URL</comment>
-  </data>
   <data name="PythonBuildCantHaveVirtualEnvAndTargetPackageDirErrorMessage" xml:space="preserve">
     <value>Invalid options: 'virtualenv_name' and 'packagedir' cannot be used at the same time. Passing 'packagedir' means that no virtual environment will be created, and instead all the packages will be downloaded to the given directory. If 'virtualenv_name' is given, the virtual environment will be created and the packages downloaded there.</value>
     <comment>Error message when both "virtualenv_name" and "packagedir" flags are passed to the oryx build command for Python.</comment>
+  </data>
+  <data name="ToolVersionCheckerMessageFormat" xml:space="preserve">
+    <value>An outdated version of {0} was detected ({1}). Consider updating.\nVersions supported by Oryx: {2}</value>
+    <comment>{0} - platform name; {1} - detected version; {2} - Oryx GitHub URL</comment>
   </data>
 </root>
