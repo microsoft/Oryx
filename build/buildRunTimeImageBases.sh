@@ -99,8 +99,8 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE10_VERSION=$NODE10_VERSION \
         $labels . 
 
-    # Retag build image with DockerHub & ACR tags
-    if [ -n "$AGENT_BUILD" ]
+    # Retag build image with build numbers as ACR tags
+    if [ "$AGENT_BUILD" == "true" ]
     then
         tag="$BUILD_NUMBER"
 
@@ -124,7 +124,7 @@ for dockerFile in $dockerFiles; do
     cd $RUNTIME_IMAGES_SRC_DIR
 done
 
-if [ -n "$AGENT_BUILD" ]
+if [ "$AGENT_BUILD" == "true" ]
 then
     echo
     echo "List of images tagged (from '$ARTIFACTS_FILE'):"

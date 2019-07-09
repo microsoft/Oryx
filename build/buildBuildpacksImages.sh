@@ -25,11 +25,11 @@ else
 	echo "Building buildpacks image(s)..."
 fi
 
-echo "-> Building stack base image: $DOCKER_PACK_STACK_BASE_IMAGE_REPO"
+echo "-> Building stack base image: $ACR_PACK_STACK_BASE_IMAGE_REPO"
 echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_STACK_BASE_IMAGE_DOCKERFILE" $noCacheFlag \
-			 -t "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:latest" \
+			 -t "$ACR_PACK_STACK_BASE_IMAGE_REPO:latest" \
 			 -t "mcr.microsoft.com/oryx/$PACK_STACK_BASE_IMAGE_NAME" \
 			 .
 
@@ -37,51 +37,41 @@ cd /tmp
 
 $REPO_DIR/images/pack-builder/installPack.sh
 
-echo "-> Creating builder image: $DOCKER_PACK_BUILDER_IMAGE_REPO"
+echo "-> Creating builder image: $ACR_PACK_BUILDER_IMAGE_REPO"
 echo
-./pack create-builder $DOCKER_PACK_BUILDER_IMAGE_REPO \
+./pack create-builder $ACR_PACK_BUILDER_IMAGE_REPO \
 					  --builder-config $REPO_DIR/images/pack-builder/builder.toml \
 					  --no-pull
 
 # Even though the image isn't pushed to MCR yet,
 # its final name needs to be baked into the `pack` runner image ($PACK_IMAGE_DOCKERFILE)
 builderFqn="mcr.microsoft.com/oryx/$PACK_BUILDER_IMAGE_NAME"
-docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$builderFqn"
+docker tag "$ACR_PACK_BUILDER_IMAGE_REPO" "$builderFqn"
 
 # Remove pack & everything that was added by it
 rm -f   ./pack
 rm -rf ~/.pack
 
 # Build an image that runs `pack`
-echo "-> Building pack runner image: $DOCKER_PACK_IMAGE_REPO"
+echo "-> Building pack runner image: $ACR_PACK_IMAGE_REPO"
 echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_IMAGE_DOCKERFILE" $noCacheFlag \
 			 --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
 			 --build-arg DEFAULT_BUILDER_NAME="$builderFqn" \
-			 -t $DOCKER_PACK_IMAGE_REPO:latest \
+			 -t $ACR_PACK_IMAGE_REPO:latest \
 			 .
 
-if [ -n "$AGENT_BUILD" ]; then
+if [ "$AGENT_BUILD" == "true" ]; then
 	BUILD_SUFFIX="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
-	# Tag oryxdevms
-	docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$DOCKER_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX"
-	echo "$DOCKER_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX" >> $BUILD_IMAGES_ARTIFACTS_FILE
-
-	docker tag "$DOCKER_PACK_IMAGE_REPO:latest" "$DOCKER_PACK_IMAGE_REPO:$BUILD_SUFFIX"
-	echo "$DOCKER_PACK_IMAGE_REPO:$BUILD_SUFFIX" >> $BUILD_IMAGES_ARTIFACTS_FILE
-
-	docker tag "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:latest" "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX"
-	echo "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX" >> $BUILD_IMAGES_ARTIFACTS_FILE
-
 	# Tag for ACR
-	docker tag "$DOCKER_PACK_BUILDER_IMAGE_REPO" "$ACR_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX"
+	docker tag "$ACR_PACK_BUILDER_IMAGE_REPO" "$ACR_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_BUILDER_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
-	docker tag "$DOCKER_PACK_IMAGE_REPO:latest" "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX"
+	docker tag "$ACR_PACK_IMAGE_REPO:latest" "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
-	docker tag "$DOCKER_PACK_STACK_BASE_IMAGE_REPO:latest" "$ACR_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX"
+	docker tag "$ACR_PACK_STACK_BASE_IMAGE_REPO:latest" "$ACR_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_STACK_BASE_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 fi
