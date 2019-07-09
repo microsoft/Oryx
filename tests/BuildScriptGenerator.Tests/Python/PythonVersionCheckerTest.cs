@@ -5,39 +5,40 @@
 
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
+using Microsoft.Oryx.Common;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 {
-    public class NodeVersionCheckerTest
+    public class PythonVersionCheckerTest
     {
         [Fact]
         public void Checker_Warns_WhenOutdatedVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
+            var checker = new PythonVersionChecker(NullLogger<PythonVersionChecker>.Instance);
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeToolName, "1.0.0" } });
+                new Dictionary<string, string> { { PythonConstants.PythonName, PythonVersions.Python27Version } });
 
             // Assert
             Assert.Single(messages);
-            Assert.Contains("outdated version of node was detected", messages.First().Content);
+            Assert.Contains("outdated version of python was detected", messages.First().Content);
         }
 
         [Fact]
         public void Checker_DoesNotWarn_WhenLtsVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
+            var checker = new PythonVersionChecker(NullLogger<PythonVersionChecker>.Instance);
 
             // Act
-            var ltsVer = NodeConstants.NodeLtsVersion;
+            var ltsVer = PythonConstants.PythonLtsVersion;
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeToolName, ltsVer } });
+                new Dictionary<string, string> { { PythonConstants.PythonName, ltsVer } });
 
             // Assert
             Assert.Empty(messages);
@@ -47,11 +48,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_DoesNotWarn_WhenCurrentVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
+            var checker = new PythonVersionChecker(NullLogger<PythonVersionChecker>.Instance);
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeToolName, NodeVersions.Node10Version } });
+                new Dictionary<string, string> { { PythonConstants.PythonName, PythonVersions.Python37Version } });
 
             // Assert
             Assert.Empty(messages);
