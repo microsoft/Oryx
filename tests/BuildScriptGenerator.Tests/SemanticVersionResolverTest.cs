@@ -71,10 +71,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Theory]
-        [InlineData("1")]
-        [InlineData("2")]
-        [InlineData("3")]
-        public void MajorVersionProvided_MatchesMajorAndLatestMinorVersion(string providedVersion)
+        [InlineData("1", "1.3.4")]
+        [InlineData("2", "2.3.0")]
+        [InlineData("3", "3.1")]
+        public void MajorVersionProvided_MatchesMajorAndLatestMinorVersion(string providedVersion, string expectedVersion)
         {
             // Arrange
             var supportedVersions = new[] { "1.2.2", "1.2.4", "1.3.0", "1.3.4", "2.0.0", "2.3.0", "3.1" };
@@ -83,17 +83,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(providedVersion, supportedVersions);
 
             // Assert;
-            switch (providedVersion)
-            {   // successful 
-                case "1": Assert.Equal("1.3.4", returnedVersion);
-                    break;
-                // successful
-                case "2": Assert.Equal("2.3.0", returnedVersion);
-                    break;
-                    // failing : as we don't have patch version for 3.1 in supported version
-                case "3": Assert.Equal("3.1", returnedVersion);
-                    break;
-            }
+            // test will fail for 3-rd test case as we don't have patching version in the maximum supported version
+            Assert.Equal(expectedVersion, returnedVersion);
         }
 
         [Theory]
@@ -104,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             // Arrange
             var expectedVersion = "1.3";
-            var supportedVersions = new[] { "1.2", "1.2", "1.3", "1.3", "2", "2.3", "3.1" };
+            var supportedVersions = new[] { "1.2", "1.2", "1.3", "1.3", "2", "2.3" };
 
             // Act
             var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(providedVersion, supportedVersions);
