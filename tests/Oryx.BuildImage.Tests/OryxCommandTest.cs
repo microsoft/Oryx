@@ -6,14 +6,61 @@
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class ExecCommandTest : SampleAppsTestBase
+    public class OryxCommandTest : SampleAppsTestBase
     {
-        public ExecCommandTest(ITestOutputHelper output) : base(output) { }
+        public OryxCommandTest(ITestOutputHelper output) : base(output) { }
+
+        [Fact]
+        public void Build_UsesCwd_WhenNoSourceDirGiven()
+        {
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "build" },
+                WorkingDirectory = "/tmp"
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.Contains("Error: Could not detect", result.StdErr);
+                    Assert.DoesNotContain("does not exist", result.StdErr);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void CanExec_WithNoUsableToolsDetected()
+        {
+            // Arrange
+            var appPath = "/tmp";
+            var cmd = "node --version";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    // Actual output from `node --version` starts with a 'v'
+                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact]
         public void CanExec_SingleCommand()
@@ -24,7 +71,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedBashPath = FilePaths.Bash;
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
-                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
             // Act
@@ -34,9 +81,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    var nodeArg = $"node={NodeConstants.NodeLtsVersion}";
                     Assert.Contains("#!" + expectedBashPath, result.StdOut);
-                    Assert.Contains(nodeArg, result.StdOut);
+                    Assert.Contains($"node={NodeConstants.NodeLtsVersion}", result.StdOut);
                     Assert.True(result.IsSuccess);
                     // Actual output from `node --version` starts with a 'v'
                     Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
@@ -88,7 +134,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
                     "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
-                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the benv command
+                .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
             // Act

@@ -7,49 +7,76 @@ package common
 
 import (
 	"common/consts"
-	"log"
+	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 )
 
 type BuildManifest struct {
-	StartupFileName          string
-	ZipAllOutput             string
-	OperationID              string
-	VirtualEnvName           string
-	PackageDir               string
-	CompressedVirtualEnvFile string
-	StartupDllFileName       string
+	StartupFileName           string
+	ZipAllOutput              string
+	OperationID               string
+	VirtualEnvName            string
+	PackageDir                string
+	CompressedVirtualEnvFile  string
+	StartupDllFileName        string
+	InjectedAppInsights       string
+	CompressedNodeModulesFile string
 }
 
-var _buildManifest = BuildManifest{}
-var _readManifest = false
+var _buildManifest BuildManifest
+var _hasResult = false
 
-func DeserializeBuildManifest(manifestFile string) BuildManifest {
-	var manifest BuildManifest
-	if _, err := toml.DecodeFile(manifestFile, &manifest); err != nil {
-		log.Fatal(err)
-	}
-	return manifest
-}
-
-func GetBuildManifest(appPath string) BuildManifest {
-	if _readManifest {
+func GetBuildManifest(manifestDir *string, fullAppPath string) BuildManifest {
+	if _hasResult {
 		return _buildManifest
 	}
 
-	tomlFile := filepath.Join(appPath, consts.BuildManifestFileName)
-	if FileExists(tomlFile) {
-		_buildManifest = DeserializeBuildManifest(tomlFile)
-		_readManifest = true
+	manifestFileFullPath := getManifestFile(manifestDir, fullAppPath)
+	if FileExists(manifestFileFullPath) {
+		fmt.Printf("Found build manifest file at '%s'. Deserializing it...\n", manifestFileFullPath)
+		_buildManifest = deserializeBuildManifest(manifestFileFullPath)
+	} else {
+		fmt.Printf("Cound not find build manifest file at '%s'\n", manifestFileFullPath)
 	}
 
+	_hasResult = true
 	return _buildManifest
 }
 
-func ManifestFileExists(appPath string) bool {
-	tomlFile := filepath.Join(appPath, consts.BuildManifestFileName)
-	fileExists := FileExists(tomlFile)
-	return fileExists
+func getManifestFile(manifestDir *string, fullAppPath string) string {
+	manifestFileFullPath := ""
+	if *manifestDir == "" {
+		manifestFileFullPath = filepath.Join(fullAppPath, consts.BuildManifestFileName)
+	} else {
+		providedPath := *manifestDir
+		absPath, err := filepath.Abs(providedPath)
+		if err != nil || !PathExists(absPath) {
+			fmt.Printf(
+				"Error: Provided manifest file directory path '%s' is not valid or does not exist.\n",
+				providedPath)
+			os.Exit(consts.FAILURE_EXIT_CODE)
+		}
+
+		manifestFileFullPath = filepath.Join(absPath, consts.BuildManifestFileName)
+		if !FileExists(manifestFileFullPath) {
+			fmt.Printf("Error: Could not file manifest file '%s' at '%s'.\n", consts.BuildManifestFileName, absPath)
+			os.Exit(consts.FAILURE_EXIT_CODE)
+		}
+	}
+	return manifestFileFullPath
+}
+
+func deserializeBuildManifest(manifestFile string) BuildManifest {
+	var manifest BuildManifest
+	if _, err := toml.DecodeFile(manifestFile, &manifest); err != nil {
+		fmt.Printf(
+			"Error occurred when trying to deserialize the manifest file '%s'. Error: '%s'.\n",
+			manifestFile,
+			err)
+		os.Exit(consts.FAILURE_EXIT_CODE)
+	}
+	return manifest
 }

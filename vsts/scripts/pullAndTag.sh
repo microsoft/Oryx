@@ -19,9 +19,6 @@ while read buildImage; do
 	# Trim the build number tag and append the '':latest' to end of it
 	newtag="${buildImage%:*}:latest"
 
-	# Replace the ACR registry repository name with a name that the tests know about
-	newtag=$(echo "$newtag" | sed 's,oryxdevmcr.azurecr.io/public/oryx,oryxdevms,g')
-
 	echo
 	echo "Tagging the source image with tag $newtag ..."
 	docker tag "$buildImage" "$newtag" | sed 's/^/     /'
@@ -50,9 +47,6 @@ while read sourceImage; do
         
 		# Trim the build number tag and append the '':latest' to end of it
 		newtag="${sourceImage%:*}:latest"
-
-		# Replace the ACR registry repository name with a name that the tests know about
-		newtag=$(echo "$newtag" | sed 's,oryxdevmcr.azurecr.io/public/oryx,oryxdevms,g')
 
 		echo
 		echo "Tagging the source image with tag $newtag ..."

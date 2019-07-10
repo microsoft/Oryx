@@ -1,9 +1,9 @@
-FROM oryxdevms/build as builder
+FROM oryxdevmcr.azurecr.io/public/oryx/build as builder
 WORKDIR /app
 COPY . .
 RUN oryx build .
 
-FROM oryxdevms/python-3.7 as final
+FROM oryxdevmcr.azurecr.io/public/oryx/python-3.7 as final
 WORKDIR /app
 COPY --from=builder /app .
 RUN adduser --disabled-login microblog

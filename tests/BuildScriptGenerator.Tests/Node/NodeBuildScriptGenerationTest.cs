@@ -127,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -158,7 +158,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -222,7 +222,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -255,7 +255,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -287,7 +287,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -318,7 +318,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -351,7 +351,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -384,7 +384,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -417,7 +417,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -448,7 +448,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -486,7 +486,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -525,7 +525,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.DoesNotContain("applicationinsights", snippet.BashBuildScriptSnippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
@@ -567,7 +567,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.Contains("applicationinsights", snippet.BashBuildScriptSnippet);
             Assert.Equal(
-                TemplateHelpers.Render(TemplateHelpers.TemplateResource.NodeBuildSnippet, expected),
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }

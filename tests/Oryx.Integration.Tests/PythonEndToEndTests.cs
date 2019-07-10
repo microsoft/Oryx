@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-2.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-2.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -208,7 +208,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-2.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-2.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -254,7 +254,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 volume,
                 "/bin/bash", new[] { "-c", buildScript },
-                $"oryxdevms/python-{pythonVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/python-{pythonVersion}",
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -309,7 +309,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -364,7 +364,63 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+        
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingCustomManifestFileLocation()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var virtualEnvName = "antenv";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var manifestDirPath = Directory.CreateDirectory(
+            Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
+            var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
+            var manifestDir = manifestDirVolume.ContainerDir;
+            var tempOutputDir = "/tmp/output";
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} --manifest-dir {manifestDir} " +
+                $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv=tar-gz")
+                .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.tar.gz")
+                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -manifestDir {manifestDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume, manifestDirVolume },
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -405,7 +461,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -464,7 +520,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -522,7 +578,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.6",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -608,7 +664,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                $"oryxdevms/python-{pythonVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/python-{pythonVersion}",
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -663,7 +719,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.6",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -712,7 +768,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.6",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -768,7 +824,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -822,7 +878,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = "oryxdevms/python-" + pythonVersion;
+            var imageVersion = "oryxdevmcr.azurecr.io/public/oryx/python-" + pythonVersion;
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -866,7 +922,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = "oryxdevms/python-" + pythonVersion;
+            var imageVersion = "oryxdevmcr.azurecr.io/public/oryx/python-" + pythonVersion;
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -928,7 +984,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -969,7 +1025,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]

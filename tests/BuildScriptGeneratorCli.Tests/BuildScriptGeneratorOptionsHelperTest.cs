@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: ".",
                 destinationDir: ".",
                 intermediateDir: ".",
+                manifestDir: ".",
                 platform: null,
                 platformVersion: null,
                 scriptOnly: false,
@@ -43,6 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(currentDir, options.SourceDir);
             Assert.Equal(currentDir, options.DestinationDir);
             Assert.Equal(currentDir, options.IntermediateDir);
+            Assert.Equal(currentDir, options.ManifestDir);
         }
 
         [Theory]
@@ -61,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: providedPath,
                 destinationDir: providedPath,
                 intermediateDir: providedPath,
+                manifestDir: providedPath,
                 platform: null,
                 platformVersion: null,
                 scriptOnly: false,
@@ -70,6 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(absolutePath, options.SourceDir);
             Assert.Equal(absolutePath, options.DestinationDir);
             Assert.Equal(absolutePath, options.IntermediateDir);
+            Assert.Equal(absolutePath, options.ManifestDir);
         }
 
         [Fact]
@@ -85,6 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: absolutePath,
                 destinationDir: absolutePath,
                 intermediateDir: absolutePath,
+                manifestDir: absolutePath,
                 platform: null,
                 platformVersion: null,
                 scriptOnly: false,
@@ -94,6 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(absolutePath, options.SourceDir);
             Assert.Equal(absolutePath, options.DestinationDir);
             Assert.Equal(absolutePath, options.IntermediateDir);
+            Assert.Equal(absolutePath, options.ManifestDir);
         }
 
         [Fact]
@@ -110,6 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 sourceDir: "..",
                 destinationDir: "..",
                 intermediateDir: "..",
+                manifestDir: "..",
                 platform: null,
                 platformVersion: null,
                 scriptOnly: false,
@@ -119,6 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.SourceDir);
             Assert.Equal(expected, options.DestinationDir);
             Assert.Equal(expected, options.IntermediateDir);
+            Assert.Equal(expected, options.ManifestDir);
         }
 
         [Fact]
@@ -129,13 +137,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var dir1 = CreateNewDir();
             var dir2 = Directory.CreateDirectory(Path.Combine(dir1, "subDir1")).FullName;
             var expected = Directory.CreateDirectory(Path.Combine(dir1, "subDir2")).FullName;
+            var relativePath = Path.Combine(dir2, "..", "subDir2");
 
             // Act
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                sourceDir: Path.Combine(dir2, "..", "subDir2"),
-                destinationDir: Path.Combine(dir2, "..", "subDir2"),
-                intermediateDir: Path.Combine(dir2, "..", "subDir2"),
+                sourceDir: relativePath,
+                destinationDir: relativePath,
+                intermediateDir: relativePath,
+                manifestDir: relativePath,
                 platform: null,
                 platformVersion: null,
                 scriptOnly: false,
@@ -145,6 +155,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(expected, options.SourceDir);
             Assert.Equal(expected, options.DestinationDir);
             Assert.Equal(expected, options.IntermediateDir);
+            Assert.Equal(expected, options.ManifestDir);
         }
 
         [Theory]

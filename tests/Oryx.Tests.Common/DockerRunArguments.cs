@@ -17,5 +17,6 @@ namespace Microsoft.Oryx.Tests.Common
         public bool RunContainerInBackground { get; set; }
         public string CommandToExecuteOnRun { get; set; }
         public string[] CommandArguments { get; set; }
+        public string WorkingDirectory { get; set; }
     }
 }

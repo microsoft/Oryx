@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
                 AutogenDisclaimer = Program.BuildAutogenDisclaimer(_collection.SourcePath),
                 Namespace = _namespace,
                 Name = _className,
-                Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value)
+                Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
             };
             return OutputTemplate.Render(model, member => member.Name);
         }

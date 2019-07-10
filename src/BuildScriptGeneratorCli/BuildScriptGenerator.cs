@@ -53,7 +53,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 EnableNodeJs = !envSettings.DisableNodeJs,
                 EnablePython = !envSettings.DisablePython,
                 EnablePhp = !envSettings.DisablePhp,
-                DisableMultiPlatformBuild = envSettings.DisableMultiPlatformBuild
+                DisableMultiPlatformBuild = envSettings.DisableMultiPlatformBuild,
+                ManifestDir = options.ManifestDir,
             };
         }
 
