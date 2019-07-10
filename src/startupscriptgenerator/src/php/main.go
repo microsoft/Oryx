@@ -14,6 +14,7 @@ func main() {
 	common.PrintVersionInfo()
 
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
+	manifestDirPtr := common.ManifestDirFlag
 	startupCmdPtr := flag.String("startupCommand", "apache2-foreground", "Command that will be executed to start the application server up.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
@@ -21,12 +22,14 @@ func main() {
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 
-	common.SetGlobalOperationID(fullAppPath)
+	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+	common.SetGlobalOperationID(buildManifest)
 
 	entrypointGenerator := PhpStartupScriptGenerator{
 		SourcePath: fullAppPath,
 		StartupCmd: *startupCmdPtr,
 		BindPort:   *bindPortPtr,
+		Manifest:   buildManifest,
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()

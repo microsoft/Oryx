@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGeneratorCli.Resources;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -49,24 +48,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
 
-            if (tools.Count == 0)
-            {
-                console.WriteErrorLine(Labels.ExecCommandNoToolsDetectedErrorMessage);
-                return ProcessConstants.ExitFailure;
-            }
-
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
             {
-                var benvCmd = $"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}";
-
                 // Build envelope script
-                var script = new ShellScriptBuilder("\n")
+                var scriptBuilder = new ShellScriptBuilder("\n")
                     .AddShebang(shellPath)
-                    .AddCommand("set -e")
-                    .Source(benvCmd)
-                    .AddCommand(Command)
-                    .ToString();
+                    .AddCommand("set -e");
+
+                if (tools.Count > 0)
+                {
+                    scriptBuilder.Source($"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}");
+                }
+
+                var script = scriptBuilder.AddCommand(Command).ToString();
                 logger.LogDebug("Script content:\n{script}", script);
 
                 // Create temporary file to store script
@@ -100,6 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
                 SourceDir,
+                null,
                 null,
                 null,
                 null,

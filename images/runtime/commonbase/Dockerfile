@@ -1,4 +1,4 @@
-FROM buildpack-deps:curl
+FROM buildpack-deps:stretch-curl
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		xz-utils \

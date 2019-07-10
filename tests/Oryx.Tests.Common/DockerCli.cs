@@ -306,6 +306,12 @@ namespace Microsoft.Oryx.Tests.Common
                 args.Add("--rm");
             }
 
+            if (!string.IsNullOrWhiteSpace(dockerRunArguments.WorkingDirectory))
+            {
+                args.Add("--workdir");
+                args.Add(dockerRunArguments.WorkingDirectory);
+            }
+
             if (dockerRunArguments.RunContainerInBackground)
             {
                 args.Add("-d");

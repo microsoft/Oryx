@@ -25,16 +25,11 @@ declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.t
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
 declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr.txt"
 
-declare -r DOCKER_DEV_REPO_BASE='oryxdevms'
-declare -r DOCKER_BUILD_IMAGES_REPO="$DOCKER_DEV_REPO_BASE/build"
 declare -r PACK_IMAGE_NAME='pack'
-declare -r DOCKER_PACK_IMAGE_REPO="$DOCKER_DEV_REPO_BASE/$PACK_IMAGE_NAME"
 declare -r PACK_STACK_BASE_IMAGE_NAME="pack-stack-base"
-declare -r DOCKER_PACK_STACK_BASE_IMAGE_REPO="$DOCKER_DEV_REPO_BASE/$PACK_STACK_BASE_IMAGE_NAME"
 declare -r PACK_BUILDER_IMAGE_NAME="pack-builder"
-declare -r DOCKER_PACK_BUILDER_IMAGE_REPO="$DOCKER_DEV_REPO_BASE/$PACK_BUILDER_IMAGE_NAME"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
-declare -r DOCKER_RUNTIME_IMAGES_REPO=$DOCKER_DEV_REPO_BASE
+
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"

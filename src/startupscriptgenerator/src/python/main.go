@@ -14,6 +14,7 @@ func main() {
 	common.PrintVersionInfo()
 
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
+	manifestDirPtr := common.ManifestDirFlag
 	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed to start the application up.")
 	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/defaultsite'")
 	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application, e.g. 'application:app'.")
@@ -31,7 +32,8 @@ func main() {
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
-	common.SetGlobalOperationID(fullAppPath)
+	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+	common.SetGlobalOperationID(buildManifest)
 
 	entrypointGenerator := PythonStartupScriptGenerator{
 		SourcePath:               fullAppPath,
@@ -42,6 +44,7 @@ func main() {
 		DefaultAppModule:         *defaultAppModulePtr,
 		PackageDirectory:         *packagesFolderPtr,
 		SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
+		Manifest:                 buildManifest,
 	}
 
 	command := entrypointGenerator.GenerateEntrypointScript()

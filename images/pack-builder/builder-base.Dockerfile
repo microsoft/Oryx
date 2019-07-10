@@ -1,4 +1,4 @@
-FROM oryxdevms/build:latest
+FROM oryxdevmcr.azurecr.io/public/oryx/build:latest
 
 LABEL io.buildpacks.stack.id=com.microsoft.oryx.stack
 

@@ -29,27 +29,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void OnExecute_ShowsErrorAndExits_WhenSourceDirectoryDoesNotExist()
-        {
-            // Arrange
-            var buildCommand = new BuildCommand
-            {
-                SourceDir = _testDir.GenerateRandomChildDirPath(),
-                DestinationDir = _testDir.GenerateRandomChildDirPath(),
-            };
-            var testConsole = new TestConsole();
-
-            // Act
-            var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
-
-            // Assert
-            Assert.NotEqual(0, exitCode);
-            var error = testConsole.StdError;
-            Assert.DoesNotContain("Usage:", error);
-            Assert.Contains("Could not find the source directory", error);
-        }
-
-        [Fact]
         public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
         {
             // Arrange

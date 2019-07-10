@@ -18,7 +18,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule() {
 	command := gen.getCommandFromModule("module.py", "")
 	fmt.Println(command)
 	// Output:
-	// gunicorn module.py
+	// GUNICORN_CMD_ARGS="--timeout 600 --access-logfile '-' --error-logfile '-'" gunicorn module.py
 }
 
 func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath() {
@@ -30,7 +30,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath() {
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:
-	// GUNICORN_CMD_ARGS="--chdir=/a/b/c" gunicorn module.py
+	// GUNICORN_CMD_ARGS="--timeout 600 --access-logfile '-' --error-logfile '-' --chdir=/a/b/c" gunicorn module.py
 }
 
 func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHost() {
@@ -42,5 +42,5 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHo
 	command := gen.getCommandFromModule("module.py", "/a/b/c")
 	fmt.Println(command)
 	// Output:
-	// GUNICORN_CMD_ARGS="--bind=0.0.0.0:12345 --chdir=/a/b/c" gunicorn module.py
+	// GUNICORN_CMD_ARGS="--timeout 600 --access-logfile '-' --error-logfile '-' --bind=0.0.0.0:12345 --chdir=/a/b/c" gunicorn module.py
 }

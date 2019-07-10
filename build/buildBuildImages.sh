@@ -48,7 +48,7 @@ fi
 function BuildAndTagStage()
 {
 	local stageName="$1"
-	local stageTagName="oryxdevms/$1"
+	local stageTagName="$ACR_PUBLIC_PREFIX/$1"
 
 	echo
 	echo
@@ -70,7 +70,7 @@ BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 
 
-builtImageTag="$DOCKER_BUILD_IMAGES_REPO:latest"
+builtImageTag="$ACR_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
@@ -85,8 +85,6 @@ docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE"
 # Create artifact dir & files
 mkdir -p "$ARTIFACTS_DIR/images"
 
-touch $BUILD_IMAGES_ARTIFACTS_FILE
-> $BUILD_IMAGES_ARTIFACTS_FILE
 touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
@@ -99,15 +97,15 @@ else
 	echo "Skipping building Buildpacks images as platform '$OSTYPE' is not supported."
 fi
 
-# Retag build image with DockerHub and ACR tags
-if [ -n "$AGENT_BUILD" ]
+echo "$ACR_BUILD_IMAGES_REPO:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
+# Retag build image with build number tags
+if [ "$AGENT_BUILD" == "true" ]
 then
 	uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
 
 	echo
-	echo "Retagging image '$builtImageTag' with DockerHub and ACR related tags..."
-	docker tag "$builtImageTag" "$DOCKER_BUILD_IMAGES_REPO:latest"
-	docker tag "$builtImageTag" "$DOCKER_BUILD_IMAGES_REPO:$uniqueTag"
+	echo "Retagging image '$builtImageTag' with ACR related tags..."
 	docker tag "$builtImageTag" "$ACR_BUILD_IMAGES_REPO:latest"
 	docker tag "$builtImageTag" "$ACR_BUILD_IMAGES_REPO:$uniqueTag"
 
@@ -116,17 +114,13 @@ then
 	echo "Writing the list of build images built to artifacts folder..."
 
 	# Write image list to artifacts file
-	echo "$DOCKER_BUILD_IMAGES_REPO:latest" >> $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "$DOCKER_BUILD_IMAGES_REPO:$uniqueTag" >> $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "$ACR_BUILD_IMAGES_REPO:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	
 	echo "$ACR_BUILD_IMAGES_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-	echo
-	echo "List of images built (from '$BUILD_IMAGES_ARTIFACTS_FILE'):"
-	cat $BUILD_IMAGES_ARTIFACTS_FILE
-	echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
-	cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 fi
+
+echo
+echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
+cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "Cleanup:"

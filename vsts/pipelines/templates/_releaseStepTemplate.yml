@@ -56,17 +56,6 @@ steps:
     scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: Docker@0
-  displayName: 'Push Build image to DockerHub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/build-images-dockerhub.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: true
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
 - task: Docker@1
   displayName: 'Push build image to ACR'
   inputs:
@@ -90,17 +79,6 @@ steps:
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Docker@0
-  displayName: 'Push runtime images to DockerHub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryConnection: oryx
-    action: 'Push images'
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-dockerhub.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@1
   displayName: 'Push runtime images to ACR'
