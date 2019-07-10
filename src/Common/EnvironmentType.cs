@@ -10,6 +10,6 @@ namespace Microsoft.Oryx.Common
         Unknown,
         AzureAppService,
         AzureContainerRegistry,
-        VisualStudioOnline
+        VisualStudioOnline,
     }
 }

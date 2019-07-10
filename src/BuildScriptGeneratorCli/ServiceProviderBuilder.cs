@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     builder.AddNLog(new NLogProviderOptions
                     {
                         CaptureMessageTemplates = true,
-                        CaptureMessageProperties = true
+                        CaptureMessageProperties = true,
                     });
                 });
         }
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
                 {
                     Name = "ai",
-                    InstrumentationKey = aiKey
+                    InstrumentationKey = aiKey,
                 };
                 config.AddTarget(aiTarget);
                 config.AddRuleForAllLevels(aiTarget);
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var fileTarget = new NLog.Targets.FileTarget("file")
                 {
                     FileName = Path.GetFullPath(logPath),
-                    Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}${exception:format=ToString}"
+                    Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}${exception:format=ToString}",
                 };
                 config.AddTarget(fileTarget);
                 config.AddRuleForAllLevels(fileTarget);

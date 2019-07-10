@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.Logging
             var props = new Dictionary<string, string>
             {
                 { nameof(platform),        platform },
-                { nameof(platformVersion), platformVersion }
+                { nameof(platformVersion), platformVersion },
             };
 
             string devPrefix = devDeps ? "Dev " : string.Empty;

@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = buildProperties
+                BuildProperties = buildProperties,
             };
         }
 
@@ -236,7 +236,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var dirs = new List<string>
             {
                 NodeConstants.AllNodeModulesDirName,
-                NodeConstants.ProdNodeModulesDirName
+                NodeConstants.ProdNodeModulesDirName,
             };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.NodeModulesDirName,
                 NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
-                NodeConstants.NodeModulesTarGzFileName
+                NodeConstants.NodeModulesTarGzFileName,
             };
         }
 
