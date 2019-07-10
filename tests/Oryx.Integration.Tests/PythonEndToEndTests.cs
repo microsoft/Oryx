@@ -618,7 +618,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevms/python-3.7",
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]

@@ -578,7 +578,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
