@@ -242,7 +242,7 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, appDir string) string {
 
 	// Default to AppService's timeout value (in seconds)
-	args := "--timeout 600"
+	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
 	if gen.BindPort != "" {
 		args = appendArgs(args, "--bind="+DefaultHost+":"+gen.BindPort)
