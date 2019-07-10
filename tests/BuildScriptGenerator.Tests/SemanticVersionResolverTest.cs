@@ -57,7 +57,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("1")]
         [InlineData("1.x")]
         [InlineData("1.x.x")]
-        [InlineData("3")]
         public void MajorVersionProvided_MatchesMajorAndLatestMinorAndPatchVersion(string providedVersion)
         {
             // Arrange
@@ -68,6 +67,50 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(providedVersion, supportedVersions);
 
             // Assert;
+            Assert.Equal(expectedVersion, returnedVersion);
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("2")]
+        [InlineData("3")]
+        public void MajorVersionProvided_MatchesMajorAndLatestMinorVersion(string providedVersion)
+        {
+            // Arrange
+            var supportedVersions = new[] { "1.2.2", "1.2.4", "1.3.0", "1.3.4", "2.0.0", "2.3.0", "3.1" };
+
+            // Act
+            var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(providedVersion, supportedVersions);
+
+            // Assert;
+            switch (providedVersion)
+            {   // successful 
+                case "1": Assert.Equal("1.3.4", returnedVersion);
+                    break;
+                // successful
+                case "2": Assert.Equal("2.3.0", returnedVersion);
+                    break;
+                    // failing : as we don't have patch version for 3.1 in supported version
+                case "3": Assert.Equal("3.1", returnedVersion);
+                    break;
+            }
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("1.x")]
+        [InlineData("1.x.x")]
+        public void VersionProvided_MatchesMajorAndLatestMinorVersion(string providedVersion)
+        {
+            // Arrange
+            var expectedVersion = "1.3";
+            var supportedVersions = new[] { "1.2", "1.2", "1.3", "1.3", "2", "2.3", "3.1" };
+
+            // Act
+            var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(providedVersion, supportedVersions);
+
+            // Assert;
+            // all will fail as patch version doesn't exist in any of the supported versions
             Assert.Equal(expectedVersion, returnedVersion);
         }
 
