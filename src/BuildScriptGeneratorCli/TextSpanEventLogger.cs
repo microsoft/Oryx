@@ -3,17 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Oryx.Common;
-
     /// <summary>
-    /// Measures time for events within a textual stream.
+    /// Detects and measures time for events within a textual stream, defined by a beginning and an ending marker.
     /// </summary>
-    internal class TextSpanEventLogger
+    internal class TextSpanEventLogger : ITextStreamProcessor
     {
         private readonly ILogger _logger;
 
@@ -34,9 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        public void CheckString(string rawInput)
+        public void ProcessLine(string line)
         {
-            var marker = rawInput.Trim();
+            var marker = line.Trim();
 
             if (_beginnings.ContainsKey(marker)) // Start measuring
             {

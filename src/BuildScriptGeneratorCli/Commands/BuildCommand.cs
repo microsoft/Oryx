@@ -227,7 +227,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             };
 
             var buildScriptOutput = new StringBuilder();
-            var stdOutEventLogger = new TextSpanEventLogger(logger, _measurableStdOutSpans);
+            var stdOutEventLoggers = new ITextStreamProcessor[]
+            {
+                new TextSpanEventLogger(logger, _measurableStdOutSpans),
+                new PipDownloadEventLogger(logger),
+            };
 
             DataReceivedEventHandler stdOutBaseHandler = (sender, args) =>
             {
@@ -239,7 +243,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 console.WriteLine(line);
                 buildScriptOutput.AppendLine(line);
-                stdOutEventLogger.CheckString(line);
+
+                foreach (var processor in stdOutEventLoggers)
+                {
+                    processor.ProcessLine(line);
+                }
             };
 
             DataReceivedEventHandler stdErrBaseHandler = (sender, args) =>
