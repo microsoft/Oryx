@@ -58,8 +58,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	targetNodeModulesDir := "/node_modules"
 	if !gen.SkipNodeModulesExtraction && gen.Manifest.CompressedNodeModulesFile != "" {
+		targetNodeModulesDir := "/node_modules"
 		if strings.HasSuffix(gen.Manifest.CompressedNodeModulesFile, ".zip") {
 			scriptBuilder.WriteString("echo Found zip-based node_modules.\n")
 			scriptBuilder.WriteString(
@@ -85,7 +85,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("$extractionCommand\n")
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
-		scriptBuilder.WriteString("export NODE_PATH=" + targetNodeModulesDir + ":$NODE_PATH\n")
+		scriptBuilder.WriteString("export NODE_PATH=\"" + targetNodeModulesDir + "\":$NODE_PATH\n")
 		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
 		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
 		scriptBuilder.WriteString("export PATH=" + targetNodeModulesDir + "/.bin:$PATH\n")
