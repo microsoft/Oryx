@@ -12,6 +12,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -244,8 +246,12 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 // Produces the gunicorn command to run the app
 func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, appDir string) string {
 
+	// http://docs.gunicorn.org/en/stable/design.html#how-many-workers
+	cpuCount := runtime.NumCPU()
+	workerCount := (2 * cpuCount) + 1
+
 	// Default to AppService's timeout value (in seconds)
-	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
+	args := "--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" + strconv.Itoa(workerCount)
 
 	if gen.BindPort != "" {
 		args = appendArgs(args, "--bind="+DefaultHost+":"+gen.BindPort)
