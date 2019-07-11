@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -18,25 +19,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
-        private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
+        private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
 
         public DotNetCoreLanguageDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
-            IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
+            IEnumerable<IProjectFileProvider> projectFileProviders,
             ILogger<DotNetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
             _scriptGeneratorOptions = options.Value;
-            _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
+            _projectFileProviders = projectFileProviders;
             _logger = logger;
         }
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(sourceRepo);
+            string projectFile = null;
+            foreach (var projectFileProvider in _projectFileProviders)
+            {
+                projectFile = projectFileProvider.GetRelativePathToProjectFile(context);
+                if (!string.IsNullOrEmpty(projectFile))
+                {
+                    break;
+                }
+            }
+
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
