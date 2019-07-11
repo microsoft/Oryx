@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var xdoc = XDocument.Load(new StringReader(NonWebSdkProjectFile));
 
             // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
+            var actual = AspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
 
             // Assert
             Assert.False(actual);
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var xdoc = XDocument.Load(new StringReader(WebSdkProjectFile));
 
             // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
+            var actual = AspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
 
             // Assert
             Assert.True(actual);
@@ -502,7 +502,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             string expectedRelativePath)
         {
             // Arrange & Act
-            var actualPath = DefaultAspNetCoreWebAppProjectFileProvider.GetRelativePathToRoot(projectFile, repoRoot);
+            var actualPath = AspNetCoreWebAppProjectFileProvider.GetRelativePathToRoot(projectFile, repoRoot);
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);
@@ -518,17 +518,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             return Directory.CreateDirectory(Path.Combine(parentDir, newDirName)).FullName;
         }
 
-        private DefaultAspNetCoreWebAppProjectFileProvider CreateProjectFileProvider()
+        private AspNetCoreWebAppProjectFileProvider CreateProjectFileProvider()
         {
             return CreateProjectFileProvider(new DotNetCoreScriptGeneratorOptions());
         }
 
-        private DefaultAspNetCoreWebAppProjectFileProvider CreateProjectFileProvider(
+        private AspNetCoreWebAppProjectFileProvider CreateProjectFileProvider(
             DotNetCoreScriptGeneratorOptions options)
         {
-            return new DefaultAspNetCoreWebAppProjectFileProvider(
+            return new AspNetCoreWebAppProjectFileProvider(
                 Options.Create(options),
-                NullLogger<DefaultAspNetCoreWebAppProjectFileProvider>.Instance);
+                NullLogger<AspNetCoreWebAppProjectFileProvider>.Instance);
         }
 
         private LocalSourceRepo CreateSourceRepo(string sourceDir)

@@ -7,134 +7,93 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DefaultAspNetCoreWebAppProjectFileProvider : IAspNetCoreWebAppProjectFileProvider
+    internal class AzureFunctionsProjectFileProvider : IProjectFileProvider
     {
-        private readonly DotNetCoreScriptGeneratorOptions _options;
-        private readonly ILogger<DefaultAspNetCoreWebAppProjectFileProvider> _logger;
+        private readonly ILogger<AzureFunctionsProjectFileProvider> _logger;
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
         private bool _probedForProjectFile;
         private string _projectFileRelativePath;
 
-        public DefaultAspNetCoreWebAppProjectFileProvider(
-            IOptions<DotNetCoreScriptGeneratorOptions> options,
-            ILogger<DefaultAspNetCoreWebAppProjectFileProvider> logger)
+        public AzureFunctionsProjectFileProvider(ILogger<AzureFunctionsProjectFileProvider> logger)
         {
-            _options = options.Value;
             _logger = logger;
         }
 
-        public string GetRelativePathToProjectFile(ISourceRepo sourceRepo)
+        public string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
         {
             if (_probedForProjectFile)
             {
                 return _projectFileRelativePath;
             }
 
-            var projectEnvVariablePath = _options.Project;
-
+            var sourceRepo = context.SourceRepo;
             string projectFile = null;
-            if (!string.IsNullOrEmpty(projectEnvVariablePath))
+
+            // Check if any of the sub-directories has a .csproj or .fsproj file and if that file has references
+            // websdk
+
+            // search for .csproj files
+            var projectFiles = GetAllProjectFilesInRepo(
+                    sourceRepo,
+                    DotNetCoreConstants.CSharpProjectFileExtension);
+
+            if (!projectFiles.Any())
             {
-                var projectFileWithRelativePath = projectEnvVariablePath.Trim();
-                projectFile = Path.Combine(sourceRepo.RootPath, projectFileWithRelativePath);
-                if (!sourceRepo.FileExists(projectFile))
-                {
-                    _logger.LogWarning($"Could not find the project file '{projectFile}'.");
-                    throw new InvalidUsageException(
-                        $"Could not find the project file '{projectFile}' specified by the environment variable" +
-                        $" '{EnvironmentSettingsKeys.Project}' with value '{projectFileWithRelativePath}'. " +
-                        "Make sure the path to the project file is relative to the root of the repo. " +
-                        "For example: PROJECT=src/Dashboard/Dashboard.csproj");
-                }
+                _logger.LogDebug(
+                    "Could not find any files with extension " +
+                    $"'{DotNetCoreConstants.CSharpProjectFileExtension}' in repo.");
 
-                // NOTE: Do not check if the project file specified by the end user is a web application since this
-                // can be a escape hatch for end users if our logic to determine a web app is incorrect.
-                return projectFileWithRelativePath;
-            }
-
-            // Check if root of the repo has a .csproj or a .fsproj file
-            projectFile = GetProjectFileAtRoot(sourceRepo, DotNetCoreConstants.CSharpProjectFileExtension) ??
-                GetProjectFileAtRoot(sourceRepo, DotNetCoreConstants.FSharpProjectFileExtension);
-
-            if (projectFile != null)
-            {
-                if (!IsAspNetCoreWebApplicationProject(sourceRepo, projectFile))
-                {
-                    return null;
-                }
-
-                return new FileInfo(projectFile).Name;
-            }
-
-            // Check if any of the sub-directories has a .csproj file and if that .csproj file has references
-            // to web sdk.
-            if (projectFile == null)
-            {
-                // search for .csproj files
-                var projectFiles = GetAllProjectFilesInRepo(
-                        sourceRepo,
-                        DotNetCoreConstants.CSharpProjectFileExtension);
+                // search for .fsproj files
+                projectFiles = GetAllProjectFilesInRepo(
+                    sourceRepo,
+                    DotNetCoreConstants.FSharpProjectFileExtension);
 
                 if (!projectFiles.Any())
                 {
                     _logger.LogDebug(
                         "Could not find any files with extension " +
-                        $"'{DotNetCoreConstants.CSharpProjectFileExtension}' in repo.");
-
-                    // search for .fsproj files
-                    projectFiles = GetAllProjectFilesInRepo(
-                        sourceRepo,
-                        DotNetCoreConstants.FSharpProjectFileExtension);
-
-                    if (!projectFiles.Any())
-                    {
-                        _logger.LogDebug(
-                            "Could not find any files with extension " +
-                            $"'{DotNetCoreConstants.FSharpProjectFileExtension}' in repo.");
-                        return null;
-                    }
-                }
-
-                var webAppProjects = new List<string>();
-                foreach (var file in projectFiles)
-                {
-                    if (IsAspNetCoreWebApplicationProject(sourceRepo, file))
-                    {
-                        webAppProjects.Add(file);
-                    }
-                }
-
-                if (webAppProjects.Count == 0)
-                {
-                    _logger.LogDebug(
-                        "Could not find any ASP.NET Core web application projects. " +
-                        $"Found the following project files: '{string.Join(" ", projectFiles)}'");
+                        $"'{DotNetCoreConstants.FSharpProjectFileExtension}' in repo.");
                     return null;
                 }
-
-                if (webAppProjects.Count > 1)
-                {
-                    var projects = string.Join(", ", webAppProjects);
-                    throw new InvalidUsageException(
-                        "Ambiguity in selecting an ASP.NET Core web application to build. " +
-                        $"Found multiple applications: '{projects}'. Use the environment variable " +
-                        $"'{EnvironmentSettingsKeys.Project}' to specify the relative path to the project " +
-                        "to be deployed.");
-                }
-
-                projectFile = webAppProjects[0];
             }
+
+            var webAppProjects = new List<string>();
+            foreach (var file in projectFiles)
+            {
+                if (IsAspNetCoreWebApplicationProject(sourceRepo, file))
+                {
+                    webAppProjects.Add(file);
+                }
+            }
+
+            if (webAppProjects.Count == 0)
+            {
+                _logger.LogDebug(
+                    "Could not find any ASP.NET Core web application projects. " +
+                    $"Found the following project files: '{string.Join(" ", projectFiles)}'");
+                return null;
+            }
+
+            if (webAppProjects.Count > 1)
+            {
+                var projects = string.Join(", ", webAppProjects);
+                throw new InvalidUsageException(
+                    "Ambiguity in selecting an ASP.NET Core web application to build. " +
+                    $"Found multiple applications: '{projects}'. Use the environment variable " +
+                    $"'{EnvironmentSettingsKeys.Project}' to specify the relative path to the project " +
+                    "to be deployed.");
+            }
+
+            projectFile = webAppProjects[0];
 
             // Cache the results
             _probedForProjectFile = true;

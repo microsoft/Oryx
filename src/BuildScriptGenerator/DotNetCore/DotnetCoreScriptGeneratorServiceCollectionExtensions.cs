@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ServiceDescriptor.Singleton<IConfigureOptions<DotNetCoreScriptGeneratorOptions>, DotNetCoreScriptGeneratorOptionsSetup>());
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
             services.AddScoped<DotNetCoreLanguageDetector>();
-            services.AddSingleton<IAspNetCoreWebAppProjectFileProvider, DefaultAspNetCoreWebAppProjectFileProvider>();
+            services.AddSingleton<IProjectFileProvider, AspNetCoreWebAppProjectFileProvider>();
             return services;
         }
     }

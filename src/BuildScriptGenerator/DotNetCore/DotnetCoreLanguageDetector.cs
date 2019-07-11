@@ -18,13 +18,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
-        private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
+        private readonly IProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
 
         public DotNetCoreLanguageDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
-            IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
+            IProjectFileProvider aspNetCoreWebAppProjectFileProvider,
             ILogger<DotNetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
