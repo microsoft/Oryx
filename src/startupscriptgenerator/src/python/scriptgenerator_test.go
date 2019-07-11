@@ -61,8 +61,14 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHo
 	assert.Equal(t, expected, actual)
 }
 
-func getWorkerCount() string {
+func Test_GetsWorkerCountBasedOnNumberOfCores(t *testing.T) {
+	// Arrange
 	cpuCount := runtime.NumCPU()
-	workerCount := (2 * cpuCount) + 1
-	return strconv.Itoa(workerCount)
+	expected := strconv.Itoa((2 * cpuCount) + 1)
+
+	// Act
+	actual := getWorkerCount()
+
+	// Assert
+	assert.Equal(t, expected, actual)
 }
