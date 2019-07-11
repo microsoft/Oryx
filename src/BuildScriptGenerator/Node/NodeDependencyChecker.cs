@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             // According to https://www.npmjs.com/package/eslint-plugin-jsx-ally:
             // "DO NOT INSTALL THIS PACKAGE. Please install eslint-plugin-jsx-a11y"
-            { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" }
+            { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" },
         };
 
         private readonly ILogger<NodeDependencyChecker> _logger;

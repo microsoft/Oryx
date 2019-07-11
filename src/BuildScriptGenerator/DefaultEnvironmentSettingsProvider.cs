@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var environmentSettings = new EnvironmentSettings
             {
                 PreBuildScriptPath = GetScriptAbsolutePath(TrimValue(EnvironmentSettingsKeys.PreBuildScriptPath)),
-                PostBuildScriptPath = GetScriptAbsolutePath(TrimValue(EnvironmentSettingsKeys.PostBuildScriptPath))
+                PostBuildScriptPath = GetScriptAbsolutePath(TrimValue(EnvironmentSettingsKeys.PostBuildScriptPath)),
             };
 
             environmentSettings.PreBuildCommand = TrimValue(EnvironmentSettingsKeys.PreBuildCommand);

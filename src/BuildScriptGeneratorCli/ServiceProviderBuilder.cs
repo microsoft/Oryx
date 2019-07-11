@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     builder.AddNLog(new NLogProviderOptions
                     {
                         CaptureMessageTemplates = true,
-                        CaptureMessageProperties = true
+                        CaptureMessageProperties = true,
                     });
                 });
         }

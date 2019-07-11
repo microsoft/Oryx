@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
                         NodeConstants.NodeToolName,
                         used,
-                        Constants.OryxGitHubUrl))
+                        Constants.OryxGitHubUrl)),
                 };
             }
 

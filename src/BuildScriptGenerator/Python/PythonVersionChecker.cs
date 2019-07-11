@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
                         PythonConstants.PythonName,
                         used,
-                        Constants.OryxGitHubUrl))
+                        Constants.OryxGitHubUrl)),
                 };
             }
 
