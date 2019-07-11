@@ -255,7 +255,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             };
         }
 
-        private class TestAspNetCoreWebAppProjectFileProvider : IProjectFileProvider
+        private class TestAspNetCoreWebAppProjectFileProvider : IAspNetCoreWebAppProjectFileProvider
         {
             private readonly string _projectFilePath;
 

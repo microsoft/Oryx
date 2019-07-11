@@ -9,8 +9,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// Represents an abstraction which probes the source repository
     /// for project files which represent a web application
     /// </summary>
-    public interface IProjectFileProvider
+    public interface IAspNetCoreWebAppProjectFileProvider
     {
-        string GetRelativePathToProjectFile(BuildScriptGeneratorContext context);
+        string GetRelativePathToProjectFile(ISourceRepo sourceRepo);
     }
 }

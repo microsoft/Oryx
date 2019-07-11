@@ -18,12 +18,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// <summary>
     /// .NET Core platform.
     /// </summary>
-    [BuildProperty(Constants.ProjectBuildPropertyKey, Constants.ProjectBuildPropertyKeyDocumentation)]
     [BuildProperty(Constants.ZipAllOutputBuildPropertyKey, Constants.ZipAllOutputBuildPropertyKeyDocumentation)]
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly IProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
+        private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
@@ -31,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
-            IProjectFileProvider aspNetCoreWebAppProjectFileProvider,
+            IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
