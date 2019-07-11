@@ -312,8 +312,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
             string appInsightsInjectCommand = string.Empty;
-            string getMaxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    context.NodeVersion, supportedVersions);
+            string getMaxSatisfyingVersion = string.Empty;
+            string nodeVersionContext =
+                string.IsNullOrEmpty(context.NodeVersion) ? context.LanguageVersion : context.NodeVersion;
+
+            if (nodeVersionContext.Contains("."))
+            {
+                getMaxSatisfyingVersion = nodeVersionContext;
+            }
+            else
+            {
+                getMaxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                    nodeVersionContext, supportedVersions);
+            }
 
             // node_options is only supported in version 8.0 or newer and in 6.12
             // so we will be able to set up app-insight only when node version is 6.12 or 8.0 or newer
