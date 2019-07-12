@@ -31,7 +31,7 @@ declare -r PACK_BUILDER_IMAGE_NAME="pack-builder"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 
 declare -r DEVBOX_BUILD_IMAGES_REPO="oryx/build"
-declare -r DEVBOX_RUNTIME_IMAGES_REPO="oryx"
+declare -r DEVBOX_RUNTIME_IMAGES_REPO_PREFIX="oryx"
 
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
