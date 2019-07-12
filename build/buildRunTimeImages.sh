@@ -12,14 +12,14 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
 # Folder structure is used to come up with the tag name
-# For example, if a docker file was located at
+# For example, if a Dockerfile was located at
 #   oryx/images/runtime/node/10.1.0/Dockerfile
 # Then the tag name would be 'node-10.1.0'(i.e the path between 'runtime' and 'Dockerfile' segments)
 function getTagName()
 {
     if [ ! $# -eq 1 ]
     then
-        echo "Expected to get a path to a directory containing a docker file, but did not get any."
+        echo "Expected to get a path to a directory containing a Dockerfile, but did not get any."
         return 1
     fi
 
@@ -88,10 +88,10 @@ clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
-    localImageTagName="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result:latest"
+    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result:latest"
     
     echo
-    echo "Building image '$localImageTagName' for docker file located at '$dockerFile'..."
+    echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
     
     cd $REPO_DIR
 
@@ -106,7 +106,7 @@ for dockerFile in $dockerFiles; do
     if [ "$AGENT_BUILD" == "true" ]
     then
         uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
-        acrRuntimeImageTagNameRepo="$ACR_RUNTIME_IMAGES_REPO/$getTagName_result"
+        acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
 

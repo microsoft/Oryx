@@ -27,12 +27,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "--version" }
-            });
+            var result = _dockerCli.Run(
+                $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+                "php",
+                new[] { "--version" }
+            );
 
             // Assert
             RunAsserts(() =>
