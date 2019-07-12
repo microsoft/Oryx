@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return new LanguageDetectorResult
             {
                 Language = DotNetCoreConstants.LanguageName,
-                LanguageVersion = languageVersion
+                LanguageVersion = languageVersion,
             };
         }
 

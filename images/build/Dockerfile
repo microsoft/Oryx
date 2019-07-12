@@ -167,6 +167,7 @@ RUN chmod a+x /tmp/__nodeVersions.sh \
  && ~/n/bin/n -d $NODE6_VERSION \
  && ~/n/bin/n -d $NODE8_VERSION \
  && ~/n/bin/n -d $NODE10_VERSION \
+ && ~/n/bin/n -d $NODE12_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 RUN set -e \
@@ -242,6 +243,8 @@ RUN set -ex \
  && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
  && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
  && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
+ && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
+ && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12 \
  && ln -s 10 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \

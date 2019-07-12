@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return new BuildScriptSnippet()
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = manifestFileProperties
+                BuildProperties = manifestFileProperties,
             };
         }
 

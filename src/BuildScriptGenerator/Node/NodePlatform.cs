@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
             var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
-            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, ctx, appInsightsKey);
+            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, ctx, appInsightsKey, SupportedVersions);
 
             // node_options is only supported in version 8.0.0 or newer and in 6.12.0
             // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = buildProperties
+                BuildProperties = buildProperties,
             };
         }
 
@@ -236,7 +236,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var dirs = new List<string>
             {
                 NodeConstants.AllNodeModulesDirName,
-                NodeConstants.ProdNodeModulesDirName
+                NodeConstants.ProdNodeModulesDirName,
             };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.NodeModulesDirName,
                 NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
-                NodeConstants.NodeModulesTarGzFileName
+                NodeConstants.NodeModulesTarGzFileName,
             };
         }
 
@@ -307,19 +307,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private static bool ShouldInjectAppInsights(
             dynamic packageJson,
             BuildScriptGeneratorContext context,
-            string appInsightsKey)
+            string appInsightsKey,
+            IEnumerable<string> supportedVersions)
         {
             bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
             string appInsightsInjectCommand = string.Empty;
+            string getMaxSatisfyingVersion = string.Empty;
+            string nodeVersionContext =
+                string.IsNullOrEmpty(context.NodeVersion) ? context.LanguageVersion : context.NodeVersion;
+
+            if (nodeVersionContext.Contains("."))
+            {
+                getMaxSatisfyingVersion = nodeVersionContext;
+            }
+            else
+            {
+                getMaxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                    nodeVersionContext, supportedVersions);
+            }
 
             // node_options is only supported in version 8.0 or newer and in 6.12
             // so we will be able to set up app-insight only when node version is 6.12 or 8.0 or newer
             if (!appInsightsDependency
                 && !string.IsNullOrEmpty(appInsightsKey)
-                && (SemanticVersionResolver.CompareVersions(context.NodeVersion, "8.0") >= 0
-                || SemanticVersionResolver.CompareVersions(context.NodeVersion, "6.12") == 0
-                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "8.0") >= 0
-                || SemanticVersionResolver.CompareVersions(context.LanguageVersion, "6.12") == 0))
+                && (SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "8.0") >= 0
+                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "6.12") == 0
+                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "8.0") >= 0
+                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "6.12") == 0))
             {
                 return true;
             }

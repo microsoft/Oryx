@@ -21,13 +21,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             "index.html",
             "iisstart.htm",
             "default.aspx",
-            "index.php"
+            "index.php",
         };
 
         private static readonly string[] TypicalNodeDetectionFiles = new[]
         {
             "server.js",
-            "app.js"
+            "app.js",
         };
 
         private readonly INodeVersionProvider _versionProvider;

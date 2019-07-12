@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Common
         {
             { EnvironmentType.AzureAppService,        ExtVarNames.AppServiceAppNameEnvVarName },
             { EnvironmentType.AzureContainerRegistry, "REGISTRY_NAME" },
-            { EnvironmentType.VisualStudioOnline,     ExtVarNames.EnvironmentType } // Currently exported only by VSO
+            { EnvironmentType.VisualStudioOnline,     ExtVarNames.EnvironmentType }, // Currently exported only by VSO
         };
 
         public static readonly IDictionary<EnvironmentType, string> EnvTypeOperationNamePrefix =
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Common
         {
             { EnvironmentType.AzureAppService,        "AAS" },
             { EnvironmentType.AzureContainerRegistry, "ACR" },
-            { EnvironmentType.VisualStudioOnline,     "VSO" } // Currently exported only by VSO
+            { EnvironmentType.VisualStudioOnline,     "VSO" }, // Currently exported only by VSO
         };
 
         public static readonly TimeSpan FlushTimeout = TimeSpan.FromSeconds(3);

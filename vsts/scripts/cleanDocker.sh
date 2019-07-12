@@ -43,17 +43,14 @@ docker images
 #
 # **NOTE**
 # - We still keep the tags of the following pattern because we still need some cache so that next builds are faster
-#	a. oryxdevms/build:latest
-#	b. oryxdevms/python-<major.minor>:latest
-#	b. oryxdevms/node-<major.minor>:latest
-#	b. oryxdevms/dotnetcore-<major.minor>:latest
+#	a. oryxdevmcr.azurecr.io/public/oryx/*:latest
 # - We should untag these images only after they have been pushed to a remote repository.
 UntagImages "test-*"
 UntagImages "oryxdevms/*:*.*"
+UntagImages "oryxdevms/*:latest"
 UntagImages "oryxtests/*:latest"
 UntagImages "oryxprod/*:latest"
 UntagImages "oryxprod/*:*.*"
-UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxdevmcr.azurecr.io/public/oryx/*:*.*"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:latest"
 UntagImages "oryxmcr.azurecr.io/public/oryx/*:*.*"

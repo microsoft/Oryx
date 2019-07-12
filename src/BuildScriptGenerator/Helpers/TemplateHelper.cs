@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var ctx = new TemplateContext
             {
                 MemberRenamer = NoOpRenamer,
-                StrictVariables = true
+                StrictVariables = true,
             };
 
             if (model != null)

@@ -57,6 +57,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("10.10", "10.10.0")]
         [InlineData("10.12", "10.12.0")]
         [InlineData("10.14", "10.14.2")]
+        [InlineData("12", "12.5.0")]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
             // Arrange & Act
@@ -86,6 +87,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("10.10", "6.9.0")]
         [InlineData("10.12", "6.9.0")]
         [InlineData("10.14", "6.9.0")]
+        [InlineData("12", "6.9.0")]
         public void HasExpectedNpmVersion(string nodeTag, string expectedNpmVersion)
         {
             // Arrange & Act

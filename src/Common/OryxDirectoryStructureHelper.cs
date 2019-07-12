@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Common
                 {
                     directory = sourceDirPath.EnumerateDirectories()
                     .ToDictionary(x => x.Name, x => GetDirectoryStructureData(x, maxDepth - 1, processedFiles)),
-                    file = sourceDirPath.EnumerateFiles().Take(currentDirfiles).Select(x => x.Name).ToList()
+                    file = sourceDirPath.EnumerateFiles().Take(currentDirfiles).Select(x => x.Name).ToList(),
                 });
         }
     }

@@ -806,7 +806,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevms/dotnetcore-{dotnetcoreVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]

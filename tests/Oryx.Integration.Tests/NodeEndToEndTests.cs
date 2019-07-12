@@ -578,7 +578,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevms/node-{nodeVersion}",
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -599,6 +599,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("10.1")]
         [InlineData("10.10")]
         [InlineData("10.14")]
+        [InlineData("12.5")]
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -780,7 +781,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")

@@ -97,6 +97,7 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE6_VERSION=$NODE6_VERSION \
         --build-arg NODE8_VERSION=$NODE8_VERSION \
         --build-arg NODE10_VERSION=$NODE10_VERSION \
+        --build-arg NODE12_VERSION=$NODE12_VERSION \
         $labels . 
 
     # Retag build image with build numbers as ACR tags
