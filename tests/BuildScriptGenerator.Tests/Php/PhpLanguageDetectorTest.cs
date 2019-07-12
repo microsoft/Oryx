@@ -29,9 +29,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Arrange
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo(); // No files in source repo
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -44,9 +45,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
             repo.AddFile("foo.php content", "foo.php");
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -60,9 +62,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             var version = "0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
+            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
             Assert.Equal(
                 $"Platform 'php' version '{version}' is unsupported. Supported versions: {PhpVersions.Php73Version}",
                 exception.Message);
@@ -78,14 +81,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile(composerFileContent, PhpConstants.ComposerFileName);
             repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PhpName, result.Language);
             Assert.Equal(PhpVersions.Php73Version, result.LanguageVersion);
+        }
+
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        {
+            return new BuildScriptGeneratorContext
+            {
+                SourceRepo = sourceRepo,
+            };
         }
 
         private PhpLanguageDetector CreatePhpLanguageDetector(string[] supportedPhpVersions)

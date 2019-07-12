@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -18,15 +17,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpLanguageDetector> _logger;
 
-        public PhpLanguageDetector(IOptions<PhpScriptGeneratorOptions> options, IPhpVersionProvider versionProvider, ILogger<PhpLanguageDetector> logger)
+        public PhpLanguageDetector(
+            IOptions<PhpScriptGeneratorOptions> options,
+            IPhpVersionProvider versionProvider,
+            ILogger<PhpLanguageDetector> logger)
         {
             _opts = options.Value;
             _versionProvider = versionProvider;
             _logger = logger;
         }
 
-        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
+            var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
             {
                 _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' does not exist in source repo");
@@ -43,7 +46,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 // We just ignore errors, so we leave malformed composer.json files for Composer to handle,
                 // not us. This prevents us from erroring out when Composer itself might be able to tolerate
                 // some errors in the composer.json file.
-                _logger.LogWarning(ex, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
+                _logger.LogWarning(
+                    ex,
+                    $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
             }
 
             string runtimeVersion = VerifyAndResolveVersion(composerFile?.require?.php?.Value as string);
@@ -61,7 +66,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return _opts.PhpDefaultVersion;
             }
 
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(version, _versionProvider.SupportedPhpVersions);
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                _versionProvider.SupportedPhpVersions);
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(

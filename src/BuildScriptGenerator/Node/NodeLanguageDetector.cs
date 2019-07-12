@@ -44,10 +44,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _logger = logger;
         }
 
-        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
             bool isNodeApp = false;
 
+            var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
                 sourceRepo.FileExists(NodeConstants.PackageLockJsonFileName) ||
                 sourceRepo.FileExists(NodeConstants.YarnLockFileName))

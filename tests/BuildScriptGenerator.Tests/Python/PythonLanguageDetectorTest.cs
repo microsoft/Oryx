@@ -31,9 +31,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files in source directory
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -48,9 +49,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -66,9 +68,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // No files with '.py' or no runtime.txt file
             IOHelpers.CreateFile(sourceDir, "requirements.txt content", PythonConstants.RequirementsFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -85,9 +88,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, $"python-{Common.PythonVersions.Python37Version}", "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -106,9 +110,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "python-" + badVersion, PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
+            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
             Assert.Equal(
                 $"Platform 'python' version '{badVersion}' is unsupported. " +
                 $"Supported versions: {Common.PythonVersions.Python37Version}",
@@ -128,9 +133,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, fileContent, "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -146,14 +152,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             IOHelpers.CreateFile(sourceDir, "content", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal("python", result.Language);
             Assert.Equal(Common.PythonVersions.Python37Version, result.LanguageVersion);
+        }
+
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        {
+            return new BuildScriptGeneratorContext
+            {
+                SourceRepo = sourceRepo,
+            };
         }
 
         private PythonLanguageDetector CreatePythonLanguageDetector(string[] supportedPythonVersions)

@@ -100,9 +100,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             // No files in source directory
             var repo = new MemorySourceRepo();
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -117,9 +118,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "server.js");
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -136,9 +138,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "server.js");
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -153,9 +156,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile("app.js content", "app.js");
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -172,9 +176,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "app.js");
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -189,9 +194,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -208,9 +214,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -228,9 +235,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithOnlyNpmVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -250,9 +258,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -272,9 +281,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 environment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -291,9 +301,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(repo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -309,10 +320,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "6.11.0" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
+            var context = CreateContext(repo);
             repo.AddFile(PakageJsonWithUnsupportedNodeVersion, NodeConstants.PackageJsonFileName);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(repo));
+            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
             Assert.Equal(
                 $"Platform '{NodeConstants.NodeJsName}' version '20.20.20' is unsupported. Supported versions: 6.11.0",
                 exception.Message);
@@ -335,9 +347,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
+            var context = CreateContext(sourceRepo);
 
             // Act
-            var result = detector.Detect(sourceRepo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -361,12 +374,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
+            var context = CreateContext(sourceRepo);
 
             // Act
-            var result = detector.Detect(sourceRepo);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
+        }
+
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        {
+            return new BuildScriptGeneratorContext
+            {
+                SourceRepo = sourceRepo,
+            };
         }
 
         private NodeLanguageDetector CreateNodeLanguageDetector(

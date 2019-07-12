@@ -33,8 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
         }
 
-        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
+            var sourceRepo = context.SourceRepo;
             var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(sourceRepo);
             if (string.IsNullOrEmpty(projectFile))
             {

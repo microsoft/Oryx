@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 platformVersion = ctx.LanguageVersion;
                 if (string.IsNullOrEmpty(platformVersion))
                 {
-                    var detectionResult = userSuppliedPlatform.Detect(ctx.SourceRepo);
+                    var detectionResult = userSuppliedPlatform.Detect(ctx);
                     if (detectionResult == null || string.IsNullOrEmpty(detectionResult.LanguageVersion))
                     {
                         throw new UnsupportedVersionException(
@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 string targetVersionSpec = null;
 
                 _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
-                var detectionResult = platform.Detect(ctx.SourceRepo);
+                var detectionResult = platform.Detect(ctx);
                 if (detectionResult != null)
                 {
                     _logger.LogDebug(
