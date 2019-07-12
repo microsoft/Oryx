@@ -55,9 +55,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
 
-        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
-            return _detector.Detect(sourceRepo);
+            return _detector.Detect(context);
         }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)

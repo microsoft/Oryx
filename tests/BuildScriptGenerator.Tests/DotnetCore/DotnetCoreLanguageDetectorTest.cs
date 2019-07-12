@@ -56,12 +56,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         {
             // Arrange
             var sourceRepo = new Mock<ISourceRepo>();
+            var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile: null);
 
             // Act
-            var result = detector.Detect(sourceRepo.Object);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -79,12 +80,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithNoTargetFramework);
+            var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
             // Act
-            var result = detector.Detect(sourceRepo.Object);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -113,12 +115,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
+            var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
             // Act
-            var result = detector.Detect(sourceRepo.Object);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -138,12 +141,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithMultipleProperties);
+            var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
             // Act
-            var result = detector.Detect(sourceRepo.Object);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -166,12 +170,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
+            var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: GetAllSupportedRuntimeVersions(),
                 projectFile);
 
             // Act
-            var result = detector.Detect(sourceRepo.Object);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.Null(result);
@@ -189,16 +194,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithTargetFrameworkPlaceHolder.Replace("#TargetFramework#", "netcoreapp2.1"));
+            var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
                 supportedVersions: new[] { "2.2" },
                 projectFile);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(sourceRepo.Object));
+            var exception = Assert.Throws<UnsupportedVersionException>(
+                () => detector.Detect(context));
             Assert.Equal(
                 $"Platform 'dotnet' version '{DotNetCoreRunTimeVersions.NetCoreApp21}' is unsupported. " +
                 "Supported versions: 2.2",
                 exception.Message);
+        }
+
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        {
+            return new BuildScriptGeneratorContext
+            {
+                SourceRepo = sourceRepo,
+            };
         }
 
         private DotNetCoreLanguageDetector CreateDotNetCoreLanguageDetector(

@@ -686,7 +686,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             public bool DetectInvoked { get; private set; }
 
-            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+            public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
             {
                 DetectInvoked = true;
 
@@ -720,7 +720,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             public bool DetectInvoked { get; private set; }
 
-            public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+            public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
             {
                 DetectInvoked = true;
 

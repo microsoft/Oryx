@@ -38,9 +38,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPhpVersions;
 
-        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
-            return _detector.Detect(sourceRepo);
+            return _detector.Detect(context);
         }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)

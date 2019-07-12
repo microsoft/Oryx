@@ -48,9 +48,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public IEnumerable<string> SupportedVersions => _versionProvider.SupportedDotNetCoreVersions;
 
-        public LanguageDetectorResult Detect(ISourceRepo sourceRepo)
+        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
-            return _detector.Detect(sourceRepo);
+            return _detector.Detect(context);
         }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
