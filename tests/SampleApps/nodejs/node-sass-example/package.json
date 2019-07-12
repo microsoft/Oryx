@@ -12,9 +12,10 @@
   "author": "Andrew Nesbitt",
   "license": "MIT",
   "dependencies": {
-    "connect": "^3.3.4",
-    "node-sass-middleware": "^0.9.8",
-    "serve-static": "^1.8.1"
+    "connect": "^3.7.0",
+    "node-sass":"^4.12.0",
+    "node-sass-middleware": "^0.11.0",
+    "serve-static": "^1.14.1"
   },
   "engines": {
     "node": ">= 0.10.21"
