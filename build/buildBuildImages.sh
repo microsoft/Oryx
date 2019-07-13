@@ -69,7 +69,6 @@ BuildAndTagStage dotnet-install
 BuildAndTagStage python
 BuildAndTagStage buildscriptbuilder
 
-
 builtImageTag="$ACR_BUILD_IMAGES_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
@@ -116,6 +115,8 @@ then
 	# Write image list to artifacts file
 	
 	echo "$ACR_BUILD_IMAGES_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+else
+	docker tag "$builtImageTag" "$DEVBOX_BUILD_IMAGES_REPO:latest"
 fi
 
 echo

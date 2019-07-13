@@ -121,6 +121,9 @@ for dockerFile in $dockerFiles; do
         echo
         echo "Updating runtime image artifacts file with build number..."
         echo "$acrRuntimeImageTagNameRepo:$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    else
+        devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
+        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo:latest"
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
