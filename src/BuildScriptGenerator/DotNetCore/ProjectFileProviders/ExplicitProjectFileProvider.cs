@@ -10,7 +10,11 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    class ExplicitProjectFileProvider : IProjectFileProvider
+    /// <summary>
+    /// Gets the relative path to the project file which user requested explicitly through either the 'PROJECT'
+    /// environment variable or the 'project' build property.
+    /// </summary>
+    internal class ExplicitProjectFileProvider : IProjectFileProvider
     {
         private readonly DotNetCoreScriptGeneratorOptions _options;
         private readonly ILogger<ExplicitProjectFileProvider> _logger;
@@ -28,18 +32,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var projectPath = GetProjectInfoFromSettings(context);
             if (string.IsNullOrEmpty(projectPath))
             {
+                _logger.LogDebug(
+                    "No request to build a particular project file explicitly either using the " +
+                    $"'{EnvironmentSettingsKeys.Project}' environment variable or the " +
+                    $"'{DotNetCoreConstants.ProjectBuildPropertyKey}' build property");
                 return null;
             }
 
             var projectFileWithRelativePath = projectPath.Trim();
             var projectFile = Path.Combine(context.SourceRepo.RootPath, projectFileWithRelativePath);
-            if (!context.SourceRepo.FileExists(projectFile))
+            if (context.SourceRepo.FileExists(projectFile))
+            {
+                _logger.LogDebug($"Using the project file '{projectFile}' to build.");
+            }
+            else
             {
                 _logger.LogWarning($"Could not find the project file '{projectFile}'.");
                 throw new InvalidUsageException(
-                    $"Could not find the project file '{projectFile}' specified by the environment variable" +
-                    $" '{EnvironmentSettingsKeys.Project}' with value '{projectFileWithRelativePath}'. " +
-                    "Make sure the path to the project file is relative to the root of the repo. " +
+                    $"Could not find the project file '{projectFile}' specified in settings. Make sure the path to " +
+                    "the project file is relative to the root of the repo. " +
                     "For example: PROJECT=src/Dashboard/Dashboard.csproj");
             }
 
@@ -49,20 +60,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string GetProjectInfoFromSettings(BuildScriptGeneratorContext context)
         {
             // Value from command line has higher precedence than from environment variables
-
-            string project = null;
             if (context.Properties != null && context.Properties.TryGetValue(
                 DotNetCoreConstants.ProjectBuildPropertyKey,
                 out var projectFromProperty))
             {
-                project = projectFromProperty;
-            }
-            else if (!string.IsNullOrEmpty(_options.Project))
-            {
-                project = _options.Project;
+                return projectFromProperty;
             }
 
-            return project;
+            if (!string.IsNullOrEmpty(_options.Project))
+            {
+                return _options.Project;
+            }
+
+            return null;
         }
     }
 }

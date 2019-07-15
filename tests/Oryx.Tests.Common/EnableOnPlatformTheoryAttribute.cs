@@ -8,11 +8,11 @@ using Xunit;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class EnableOnPlatformAttribute : FactAttribute
+    public class EnableOnPlatformTheoryAttribute : TheoryAttribute
     {
         private readonly OSPlatform _platform;
 
-        public EnableOnPlatformAttribute(string platform)
+        public EnableOnPlatformTheoryAttribute(string platform)
         {
             _platform = OSPlatform.Create(platform);
 

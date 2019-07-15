@@ -40,6 +40,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string ProjectBuildPropertyKey = "project";
         public const string ProjectBuildPropertyKeyDocumentation = "Relative path to the project file to build.";
 
-        public const string AzureFunctionsPackageReferenceName = "Microsoft.NET.Sdk.Functions";
+        public const string AzureFunctionsVersionElementXPathExpression =
+            "/Project/PropertyGroup/AzureFunctionsVersion";
+        public const string AzureFunctionsPackageReference = "Microsoft.NET.Sdk.Functions";
     }
 }

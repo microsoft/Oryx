@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             return new DotNetCoreLanguageDetector(
                 new TestVersionProvider(supportedVersions),
                 Options.Create(options),
-                new TestAspNetCoreWebAppProjectFileProvider(projectFile),
+                new[] { new TestProjectFileProvider(projectFile) },
                 NullLogger<DotNetCoreLanguageDetector>.Instance);
         }
 
@@ -255,16 +255,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             };
         }
 
-        private class TestAspNetCoreWebAppProjectFileProvider : IAspNetCoreWebAppProjectFileProvider
+        private class TestProjectFileProvider : IProjectFileProvider
         {
             private readonly string _projectFilePath;
 
-            public TestAspNetCoreWebAppProjectFileProvider(string projectFilePath)
+            public TestProjectFileProvider(string projectFilePath)
             {
                 _projectFilePath = projectFilePath;
             }
 
-            public string GetRelativePathToProjectFile(ISourceRepo sourceRepo)
+            public string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
             {
                 return _projectFilePath;
             }

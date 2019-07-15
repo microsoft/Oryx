@@ -17,17 +17,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         public static bool IsAspNetCoreWebApplicationProject(ISourceRepo sourceRepo, string projectFile)
         {
-            var projFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
+            var projFileDoc = GetXmlDocument(sourceRepo, projectFile);
             return IsAspNetCoreWebApplicationProject(projFileDoc);
         }
 
         public static bool IsAzureFunctionsProject(ISourceRepo sourceRepo, string projectFile)
         {
-            var projFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
+            var projFileDoc = GetXmlDocument(sourceRepo, projectFile);
             return IsAzureFunctionsProject(projFileDoc);
         }
 
-        // To enable unit testing
         public static string GetRelativePathToRoot(string projectFilePath, string repoRoot)
         {
             var repoRootDir = new DirectoryInfo(repoRoot);
@@ -46,25 +45,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return Path.Combine(parts.ToArray());
         }
 
-        internal static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
+        public static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
             return IsOfSdkProjectType(
                 projectFileDoc,
                 DotNetCoreConstants.DotNetWebSdkName.ToLowerInvariant());
         }
 
-        // To enable unit testing
-        internal static bool IsAzureFunctionsProject(XDocument projectFileDoc)
+        public static bool IsAzureFunctionsProject(XDocument projectFileDoc)
         {
-            bool isDotNetSdk = IsOfSdkProjectType(
-                projectFileDoc,
-                DotNetCoreConstants.AzureFunctionsPackageReferenceName.ToLowerInvariant());
-            if (!isDotNetSdk)
+            var azureFunctionsVersionElement = projectFileDoc.XPathSelectElement(
+                DotNetCoreConstants.AzureFunctionsVersionElementXPathExpression);
+            var azureFunctionsVersion = azureFunctionsVersionElement?.Value;
+            if (!string.IsNullOrEmpty(azureFunctionsVersion))
             {
-                return false;
+                return true;
             }
 
-            return HasAzureFunctionsPackageReference(projectFileDoc);
+            return HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureFunctionsPackageReference);
+        }
+
+        private static XDocument GetXmlDocument(ISourceRepo sourceRepo, string projectFile)
+        {
+            return XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
         }
 
         private static bool IsOfSdkProjectType(XDocument projectFileDoc, string expectedSdkName)
@@ -89,30 +92,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return sdkName.EqualsIgnoreCase(expectedSdkName);
         }
 
-        private static bool HasAzureFunctionsPackageReference(XDocument projectFileDoc)
-        {
-            var packageReferences = GetPackageReferences(projectFileDoc);
-            if (packageReferences == null || !packageReferences.Any())
-            {
-                return false;
-            }
-
-            var packageReference = packageReferences.Where(reference =>
-            {
-                var referenceName = reference.Value;
-                return referenceName.Equals(DotNetCoreConstants.AzureFunctionsPackageReferenceName);
-            }).FirstOrDefault();
-
-            return packageReference != null;
-        }
-
-        private static IEnumerable<XElement> GetPackageReferences(XDocument projectFileDoc)
+        private static bool HasPackageReference(XDocument projectFileDoc, string packageName)
         {
             var packageReferenceElements = projectFileDoc.XPathSelectElements(
                 DotNetCoreConstants.PackageReferenceXPathExpression);
             if (packageReferenceElements == null || !packageReferenceElements.Any())
             {
-                return null;
+                return false;
             }
 
             var packageReferences = packageReferenceElements
@@ -131,9 +117,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         return false;
                     }
 
-                    return true;
+                    return includeAttribute.Value.EqualsIgnoreCase(packageName);
                 });
-            return packageReferences;
+            return packageReferences.Any();
         }
     }
 }
