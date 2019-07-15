@@ -218,16 +218,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(
             BuildScriptGeneratorContext context)
         {
-            foreach (var projectFileProvider in _projectFileProviders)
+            var projectFile = ProjectFileProviderHelper.GetRelativePathToProjectFile(_projectFileProviders, context);
+            if (!string.IsNullOrEmpty(projectFile))
             {
-                var projectFile = projectFileProvider.GetRelativePathToProjectFile(context);
-                if (!string.IsNullOrEmpty(projectFile))
-                {
-                    var publishDir = Path.Combine(
-                        context.SourceRepo.RootPath,
-                        DotNetCoreConstants.OryxOutputPublishDirectory);
-                    return (projectFile, publishDir);
-                }
+                var publishDir = Path.Combine(
+                    context.SourceRepo.RootPath,
+                    DotNetCoreConstants.OryxOutputPublishDirectory);
+                return (projectFile, publishDir);
             }
 
             return (null, null);

@@ -36,22 +36,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
-            var sourceRepo = context.SourceRepo;
-            string projectFile = null;
-            foreach (var projectFileProvider in _projectFileProviders)
-            {
-                projectFile = projectFileProvider.GetRelativePathToProjectFile(context);
-                if (!string.IsNullOrEmpty(projectFile))
-                {
-                    break;
-                }
-            }
-
+            var projectFile = ProjectFileProviderHelper.GetRelativePathToProjectFile(
+                _projectFileProviders,
+                context);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
             }
 
+            var sourceRepo = context.SourceRepo;
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.TargetFrameworkElementXPathExpression);

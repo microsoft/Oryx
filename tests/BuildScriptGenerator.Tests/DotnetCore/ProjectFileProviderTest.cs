@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -15,7 +17,7 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
-    public class DefaultAspNetCoreWebAppProjectFileProviderTest : IClassFixture<TestTempDirTestFixture>
+    public class ProjectFileProviderTest : IClassFixture<TestTempDirTestFixture>
     {
         private const string NonWebSdkProjectFile = @"
         <Project Sdk=""Microsoft.NET.Sdk.Razor"">
@@ -122,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var xdoc = XDocument.Load(new StringReader(NonWebSdkProjectFile));
 
             // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
+            var actual = ProjectFileHelpers.IsAspNetCoreWebApplicationProject(xdoc);
 
             // Assert
             Assert.False(actual);
@@ -135,7 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var xdoc = XDocument.Load(new StringReader(WebSdkProjectFile));
 
             // Act
-            var actual = DefaultAspNetCoreWebAppProjectFileProvider.IsAspNetCoreWebApplicationProject(xdoc);
+            var actual = ProjectFileHelpers.IsAspNetCoreWebApplicationProject(xdoc);
 
             // Assert
             Assert.True(actual);
@@ -147,7 +149,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var provider = CreateProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(sourceRepo);
@@ -347,7 +348,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Act & Assert
             var exception = Assert.Throws<InvalidUsageException>(
-                () => provider.GetRelativePathToProjectFile(sourceRepo));
+                () => ProjectFileProviderHelper.GetRelativePathToProjectFile(sourceRepo));
             Assert.Contains("Could not find the project file ", exception.Message);
         }
 
@@ -518,17 +519,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             return Directory.CreateDirectory(Path.Combine(parentDir, newDirName)).FullName;
         }
 
-        private DefaultAspNetCoreWebAppProjectFileProvider CreateProjectFileProvider()
+        private IEnumerable<IProjectFileProvider> GetProjectFileProviders()
         {
-            return CreateProjectFileProvider(new DotNetCoreScriptGeneratorOptions());
+            return new IProjectFileProvider[]
+            {
+                new ExplicitProjectFileProvider(new dotnet)
+            };
         }
 
-        private DefaultAspNetCoreWebAppProjectFileProvider CreateProjectFileProvider(
-            DotNetCoreScriptGeneratorOptions options)
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
         {
-            return new DefaultAspNetCoreWebAppProjectFileProvider(
-                Options.Create(options),
-                NullLogger<DefaultAspNetCoreWebAppProjectFileProvider>.Instance);
+            return new BuildScriptGeneratorContext
+            {
+                SourceRepo = sourceRepo
+            };
         }
 
         private LocalSourceRepo CreateSourceRepo(string sourceDir)
