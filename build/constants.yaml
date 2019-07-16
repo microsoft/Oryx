@@ -49,7 +49,7 @@
 - name: python-versions
   constants:
     python-base-tag: 20190709.1
-    pip-version: 19.0.3
+    pip-version: 19.1.1
     python27-version: 2.7.16
     python36-version: 3.6.9
     python37-version: 3.7.4
