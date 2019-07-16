@@ -18,6 +18,86 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
+        public void GetRelativePathToProjectFile_ReturnsWebApp_WhenSourceRepoHasOtherValidProjectTypes()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            var azureFunctionsAppDir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsAppDir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+            var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var providers = GetProjectFileProviders();
+
+            // Act
+            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsWebApp_EvenIfMultipleAzureFunctionsProjectsExist()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+            var azureFunctionsApp2Dir = CreateDir(srcDir, "AzureFunctionsApp2");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp2Dir,
+                "AzureFunctionsApp2.csproj"),
+                AzureFunctionsProjectFile);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var providers = GetProjectFileProviders();
+
+            // Act
+            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsAzureFunctionsApp_OnlyWhenNoWebAppIsFound()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var app1Dir = CreateDir(srcDir, "App1");
+            File.WriteAllText(Path.Combine(app1Dir, "App1.csproj"), NonWebSdkProjectFile);
+            var azureFunctionsAppDir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsAppDir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+            var expectedRelativePath = Path.Combine("src", "AzureFunctionsApp1", "AzureFunctionsApp1.csproj");
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var providers = GetProjectFileProviders();
+
+            // Act
+            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
         public void GetRelativePathToProjectFile_ReturnsNull_IfNoProjectFileFound()
         {
             // Arrange
@@ -131,6 +211,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_Throws_IfSourceRepo_HasMultipleAzureFunctionsProjects()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+            var azureFunctionsApp2Dir = CreateDir(srcDir, "AzureFunctionsApp2");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp2Dir,
+                "AzureFunctionsApp2.csproj"),
+                AzureFunctionsProjectFile);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var providers = GetProjectFileProviders();
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context));
+            Assert.StartsWith(
+                "Ambiguity in selecting a project to build. Found multiple projects:",
+                exception.Message);
         }
     }
 }

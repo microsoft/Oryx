@@ -61,17 +61,54 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
             }
 
-            var projects = new List<string>();
+            var webAppProjects = new List<string>();
+            var azureFunctionsProjects = new List<string>();
+            var otherProjects = new List<string>();
             foreach (var file in projectFiles)
             {
                 if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
                 {
-                    projects.Add(file);
+                    webAppProjects.Add(file);
                 }
                 else if (ProjectFileHelpers.IsAzureFunctionsProject(sourceRepo, file))
                 {
-                    projects.Add(file);
+                    azureFunctionsProjects.Add(file);
                 }
+                else
+                {
+                    otherProjects.Add(file);
+                }
+            }
+
+            projectFile = GetProject(webAppProjects);
+            if (projectFile == null)
+            {
+                projectFile = GetProject(azureFunctionsProjects);
+            }
+
+            if (projectFile == null)
+            {
+                return null;
+            }
+
+            // Cache the results
+            _probedForProjectFile = true;
+            _projectFileRelativePath = ProjectFileHelpers.GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
+            return _projectFileRelativePath;
+        }
+
+        private static IEnumerable<string> GetAllProjectFilesInRepo(
+            ISourceRepo sourceRepo,
+            string projectFileExtension)
+        {
+            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories: true);
+        }
+
+        private string GetProject(List<string> projects)
+        {
+            if (projects.Count == 1)
+            {
+                return projects[0];
             }
 
             if (projects.Count > 1)
@@ -88,26 +125,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var projectList = string.Join(", ", projects);
                 _logger.LogDebug(
-                    "Could not find any ASP.NET Core web application or Azure projects to build. " +
+                    "Could not find a project to build. " +
                     $"Found the following project files: '{projectList}'. " +
                     $"To fix this, use the environment variable '{EnvironmentSettingsKeys.Project}' to specify the " +
                     "relative path to the project to be deployed.");
-                return null;
             }
 
-            projectFile = projects[0];
-
-            // Cache the results
-            _probedForProjectFile = true;
-            _projectFileRelativePath = ProjectFileHelpers.GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
-            return _projectFileRelativePath;
-        }
-
-        private static IEnumerable<string> GetAllProjectFilesInRepo(
-            ISourceRepo sourceRepo,
-            string projectFileExtension)
-        {
-            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories: true);
+            return null;
         }
     }
 }
