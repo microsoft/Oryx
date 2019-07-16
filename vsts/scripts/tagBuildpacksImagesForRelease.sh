@@ -16,7 +16,7 @@ sourceBranchName=$BUILD_SOURCEBRANCHNAME
 echo "Pulling pack image..."
 packImage=$sourceImageRepo/pack:Oryx-CI.$buildNumber
 docker pull "$packImage"
-echo "Retagging pack image with 'builderNumber'..."
+echo "Retagging pack image with 'buildNumber'..."
 echo "$prodImageRepo/pack:$buildNumber">>"$outFile"
 docker tag "$packImage" "$prodImageRepo/pack:$buildNumber"
 
