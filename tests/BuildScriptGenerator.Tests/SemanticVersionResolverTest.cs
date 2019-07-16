@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             int comparisonResult= SemanticVersionResolver.CompareVersions(providedVersion, supportedVersion);
 
             // Assert 
-            Assert.Equal(comparisonResult, resultExpected);
+            Assert.Equal(resultExpected, comparisonResult);
         }
 
         [Theory]
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             int comparisonResult = SemanticVersionResolver.CompareVersions(providedVersion, supportedVersion);
 
             // Assert 
-            Assert.Equal(comparisonResult, resultExpected);
+            Assert.Equal(resultExpected, comparisonResult);
         }
     }
 }
