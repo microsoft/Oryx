@@ -406,7 +406,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         // Run on Linux only as TypeScript seems to create symlinks and this does not work on Windows machines.
-        [EnableOnPlatformFact("LINUX")]
+        [EnableOnPlatform("LINUX")]
         public async Task CanBuildNodeAppUsingScriptsNodeInPackageJson()
         {
             // Arrange

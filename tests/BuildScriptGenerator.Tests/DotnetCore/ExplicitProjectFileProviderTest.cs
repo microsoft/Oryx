@@ -151,20 +151,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
         // Scenario: There could be multiple project files under the same directory in which case a user might want
         // to choose one explicitly.
-        [EnableOnPlatformTheory(TestConstants.LinuxPlatform)]
-        [InlineData("WebApp1.csproj", "WebApp1.csproj")]
-        [InlineData("./WebApp1.csproj", "WebApp1.csproj")]
-        public void GetRelativePathToProjectFile_ReturnsFile_IfProjEnvVariableIsSet_AndIsAtRoot(
-            string relativePath, string expectedPath)
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsFile_IfProjEnvVariableIsSet_AndIsAtRoot()
         {
             // Arrange
+            var expectedPath = "WebApp1.csproj";
             var sourceRepoDir = CreateSourceRepoDir();
-            var projectFile = Path.Combine(sourceRepoDir, relativePath);
+            var projectFile = Path.Combine(sourceRepoDir, expectedPath);
             File.WriteAllText(projectFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
             var providers = GetProjectFileProviders();
-            context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = relativePath;
+            context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = expectedPath;
 
             // Act
             var actualFilePath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);

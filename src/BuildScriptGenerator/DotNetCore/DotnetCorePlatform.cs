@@ -137,8 +137,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public bool IsCleanRepo(ISourceRepo repo)
         {
-            //(_, string expectedPublishDir) = GetProjectFileAndPublishDir(repo);
-            //return !repo.DirExists(expectedPublishDir);
             return true;
         }
 

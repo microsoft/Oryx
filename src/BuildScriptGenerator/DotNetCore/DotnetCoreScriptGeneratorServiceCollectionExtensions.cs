@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
             services.AddScoped<DotNetCoreLanguageDetector>();
 
+            // Note that the order of these project file providers is important
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());
             services.TryAddEnumerable(

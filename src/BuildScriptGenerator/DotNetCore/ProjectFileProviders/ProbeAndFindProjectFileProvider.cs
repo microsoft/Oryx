@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string projectFile = null;
 
             // Check if any of the sub-directories has a .csproj or .fsproj file and if that file has references
-            // websdk
+            // to websdk or azure functions
 
             // search for .csproj files
             var projectFiles = GetAllProjectFilesInRepo(
@@ -63,9 +63,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var webAppProjects = new List<string>();
             var azureFunctionsProjects = new List<string>();
-            var otherProjects = new List<string>();
+            var allProjects = new List<string>();
             foreach (var file in projectFiles)
             {
+                allProjects.Add(file);
                 if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
                 {
                     webAppProjects.Add(file);
@@ -73,10 +74,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 else if (ProjectFileHelpers.IsAzureFunctionsProject(sourceRepo, file))
                 {
                     azureFunctionsProjects.Add(file);
-                }
-                else
-                {
-                    otherProjects.Add(file);
                 }
             }
 
@@ -88,6 +85,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (projectFile == null)
             {
+                _logger.LogDebug($"Could not find a project file to build. Available project files: " +
+                    $"{string.Join(',', allProjects)}");
                 return null;
             }
 
@@ -106,11 +105,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetProject(List<string> projects)
         {
-            if (projects.Count == 1)
-            {
-                return projects[0];
-            }
-
             if (projects.Count > 1)
             {
                 var projectList = string.Join(", ", projects);
@@ -121,14 +115,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     "to be deployed.");
             }
 
-            if (projects.Count == 0)
+            if (projects.Count == 1)
             {
-                var projectList = string.Join(", ", projects);
-                _logger.LogDebug(
-                    "Could not find a project to build. " +
-                    $"Found the following project files: '{projectList}'. " +
-                    $"To fix this, use the environment variable '{EnvironmentSettingsKeys.Project}' to specify the " +
-                    "relative path to the project to be deployed.");
+                return projects[0];
             }
 
             return null;
