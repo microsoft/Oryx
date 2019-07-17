@@ -48,8 +48,8 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20190709.1
-    pip-version: 19.0.3
+    python-base-tag: 20190716.3
+    pip-version: 19.1.1
     python27-version: 2.7.16
     python36-version: 3.6.9
     python37-version: 3.7.4
@@ -63,8 +63,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-build-base-tag: 20190710.4
-    php-runtime-base-tag: 20190710.4
+    php-build-base-tag: 20190716.3
+    php-runtime-base-tag: 20190716.3
     composer-version: 1.8.6
     composer-sha384: 48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5
     # hashes are for .tar.xz
