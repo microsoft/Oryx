@@ -18,11 +18,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// <summary>
     /// .NET Core platform.
     /// </summary>
+    [BuildProperty(
+        DotNetCoreConstants.ProjectBuildPropertyKey,
+        DotNetCoreConstants.ProjectBuildPropertyKeyDocumentation)]
     [BuildProperty(Constants.ZipAllOutputBuildPropertyKey, Constants.ZipAllOutputBuildPropertyKeyDocumentation)]
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
+        private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
@@ -30,14 +33,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
-            IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
+            DefaultProjectFileProvider projectFileProvider,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
             IOptions<DotNetCoreScriptGeneratorOptions> options)
         {
             _versionProvider = versionProvider;
-            _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
+            _projectFileProvider = projectFileProvider;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
@@ -58,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var buildProperties = new Dictionary<string, string>();
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
-            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context.SourceRepo);
+            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context);
             if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
             {
                 return null;
@@ -134,8 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public bool IsCleanRepo(ISourceRepo repo)
         {
-            (_, string expectedPublishDir) = GetProjectFileAndPublishDir(repo);
-            return !repo.DirExists(expectedPublishDir);
+            return true;
         }
 
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
@@ -211,16 +213,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return configuration;
         }
 
-        private (string projFile, string publishDir) GetProjectFileAndPublishDir(ISourceRepo repo)
+        private (string projFile, string publishDir) GetProjectFileAndPublishDir(
+            BuildScriptGeneratorContext context)
         {
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(repo);
-            if (string.IsNullOrEmpty(projectFile))
+            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
+            if (!string.IsNullOrEmpty(projectFile))
             {
-                return (null, null);
+                var publishDir = Path.Combine(
+                    context.SourceRepo.RootPath,
+                    DotNetCoreConstants.OryxOutputPublishDirectory);
+                return (projectFile, publishDir);
             }
 
-            var publishDir = Path.Combine(repo.RootPath, DotNetCoreConstants.OryxOutputPublishDirectory);
-            return (projectFile, publishDir);
+            return (null, null);
         }
     }
 }
