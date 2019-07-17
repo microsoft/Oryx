@@ -18,30 +18,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
-        private readonly IAspNetCoreWebAppProjectFileProvider _aspNetCoreWebAppProjectFileProvider;
+        DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
 
         public DotNetCoreLanguageDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
-            IAspNetCoreWebAppProjectFileProvider aspNetCoreWebAppProjectFileProvider,
+            DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
             _scriptGeneratorOptions = options.Value;
-            _aspNetCoreWebAppProjectFileProvider = aspNetCoreWebAppProjectFileProvider;
+            _projectFileProvider = projectFileProvider;
             _logger = logger;
         }
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
-            var sourceRepo = context.SourceRepo;
-            var projectFile = _aspNetCoreWebAppProjectFileProvider.GetRelativePathToProjectFile(sourceRepo);
+            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
             }
 
+            var sourceRepo = context.SourceRepo;
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.TargetFrameworkElementXPathExpression);

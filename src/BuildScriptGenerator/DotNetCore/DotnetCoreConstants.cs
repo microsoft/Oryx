@@ -27,12 +27,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public const string ProjectFileLanguageDetectorProperty = "ProjectFile";
 
-        public const string WebSdkName = "Microsoft.NET.Sdk.Web";
+        public const string DotNetSdkName = "Microsoft.NET.Sdk";
+        public const string DotNetWebSdkName = "Microsoft.NET.Sdk.Web";
         public const string ProjectSdkAttributeValueXPathExpression = "string(/Project/@Sdk)";
         public const string ProjectSdkElementNameAttributeValueXPathExpression = "string(/Project/Sdk/@Name)";
         public const string TargetFrameworkElementXPathExpression = "/Project/PropertyGroup/TargetFramework";
         public const string AssemblyNameXPathExpression = "/Project/PropertyGroup/AssemblyName";
+        public const string PackageReferenceXPathExpression = "/Project/ItemGroup/PackageReference";
 
         public const string DefaultMSBuildConfiguration = "Release";
+
+        public const string ProjectBuildPropertyKey = "project";
+        public const string ProjectBuildPropertyKeyDocumentation = "Relative path of the project file to build.";
+
+        public const string AzureFunctionsVersionElementXPathExpression =
+            "/Project/PropertyGroup/AzureFunctionsVersion";
+        public const string AzureFunctionsPackageReference = "Microsoft.NET.Sdk.Functions";
     }
 }

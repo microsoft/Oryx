@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DotNetCoreAmbiguityInSelectingProjectFile" xml:space="preserve">
+    <value>Ambiguity in selecting a project to build. Found multiple projects: '{0}'. To fix this, use the environment variable '{1}' to specify the relative path to the project to be deployed.</value>
+  </data>
+  <data name="DotNetCoreCouldNotFindProjectFileToBuild" xml:space="preserve">
+    <value>Could not find the project file '{0}' specified in settings. Make sure the path to the project file is relative to the root of the repo. For example: PROJECT=src/Dashboard/Dashboard.csproj</value>
+  </data>
   <data name="NodeDependencyCheckerMessageFormat" xml:space="preserve">
     <value>The package '{0}', specified in package.json's {1},\nis known to have been superseded by '{2}'. Consider switching over.</value>
     <comment>{0} - detected package; {1} - key of object in package.json; {2} - alternative package</comment>
