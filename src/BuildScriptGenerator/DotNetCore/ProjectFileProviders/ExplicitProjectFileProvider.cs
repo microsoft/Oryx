@@ -49,9 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 _logger.LogWarning($"Could not find the project file '{projectFile}'.");
                 throw new InvalidUsageException(
-                    $"Could not find the project file '{projectFile}' specified in settings. Make sure the path to " +
-                    "the project file is relative to the root of the repo. " +
-                    "For example: PROJECT=src/Dashboard/Dashboard.csproj");
+                    string.Format(Resources.Labels.DotNetCoreCouldNotFindProjectFileToBuild, projectFile));
             }
 
             return projectFileWithRelativePath;

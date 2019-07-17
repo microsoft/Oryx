@@ -85,7 +85,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (projectFile == null)
             {
-                _logger.LogDebug($"Could not find a project file to build. Available project files: " +
+                _logger.LogDebug(
+                    $"Could not find a project file to build. Available project files: " +
                     $"{string.Join(',', allProjects)}");
                 return null;
             }
@@ -108,11 +109,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (projects.Count > 1)
             {
                 var projectList = string.Join(", ", projects);
-                throw new InvalidUsageException(
-                    "Ambiguity in selecting a project to build. " +
-                    $"Found multiple projects: '{projectList}'. To fix this, use the environment variable " +
-                    $"'{EnvironmentSettingsKeys.Project}' to specify the relative path to the project " +
-                    "to be deployed.");
+                throw new InvalidUsageException(string.Format(
+                    Resources.Labels.DotNetCoreAmbiguityInSelectingProjectFile,
+                    projectList,
+                    EnvironmentSettingsKeys.Project));
             }
 
             if (projects.Count == 1)

@@ -61,6 +61,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ambiguity in selecting a project to build. Found multiple projects: &apos;{0}&apos;. To fix this, use the environment variable &apos;{1}&apos; to specify the relative path to the project to be deployed..
+        /// </summary>
+        internal static string DotNetCoreAmbiguityInSelectingProjectFile {
+            get {
+                return ResourceManager.GetString("DotNetCoreAmbiguityInSelectingProjectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the project file &apos;{0}&apos; specified in settings. Make sure the path to the project file is relative to the root of the repo. For example: PROJECT=src/Dashboard/Dashboard.csproj.
+        /// </summary>
+        internal static string DotNetCoreCouldNotFindProjectFileToBuild {
+            get {
+                return ResourceManager.GetString("DotNetCoreCouldNotFindProjectFileToBuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The package &apos;{0}&apos;, specified in package.json&apos;s {1},\nis known to have been superseded by &apos;{2}&apos;. Consider switching over..
         /// </summary>
         internal static string NodeDependencyCheckerMessageFormat {

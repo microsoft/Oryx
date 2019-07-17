@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string DefaultMSBuildConfiguration = "Release";
 
         public const string ProjectBuildPropertyKey = "project";
-        public const string ProjectBuildPropertyKeyDocumentation = "Relative path to the project file to build.";
+        public const string ProjectBuildPropertyKeyDocumentation = "Relative path of the project file to build.";
 
         public const string AzureFunctionsVersionElementXPathExpression =
             "/Project/PropertyGroup/AzureFunctionsVersion";

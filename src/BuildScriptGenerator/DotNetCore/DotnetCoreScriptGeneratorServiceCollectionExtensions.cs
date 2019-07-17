@@ -23,7 +23,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
             services.AddScoped<DotNetCoreLanguageDetector>();
 
-            // Note that the order of these project file providers is important
+            // Note that the order of these project file providers is important. For example, if a user explicitly
+            // specifies a project file using either the 'PROJECT' environment or the 'project' build property, we want
+            // to use that. In that case we want the ExplicitProjectFileProvider to return the project file and not
+            // probe for files.
             services.AddSingleton<DefaultProjectFileProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());
