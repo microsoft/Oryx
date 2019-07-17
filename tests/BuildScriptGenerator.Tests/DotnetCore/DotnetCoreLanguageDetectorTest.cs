@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             return new DotNetCoreLanguageDetector(
                 new TestVersionProvider(supportedVersions),
                 Options.Create(options),
-                new[] { new TestProjectFileProvider(projectFile) },
+                new TestProjectFileProvider(projectFile),
                 NullLogger<DotNetCoreLanguageDetector>.Instance);
         }
 
@@ -255,16 +255,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             };
         }
 
-        private class TestProjectFileProvider : IProjectFileProvider
+        private class TestProjectFileProvider : DefaultProjectFileProvider
         {
             private readonly string _projectFilePath;
 
             public TestProjectFileProvider(string projectFilePath)
+                : base(projectFileProviders: null)
             {
                 _projectFilePath = projectFilePath;
             }
 
-            public string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
+            public override string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
             {
                 return _projectFilePath;
             }

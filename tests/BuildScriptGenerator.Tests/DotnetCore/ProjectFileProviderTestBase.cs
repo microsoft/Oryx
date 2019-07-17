@@ -155,7 +155,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             _tempDirRoot = testFixture.RootDirPath;
         }
 
-        protected IEnumerable<IProjectFileProvider> GetProjectFileProviders(
+        protected DefaultProjectFileProvider GetProjectFileProvider(
             DotNetCoreScriptGeneratorOptions options = null)
         {
             if (options == null)
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 options = new DotNetCoreScriptGeneratorOptions();
             }
 
-            return new IProjectFileProvider[]
+            var providers = new IProjectFileProvider[]
             {
                 new ExplicitProjectFileProvider(
                     Options.Create(options),
@@ -171,6 +171,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 new RootDirectoryProjectFileProvider(NullLogger<RootDirectoryProjectFileProvider>.Instance),
                 new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance),
             };
+
+            return new DefaultProjectFileProvider(providers);
         }
 
         protected BuildScriptGeneratorContext GetContext(ISourceRepo sourceRepo)

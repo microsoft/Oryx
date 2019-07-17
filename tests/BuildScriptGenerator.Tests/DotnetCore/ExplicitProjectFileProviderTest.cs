@@ -36,10 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders(options);
+            var provider = GetProjectFileProvider(options);
 
             // Act
-            var actualFilePath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualFilePath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(relativeProjectPath, actualFilePath);
@@ -58,11 +58,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var relativeProjectPath = Path.Combine("src", "WebApp1", projectName);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
             context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = relativeProjectPath;
 
             // Act
-            var actualFilePath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualFilePath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(relativeProjectPath, actualFilePath);
@@ -83,11 +83,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders(options);
+            var provider = GetProjectFileProvider(options);
 
             // Act & Assert
             var exception = Assert.Throws<InvalidUsageException>(
-                () => ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context));
+                () => provider.GetRelativePathToProjectFile(context));
             Assert.Contains("Could not find the project file ", exception.Message);
         }
 
@@ -110,10 +110,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders(options);
+            var provider = GetProjectFileProvider(options);
 
             // Act
-            var actualFile = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualFile = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(relativeProjectPath, actualFile);
@@ -140,10 +140,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = expectedRelativeProjectPath;
             var options = new DotNetCoreScriptGeneratorOptions();
             options.Project = relativeProjectPath2;
-            var providers = GetProjectFileProviders(options);
+            var provider = GetProjectFileProvider(options);
 
             // Act
-            var actualFilePath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualFilePath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativeProjectPath, actualFilePath);
@@ -161,11 +161,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
             context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = expectedPath;
 
             // Act
-            var actualFilePath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualFilePath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedPath, actualFilePath);

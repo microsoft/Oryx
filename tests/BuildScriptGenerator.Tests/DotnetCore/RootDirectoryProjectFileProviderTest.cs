@@ -29,10 +29,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actualPath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualPath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);
@@ -48,10 +48,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFileWithVersion);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actualPath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualPath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);
@@ -67,10 +67,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFileWithVersion);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -86,10 +86,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFileWithSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -105,10 +105,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFileWithSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -124,10 +124,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NoSdkInformationProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -143,10 +143,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFileWithMultipleSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actualPath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualPath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);
@@ -165,10 +165,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -184,10 +184,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, AzureFunctionsProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actualPath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualPath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);

@@ -7,13 +7,18 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class ProjectFileProviderHelper
+    public class DefaultProjectFileProvider : IProjectFileProvider
     {
-        public static string GetRelativePathToProjectFile(
-            IEnumerable<IProjectFileProvider> projectFileProviders,
-            BuildScriptGeneratorContext context)
+        private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
+
+        public DefaultProjectFileProvider(IEnumerable<IProjectFileProvider> projectFileProviders)
         {
-            foreach (var projectFileProvider in projectFileProviders)
+            _projectFileProviders = projectFileProviders;
+        }
+
+        public virtual string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
+        {
+            foreach (var projectFileProvider in _projectFileProviders)
             {
                 var projectFile = projectFileProvider.GetRelativePathToProjectFile(context);
                 if (!string.IsNullOrEmpty(projectFile))

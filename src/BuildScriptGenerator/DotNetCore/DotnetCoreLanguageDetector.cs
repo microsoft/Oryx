@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -19,26 +18,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
-        private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
+        DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
 
         public DotNetCoreLanguageDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
-            IEnumerable<IProjectFileProvider> projectFileProviders,
+            DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
             _scriptGeneratorOptions = options.Value;
-            _projectFileProviders = projectFileProviders;
+            _projectFileProvider = projectFileProvider;
             _logger = logger;
         }
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
-            var projectFile = ProjectFileProviderHelper.GetRelativePathToProjectFile(
-                _projectFileProviders,
-                context);
+            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;

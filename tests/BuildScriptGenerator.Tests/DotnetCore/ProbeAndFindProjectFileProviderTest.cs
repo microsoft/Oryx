@@ -33,10 +33,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -63,10 +63,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 AzureFunctionsProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -88,10 +88,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "AzureFunctionsApp1", "AzureFunctionsApp1.csproj");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
@@ -104,10 +104,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepoDir = CreateSourceRepoDir();
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Null(actual);
@@ -128,10 +128,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actual = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actual = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Null(actual);
@@ -152,11 +152,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidUsageException>(
-                () => ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context));
+                () => provider.GetRelativePathToProjectFile(context));
             Assert.StartsWith(
                 "Ambiguity in selecting a project to build. Found multiple projects:",
                 exception.Message);
@@ -178,11 +178,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidUsageException>(
-                () => ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context));
+                () => provider.GetRelativePathToProjectFile(context));
             Assert.StartsWith(
                 "Ambiguity in selecting a project to build. Found multiple projects:",
                 exception.Message);
@@ -204,10 +204,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act
-            var actualPath = ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context);
+            var actualPath = provider.GetRelativePathToProjectFile(context);
 
             // Assert
             Assert.Equal(expectedRelativePath, actualPath);
@@ -231,11 +231,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 AzureFunctionsProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var providers = GetProjectFileProviders();
+            var provider = GetProjectFileProvider();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidUsageException>(
-                () => ProjectFileProviderHelper.GetRelativePathToProjectFile(providers, context));
+                () => provider.GetRelativePathToProjectFile(context));
             Assert.StartsWith(
                 "Ambiguity in selecting a project to build. Found multiple projects:",
                 exception.Message);

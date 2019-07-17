@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
+        private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
@@ -33,14 +33,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
-            IEnumerable<IProjectFileProvider> projectFileProviders,
+            DefaultProjectFileProvider projectFileProvider,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
             IOptions<DotNetCoreScriptGeneratorOptions> options)
         {
             _versionProvider = versionProvider;
-            _projectFileProviders = projectFileProviders;
+            _projectFileProvider = projectFileProvider;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private (string projFile, string publishDir) GetProjectFileAndPublishDir(
             BuildScriptGeneratorContext context)
         {
-            var projectFile = ProjectFileProviderHelper.GetRelativePathToProjectFile(_projectFileProviders, context);
+            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (!string.IsNullOrEmpty(projectFile))
             {
                 var publishDir = Path.Combine(
