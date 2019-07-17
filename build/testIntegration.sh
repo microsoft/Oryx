@@ -57,7 +57,6 @@ cd "$TESTS_SRC_DIR/$testProjectName.Tests"
 # These three images are used in Buildpacks-related integration tests
 docker pull "heroku/buildpacks:18"
 docker pull "heroku/pack:18"
-docker pull "mcr.microsoft.com/oryx/pack-stack-base"
 
 dotnet test \
     $testCaseFilter \
