@@ -289,9 +289,15 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
+        libpcre3 \
+        libpcre3-dev \
+        swig \
+        locales \
  && rm -rf /var/lib/apt/lists/*
+
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
+ENV PYTHONPATH /opt/python/2.7.16/lib:/opt/python/3.6.9/lib:/opt/python/3.7.4/lib:/opt/python/3.8.0b2/lib
 COPY build/__pythonVersions.sh /tmp
 COPY --from=py27-build-base /opt /opt
 COPY --from=py36-build-base /opt /opt
