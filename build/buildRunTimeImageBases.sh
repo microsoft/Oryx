@@ -27,17 +27,7 @@ fi
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
-generateDockerFiles=$(find $runtimeImagesSourceDir -type f -name "generateDockerfiles.sh")
-if [ -z "$generateDockerFiles" ]
-then
-    echo "Couldn't find any 'generateDockerfiles.sh' under '$runtimeImagesSourceDir' and its sub-directories."
-fi
-
-for generateDockerFile in $generateDockerFiles; do
-    echo
-    echo "Executing '$generateDockerFile'..."
-    "$generateDockerFile"
-done
+execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
 dockerFileName="Dockerfile.base"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)

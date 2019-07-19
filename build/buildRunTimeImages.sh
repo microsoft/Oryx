@@ -32,17 +32,7 @@ then
 	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
 fi
 
-generateDockerFiles=$(find $runtimeImagesSourceDir -type f -name "generateDockerfiles.sh")
-if [ -z "$generateDockerFiles" ]
-then
-    echo "Couldn't find any 'generateDockerfiles.sh' under '$runtimeImagesSourceDir' and its sub-directories."
-fi
-
-for generateDockerFile in $generateDockerFiles; do
-    echo
-    echo "Executing '$generateDockerFile'..."
-    "$generateDockerFile"
-done
+execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
 # The common base image is built separately, so we ignore it
 dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )

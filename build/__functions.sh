@@ -1,5 +1,5 @@
 
-# Folder structure is used to build the tag name
+# Folder structure is used to decide the tag name
 # For example, if a Dockerfile is located at "images/runtime/node/10.1.0/Dockerfile",
 # then the tag name would be 'node-10.1.0' (i.e. the path between 'runtime' and 'Dockerfile' segments)
 function getTagName()
@@ -32,4 +32,20 @@ function dockerCleanupIfRequested()
 	else
 		echo "Skipping 'docker system prune -f'"
 	fi
+}
+
+function execAllGenerateDockerfiles()
+{
+	runtimeImagesSourceDir="$1"
+	generateDockerfiles=$(find $runtimeImagesSourceDir -type f -name "generateDockerfiles.sh")
+	if [ -z "$generateDockerfiles" ]
+	then
+		echo "Couldn't find any 'generateDockerfiles.sh' under '$runtimeImagesSourceDir' and its sub-directories."
+	fi
+
+	for generateDockerFile in $generateDockerfiles; do
+		echo
+		echo "Executing '$generateDockerFile'..."
+		"$generateDockerFile"
+	done
 }
