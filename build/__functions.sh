@@ -1,3 +1,8 @@
+#!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 # Folder structure is used to decide the tag name
 # For example, if a Dockerfile is located at "images/runtime/node/10.1.0/Dockerfile",
