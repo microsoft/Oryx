@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_JamSpellFlaskApp_PackageDir(string pythonVersion)
         {
             // Arrange
-            const string packageDir = "orx_packages";
+            const string packageDir = "oryx_packages";
             var appName = "jamspell-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;

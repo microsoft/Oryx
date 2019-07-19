@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDir(string pythonVersion)
         {
             // Arrange
-            const string packageDir = "orx_packages";
+            const string packageDir = "oryx_packages";
             var appName = "shapely-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
