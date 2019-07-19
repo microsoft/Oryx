@@ -13,5 +13,5 @@ spellCheckedString = corrector.FixFragment(inputString )
 @app.route("/")
 
 def hello():
-    return print  inputString  + " is spellchecked and corrected as " + spellCheckedString
+    return inputString  + " is spellchecked and corrected as " + spellCheckedString
 

@@ -49,12 +49,25 @@ python_bin=python
 
 {{ else }}
 
+# We need to use the python binary selected by benv
+python_bin=$python
+
+# Detect the location of the cd /tmp/-packages to add the .pth file
+# For the local site package, only major and minor versions are provided, so we fetch it again
+SITE_PACKAGE_PYTHON_VERSION=$($python -c "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")
+SITE_PACKAGES_PATH=$HOME"/.local/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
+mkdir -p $SITE_PACKAGES_PATH
+# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
+APP_PACKAGES_PATH=$(pwd)"/{{ PackagesDirectory }}"
+echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
+
 if [ -e "requirements.txt" ]
 then
 	echo
 	echo Running pip install...
 	START_TIME=$SECONDS
-	$pip install --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
+	export PYTHONUSERBASE=$SITE_PACKAGES_PATH
+	$pip install --prefer-binary -r requirements.txt --user --upgrade | ts $TS_FMT
 	pipInstallExitCode=${PIPESTATUS[0]}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
@@ -66,18 +79,6 @@ then
 else
 	echo $REQS_NOT_FOUND_MSG
 fi
-
-# We need to use the python binary selected by benv
-python_bin=$python
-
-# Detect the location of the site-packages to add the .pth file
-# For the local site package, only major and minor versions are provided, so we fetch it again
-SITE_PACKAGE_PYTHON_VERSION=$($python -c "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")
-SITE_PACKAGES_PATH=$HOME"/.local/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
-mkdir -p $SITE_PACKAGES_PATH
-# To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
-APP_PACKAGES_PATH=$(pwd)"/{{ PackagesDirectory }}"
-echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 
 {{ end }}
 
