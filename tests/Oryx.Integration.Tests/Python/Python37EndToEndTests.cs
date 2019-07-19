@@ -55,24 +55,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "AB#896178")]
-        public async Task CanBuildAndRunPythonApp_WithBuildpack()
-        {
-            var appName = "flask-app";
-
-            await EndToEndTestHelper.RunPackAndAssertAppAsync(
-                _output,
-                appName,
-                CreateAppVolume(appName),
-                "test-py37app",
-                Constants.OryxBuildpackBuilderImageName,
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
         [Fact]
         public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnv()
         {
