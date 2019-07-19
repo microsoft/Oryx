@@ -80,13 +80,13 @@ RUN apt-get update \
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.1.* || $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* ]]; then \
-        apt-get update && apt-get install -y gnupg2 apt-transport-https && \
-        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
-        curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
-        apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev; \
-		pecl install sqlsrv pdo_sqlsrv && \
-		echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini && \
-		echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
+        apt-get update && apt-get install -y gnupg2 apt-transport-https \
+        && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+        && curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+        && apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev \
+        && pecl install sqlsrv pdo_sqlsrv \
+        && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
+        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
 	fi
 
 RUN { \
@@ -115,4 +115,3 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
-
