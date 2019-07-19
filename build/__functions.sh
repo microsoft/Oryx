@@ -22,3 +22,14 @@ function getTagName()
 	getTagName_result=${remainderPath//$slashChar/"-"}
 	return 0
 }
+
+function dockerCleanupIfRequested()
+{
+	if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
+	then
+		echo "Running 'docker system prune -f'"
+		docker system prune -f
+	else
+		echo "Skipping 'docker system prune -f'"
+	fi
+}

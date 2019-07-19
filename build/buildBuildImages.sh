@@ -124,12 +124,7 @@ echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
 cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
-echo "Cleanup:"
-echo "Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
-if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
-then
-	docker system prune -f
-fi
+dockerCleanupIfRequested
 
 if [ -z "$BUILD_SIGNED" ]
 then
