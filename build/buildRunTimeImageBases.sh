@@ -10,8 +10,8 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__nodeVersions.sh
 source $REPO_DIR/build/__functions.sh
+source $REPO_DIR/build/__nodeVersions.sh
 
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
