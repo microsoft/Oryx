@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -93,6 +94,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert;
             Assert.Equal("1.2.3", returnedVersion);
+        }
+
+        [Theory]
+        [InlineData("1.2", "1.2.3", -1)]
+        [InlineData("1.3.4", "1.2.3", 1)]
+        [InlineData("3.5", "2.1.1", 1)]
+        [InlineData("3.5", "4.1", -1)]
+        public void CompareVersion_ProvidedVersionToSupportedVersion(
+            string providedVersion, 
+            string supportedVersion, 
+            int resultExpected)
+        {
+            // Arrange and Act 
+            int comparisonResult= SemanticVersionResolver.CompareVersions(providedVersion, supportedVersion);
+
+            // Assert 
+            Assert.Equal(resultExpected, comparisonResult);
+        }
+
+        [Theory]
+        [InlineData("1", "1.2.3", int.MinValue)]
+        [InlineData("1", "1.2", int.MinValue)]
+        [InlineData("3.5.1", "4", int.MinValue)]
+        [InlineData("3.5", "4", int.MinValue)]
+        [InlineData("5", "6", int.MinValue)]
+        public void CompareVersions_VersionDoesNotHaveMinorAndOrPatchVersion(
+            string providedVersion, 
+            string supportedVersion, 
+            int resultExpected)
+        {
+            // Arrange and Act 
+            int comparisonResult = SemanticVersionResolver.CompareVersions(providedVersion, supportedVersion);
+
+            // Assert 
+            Assert.Equal(resultExpected, comparisonResult);
         }
     }
 }
