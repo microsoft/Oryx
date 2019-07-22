@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory(Skip = "locale bug, https://github.com/bakwc/JamSpell/issues/17")]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_JamSpellFlaskApp_UsingVirtualEnv(string pythonVersion)
         {
@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "locale bug, https://github.com/bakwc/JamSpell/issues/17")]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_JamSpellFlaskApp_PackageDir(string pythonVersion)
         {
