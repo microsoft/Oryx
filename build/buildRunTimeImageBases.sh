@@ -10,32 +10,9 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-# Folder structure is used to come up with the tag name
-# For example, if a Dockerfile was located at
-#   oryx/images/runtime/node/10.1.0/Dockerfile.base
-# Then the tag name would be 'node-10.1.0'(i.e the path between 'runtime' and 'Dockerfile' segments)
-function getTagName()
-{
-    if [ ! $# -eq 1 ]
-    then
-        echo "Expected to get a path to a directory containing a Dockerfile, but did not get any."
-        return 1
-    fi
-
-    if [ ! -d $1 ]
-    then
-        echo "Directory '$1' does not exist."
-        return 1
-    fi
-
-    local replacedPath="$RUNTIME_IMAGES_SRC_DIR/"
-    local remainderPath="${1//$replacedPath/}"
-    local slashChar="/"
-    getTagName_result="${remainderPath//$slashChar/"-"}-base"
-    return 0
-}
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir="$1"
@@ -50,17 +27,7 @@ fi
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
-generateDockerFiles=$(find $runtimeImagesSourceDir -type f -name "generateDockerfiles.sh")
-if [ -z "$generateDockerFiles" ]
-then
-    echo "Couldn't find any 'generateDockerfiles.sh' under '$runtimeImagesSourceDir' and its sub-directories."
-fi
-
-for generateDockerFile in $generateDockerFiles; do
-    echo
-    echo "Executing '$generateDockerFile'..."
-    "$generateDockerFile"
-done
+execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
 dockerFileName="Dockerfile.base"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
@@ -133,8 +100,4 @@ then
 fi
 
 echo
-echo "Cleanup: Run 'docker system prune': $DOCKER_SYSTEM_PRUNE"
-if [ "$DOCKER_SYSTEM_PRUNE" == "true" ]
-then
-	docker system prune -f
-fi
+dockerCleanupIfRequested
