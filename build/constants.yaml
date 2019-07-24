@@ -14,15 +14,15 @@
   constants:
     dot-net-core-11-sdk-version: 1.1.14
     dot-net-core-11-sdk-sha512: E36AA4B278B936E1E2989B5E556F4EC3AEF2CB1EBB5ABD1BD6011D511873FC3E72101D035CF4DAF1563C7A3C43C193863D38CBF24288D375DD143AB42AFAE524
-    dot-net-core-21-sdk-version: 2.1.700
-    dot-net-core-21-sdk-sha512: 44258B4FB59927D9977900F0724EEB82248A3CC46EF3067088F8F78EB092C09DA88BBA9B7A488F1549A240E0DD3FEA465FF1FFA6CDABB543B6BB536A12A549D3
-    dot-net-core-22-sdk-version: 2.2.300
-    dot-net-core-22-sdk-sha512: 1D660A323180DF3DA8C6E0EA3F439D6BBEC29670D498AC884F38BF3CDFFBB041C7AFFF66171CDFD24C82394B845B135B057404DEF1FCE9F206853726382BC42B
+    dot-net-core-21-sdk-version: 2.1.701
+    dot-net-core-21-sdk-sha512: C915BDBF493CD5CAF60E051B3BE2C587D4CC28FEC426AB8E9AC1BBAB7F620273CF2B76F4ACA10DA9807CDE1B7141A0A8D07BA35C08D0C70006767589CEEC04A4
+    dot-net-core-22-sdk-version: 2.2.301
+    dot-net-core-22-sdk-sha512: 63C54261B58B8D5E56326D0EFB2EF3B25F120AE16E49F7BD470537DA9CDDDF96B1E0B6288C159EC808BD0B7E2CC9C93D0DF2E4122948995E74A797C04098C599
     # Since preview names of .NET Core break the semver norms, it does not work well with the code
     # that we depend on for semantic version checks, so having two constants here.
-    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview6-012264
+    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview7-012821
     dot-net-core-30-sdk-version: 3.0.100
-    dot-net-core-30-sdk-sha512: 047e295f3d7d4c590c906334ec28b844bef90c2b3fefe395a23e37e2a7d13955a11cbcf2fc2ee9ffcfd6fd44cede4ecd72a6b92258f568d5b328ad46bf0a7bb8
+    dot-net-core-30-sdk-sha512: DF70CA86453CEBA51B480BC8521D6BF76625469CDD3DA6FE782B85F13620D8BEEB34E02EE7AFE2803CD144066E7C685E5A1A9A4005ADC9B2709C69F7F37C9BDC
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -35,10 +35,10 @@
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.14
     net-core-app-20: 2.0.9
-    net-core-app-21: 2.1.11
-    net-core-app-22: 2.2.5
+    net-core-app-21: 2.1.12
+    net-core-app-22: 2.2.6
     net-core-app-30: 3.0.0
-    net-core-app-30-preview-name: 3.0.0-preview6-27804-01
+    net-core-app-30-preview-name: 3.0.0-preview7-27912-14
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
