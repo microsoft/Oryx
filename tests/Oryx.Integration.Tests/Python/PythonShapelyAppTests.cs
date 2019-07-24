@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform python --language-version {pythonVersion} -p packagedir={packageDir}")
+                $"oryx build {appDir} --platform python --platform-version {pythonVersion} -p packagedir={packageDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
