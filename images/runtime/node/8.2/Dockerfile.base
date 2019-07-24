@@ -85,4 +85,4 @@ RUN apt-get update \
 
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.
-RUN npm install -g pm2
+RUN npm install -g pm2@3.5.1
