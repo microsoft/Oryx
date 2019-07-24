@@ -401,8 +401,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/dotnet/sdks/2.1.700/dotnet", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/dotnet/sdks/2.1.700/dotnet", result.StdOut);
+                    var dotnetExecutable = $"/opt/dotnet/sdks/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
+                    Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
+                    Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
