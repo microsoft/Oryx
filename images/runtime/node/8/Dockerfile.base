@@ -66,24 +66,11 @@ CMD [ "node" ]
 
 FROM node-original as main
 
-RUN apt-get update && apt-get install unzip --yes
+RUN apt-get update && apt-get install -y \
+  unzip \
+  && rm -rf /var/lib/apt/lists/*
 
-# All users need access to node_modules at the root, as this is the location
-# for packages valid for all apps.
-RUN mkdir -p /node_modules \
- && chmod 777 /node_modules
+COPY images/runtime/node/installDependencies.sh /tmp/scripts/installDependencies.sh
+RUN /tmp/scripts/installDependencies.sh
+RUN rm -rf /tmp/scripts
 
-RUN set -e \
- && npm_ver=$(npm --version) \
- && if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then \
-        echo "Upgrading npm version from $npm_ver to 6.9.0"; \
-        npm install -g npm@6.9.0; \
-    fi
-
-# This is a way to avoid using caches for the next stages, since we want the remaining steps
-# to always run
-ARG CACHEBUST=0
-
-# PM2 is supported as an option when running the app,
-# so we need to make sure it is available in our images.
-RUN npm install -g pm2@3.5.1
