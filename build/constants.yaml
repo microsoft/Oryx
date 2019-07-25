@@ -111,8 +111,8 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    yarn-version: 1.13.0
-    yarn-minor-version: 1.13
+    yarn-version: 1.17.3
+    yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
     node6-major-minor-version: 6.17
