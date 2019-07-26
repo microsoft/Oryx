@@ -382,6 +382,8 @@ WORKDIR /
 
 COPY images/build/benv.sh /usr/local/bin/benv
 RUN chmod +x /usr/local/bin/benv
+RUN mkdir -p /usr/local/share/pip-cache/lib
+RUN chmod -R 777 /usr/local/share/pip-cache
 
 # Copy .NET Core related content
 ENV NUGET_XMLDOC_MODE=skip \
