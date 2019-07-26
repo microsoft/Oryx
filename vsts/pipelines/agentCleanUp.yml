@@ -58,4 +58,5 @@ stages:
       parameters:
         agentName: DDMBLDL022
 
+# trigger is set using vsts UI, cleanup build will run every sundays 10 PM PST/PDT
 trigger: none
