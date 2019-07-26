@@ -5,7 +5,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
