@@ -1,0 +1,17 @@
+parameters:
+  agentName: ''
+
+jobs:
+- job: Cleaning_${{ parameters.agentName }}
+  displayName: ${{ parameters.agentName }}
+  pool:
+    name: OryxLinux
+    demands:
+    - agent.name -equals ${{ parameters.agentName }}
+  timeoutInMinutes: 10
+  steps:
+  - script: |
+      docker ps -a
+      docker system prune -af
+      docker ps -a
+    displayName: 'Script to remove docker images'

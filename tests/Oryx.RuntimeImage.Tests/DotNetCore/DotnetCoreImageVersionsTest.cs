@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -83,10 +84,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("2.0", "Version  : 2.0.9")]
-        [InlineData("2.1", "Version: 2.1.11")]
-        [InlineData("2.2", "Version: 2.2.5")]
-        [InlineData("3.0", "Version: 3.0.0-preview6-27804-01")]
+        [InlineData("2.0", "Version  : " + DotNetCoreRunTimeVersions.NetCoreApp20)]
+        [InlineData("2.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp21)]
+        [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
+        [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30PreviewName)]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act

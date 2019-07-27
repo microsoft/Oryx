@@ -1,6 +1,11 @@
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
 echo "Python Version: $python"
+PIP_CACHE_DIR=/usr/local/share/pip-cache
+
+if [ ! -d "$PIP_CACHE_DIR" ];then
+	mkdir -p $PIP_CACHE_DIR
+fi
 
 {{ if VirtualEnvironmentName | IsNotBlank }}
 
@@ -34,7 +39,7 @@ then
 	echo "Done in $ELAPSED_TIME sec(s)."
 
 	echo "Running pip install..."
-	pip install --prefer-binary -r requirements.txt | ts $TS_FMT
+	pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT
 	pipInstallExitCode=${PIPESTATUS[0]}
 	if [[ $pipInstallExitCode != 0 ]]
 	then
@@ -54,7 +59,7 @@ then
 	echo
 	echo Running pip install...
 	START_TIME=$SECONDS
-	$pip install --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
+	$pip install  --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
 	pipInstallExitCode=${PIPESTATUS[0]}
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
@@ -73,7 +78,7 @@ python_bin=$python
 # Detect the location of the site-packages to add the .pth file
 # For the local site package, only major and minor versions are provided, so we fetch it again
 SITE_PACKAGE_PYTHON_VERSION=$($python -c "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")
-SITE_PACKAGES_PATH=$HOME"/.local/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
+SITE_PACKAGES_PATH=$PIP_CACHE_DIR"/lib/python"$SITE_PACKAGE_PYTHON_VERSION"/site-packages"
 mkdir -p $SITE_PACKAGES_PATH
 # To make sure the packages are available later, e.g. for collect static or post-build hooks, we add a .pth pointing to them
 APP_PACKAGES_PATH=$(pwd)"/{{ PackagesDirectory }}"
