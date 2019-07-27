@@ -52,3 +52,4 @@ jobs:
       repositoryName: Microsoft/Oryx
       tagSource: manual
       tag: '$(Build.BuildNumber)'
+      assets: '$(Build.ArtifactStagingDirectory)/binaries/*'
