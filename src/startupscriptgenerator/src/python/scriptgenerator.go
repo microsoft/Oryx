@@ -136,17 +136,17 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			virtualEnvDir := "/" + virtualEnvironmentName
 			if strings.HasSuffix(compressedFile, ".zip") {
-				scriptBuilder.WriteString("echo Found zip-based virtual environment.\n")
+				scriptBuilder.WriteString("echo Found virtual environment .zip archive.\n")
 				scriptBuilder.WriteString(
 					"extractionCommand=\"unzip -q " + compressedFile + " -d " + virtualEnvDir + "\"\n")
 
 			} else if strings.HasSuffix(compressedFile, ".tar.gz") {
-				scriptBuilder.WriteString("echo Found tar.gz based virtual environment.\n")
+				scriptBuilder.WriteString("echo Found virtual environment .tar.gz archive.\n")
 				scriptBuilder.WriteString(
 					"extractionCommand=\"tar -xzf " + compressedFile + " -C " + virtualEnvDir + "\"\n")
 			} else {
 				fmt.Printf(
-					"Error: Unrecognizable file '%s'. Expected a file with an extesion '.zip' or '.tar.gz'\n",
+					"Error: Unrecognizable file '%s'. Expected a file with a '.zip' or '.tar.gz' extension.\n",
 					compressedFile)
 				os.Exit(consts.FAILURE_EXIT_CODE)
 			}
