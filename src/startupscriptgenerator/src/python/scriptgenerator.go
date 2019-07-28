@@ -76,9 +76,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			command = gen.buildGunicornCommandForModule(appModule, appDirectory)
 		}
 	} else {
-		logger.LogInformation("adding execution permission if needed ...")
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
-		logger.LogInformation("permission added %t", isPermissionAdded)
+		logger.LogInformation("Permission added: %t", isPermissionAdded)
 		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
 
