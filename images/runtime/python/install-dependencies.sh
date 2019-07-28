@@ -43,9 +43,9 @@ Threading=1
 UsageCount=1
 EOL
 
-# Use Gunicorn as our WSGI Servier
 pip install --upgrade pip
 pip install gunicorn
+pip install ptvsd
 
 ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
 

@@ -17,17 +17,28 @@ import (
 	"strings"
 )
 
+
 type PythonStartupScriptGenerator struct {
-	SourcePath               string
-	UserStartupCommand       string
-	DefaultAppPath           string
-	DefaultAppModule         string
-	BindPort                 string
-	VirtualEnvironmentName   string
-	PackageDirectory         string
-	SkipVirtualEnvExtraction bool
-	Manifest                 common.BuildManifest
+	SourcePath					string
+	UserStartupCommand			string
+	DefaultAppPath				string
+	DefaultAppModule			string
+	DebugAdapter				string // Remote debugger to use.
+									   //  Currently, only `ptvsd` is supported.
+	DebugHost					bool   // Remote debugger bind host
+	DebugPort					bool   // Remote debugger bind port
+	DebugWait					bool   // Whether debugger should pause and wait for a client
+									   //  connection before running the app
+	BindPort					string
+	VirtualEnvironmentName		string
+	PackageDirectory			string
+	SkipVirtualEnvExtraction	bool
+	Manifest					common.BuildManifest
 }
+
+const SupportedDebugAdapter = "ptvsd"; // Not using an array since there's only one at the moment
+const DefaultPtvsdHost = "0.0.0.0"
+const DefaultPtvsdPort = "3000"
 
 const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
@@ -72,8 +83,13 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		}
 
 		if appModule != "" {
-			logger.LogInformation("Generating command for appModule='%s'", appModule)
-			command = gen.buildGunicornCommandForModule(appModule, appDirectory)
+			if gen.shouldStartAppInDebugMode() {
+				logger.LogInformation("Generating debug command for appModule='%s'", appModule)
+				command = gen.buildDebugCommandForModule(appModule, appDirectory)
+			} else {
+				logger.LogInformation("Generating command for appModule='%s'", appModule)
+				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
+			}
 		}
 	} else {
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
@@ -262,6 +278,22 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	}
 
 	return "gunicorn " + module
+}
+
+func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
+	logger := common.GetLogger("python.scriptgenerator.shouldStartAppInDebugMode")
+	defer logger.Shutdown()
+	
+	if gen.DebugAdapter == "" {
+		return false
+	}
+
+	if gen.DebugAdapter != SupportedDebugAdapter {
+		logger.LogError("Unsupported debug adapter '%s'", gen.DebugAdapter)
+		return false
+	}
+
+	return true
 }
 
 func appendArgs(currentArgs string, argToAppend string) string {
