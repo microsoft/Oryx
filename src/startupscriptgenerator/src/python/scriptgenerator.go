@@ -73,7 +73,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 		if appModule != "" {
 			logger.LogInformation("Generating command for appModule='%s'", appModule)
-			command = gen.getCommandFromModule(appModule, appDirectory)
+			command = gen.buildGunicornCommandForModule(appModule, appDirectory)
 		}
 	} else {
 		logger.LogInformation("adding execution permission if needed ...")
@@ -244,7 +244,7 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
 }
 
 // Produces the gunicorn command to run the app
-func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, appDir string) string {
+func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module string, appDir string) string {
 	workerCount := getWorkerCount()
 
 	// Default to AppService's timeout value (in seconds)
