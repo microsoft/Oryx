@@ -25,8 +25,6 @@ type PythonStartupScriptGenerator struct {
 	DefaultAppModule			string
 	DebugAdapter				string // Remote debugger to use.
 									   //  Currently, only `ptvsd` is supported.
-	DebugHost					bool   // Remote debugger bind host
-	DebugPort					bool   // Remote debugger bind port
 	DebugWait					bool   // Whether debugger should pause and wait for a client
 									   //  connection before running the app
 	BindPort					string
@@ -37,7 +35,6 @@ type PythonStartupScriptGenerator struct {
 }
 
 const SupportedDebugAdapter = "ptvsd"; // Not using an array since there's only one at the moment
-const DefaultPtvsdHost = "0.0.0.0"
 const DefaultPtvsdPort = "3000"
 
 const DefaultHost = "0.0.0.0"
@@ -55,9 +52,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
 
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
+	appDebug := false // Will the app be started in debugging mode
 	appType := ""
 	appModule := ""
 	command := gen.UserStartupCommand
@@ -86,6 +85,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appModule='%s'", appModule)
 				command = gen.buildDebugCommandForModule(appModule, appDirectory)
+				appDebug = true
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
 				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
@@ -101,7 +101,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogProperties(
 		"Finalizing script",
-		map[string]string{"appType": appType, "appModule": appModule,
+		map[string]string{"appType": appType, "debug": appDebug, "appModule": appModule,
 			"venv": gen.Manifest.VirtualEnvName})
 
 	var runScript = scriptBuilder.String()
@@ -283,7 +283,7 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	logger := common.GetLogger("python.scriptgenerator.shouldStartAppInDebugMode")
 	defer logger.Shutdown()
-	
+
 	if gen.DebugAdapter == "" {
 		return false
 	}
@@ -294,6 +294,19 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	}
 
 	return true
+}
+
+func (gen *PythonStartupScriptGenerator) buildDebugCommandForModule(module string, appDir string) string {
+	// TODO: support --wait
+
+	pycmd := "python -m ptvsd --host " + DefaultHost + " --port " + DefaultPtvsdPort + " -m " + module
+
+	cdcmd := ""
+	if appDir != "" {
+		cdcmd = "cd " + appDir + " && "
+	}
+
+	return cdcmd + pycmd
 }
 
 func appendArgs(currentArgs string, argToAppend string) string {
