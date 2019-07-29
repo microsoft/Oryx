@@ -56,21 +56,33 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
-	appDebugAdapter := "" // Will the app be started in debugging mode
-	appType := ""
-	appModule := ""
-	command := gen.UserStartupCommand
-	if command == "" {
+	appDebugAdapter := "" // Whether or not the app should be started in debugging mode
+
+	appType := ""		  // "Flask", "Django", or anything else. Used for logging only.
+
+	appDebugCmd := ""	  // Command to run under a debugger in case debugging mode was requested
+
+	appModule := ""		  // Suspected entry module in app
+
+	command := gen.UserStartupCommand // A custom command takes precedence over any detection logic
+	if command != "" {
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
+		logger.LogInformation("Permission added: %t", isPermissionAdded)
+		command = common.ExtendPathForCommand(command, gen.SourcePath)
+	} else {
 		appDirectory := gen.SourcePath
 
 		appModule = gen.getDjangoStartupModule()
 		if appModule != "" {
 			appType = "Django"
+			appDebugCmd = "manage.py startserver"
 			println("Detected Django app.")
 		} else {
-			appModule = gen.getFlaskStartupModule()
+			var appMainFile string
+			appMainFile, appModule = gen.getFlaskStartupModuleAndObject()
 			if appModule != "" {
 				appType = "Flask"
+				appDebugCmd = appMainFile
 				println("Detected Flask app.")
 			} else {
 				appType = "Default"
@@ -91,10 +103,6 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
 			}
 		}
-	} else {
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
-		logger.LogInformation("Permission added: %t", isPermissionAdded)
-		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
 
 	scriptBuilder.WriteString(command + "\n")
@@ -237,25 +245,26 @@ func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 	return ""
 }
 
-// Checks if the app is based on Flask, and returns a startup command if so.
-func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
-	logger := common.GetLogger("python.scriptgenerator.getFlaskStartupModule")
+// Checks if the app is based on Flask, and returns the main file's name
+// along with a path to the app's Flask object.
+func (gen *PythonStartupScriptGenerator) getFlaskStartupModuleAndObject() (string, string) {
+	logger := common.GetLogger("python.scriptgenerator.getFlaskStartupModuleAndObject")
 	defer logger.Shutdown()
 
 	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
 
 	for _, file := range filesToSearch {
-		fullPath := filepath.Join(gen.SourcePath, file)
+		fullPath := filepath.Join(gen.SourcePath, file) // TODO: app code might be under 'src'
 		if common.FileExists(fullPath) {
 			logger.LogInformation("Found file '%s'", fullPath)
-			println("Found file '" + fullPath + "' to run the app with.")
-			// Remove the '.py' from the end to get the module name
-			modulename := file[0 : len(file)-3]
-			return modulename + ":app"
+			println("Using '" + fullPath + "' as the startup module.")
+
+			modulename := file[0 : len(file)-3] // Remove the '.py' from the end
+			return file, modulename + ":app"
 		}
 	}
 
-	return ""
+	return "", ""
 }
 
 // Produces the gunicorn command to run the app
