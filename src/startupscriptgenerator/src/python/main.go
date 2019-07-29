@@ -18,6 +18,7 @@ func main() {
 	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed to start the application up.")
 	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/defaultsite'")
 	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application, e.g. 'application:app'.")
+	defaultAppDebugCmdPtr := flag.String("defaultAppDebugCmd", "application.py", "Python command to run if debugging the app in debug mode, e.g. 'application.py start_dev_server'.")
 	virtualEnvNamePtr := flag.String("virtualEnvName", "", "Name of the virtual environment for the app")
 	packagesFolderPtr := flag.String("packagedir", "", "Directory where the python packages were installed, if no virtual environment was used.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
@@ -30,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
-	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
+	defaultAppFullPath := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
 	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
 	common.SetGlobalOperationID(buildManifest)
@@ -40,8 +41,9 @@ func main() {
 		UserStartupCommand:       *userStartupCommandPtr,
 		VirtualEnvName:           *virtualEnvNamePtr,
 		BindPort:                 *bindPortPtr,
-		DefaultAppPath:           defaultAppFullPAth,
+		DefaultAppPath:           defaultAppFullPath,
 		DefaultAppModule:         *defaultAppModulePtr,
+		DefaultAppDebugCommand:   *defaultAppDebugCmdPtr,
 		PackageDirectory:         *packagesFolderPtr,
 		SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
 		Manifest:                 buildManifest,

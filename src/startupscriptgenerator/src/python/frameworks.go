@@ -1,11 +1,17 @@
-package main
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+package frameworks
 
 import "common"
 
-type PyAppFrameworkDetector interface {
+type PyAppFramework interface {
+    Name() string
+    GetGunicornModuleArg() string
+    GetDebuggableCommand() string
     detect() bool
-    getGunicornModuleArg() string
-    getDebuggableCommand() string
 }
 
 type djangoDetector struct {
@@ -19,12 +25,24 @@ type flaskDetector struct {
 	mainFile	string
 }
 
-func NewDjangoDetector(appPath string, venvName string) PyAppFrameworkDetector {
-	return djangoDetector{ appPath: appPath, venvName: venvName }
+func DetectFramework(appPath string, venvName string) *PyAppFramework {
+	var detector PyAppFramework
+
+	detector = djangoDetector{ appPath: appPath, venvName: venvName }
+	if detector.detect() {
+		return detector
+	}
+
+	detector = flaskDetector{ appPath: appPath }
+	if detector.detect() {
+		return detector
+	}
+
+	return nil
 }
 
-func NewFlaskDetector(appPath string) PyAppFrameworkDetector {
-	return flaskDetector{ appPath: appPath }
+func (detector *djangoDetector) Name() string {
+	return "Django"
 }
 
 // Checks if the app is based on Django:
@@ -65,7 +83,12 @@ func (detector *djangoDetector) getDebuggableCommand() string {
 		logger.Shutdown()
 	}
 
-	return "manage.py startserver"
+	// Default is 127.0.0.1:8000 (https://docs.djangoproject.com/en/2.2/ref/django-admin/#runserver)
+	return "manage.py runserver 0.0.0.0:$PORT"
+}
+
+func (detector *flaskDetector) Name() string {
+	return "Flask"
 }
 
 // Checks if the app is based on Flask:
@@ -97,5 +120,6 @@ func (detector *flaskDetector) getGunicornModuleArg() string {
 }
 
 func (detector *flaskDetector) getDebuggableCommand() string {
+	// Default is 127.0.0.1:5000 (https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run)
 	return detector.mainFile
 }

@@ -23,10 +23,11 @@ type PythonStartupScriptGenerator struct {
 	UserStartupCommand			string
 	DefaultAppPath				string
 	DefaultAppModule			string
-	DebugAdapter				string // Remote debugger to use.
-									   //  Currently, only `ptvsd` is supported.
-	DebugWait					bool   // Whether debugger should pause and wait for a client
-									   //  connection before running the app
+	DefaultAppDebugCommand		string
+	DebugAdapter				string // Remote debugger adapter to use.
+									   //  Currently, only `ptvsd` is supported. It listens on port 3000.
+	DebugWait					bool   // Whether debugger adapter should pause and wait for a client
+									   //  connection before running the app.
 	BindPort					string
 	VirtualEnvName				string
 	PackageDirectory			string
@@ -56,47 +57,38 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
-	appDebugAdapter := "" // Whether or not the app should be started in debugging mode
-
-	appType := ""		  // "Flask", "Django", or anything else. Used for logging only.
-
-	appDebugCmd := ""	  // Command to run under a debugger in case debugging mode was requested
-
-	appModule := ""		  // Suspected entry module in app
-
-	command := gen.UserStartupCommand // A custom command takes precedence over any detection logic
+	appType := "" // "Django", "Flask", etc.
+	appDebugAdapter := "" // Used debugger adapter
+	appModule := ""   // Suspected entry module in app
+	appDebugCmd := "" // Command to run under a debugger in case debugging mode was requested
+	
+	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
 	if command != "" {
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.AppPath)
 		logger.LogInformation("Permission added: %t", isPermissionAdded)
 		command = common.ExtendPathForCommand(command, gen.AppPath)
 	} else {
-		appDirectory := gen.AppPath
+		appFw := frameworks.DetectFramework(gen.AppPath, gen.VirtualEnvName)
 
-		appModule = gen.getDjangoStartupModule()
-		if appModule != "" {
-			appType = "Django"
-			appDebugCmd = "manage.py startserver"
-			println("Detected Django app.")
+		if appFw != nil {
+			println("Detected an app based on " + appFw.Name())
+			appType      = appFw.Name()
+			appDirectory = gen.AppPath
+			appModule    = appFw.getGunicornModuleArg()
+			appDebugCmd  = appFw.getDebuggableCommand(ge)
 		} else {
-			var appMainFile string
-			appMainFile, appModule = gen.getFlaskStartupModuleAndObject()
-			if appModule != "" {
-				appType = "Flask"
-				appDebugCmd = appMainFile
-				println("Detected Flask app.")
-			} else {
-				appType = "Default"
-				logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
-				println("Using default app from " + gen.DefaultAppPath)
-				appDirectory = gen.DefaultAppPath
-				appModule = gen.DefaultAppModule
-			}
+			println("No framework detected; using default app from " + gen.DefaultAppPath)
+			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
+			appType      = "Default"
+			appDirectory = gen.DefaultAppPath
+			appModule    = gen.DefaultAppModule
+			appDebugCmd  = gen.DefaultAppDebugCommand
 		}
 
 		if appModule != "" {
 			if gen.shouldStartAppInDebugMode() {
-				logger.LogInformation("Generating debug command for appModule='%s'", appModule)
-				command = gen.buildPtvsdCommandForModule(appModule, appDirectory)
+				logger.LogInformation("Generating debug command for appDebugCmd='%s'", appDebugCmd)
+				command = gen.buildPtvsdCommandForModule(appDebugCmd, appDirectory)
 				appDebugAdapter = gen.DebugAdapter
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
@@ -217,63 +209,13 @@ func getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
 	return scriptBuilder.String()
 }
 
-// Checks if the app is based on Django, and returns a startup command if so.
-func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
-	logger := common.GetLogger("python.scriptgenerator.getDjangoStartupModule")
-	defer logger.Shutdown()
-
-	appRootFiles, err := ioutil.ReadDir(gen.AppPath)
-	if err != nil {
-		logReadDirError(logger, gen.AppPath, err)
-		panic("Couldn't read app directory '" + gen.AppPath + "'")
-	}
-	for _, appRootFile := range appRootFiles {
-		if appRootFile.IsDir() && appRootFile.Name() != gen.Manifest.VirtualEnvName {
-			subDirPath := filepath.Join(gen.AppPath, appRootFile.Name())
-			subDirFiles, subDirErr := ioutil.ReadDir(subDirPath)
-			if subDirErr != nil {
-				logReadDirError(logger, subDirPath, subDirErr)
-				panic("Couldn't read directory '" + subDirPath + "'")
-			}
-			for _, subDirFile := range subDirFiles {
-				if !subDirFile.IsDir() && subDirFile.Name() == "wsgi.py" {
-					return appRootFile.Name() + ".wsgi"
-				}
-			}
-		}
-	}
-	return ""
-}
-
-// Checks if the app is based on Flask, and returns the main file's name
-// along with a path to the app's Flask object.
-func (gen *PythonStartupScriptGenerator) getFlaskStartupModuleAndObject() (string, string) {
-	logger := common.GetLogger("python.scriptgenerator.getFlaskStartupModuleAndObject")
-	defer logger.Shutdown()
-
-	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
-
-	for _, file := range filesToSearch {
-		fullPath := filepath.Join(gen.AppPath, file) // TODO: app code might be under 'src'
-		if common.FileExists(fullPath) {
-			logger.LogInformation("Found file '%s'", fullPath)
-			println("Using '" + fullPath + "' as the startup module.")
-
-			modulename := file[0 : len(file)-3] // Remove the '.py' from the end
-			return file, modulename + ":app"
-		}
-	}
-
-	return "", ""
-}
-
 // Produces the gunicorn command to run the app.
 // `module` is of the pattern "<dotted module path>:<variable name>".
 // The variable name refers to a WSGI callable that should be found in the specified module.
 func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module string, appDir string) string {
 	workerCount := getWorkerCount()
 
-	// Default to AppService's timeout value (in seconds)
+	// Default to App Service's timeout value (in seconds)
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" + workerCount
 
 	if gen.BindPort != "" {
