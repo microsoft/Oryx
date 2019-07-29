@@ -9,6 +9,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class SemanticVersionResolverTest
     {
+        [Theory]
+        [InlineData(">=1.2.3 <2.0.0", "1.3.5")]
+        [InlineData("^1.2.5 || ^2.0.0", "2.3.0")]
+        [InlineData("^1.2.5 || ^2.3.5", "1.3.5")]
+        [InlineData(">=1.2.3", "2.3.0")]
+        [InlineData("=1.2.3", "1.2.3")]
+        [InlineData("v1.2.3", "1.2.3")]
+        [InlineData("^1.2.3", "1.3.5")] // get latest minor & patch
+        [InlineData("~1.2.3", "1.2.5")] // get latest patch
+        public void GetMaxSatisfyingVersion_UnderstandComplexRangeSyntaxes(string providedRange, string expectedVersion)
+        {
+            // Arrange
+            var supportedVersions = new[] { "1.2.3", "1.2.4", "1.2.5", "1.3.0", "1.3.5", "2.0.0", "2.3.0" };
+
+            // Act
+            var returnedVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                providedRange,
+                supportedVersions);
+
+            // Assert;
+            Assert.Equal(expectedVersion, returnedVersion);
+        }
+
         [Fact]
         public void MajorMinorAndPatchVersionsProvided_MatchesExactVersionIfAvailable()
         {
