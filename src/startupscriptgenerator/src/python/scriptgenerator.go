@@ -19,7 +19,7 @@ import (
 
 
 type PythonStartupScriptGenerator struct {
-	SourcePath					string
+	AppPath						string
 	UserStartupCommand			string
 	DefaultAppPath				string
 	DefaultAppModule			string
@@ -44,12 +44,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+	logger.LogInformation("Generating script for source at '%s'", gen.AppPath)
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
+	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
 
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
@@ -66,11 +66,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	command := gen.UserStartupCommand // A custom command takes precedence over any detection logic
 	if command != "" {
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.AppPath)
 		logger.LogInformation("Permission added: %t", isPermissionAdded)
-		command = common.ExtendPathForCommand(command, gen.SourcePath)
+		command = common.ExtendPathForCommand(command, gen.AppPath)
 	} else {
-		appDirectory := gen.SourcePath
+		appDirectory := gen.AppPath
 
 		appModule = gen.getDjangoStartupModule()
 		if appModule != "" {
@@ -137,7 +137,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	}
 
 	if virtualEnvironmentName != "" {
-		virtualEnvDir := filepath.Join(gen.SourcePath, virtualEnvironmentName)
+		virtualEnvDir := filepath.Join(gen.AppPath, virtualEnvironmentName)
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
@@ -186,7 +186,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	}
 
 	if packageDirName != "" {
-		packageDir := filepath.Join(gen.SourcePath, packageDirName)
+		packageDir := filepath.Join(gen.AppPath, packageDirName)
 		if common.PathExists(packageDir) {
 			scriptBuilder.WriteString("echo Using package directory '" + packageDir + "'\n")
 			scriptBuilder.WriteString("SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
@@ -222,14 +222,14 @@ func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 	logger := common.GetLogger("python.scriptgenerator.getDjangoStartupModule")
 	defer logger.Shutdown()
 
-	appRootFiles, err := ioutil.ReadDir(gen.SourcePath)
+	appRootFiles, err := ioutil.ReadDir(gen.AppPath)
 	if err != nil {
-		logReadDirError(logger, gen.SourcePath, err)
-		panic("Couldn't read application folder '" + gen.SourcePath + "'")
+		logReadDirError(logger, gen.AppPath, err)
+		panic("Couldn't read app directory '" + gen.AppPath + "'")
 	}
 	for _, appRootFile := range appRootFiles {
 		if appRootFile.IsDir() && appRootFile.Name() != gen.Manifest.VirtualEnvName {
-			subDirPath := filepath.Join(gen.SourcePath, appRootFile.Name())
+			subDirPath := filepath.Join(gen.AppPath, appRootFile.Name())
 			subDirFiles, subDirErr := ioutil.ReadDir(subDirPath)
 			if subDirErr != nil {
 				logReadDirError(logger, subDirPath, subDirErr)
@@ -254,7 +254,7 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModuleAndObject() (strin
 	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
 
 	for _, file := range filesToSearch {
-		fullPath := filepath.Join(gen.SourcePath, file) // TODO: app code might be under 'src'
+		fullPath := filepath.Join(gen.AppPath, file) // TODO: app code might be under 'src'
 		if common.FileExists(fullPath) {
 			logger.LogInformation("Found file '%s'", fullPath)
 			println("Using '" + fullPath + "' as the startup module.")
