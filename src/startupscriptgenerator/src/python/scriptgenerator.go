@@ -62,22 +62,22 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	command := gen.UserStartupCommand
 	if command == "" {
 		appDirectory := gen.SourcePath
-		
+
 		appModule = gen.getDjangoStartupModule()
 		if appModule != "" {
 			appType = "Django"
 			println("Detected Django app.")
 		} else {
 			appModule = gen.getFlaskStartupModule()
-			if appModule == "" {
+			if appModule != "" {
+				appType = "Flask"
+				println("Detected flask app.")
+			} else {
 				appType = "Default"
 				logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
 				println("Using default app from " + gen.DefaultAppPath)
 				appDirectory = gen.DefaultAppPath
 				appModule = gen.DefaultAppModule
-			} else {
-				appType = "Flask"
-				println("Detected flask app.")
 			}
 		}
 
