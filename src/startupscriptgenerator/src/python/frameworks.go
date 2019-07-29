@@ -82,7 +82,7 @@ func (detector *djangoDetector) GetGunicornModuleArg() string {
 
 func (detector *djangoDetector) GetDebuggableCommand() string {
 	if !common.FileExists(filepath.Join(detector.appPath, "manage.py")) {
-		logger := common.GetLogger("python.frameworks.djangoDetector.getDebuggableCommand")
+		logger := common.GetLogger("python.frameworks.djangoDetector.GetDebuggableCommand")
 		logger.LogWarning("No 'manage.py' file found in app's root directory")
 		logger.Shutdown()
 	}
@@ -102,7 +102,7 @@ func (detector *flaskDetector) detect() bool {
 	logger := common.GetLogger("python.frameworks.flaskDetector.detect")
 	defer logger.Shutdown()
 
-	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
+	filesToSearch := []string{"application.py", "app.py", "run.py", "index.py", "server.py"}
 
 	for _, file := range filesToSearch {
 		// TODO: app code might be under 'src'
