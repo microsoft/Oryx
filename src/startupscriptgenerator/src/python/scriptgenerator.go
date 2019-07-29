@@ -62,8 +62,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	command := gen.UserStartupCommand
 	if command == "" {
 		appDirectory := gen.SourcePath
+		
 		appModule = gen.getDjangoStartupModule()
-
 		if appModule != "" {
 			appType = "Django"
 			println("Detected Django app.")
