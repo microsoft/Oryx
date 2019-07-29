@@ -236,7 +236,7 @@ func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
 				panic("Couldn't read directory '" + subDirPath + "'")
 			}
 			for _, subDirFile := range subDirFiles {
-				if subDirFile.IsDir() == false && subDirFile.Name() == "wsgi.py" {
+				if !subDirFile.IsDir() && subDirFile.Name() == "wsgi.py" {
 					return appRootFile.Name() + ".wsgi"
 				}
 			}
