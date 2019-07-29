@@ -71,7 +71,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			appModule = gen.getFlaskStartupModule()
 			if appModule != "" {
 				appType = "Flask"
-				println("Detected flask app.")
+				println("Detected Flask app.")
 			} else {
 				appType = "Default"
 				logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
@@ -139,8 +139,8 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
 				// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
 				// the libraries are not found.
-				virtualEnvCommand := getVirtualEnvironmentCommand(virtualEnvironmentName, virtualEnvDir)
-				scriptBuilder.WriteString(virtualEnvCommand)
+				venvSubScript := getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+				scriptBuilder.WriteString(venvSubScript)
 
 			} else {
 				packageDirName = "__oryx_packages__"
@@ -172,8 +172,8 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			scriptBuilder.WriteString("mkdir -p " + virtualEnvDir + "\n")
 			scriptBuilder.WriteString("echo Extracting to directory '" + virtualEnvDir + "'...\n")
 			scriptBuilder.WriteString("$extractionCommand\n")
-			virtualEnvCommand := getVirtualEnvironmentCommand(virtualEnvironmentName, virtualEnvDir)
-			scriptBuilder.WriteString(virtualEnvCommand)
+			venvSubScript := getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+			scriptBuilder.WriteString(venvSubScript)
 		}
 	}
 
@@ -196,7 +196,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	return scriptBuilder.String()
 }
 
-func getVirtualEnvironmentCommand(virtualEnvName string, virtualEnvDir string) string {
+func getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString(
 		"PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) " +
