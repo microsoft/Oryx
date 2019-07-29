@@ -267,7 +267,9 @@ func (gen *PythonStartupScriptGenerator) getFlaskStartupModuleAndObject() (strin
 	return "", ""
 }
 
-// Produces the gunicorn command to run the app
+// Produces the gunicorn command to run the app.
+// `module` is of the pattern "<dotted module path>:<variable name>".
+// The variable name refers to a WSGI callable that should be found in the specified module.
 func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module string, appDir string) string {
 	workerCount := getWorkerCount()
 
