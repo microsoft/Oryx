@@ -84,7 +84,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		if appModule != "" {
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appModule='%s'", appModule)
-				command = gen.buildDebugCommandForModule(appModule, appDirectory)
+				command = gen.buildPtvsdCommandForModule(appModule, appDirectory)
 				appDebug = true
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
@@ -296,10 +296,13 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	return true
 }
 
-func (gen *PythonStartupScriptGenerator) buildDebugCommandForModule(module string, appDir string) string {
-	// TODO: support --wait
+func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(module string, appDir string) string {
+	waitarg := ""
+	if gen.DebugWait {
+		waitarg = " --wait"
+	}
 
-	pycmd := "python -m ptvsd --host " + DefaultHost + " --port " + DefaultPtvsdPort + " -m " + module
+	pycmd := "python -m ptvsd --host " + DefaultHost + " --port " + DefaultPtvsdPort + waitarg + " -m " + module
 
 	cdcmd := ""
 	if appDir != "" {
