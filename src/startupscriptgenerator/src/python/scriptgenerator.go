@@ -249,17 +249,18 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	return true
 }
 
-func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(module string, appDir string) string {
+func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(cmd string, appDir string) string {
 	waitarg := ""
 	if gen.DebugWait {
 		waitarg = " --wait"
 	}
 
-	pycmd := "python -m ptvsd --host " + DefaultHost + " --port " + gen.DebugPort + waitarg + " -m " + module
+	pycmd := fmt.Sprintf("python -m ptvsd --host %s --port %s %s -m %s",
+						 DefaultHost, gen.DebugPort, waitarg, cmd)
 
 	cdcmd := ""
 	if appDir != "" {
-		cdcmd = "cd " + appDir + " && "
+		cdcmd = fmt.Sprintf("cd %s && ", appDir)
 	}
 
 	return cdcmd + pycmd
