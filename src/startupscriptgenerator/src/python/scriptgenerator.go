@@ -56,7 +56,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
-	appDebug := false // Will the app be started in debugging mode
+	appDebugAdapter := "" // Will the app be started in debugging mode
 	appType := ""
 	appModule := ""
 	command := gen.UserStartupCommand
@@ -85,7 +85,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appModule='%s'", appModule)
 				command = gen.buildPtvsdCommandForModule(appModule, appDirectory)
-				appDebug = true
+				appDebugAdapter = gen.DebugAdapter
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
 				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
@@ -101,8 +101,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogProperties(
 		"Finalizing script",
-		map[string]string{"appType": appType, "debug": appDebug, "appModule": appModule,
-			"venv": gen.Manifest.VirtualEnvName})
+		map[string]string { "appType": appType, "appDebugAdapter": appDebugAdapter,
+							"appModule": appModule, "venv": gen.Manifest.VirtualEnvName })
 
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
