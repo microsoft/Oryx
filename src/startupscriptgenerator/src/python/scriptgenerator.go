@@ -9,7 +9,6 @@ import (
 	"common"
 	"common/consts"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -19,20 +18,20 @@ import (
 
 
 type PythonStartupScriptGenerator struct {
-	AppPath						string
-	UserStartupCommand			string
-	DefaultAppPath				string
-	DefaultAppModule			string
-	DefaultAppDebugCommand		string
-	DebugAdapter				string // Remote debugger adapter to use.
-									   //  Currently, only `ptvsd` is supported. It listens on port 3000.
-	DebugWait					bool   // Whether debugger adapter should pause and wait for a client
-									   //  connection before running the app.
-	BindPort					string
-	VirtualEnvName				string
-	PackageDirectory			string
-	SkipVirtualEnvExtraction	bool
-	Manifest					common.BuildManifest
+	AppPath                     string
+	UserStartupCommand          string
+	DefaultAppPath              string
+	DefaultAppModule            string
+	DefaultAppDebugCommand      string
+	DebugAdapter                string // Remote debugger adapter to use.
+	                                   //  Currently, only `ptvsd` is supported. It listens on port 3000.
+	DebugWait                   bool // Whether debugger adapter should pause and wait for a client
+	                                 //  connection before running the app.
+	BindPort                    string
+	VirtualEnvName              string
+	PackageDirectory            string
+	SkipVirtualEnvExtraction    bool
+	Manifest                    common.BuildManifest
 }
 
 const SupportedDebugAdapter = "ptvsd"; // Not using an array since there's only one at the moment
@@ -59,6 +58,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	appType := "" // "Django", "Flask", etc.
 	appDebugAdapter := "" // Used debugger adapter
+	appDirectory := ""
 	appModule := ""   // Suspected entry module in app
 	appDebugCmd := "" // Command to run under a debugger in case debugging mode was requested
 	
@@ -68,14 +68,14 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		logger.LogInformation("Permission added: %t", isPermissionAdded)
 		command = common.ExtendPathForCommand(command, gen.AppPath)
 	} else {
-		appFw := frameworks.DetectFramework(gen.AppPath, gen.VirtualEnvName)
+		var appFw PyAppFramework = DetectFramework(gen.AppPath, gen.VirtualEnvName)
 
 		if appFw != nil {
 			println("Detected an app based on " + appFw.Name())
 			appType      = appFw.Name()
 			appDirectory = gen.AppPath
-			appModule    = appFw.getGunicornModuleArg()
-			appDebugCmd  = appFw.getDebuggableCommand(ge)
+			appModule    = appFw.GetGunicornModuleArg()
+			appDebugCmd  = appFw.GetDebuggableCommand()
 		} else {
 			println("No framework detected; using default app from " + gen.DefaultAppPath)
 			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)

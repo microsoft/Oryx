@@ -3,9 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-package frameworks
+package main
 
-import "common"
+import (
+	"common"
+	"io/ioutil"
+	"path/filepath"
+)
 
 type PyAppFramework interface {
     Name() string
@@ -17,7 +21,7 @@ type PyAppFramework interface {
 type djangoDetector struct {
 	appPath		string
 	venvName	string
-	wsgiFile	string
+	wsgiModule	string
 }
 
 type flaskDetector struct {
@@ -25,15 +29,15 @@ type flaskDetector struct {
 	mainFile	string
 }
 
-func DetectFramework(appPath string, venvName string) *PyAppFramework {
+func DetectFramework(appPath string, venvName string) PyAppFramework {
 	var detector PyAppFramework
 
-	detector = djangoDetector{ appPath: appPath, venvName: venvName }
+	detector = &djangoDetector{ appPath: appPath, venvName: venvName }
 	if detector.detect() {
 		return detector
 	}
 
-	detector = flaskDetector{ appPath: appPath }
+	detector = &flaskDetector{ appPath: appPath }
 	if detector.detect() {
 		return detector
 	}
@@ -64,7 +68,7 @@ func (detector *djangoDetector) detect() bool {
 
 		subDirWsgiFilePath := filepath.Join(detector.appPath, appRootEntry.Name(), "wsgi.py")
 		if common.FileExists(subDirWsgiFilePath) {
-			detector.wsgiModule = appRootFile.Name() + ".wsgi"
+			detector.wsgiModule = appRootEntry.Name() + ".wsgi"
 			return true
 		}
 	}
@@ -72,11 +76,11 @@ func (detector *djangoDetector) detect() bool {
 	return false
 }
 
-func (detector *djangoDetector) getGunicornModuleArg() string {
+func (detector *djangoDetector) GetGunicornModuleArg() string {
 	return detector.wsgiModule
 }
 
-func (detector *djangoDetector) getDebuggableCommand() string {
+func (detector *djangoDetector) GetDebuggableCommand() string {
 	if !common.FileExists(filepath.Join(detector.appPath, "manage.py")) {
 		logger := common.GetLogger("python.frameworks.djangoDetector.getDebuggableCommand")
 		logger.LogWarning("No 'manage.py' file found in app's root directory")
@@ -114,12 +118,12 @@ func (detector *flaskDetector) detect() bool {
 }
 
 // TODO: detect correct variable name from a list of common names (app, application, etc.)
-func (detector *flaskDetector) getGunicornModuleArg() string {
-	module = detector.mainFile[0 : len(detector.mainFile) - 3] // Remove the '.py' from the end
+func (detector *flaskDetector) GetGunicornModuleArg() string {
+	module := detector.mainFile[0 : len(detector.mainFile) - 3] // Remove the '.py' from the end
 	return module + ":app"
 }
 
-func (detector *flaskDetector) getDebuggableCommand() string {
+func (detector *flaskDetector) GetDebuggableCommand() string {
 	// Default is 127.0.0.1:5000 (https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run)
 	return detector.mainFile
 }

@@ -37,7 +37,7 @@ func main() {
 	common.SetGlobalOperationID(buildManifest)
 
 	entrypointGenerator := PythonStartupScriptGenerator{
-		SourcePath:               fullAppPath,
+		AppPath:                  fullAppPath,
 		UserStartupCommand:       *userStartupCommandPtr,
 		VirtualEnvName:           *virtualEnvNamePtr,
 		BindPort:                 *bindPortPtr,
