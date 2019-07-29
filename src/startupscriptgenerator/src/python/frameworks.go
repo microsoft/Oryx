@@ -14,11 +14,20 @@ type djangoDetector struct {
 	wsgiFile	string
 }
 
+type flaskDetector struct {
+	appPath		string
+	mainFile	string
+}
+
 func NewDjangoDetector(appPath string, venvName string) PyAppFrameworkDetector {
 	return djangoDetector{
 		appPath: appPath,
 		venvName: venvName,
 	}
+}
+
+func NewFlaskDetector(appPath string) PyAppFrameworkDetector {
+	return flaskDetector{ appPath: appPath }
 }
 
 // Returns true if one of the subdirectories of the app has a file named 'wsgi.py'
