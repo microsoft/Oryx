@@ -64,7 +64,10 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		appDirectory := gen.SourcePath
 		appModule = gen.getDjangoStartupModule()
 
-		if appModule == "" {
+		if appModule != "" {
+			appType = "Django"
+			println("Detected Django app.")
+		} else {
 			appModule = gen.getFlaskStartupModule()
 			if appModule == "" {
 				appType = "Default"
@@ -76,9 +79,6 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 				appType = "Flask"
 				println("Detected flask app.")
 			}
-		} else {
-			appType = "Django"
-			println("Detected Django app.")
 		}
 
 		if appModule != "" {
