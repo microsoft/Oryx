@@ -32,6 +32,8 @@ func main() {
 	debugAdapterPtr := flag.String("debugAdapter", "", "Python debugger adapter. Currently, only 'ptvsd' is " +
 		"supported.")
 
+	debugPortPtr := flag.String("debugPort", "3000", "Port where the debugger will bind to. Has no effect if -debugAdapter isn't used.")
+
 	debugWaitPtr := flag.Bool("debugWait", false, "Whether the debugger adapter should pause and wait for a " +
 		"client connection before running the app.")
 	
@@ -67,6 +69,7 @@ func main() {
 		DefaultAppModule:         *defaultAppModulePtr,
 		DefaultAppDebugCommand:   *defaultAppDebugCmdPtr,
 		DebugAdapter:             *debugAdapterPtr,
+		DebugPort:                *debugPortPtr,
 		DebugWait:                *debugWaitPtr,
 		PackageDirectory:         *packagesFolderPtr,
 		SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,

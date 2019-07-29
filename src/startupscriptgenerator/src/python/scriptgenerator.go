@@ -25,6 +25,7 @@ type PythonStartupScriptGenerator struct {
 	DefaultAppDebugCommand      string
 	DebugAdapter                string // Remote debugger adapter to use.
 	                                   //  Currently, only `ptvsd` is supported. It listens on port 3000.
+	DebugPort                   string
 	DebugWait                   bool // Whether debugger adapter should pause and wait for a client
 	                                 //  connection before running the app.
 	BindPort                    string
@@ -35,7 +36,6 @@ type PythonStartupScriptGenerator struct {
 }
 
 const SupportedDebugAdapter = "ptvsd"; // Not using an array since there's only one at the moment
-const DefaultPtvsdPort = "3000"
 
 const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
@@ -255,7 +255,7 @@ func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(module strin
 		waitarg = " --wait"
 	}
 
-	pycmd := "python -m ptvsd --host " + DefaultHost + " --port " + DefaultPtvsdPort + waitarg + " -m " + module
+	pycmd := "python -m ptvsd --host " + DefaultHost + " --port " + gen.DebugPort + waitarg + " -m " + module
 
 	cdcmd := ""
 	if appDir != "" {
