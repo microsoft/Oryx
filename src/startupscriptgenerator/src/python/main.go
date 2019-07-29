@@ -18,7 +18,7 @@ func main() {
 	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed to start the application up.")
 	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/defaultsite'")
 	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application, e.g. 'application:app'.")
-	virtualEnvironmentNamePtr := flag.String("virtualEnvName", "", "Name of the virtual environment for the app")
+	virtualEnvNamePtr := flag.String("virtualEnvName", "", "Name of the virtual environment for the app")
 	packagesFolderPtr := flag.String("packagedir", "", "Directory where the python packages were installed, if no virtual environment was used.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
@@ -38,7 +38,7 @@ func main() {
 	entrypointGenerator := PythonStartupScriptGenerator{
 		SourcePath:               fullAppPath,
 		UserStartupCommand:       *userStartupCommandPtr,
-		VirtualEnvironmentName:   *virtualEnvironmentNamePtr,
+		VirtualEnvName:           *virtualEnvNamePtr,
 		BindPort:                 *bindPortPtr,
 		DefaultAppPath:           defaultAppFullPAth,
 		DefaultAppModule:         *defaultAppModulePtr,

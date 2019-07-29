@@ -28,7 +28,7 @@ type PythonStartupScriptGenerator struct {
 	DebugWait					bool   // Whether debugger should pause and wait for a client
 									   //  connection before running the app
 	BindPort					string
-	VirtualEnvironmentName		string
+	VirtualEnvName				string
 	PackageDirectory			string
 	SkipVirtualEnvExtraction	bool
 	Manifest					common.BuildManifest
@@ -128,7 +128,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	// Values in manifest file takes precedence over values supplied at command line
 	virtualEnvironmentName := gen.Manifest.VirtualEnvName
 	if virtualEnvironmentName == "" {
-		virtualEnvironmentName = gen.VirtualEnvironmentName
+		virtualEnvironmentName = gen.VirtualEnvName
 	}
 
 	packageDirName := gen.Manifest.PackageDir
