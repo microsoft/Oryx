@@ -598,7 +598,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
-                $"--language-version {nodeVersion} -p compress_node_modules=zip")
+                $"--platform-version {nodeVersion} -p compress_node_modules=zip")
                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                .ToString();
 
