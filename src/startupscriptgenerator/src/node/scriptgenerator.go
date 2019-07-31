@@ -54,6 +54,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
+	scriptBuilder.WriteString("ls -l \n\n")
+	scriptBuilder.WriteString("ls -l \"" + gen.SourcePath + "\"/node_modules/.bin \n\n")
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -78,24 +80,31 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 			os.Exit(consts.FAILURE_EXIT_CODE)
 		}
 
-		scriptBuilder.WriteString("echo \"Removing existing modules directory...\"\n")
+		scriptBuilder.WriteString("echo \"Removing existing modules directory from root...\"\n")
 		scriptBuilder.WriteString("rm -fr " + targetNodeModulesDir + "\n")
 		scriptBuilder.WriteString("mkdir -p " + targetNodeModulesDir + "\n")
 		scriptBuilder.WriteString("echo Extracting modules...\n")
 		scriptBuilder.WriteString("$extractionCommand\n")
+		
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
 		scriptBuilder.WriteString("export NODE_PATH=\"" + targetNodeModulesDir + "\":$NODE_PATH\n")
 		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
 		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
-		scriptBuilder.WriteString("export PATH=" + targetNodeModulesDir + "/.bin:$PATH\n")
+		scriptBuilder.WriteString("export PATH=." + targetNodeModulesDir + "/.bin:$PATH\n")
 		// To avoid having older versions of packages available, we delete existing node_modules folder.
 		// We do so in the background to not block the app's startup.
-		scriptBuilder.WriteString("if [ -d node_modules ]; then\n")
-		// We move the directory first to prevent node from start using it
+		scriptBuilder.WriteString("if [ -d node_modules ] || [ -L node_modules ]; then\n")
+		// We move the directory/link first to prevent node from start using it
 		scriptBuilder.WriteString("    mv -f node_modules _del_node_modules || true\n")
 		scriptBuilder.WriteString("    nohup rm -fr _del_node_modules &> /dev/null &\n")
-		scriptBuilder.WriteString("fi\n")
+		scriptBuilder.WriteString("fi\n\n")
+		scriptBuilder.WriteString("\n# creating symbolic links for node_modules in the source directory\n")
+		scriptBuilder.WriteString("ln -s /node_modules ./node_modules \n\n")
+		scriptBuilder.WriteString("ls -l ./node_modules \n\n")
+		scriptBuilder.WriteString("\n# creating symbolic links for node_module's bin directory\n")
+		scriptBuilder.WriteString("ln -s /node_modules/.bin ./node_modules/.bin \n\n")
+		scriptBuilder.WriteString("ls -l ./node_modules/.bin \n\n")
 		scriptBuilder.WriteString("echo \"Done.\"\n")
 	}
 

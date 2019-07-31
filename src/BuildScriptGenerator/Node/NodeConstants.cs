@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string NpmStartCommand = "npm start";
         internal const string YarnStartCommand = "yarn run start";
         internal const string YarnCommand = "yarn";
-        internal const string NpmPackageInstallCommand = "npm install --no-bin-links";
+        internal const string NpmPackageInstallCommand = "npm install";
         internal const string YarnPackageInstallCommand = "yarn install --prefer-offline";
         internal const string ProductionOnlyPackageInstallCommandTemplate = "{0} --production";
         internal const string PkgMgrRunBuildCommandTemplate = "{0} run build";
