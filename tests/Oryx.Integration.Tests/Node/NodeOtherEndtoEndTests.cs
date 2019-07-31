@@ -579,7 +579,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("10.1")]
         [InlineData("10.10")]
         [InlineData("10.14")]
-        [InlineData("12.5")]
+        [InlineData("12")]
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -598,7 +598,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
-                $"--language-version {nodeVersion} -p compress_node_modules=zip")
+                $"--platform-version {nodeVersion} -p compress_node_modules=zip")
                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                .ToString();
 
