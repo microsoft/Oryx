@@ -51,6 +51,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
 
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
 	packageSetupBlock := gen.getPackageSetupCommand()
@@ -60,7 +61,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	appDebugAdapter := "" // Used debugger adapter
 	appDirectory := ""
 	appModule := ""   // Suspected entry module in app
-	appDebugCmd := "" // Command to run under a debugger in case debugging mode was requested
+	appDebugModule := "" // Command to run under a debugger in case debugging mode was requested
 	
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
 	if command != "" {
@@ -72,23 +73,23 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 		if appFw != nil {
 			println("Detected an app based on " + appFw.Name())
-			appType      = appFw.Name()
-			appDirectory = gen.AppPath
-			appModule    = appFw.GetGunicornModuleArg()
-			appDebugCmd  = appFw.GetDebuggableCommand()
+			appType        = appFw.Name()
+			appDirectory   = gen.AppPath
+			appModule      = appFw.GetGunicornModuleArg()
+			appDebugModule = appFw.GetDebuggableModule()
 		} else {
 			println("No framework detected; using default app from " + gen.DefaultAppPath)
 			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
-			appType      = "Default"
-			appDirectory = gen.DefaultAppPath
-			appModule    = gen.DefaultAppModule
-			appDebugCmd  = gen.DefaultAppDebugCommand
+			appType        = "Default"
+			appDirectory   = gen.DefaultAppPath
+			appModule      = gen.DefaultAppModule
+			appDebugModule = gen.DefaultAppDebugCommand
 		}
 
 		if appModule != "" {
 			if gen.shouldStartAppInDebugMode() {
-				logger.LogInformation("Generating debug command for appDebugCmd='%s'", appDebugCmd)
-				command = gen.buildPtvsdCommandForModule(appDebugCmd, appDirectory)
+				logger.LogInformation("Generating debug command for appDebugModule='%s'", appDebugModule)
+				command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
 				appDebugAdapter = gen.DebugAdapter
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
@@ -249,19 +250,19 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	return true
 }
 
-func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(cmd string, appDir string) string {
+func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArgs string, appDir string) string {
 	waitarg := ""
 	if gen.DebugWait {
-		waitarg = " --wait"
+		waitarg = "--wait"
 	}
-
-	pycmd := fmt.Sprintf("python -m ptvsd --host %s --port %s %s %s",
-						 DefaultHost, gen.DebugPort, waitarg, cmd)
 
 	cdcmd := ""
 	if appDir != "" {
 		cdcmd = fmt.Sprintf("cd %s && ", appDir)
 	}
+
+	pycmd := fmt.Sprintf("%spython -m ptvsd --host %s --port %s %s -m %s",
+						 cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
 }

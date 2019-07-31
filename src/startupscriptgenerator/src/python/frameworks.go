@@ -9,12 +9,13 @@ import (
 	"common"
 	"io/ioutil"
 	"path/filepath"
+	"fmt"
 )
 
 type PyAppFramework interface {
     Name() string
     GetGunicornModuleArg() string
-    GetDebuggableCommand() string
+    GetDebuggableModule() string
     detect() bool
 }
 
@@ -80,15 +81,15 @@ func (detector *djangoDetector) GetGunicornModuleArg() string {
 	return detector.wsgiModule
 }
 
-func (detector *djangoDetector) GetDebuggableCommand() string {
+func (detector *djangoDetector) GetDebuggableModule() string {
 	if !common.FileExists(filepath.Join(detector.appPath, "manage.py")) {
-		logger := common.GetLogger("python.frameworks.djangoDetector.GetDebuggableCommand")
+		logger := common.GetLogger("python.frameworks.djangoDetector.GetDebuggableModule")
 		logger.LogWarning("No 'manage.py' file found in app's root directory")
 		logger.Shutdown()
 	}
 
 	// Default is 127.0.0.1:8000 (https://docs.djangoproject.com/en/2.2/ref/django-admin/#runserver)
-	return "manage.py runserver 0.0.0.0:$PORT"
+	return "manage runserver $HOST:$PORT"
 }
 
 func (detector *flaskDetector) Name() string {
@@ -123,7 +124,7 @@ func (detector *flaskDetector) GetGunicornModuleArg() string {
 	return module + ":app"
 }
 
-func (detector *flaskDetector) GetDebuggableCommand() string {
+func (detector *flaskDetector) GetDebuggableModule() string {
 	// Default is 127.0.0.1:5000 (https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run)
-	return detector.mainFile
+	return fmt.Sprintf("flask run --host $HOST --port $PORT")
 }
