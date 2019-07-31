@@ -255,7 +255,7 @@ func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(cmd string, 
 		waitarg = " --wait"
 	}
 
-	pycmd := fmt.Sprintf("python -m ptvsd --host %s --port %s %s -m %s",
+	pycmd := fmt.Sprintf("python -m ptvsd --host %s --port %s %s %s",
 						 DefaultHost, gen.DebugPort, waitarg, cmd)
 
 	cdcmd := ""
