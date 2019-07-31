@@ -26,13 +26,13 @@ func main() {
 	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application," +
 		" e.g. 'application:app'.")
 	
-	defaultAppDebugCmdPtr := flag.String("defaultAppDebugCmd", "application.py", "Python command to run if " +
-		"debugging the app in debug mode, e.g. 'application.py start_dev_server'.")
+	defaultAppDebugModulePtr := flag.String("defaultAppDebugModule", "application.py", "Module to run if " +
+		"running the app in debug mode, e.g. 'application.py start_dev_server'. Has no effect if -debugAdapter isn't used.")
 	
 	debugAdapterPtr := flag.String("debugAdapter", "", "Python debugger adapter. Currently, only 'ptvsd' is " +
 		"supported.")
 
-	debugPortPtr := flag.String("debugPort", "3000", "Port where the debugger will bind to. Has no effect if -debugAdapter isn't used.")
+	debugPortPtr := flag.String("debugPort", "5678", "Port where the debugger will bind to. Has no effect if -debugAdapter isn't used.")
 
 	debugWaitPtr := flag.Bool("debugWait", false, "Whether the debugger adapter should pause and wait for a " +
 		"client connection before running the app.")
@@ -67,7 +67,7 @@ func main() {
 		BindPort:                 *bindPortPtr,
 		DefaultAppPath:           defaultAppFullPath,
 		DefaultAppModule:         *defaultAppModulePtr,
-		DefaultAppDebugCommand:   *defaultAppDebugCmdPtr,
+		DefaultAppDebugModule:    *defaultAppDebugModulePtr,
 		DebugAdapter:             *debugAdapterPtr,
 		DebugPort:                *debugPortPtr,
 		DebugWait:                *debugWaitPtr,

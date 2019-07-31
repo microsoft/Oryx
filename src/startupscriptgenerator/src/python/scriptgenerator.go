@@ -22,12 +22,11 @@ type PythonStartupScriptGenerator struct {
 	UserStartupCommand          string
 	DefaultAppPath              string
 	DefaultAppModule            string
-	DefaultAppDebugCommand      string
-	DebugAdapter                string // Remote debugger adapter to use.
-	                                   //  Currently, only `ptvsd` is supported. It listens on port 3000.
+	DefaultAppDebugModule       string
+	DebugAdapter                string // Remote debugger adapter to use. Currently, only `ptvsd` is supported.
 	DebugPort                   string
-	DebugWait                   bool // Whether debugger adapter should pause and wait for a client
-	                                 //  connection before running the app.
+	DebugWait                   bool   // Whether debugger adapter should pause and wait for a client
+	                                   //  connection before running the app.
 	BindPort                    string
 	VirtualEnvName              string
 	PackageDirectory            string
@@ -83,7 +82,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			appType        = "Default"
 			appDirectory   = gen.DefaultAppPath
 			appModule      = gen.DefaultAppModule
-			appDebugModule = gen.DefaultAppDebugCommand
+			appDebugModule = gen.DefaultAppDebugModule
 		}
 
 		if appModule != "" {

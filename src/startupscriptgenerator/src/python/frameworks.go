@@ -89,7 +89,7 @@ func (detector *djangoDetector) GetDebuggableModule() string {
 	}
 
 	// Default is 127.0.0.1:8000 (https://docs.djangoproject.com/en/2.2/ref/django-admin/#runserver)
-	return "manage runserver $HOST:$PORT"
+	return "manage runserver --noreload --nothreading $HOST:$PORT"
 }
 
 func (detector *flaskDetector) Name() string {
