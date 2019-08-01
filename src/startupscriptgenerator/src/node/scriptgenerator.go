@@ -55,7 +55,6 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
 	scriptBuilder.WriteString("ls -l \n\n")
-	scriptBuilder.WriteString("ls -l \"" + gen.SourcePath + "\"/node_modules/.bin \n\n")
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)

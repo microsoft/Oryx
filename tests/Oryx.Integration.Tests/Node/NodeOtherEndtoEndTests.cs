@@ -303,7 +303,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort 4200")
+                .AddCommand($"export PORT=4200")
+                .AddCommand($"oryx -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
