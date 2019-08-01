@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("AngularApp", data);
+                    Assert.Contains("AngularApp", data);
                 });
         }
 
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("TestAngular", data);
+                    Assert.Contains("TestAngular", data);
                 });
         }
     }

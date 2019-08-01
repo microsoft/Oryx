@@ -54,7 +54,6 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
-	scriptBuilder.WriteString("ls -l \n\n")
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -100,10 +99,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("fi\n\n")
 		scriptBuilder.WriteString("\n# creating symbolic links for node_modules in the source directory\n")
 		scriptBuilder.WriteString("ln -s /node_modules ./node_modules \n\n")
-		scriptBuilder.WriteString("ls -l ./node_modules \n\n")
 		scriptBuilder.WriteString("\n# creating symbolic links for node_module's bin directory\n")
 		scriptBuilder.WriteString("ln -s /node_modules/.bin ./node_modules/.bin \n\n")
-		scriptBuilder.WriteString("ls -l ./node_modules/.bin \n\n")
 		scriptBuilder.WriteString("echo \"Done.\"\n")
 	}
 
