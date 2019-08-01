@@ -329,7 +329,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Welcome to test-angular!", data);
+                    Assert.Contains("TestAngular", data);
                 });
         }
 
