@@ -70,17 +70,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
+            string packageInstallerVersionCommand = null;
 
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
                 configureYarnCache = true;
+                packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
             }
             else
             {
                 packageManagerCmd = NodeConstants.NpmCommand;
                 packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+                packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
             }
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
@@ -147,7 +150,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 pruneDevDependencies: pruneDevDependencies,
                 appInsightsInjectCommand: appInsightsInjectCommand,
                 appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
-                appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName);
+                appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
+                packageInstallerVersionCommand: packageInstallerVersionCommand);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,

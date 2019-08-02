@@ -350,9 +350,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
-            Assert.Equal(
-                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
-                snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 

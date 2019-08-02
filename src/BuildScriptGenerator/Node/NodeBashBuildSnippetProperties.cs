@@ -22,7 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool pruneDevDependencies = false,
             string appInsightsInjectCommand = null,
             string appInsightsPackageName = null,
-            string appInsightsLoaderFileName = null)
+            string appInsightsLoaderFileName = null,
+            string packageInstallerVersionCommand = null)
         {
             PackageInstallCommand = packageInstallCommand;
             NpmRunBuildCommand = runBuildCommand;
@@ -36,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             AppInsightsInjectCommand = appInsightsInjectCommand;
             AppInsightsPackageName = appInsightsPackageName;
             AppInsightsLoaderFileName = appInsightsLoaderFileName;
+            PackageInstallerVersionCommand = packageInstallerVersionCommand;
         }
 
         public string PackageInstallCommand { get; set; }
@@ -61,5 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string AppInsightsPackageName { get; set; }
 
         public string AppInsightsLoaderFileName { get; set; }
+
+        public string PackageInstallerVersionCommand { get; set; }
     }
 }
