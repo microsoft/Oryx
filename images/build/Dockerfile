@@ -196,15 +196,11 @@ RUN set -ex \
         fi; \
     done
 
+COPY images/receivePgpKeys.sh /tmp/scripts/receivePgpKeys.sh
+RUN chmod +x /tmp/scripts/receivePgpKeys.sh
 RUN set -ex \
  && . /tmp/__nodeVersions.sh \
- && GPG_KEY=6A010C5166006599AA17F08146C2130DFD2497F5 \
- && for i in {1..5}; do \
-      gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" || \
-      gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$GPG_KEY" || \
-      gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$GPG_KEY"; \
-      if [ $? -eq 0 ]; then break; fi \
-    done \
+ && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
@@ -399,7 +395,7 @@ RUN chmod a+rw /var/nuget
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190326.8 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY images/build/php/prereqs/installPrereqs.sh /tmp/php/installPrereqs.sh

@@ -40,7 +40,8 @@ namespace Microsoft.Oryx.Tests.Common
 
             var infoFormatter = new DefinitionListFormatter();
 
-            infoFormatter.AddDefinition("Executed command", ExecutedCommand);
+            // NOTE: do not log the executed command as it might contain secrets
+            //infoFormatter.AddDefinition("Executed command", ExecutedCommand);
             if (HasExited) infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
             infoFormatter.AddDefinition("StdOut", StdOut);
             infoFormatter.AddDefinition("StdErr", StdErr);

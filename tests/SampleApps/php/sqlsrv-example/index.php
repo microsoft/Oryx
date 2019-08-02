@@ -18,5 +18,5 @@ try {
 }
 catch (PDOException $e) {
 	print("Error connecting to SQL Server.");
-	die($e->getTraceAsString());
+	die(print_r($e->getMessage()));
 }
