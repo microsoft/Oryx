@@ -395,7 +395,7 @@ RUN chmod a+rw /var/nuget
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190801.4 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY images/build/php/prereqs/installPrereqs.sh /tmp/php/installPrereqs.sh
