@@ -289,50 +289,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("10.10")]
-        [InlineData("10.14")]
-        [InlineData("12")]
-        public async Task CanBuildAndRun_AngularNodeApp(string nodeVersion)
-        {
-            // Arrange
-            var appName = "test-angular";
-            var volume = CreateAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
-               .ToString();
-            var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
-                .AddCommand($"oryx -appPath {appDir}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    buildScript
-                },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
-                4200,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    runScript
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("TestAngular", data);
-                });
-        }
-
         [Fact]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {
