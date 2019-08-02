@@ -116,7 +116,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Trait("foo", "bar")]
         [Theory]
         [InlineData("7.3")]
         [InlineData("7.2")]
@@ -152,7 +151,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    _output.WriteLine(data);
                     Assert.Equal(
                         DbContainerFixtureBase.GetSampleDataAsJson(),
                         data.Trim(),
