@@ -22,10 +22,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
-        [InlineData("8.0")]
-        [InlineData("8.2")]
-        [InlineData("8.8")]
         [InlineData("8.9")]
         [InlineData("8.11")]
         [InlineData("8.12")]
@@ -35,10 +33,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("10.10")]
         [InlineData("10.14")]
         [InlineData("12")]
-        public async Task CanBuildAndRun_AngularNodeApp_WithoutZippingNodeModules(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6NodeApp_WithoutZippingNodeModules(string nodeVersion)
         {
             // Arrange
-            var appName = "test-angular";
+            var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -71,14 +69,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("TestAngular", data);
+                    Assert.Contains("Angular6app", data);
                 });
         }
 
         [Theory]
-        [InlineData("8.0")]
-        [InlineData("8.2")]
-        [InlineData("8.8")]
         [InlineData("8.9")]
         [InlineData("8.11")]
         [InlineData("8.12")]
@@ -88,7 +83,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("10.10")]
         [InlineData("10.14")]
         [InlineData("12")]
-        public async Task CanBuildAndRunAngularApp_WithProdDependenciesOnly_UsingZippedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunAngular6App_WithDevAndProdDependencies_UsingZippedNodeModules(string nodeVersion)
         {
             string compressFormat = "tar-gz";
             // NOTE:
@@ -103,7 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "angular-app";
+            var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
@@ -139,24 +134,58 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("AngularApp", data);
+                    Assert.Contains("Angular6app", data);
+                });
+        }
+
+        // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater
+        [Theory]
+        [InlineData("10")]
+        [InlineData("12")]
+        public async Task CanBuildAndRun_Angular8NodeApp_WithoutZippingNodeModules(string nodeVersion)
+        {
+            // Arrange
+            var appName = "angular8app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"export PORT=4200")
+                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                4200,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Angular8app", data);
                 });
         }
 
         [Theory]
-        [InlineData("8.0")]
-        [InlineData("8.2")]
-        [InlineData("8.8")]
-        [InlineData("8.9")]
-        [InlineData("8.11")]
-        [InlineData("8.12")]
-        [InlineData("9.4")]
         [InlineData("10")]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.14")]
         [InlineData("12")]
-        public async Task CanBuildAndRunAngularApp_WithDevAndProdDependencies_UsingZippedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunAngular8App_WithDevAndProdDependencies_UsingZippedNodeModules(string nodeVersion)
         {
             string compressFormat = "tar-gz";
             // NOTE:
@@ -171,7 +200,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "test-angular";
+            var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
@@ -207,7 +236,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("TestAngular", data);
+                    Assert.Contains("Angular8app", data);
                 });
         }
     }
