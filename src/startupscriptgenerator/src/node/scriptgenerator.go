@@ -89,7 +89,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("export NODE_PATH=\"" + targetNodeModulesDir + "\":$NODE_PATH\n")
 		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
 		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
-		scriptBuilder.WriteString("export PATH=." + targetNodeModulesDir + "/.bin:$PATH\n")
+		scriptBuilder.WriteString("export PATH=" + targetNodeModulesDir + "/.bin:$PATH\n")
 		// To avoid having older versions of packages available, we delete existing node_modules folder.
 		// We do so in the background to not block the app's startup.
 		scriptBuilder.WriteString("if [ -d node_modules ] || [ -L node_modules ]; then\n")
@@ -99,9 +99,9 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("fi\n\n")
 		scriptBuilder.WriteString("if [ -d /node_modules/.bin ]; then\n")
 		// We move the directory/link first to prevent node from start using it
-		scriptBuilder.WriteString("\n# creating symbolic links for node_modules in the source directory\n")
+		scriptBuilder.WriteString("\n# creating symbolic links for local node_module's directory\n")
 		scriptBuilder.WriteString("ln -s /node_modules ./node_modules \n\n")
-		scriptBuilder.WriteString("\n# creating symbolic links for node_module's bin directory\n")
+		scriptBuilder.WriteString("\n# creating symbolic links for local node_module's bin directory\n")
 		scriptBuilder.WriteString("ln -s /node_modules/.bin ./node_modules/.bin \n\n")
 		scriptBuilder.WriteString("fi\n\n")
 		scriptBuilder.WriteString("echo \"Done.\"\n")
