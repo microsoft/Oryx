@@ -37,3 +37,5 @@ steps:
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@3
   displayName: 'Run Antimalware Scan'
+  inputs:
+    EnableServices: true
