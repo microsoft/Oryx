@@ -76,5 +76,6 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Equal("Hello World from express!", data);
                 });
         }
+
     }
 }
