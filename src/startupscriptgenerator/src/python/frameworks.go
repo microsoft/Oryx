@@ -103,7 +103,9 @@ func (detector *flaskDetector) detect() bool {
 	logger := common.GetLogger("python.frameworks.flaskDetector.detect")
 	defer logger.Shutdown()
 
-	filesToSearch := []string{"application.py", "app.py", "run.py", "index.py", "server.py"}
+	// Warning: the official "flask run" tool only looks for "wsgi.py" or "app.py".
+	// If the user is trying to debug an app with a differene main module name, it will need a custom debug command.
+	filesToSearch := []string{"application.py", "app.py", "run.py", "index.py", "server.py", "wsgi.py"}
 
 	for _, file := range filesToSearch {
 		// TODO: app code might be under 'src'
@@ -125,6 +127,13 @@ func (detector *flaskDetector) GetGunicornModuleArg() string {
 }
 
 func (detector *flaskDetector) GetDebuggableModule() string {
+	if !common.FileExists(filepath.Join(detector.appPath, "wsgi.py")) &&
+		!common.FileExists(filepath.Join(detector.appPath, "app.py")) {
+		logger := common.GetLogger("python.frameworks.flaskDetector.GetDebuggableModule")
+		logger.LogWarning("No 'wsgi.py' or 'app.py' file found in app's root directory")
+		logger.Shutdown()
+	}
+
 	// Default is 127.0.0.1:5000 (https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run)
 	return fmt.Sprintf("flask run --host $HOST --port $PORT")
 }

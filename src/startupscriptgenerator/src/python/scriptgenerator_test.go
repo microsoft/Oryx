@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule(t *testing.T) {
+func Test_ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_onlyModule(t *testing.T) {
 	// Arrange
 	workerCount := getWorkerCount()
 	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" +
@@ -23,13 +23,13 @@ func Test_ExamplePythonStartupScriptGenerator_getCommandFromModule_onlyModule(t 
 	}
 
 	// Act
-	actual := gen.getCommandFromModule("module.py", "")
+	actual := gen.buildGunicornCommandForModule("module.py", "")
 
 	// Assert
 	assert.Equal(t, expected, actual)
 }
 
-func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath(t *testing.T) {
+func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAndPath(t *testing.T) {
 	// Arrange
 	workerCount := getWorkerCount()
 	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workders=" +
@@ -39,13 +39,13 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPath(t *t
 	}
 
 	// Act
-	actual := gen.getCommandFromModule("module.py", "/a/b/c")
+	actual := gen.buildGunicornCommandForModule("module.py", "/a/b/c")
 
 	// Assert
 	assert.Equal(t, expected, actual)
 }
 
-func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHost(t *testing.T) {
+func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAndPathAndHost(t *testing.T) {
 	// Arrange
 	workerCount := getWorkerCount()
 	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" +
@@ -55,7 +55,7 @@ func ExamplePythonStartupScriptGenerator_getCommandFromModule_moduleAndPathAndHo
 	}
 
 	// Act
-	actual := gen.getCommandFromModule("module.py", "/a/b/c")
+	actual := gen.buildGunicornCommandForModule("module.py", "/a/b/c")
 
 	// Assert
 	assert.Equal(t, expected, actual)
