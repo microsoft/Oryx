@@ -24,14 +24,9 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
-        [InlineData("8.9")]
-        [InlineData("8.11")]
-        [InlineData("8.12")]
+        [InlineData("8")]
         [InlineData("9.4")]
         [InlineData("10")]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.14")]
         [InlineData("12")]
         public async Task CanBuildAndRun_Angular6NodeApp_WithoutZippingNodeModules(string nodeVersion)
         {
@@ -74,14 +69,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8.9")]
-        [InlineData("8.11")]
-        [InlineData("8.12")]
+        [InlineData("8")]
         [InlineData("9.4")]
         [InlineData("10")]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.14")]
         [InlineData("12")]
         public async Task CanBuildAndRunAngular6App_WithDevAndProdDependencies_UsingZippedNodeModules(string nodeVersion)
         {

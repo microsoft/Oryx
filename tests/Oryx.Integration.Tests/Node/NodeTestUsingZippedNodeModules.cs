@@ -24,7 +24,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetZipOptions_NodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules(string compressFormat, string nodeVersion)
+        [InlineData("8")]
+        [InlineData("10")]
+        [InlineData("12")]
+        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
         {
             // NOTE:
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
@@ -34,6 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             //    having issues with volume mounted directories
 
             // Arrange
+            var compressFormat = "tar-gz";
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
@@ -74,6 +78,49 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Equal("Hello World from express!", data);
+                });
+        }
+
+        [Theory]
+        [InlineData("8")]
+        [InlineData("10")]
+        [InlineData("12")]
+        public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
+        {
+            // Arrange
+            // Use a separate volume for output due to rsync errors
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appName = "create-react-app-sample";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"--platform-version {nodeVersion} -p compress_node_modules=zip")
+               .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+               .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[] { "-c", runAppScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<title>React App</title>", data);
                 });
         }
 
