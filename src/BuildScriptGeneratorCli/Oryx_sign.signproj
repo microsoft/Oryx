@@ -11,7 +11,7 @@
     <ItemGroup>
       <ProjectReference Include="..\BuildScriptGeneratorCli\BuildScriptGeneratorCli.csproj" />
       <FilesToSign Include="$(OutDir)\GenerateBuildScript.dll;&#xD;&#xA;                          $(OutDir)\Microsoft.Oryx.BuildScriptGenerator.dll;&#xD;&#xA;                          $(OutDir)\Microsoft.Oryx.Common.dll;">
-        <Authenticode>Microsoft</Authenticode>
+        <Authenticode>Microsoft400</Authenticode>
         <StrongName>StrongName</StrongName>
       </FilesToSign>
     </ItemGroup>
