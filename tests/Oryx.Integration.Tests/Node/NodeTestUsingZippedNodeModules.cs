@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestValueGenerator.GetZipOptions_NodeVersions), MemberType = typeof(TestValueGenerator))]
+        //[MemberData(nameof(TestValueGenerator.GetZipOptions_NodeVersions), MemberType = typeof(TestValueGenerator))]
         [InlineData("8")]
         [InlineData("10")]
         [InlineData("12")]
