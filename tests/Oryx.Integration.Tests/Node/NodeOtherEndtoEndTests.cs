@@ -459,7 +459,6 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand($"npm rebuild node-sass") //remove this once workitem 762584 is done
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
