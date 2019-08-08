@@ -15,10 +15,10 @@ namespace Microsoft.Oryx.Tests.Common
         private readonly static List<string> NodeVersions = new List<string>
         {
             "4.4", "4.5", "4.8",
-            "6.2", "6.6", "6.9", "6.10", "6.11",
-            "8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
+            "6.2", "6.6", "6.9", "6.10", "6.11", "8",
+            "8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12", "8.16",
             "9.4",
-            "10.1", "10.10", "10.14", "12"
+            "10","10.1", "10.10", "10.14", "10.16", "12", "12.7"
         };
 
         private readonly static List<string> PythonVersions = new List<string>
@@ -46,9 +46,9 @@ namespace Microsoft.Oryx.Tests.Common
         {
             var versions = new List<string>
             {
-                "8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
+                "8","8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12", "8.16",
                 "9.4",
-                "10.1", "10.10", "10.14", "12"
+                "10","10.1", "10.10", "10.14", "12", "12.7"
             };
 
             return versions.Select(v => new object[] { v });

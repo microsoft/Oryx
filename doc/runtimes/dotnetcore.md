@@ -19,18 +19,14 @@ the Microsoft Container Registry.
 
 # Detect
 
-The .NET Core toolset is applied when a `.csproj` ("C# Project") file is found
-in the root or a subdirectory of the repo. If a `.csproj` file is found in the
-root it is used; if not in the root but exactly one `.csproj` file is found in
-a subdirectory, it is used. If multiple files are found in subdirectories an
-error is returned.
+The .NET Core toolset is applied when an ASP.NET Core or Azure Functions project file is found
+in the root or a subdirectory of the repo.   
+We currently support detecting both `.csproj` ("C# Project") and `.fsproj` ("F# Project") files.
 
-The `PROJECT` environment variable (App Setting in App Service) can be used to
-specify a repo-relative path to a valid `.csproj` file to manage the build. If
-this variable is specified no other checks are carried out.
-
-Only ASP.NET Core apps are supported; therefore the .csproj file must include a
-reference to the `Microsoft.AspNetCore` assembly.
+### Order of precedence for finding the project file
+1. `PROJECT` environment variable with a relative path to a project file.
+2. `.csproj` or `.fsproj` in the root directory.
+3. Look for an ASP.NET or Azure functions project in the subdirectories.
 
 # Build
 
