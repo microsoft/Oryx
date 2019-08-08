@@ -88,10 +88,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		if appModule != "" {
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appDebugModule='%s'", appDebugModule)
+				println("Generating `ptvsd` command for " + appDebugModule)
 				command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
 				appDebugAdapter = gen.DebugAdapter
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
+				println("Generating `gunicorn` command for " + appDebugModule)
 				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
 			}
 		}
