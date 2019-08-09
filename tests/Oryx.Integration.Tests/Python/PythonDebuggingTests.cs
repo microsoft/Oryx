@@ -55,9 +55,9 @@ namespace Microsoft.Oryx.Integration.Tests
                     // Send an Initialize request to make sure the debugger is running
                     using (var debugClient = new SimpleDAPClient("127.0.0.1", ptvsdHostPort, "oryxtests"))
                     {
-                        var initResponse = await debugClient.Initialize();
+                        string initResponse = await debugClient.Initialize();
                         // Deliberatly weak assertion; don't care what's in the response, only that there IS a response
-                        Assert.True(initResponse.Success);
+                        Assert.False(string.IsNullOrEmpty(initResponse));
                     }
                 });
         }

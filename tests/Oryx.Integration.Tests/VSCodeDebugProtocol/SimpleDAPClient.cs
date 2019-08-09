@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             _tcpStream = _tcpClient.GetStream();
         }
 
-        public async Task<Messages.Response> Initialize()
+        public async Task<string> Initialize()
         {
             var reqArgs = new Messages.InitializeRequestArguments { ClientName = _name };
             var req = new Messages.InitializeRequest { SequenceNumber = _sequence++, Args = reqArgs };
@@ -52,37 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             // Write out the request
             await _tcpStream.WriteAsync(reqData, 0, reqData.Length);
 
-            // The first message seems to always be an event, so process the second (which should be the response)
-            var rawMessages = await RecvMessages();
-            return DeserializeResponse(rawMessages.ElementAt(1), req);
-        }
-
-        private static Messages.Response DeserializeResponse(string messageBody, Messages.ProtocolMessage precedingRequest)
-        {
-            try
-            {
-                var res = JsonConvert.DeserializeObject<Messages.Response>(messageBody);
-                if (res.RequestSequenceNumber != precedingRequest.SequenceNumber)
-                {
-                    throw new Exception("Sequence numbers mismatch");
-                }
-
-                return res;
-            }
-            catch (JsonReaderException)
-            {
-                return null;
-            }
-        }
-
-        private static string GetMessageBody(string rawMessage)
-        {
-            var headerIndex = rawMessage.IndexOf(CLHeader);
-            if (headerIndex != -1)
-            {
-                rawMessage = rawMessage.Substring(0, headerIndex);
-            }
-            return rawMessage;
+            return await RecvRawMessage();
         }
 
         private static bool DoesNotStartWithCLHeader(string chunk)
@@ -95,15 +65,11 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
         /// For example - ignores the Content-Length headers completely.
         /// </summary>
         /// <returns>Array of message bodies received.</returns>
-        private async Task<IEnumerable<string>> RecvMessages()
+        private async Task<string> RecvRawMessage()
         {
             var rawResData = new byte[256];
             int bytesRecvd = await _tcpStream.ReadAsync(rawResData, 0, rawResData.Length);
-
-            string resData = StreamEncoding.GetString(rawResData, 0, bytesRecvd);
-            var resMsgBodies = resData.Split(TwoCRLF).Where(DoesNotStartWithCLHeader);
-
-            return resMsgBodies.Select(GetMessageBody);
+            return StreamEncoding.GetString(rawResData, 0, bytesRecvd);
         }
 
         public void Dispose()
