@@ -22,21 +22,22 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        // [InlineData("2.7", "ptvsd")]
-        // [InlineData("3.6", "ptvsd")]
-        [InlineData("3.7", "ptvsd", 5637)]
-        public async Task CanBuildAndDebugFlaskApp(string pythonVersion, string debugAdapter, int debugPort = 5678)
+        [InlineData("2.7")]
+        [InlineData("3.6")]
+        [InlineData("3.7", 5637)] // Test with a non-default port as well
+        public async Task CanBuildAndDebugFlaskApp(string pythonVersion, int? debugPort = null)
         {
             // Arrange
             var appName = "flask-app";
             var appVolume = CreateAppVolume(appName);
+            var scriptGenDebugPortArg = debugPort.HasValue ? $"-debugPort {debugPort.Value}" : string.Empty;
 
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appVolume.ContainerDir} --platform python --platform-version {pythonVersion} --debug")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appVolume.ContainerDir} -bindPort {ContainerPort}" +
-                            $" -debugAdapter {debugAdapter} -debugPort {debugPort} -debugWait")
+                            $" -debugAdapter ptvsd {scriptGenDebugPortArg} -debugWait")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -46,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appVolume,
                 "/bin/bash", new[] { "-c", buildScript },
                 $"oryxdevmcr.azurecr.io/public/oryx/python-{pythonVersion}",
-                debugPort,
+                debugPort.GetValueOrDefault(5678),
                 "/bin/bash", new[] { "-c", runScript },
                 async (ptvsdHostPort) =>
                 {
