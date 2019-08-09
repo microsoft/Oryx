@@ -4,10 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol;
 using Microsoft.Oryx.Tests.Common;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,33 +22,41 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("3.7", "ptvsd")]
-        public async Task CanBuildAndDebugFlaskApp(string pythonVersion, string debugAdapter)
+        // [InlineData("2.7", "ptvsd")]
+        // [InlineData("3.6", "ptvsd")]
+        [InlineData("3.7", "ptvsd", 5637)]
+        public async Task CanBuildAndDebugFlaskApp(string pythonVersion, string debugAdapter, int debugPort = 5678)
         {
             // Arrange
             var appName = "flask-app";
-            var volume = CreateAppVolume(appName);
+            var appVolume = CreateAppVolume(appName);
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {volume.ContainerDir} --platform python --platform-version {pythonVersion} --debug")
+               .AddCommand($"oryx build {appVolume.ContainerDir} --platform python --platform-version {pythonVersion} --debug")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {volume.ContainerDir} -bindPort {ContainerPort} -debugAdapter {debugAdapter} -debugWait")
+                .AddCommand($"oryx -appPath {appVolume.ContainerDir} -bindPort {ContainerPort}" +
+                            $" -debugAdapter {debugAdapter} -debugPort {debugPort} -debugWait")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                appVolume,
                 "/bin/bash", new[] { "-c", buildScript },
                 $"oryxdevmcr.azurecr.io/public/oryx/python-{pythonVersion}",
-                ContainerPort,
+                debugPort,
                 "/bin/bash", new[] { "-c", runScript },
-                async (hostPort) =>
+                async (ptvsdHostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.DoesNotContain("Hello World!", data);
+                    // Send an Initialize request to make sure the debugger is running
+                    using (var debugClient = new SimpleDAPClient("127.0.0.1", ptvsdHostPort, "oryxtests"))
+                    {
+                        dynamic initRes = await debugClient.Initialize();
+                        // Deliberatly weak assertion (don't care what's in the response, only that there IS a response)
+                        Assert.Equal("event", initRes.type);
+                    }
                 });
         }
     }
