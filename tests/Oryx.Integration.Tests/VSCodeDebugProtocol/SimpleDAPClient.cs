@@ -52,13 +52,22 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             // Write out the request
             await _tcpStream.WriteAsync(reqData, 0, reqData.Length);
 
-            // Read the anticipated response
-            var rawMessages = await RecvChunks();
+            // The first message seems to always be an event, so process the second (which should be the response)
+            var rawMessages = await RecvMessages();
+            return DeserializeResponse(rawMessages.ElementAt(1), req);
+        }
+
+        private static Messages.Response DeserializeResponse(string messageBody, Messages.ProtocolMessage precedingRequest)
+        {
             try
             {
-                // The first message is an event, so process the second (which should be the response)
-                var secondMessageBody = GetMessageBody(rawMessages.Skip(1).First());
-                return JsonConvert.DeserializeObject<Messages.Response>(secondMessageBody);
+                var res = JsonConvert.DeserializeObject<Messages.Response>(messageBody);
+                if (res.RequestSequenceNumber != precedingRequest.SequenceNumber)
+                {
+                    throw new Exception("Sequence numbers mismatch");
+                }
+
+                return res;
             }
             catch (JsonReaderException)
             {
@@ -85,16 +94,16 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
         /// An overly simplistic implementation of the protocol.
         /// For example - ignores the Content-Length headers completely.
         /// </summary>
-        /// <returns>Array of raw messages received.</returns>
-        private async Task<IEnumerable<string>> RecvChunks()
+        /// <returns>Array of message bodies received.</returns>
+        private async Task<IEnumerable<string>> RecvMessages()
         {
             var rawResData = new byte[256];
             int bytesRecvd = await _tcpStream.ReadAsync(rawResData, 0, rawResData.Length);
 
             string resData = StreamEncoding.GetString(rawResData, 0, bytesRecvd);
-            string[] resChunks = resData.Split(TwoCRLF);
+            var resMsgBodies = resData.Split(TwoCRLF).Where(DoesNotStartWithCLHeader);
 
-            return resChunks.Where(DoesNotStartWithCLHeader);
+            return resMsgBodies.Select(GetMessageBody);
         }
 
         public void Dispose()
