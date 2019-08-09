@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     {
                         dynamic initRes = await debugClient.Initialize();
                         // Deliberatly weak assertion (don't care what's in the response, only that there IS a response)
-                        Assert.Equal("event", initRes.type);
+                        Assert.Equal("event", initRes.type as string);
                     }
                 });
         }
