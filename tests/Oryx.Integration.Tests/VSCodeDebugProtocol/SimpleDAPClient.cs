@@ -30,10 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
         private readonly string _adapterID;
         private readonly TcpClient _tcpClient;
         private readonly NetworkStream _tcpStream;
-
         private uint _sequence = 1;
-        private int _contentLen = -1;
-        private StringBuilder _recvBuf = new StringBuilder();
 
         public SimpleDAPClient(string hostname, int port, string adapterID)
         {
@@ -57,7 +54,14 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
 
             // Read the anticipated response
             var rawMessages = await RecvChunks();
-            return JsonConvert.DeserializeObject(rawMessages.First().Trim());
+            try
+            {
+                return JsonConvert.DeserializeObject(rawMessages.First().Trim());
+            }
+            catch (JsonReaderException)
+            {
+                return null;
+            }
         }
 
         private static bool DoesNotStartWithCLHeader(string chunk)
