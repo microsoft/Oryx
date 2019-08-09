@@ -21,6 +21,7 @@ RUN apt-get update \
   && apt-get install -y \
      curl \
      file \
+     openssl \
   && rm -rf /var/lib/apt/lists/*
 
 # Bake Application Insights key from pipeline variable into final image
