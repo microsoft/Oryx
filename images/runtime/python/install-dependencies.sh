@@ -44,7 +44,7 @@ UsageCount=1
 EOL
 
 pip install --upgrade pip
-pip install gunicorn
+pip install gunicorn # The default WSGI server
 pip install ptvsd
 
 ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
