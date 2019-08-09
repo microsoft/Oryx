@@ -55,11 +55,6 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             return await RecvRawMessage();
         }
 
-        private static bool DoesNotStartWithCLHeader(string chunk)
-        {
-            return !chunk.StartsWith(CLHeader, StringComparison.Ordinal);
-        }
-
         /// <summary>
         /// An overly simplistic implementation of the protocol.
         /// For example - ignores the Content-Length headers completely.
