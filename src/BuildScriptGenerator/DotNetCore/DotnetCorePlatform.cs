@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -29,7 +31,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
-        private readonly DotNetCoreScriptGeneratorOptions _options;
+        private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
+        private readonly BuildScriptGeneratorOptions _buildOptions;
 
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
@@ -37,14 +40,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
-            IOptions<DotNetCoreScriptGeneratorOptions> options)
+            IOptions<BuildScriptGeneratorOptions> buildOptions,
+            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCorePlatformOptions)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
-            _options = options.Value;
+            _dotNetCorePlatformOptions = dotNetCorePlatformOptions.Value;
+            _buildOptions = buildOptions.Value;
         }
 
         public string Name => DotNetCoreConstants.LanguageName;
@@ -61,16 +66,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var buildProperties = new Dictionary<string, string>();
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
-            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context);
-            if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
+            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
+            if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
             }
-
-            SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
-
-            bool zipAllOutput = ShouldZipAllOutput(context);
-            buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = zipAllOutput.ToString().ToLowerInvariant();
 
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
@@ -78,26 +78,246 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 context.SourceRepo,
                 environmentSettings);
 
-            var templateProperties = new DotNetCoreBashBuildSnippetProperties
+            var scriptBuilder = new StringBuilder();
+            scriptBuilder.AppendLine("#!/bin/bash");
+            scriptBuilder.AppendLine("set -e");
+            scriptBuilder.AppendLine();
+
+            var sourceDir = _buildOptions.SourceDir;
+            var destinationDir = _buildOptions.DestinationDir;
+            var userSuppliedDestinationDir = !string.IsNullOrEmpty(_buildOptions.DestinationDir);
+            var zipAllOutput = ShouldZipAllOutput();
+
+            AddScriptToCopyToIntermediateDirectory();
+
+            AddScriptToSetupSourceAndDestinationDirectories();
+
+            scriptBuilder.AppendBenvCommand($"dotnet={context.DotNetCoreVersion}");
+
+            AddScriptToRunPreBuildCommand();
+
+            scriptBuilder.AppendLine("echo");
+            scriptBuilder.AppendLine("dotnetCoreVersion=$(dotnet --version)");
+            scriptBuilder.AppendLine("echo \"Using .NET Core SDK Version: $dotnetCoreVersion\"");
+            scriptBuilder.AppendLine();
+
+            AddScriptToRestorePackages();
+
+            if (userSuppliedDestinationDir)
             {
-                ProjectFile = projectFile,
-                PublishDirectory = publishDir,
-                BuildProperties = buildProperties,
-                BenvArgs = $"dotnet={context.DotNetCoreVersion}",
-                DirectoriesToExcludeFromCopyToIntermediateDir = GetDirectoriesToExcludeFromCopyToIntermediateDir(
-                    context),
-                PreBuildCommand = preBuildCommand,
-                PostBuildCommand = postBuildCommand,
-                ManifestFileName = FilePaths.BuildManifestFileName,
-                ManifestDir = context.ManifestDir,
-                ZipAllOutput = zipAllOutput,
-                Configuration = GetBuildConfiguration(),
+                if (zipAllOutput)
+                {
+                    AddScriptToZipAllOutput();
+                }
+                else
+                {
+                    AddScriptToPublishOutput();
+
+                    AddScriptToRunPostBuildCommand();
+                }
+            }
+            else
+            {
+                AddScriptToBuildProject();
+
+                AddScriptToRunPostBuildCommand();
+            }
+
+            SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
+
+            AddScriptToCreateManifestFile();
+
+            scriptBuilder.AppendLine("echo Done.");
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = scriptBuilder.ToString(),
+                IsFullScript = true,
             };
-            var script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.DotNetCoreSnippet,
-                templateProperties,
-                _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = script, IsFullScript = true };
+
+            void AddScriptToCopyToIntermediateDirectory()
+            {
+                if (!string.IsNullOrEmpty(_buildOptions.IntermediateDir))
+                {
+                    var intermediateDir = _buildOptions.IntermediateDir;
+                    if (!Directory.Exists(intermediateDir))
+                    {
+                        scriptBuilder.AppendLine();
+                        scriptBuilder.AppendLine("echo Intermediate directory does not exist, creating it...");
+                        scriptBuilder.AppendFormatWithLine("mkdir -p \"{0}\"", intermediateDir);
+                    }
+
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", _buildOptions.SourceDir);
+                    scriptBuilder.AppendLine("echo");
+                    var excludeDirs = GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
+                    var excludeDirsSwitch = string.Join(" ", excludeDirs.Select(dir => $"--exclude \"{dir}\""));
+                    scriptBuilder.AppendFormatWithLine(
+                        "rsync --delete -rt {0} . \"{1}\"",
+                        excludeDirsSwitch,
+                        intermediateDir);
+                    sourceDir = intermediateDir;
+                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", sourceDir);
+                }
+            }
+
+            void AddScriptToRunPreBuildCommand()
+            {
+                if (!string.IsNullOrEmpty(preBuildCommand))
+                {
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", sourceDir);
+                    scriptBuilder.AppendLine(preBuildCommand);
+                    scriptBuilder.AppendLine();
+                }
+            }
+
+            void AddScriptToRunPostBuildCommand()
+            {
+                if (!string.IsNullOrEmpty(postBuildCommand))
+                {
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", sourceDir);
+                    scriptBuilder.AppendLine(postBuildCommand);
+                    scriptBuilder.AppendLine();
+                }
+            }
+
+            void AddScriptToSetupSourceAndDestinationDirectories()
+            {
+                scriptBuilder.AppendFormatWithLine("SOURCE_DIR=\"{0}\"", sourceDir);
+                scriptBuilder.AppendLine("export SOURCE_DIR");
+
+                if (userSuppliedDestinationDir)
+                {
+                    scriptBuilder.AppendLine("echo");
+                    scriptBuilder
+                        .AppendSourceDirectoryInfo(sourceDir)
+                        .AppendDestinationDirectoryInfo(destinationDir);
+                    scriptBuilder.AppendLine("echo");
+                    scriptBuilder.AppendFormatWithLine("mkdir -p \"{0}\"", destinationDir);
+
+                    if (zipAllOutput)
+                    {
+                        var tempOutputDir = "/tmp/puboutput";
+                        var tempPublishDir = $"{tempOutputDir}/publish";
+                        destinationDir = tempOutputDir;
+                    }
+
+                    scriptBuilder.AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", _buildOptions.DestinationDir);
+                    scriptBuilder.AppendLine("export DESTINATION_DIR");
+                }
+                else
+                {
+                    scriptBuilder.AppendLine("echo");
+                    scriptBuilder.AppendSourceDirectoryInfo(sourceDir);
+                    scriptBuilder.AppendLine("echo");
+                }
+            }
+
+            void AddScriptToZipAllOutput()
+            {
+                var zipFileName = FilePaths.CompressedOutputFileName;
+
+                scriptBuilder.AppendLine();
+                scriptBuilder.AppendLine("echo");
+                scriptBuilder.AppendFormatWithLine("echo \"Publishing output to '{0}'\"", destinationDir);
+                scriptBuilder.AppendFormatWithLine(
+                    "dotnet publish \"{0}\" -c {1} -o \"{2}\"",
+                    projectFile,
+                    GetBuildConfiguration(),
+                    destinationDir);
+
+                AddScriptToRunPostBuildCommand();
+
+                scriptBuilder.AppendLine();
+                scriptBuilder.AppendLine("echo Compressing the contents of the output directory...");
+                scriptBuilder.AppendFormatWithLine("cd \"{0}\"", destinationDir);
+                scriptBuilder.AppendFormatWithLine("tar -zcf ../{0} .", zipFileName);
+                scriptBuilder.AppendLine("cd ..");
+                scriptBuilder.AppendFormatWithLine(
+                    "cp -f \"{0}\" \"{1}/{2}\"",
+                    zipFileName,
+                    _buildOptions.DestinationDir,
+                    zipFileName);
+
+                buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = "true";
+            }
+
+            void AddScriptToCreateManifestFile()
+            {
+                if (buildProperties.Any())
+                {
+                    var manifestFileDir = context.ManifestDir;
+                    if (string.IsNullOrEmpty(manifestFileDir))
+                    {
+                        manifestFileDir = _buildOptions.DestinationDir;
+                    }
+
+                    if (!string.IsNullOrEmpty(manifestFileDir))
+                    {
+                        scriptBuilder.AppendLine();
+                        scriptBuilder.AppendFormatWithLine("mkdir -p \"{0}\"", manifestFileDir);
+                        scriptBuilder.AppendLine("echo");
+                        scriptBuilder.AppendLine("echo Removing any existing manifest file...");
+                        scriptBuilder.AppendFormatWithLine(
+                            "rm -f \"{0}/{1}\"",
+                            manifestFileDir,
+                            FilePaths.BuildManifestFileName);
+                        scriptBuilder.AppendLine("echo Creating a manifest file...");
+
+                        foreach (var property in buildProperties)
+                        {
+                            scriptBuilder.AppendFormatWithLine(
+                                "echo '{0}=\"{1}\"' >> \"{2}/{3}\"",
+                                property.Key,
+                                property.Value,
+                                manifestFileDir,
+                                FilePaths.BuildManifestFileName);
+                        }
+
+                        scriptBuilder.AppendLine("echo Manifest file created.");
+                    }
+                }
+            }
+
+            void AddScriptToRestorePackages()
+            {
+                scriptBuilder.AppendLine("echo");
+                scriptBuilder.AppendLine("echo Restoring packages...");
+                scriptBuilder.AppendFormatWithLine("dotnet restore \"{0}\"", projectFile);
+            }
+
+            void AddScriptToBuildProject()
+            {
+                scriptBuilder.AppendLine();
+                scriptBuilder.AppendLine("echo");
+                scriptBuilder.AppendFormatWithLine("echo \"Building project '{0}'\"", projectFile);
+
+                // Use the default build configuration 'Debug' here.
+                scriptBuilder.AppendFormatWithLine("dotnet build \"{0}\"", projectFile);
+            }
+
+            void AddScriptToPublishOutput()
+            {
+                scriptBuilder.AppendLine();
+                scriptBuilder.AppendFormatWithLine(
+                    "echo \"Publishing output to '{0}'\"",
+                    _buildOptions.DestinationDir);
+                scriptBuilder.AppendFormatWithLine(
+                    "dotnet publish \"{0}\" -c {1} -o \"{2}\"",
+                    projectFile,
+                    GetBuildConfiguration(),
+                    _buildOptions.DestinationDir);
+            }
+
+            bool ShouldZipAllOutput()
+            {
+                return BuildPropertiesHelper.IsTrue(
+                    Constants.ZipAllOutputBuildPropertyKey,
+                    context,
+                    valueIsRequired: false);
+            }
         }
 
         /// <summary>
@@ -190,42 +410,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             dirs.Add(".git");
             dirs.Add("obj");
             dirs.Add("bin");
-            dirs.Add(DotNetCoreConstants.OryxOutputPublishDirectory);
             return dirs;
-        }
-
-        private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
-        {
-            return BuildPropertiesHelper.IsTrue(
-                Constants.ZipAllOutputBuildPropertyKey,
-                context,
-                valueIsRequired: false);
         }
 
         private string GetBuildConfiguration()
         {
-            var configuration = _options.MSBuildConfiguration;
+            var configuration = _dotNetCorePlatformOptions.MSBuildConfiguration;
             if (string.IsNullOrEmpty(configuration))
             {
                 configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
             }
 
             return configuration;
-        }
-
-        private (string projFile, string publishDir) GetProjectFileAndPublishDir(
-            BuildScriptGeneratorContext context)
-        {
-            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
-            if (!string.IsNullOrEmpty(projectFile))
-            {
-                var publishDir = Path.Combine(
-                    context.SourceRepo.RootPath,
-                    DotNetCoreConstants.OryxOutputPublishDirectory);
-                return (projectFile, publishDir);
-            }
-
-            return (null, null);
         }
     }
 }

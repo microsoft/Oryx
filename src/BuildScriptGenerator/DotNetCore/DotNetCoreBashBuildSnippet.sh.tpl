@@ -24,11 +24,6 @@ fi
 cd $SOURCE_DIR
 SOURCE_DIR=$(pwd -P)
 
-if [ -z "$DESTINATION_DIR" ]
-then
-    DESTINATION_DIR="$SOURCE_DIR"
-fi
-
 if [ -d "$DESTINATION_DIR" ]
 then
     cd $DESTINATION_DIR
@@ -59,11 +54,6 @@ then
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 	SOURCE_DIR="$INTERMEDIATE_DIR"
-fi
-
-if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
-then
-	DESTINATION_DIR="{{ PublishDirectory }}"
 fi
 
 echo
