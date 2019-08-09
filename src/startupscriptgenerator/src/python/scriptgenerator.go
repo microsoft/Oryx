@@ -34,7 +34,8 @@ type PythonStartupScriptGenerator struct {
 	Manifest                    common.BuildManifest
 }
 
-const SupportedDebugAdapter = "ptvsd"; // Not using an array since there's only one at the moment
+const SupportedDebugAdapter = "ptvsd" // Not using an array since there's only one at the moment
+const GeneratingCommandMessage = "Generating `%s` command for '%s'"
 
 const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
@@ -88,12 +89,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		if appModule != "" {
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appDebugModule='%s'", appDebugModule)
-				println("Generating `ptvsd` command for " + appDebugModule)
+				println(fmt.Sprintf(GeneratingCommandMessage, "ptvsd", appDebugModule))
 				command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
 				appDebugAdapter = gen.DebugAdapter
 			} else {
 				logger.LogInformation("Generating command for appModule='%s'", appModule)
-				println("Generating `gunicorn` command for " + appDebugModule)
+				println(fmt.Sprintf(GeneratingCommandMessage, "gunicorn", appModule))
 				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
 			}
 		}

@@ -27,21 +27,21 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
         private readonly JsonSerializerSettings IgnoreNullsSerializerSettings =
             new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 
-        private readonly string _adapterID;
+        private readonly string _name;
         private readonly TcpClient _tcpClient;
         private readonly NetworkStream _tcpStream;
         private uint _sequence = 1;
 
-        public SimpleDAPClient(string hostname, int port, string adapterID)
+        public SimpleDAPClient(string hostname, int port, string name)
         {
-            _adapterID = adapterID;
+            _name = name;
             _tcpClient = new TcpClient(hostname, port);
             _tcpStream = _tcpClient.GetStream();
         }
 
         public async Task<dynamic> Initialize()
         {
-            var reqArgs = new Messages.InitializeRequestArguments { AdapterID = _adapterID };
+            var reqArgs = new Messages.InitializeRequestArguments { ClientName = _name };
             var req = new Messages.InitializeRequest { SequenceNumber = _sequence++, Args = reqArgs };
 
             // Serialize the request to a buffer
@@ -56,12 +56,22 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             var rawMessages = await RecvChunks();
             try
             {
-                return JsonConvert.DeserializeObject(rawMessages.First().Trim());
+                return JsonConvert.DeserializeObject(GetMessageBody(rawMessages.First()));
             }
             catch (JsonReaderException)
             {
                 return null;
             }
+        }
+
+        private static string GetMessageBody(string rawMessage)
+        {
+            var headerIndex = rawMessage.IndexOf(CLHeader);
+            if (headerIndex != -1)
+            {
+                rawMessage = rawMessage.Substring(0, headerIndex);
+            }
+            return rawMessage;
         }
 
         private static bool DoesNotStartWithCLHeader(string chunk)

@@ -16,6 +16,8 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "python")]
     public class PythonDebuggingTests : PythonEndToEndTestsBase
     {
+        private const int DefaultPtvsdPort = 5678;
+
         public PythonDebuggingTests(ITestOutputHelper output, TestTempDirTestFixture tempDir)
             : base(output, tempDir)
         {
@@ -47,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appVolume,
                 "/bin/bash", new[] { "-c", buildScript },
                 $"oryxdevmcr.azurecr.io/public/oryx/python-{pythonVersion}",
-                debugPort.GetValueOrDefault(5678),
+                debugPort.GetValueOrDefault(DefaultPtvsdPort),
                 "/bin/bash", new[] { "-c", runScript },
                 async (ptvsdHostPort) =>
                 {

@@ -36,37 +36,10 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol.Messages
 
     public class InitializeRequestArguments
     {
-        [JsonProperty("clientID")]
-        public string ClientID { get; set; }
-
         [JsonProperty("clientName")]
         public string ClientName { get; set; }
 
         [JsonProperty("adapterID")]
         public string AdapterID { get; set; }
-
-        [JsonProperty("locale")]
-        public string Locale { get; set; }
-
-        [JsonProperty("linesStartAt1")]
-        public bool LinesStartAt1 { get; set; }
-
-        [JsonProperty("columnsStartAt1")]
-        public bool ColumnsStartAt1 { get; set; }
-
-        [JsonProperty("pathFormat")]
-        public string PathFormat { get; set; } // 'path', 'uri', etc.
-
-        [JsonProperty("supportsVariableType")]
-        public bool SupportsVariableType { get; set; }
-
-        [JsonProperty("supportsVariablePaging")]
-        public bool SupportsVariablePaging { get; set; }
-
-        [JsonProperty("supportsRunInTerminalRequest")]
-        public bool SupportsRunInTerminalRequest { get; set; }
-
-        [JsonProperty("supportsMemoryReferences")]
-        public bool SupportsMemoryReferences { get; set; }
     }
 }
