@@ -21,7 +21,8 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
     /// </summary>
     public class SimpleDAPClient : IDisposable
     {
-        private const string TwoCrLf = "\r\n\r\n";
+        private const string TwoCRLF = "\r\n\r\n";
+        private const string CLHeader = "Content-Length";
         private readonly Encoding StreamEncoding = Encoding.UTF8;
         private readonly JsonSerializerSettings IgnoreNullsSerializerSettings =
             new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
@@ -49,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             // Serialize the request to a buffer
             var reqBody = JsonConvert.SerializeObject(req, Formatting.None, IgnoreNullsSerializerSettings);
             var reqBodyLen = StreamEncoding.GetByteCount(reqBody);
-            byte[] reqData = StreamEncoding.GetBytes($"Content-Length: {reqBodyLen}\r\n\r\n{reqBody}");
+            byte[] reqData = StreamEncoding.GetBytes($"{CLHeader}: {reqBodyLen}\r\n\r\n{reqBody}");
 
             // Write out the request
             await _tcpStream.WriteAsync(reqData, 0, reqData.Length);
@@ -61,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
 
         private static bool DoesNotStartWithCLHeader(string chunk)
         {
-            return !chunk.StartsWith("Content-Length", StringComparison.Ordinal);
+            return !chunk.StartsWith(CLHeader, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             int bytesRecvd = await _tcpStream.ReadAsync(rawResData, 0, rawResData.Length);
 
             string resData = StreamEncoding.GetString(rawResData, 0, bytesRecvd);
-            string[] resChunks = resData.Split(TwoCrLf);
+            string[] resChunks = resData.Split(TwoCRLF);
 
             return resChunks.Where(DoesNotStartWithCLHeader);
         }
