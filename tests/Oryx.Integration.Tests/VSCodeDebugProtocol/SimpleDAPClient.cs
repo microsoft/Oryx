@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             _tcpStream = _tcpClient.GetStream();
         }
 
-        public async Task<dynamic> Initialize()
+        public async Task<Messages.Response> Initialize()
         {
             var reqArgs = new Messages.InitializeRequestArguments { ClientName = _name };
             var req = new Messages.InitializeRequest { SequenceNumber = _sequence++, Args = reqArgs };
@@ -56,7 +56,9 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             var rawMessages = await RecvChunks();
             try
             {
-                return JsonConvert.DeserializeObject(GetMessageBody(rawMessages.First()));
+                // The first message is an event, so process the second (which should be the response)
+                var secondMessageBody = GetMessageBody(rawMessages.Skip(1).First());
+                return JsonConvert.DeserializeObject<Messages.Response>(secondMessageBody);
             }
             catch (JsonReaderException)
             {

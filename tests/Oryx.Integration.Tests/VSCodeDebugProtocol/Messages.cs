@@ -29,6 +29,26 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol.Messages
         public virtual T Args { get; set; }
     }
 
+    public class Response : ProtocolMessage
+    {
+        public override string Type => "response";
+
+        [JsonProperty("request_seq")]
+        public uint RequestSequenceNumber { get; set; } // Sequence number of the corresponding request
+
+        [JsonProperty("success")]
+        public bool Success { get; set; }
+
+        [JsonProperty("command")]
+        public string Command { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; } // Contains error message if Success is false
+
+        [JsonProperty("body")]
+        public dynamic Body { get; set; } // Contains request result if Success is true. Optional error details otherwise
+    }
+
     public class InitializeRequest : Request<InitializeRequestArguments>
     {
         public override string Command => "initialize";
@@ -41,5 +61,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol.Messages
 
         [JsonProperty("adapterID")]
         public string AdapterID { get; set; }
+
+        // Most fields were omitted here
     }
 }
