@@ -115,3 +115,8 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
+
+RUN apt-get update \
+  && apt-get install -y \
+     openssl \
+  && rm -rf /var/lib/apt/lists/*
