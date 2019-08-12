@@ -171,10 +171,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		}
 
 	} else {
-
-		logger.LogInformation("adding execution permission if needed ...")
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
-		logger.LogInformation("permission added %t", isPermissionAdded)
+		logger.LogInformation("Permission added: %t", isPermissionAdded)
 		logger.LogInformation("User-supplied startup command: '%s'", gen.UserStartupCommand)
 		startupCommand = common.ExtendPathForCommand(startupCommand, gen.SourcePath)
 	}

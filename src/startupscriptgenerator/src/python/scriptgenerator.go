@@ -9,7 +9,6 @@ import (
 	"common"
 	"common/consts"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -17,17 +16,26 @@ import (
 	"strings"
 )
 
+
 type PythonStartupScriptGenerator struct {
-	SourcePath               string
-	UserStartupCommand       string
-	DefaultAppPath           string
-	DefaultAppModule         string
-	BindPort                 string
-	VirtualEnvironmentName   string
-	PackageDirectory         string
-	SkipVirtualEnvExtraction bool
-	Manifest                 common.BuildManifest
+	AppPath                     string
+	UserStartupCommand          string
+	DefaultAppPath              string
+	DefaultAppModule            string
+	DefaultAppDebugModule       string
+	DebugAdapter                string // Remote debugger adapter to use. Currently, only `ptvsd` is supported.
+	DebugPort                   string
+	DebugWait                   bool   // Whether debugger adapter should pause and wait for a client
+	                                   //  connection before running the app.
+	BindPort                    string
+	VirtualEnvName              string
+	PackageDirectory            string
+	SkipVirtualEnvExtraction    bool
+	Manifest                    common.BuildManifest
 }
+
+const SupportedDebugAdapter = "ptvsd" // Not using an array since there's only one at the moment
+const GeneratingCommandMessage = "Generating `%s` command for '%s'"
 
 const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
@@ -36,58 +44,68 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+	logger.LogInformation("Generating script for source at '%s'", gen.AppPath)
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n\n")
+	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
 
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
-	appType := ""
-	appModule := ""
-	command := gen.UserStartupCommand
-	if command == "" {
-		appDirectory := gen.SourcePath
-		appModule = gen.getDjangoStartupModule()
+	appType := "" // "Django", "Flask", etc.
+	appDebugAdapter := "" // Used debugger adapter
+	appDirectory := ""
+	appModule := ""   // Suspected entry module in app
+	appDebugModule := "" // Command to run under a debugger in case debugging mode was requested
+	
+	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
+	if command != "" {
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.AppPath)
+		logger.LogInformation("Permission added: %t", isPermissionAdded)
+		command = common.ExtendPathForCommand(command, gen.AppPath)
+	} else {
+		var appFw PyAppFramework = DetectFramework(gen.AppPath, gen.VirtualEnvName)
 
-		if appModule == "" {
-			appModule = gen.getFlaskStartupModule()
-			if appModule == "" {
-				appType = "Default"
-				logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
-				println("Using default app from " + gen.DefaultAppPath)
-				appDirectory = gen.DefaultAppPath
-				appModule = gen.DefaultAppModule
-			} else {
-				appType = "Flask"
-				println("Detected flask app.")
-			}
+		if appFw != nil {
+			println("Detected an app based on " + appFw.Name())
+			appType        = appFw.Name()
+			appDirectory   = gen.AppPath
+			appModule      = appFw.GetGunicornModuleArg()
+			appDebugModule = appFw.GetDebuggableModule()
 		} else {
-			appType = "Django"
-			println("Detected Django app.")
+			println("No framework detected; using default app from " + gen.DefaultAppPath)
+			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
+			appType        = "Default"
+			appDirectory   = gen.DefaultAppPath
+			appModule      = gen.DefaultAppModule
+			appDebugModule = gen.DefaultAppDebugModule
 		}
 
 		if appModule != "" {
-			logger.LogInformation("Generating command for appModule='%s'", appModule)
-			command = gen.getCommandFromModule(appModule, appDirectory)
+			if gen.shouldStartAppInDebugMode() {
+				logger.LogInformation("Generating debug command for appDebugModule='%s'", appDebugModule)
+				println(fmt.Sprintf(GeneratingCommandMessage, "ptvsd", appDebugModule))
+				command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
+				appDebugAdapter = gen.DebugAdapter
+			} else {
+				logger.LogInformation("Generating command for appModule='%s'", appModule)
+				println(fmt.Sprintf(GeneratingCommandMessage, "gunicorn", appModule))
+				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
+			}
 		}
-	} else {
-		logger.LogInformation("adding execution permission if needed ...")
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
-		logger.LogInformation("permission added %t", isPermissionAdded)
-		command = common.ExtendPathForCommand(command, gen.SourcePath)
 	}
 
 	scriptBuilder.WriteString(command + "\n")
 
 	logger.LogProperties(
 		"Finalizing script",
-		map[string]string{"appType": appType, "appModule": appModule,
-			"venv": gen.Manifest.VirtualEnvName})
+		map[string]string { "appType": appType, "appDebugAdapter": appDebugAdapter,
+							"appModule": appModule, "venv": gen.Manifest.VirtualEnvName })
 
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
@@ -105,7 +123,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	// Values in manifest file takes precedence over values supplied at command line
 	virtualEnvironmentName := gen.Manifest.VirtualEnvName
 	if virtualEnvironmentName == "" {
-		virtualEnvironmentName = gen.VirtualEnvironmentName
+		virtualEnvironmentName = gen.VirtualEnvName
 	}
 
 	packageDirName := gen.Manifest.PackageDir
@@ -114,7 +132,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	}
 
 	if virtualEnvironmentName != "" {
-		virtualEnvDir := filepath.Join(gen.SourcePath, virtualEnvironmentName)
+		virtualEnvDir := filepath.Join(gen.AppPath, virtualEnvironmentName)
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
@@ -124,8 +142,8 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
 				// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
 				// the libraries are not found.
-				virtualEnvCommand := getVirtualEnvironmentCommand(virtualEnvironmentName, virtualEnvDir)
-				scriptBuilder.WriteString(virtualEnvCommand)
+				venvSubScript := getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+				scriptBuilder.WriteString(venvSubScript)
 
 			} else {
 				packageDirName = "__oryx_packages__"
@@ -136,17 +154,17 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			virtualEnvDir := "/" + virtualEnvironmentName
 			if strings.HasSuffix(compressedFile, ".zip") {
-				scriptBuilder.WriteString("echo Found zip-based virtual environment.\n")
+				scriptBuilder.WriteString("echo Found virtual environment .zip archive.\n")
 				scriptBuilder.WriteString(
 					"extractionCommand=\"unzip -q " + compressedFile + " -d " + virtualEnvDir + "\"\n")
 
 			} else if strings.HasSuffix(compressedFile, ".tar.gz") {
-				scriptBuilder.WriteString("echo Found tar.gz based virtual environment.\n")
+				scriptBuilder.WriteString("echo Found virtual environment .tar.gz archive.\n")
 				scriptBuilder.WriteString(
 					"extractionCommand=\"tar -xzf " + compressedFile + " -C " + virtualEnvDir + "\"\n")
 			} else {
 				fmt.Printf(
-					"Error: Unrecognizable file '%s'. Expected a file with an extesion '.zip' or '.tar.gz'\n",
+					"Error: Unrecognizable file '%s'. Expected a file with a '.zip' or '.tar.gz' extension.\n",
 					compressedFile)
 				os.Exit(consts.FAILURE_EXIT_CODE)
 			}
@@ -157,13 +175,13 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			scriptBuilder.WriteString("mkdir -p " + virtualEnvDir + "\n")
 			scriptBuilder.WriteString("echo Extracting to directory '" + virtualEnvDir + "'...\n")
 			scriptBuilder.WriteString("$extractionCommand\n")
-			virtualEnvCommand := getVirtualEnvironmentCommand(virtualEnvironmentName, virtualEnvDir)
-			scriptBuilder.WriteString(virtualEnvCommand)
+			venvSubScript := getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+			scriptBuilder.WriteString(venvSubScript)
 		}
 	}
 
 	if packageDirName != "" {
-		packageDir := filepath.Join(gen.SourcePath, packageDirName)
+		packageDir := filepath.Join(gen.AppPath, packageDirName)
 		if common.PathExists(packageDir) {
 			scriptBuilder.WriteString("echo Using package directory '" + packageDir + "'\n")
 			scriptBuilder.WriteString("SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
@@ -181,7 +199,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	return scriptBuilder.String()
 }
 
-func getVirtualEnvironmentCommand(virtualEnvName string, virtualEnvDir string) string {
+func getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString(
 		"PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) " +
@@ -194,60 +212,13 @@ func getVirtualEnvironmentCommand(virtualEnvName string, virtualEnvDir string) s
 	return scriptBuilder.String()
 }
 
-// Checks if the app is based on Django, and returns a startup command if so.
-func (gen *PythonStartupScriptGenerator) getDjangoStartupModule() string {
-	logger := common.GetLogger("python.scriptgenerator.getDjangoStartupModule")
-	defer logger.Shutdown()
-
-	appRootFiles, err := ioutil.ReadDir(gen.SourcePath)
-	if err != nil {
-		logReadDirError(logger, gen.SourcePath, err)
-		panic("Couldn't read application folder '" + gen.SourcePath + "'")
-	}
-	for _, appRootFile := range appRootFiles {
-		if appRootFile.IsDir() && appRootFile.Name() != gen.Manifest.VirtualEnvName {
-			subDirPath := filepath.Join(gen.SourcePath, appRootFile.Name())
-			subDirFiles, subDirErr := ioutil.ReadDir(subDirPath)
-			if subDirErr != nil {
-				logReadDirError(logger, subDirPath, subDirErr)
-				panic("Couldn't read directory '" + subDirPath + "'")
-			}
-			for _, subDirFile := range subDirFiles {
-				if subDirFile.IsDir() == false && subDirFile.Name() == "wsgi.py" {
-					return appRootFile.Name() + ".wsgi"
-				}
-			}
-		}
-	}
-	return ""
-}
-
-// Checks if the app is based on Flask, and returns a startup command if so.
-func (gen *PythonStartupScriptGenerator) getFlaskStartupModule() string {
-	logger := common.GetLogger("python.scriptgenerator.getFlaskStartupModule")
-	defer logger.Shutdown()
-
-	filesToSearch := []string{"application.py", "app.py", "index.py", "server.py"}
-
-	for _, file := range filesToSearch {
-		fullPath := filepath.Join(gen.SourcePath, file)
-		if common.FileExists(fullPath) {
-			logger.LogInformation("Found file '%s'", fullPath)
-			println("Found file '" + fullPath + "' to run the app with.")
-			// Remove the '.py' from the end to get the module name
-			modulename := file[0 : len(file)-3]
-			return modulename + ":app"
-		}
-	}
-
-	return ""
-}
-
-// Produces the gunicorn command to run the app
-func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, appDir string) string {
+// Produces the gunicorn command to run the app.
+// `module` is of the pattern "<dotted module path>:<variable name>".
+// The variable name refers to a WSGI callable that should be found in the specified module.
+func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module string, appDir string) string {
 	workerCount := getWorkerCount()
 
-	// Default to AppService's timeout value (in seconds)
+	// Default to App Service's timeout value (in seconds)
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" + workerCount
 
 	if gen.BindPort != "" {
@@ -263,6 +234,39 @@ func (gen *PythonStartupScriptGenerator) getCommandFromModule(module string, app
 	}
 
 	return "gunicorn " + module
+}
+
+func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
+	logger := common.GetLogger("python.scriptgenerator.shouldStartAppInDebugMode")
+	defer logger.Shutdown()
+
+	if gen.DebugAdapter == "" {
+		return false
+	}
+
+	if gen.DebugAdapter != SupportedDebugAdapter {
+		logger.LogError("Unsupported debug adapter '%s'", gen.DebugAdapter)
+		return false
+	}
+
+	return true
+}
+
+func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArgs string, appDir string) string {
+	waitarg := ""
+	if gen.DebugWait {
+		waitarg = "--wait"
+	}
+
+	cdcmd := ""
+	if appDir != "" {
+		cdcmd = fmt.Sprintf("cd %s && ", appDir)
+	}
+
+	pycmd := fmt.Sprintf("%spython -m ptvsd --host %s --port %s %s -m %s",
+						 cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
+
+	return cdcmd + pycmd
 }
 
 func appendArgs(currentArgs string, argToAppend string) string {
