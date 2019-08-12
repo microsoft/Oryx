@@ -34,13 +34,13 @@ while read sourceImage; do
     acrRepoName=${repoParts[0]}
     acrProdRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/oryxmcr/g")
     version=${repoParts[1]}
-    acrLatest="$acrProdRepo:$version"
+    acrLatest="$acrProdRepo:$version-latest"
     acrSpecific="$acrProdRepo:$version-$buildNumber"
     
     replaceText="oryxdevmcr.azurecr.io/public/oryx/"
     runtimeName=$(echo $acrRepoName | sed "s!$replaceText!!g")
     dockerHubRepoName="oryxprod/$runtimeName"
-    dockerHubLatest="$dockerHubRepoName:$version"
+    dockerHubLatest="$dockerHubRepoName:$version-latest"
     dockerHubSpecific="$dockerHubRepoName:$version-$buildNumber"
 
     echo
