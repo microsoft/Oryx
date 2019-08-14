@@ -23,10 +23,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        //[MemberData(nameof(TestValueGenerator.GetZipOptions_NodeVersions), MemberType = typeof(TestValueGenerator))]
-        [InlineData("8")]
-        [InlineData("10")]
-        [InlineData("12")]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+
         public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
         {
             // NOTE:
