@@ -9,6 +9,6 @@ namespace Microsoft.Oryx.Common
         public const string Python27Version = "2.7.16";
         public const string Python36Version = "3.6.9";
         public const string Python37Version = "3.7.4";
-        public const string Python38Version = "3.8.0b2";
+        public const string Python38Version = "3.8.0b3";
     }
 }
