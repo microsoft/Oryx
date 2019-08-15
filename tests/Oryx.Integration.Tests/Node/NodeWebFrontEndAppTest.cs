@@ -5,6 +5,9 @@
 
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,22 +15,19 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Trait("category", "node")]
-    public class NodeSassExampleTest : NodeEndToEndTestsBase
+    public class NodeWebFrontEndAppTest : NodeEndToEndTestsBase
     {
-        public NodeSassExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
-            : base(output, fixture)
+        public NodeWebFrontEndAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
         {
         }
 
         [Theory]
-        //[MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        [InlineData("8")]
-        [InlineData("10")]
-        [InlineData("12")]
-        public async Task Test_NodeSassExample(string nodeVersion)
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public async Task CanBuildAndRun_NodeWebFrontEndApp(string nodeVersion)
         {
             // Arrange
-            var appName = "node-sass-example";
+            var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("<title>Node-sass example</title>", data);
+                    Assert.Contains("Say It Again", data);
                 });
         }
     }
