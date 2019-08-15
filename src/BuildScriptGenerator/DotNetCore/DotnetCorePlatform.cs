@@ -79,9 +79,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 environmentSettings);
 
             var scriptBuilder = new StringBuilder();
-            scriptBuilder.AppendLine("#!/bin/bash");
-            scriptBuilder.AppendLine("set -e");
-            scriptBuilder.AppendLine();
+            scriptBuilder
+                .AppendLine("#!/bin/bash")
+                .AppendLine("set -e")
+                .AppendLine();
 
             var sourceDir = _buildOptions.SourceDir;
             var destinationDir = _buildOptions.DestinationDir;
@@ -96,10 +97,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             AddScriptToRunPreBuildCommand();
 
-            scriptBuilder.AppendLine("echo");
-            scriptBuilder.AppendLine("dotnetCoreVersion=$(dotnet --version)");
-            scriptBuilder.AppendLine("echo \"Using .NET Core SDK Version: $dotnetCoreVersion\"");
-            scriptBuilder.AppendLine();
+            scriptBuilder
+                .AppendLine("echo")
+                .AppendLine("dotnetCoreVersion=$(dotnet --version)")
+                .AppendLine("echo \"Using .NET Core SDK Version: $dotnetCoreVersion\"")
+                .AppendLine();
 
             AddScriptToRestorePackages();
 
@@ -142,22 +144,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     var intermediateDir = _buildOptions.IntermediateDir;
                     if (!Directory.Exists(intermediateDir))
                     {
-                        scriptBuilder.AppendLine();
-                        scriptBuilder.AppendLine("echo Intermediate directory does not exist, creating it...");
-                        scriptBuilder.AppendFormatWithLine("mkdir -p \"{0}\"", intermediateDir);
+                        scriptBuilder
+                            .AppendLine()
+                            .AppendLine("echo Intermediate directory does not exist, creating it...")
+                            .AppendFormatWithLine("mkdir -p \"{0}\"", intermediateDir);
                     }
 
-                    scriptBuilder.AppendLine();
-                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", _buildOptions.SourceDir);
-                    scriptBuilder.AppendLine("echo");
+                    scriptBuilder
+                        .AppendLine()
+                        .AppendFormatWithLine("cd \"{0}\"", _buildOptions.SourceDir)
+                        .AppendLine("echo");
                     var excludeDirs = GetDirectoriesToExcludeFromCopyToIntermediateDir(context);
                     var excludeDirsSwitch = string.Join(" ", excludeDirs.Select(dir => $"--exclude \"{dir}\""));
-                    scriptBuilder.AppendFormatWithLine(
+                    sourceDir = intermediateDir;
+                    scriptBuilder
+                        .AppendFormatWithLine(
                         "rsync --delete -rt {0} . \"{1}\"",
                         excludeDirsSwitch,
-                        intermediateDir);
-                    sourceDir = intermediateDir;
-                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", sourceDir);
+                        intermediateDir)
+                        .AppendFormatWithLine("cd \"{0}\"", sourceDir);
                 }
             }
 
@@ -165,10 +170,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 if (!string.IsNullOrEmpty(preBuildCommand))
                 {
-                    scriptBuilder.AppendLine();
-                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", sourceDir);
-                    scriptBuilder.AppendLine(preBuildCommand);
-                    scriptBuilder.AppendLine();
+                    scriptBuilder
+                        .AppendLine()
+                        .AppendFormatWithLine("cd \"{0}\"", sourceDir)
+                        .AppendLine(preBuildCommand)
+                        .AppendLine();
                 }
             }
 
@@ -176,26 +182,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 if (!string.IsNullOrEmpty(postBuildCommand))
                 {
-                    scriptBuilder.AppendLine();
-                    scriptBuilder.AppendFormatWithLine("cd \"{0}\"", sourceDir);
-                    scriptBuilder.AppendLine(postBuildCommand);
-                    scriptBuilder.AppendLine();
+                    scriptBuilder
+                        .AppendLine()
+                        .AppendFormatWithLine("cd \"{0}\"", sourceDir)
+                        .AppendLine(postBuildCommand)
+                        .AppendLine();
                 }
             }
 
             void AddScriptToSetupSourceAndDestinationDirectories()
             {
-                scriptBuilder.AppendFormatWithLine("SOURCE_DIR=\"{0}\"", sourceDir);
-                scriptBuilder.AppendLine("export SOURCE_DIR");
+                scriptBuilder
+                    .AppendFormatWithLine("SOURCE_DIR=\"{0}\"", sourceDir)
+                    .AppendLine("export SOURCE_DIR");
 
                 if (userSuppliedDestinationDir)
                 {
-                    scriptBuilder.AppendLine("echo");
                     scriptBuilder
+                        .AppendLine("echo")
                         .AppendSourceDirectoryInfo(sourceDir)
-                        .AppendDestinationDirectoryInfo(destinationDir);
-                    scriptBuilder.AppendLine("echo");
-                    scriptBuilder.AppendFormatWithLine("mkdir -p \"{0}\"", destinationDir);
+                        .AppendDestinationDirectoryInfo(destinationDir)
+                        .AppendLine("echo")
+                        .AppendFormatWithLine("mkdir -p \"{0}\"", destinationDir);
 
                     if (zipAllOutput)
                     {
@@ -204,14 +212,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         destinationDir = tempOutputDir;
                     }
 
-                    scriptBuilder.AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", _buildOptions.DestinationDir);
-                    scriptBuilder.AppendLine("export DESTINATION_DIR");
+                    scriptBuilder
+                        .AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", _buildOptions.DestinationDir)
+                        .AppendLine("export DESTINATION_DIR");
                 }
                 else
                 {
-                    scriptBuilder.AppendLine("echo");
-                    scriptBuilder.AppendSourceDirectoryInfo(sourceDir);
-                    scriptBuilder.AppendLine("echo");
+                    scriptBuilder
+                        .AppendLine("echo")
+                        .AppendSourceDirectoryInfo(sourceDir)
+                        .AppendLine("echo");
                 }
             }
 
@@ -219,10 +229,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var zipFileName = FilePaths.CompressedOutputFileName;
 
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("echo");
-                scriptBuilder.AppendFormatWithLine("echo \"Publishing output to '{0}'\"", destinationDir);
-                scriptBuilder.AppendFormatWithLine(
+                scriptBuilder
+                    .AppendLine()
+                    .AppendLine("echo")
+                    .AppendFormatWithLine("echo \"Publishing output to '{0}'\"", destinationDir)
+                    .AppendFormatWithLine(
                     "dotnet publish \"{0}\" -c {1} -o \"{2}\"",
                     projectFile,
                     GetBuildConfiguration(),
@@ -230,12 +241,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 AddScriptToRunPostBuildCommand();
 
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("echo Compressing the contents of the output directory...");
-                scriptBuilder.AppendFormatWithLine("cd \"{0}\"", destinationDir);
-                scriptBuilder.AppendFormatWithLine("tar -zcf ../{0} .", zipFileName);
-                scriptBuilder.AppendLine("cd ..");
-                scriptBuilder.AppendFormatWithLine(
+                scriptBuilder
+                    .AppendLine()
+                    .AppendLine("echo Compressing the contents of the output directory...")
+                    .AppendFormatWithLine("cd \"{0}\"", destinationDir)
+                    .AppendFormatWithLine("tar -zcf ../{0} .", zipFileName)
+                    .AppendLine("cd ..")
+                    .AppendFormatWithLine(
                     "cp -f \"{0}\" \"{1}/{2}\"",
                     zipFileName,
                     _buildOptions.DestinationDir,
@@ -256,15 +268,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                     if (!string.IsNullOrEmpty(manifestFileDir))
                     {
-                        scriptBuilder.AppendLine();
-                        scriptBuilder.AppendFormatWithLine("mkdir -p \"{0}\"", manifestFileDir);
-                        scriptBuilder.AppendLine("echo");
-                        scriptBuilder.AppendLine("echo Removing any existing manifest file...");
-                        scriptBuilder.AppendFormatWithLine(
+                        scriptBuilder
+                            .AppendLine()
+                            .AppendFormatWithLine("mkdir -p \"{0}\"", manifestFileDir)
+                            .AppendLine("echo")
+                            .AppendLine("echo Removing any existing manifest file...")
+                            .AppendFormatWithLine(
                             "rm -f \"{0}/{1}\"",
                             manifestFileDir,
-                            FilePaths.BuildManifestFileName);
-                        scriptBuilder.AppendLine("echo Creating a manifest file...");
+                            FilePaths.BuildManifestFileName)
+                            .AppendLine("echo Creating a manifest file...");
 
                         foreach (var property in buildProperties)
                         {
@@ -283,28 +296,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             void AddScriptToRestorePackages()
             {
-                scriptBuilder.AppendLine("echo");
-                scriptBuilder.AppendLine("echo Restoring packages...");
-                scriptBuilder.AppendFormatWithLine("dotnet restore \"{0}\"", projectFile);
+                scriptBuilder
+                    .AppendLine("echo")
+                    .AppendLine("echo Restoring packages...")
+                    .AppendFormatWithLine("dotnet restore \"{0}\"", projectFile);
             }
 
             void AddScriptToBuildProject()
             {
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("echo");
-                scriptBuilder.AppendFormatWithLine("echo \"Building project '{0}'\"", projectFile);
-
-                // Use the default build configuration 'Debug' here.
-                scriptBuilder.AppendFormatWithLine("dotnet build \"{0}\"", projectFile);
+                scriptBuilder
+                    .AppendLine()
+                    .AppendLine("echo")
+                    .AppendFormatWithLine("echo \"Building project '{0}'\"", projectFile)
+                    // Use the default build configuration 'Debug' here.
+                    .AppendFormatWithLine("dotnet build \"{0}\"", projectFile);
             }
 
             void AddScriptToPublishOutput()
             {
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendFormatWithLine(
+                scriptBuilder
+                    .AppendLine()
+                    .AppendFormatWithLine(
                     "echo \"Publishing output to '{0}'\"",
-                    _buildOptions.DestinationDir);
-                scriptBuilder.AppendFormatWithLine(
+                    _buildOptions.DestinationDir)
+                    .AppendFormatWithLine(
                     "dotnet publish \"{0}\" -c {1} -o \"{2}\"",
                     projectFile,
                     GetBuildConfiguration(),
