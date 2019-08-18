@@ -19,7 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string[] existingResources = assembly.GetManifestResourceNames();
             string[] requiredTemplates = {
                 "BaseBashBuildScript.sh.tpl",
-                "DotNetCoreBashBuildSnippet.sh.tpl",
                 "NodeBashBuildSnippet.sh.tpl",
                 "PythonBashBuildSnippet.sh.tpl"
             };
