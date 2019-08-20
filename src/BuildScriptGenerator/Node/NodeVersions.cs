@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node8MajorMinorVersion = "8.16";
         public const string Node10Version = "10.16.1";
         public const string Node10MajorMinorVersion = "10.16";
-        public const string Node12Version = "12.7.0";
-        public const string Node12MajorMinorVersion = "12.7";
+        public const string Node12Version = "12.8.1";
+        public const string Node12MajorMinorVersion = "12.8";
     }
 }

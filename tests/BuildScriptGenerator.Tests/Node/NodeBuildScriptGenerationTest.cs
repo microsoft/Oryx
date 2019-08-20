@@ -589,7 +589,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 }
             }
             
-            var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1", "10.16.1", "12.7.0" }, new[] { "5.4.2", "6.0.0" });
+            var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1", "10.16.1", "12.8.1" }, new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
