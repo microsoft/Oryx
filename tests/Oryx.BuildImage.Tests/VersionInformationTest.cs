@@ -504,9 +504,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "dotnet")]
         [Fact]
-        public void BevnShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
+        public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
             var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
@@ -533,6 +532,35 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(expectedDotNetVersion, actualOutput);
                     Assert.Contains(expectedPythonVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BenvShouldSetUpEnviroment_UsingExactNames()
+        {
+            // Arrange
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var script = new ShellScriptBuilder()
+                .Source("benv dotnet_foo=1")
+                .AddCommand("dotnet --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedDotNetVersion, actualOutput);
                 },
                 result.GetDebugInfo());
         }
