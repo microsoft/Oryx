@@ -119,45 +119,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void BuildNodeApp_ConfigureAppInsights__WithDefaultNodeVersion_AIEnvironmentVariableSet()
-        {
-            // Arrange
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var nestedOutputDir = "/tmp/output";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
-                .AddFileExistsCheck($"{nestedOutputDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(
-                $"{NodeConstants.InjectedAppInsights}=\"True\"",
-                $"{nestedOutputDir}/{FilePaths.BuildManifestFileName}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable>
-                {
-                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "xyz")
-                },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
