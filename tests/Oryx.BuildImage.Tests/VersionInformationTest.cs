@@ -441,6 +441,130 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Trait("platform", "dotnet")]
+        [Fact]
+        public void DotNetAlias_UsesVersionSetOnBenvArgument_OverVersionSetInEnvironmentVariable()
+        {
+            // Arrange
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("dotnet", "3")
+                .Source("benv dotnet=1")
+                .AddCommand("dotnet --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Trait("platform", "dotnet")]
+        [Fact]
+        public void RunningBenvMultipleTimes_HonorsLastRunArguments()
+        {
+            // Arrange
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var script = new ShellScriptBuilder()
+                .Source("benv dotnet=3")
+                .Source("benv dotnet=1")
+                // benv should update the PATH environment in such a way that we should version 1
+                .AddCommand("dotnet --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
+        {
+            // Arrange
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedPythonVersion = Python36VersionInfo;
+            var script = new ShellScriptBuilder()
+                .Source("benv dotnet=1 python=3.6")
+                .AddCommand("dotnet --version")
+                .AddCommand("python --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedDotNetVersion, actualOutput);
+                    Assert.Contains(expectedPythonVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BenvShouldSetUpEnviroment_UsingExactNames()
+        {
+            // Arrange
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var script = new ShellScriptBuilder()
+                .Source("benv dotnet_foo=1")
+                .AddCommand("dotnet --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedDotNetVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

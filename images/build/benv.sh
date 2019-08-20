@@ -1,36 +1,20 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
-# Translate environment variables into script arguments by
-# reading well known names from the current environment and
-# prepending each one found to the current script's arguments.
-# Since arguments are prepended, the order in which they are
-# added is backwards so that the final ordering is correct.
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^python_')
+# Read the environment variables to see if a value for these variables have been set.
+# If a variable was set as an environment variable AND as an argument to benv script, then the argument wins.
+# Example:
+#   export dotnet=1
+#   source benv dotnet=3
+#   dotnet --version (This should print version 3)
 [ -n "$python" ] && set -- "python=$python" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^php_')
 [ -n "$php" ] && set -- "php=$php" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^npm_')
 [ -n "$npm" ] && set -- "npm=$npm" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^node_')
 [ -n "$node" ] && set -- "node=$node" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^dotnet_')
 [ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
-
-unset benvvar # Remove all traces of this part of the script
 
 benv-versions() {
   local IFS=$' \r\n'
@@ -50,118 +34,93 @@ benv-resolve() {
   local value=$(echo $1 | sed 's/^.*=//')
 
   # Resolve node versions
-  if [ "$name" == "node" -o "${name::5}" == "node_" ] && [ "${value::1}" != "/" ]; then
+  if [ "$name" == "node" ] && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/nodejs/$value" ]; then
       echo >&2 benv: node version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/nodejs
       return 1
     fi
+
     local DIR="/opt/nodejs/$value/bin"
-    if [ "$name" == "node" ]; then
-      export PATH="$DIR:$PATH"
-      export node="$DIR/node"
-      export npm="$DIR/npm"
-      if [ -e "$DIR/npx" ]; then
-        export npx="$DIR/npx"
-      fi
-    else
-      eval export node_${name:5}=\"$DIR/node\"
-      eval export npm_${name:5}=\"$DIR/npm\"
-      if [ -e "$DIR/npx" ]; then
-        eval export npx_${name:5}=\"$DIR/npx\"
-      fi
+    export PATH="$DIR:$PATH"
+    export node="$DIR/node"
+    export npm="$DIR/npm"
+    if [ -e "$DIR/npx" ]; then
+      export npx="$DIR/npx"
     fi
+
     return 0
   fi
 
   # Resolve npm versions
-  if [ "$name" == "npm" -o "${name::4}" == "npm_" ] && [ "${value::1}" != "/" ]; then
+  if [ "$name" == "npm" ] && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/npm/$value" ]; then
       echo >&2 benv: npm version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/npm
       return 1
     fi
+
     local DIR="/opt/npm/$value"
-    if [ "$name" == "npm" ]; then
-      export PATH="$DIR:$PATH"
-      export npm="$DIR/npm"
-      if [ -e "$DIR/npx" ]; then
-        export npx="$DIR/npx"
-      fi
-    else
-      eval export npm_${name:4}=\"$DIR/npm\"
-      if [ -e "$DIR/npx" ]; then
-        eval export npx_${name:4}=\"$DIR/npx\"
-      fi
+    export PATH="$DIR:$PATH"
+    export npm="$DIR/npm"
+    if [ -e "$DIR/npx" ]; then
+      export npx="$DIR/npx"
     fi
+
     return 0
   fi
 
   # Resolve python versions
-  if [ "$name" == "python" -o "${name::7}" == "python_" ] && [ "${value::1}" != "/" ]; then
+  if [ "$name" == "python" ] && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/python/$value" ]; then
       echo >&2 benv: python version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/python
       return 1
     fi
+
     local DIR="/opt/python/$value/bin"
-    if [ "$name" == "python" ]; then
-      export PATH="$DIR:$PATH"
-      if [ -e "$DIR/python2" ]; then
-        export python="$DIR/python2"
-      elif [ -e "$DIR/python3" ]; then
-        export python="$DIR/python3"
-      fi
-      export pip="$DIR/pip"
-      if [ -e "$DIR/virtualenv" ]; then
-        export virtualenv="$DIR/virtualenv"
-      fi
-    else
-      if [ -e "$DIR/python2" ]; then
-        eval export python_${name:7}=$DIR/python2
-      elif [ -e "$DIR/python3" ]; then
-        eval export python_${name:7}=$DIR/python3
-      fi
-      eval export pip_${name:7}="$DIR/pip"
-      if [ -e "$DIR/virtualenv" ]; then
-        eval export virtualenv_${name:7}=$DIR/virtualenv
-      fi
+    export PATH="$DIR:$PATH"
+    if [ -e "$DIR/python2" ]; then
+      export python="$DIR/python2"
+    elif [ -e "$DIR/python3" ]; then
+      export python="$DIR/python3"
     fi
+    export pip="$DIR/pip"
+    if [ -e "$DIR/virtualenv" ]; then
+      export virtualenv="$DIR/virtualenv"
+    fi
+
     return 0
   fi
 
   # Resolve PHP versions
-  if [ "$name" == "php" -o "${name::4}" == "php_" ] && [ "${value::1}" != "/" ]; then
+  if [ "$name" == "php" ] && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/php/$value" ]; then
       echo >&2 benv: php version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/php
       return 1
     fi
+
     local DIR="/opt/php/$value/bin"
-    if [ "$name" == "php" ]; then
-      export PATH="$DIR:$PATH"
-      export php="$DIR/php"
-    else
-      eval export php_${name:4}=\"$DIR/php\"
-    fi
+    export PATH="$DIR:$PATH"
+    export php="$DIR/php"
+
     return 0
   fi
 
   # Resolve dotnet versions
-  if [ "$name" == "dotnet" -o "${name::11}" == "dotnet_" ] && [ "${value::1}" != "/" ]; then
+  if [ "$name" == "dotnet" ] && [ "${value::1}" != "/" ]; then
     local runtimesDir="/opt/dotnet/runtimes"
     if [ ! -d "$runtimesDir/$value" ]; then
       echo >&2 benv: dotnet version \'$value\' not found\; choose one of:
       benv-versions >&2 $runtimesDir
       return 1
     fi
+
     local DIR=$(readlink $"$runtimesDir/$value/sdk")
-    if [ "$name" == "dotnet" ]; then
-      export PATH="$DIR:$PATH"
-      export dotnet="$DIR/dotnet"
-    else
-      eval export dotnet_${name:7}=\"$DIR/dotnet\"
-    fi
+    export PATH="$DIR:$PATH"
+    export dotnet="$DIR/dotnet"
+    
     return 0
   fi
 
