@@ -1,36 +1,10 @@
 #!/bin/bash
 
-# Translate environment variables into script arguments by
-# reading well known names from the current environment and
-# prepending each one found to the current script's arguments.
-# Since arguments are prepended, the order in which they are
-# added is backwards so that the final ordering is correct.
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^python_')
 [ -n "$python" ] && set -- "python=$python" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^php_')
 [ -n "$php" ] && set -- "php=$php" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^npm_')
 [ -n "$npm" ] && set -- "npm=$npm" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^node_')
 [ -n "$node" ] && set -- "node=$node" "$@"
-
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep '^dotnet_')
 [ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
-
-unset benvvar # Remove all traces of this part of the script
 
 benv-versions() {
   local IFS=$' \r\n'
