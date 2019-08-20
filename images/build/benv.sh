@@ -1,10 +1,8 @@
 #!/bin/bash
-
-[ -n "$python" ] && set -- "python=$python" "$@"
-[ -n "$php" ] && set -- "php=$php" "$@"
-[ -n "$npm" ] && set -- "npm=$npm" "$@"
-[ -n "$node" ] && set -- "node=$node" "$@"
-[ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 benv-versions() {
   local IFS=$' \r\n'
