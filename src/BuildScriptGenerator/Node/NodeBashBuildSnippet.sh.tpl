@@ -99,8 +99,15 @@ echo "// -----------------------------------------------------------------------
 try 
 {
 	var appInsights = require('{{ AppInsightsPackageName }}');
-	if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+	var prefixInternalSdkVersion = function (envelope, contextObjects) {
+        try {
+			var appInsightsSDKVersion = appInsights.defaultClient.context.keys.internalSdkVersion;
+            envelope.tags[appInsightsSDKVersion] = "ad_" + envelope.tags[appInsightsSDKVersion];
+        } catch(e) {}
 
+        return true;
+	}
+	if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTS_CODELESS_ENABLED) {
         appInsights
             .setup()
             .start();

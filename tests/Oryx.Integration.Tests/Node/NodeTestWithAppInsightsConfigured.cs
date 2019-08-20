@@ -32,6 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = "--platform nodejs --language-version=" + nodeVersion;
             var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+            var aIEnabled = "APPLICATIONINSIGHTS_CODELESS_ENABLED";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
@@ -42,6 +43,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"export {aIEnabled}=TRUE")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
@@ -63,7 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
-                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "TRUE") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
