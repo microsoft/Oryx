@@ -4,6 +4,18 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
+# Read the environment variables to see if a value for these variables have been set.
+# If a variable was set as an environment variable AND as an argument to benv script, then the argument wins.
+# Example:
+#   export dotnet=1
+#   source benv dotnet=3
+#   dotnet --version (This should print version 3)
+[ -n "$python" ] && set -- "python=$python" "$@"
+[ -n "$php" ] && set -- "php=$php" "$@"
+[ -n "$npm" ] && set -- "npm=$npm" "$@"
+[ -n "$node" ] && set -- "node=$node" "$@"
+[ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
+
 benv-versions() {
   local IFS=$' \r\n'
   local version
