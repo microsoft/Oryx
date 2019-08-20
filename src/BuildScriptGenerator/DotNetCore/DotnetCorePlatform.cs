@@ -213,7 +213,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     }
 
                     scriptBuilder
-                        .AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", _buildOptions.DestinationDir)
+                        .AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", destinationDir)
                         .AppendLine("export DESTINATION_DIR");
                 }
                 else
