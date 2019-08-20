@@ -10,7 +10,7 @@ declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
 declare -r IMAGE_NAME_PLACEHOLDER="%NODE_BASE_IMAGE%"
 declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
-declare -r BASE_BUILD_NUMBER="20190820.1"
+declare -r BASE_BUILD_NUMBER="20190820.2"
 
 cd $DIR
 for VERSION_DIRECTORY in $(find . -type d -iname '[0-9]*' -printf '%f\n')
