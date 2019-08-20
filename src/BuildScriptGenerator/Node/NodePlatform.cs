@@ -141,12 +141,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
             if (shouldInjectAppInsights)
             {
-                appInsightsInjectCommand = string.Concat(
-                    NodeConstants.NpmPackageInstallCommand,
-                    " --save ",
-                    NodeConstants.NodeAppInsightsPackageName);
-
-                buildProperties[NodeConstants.InjectedAppInsights] = true.ToString();
                 _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
             }
 

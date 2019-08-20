@@ -49,7 +49,7 @@ func shouldApplicationInsightsBeConfigured() bool {
 	nodeAppInsightsKeyEnv := os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY")
 	nodeAppInsightsEnabledEnv := os.Getenv("APPLICATIONINSIGHTS_CODELESS_ENABLED")
 
-	if nodeAppInsightsEnabledEnv != "" && nodeAppInsightsKeyEnv != "" {
+	if nodeAppInsightsEnabledEnv != "" && strings.ToLower(nodeAppInsightsKeyEnv) == "true" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
@@ -78,6 +78,7 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTS_CODELESS_ENABLED) {
 			appInsights
 				.setup()
+				.setSendLiveMetrics(true)
 				.start();
 		}
 	}catch (e) {

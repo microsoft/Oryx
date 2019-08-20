@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions),
             MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_NodeApp_WithAppInsights_Configured(string nodeVersion)
         {
@@ -30,27 +30,18 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "--platform nodejs --language-version=" + nodeVersion;
+            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
             var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
             var aIEnabled = "APPLICATIONINSIGHTS_CODELESS_ENABLED";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules")
-                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(
-                $"{NodeConstants.InjectedAppInsights}=\"True\"", $"{appDir}/{FilePaths.BuildManifestFileName}")
-                .ToString();
+                .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"export {aIEnabled}=TRUE")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
-                .AddFileExistsCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(
-                $"{NodeConstants.InjectedAppInsights}=\"True\"",
-                $"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

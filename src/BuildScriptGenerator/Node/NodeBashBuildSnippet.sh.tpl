@@ -82,43 +82,6 @@ echo "Running '{{ PackageInstallCommand }}'..."
 echo
 {{ PackageInstallCommand }}
 
-{{ if AppInsightsInjectCommand | IsNotBlank }}
-echo
-echo "Preparing environment to set up Application Insights..."
-echo "Running '{{ AppInsightsInjectCommand }}'..."
-echo
-{{ AppInsightsInjectCommand }}
-echo
-echo "Creating Application Insights loader file in '$DESTINATION_DIR'"
-echo "// --------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license.
-// --------------------------------------------------------------------------------------------
-
-// Created by Oryx
-try 
-{
-	var appInsights = require('{{ AppInsightsPackageName }}');
-	var prefixInternalSdkVersion = function (envelope, contextObjects) {
-        try {
-			var appInsightsSDKVersion = appInsights.defaultClient.context.keys.internalSdkVersion;
-            envelope.tags[appInsightsSDKVersion] = "ad_" + envelope.tags[appInsightsSDKVersion];
-        } catch(e) {}
-
-        return true;
-	}
-	if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTS_CODELESS_ENABLED) {
-        appInsights
-            .setup()
-            .start();
-	}
-}catch (e) {
-        console.log('Application Insights could not be automatically configured for this application'); 
-        console.log(e);
-}">{{ AppInsightsLoaderFileName }}
-cat {{ AppInsightsLoaderFileName }}
-{{ end }}
-
 {{ if NpmRunBuildCommand | IsNotBlank }}
 echo
 echo "Running '{{ NpmRunBuildCommand }}'..."
