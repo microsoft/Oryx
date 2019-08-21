@@ -572,7 +572,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        private IProgrammingPlatform GetNodePlatformInstance(
+        private static IProgrammingPlatform GetNodePlatformInstance(
             string defaultNodeVersion = null,
             string defaultNpmVersion = null,
             Dictionary<string, string> otherEnvironment = null)
@@ -599,7 +599,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeScriptGeneratorOptions,
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
-                null,
+                detector: null,
                 environment);
         }
 
