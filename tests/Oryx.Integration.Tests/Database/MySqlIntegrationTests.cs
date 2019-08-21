@@ -5,6 +5,8 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,10 +21,29 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
-        public async Task NodeApp_MySqlDB()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public async Task NodeApp_MySqlDB(string buildImageName)
         {
-            await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-mysql"));
+            await RunTestAsync(
+                "nodejs",
+                NodeVersions.Node10Version,
+                Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
+                buildImageName: buildImageName);
+        }
+
+        [Theory]
+        [InlineData("mysql-pymysql-sample")]
+        [InlineData("mysql-mysqlconnector-sample")]
+        [InlineData("mysql-mysqlclient-sample")]
+        public async Task Python37App_MySqlDB_UsingPyMySql_UsingSlimBuildImage(string sampleAppName)
+        {
+            await RunTestAsync(
+                "python",
+                "3.7",
+                Path.Combine(HostSamplesDir, "python", sampleAppName),
+                buildImageName: Settings.SlimBuildImageName);
         }
 
         [Theory]
@@ -32,6 +53,18 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task Python37App_MySqlDB_UsingPyMySql(string sampleAppName)
         {
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", sampleAppName));
+        }
+
+        [Fact]
+        public async Task PhpApp_UsingMysqli_AndSlimBuildImage()
+        {
+            await RunTestAsync(
+                "php",
+                "7.3",
+                Path.Combine(HostSamplesDir, "php", "mysqli-example"),
+                8080,
+                specifyBindPortFlag: false,
+                buildImageName: Settings.SlimBuildImageName);
         }
 
         [Theory]

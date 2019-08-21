@@ -21,8 +21,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact]
-        public void GeneratesScript_AndBuilds()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
@@ -36,7 +38,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
