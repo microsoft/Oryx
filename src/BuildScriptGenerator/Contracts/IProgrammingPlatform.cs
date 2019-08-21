@@ -55,12 +55,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             [NotNull] IDictionary<string, string> toolsToVersion);
 
         /// <summary>
-        /// Tries generating a bash script based on the application in source directory.
+        /// Generates a build Bash script based on the application in source directory.
         /// </summary>
         /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
         /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful,
         /// <c>null</c> otherwise.</returns>
         BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
+
+        /// <summary>
+        /// Generates a package Bash script based on the package in source directory.
+        /// </summary>
+        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
+        /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful,
+        /// <c>null</c> otherwise.</returns>
+        BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
 
         /// <summary>
         /// Generate a bash script that can install the required runtime bits for the application's platforms.

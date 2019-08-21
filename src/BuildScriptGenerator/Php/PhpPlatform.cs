@@ -75,6 +75,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet };
         }
 
+        public BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsEnabled(BuildScriptGeneratorContext ctx)
         {
             return ctx.EnablePhp;
