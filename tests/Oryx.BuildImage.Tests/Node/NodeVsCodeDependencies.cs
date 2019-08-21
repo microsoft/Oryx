@@ -7,6 +7,7 @@ using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,9 +22,9 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
         public static IEnumerable<object[]> VSCodeDependencies => new object[][]
         {
-            new object[] { "applicationinsights", "1.0.8", "https://github.com/Microsoft/ApplicationInsights-node.js",
+            new object[] { "applicationinsights", "1.0.8", "https://github.com/microsoft/ApplicationInsights-node.js.git",
                 "bf8dee921aeaf2ab5461d21ca090b01d1fd1d715" },
-            new object[] { "graceful-fs", "4.1.11", "https://github.com/isaacs/node-graceful-fs",
+            new object[] { "graceful-fs", "4.1.11", "https://github.com/isaacs/node-graceful-fs.git",
                 "65cf80d1fd3413b823c16c626c1e7c326452bee5" },
         };
 
@@ -32,20 +33,31 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
         public async Task CanBuildAndPackage(string pkgName, string pkgVersion, string gitRepoUrl, string commitId)
         {
             // Arrange
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/webfrontend-output";
+            var pkgSrcDir = "/tmp/pkg/src";
+            var pkgBuildOutputDir = "/tmp/pkg/out";
+            var oryxPackOutput = Path.Combine(pkgBuildOutputDir, $"{pkgName}-{pkgVersion}.tgz");
+
+            var diffSentinel = "--- Diff: ---";
+
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                // Fetch source code
+                .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
+                .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")
+                // Build & package
+                .AddBuildCommand($"{pkgSrcDir} -o {pkgBuildOutputDir}")
+                .AddCommand($"oryx package {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
+                .AddDirectoryExistsCheck($"{pkgBuildOutputDir}/node_modules")
+                // Compute diff between tar contents
+                .AddCommand("tar -tf {pkgPackOutput} > /tmp/contents.oryx.txt")
+                .AddCommand("export NpmTarUrl=$(npm view object-assign@4.1.1 dist.tarball)")
+                .AddCommand("wget -O /tmp/npm-pkg.tgz $NpmTarUrl")
+                .AddCommand("tar -tf /tmp/npm-pkg.tgz > /tmp/contents.npm.txt")
+                .AddCommand("echo " + diffSentinel)
+                .AddCommand("diff /tmp/contents.oryx.txt /tmp/contents.npm.txt")
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+            var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", new[] { "-c", script });
         }
+    }
 }
