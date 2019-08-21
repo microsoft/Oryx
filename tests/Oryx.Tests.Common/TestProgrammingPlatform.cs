@@ -55,6 +55,11 @@ namespace Microsoft.Oryx.Tests.Common
             return null;
         }
 
+        public BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            throw new NotImplementedException();
+        }
+
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions _)
         {
             throw new NotImplementedException();

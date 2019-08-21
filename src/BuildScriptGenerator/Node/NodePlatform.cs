@@ -176,9 +176,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
         }
 
-        public BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+        public BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext ctx)
         {
-            throw new NotImplementedException();
+            string script = TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, null, _logger);
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+                IsFullScript = true,
+            };
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
