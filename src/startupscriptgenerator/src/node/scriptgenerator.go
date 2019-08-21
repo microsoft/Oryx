@@ -49,7 +49,7 @@ func shouldApplicationInsightsBeConfigured() bool {
 	nodeAppInsightsKeyEnv := os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY")
 	nodeAppInsightsEnabledEnv := os.Getenv("APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED")
 
-	if nodeAppInsightsEnabledEnv != "" && strings.ToLower(nodeAppInsightsKeyEnv) == "true" {
+	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) == "true" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
@@ -225,11 +225,11 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	if shouldApplicationInsightsBeConfigured() {
 		loaderFile := filepath.Join(gen.SourcePath, consts.NodeAppInsightsLoaderFileName)
 
-		if common.FileExists(loaderFile) !=true {
+		if !common.FileExists(loaderFile) {
 			createApplicationInsightsLoaderFile(loaderFile)			
 		}
 
-		var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " '$NODE_OPTIONS"
+		var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " ' $NODE_OPTIONS"
 		scriptBuilder.WriteString("export NODE_OPTIONS=" + nodeOptions + "\n")
 	}
 	scriptBuilder.WriteString(startupCommand + "\n")
