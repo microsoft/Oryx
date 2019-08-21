@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
             var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-            var aIEnabled = "APPLICATIONINSIGHTS_CODELESS_ENABLED";
+            var aIEnabled = "APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
