@@ -53,8 +53,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        public void GeneratesScript_AndBuilds_WithoutComposerFile()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void GeneratesScript_AndBuilds_WithoutComposerFile(string buildImageName)
         {
             // Arrange
             var appName = "twig-example";
@@ -68,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
