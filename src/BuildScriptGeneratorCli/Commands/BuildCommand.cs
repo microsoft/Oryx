@@ -210,6 +210,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
             logger.LogTrace("Build script written to file");
+            logger.LogDebug("Build script content:\n" + scriptContent);
 
             var buildEventProps = new Dictionary<string, string>()
             {
@@ -286,7 +287,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
-            logger.LogDebug("Build script content:\n" + scriptContent);
             logger.LogLongMessage(LogLevel.Debug, "Build script output", buildScriptOutput.ToString());
 
             if (exitCode != ProcessConstants.ExitSuccess)
