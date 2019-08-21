@@ -447,14 +447,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "dotnet")]
-        [Fact]
-        public void DotNetAlias_UsesVersionSetOnBenvArgument_OverVersionSetInEnvironmentVariable()
+        [Theory]
+        [InlineData("DotNet", "dotnet")]
+        [InlineData("dotnet", "dotNet")]
+        [InlineData("DOTNET_VERSION", "DOTNET_VERSION")]
+        [InlineData("dotnet_version", "dotnet_version")]
+        public void DotNetAlias_UsesVersionSetOnBenvArgument_OverVersionSetInEnvironmentVariable(
+            string environmentVariableName,
+            string argumentName)
         {
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("dotnet", "3")
-                .Source("benv dotnet=1")
+                .SetEnvironmentVariable(environmentVariableName, "3")
+                .Source($"benv {argumentName}=1")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -485,7 +491,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet=3")
-                .Source("benv dotnet=1")
+                .Source("benv dotnet_version=1")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
                 .ToString();
