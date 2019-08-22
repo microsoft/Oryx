@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
         [Theory]
         [MemberData(nameof(VSCodeDependencies))]
-        public async Task CanBuildNpmPackages(string pkgName, string pkgVersion, string gitRepoUrl, string commitId)
+        public void CanBuildNpmPackages(string pkgName, string pkgVersion, string gitRepoUrl, string commitId)
         {
             // Arrange
             var pkgSrcDir = "/tmp/pkg/src";
