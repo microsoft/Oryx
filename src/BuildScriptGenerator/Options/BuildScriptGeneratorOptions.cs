@@ -21,6 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool ScriptOnly { get; set; }
 
+        public bool ShouldPackage { get; set; }
+
         public IDictionary<string, string> Properties { get; set; }
 
         public string ManifestDir { get; set; }

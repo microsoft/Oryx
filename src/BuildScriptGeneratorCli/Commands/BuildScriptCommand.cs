@@ -34,6 +34,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The version of the programming platform used in the provided source directory.")]
         public string PlatformVersion { get; set; }
 
+        [Option("--package", CommandOptionType.NoValue,
+            Description = "Package the built sources into a platform-specific format.")]
+        public bool ShouldPackage { get; set; }
+
         [Option(
             OptionTemplates.Property,
             CommandOptionType.MultipleValue,
@@ -88,6 +92,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 manifestDir: null,
                 platform: PlatformName,
                 platformVersion: PlatformVersion,
+                shouldPackage: ShouldPackage,
                 scriptOnly: true,
                 properties: Properties);
         }

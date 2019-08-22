@@ -356,6 +356,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 manifestDir: ManifestDir,
                 platform: PlatformName,
                 platformVersion: PlatformVersion,
+                shouldPackage: ShouldPackage,
                 scriptOnly: false,
                 properties: Properties);
         }
