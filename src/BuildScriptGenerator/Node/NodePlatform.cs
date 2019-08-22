@@ -134,21 +134,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
-            var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
-            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, ctx, appInsightsKey, SupportedVersions);
-
-            // node_options is only supported in version 8.0.0 or newer and in 6.12.0
-            // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
-            if (shouldInjectAppInsights)
-            {
-                appInsightsInjectCommand = string.Concat(
-                    NodeConstants.NpmPackageInstallCommand,
-                    " --save ",
-                    NodeConstants.NodeAppInsightsPackageName);
-
-                buildProperties[NodeConstants.InjectedAppInsights] = true.ToString();
-                _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
-            }
 
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
@@ -309,42 +294,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     return true;
                 }
-            }
-
-            return false;
-        }
-
-        private static bool ShouldInjectAppInsights(
-            dynamic packageJson,
-            BuildScriptGeneratorContext context,
-            string appInsightsKey,
-            IEnumerable<string> supportedVersions)
-        {
-            bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
-            string nodeVersionContext =
-                string.IsNullOrEmpty(context.NodeVersion) ? context.LanguageVersion : context.NodeVersion;
-
-            string getMaxSatisfyingVersion;
-            if (nodeVersionContext.Contains("."))
-            {
-                getMaxSatisfyingVersion = nodeVersionContext;
-            }
-            else
-            {
-                getMaxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    nodeVersionContext, supportedVersions);
-            }
-
-            // node_options is only supported in version 8.0 or newer and in 6.12
-            // so we will be able to set up app-insight only when node version is 6.12 or 8.0 or newer
-            if (!appInsightsDependency
-                && !string.IsNullOrEmpty(appInsightsKey)
-                && (SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "8.0") >= 0
-                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "6.12") == 0
-                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "8.0") >= 0
-                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "6.12") == 0))
-            {
-                return true;
             }
 
             return false;

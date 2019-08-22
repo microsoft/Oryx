@@ -92,21 +92,13 @@
     compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
     run-script-generator-dir: /opt/startupcmdgen
+    node-app-insights-loader-file-name: oryx-appinsightsloader.js
     bash: /bin/bash
     benv: /usr/local/bin/benv
   outputs:
     - type: csharp
       directory: src/Common
       namespace: Microsoft.Oryx.Common
-    - type: go
-      directory: src/startupscriptgenerator/src/common/consts
-- name: node-app-insights-loader
-  constants:
-    node-app-insights-loader-file-name: oryx-appinsightsloader.js
-  outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator/Node
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions

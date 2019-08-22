@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 # All users need access to node_modules at the root, as this is the location
 # for packages valid for all apps.
@@ -20,3 +20,7 @@ fi
 # PM2 is supported as an option when running the app,
 # so we need to make sure it is available in our images.
 npm install -g pm2@3.5.1
+
+# Application-Insights is supported as an option for telemetry when running the app,
+# so we need to make sure it is available in our images.
+npm install -g applicationinsights@1.4.1
