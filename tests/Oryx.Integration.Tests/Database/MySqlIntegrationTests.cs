@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await RunTestAsync(
                 "nodejs",
-                NodeVersions.Node10Version,
+                NodeVersions.Node10MajorMinorVersion,
                 Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
                 buildImageName: buildImageName);
         }
