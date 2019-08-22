@@ -55,18 +55,6 @@ namespace Microsoft.Oryx.Integration.Tests
             await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", sampleAppName));
         }
 
-        [Fact]
-        public async Task PhpApp_UsingMysqli_AndSlimBuildImage()
-        {
-            await RunTestAsync(
-                "php",
-                "7.3",
-                Path.Combine(HostSamplesDir, "php", "mysqli-example"),
-                8080,
-                specifyBindPortFlag: false,
-                buildImageName: Settings.SlimBuildImageName);
-        }
-
         [Theory]
         [InlineData("7.3")]
         [InlineData("7.2")]

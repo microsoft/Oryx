@@ -217,8 +217,31 @@ FROM dotnet-install AS buildscriptbuilder
 FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
 FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
+FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
 ###
 # End PHP intermediate stages
+###
+
+###
+# Build run script generators (to be used by the `oryx run-script` command)
+###
+FROM golang:1.11-stretch as startupScriptGens
+
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+###
+# End build run script generators
 ###
 
 FROM python AS final
@@ -251,7 +274,12 @@ COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/
 COPY --from=php56-build-base /opt /opt
 COPY --from=php70-build-base /opt /opt
 COPY --from=php72-build-base /opt /opt
-RUN ln -s /opt/php/5.6 /opt/php/5
+COPY --from=php73-build-base /opt /opt
+
+RUN ln -s /opt/php/5.6 /opt/php/5 \
+ && ln -s /opt/php/7.3 /opt/php/7 \
+ && ln -s /opt/php/7 /opt/php/lts \
+ && ln -s /opt/php/lts/bin/php /usr/local/bin/php
 
 RUN rm -rf /tmp/scripts
 
