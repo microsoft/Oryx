@@ -48,8 +48,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                     .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
                     .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")
                 // Build & package
-                    .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir}")
-                    .AddCommand($"oryx package {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
+                    .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
                     .AddFileExistsCheck(oryxPackOutput)
                 // Compute diff between tar contents
                     .AddCommand($"tar -tf {oryxPackOutput} > /tmp/contents.oryx.txt")

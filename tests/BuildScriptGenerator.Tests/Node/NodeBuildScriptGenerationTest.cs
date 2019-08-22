@@ -71,6 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           ""dependencies"": { ""foo"" : ""1.0.0 - 2.9999.9999"", ""bar"" : "">=1.0.2 <2.1.2"" }
         }";
 
+        // See https://dev.azure.com/devdiv/DevDiv/_workitems/edit/894104
         private const string PackageJsonWithUnsupportedNpmVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",

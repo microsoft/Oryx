@@ -250,7 +250,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
-            if (GetNodeModulesPackOptions(ctx, out string compressCommand, out string compressedFileName))
+            if (GetNodeModulesPackOptions(ctx, out _, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }
@@ -321,11 +321,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IEnumerable<string> supportedVersions)
         {
             bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
-            string appInsightsInjectCommand = string.Empty;
-            string getMaxSatisfyingVersion = string.Empty;
             string nodeVersionContext =
                 string.IsNullOrEmpty(context.NodeVersion) ? context.LanguageVersion : context.NodeVersion;
 
+            string getMaxSatisfyingVersion;
             if (nodeVersionContext.Contains("."))
             {
                 getMaxSatisfyingVersion = nodeVersionContext;

@@ -32,6 +32,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string LanguageVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the built sources should be packages into a platform-specific format.
+        /// </summary>
+        public bool Package { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether only the provided platform should be built, disabling
         /// the detection and build of all other platforms. If set to <c>true</c>, all other languages
         /// are disabled even if they are enabled by their specific flags.
