@@ -100,11 +100,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return new BuildScriptSnippet { BashBuildScriptSnippet = script, IsFullScript = true };
         }
 
-        public BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Even though the runtime container has the logic of finding out the startup file based on
         /// 'runtimeconfig.json' prefix, we still set the name in the manifest file because of the following

@@ -135,19 +135,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
 
-            var scriptProps = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: packageInstallCommand,
-                runBuildCommand: runBuildCommand,
-                runBuildAzureCommand: runBuildAzureCommand,
-                hasProductionOnlyDependencies: hasProductionOnlyDependencies,
-                productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
-                compressNodeModulesCommand: compressNodeModulesCommand,
-                compressedNodeModulesFileName: compressedNodeModulesFileName,
-                configureYarnCache: configureYarnCache,
-                pruneDevDependencies: pruneDevDependencies,
-                appInsightsInjectCommand: appInsightsInjectCommand,
-                appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
-                appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName);
+            var scriptProps = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = packageInstallCommand,
+                NpmRunBuildCommand = runBuildCommand,
+                NpmRunBuildAzureCommand = runBuildAzureCommand,
+                HasProductionOnlyDependencies = hasProductionOnlyDependencies,
+                ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand,
+                CompressNodeModulesCommand = compressNodeModulesCommand,
+                CompressedNodeModulesFileName = compressedNodeModulesFileName,
+                ConfigureYarnCache = configureYarnCache,
+                PruneDevDependencies = pruneDevDependencies,
+                AppInsightsInjectCommand = appInsightsInjectCommand,
+                AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
+                AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
+                RunNpmPack = ctx.Package,
+            };
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
@@ -158,16 +161,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = buildProperties,
-            };
-        }
-
-        public BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext ctx)
-        {
-            string script = TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, null, _logger);
-            return new BuildScriptSnippet
-            {
-                BashBuildScriptSnippet = script,
-                IsFullScript = true,
             };
         }
 

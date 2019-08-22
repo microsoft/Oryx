@@ -10,34 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// </summary>
     public class NodeBashBuildSnippetProperties
     {
-        public NodeBashBuildSnippetProperties(
-            string packageInstallCommand,
-            string runBuildCommand,
-            string runBuildAzureCommand,
-            bool hasProductionOnlyDependencies,
-            string productionOnlyPackageInstallCommand,
-            string compressNodeModulesCommand,
-            string compressedNodeModulesFileName,
-            bool configureYarnCache = false,
-            bool pruneDevDependencies = false,
-            string appInsightsInjectCommand = null,
-            string appInsightsPackageName = null,
-            string appInsightsLoaderFileName = null)
-        {
-            PackageInstallCommand = packageInstallCommand;
-            NpmRunBuildCommand = runBuildCommand;
-            NpmRunBuildAzureCommand = runBuildAzureCommand;
-            HasProductionOnlyDependencies = hasProductionOnlyDependencies;
-            ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand;
-            CompressNodeModulesCommand = compressNodeModulesCommand;
-            CompressedNodeModulesFileName = compressedNodeModulesFileName;
-            ConfigureYarnCache = configureYarnCache;
-            PruneDevDependencies = pruneDevDependencies;
-            AppInsightsInjectCommand = appInsightsInjectCommand;
-            AppInsightsPackageName = appInsightsPackageName;
-            AppInsightsLoaderFileName = appInsightsLoaderFileName;
-        }
-
         public string PackageInstallCommand { get; set; }
 
         public string NpmRunBuildCommand { get; set; }
@@ -61,5 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string AppInsightsPackageName { get; set; }
 
         public string AppInsightsLoaderFileName { get; set; }
+
+        public bool RunNpmPack { get; set; }
     }
 }

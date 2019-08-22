@@ -96,6 +96,12 @@ echo
 {{ NpmRunBuildAzureCommand }}
 {{ end }}
 
+{{ if RunNpmPack }}
+echo "Preparing and packaging..."
+npm run prepare || true
+npm pack
+{{ end }}
+
 if [ "$copyOnlyProdModulesToOutput" == "true" ]
 then
 	# Rename folder having all node_modules as we want only prod dependencies

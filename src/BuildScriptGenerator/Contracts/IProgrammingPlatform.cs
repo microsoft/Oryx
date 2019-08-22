@@ -63,14 +63,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
 
         /// <summary>
-        /// Generates a package Bash script based on the package in source directory.
-        /// </summary>
-        /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
-        /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful,
-        /// <c>null</c> otherwise.</returns>
-        BuildScriptSnippet GenerateBashPackageScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext);
-
-        /// <summary>
         /// Generate a bash script that can install the required runtime bits for the application's platforms.
         /// </summary>
         /// <param name="options">Options to generate the installation script with.</param>
