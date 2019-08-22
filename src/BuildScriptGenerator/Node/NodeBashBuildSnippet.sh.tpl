@@ -97,8 +97,9 @@ echo
 {{ end }}
 
 {{ if RunNpmPack }}
-echo "Preparing and packaging..."
-npm run prepare || true
+echo
+echo "Running npm pack..."
+echo
 npm pack
 {{ end }}
 

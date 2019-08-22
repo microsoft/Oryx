@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             // Arrange
             var pkgSrcDir = "/tmp/pkg/src";
             var pkgBuildOutputDir = "/tmp/pkg/out";
-            var oryxPackOutput = Path.Combine(pkgBuildOutputDir, $"{pkgName}-{pkgVersion}.tgz");
+            var oryxPackOutput = $"{pkgBuildOutputDir}/{pkgName}-{pkgVersion}.tgz";
 
             const string diffSentinel = "--- Diff: ---";
 
