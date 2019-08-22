@@ -289,43 +289,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return false;
         }
 
-        private static bool ShouldInjectAppInsights(
-            dynamic packageJson,
-            BuildScriptGeneratorContext context,
-            string appInsightsKey,
-            IEnumerable<string> supportedVersions)
-        {
-            bool appInsightsDependency = DoesPackageDependencyExist(packageJson, NodeConstants.NodeAppInsightsPackageName);
-            string appInsightsInjectCommand = string.Empty;
-            string getMaxSatisfyingVersion = string.Empty;
-            string nodeVersionContext =
-                string.IsNullOrEmpty(context.NodeVersion) ? context.LanguageVersion : context.NodeVersion;
-
-            if (nodeVersionContext.Contains("."))
-            {
-                getMaxSatisfyingVersion = nodeVersionContext;
-            }
-            else
-            {
-                getMaxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    nodeVersionContext, supportedVersions);
-            }
-
-            // node_options is only supported in version 8.0 or newer and in 6.12
-            // so we will be able to set up app-insight only when node version is 6.12 or 8.0 or newer
-            if (!appInsightsDependency
-                && !string.IsNullOrEmpty(appInsightsKey)
-                && (SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "8.0") >= 0
-                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "6.12") == 0
-                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "8.0") >= 0
-                || SemanticVersionResolver.CompareVersions(getMaxSatisfyingVersion, "6.12") == 0))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         private static bool GetNodeModulesPackOptions(
             BuildScriptGeneratorContext context,
             out string compressNodeModulesCommand,
