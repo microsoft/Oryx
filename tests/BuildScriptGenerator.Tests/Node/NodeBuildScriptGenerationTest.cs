@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -111,16 +113,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: null,
-                runBuildAzureCommand: null,
-                hasProductionOnlyDependencies: false,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = null,
+                NpmRunBuildAzureCommand = null,
+                HasProductionOnlyDependencies = false,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -142,16 +146,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: null,
-                runBuildAzureCommand: null,
-                hasProductionOnlyDependencies: false,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = null,
+                NpmRunBuildAzureCommand = null,
+                HasProductionOnlyDependencies = false,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -173,16 +179,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: null,
-                runBuildAzureCommand: null,
-                hasProductionOnlyDependencies: false,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = null,
+                NpmRunBuildAzureCommand = null,
+                HasProductionOnlyDependencies = false,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -205,17 +213,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: YarnInstallCommand,
-                runBuildCommand: null,
-                runBuildAzureCommand: null,
-                hasProductionOnlyDependencies: false,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = YarnInstallCommand,
+                NpmRunBuildCommand = null,
+                NpmRunBuildAzureCommand = null,
+                HasProductionOnlyDependencies = false,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null,
-                configureYarnCache: true);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+                ConfigureYarnCache = true,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -238,17 +248,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: YarnInstallCommand,
-                runBuildCommand: "yarn run build",
-                runBuildAzureCommand: "yarn run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = YarnInstallCommand,
+                NpmRunBuildCommand = "yarn run build",
+                NpmRunBuildAzureCommand = "yarn run build:azure",
+                HasProductionOnlyDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null,
-                configureYarnCache: true);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+                ConfigureYarnCache = true,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -271,16 +283,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: null,
-                runBuildAzureCommand: null,
-                hasProductionOnlyDependencies: false,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = null,
+                NpmRunBuildAzureCommand = null,
+                HasProductionOnlyDependencies = false,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -302,16 +316,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProductionOnlyDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -334,16 +350,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             context.Properties["compress_node_modules"] = "tar-gz";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProductionOnlyDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: "node_modules.tar.gz",
-                compressNodeModulesCommand: "tar -zcf");
+                CompressedNodeModulesFileName = "node_modules.tar.gz",
+                CompressNodeModulesCommand = "tar -zcf",
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -367,16 +385,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             context.Properties["compress_node_modules"] = null;
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProductionOnlyDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: "node_modules.tar.gz",
-                compressNodeModulesCommand: "tar -zcf");
+                CompressedNodeModulesFileName = "node_modules.tar.gz",
+                CompressNodeModulesCommand = "tar -zcf",
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -400,16 +420,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             context.Properties["compress_node_modules"] = "zip";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProductionOnlyDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: "node_modules.zip",
-                compressNodeModulesCommand: "zip -y -q -r");
+                CompressedNodeModulesFileName = "node_modules.zip",
+                CompressNodeModulesCommand = "zip -y -q -r",
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -432,16 +454,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
-            var expected = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: NpmInstallCommand,
-                runBuildCommand: "npm run build",
-                runBuildAzureCommand: "npm run build:azure",
-                hasProductionOnlyDependencies: true,
-                productionOnlyPackageInstallCommand: string.Format(
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NpmInstallCommand,
+                NpmRunBuildCommand = "npm run build",
+                NpmRunBuildAzureCommand = "npm run build:azure",
+                HasProductionOnlyDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
-                compressedNodeModulesFileName: null,
-                compressNodeModulesCommand: null);
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+            };
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -454,7 +478,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
-        private IProgrammingPlatform GetNodePlatformInstance(
+        private static IProgrammingPlatform GetNodePlatformInstance(
             string defaultNodeVersion = null,
             string defaultNpmVersion = null,
             Dictionary<string, string> otherEnvironment = null)
@@ -471,7 +495,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 }
             }
             
-            var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.2.1", "10.16.1", "12.8.1" }, new[] { "5.4.2", "6.0.0" });
+            var nodeVersionProvider = new TestVersionProvider(
+                new[] { "6.11.0", "8.2.1", "10.16.1", "12.8.1" },
+                new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
