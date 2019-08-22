@@ -41,14 +41,14 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var pkgBuildOutputDir = "/tmp/pkg/out";
             var oryxPackOutput = Path.Combine(pkgBuildOutputDir, $"{pkgName}-{pkgVersion}.tgz");
 
-            var diffSentinel = "--- Diff: ---";
+            const string diffSentinel = "--- Diff: ---";
 
             var script = new ShellScriptBuilder()
                 // Fetch source code
                     .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
                     .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")
                 // Build & package
-                    .AddBuildCommand($"{pkgSrcDir} -o {pkgBuildOutputDir}")
+                    .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir}")
                     .AddCommand($"oryx package {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
                     .AddFileExistsCheck(oryxPackOutput)
                 // Compute diff between tar contents
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", new[] { "-c", script });
 
             // Assert
-            Console.WriteLine(result.StdOut);
+            var tarDiff = result.StdOut.Split(diffSentinel)[1];
         }
     }
 }

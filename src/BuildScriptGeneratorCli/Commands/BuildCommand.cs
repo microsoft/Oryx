@@ -99,6 +99,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The destination directory.")]
         public string DestinationDir { get; set; }
 
+        [Option("--package", CommandOptionType.NoValue,
+            Description = "Package the built sources into a platform-specific format.")]
+        public bool ShouldPackage { get; set; }
+
         [Option(
             OptionTemplates.Property,
             CommandOptionType.MultipleValue,
