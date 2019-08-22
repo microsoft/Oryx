@@ -198,37 +198,6 @@ RUN if [ -z "$AGENTBUILD" ]; then \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
-###
-# PHP intermediate stages
-# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
-###
-FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
-###
-# End PHP intermediate stages
-###
-
-###
-# Build run script generators (to be used by the `oryx run-script` command)
-###
-FROM golang:1.11-stretch as startupScriptGens
-
-# GOPATH is set to "/go" in the base image
-WORKDIR /go/src
-COPY src/startupscriptgenerator/src .
-
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-
-RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
-RUN ./build.sh node       /opt/startupcmdgen/nodejs
-RUN ./build.sh php        /opt/startupcmdgen/php
-RUN ./build.sh python     /opt/startupcmdgen/python
-###
-# End build run script generators
-###
-
 FROM python AS final
 WORKDIR /
 
@@ -251,26 +220,11 @@ RUN chmod a+rw /var/nuget
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 COPY --from=node-install /links/ /usr/local/bin
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
-
-# Copy PHP versions
-COPY images/build/php/prereqs/installPrereqs.sh /tmp/php/installPrereqs.sh
-RUN . /tmp/php/installPrereqs.sh
-
-COPY --from=php73-build-base /opt /opt
-
-RUN ln -s /opt/php/7.3 /opt/php/7 \
- && ln -s /opt/php/7 /opt/php/lts \
- && ln -s /opt/php/lts/bin/php /usr/local/bin/php
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
-
-# Oryx depends on the run script generators for most of its
-# `IProgrammingPlatform.GenerateBashRunScript()` implementations
-COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 RUN rm -rf /tmp/scripts
 
