@@ -125,6 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _logger.LogDebug("{platformName} has been disabled", p.Name);
                     return false;
                 }
+
                 return true;
             });
 
