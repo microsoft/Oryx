@@ -134,21 +134,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
-            var appInsightsKey = _environment.GetEnvironmentVariable(Constants.AppInsightsKey);
-            var shouldInjectAppInsights = ShouldInjectAppInsights(packageJson, ctx, appInsightsKey, SupportedVersions);
-
-            // node_options is only supported in version 8.0.0 or newer and in 6.12.0
-            // so we will be able to set up app-insight only when node version is 6.12.0 or 8.0.0 or newer
-            if (shouldInjectAppInsights)
-            {
-                appInsightsInjectCommand = string.Concat(
-                    NodeConstants.NpmPackageInstallCommand,
-                    " --save ",
-                    NodeConstants.NodeAppInsightsPackageName);
-
-                buildProperties[NodeConstants.InjectedAppInsights] = true.ToString();
-                _logger.LogInformation("Oryx setting up Application Insights for auto-collection telemetry... ");
-            }
 
             var scriptProps = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: packageInstallCommand,
