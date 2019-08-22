@@ -8,7 +8,7 @@ using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var pkgBuildOutputDir = "/tmp/pkg/out";
             var oryxPackOutput = $"{pkgBuildOutputDir}/{pkgName}-{pkgVersion}.tgz";
 
-            const string diffSentinel = "--- Diff: ---";
+            const string tarListMarker = "------";
 
             var script = new ShellScriptBuilder()
                 // Fetch source code
@@ -51,20 +51,21 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                     .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
                     .AddFileExistsCheck(oryxPackOutput)
                 // Compute diff between tar contents
-                    .AddCommand($"tar -tf {oryxPackOutput} > /tmp/contents.oryx.txt")
                     // Download public NPM build for comparison
                         .AddCommand($"export NpmTarUrl=$(npm view {pkgName}@{pkgVersion} dist.tarball)")
                         .AddCommand("wget -O /tmp/npm-pkg.tgz $NpmTarUrl")
-                    .AddCommand("tar -tf /tmp/npm-pkg.tgz > /tmp/contents.npm.txt")
-                    .AddCommand("echo " + diffSentinel)
-                    .AddCommand("diff /tmp/contents.oryx.txt /tmp/contents.npm.txt")
+                    .AddCommand("echo " + tarListMarker)
+                    .AddCommand($"tar -tf {oryxPackOutput}")
+                    .AddCommand("echo " + tarListMarker)
+                    .AddCommand("tar -tf /tmp/npm-pkg.tgz")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(Settings.BuildImageName, "/bin/bash", new[] { "-c", script });
 
             // Assert
-            var tarDiff = result.StdOut.Split(diffSentinel)[1];
+            var tarLists = result.StdOut.Split(tarListMarker);
+            Assert.Equal(tarLists[1], tarLists[2]);
         }
     }
 }
