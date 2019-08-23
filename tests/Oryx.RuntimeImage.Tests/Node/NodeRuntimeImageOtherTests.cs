@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("6.9", "6.9.5")]
         [InlineData("6.10", "6.10.3")]
         [InlineData("6.11", "6.11.5")]
-        [InlineData("8", "8.16.0")]
+        [InlineData("8", "8.16.1")]
         [InlineData("8.0", "8.0.0")]
         [InlineData("8.1", "8.1.4")]
         [InlineData("8.2", "8.2.1")]
