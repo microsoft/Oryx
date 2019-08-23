@@ -283,6 +283,8 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
 
 RUN rm -rf /tmp/scripts
 
+RUN rm -rf /tmp/scripts
+
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
