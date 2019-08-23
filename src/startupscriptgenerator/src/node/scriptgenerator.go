@@ -75,7 +75,7 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 
 			return true;
 		}
-		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED) {
+		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED === "true") {
 			appInsights
 				.setup()
 				.setSendLiveMetrics(true)
