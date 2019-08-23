@@ -108,9 +108,9 @@
     yarn-major-version: 1
     node6-version: 6.17.1
     node6-major-minor-version: 6.17
-    node8-version: 8.16.0
+    node8-version: 8.16.1
     node8-major-minor-version: 8.16
-    node10-version: 10.16.1
+    node10-version: 10.16.3
     node10-major-minor-version: 10.16
     node12-version: 12.8.1
     node12-major-minor-version: 12.8
