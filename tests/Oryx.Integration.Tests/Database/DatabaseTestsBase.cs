@@ -36,7 +36,8 @@ namespace Microsoft.Oryx.Integration.Tests
             string languageVersion,
             string samplePath,
             int containerPort = 8000,
-            bool specifyBindPortFlag = true)
+            bool specifyBindPortFlag = true,
+            string buildImageName = Settings.BuildImageName)
         {
             var volume = DockerVolume.CreateMirror(samplePath);
             var appDir = volume.ContainerDir;
@@ -59,7 +60,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
                 new List<DockerVolume> { volume },
-                Settings.BuildImageName,
+                buildImageName,
                 "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),

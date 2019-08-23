@@ -172,8 +172,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(string buildImageName)
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
@@ -188,7 +190,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
