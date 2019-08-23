@@ -112,6 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 hasProductionOnlyDependencies: false,
@@ -143,6 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 hasProductionOnlyDependencies: false,
@@ -174,6 +176,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 hasProductionOnlyDependencies: false,
@@ -206,6 +209,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: YarnInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.YarnVersionCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 hasProductionOnlyDependencies: false,
@@ -239,6 +243,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: YarnInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.YarnVersionCommand,
                 runBuildCommand: "yarn run build",
                 runBuildAzureCommand: "yarn run build:azure",
                 hasProductionOnlyDependencies: true,
@@ -272,6 +277,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: null,
                 runBuildAzureCommand: null,
                 hasProductionOnlyDependencies: false,
@@ -303,6 +309,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
                 hasProductionOnlyDependencies: true,
@@ -335,6 +342,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.Properties["compress_node_modules"] = "tar-gz";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
                 hasProductionOnlyDependencies: true,
@@ -349,10 +357,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
+            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -368,6 +376,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.Properties["compress_node_modules"] = null;
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
                 hasProductionOnlyDependencies: true,
@@ -401,6 +410,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.Properties["compress_node_modules"] = "zip";
             var expected = new NodeBashBuildSnippetProperties(
                 packageInstallCommand: NpmInstallCommand,
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
                 hasProductionOnlyDependencies: true,
@@ -432,6 +442,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             var expected = new NodeBashBuildSnippetProperties(
+                packageInstallerVersionCommand: NodeConstants.NpmVersionCommand,
                 packageInstallCommand: NpmInstallCommand,
                 runBuildCommand: "npm run build",
                 runBuildAzureCommand: "npm run build:azure",
@@ -469,7 +480,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     environment.Variables[environmentVariable] = otherEnvironment[environmentVariable];
                 }
             }
-            
+
             var nodeVersionProvider = new TestVersionProvider(new[] { "6.11.0", "8.16.1", "10.16.3", "12.8.1" }, new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());

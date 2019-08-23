@@ -1,3 +1,9 @@
+echo
+echo "Using Node version:"
+node --version
+echo
+{{ PackageInstallerVersionCommand }}
+
 {{ if ConfigureYarnCache }}
 # Yarn config is per user, and since the build might run with a non-root account, we make sure
 # the yarn cache is set on every build.
