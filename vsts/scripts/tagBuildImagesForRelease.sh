@@ -7,41 +7,28 @@
 set -o pipefail
 
 function tagBuildImage() {
-    local buildImageRepo="$1"
-    buildNumber=$BUILD_BUILDNUMBER
+    local devRegistryRepoName="$1"
+    local prodRegistryRepoName="$1"
+    local prodRegistryTagName="$2"
     sourceBranchName=$BUILD_SOURCEBRANCHNAME
-    buildImageName="$buildImageRepo:Oryx-CI.$buildNumber"
+    buildImageName="$devRegistryRepoName:Oryx-CI.$buildNumber"
     outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
-    outFileDocker="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
 
     echo "Pulling the source image $buildImageName ..."
     docker pull "$buildImageName" | sed 's/^/     /'
         
-    acrProdRepo="oryxmcr.azurecr.io/public/oryx/build"
-    acrLatest="$acrProdRepo:latest"
-    acrSpecific="$acrProdRepo:$buildNumber"    
-        
-    dockerHubRepoName="oryxprod/build"
-    dockerHubLatest="$dockerHubRepoName:latest"
-    dockerHubSpecific="$dockerHubRepoName:$buildNumber"
+    acrLatest="$prodRegistryRepoName:latest"
+    acrSpecific="$prodRegistryRepoName:$buildNumber"    
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."
     echo "$acrSpecific">>"$outFileMCR"
     docker tag "$buildImageName" "$acrSpecific"
 
-    echo "Tagging the source image with tag $dockerHubSpecific..."
-    echo "$dockerHubSpecific">>"$outFileDocker"
-    docker tag "$buildImageName" "$dockerHubSpecific"
-
     if [ "$sourceBranchName" == "master" ]; then
         echo "Tagging the source image with tag $acrLatest..."
         echo "$acrLatest">>"$outFileMCR"
         docker tag "$buildImageName" "$acrLatest"
-
-        echo "Tagging the source image with tag $dockerHubLatest..."
-        echo "$dockerHubLatest">>"$outFileDocker"
-        docker tag "$buildImageName" "$dockerHubLatest"
     else
         echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
@@ -49,5 +36,6 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim"
+buildNumber=$BUILD_BUILDNUMBER
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build" "oryxmcr.azurecr.io/public/oryx/build" $buildNumber
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim" "oryxmcr.azurecr.io/public/oryx/build-slim" "slim-$buildNumber"
