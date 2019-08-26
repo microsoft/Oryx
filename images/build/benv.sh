@@ -4,17 +4,54 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
+# Perform case-insensitive comparison
+matchesName() {
+  local expectedName="$1"
+  local providedName="$2"
+  local result=
+  shopt -s nocasematch
+  [[ "$expectedName" == "$providedName" ]] && result=0 || result=1
+  shopt -u nocasematch
+   return $result
+}
+
 # Read the environment variables to see if a value for these variables have been set.
 # If a variable was set as an environment variable AND as an argument to benv script, then the argument wins.
 # Example:
 #   export dotnet=1
 #   source benv dotnet=3
 #   dotnet --version (This should print version 3)
-[ -n "$python" ] && set -- "python=$python" "$@"
-[ -n "$php" ] && set -- "php=$php" "$@"
-[ -n "$npm" ] && set -- "npm=$npm" "$@"
-[ -n "$node" ] && set -- "node=$node" "$@"
-[ -n "$dotnet" ] && set -- "dotnet=$dotnet" "$@"
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^php=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^php_version=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^python=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^python_version=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^node=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^node_version=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^npm=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^npm_version=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^dotnet=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^dotnet_version=')
+unset benvvar # Remove all traces of this part of the script
 
 benv-versions() {
   local IFS=$' \r\n'
@@ -34,7 +71,7 @@ benv-resolve() {
   local value=$(echo $1 | sed 's/^.*=//')
 
   # Resolve node versions
-  if [ "$name" == "node" ] && [ "${value::1}" != "/" ]; then
+  if matchesName "node" "$name" || matchesName "node_version" "$name" && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/nodejs/$value" ]; then
       echo >&2 benv: node version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/nodejs
@@ -53,7 +90,7 @@ benv-resolve() {
   fi
 
   # Resolve npm versions
-  if [ "$name" == "npm" ] && [ "${value::1}" != "/" ]; then
+  if matchesName "npm" "$name" || matchesName "npm_version" "$name" && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/npm/$value" ]; then
       echo >&2 benv: npm version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/npm
@@ -71,7 +108,7 @@ benv-resolve() {
   fi
 
   # Resolve python versions
-  if [ "$name" == "python" ] && [ "${value::1}" != "/" ]; then
+  if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/python/$value" ]; then
       echo >&2 benv: python version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/python
@@ -94,7 +131,7 @@ benv-resolve() {
   fi
 
   # Resolve PHP versions
-  if [ "$name" == "php" ] && [ "${value::1}" != "/" ]; then
+  if matchesName "php" "$name" || matchesName "php_version" "$name" && [ "${value::1}" != "/" ]; then
     if [ ! -d "/opt/php/$value" ]; then
       echo >&2 benv: php version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/php
@@ -109,7 +146,7 @@ benv-resolve() {
   fi
 
   # Resolve dotnet versions
-  if [ "$name" == "dotnet" ] && [ "${value::1}" != "/" ]; then
+  if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
     local runtimesDir="/opt/dotnet/runtimes"
     if [ ! -d "$runtimesDir/$value" ]; then
       echo >&2 benv: dotnet version \'$value\' not found\; choose one of:

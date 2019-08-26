@@ -31,6 +31,10 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 "bf8dee921aeaf2ab5461d21ca090b01d1fd1d715" },
             new object[] { "graceful-fs", "4.1.11", "https://github.com/isaacs/node-graceful-fs.git",
                 "65cf80d1fd3413b823c16c626c1e7c326452bee5" },
+            new object[] { "http-proxy-agent", "2.1.0", "https://github.com/TooTallNate/node-http-proxy-agent.git",
+                "65307ac8fe4e6ce1a2685d21ec4affa4c2a0a30d" },
+            new object[] { "https-proxy-agent", "2.2.1", "https://github.com/isaacs/node-graceful-fs.git",
+                "8c3a75baddecae7e2fe2921d1adde7edd0203156" },
         };
 
         [Theory]

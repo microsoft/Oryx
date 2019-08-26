@@ -113,9 +113,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
                 HasProductionOnlyDependencies = false,
@@ -146,6 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -179,9 +182,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
                 HasProductionOnlyDependencies = false,
@@ -213,9 +218,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = YarnInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
                 HasProductionOnlyDependencies = false,
@@ -248,9 +255,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = YarnInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
                 NpmRunBuildCommand = "yarn run build",
                 NpmRunBuildAzureCommand = "yarn run build:azure",
                 HasProductionOnlyDependencies = true,
@@ -283,9 +292,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
                 HasProductionOnlyDependencies = false,
@@ -316,9 +327,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProductionOnlyDependencies = true,
@@ -350,9 +363,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             context.Properties["compress_node_modules"] = "tar-gz";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProductionOnlyDependencies = true,
@@ -368,10 +383,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
+            Assert.Contains("echo Zipping existing 'node_modules' folder", snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -385,9 +400,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             context.Properties["compress_node_modules"] = null;
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProductionOnlyDependencies = true,
@@ -420,9 +437,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
             context.Properties["compress_node_modules"] = "zip";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProductionOnlyDependencies = true,
@@ -454,9 +473,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.LanguageVersion = "8.2.1";
+
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProductionOnlyDependencies = true,
@@ -494,9 +515,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     environment.Variables[environmentVariable] = otherEnvironment[environmentVariable];
                 }
             }
-            
+
             var nodeVersionProvider = new TestVersionProvider(
-                new[] { "6.11.0", "8.2.1", "10.16.1", "12.8.1" },
+                new[] { "6.11.0", "8.16.1", "10.16.3", "12.8.1" },
                 new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());

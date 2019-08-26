@@ -6,43 +6,36 @@
 
 set -o pipefail
 
-sourceImageName="oryxdevmcr.azurecr.io/public/oryx/build"
 buildNumber=$BUILD_BUILDNUMBER
-sourceBranchName=$BUILD_SOURCEBRANCHNAME
-sourceImage="$sourceImageName:Oryx-CI.$buildNumber"
-outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
-outFileDocker="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-dockerhub.txt"
 
-echo "Pulling the source image $sourceImage ..."
-docker pull "$sourceImage" | sed 's/^/     /'
-    
-acrProdRepo="oryxmcr.azurecr.io/public/oryx/build"
-acrLatest="$acrProdRepo:latest"
-acrSpecific="$acrProdRepo:$buildNumber"    
-    
-dockerHubRepoName="oryxprod/build"
-dockerHubLatest="$dockerHubRepoName:latest"
-dockerHubSpecific="$dockerHubRepoName:$buildNumber"
+function tagBuildImage() {
+    local devRegistryImageName="$1"
+    local prodRegistryLatestTagName="$2"
+    local prodRegistrySpecificTagName="$3"
+    local prodRegistryRepoName="oryxmcr.azurecr.io/public/oryx/build"
+    sourceBranchName=$BUILD_SOURCEBRANCHNAME
+    outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
 
-echo
-echo "Tagging the source image with tag $acrSpecific..."
-echo "$acrSpecific">>"$outFileMCR"
-docker tag "$sourceImage" "$acrSpecific"
+    echo "Pulling the source image $devRegistryImageName..."
+    docker pull "$devRegistryImageName" | sed 's/^/     /'
 
-echo "Tagging the source image with tag $dockerHubSpecific..."
-echo "$dockerHubSpecific">>"$outFileDocker"
-docker tag "$sourceImage" "$dockerHubSpecific"
+    echo
+    echo "Tagging the source image with tag $prodRegistrySpecificTagName..."
+    prodRegistryImageName="$prodRegistryRepoName:$prodRegistrySpecificTagName"
+    docker tag "$devRegistryImageName" "$prodRegistryImageName"
+    echo "$prodRegistryImageName">>"$outFileMCR"
 
-if [ "$sourceBranchName" == "master" ]; then
-    echo "Tagging the source image with tag $acrLatest..."
-    echo "$acrLatest">>"$outFileMCR"
-    docker tag "$sourceImage" "$acrLatest"
+    if [ "$sourceBranchName" == "master" ]; then
+        echo "Tagging the source image with tag $prodRegistryLatestTagName..."
+        prodRegistryImageName="$prodRegistryRepoName:$prodRegistryLatestTagName"
+        docker tag "$devRegistryImageName" "$prodRegistryRepoName:$prodRegistryLatestTagName"
+        echo "$prodRegistryImageName">>"$outFileMCR"
+    else
+        echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
+    fi
 
-    echo "Tagging the source image with tag $dockerHubLatest..."
-    echo "$dockerHubLatest">>"$outFileDocker"
-    docker tag "$sourceImage" "$dockerHubLatest"
-else
-    echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
-fi
+    echo -------------------------------------------------------------------------------
+}
 
-echo -------------------------------------------------------------------------------
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$buildNumber" "latest" "$buildNumber"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$buildNumber" "slim" "slim-$buildNumber"

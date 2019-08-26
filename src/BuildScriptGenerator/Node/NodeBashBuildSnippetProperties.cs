@@ -34,6 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string AppInsightsLoaderFileName { get; set; }
 
+        public string PackageInstallerVersionCommand { get; set; }
+
         public bool RunNpmPack { get; set; }
     }
 }

@@ -28,8 +28,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
-        [SkippableFact]
-        public void OryxBuildImage_Contains_VersionAndCommit_Information()
+        [SkippableTheory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the test is happening in azure devops agent 
@@ -45,7 +47,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "--version" }
             });
@@ -63,9 +65,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "dotnet")]
-        [Fact]
-        public void DotNetAlias_UsesLtsVersion_ByDefault()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
@@ -73,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--version" }
             });
@@ -89,7 +92,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "dotnet")]
         [Theory]
         [InlineData("1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData("1.0", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
@@ -128,9 +130,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "node")]
-        [Fact]
-        public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
             var expectedOutput = "v" + NodeVersions.Node10Version;
@@ -138,7 +141,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 CommandToExecuteOnRun = "node",
                 CommandArguments = new[] { "--version" }
             });
@@ -180,9 +183,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "python")]
-        [Fact]
-        public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided()
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.SlimBuildImageName)]
+        public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+            string buildImageName)
         {
             // Arrange
             var expectedOutput = $"Python {Common.PythonVersions.Python37Version}";
@@ -190,7 +195,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = buildImageName,
                 CommandToExecuteOnRun = "python3",
                 CommandArguments = new[] { "--version" }
             });
@@ -442,14 +447,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "dotnet")]
-        [Fact]
-        public void DotNetAlias_UsesVersionSetOnBenvArgument_OverVersionSetInEnvironmentVariable()
+        [Theory]
+        [InlineData("DotNet", "dotnet")]
+        [InlineData("dotnet", "dotNet")]
+        [InlineData("DOTNET_VERSION", "DOTNET_VERSION")]
+        [InlineData("dotnet_version", "dotnet_version")]
+        public void DotNetAlias_UsesVersionSetOnBenvArgument_OverVersionSetInEnvironmentVariable(
+            string environmentVariableName,
+            string argumentName)
         {
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("dotnet", "3")
-                .Source("benv dotnet=1")
+                .SetEnvironmentVariable(environmentVariableName, "3")
+                .Source($"benv {argumentName}=1")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -480,7 +491,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet=3")
-                .Source("benv dotnet=1")
+                .Source("benv dotnet_version=1")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
                 .ToString();
