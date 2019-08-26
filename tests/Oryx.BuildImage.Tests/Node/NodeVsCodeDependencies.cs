@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -65,7 +66,15 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
             // Assert
             var tarLists = result.StdOut.Split(tarListMarker);
-            Assert.Equal(tarLists[1], tarLists[2]);
+
+            var oryxTarList = SplitLines(tarLists[1]).OrderBy(s => s);
+            var npmTarList  = SplitLines(tarLists[2]).OrderBy(s => s);
+            Assert.Equal(oryxTarList, npmTarList);
+        }
+
+        private string[] SplitLines(string str)
+        {
+            return str.Trim().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
         }
     }
 }
