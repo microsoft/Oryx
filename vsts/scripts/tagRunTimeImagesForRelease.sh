@@ -8,7 +8,6 @@ set -o pipefail
 
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
-outFileDocker="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-dockerhub.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
 while read sourceImage; do
@@ -36,30 +35,16 @@ while read sourceImage; do
     version=${repoParts[1]}
     acrLatest="$acrProdRepo:$version"
     acrSpecific="$acrProdRepo:$version-$buildNumber"
-    
-    replaceText="oryxdevmcr.azurecr.io/public/oryx/"
-    runtimeName=$(echo $acrRepoName | sed "s!$replaceText!!g")
-    dockerHubRepoName="oryxprod/$runtimeName"
-    dockerHubLatest="$dockerHubRepoName:$version"
-    dockerHubSpecific="$dockerHubRepoName:$version-$buildNumber"
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."
     echo "$acrSpecific">>"$outFileMCR"
     docker tag "$sourceImage" "$acrSpecific" 
 
-    echo "Tagging the source image with tag $dockerHubSpecific..."
-    echo "$dockerHubSpecific">>"$outFileDocker"
-    docker tag "$sourceImage" "$dockerHubSpecific"
-
     if [ "$sourceBranchName" == "master" ]; then
       echo "Tagging the source image with tag $acrLatest..."
       echo "$acrLatest">>"$outFileMCR"
       docker tag "$sourceImage" "$acrLatest"
-
-      echo "Tagging the source image with tag $dockerHubLatest..."
-      echo "$dockerHubLatest">>"$outFileDocker"
-      docker tag "$sourceImage" "$dockerHubLatest"
     else
       echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
