@@ -41,7 +41,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendFormatWithLine(
                     "rsync --delete -rt {0} . \"{1}\"",
                     excludeDirsSwitch,
-                    intermediateDir);
+                    intermediateDir)
+                .AppendFormatWithLine("cd \"{0}\"", intermediateDir);
             return scriptBuilder;
         }
 
