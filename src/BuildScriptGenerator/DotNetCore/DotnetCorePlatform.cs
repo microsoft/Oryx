@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -91,20 +90,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendLine("set -e")
                 .AppendLine()
                 .AddScriptToCopyToIntermediateDirectory(
-                    sourceDir,
-                    intermediateDir,
+                    sourceDir: sourceDir,
+                    intermediateDir: intermediateDir,
                     GetDirectoriesToExcludeFromCopyToIntermediateDir(context));
 
             sourceDir = intermediateDir;
             scriptBuilder
                 .AddScriptToSetupSourceAndDestinationDirectories(
-                    sourceDir,
-                    temporaryDestinationDir,
-                    destinationDir,
-                    hasUserSuppliedDestinationDir,
-                    zipAllOutput)
+                    sourceDir: sourceDir,
+                    temporaryDestinationDir: temporaryDestinationDir,
+                    destinationDir: destinationDir,
+                    hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir,
+                    zipAllOutput: zipAllOutput)
                 .AppendBenvCommand($"dotnet={context.DotNetCoreVersion}")
-                .AddScriptToRunPreBuildCommand(sourceDir, preBuildCommand)
+                .AddScriptToRunPreBuildCommand(sourceDir: sourceDir, preBuildCommand: preBuildCommand)
                 .AppendLine("echo")
                 .AppendLine("dotnetCoreVersion=$(dotnet --version)")
                 .AppendLine("echo \"Using .NET Core SDK Version: $dotnetCoreVersion\"")
@@ -116,32 +115,42 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 if (zipAllOutput)
                 {
                     scriptBuilder.AddScriptToZipAllOutput(
-                        projectFile,
-                        buildConfiguration,
-                        sourceDir,
-                        temporaryDestinationDir,
-                        destinationDir,
-                        postBuildCommand,
+                        projectFile: projectFile,
+                        buildConfiguration: buildConfiguration,
+                        sourceDir: sourceDir,
+                        temporaryDestinationDir: temporaryDestinationDir,
+                        finalDestinationDir: destinationDir,
+                        postBuildCommand: postBuildCommand,
                         buildProperties);
                 }
                 else
                 {
                     scriptBuilder
-                        .AddScriptToPublishOutput(projectFile, buildConfiguration, destinationDir)
-                        .AddScriptToRunPostBuildCommand(sourceDir, postBuildCommand);
+                        .AddScriptToPublishOutput(
+                            projectFile: projectFile,
+                            buildConfiguration: buildConfiguration,
+                            finalDestinationDir: destinationDir)
+                        .AddScriptToRunPostBuildCommand(
+                            sourceDir: sourceDir,
+                            postBuildCommand: postBuildCommand);
                 }
             }
             else
             {
                 scriptBuilder
                     .AddScriptToBuildProject(projectFile)
-                    .AddScriptToRunPostBuildCommand(sourceDir, postBuildCommand);
+                    .AddScriptToRunPostBuildCommand(
+                        sourceDir: sourceDir,
+                        postBuildCommand: postBuildCommand);
             }
 
             SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
 
             scriptBuilder
-                .AddScriptToCreateManifestFile(buildProperties, _buildOptions.ManifestDir, destinationDir)
+                .AddScriptToCreateManifestFile(
+                    buildProperties,
+                    manifestDir: _buildOptions.ManifestDir,
+                    finalDestinationDir: destinationDir)
                 .AppendLine("echo Done.");
 
             return new BuildScriptSnippet
@@ -149,8 +158,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 BashBuildScriptSnippet = scriptBuilder.ToString(),
                 IsFullScript = true,
             };
-
-
         }
 
         /// <summary>
