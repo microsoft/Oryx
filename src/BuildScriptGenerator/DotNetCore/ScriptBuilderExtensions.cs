@@ -33,7 +33,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             var excludeDirsSwitch = string.Join(" ", excludeDirs.Select(dir => $"--exclude \"{dir}\""));
-            sourceDir = intermediateDir;
 
             scriptBuilder
                 .AppendLine()
