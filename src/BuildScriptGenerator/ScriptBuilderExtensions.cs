@@ -12,7 +12,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static StringBuilder AppendSourceDirectoryInfo(this StringBuilder stringBuilder, string sourceDir)
         {
-            stringBuilder.AppendFormatWithLine("echo Source directory     : {0}", sourceDir);
+            stringBuilder
+                .AppendFormatWithLine("echo Source directory     : {0}", sourceDir)
+                .AppendLine();
             return stringBuilder;
         }
 
@@ -20,7 +22,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this StringBuilder stringBuilder,
             string destinationDir)
         {
-            stringBuilder.AppendFormatWithLine("echo Destination directory : {0}", destinationDir);
+            stringBuilder
+                .AppendFormatWithLine("echo Destination directory : {0}", destinationDir)
+                .AppendLine();
             return stringBuilder;
         }
 
@@ -29,7 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var benvPath = Path.Combine("/", "usr", "local", "bin", "benv");
             if (File.Exists(benvPath))
             {
-                stringBuilder.AppendFormatWithLine("source {0} {1}", benvPath, benvArgs);
+                stringBuilder
+                    .AppendFormatWithLine("source {0} {1}", benvPath, benvArgs)
+                    .AppendLine();
             }
 
             return stringBuilder;

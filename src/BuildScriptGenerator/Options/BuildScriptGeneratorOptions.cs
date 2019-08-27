@@ -3,7 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -24,5 +26,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IDictionary<string, string> Properties { get; set; }
 
         public string ManifestDir { get; set; }
+
+        public override string ToString()
+        {
+            return "Source Dir: " + SourceDir + ", DestinationDir: " + DestinationDir + ", IntermediateDir: " + IntermediateDir;
+        }
     }
 }

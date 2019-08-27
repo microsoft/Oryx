@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         public static StringBuilder AddScriptToCopyToIntermediateDirectory(
             this StringBuilder scriptBuilder,
-            string sourceDir,
+            ref string sourceDir,
             string intermediateDir,
             IEnumerable<string> excludeDirs)
         {
@@ -33,7 +33,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             var excludeDirsSwitch = string.Join(" ", excludeDirs.Select(dir => $"--exclude \"{dir}\""));
-
             scriptBuilder
                 .AppendLine()
                 .AppendFormatWithLine("cd \"{0}\"", sourceDir)
@@ -42,7 +41,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     "rsync --delete -rt {0} . \"{1}\"",
                     excludeDirsSwitch,
                     intermediateDir)
-                .AppendFormatWithLine("cd \"{0}\"", intermediateDir);
+                .AppendLine();
+            sourceDir = intermediateDir;
             return scriptBuilder;
         }
 
@@ -92,7 +92,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             scriptBuilder
                 .AppendFormatWithLine("SOURCE_DIR=\"{0}\"", sourceDir)
-                .AppendLine("export SOURCE_DIR");
+                .AppendLine("export SOURCE_DIR")
+                .AppendLine();
 
             if (hasUserSuppliedDestinationDir)
             {
@@ -223,7 +224,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendLine("echo")
                 .AppendFormatWithLine("echo \"Building project '{0}'\"", projectFile)
                 // Use the default build configuration 'Debug' here.
-                .AppendFormatWithLine("dotnet build \"{0}\"", projectFile);
+                .AppendFormatWithLine("dotnet build \"{0}\"", projectFile)
+                .AppendLine();
             return scriptBuilder;
         }
 
