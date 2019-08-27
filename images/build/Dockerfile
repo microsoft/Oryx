@@ -14,6 +14,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         # Required for .NET Core 1.1
         libunwind8 \
+		# Required for building the `keytar` NPM package
+		libsecret-1-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts
