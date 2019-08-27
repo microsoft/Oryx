@@ -7,11 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -29,7 +29,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
-        private readonly DotNetCoreScriptGeneratorOptions _options;
+        private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
+        private readonly BuildScriptGeneratorOptions _buildOptions;
 
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
@@ -37,14 +38,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
-            IOptions<DotNetCoreScriptGeneratorOptions> options)
+            IOptions<BuildScriptGeneratorOptions> buildOptions,
+            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCorePlatformOptions)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
-            _options = options.Value;
+            _dotNetCorePlatformOptions = dotNetCorePlatformOptions.Value;
+            _buildOptions = buildOptions.Value;
         }
 
         public string Name => DotNetCoreConstants.LanguageName;
@@ -61,16 +64,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var buildProperties = new Dictionary<string, string>();
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
-            (string projectFile, string publishDir) = GetProjectFileAndPublishDir(context);
-            if (string.IsNullOrEmpty(projectFile) || string.IsNullOrEmpty(publishDir))
+            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
+            if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
             }
-
-            SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
-
-            bool zipAllOutput = ShouldZipAllOutput(context);
-            buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = zipAllOutput.ToString().ToLowerInvariant();
 
             _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
@@ -78,26 +76,88 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 context.SourceRepo,
                 environmentSettings);
 
-            var templateProperties = new DotNetCoreBashBuildSnippetProperties
+            var sourceDir = _buildOptions.SourceDir;
+            var temporaryDestinationDir = "/tmp/puboutput";
+            var destinationDir = _buildOptions.DestinationDir;
+            var intermediateDir = _buildOptions.IntermediateDir;
+            var hasUserSuppliedDestinationDir = !string.IsNullOrEmpty(_buildOptions.DestinationDir);
+            var zipAllOutput = ShouldZipAllOutput(context);
+            var buildConfiguration = GetBuildConfiguration();
+
+            var scriptBuilder = new StringBuilder();
+            scriptBuilder
+                .AppendLine("#!/bin/bash")
+                .AppendLine("set -e")
+                .AppendLine()
+                .AddScriptToCopyToIntermediateDirectory(
+                    sourceDir: sourceDir,
+                    intermediateDir: intermediateDir,
+                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context));
+
+            sourceDir = intermediateDir;
+            scriptBuilder
+                .AddScriptToSetupSourceAndDestinationDirectories(
+                    sourceDir: sourceDir,
+                    temporaryDestinationDir: temporaryDestinationDir,
+                    destinationDir: destinationDir,
+                    hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir,
+                    zipAllOutput: zipAllOutput)
+                .AppendBenvCommand($"dotnet={context.DotNetCoreVersion}")
+                .AddScriptToRunPreBuildCommand(sourceDir: sourceDir, preBuildCommand: preBuildCommand)
+                .AppendLine("echo")
+                .AppendLine("dotnetCoreVersion=$(dotnet --version)")
+                .AppendLine("echo \"Using .NET Core SDK Version: $dotnetCoreVersion\"")
+                .AppendLine()
+                .AddScriptToRestorePackages(projectFile);
+
+            if (hasUserSuppliedDestinationDir)
             {
-                ProjectFile = projectFile,
-                PublishDirectory = publishDir,
-                BuildProperties = buildProperties,
-                BenvArgs = $"dotnet={context.DotNetCoreVersion}",
-                DirectoriesToExcludeFromCopyToIntermediateDir = GetDirectoriesToExcludeFromCopyToIntermediateDir(
-                    context),
-                PreBuildCommand = preBuildCommand,
-                PostBuildCommand = postBuildCommand,
-                ManifestFileName = FilePaths.BuildManifestFileName,
-                ManifestDir = context.ManifestDir,
-                ZipAllOutput = zipAllOutput,
-                Configuration = GetBuildConfiguration(),
+                if (zipAllOutput)
+                {
+                    scriptBuilder.AddScriptToZipAllOutput(
+                        projectFile: projectFile,
+                        buildConfiguration: buildConfiguration,
+                        sourceDir: sourceDir,
+                        temporaryDestinationDir: temporaryDestinationDir,
+                        finalDestinationDir: destinationDir,
+                        postBuildCommand: postBuildCommand,
+                        buildProperties);
+                }
+                else
+                {
+                    scriptBuilder
+                        .AddScriptToPublishOutput(
+                            projectFile: projectFile,
+                            buildConfiguration: buildConfiguration,
+                            finalDestinationDir: destinationDir)
+                        .AddScriptToRunPostBuildCommand(
+                            sourceDir: sourceDir,
+                            postBuildCommand: postBuildCommand);
+                }
+            }
+            else
+            {
+                scriptBuilder
+                    .AddScriptToBuildProject(projectFile)
+                    .AddScriptToRunPostBuildCommand(
+                        sourceDir: sourceDir,
+                        postBuildCommand: postBuildCommand);
+            }
+
+            SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
+
+            scriptBuilder
+                .AddScriptToCreateManifestFile(
+                    buildProperties,
+                    manifestDir: _buildOptions.ManifestDir,
+                    finalDestinationDir: destinationDir)
+                .AppendLine("echo Done.");
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = scriptBuilder.ToString(),
+                IsFullScript = true,
             };
-            var script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.DotNetCoreSnippet,
-                templateProperties,
-                _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = script, IsFullScript = true };
         }
 
         /// <summary>
@@ -190,21 +250,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             dirs.Add(".git");
             dirs.Add("obj");
             dirs.Add("bin");
-            dirs.Add(DotNetCoreConstants.OryxOutputPublishDirectory);
             return dirs;
-        }
-
-        private static bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
-        {
-            return BuildPropertiesHelper.IsTrue(
-                Constants.ZipAllOutputBuildPropertyKey,
-                context,
-                valueIsRequired: false);
         }
 
         private string GetBuildConfiguration()
         {
-            var configuration = _options.MSBuildConfiguration;
+            var configuration = _dotNetCorePlatformOptions.MSBuildConfiguration;
             if (string.IsNullOrEmpty(configuration))
             {
                 configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
@@ -213,19 +264,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return configuration;
         }
 
-        private (string projFile, string publishDir) GetProjectFileAndPublishDir(
-            BuildScriptGeneratorContext context)
+        bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
         {
-            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
-            if (!string.IsNullOrEmpty(projectFile))
-            {
-                var publishDir = Path.Combine(
-                    context.SourceRepo.RootPath,
-                    DotNetCoreConstants.OryxOutputPublishDirectory);
-                return (projectFile, publishDir);
-            }
-
-            return (null, null);
+            return BuildPropertiesHelper.IsTrue(
+                Constants.ZipAllOutputBuildPropertyKey,
+                context,
+                valueIsRequired: false);
         }
     }
 }

@@ -19,8 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp22 = "netcoreapp2.2";
         public const string NetCoreApp30 = "netcoreapp3.0";
 
-        public const string OryxOutputPublishDirectory = "oryx_publish_output";
-
         public const string AspNetCorePackageReference = "Microsoft.AspNetCore";
         public const string AspNetCoreAllPackageReference = "Microsoft.AspNetCore.All";
         public const string AspNetCoreAppPackageReference = "Microsoft.AspNetCore.App";
