@@ -80,6 +80,8 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 				.setup()
 				.setSendLiveMetrics(true)
 				.start();
+
+			appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
 		}
 	}catch (e) {
 			console.log('Application Insights could not be automatically configured for this application'); 
