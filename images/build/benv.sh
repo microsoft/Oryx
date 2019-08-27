@@ -53,6 +53,19 @@ while read benvvar; do
 done < <(set | grep -i '^dotnet_version=')
 unset benvvar # Remove all traces of this part of the script
 
+# Oryx's paths come to the end of the PATH environment variable so that any user installed platform
+# sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/'
+# (as in /opt/dotnet) and inserting a more specific provided path before it.
+# Example: (note that all Oryx related patlform paths come in the end)
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401:/opt/oryx/defaultversions
+updatePath() {
+  local replacingText="$1:/opt/"
+  local currentPath="$PATH"
+  local lookUpText="\/opt\/"
+  local newPath=$(echo $currentPath | sed "0,/$lookUpText/ s##$replacingText#")
+  export PATH="$newPath"
+}
+
 benv-versions() {
   local IFS=$' \r\n'
   local version
@@ -79,7 +92,7 @@ benv-resolve() {
     fi
 
     local DIR="/opt/nodejs/$value/bin"
-    export PATH="$DIR:$PATH"
+    updatePath "$DIR"
     export node="$DIR/node"
     export npm="$DIR/npm"
     if [ -e "$DIR/npx" ]; then
@@ -98,7 +111,7 @@ benv-resolve() {
     fi
 
     local DIR="/opt/npm/$value"
-    export PATH="$DIR:$PATH"
+    updatePath "$DIR"
     export npm="$DIR/npm"
     if [ -e "$DIR/npx" ]; then
       export npx="$DIR/npx"
@@ -116,7 +129,7 @@ benv-resolve() {
     fi
 
     local DIR="/opt/python/$value/bin"
-    export PATH="$DIR:$PATH"
+    updatePath "$DIR"
     if [ -e "$DIR/python2" ]; then
       export python="$DIR/python2"
     elif [ -e "$DIR/python3" ]; then
@@ -139,7 +152,7 @@ benv-resolve() {
     fi
 
     local DIR="/opt/php/$value/bin"
-    export PATH="$DIR:$PATH"
+    updatePath "$DIR"
     export php="$DIR/php"
 
     return 0
@@ -155,7 +168,7 @@ benv-resolve() {
     fi
 
     local DIR=$(readlink $"$runtimesDir/$value/sdk")
-    export PATH="$DIR:$PATH"
+    updatePath "$DIR"
     export dotnet="$DIR/dotnet"
     
     return 0
