@@ -16,6 +16,8 @@ RUN apt-get update \
         libunwind8 \
 		# Required for building the `keytar` NPM package
 		libsecret-1-dev \
+		# Required for building the `native-keymap` NPM package
+		libx11-dev libxkbfile-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts
