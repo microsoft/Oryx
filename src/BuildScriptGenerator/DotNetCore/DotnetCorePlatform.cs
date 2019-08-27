@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -92,7 +93,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AddScriptToCopyToIntermediateDirectory(
                     sourceDir,
                     intermediateDir,
-                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
+                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context));
+
+            sourceDir = intermediateDir;
+            scriptBuilder
                 .AddScriptToSetupSourceAndDestinationDirectories(
                     sourceDir,
                     temporaryDestinationDir,
