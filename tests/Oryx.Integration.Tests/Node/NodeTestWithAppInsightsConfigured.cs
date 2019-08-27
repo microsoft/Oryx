@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
-                .AddCommand($"export {aIEnabled}=TRUE")
+                .AddCommand($"export {aIEnabled}=true")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
-                .AddCommand($"export {aIEnabled}=TRUE")
+                .AddCommand($"export {aIEnabled}=true")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World from express!", data);
+                    Assert.Contains("AppInsights is set to send telemetry!", data);
                 });
         }
     }

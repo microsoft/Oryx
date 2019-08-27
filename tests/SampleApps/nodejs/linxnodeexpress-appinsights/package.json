@@ -7,16 +7,14 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.13.3",
-	"applicationinsights":"^1.4.0"
+    "express": "^4.13.3"
   },
   "engines": {
     "node": ">=4.4.7"
   },
   "keywords": [
     "node",
-    "express",
-	"applicationinsights"
+    "express"
   ],
   "author": "Arjun Roy Chaudhuri",
   "contributors": [
