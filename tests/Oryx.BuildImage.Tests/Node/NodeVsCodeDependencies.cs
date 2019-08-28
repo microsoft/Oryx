@@ -55,10 +55,11 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 "e1d4f7142c4bfe9336924428a218fde2e665fdd6" },
             new object[] { "semver-umd", "5.5.3", "https://github.com/Microsoft/semver-umd.git",
                 "7b204c2a62206cfbd916d911f3cf876f6a9e437f" },
+            new object[] { "spdlog", "0.9.0", "https://github.com/Microsoft/node-spdlog.git",
+                "52a0510087667a18cc3524450ae946183f6a4c7d" },
+            new object[] { "sudo-prompt", "9.0.0", "https://github.com/jorangreef/sudo-prompt.git",
+                "3bfa62163b59e45111436c695ee8e7e2befbe310" },
             /*
-            "onigasm-umd": "^2.2.2",
-            "semver-umd": "^5.5.3",
-            "spdlog": "^0.9.0",
             "sudo-prompt": "9.0.0",
             "v8-inspect-profiler": "^0.0.20",
             "vscode-chokidar": "2.1.7",
@@ -74,6 +75,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             "yazl": "^2.4.3"
             */
         };
+
+        private readonly string[] IgnoredTarEntries = new[] { "package/.npmignore", "package" };
 
         [Theory]
         [MemberData(nameof(VSCodeDependencies))]
@@ -141,7 +144,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
         private IEnumerable<string> NormalizeTarList(string rawTarList)
         {
             return rawTarList.Trim().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
-                .Where(fname => fname != "package/.npmignore")
+                .Where(fname => !IgnoredTarEntries.Contains(fname))
                 .OrderBy(s => s);
         }
     }
