@@ -36,5 +36,34 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Assert
             RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public void NodeImage_Contains_ApplicationInsights(string nodeTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeTag}:latest",
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "npm list -g applicationinsights"
+                }
+            });
+
+            var actualOutput = result.StdOut.ReplaceNewLine();
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("applicationinsights@1.4.1", actualOutput);
+                    Assert.Contains("/usr/local/lib", actualOutput);
+                },
+                result.GetDebugInfo());
+        }
     }
 }

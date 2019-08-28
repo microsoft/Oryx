@@ -80,6 +80,8 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 				.setup()
 				.setSendLiveMetrics(true)
 				.start();
+
+			appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
 		}
 	}catch (e) {
 			console.log('Application Insights could not be automatically configured for this application'); 
@@ -98,6 +100,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
+	scriptBuilder.WriteString("export NODE_PATH=$(npm root --quiet -g):$NODE_PATH\n")
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
