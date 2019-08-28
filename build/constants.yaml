@@ -94,7 +94,7 @@
     run-script-generator-dir: /opt/startupcmdgen
     node-app-insights-loader-file-name: oryx-appinsightsloader.js
     bash: /bin/bash
-    benv: /usr/local/bin/benv
+    benv: /opt/oryx/defaultversions/benv
   outputs:
     - type: csharp
       directory: src/Common

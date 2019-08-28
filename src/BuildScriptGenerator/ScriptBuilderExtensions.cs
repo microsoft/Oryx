@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public static StringBuilder AppendBenvCommand(this StringBuilder stringBuilder, string benvArgs)
         {
-            var benvPath = Path.Combine("/", "usr", "local", "bin", "benv");
+            var benvPath = Path.Combine("/", "opt", "oryx", "defaultversions", "benv");
             if (File.Exists(benvPath))
             {
                 stringBuilder
