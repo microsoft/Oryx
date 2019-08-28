@@ -49,8 +49,13 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 "277683b01e7c0933f51c322a76749f91f34143a8" },
             new object[] { "node-pty", "0.9.0-beta19", "https://github.com/microsoft/node-pty.git",
                 "32ea3e47791794a82c58c76bf83dc4d441a93108" },
+            new object[] { "nsfw", "1.2.5", "https://github.com/Axosoft/nsfw.git",
+                "636dc8c9424a81310e609eaecbdd113640bd822e" },
+            new object[] { "onigasm-umd", "2.2.2", "https://github.com/alexandrudima/onigasm-umd.git",
+                "e1d4f7142c4bfe9336924428a218fde2e665fdd6" },
+            new object[] { "semver-umd", "5.5.3", "https://github.com/Microsoft/semver-umd.git",
+                "7b204c2a62206cfbd916d911f3cf876f6a9e437f" },
             /*
-            "nsfw": "1.2.5",
             "onigasm-umd": "^2.2.2",
             "semver-umd": "^5.5.3",
             "spdlog": "^0.9.0",
@@ -79,28 +84,34 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var pkgBuildOutputDir = "/tmp/pkg/out";
             var oryxPackOutput = $"{pkgBuildOutputDir}/{pkgName}-{pkgVersion}.tgz";
 
+            // HACK: node-pty has a different version string in its `package.json`
+            if (pkgName == "node-pty")
+            {
+                oryxPackOutput = $"{pkgBuildOutputDir}/{pkgName}-0.8.1.tgz";
+            }
+
             const string npmTarPath = "/tmp/npm-pkg.tgz";
             const string tarListMarker = "---TAR---";
             const string sizeMarker = "---SIZE---";
 
             var script = new ShellScriptBuilder()
-                // Fetch source code
-                    .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
-                    .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")
-                // Build & package
-                    .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
-                    .AddFileExistsCheck(oryxPackOutput)
-                // Compute diff between tar contents
-                    // Download public NPM build for comparison
-                        .AddCommand($"export NpmTarUrl=$(npm view {pkgName}@{pkgVersion} dist.tarball)")
-                        .AddCommand($"wget -O {npmTarPath} $NpmTarUrl")
-                    // Print tar content lists
+            // Fetch source code
+                .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
+                .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")
+            // Build & package
+                .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir}") // Should create a file <name>-<version>.tgz
+                .AddFileExistsCheck(oryxPackOutput)
+            // Compute diff between tar contents
+                // Download public NPM build for comparison
+                    .AddCommand($"export NpmTarUrl=$(npm view {pkgName}@{pkgVersion} dist.tarball)")
+                    .AddCommand($"wget -O {npmTarPath} $NpmTarUrl")
+                // Print tar content lists
                     .AddCommand("echo " + tarListMarker)
                     .AddCommand($"tar -tf {oryxPackOutput}")
                     .AddCommand("echo " + tarListMarker)
                     .AddCommand($"tar -tf {npmTarPath}")
                     .AddCommand("echo " + tarListMarker)
-                    // Print tar sizes
+                // Print tar sizes
                     .AddCommand("echo " + sizeMarker)
                     .AddCommand($"stat --format %s {oryxPackOutput}")
                     .AddCommand("echo " + sizeMarker)
