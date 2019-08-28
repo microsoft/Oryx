@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             */
         };
 
-        private readonly string[] IgnoredTarEntries = new[] { "package/.npmignore", "package" };
+        private readonly string[] IgnoredTarEntries = new[] { "package/.npmignore", "package", "package/yarn.lock" };
 
         [Theory]
         [MemberData(nameof(VSCodeDependencies))]
@@ -129,7 +129,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
             var oryxTarList = NormalizeTarList(tarLists[1]);
             var npmTarList  = NormalizeTarList(tarLists[2]);
-            Assert.Equal(oryxTarList, npmTarList);
+            Assert.Equal(npmTarList, oryxTarList);
 
             // Assert tar file sizes
             var tarSizes = result.StdOut.Split(sizeMarker);
