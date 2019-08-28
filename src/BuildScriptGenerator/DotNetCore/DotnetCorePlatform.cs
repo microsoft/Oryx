@@ -90,11 +90,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendLine("set -e")
                 .AppendLine()
                 .AddScriptToCopyToIntermediateDirectory(
-                    sourceDir: sourceDir,
+                    sourceDir: ref sourceDir,
                     intermediateDir: intermediateDir,
-                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context));
+                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
+                .AppendFormatWithLine("cd \"{0}\"", sourceDir)
+                .AppendLine();
 
-            sourceDir = intermediateDir;
             scriptBuilder
                 .AddScriptToSetupSourceAndDestinationDirectories(
                     sourceDir: sourceDir,
