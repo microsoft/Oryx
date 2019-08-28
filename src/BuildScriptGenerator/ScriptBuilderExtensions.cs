@@ -5,6 +5,7 @@
 
 using System.IO;
 using System.Text;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -30,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public static StringBuilder AppendBenvCommand(this StringBuilder stringBuilder, string benvArgs)
         {
-            var benvPath = Path.Combine("/", "opt", "oryx", "defaultversions", "benv");
+            var benvPath = FilePaths.Benv;
             if (File.Exists(benvPath))
             {
                 stringBuilder
