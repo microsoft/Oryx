@@ -32,9 +32,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string LanguageVersion { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the built sources should be packages into a platform-specific format.
+        /// Gets or sets a value indicating whether the built sources should be packaged into a platform-specific format.
         /// </summary>
-        public bool Package { get; set; }
+        public bool IsPackage { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether only the provided platform should be built, disabling

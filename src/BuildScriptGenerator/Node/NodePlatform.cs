@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
-                RunNpmPack = ctx.Package,
+                RunNpmPack = ctx.IsPackage,
             };
 
             string script = TemplateHelper.Render(
