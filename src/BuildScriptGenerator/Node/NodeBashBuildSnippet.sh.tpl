@@ -69,7 +69,7 @@ then
 
 	echo
 	echo "Installing production dependencies in '$prodModulesDirName'..."
-	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
+	echo "Running `{{ ProductionOnlyPackageInstallCommand }}`..."
 	echo
 	{{ ProductionOnlyPackageInstallCommand }}
 
@@ -84,29 +84,29 @@ fi
 cd "$SOURCE_DIR"
 
 echo
-echo "Running '{{ PackageInstallCommand }}'..."
+echo "Running `{{ PackageInstallCommand }}`..."
 echo
 {{ PackageInstallCommand }}
 
 {{ if NpmRunBuildCommand | IsNotBlank }}
 echo
-echo "Running '{{ NpmRunBuildCommand }}'..."
+echo "Running `{{ NpmRunBuildCommand }}`..."
 echo
 {{ NpmRunBuildCommand }}
 {{ end }}
 
 {{ if NpmRunBuildAzureCommand | IsNotBlank }}
 echo
-echo "Running '{{ NpmRunBuildAzureCommand }}'..."
+echo "Running `{{ NpmRunBuildAzureCommand }}`..."
 echo
 {{ NpmRunBuildAzureCommand }}
 {{ end }}
 
 {{ if RunNpmPack }}
 echo
-echo "Running npm pack..."
+echo "Running `npm run package || npm pack`..."
 echo
-npm pack
+npm run package || npm pack
 {{ end }}
 
 if [ "$copyOnlyProdModulesToOutput" == "true" ]
