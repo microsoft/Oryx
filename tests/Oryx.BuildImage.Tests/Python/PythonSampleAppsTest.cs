@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -345,7 +345,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python36Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -530,7 +530,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -571,7 +571,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -610,7 +610,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -647,7 +647,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/oryx/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1054,15 +1054,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Matches(
-                        @"Pre-build script: /opt/oryx/python/" + version + @".\d+.\d+/bin/python" + version,
+                        @"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
                         result.StdOut);
                     Assert.Matches(
-                        @"Pre-build script: /opt/oryx/python/" + version + @".\d+.\d+/bin/pip",
+                        @"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip",
                         result.StdOut);
                     Assert.Matches(
-                        @"Post-build script: /opt/oryx/python/" + version + @".\d+.\d+/bin/python" + version,
+                        @"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
                         result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/oryx/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

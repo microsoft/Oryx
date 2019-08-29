@@ -29,7 +29,7 @@ globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 # Example: 3.0.100-preview4-011223 will be changed to 3.0.100
 DOTNET_SDK_VER=${DOTNET_SDK_VER%%-*}
 
-SDK_DIR=/opt/oryx/dotnet/sdks
+SDK_DIR=/opt/dotnet/sdks
 DOTNET_DIR=$SDK_DIR/$DOTNET_SDK_VER
 mkdir -p $DOTNET_DIR
 tar -xzf dotnet.tar.gz -C $DOTNET_DIR

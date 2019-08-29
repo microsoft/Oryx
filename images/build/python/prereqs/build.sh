@@ -15,7 +15,7 @@ wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_
 gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
-INSTALLATION_PREFIX=/opt/oryx/python/$PYTHON_VERSION
+INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
 if [ "${PYTHON_VERSION::1}" == "2" ]; then
     ./configure \

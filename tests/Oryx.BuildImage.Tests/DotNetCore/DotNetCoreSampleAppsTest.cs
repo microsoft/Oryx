@@ -300,7 +300,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var dotnetExecutable = $"/opt/oryx/dotnet/sdks/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
+                    var dotnetExecutable = $"/opt/dotnet/sdks/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
                     Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
                     Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },

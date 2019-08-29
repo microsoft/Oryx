@@ -58,13 +58,13 @@ RUN set -ex \
     && find /var/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
- && sdksDir=/opt/oryx/dotnet/sdks \
+ && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
  && ln -s 1.1 1 \
  && ln -s 3.0 3
 
 RUN set -ex \
- && dotnetDir=/opt/oryx/dotnet \
+ && dotnetDir=/opt/dotnet \
  && sdksDir=$dotnetDir/sdks \
  && runtimesDir=$dotnetDir/runtimes \
  && cd $runtimesDir \
@@ -126,40 +126,40 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && ~/n/bin/n -d 10.14.2 \
  && ~/n/bin/n -d $NODE6_VERSION \
  && ~/n/bin/n -d $NODE12_VERSION \
- && mv /usr/local/n/versions/node /opt/oryx/nodejs \
+ && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
 RUN /tmp/scripts/installNpm.sh
 
 RUN set -ex \
- && ln -s 4.4.7 /opt/oryx/nodejs/4.4 \
- && ln -s 4.5.0 /opt/oryx/nodejs/4.5 \
- && ln -s 4.8.0 /opt/oryx/nodejs/4.8 \
- && ln -s 4.8 /opt/oryx/nodejs/4 \
- && ln -s 6.2.2 /opt/oryx/nodejs/6.2 \
- && ln -s 6.6.0 /opt/oryx/nodejs/6.6 \
- && ln -s 6.9.3 /opt/oryx/nodejs/6.9 \
- && ln -s 6.10.3 /opt/oryx/nodejs/6.10 \
- && ln -s 6.11.0 /opt/oryx/nodejs/6.11 \ 
- && ln -s 8.0.0 /opt/oryx/nodejs/8.0 \
- && ln -s 8.1.4 /opt/oryx/nodejs/8.1 \
- && ln -s 8.2.1 /opt/oryx/nodejs/8.2 \
- && ln -s 8.8.1 /opt/oryx/nodejs/8.8 \
- && ln -s 8.9.4 /opt/oryx/nodejs/8.9 \
- && ln -s 8.11.2 /opt/oryx/nodejs/8.11 \
- && ln -s 8.12.0 /opt/oryx/nodejs/8.12 \
- && ln -s 8.15.1 /opt/oryx/nodejs/8.15 \
- && ln -s 9.4.0 /opt/oryx/nodejs/9.4 \
- && ln -s 9.4 /opt/oryx/nodejs/9 \
- && ln -s 10.1.0 /opt/oryx/nodejs/10.1 \
- && ln -s 10.10.0 /opt/oryx/nodejs/10.10 \
- && ln -s 10.14.2 /opt/oryx/nodejs/10.14 \
+ && ln -s 4.4.7 /opt/nodejs/4.4 \
+ && ln -s 4.5.0 /opt/nodejs/4.5 \
+ && ln -s 4.8.0 /opt/nodejs/4.8 \
+ && ln -s 4.8 /opt/nodejs/4 \
+ && ln -s 6.2.2 /opt/nodejs/6.2 \
+ && ln -s 6.6.0 /opt/nodejs/6.6 \
+ && ln -s 6.9.3 /opt/nodejs/6.9 \
+ && ln -s 6.10.3 /opt/nodejs/6.10 \
+ && ln -s 6.11.0 /opt/nodejs/6.11 \ 
+ && ln -s 8.0.0 /opt/nodejs/8.0 \
+ && ln -s 8.1.4 /opt/nodejs/8.1 \
+ && ln -s 8.2.1 /opt/nodejs/8.2 \
+ && ln -s 8.8.1 /opt/nodejs/8.8 \
+ && ln -s 8.9.4 /opt/nodejs/8.9 \
+ && ln -s 8.11.2 /opt/nodejs/8.11 \
+ && ln -s 8.12.0 /opt/nodejs/8.12 \
+ && ln -s 8.15.1 /opt/nodejs/8.15 \
+ && ln -s 9.4.0 /opt/nodejs/9.4 \
+ && ln -s 9.4 /opt/nodejs/9 \
+ && ln -s 10.1.0 /opt/nodejs/10.1 \
+ && ln -s 10.10.0 /opt/nodejs/10.10 \
+ && ln -s 10.14.2 /opt/nodejs/10.14 \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/oryx/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
- && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/oryx/nodejs/6 \
- && ln -s $NODE12_VERSION /opt/oryx/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/oryx/nodejs/12
+ && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
+ && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
+ && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
+ && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -191,20 +191,20 @@ COPY --from=py27-build-base /opt /opt
 COPY --from=py36-build-base /opt /opt
 COPY --from=py38-build-base /opt /opt
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && [ -d "/opt/oryx/python/$PYTHON27_VERSION" ] && echo /opt/oryx/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/oryx/python/$PYTHON36_VERSION" ] && echo /opt/oryx/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/oryx/python/$PYTHON38_VERSION" ] && echo /opt/oryx/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 # The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON27_VERSION /opt/oryx/python/2.7 \
- && ln -s 2.7 /opt/oryx/python/2 \
- && ln -s $PYTHON36_VERSION /opt/oryx/python/3.6 \
- && ln -s $PYTHON38_VERSION /opt/oryx/python/3.8.0 \
- && ln -s $PYTHON38_VERSION /opt/oryx/python/3.8
+ && ln -s $PYTHON27_VERSION /opt/python/2.7 \
+ && ln -s 2.7 /opt/python/2 \
+ && ln -s $PYTHON36_VERSION /opt/python/3.6 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8.0 \
+ && ln -s $PYTHON38_VERSION /opt/python/3.8
 RUN set -ex \
  && cd /opt/oryx/defaultversions \
- && cp -sn /opt/oryx/python/2/bin/* .
+ && cp -sn /opt/python/2/bin/* .
   
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
@@ -248,14 +248,14 @@ FROM python AS final
 WORKDIR /
 
 # Copy .NET Core related content
-COPY --from=dotnet-install /opt/oryx/dotnet /opt/oryx/dotnet
+COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
 COPY --from=dotnet-install /usr/local/bin /opt/oryx/defaultversions
 
 # Make sure the alias 'python' always refers to Python 2 by default
 RUN cd /opt/oryx/defaultversions \
  && rm -f python \
- && ln -sf /opt/oryx/python/2/bin/python python
+ && ln -sf /opt/python/2/bin/python python
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
@@ -276,10 +276,10 @@ COPY --from=php70-build-base /opt /opt
 COPY --from=php72-build-base /opt /opt
 COPY --from=php73-build-base /opt /opt
 
-RUN ln -s /opt/oryx/php/5.6 /opt/oryx/php/5 \
- && ln -s /opt/oryx/php/7.3 /opt/oryx/php/7 \
- && ln -s /opt/oryx/php/7 /opt/oryx/php/lts \
- && ln -s /opt/oryx/php/lts/bin/php /opt/oryx/defaultversions/php
+RUN ln -s /opt/php/5.6 /opt/php/5 \
+ && ln -s /opt/php/7.3 /opt/php/7 \
+ && ln -s /opt/php/7 /opt/php/lts \
+ && ln -s /opt/php/lts/bin/php /opt/oryx/defaultversions/php
 
 RUN rm -rf /tmp/scripts
 
