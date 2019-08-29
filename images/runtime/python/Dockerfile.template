@@ -16,17 +16,17 @@ ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 # Add python binaries from Oryx base image
 COPY --from=mcr.microsoft.com/oryx/python-build-base:%PYTHON_VERSION%-%IMAGE_TAG% /opt /opt
 RUN set -ex \
- && cd /opt/python/ \
+ && cd /opt/oryx/python/ \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
  && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
- && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
+ && echo /opt/oryx/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
- && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
+ && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/oryx/python/%PYTHON_MAJOR_VERSION%/bin \
  && ln -s idle3 idle \
  && ln -s pydoc3 pydoc \
  && ln -s python3-config python-config; fi
 
-ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
+ENV PATH="/opt/oryx/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

@@ -528,10 +528,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/oryx/nodejs/6.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/oryx/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/oryx/nodejs/6.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/oryx/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

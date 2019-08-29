@@ -55,13 +55,13 @@ unset benvvar # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
 # sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/'
-# (as in /opt/dotnet) and inserting a more specific provided path before it.
+# (as in /opt/oryx/dotnet) and inserting a more specific provided path before it.
 # Example: (note that all Oryx related patlform paths come in the end)
-# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401:/opt/oryx/defaultversions
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx/nodejs/6/bin:/opt/oryx/dotnet/sdks/2.2.401:/opt/oryx/defaultversions
 updatePath() {
-  local replacingText="$1:/opt/"
+  local replacingText="$1:/opt/oryx/"
   local currentPath="$PATH"
-  local lookUpText="\/opt\/"
+  local lookUpText="\/opt\/oryx\/"
   local newPath=$(echo $currentPath | sed "0,/$lookUpText/ s##$replacingText#")
   export PATH="$newPath"
 }
@@ -85,13 +85,13 @@ benv-resolve() {
 
   # Resolve node versions
   if matchesName "node" "$name" || matchesName "node_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/nodejs/$value" ]; then
+    if [ ! -d "/opt/oryx/nodejs/$value" ]; then
       echo >&2 benv: node version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/nodejs
+      benv-versions >&2 /opt/oryx/nodejs
       return 1
     fi
 
-    local DIR="/opt/nodejs/$value/bin"
+    local DIR="/opt/oryx/nodejs/$value/bin"
     updatePath "$DIR"
     export node="$DIR/node"
     export npm="$DIR/npm"
@@ -122,13 +122,13 @@ benv-resolve() {
 
   # Resolve python versions
   if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/python/$value" ]; then
+    if [ ! -d "/opt/oryx/python/$value" ]; then
       echo >&2 benv: python version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/python
+      benv-versions >&2 /opt/oryx/python
       return 1
     fi
 
-    local DIR="/opt/python/$value/bin"
+    local DIR="/opt/oryx/python/$value/bin"
     updatePath "$DIR"
     if [ -e "$DIR/python2" ]; then
       export python="$DIR/python2"
@@ -145,13 +145,13 @@ benv-resolve() {
 
   # Resolve PHP versions
   if matchesName "php" "$name" || matchesName "php_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/php/$value" ]; then
+    if [ ! -d "/opt/oryx/php/$value" ]; then
       echo >&2 benv: php version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/php
+      benv-versions >&2 /opt/oryx/php
       return 1
     fi
 
-    local DIR="/opt/php/$value/bin"
+    local DIR="/opt/oryx/php/$value/bin"
     updatePath "$DIR"
     export php="$DIR/php"
 
@@ -160,7 +160,7 @@ benv-resolve() {
 
   # Resolve dotnet versions
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
-    local runtimesDir="/opt/dotnet/runtimes"
+    local runtimesDir="/opt/oryx/dotnet/runtimes"
     if [ ! -d "$runtimesDir/$value" ]; then
       echo >&2 benv: dotnet version \'$value\' not found\; choose one of:
       benv-versions >&2 $runtimesDir

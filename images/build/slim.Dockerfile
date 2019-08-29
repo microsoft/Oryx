@@ -79,12 +79,12 @@ RUN set -ex \
     && find /var/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
- && sdksDir=/opt/dotnet/sdks \
+ && sdksDir=/opt/oryx/dotnet/sdks \
  && cd $sdksDir \
  && ln -s 2.1 2
 
 RUN set -ex \
- && dotnetDir=/opt/dotnet \
+ && dotnetDir=/opt/oryx/dotnet \
  && sdksDir=$dotnetDir/sdks \
  && runtimesDir=$dotnetDir/runtimes \
  && mkdir -p $runtimesDir \
@@ -112,7 +112,7 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d $NODE8_VERSION \
  && ~/n/bin/n -d $NODE10_VERSION \
- && mv /usr/local/n/versions/node /opt/nodejs \
+ && mv /usr/local/n/versions/node /opt/oryx/nodejs \
  && rm -rf /usr/local/n ~/n
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
@@ -132,11 +132,11 @@ RUN set -ex \
 
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
- && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
- && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s 10 /opt/nodejs/lts
+ && ln -s $NODE8_VERSION /opt/oryx/nodejs/$NODE8_MAJOR_MINOR_VERSION \
+ && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/oryx/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/oryx/nodejs/$NODE10_MAJOR_MINOR_VERSION \
+ && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/oryx/nodejs/10 \
+ && ln -s 10 /opt/oryx/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \
  && ln -s 6.9 /opt/npm/6 \
@@ -149,7 +149,7 @@ RUN set -ex \
  && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
 RUN set -ex \
  && mkdir -p /links \
- && cp -s /opt/nodejs/lts/bin/* /links \
+ && cp -s /opt/oryx/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
 ###
@@ -173,18 +173,18 @@ ENV PYTHONIOENCODING UTF-8
 COPY build/__pythonVersions.sh /tmp/scripts
 COPY --from=py37-build-base /opt /opt
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/oryx/python/$PYTHON37_VERSION" ] && echo /opt/oryx/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 # The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON37_VERSION /opt/python/latest \
- && ln -s $PYTHON37_VERSION /opt/python/3.7 \
- && ln -s 3.7 /opt/python/3
+ && ln -s $PYTHON37_VERSION /opt/oryx/python/latest \
+ && ln -s $PYTHON37_VERSION /opt/oryx/python/3.7 \
+ && ln -s 3.7 /opt/oryx/python/3
 RUN set -ex \
  && cd /opt/oryx/defaultversions \
- && cp -sn /opt/python/3/bin/* . \
+ && cp -sn /opt/oryx/python/3/bin/* . \
  # Make sure the alias 'python' always refers to Python 3 by default
- && ln -sf /opt/python/3/bin/python python
+ && ln -sf /opt/oryx/python/3/bin/python python
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
@@ -220,7 +220,7 @@ RUN chmod -R 777 /usr/local/share/pip-cache
 ENV NUGET_XMLDOC_MODE=skip \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
-COPY --from=dotnet-install /opt/dotnet /opt/dotnet
+COPY --from=dotnet-install /opt/oryx/dotnet /opt/oryx/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
 COPY --from=dotnet-install /usr/local/bin /opt/oryx/defaultversions
 # Grant read-write permissions to the nuget folder so that dotnet restore
