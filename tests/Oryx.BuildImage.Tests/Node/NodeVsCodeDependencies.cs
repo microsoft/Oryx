@@ -93,6 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 oryxPackOutput = $"{pkgBuildOutputDir}/{pkgName}-0.8.1.tgz";
             }
 
+            const string tarListCmd = "tar -tvf";
             const string npmTarPath = "/tmp/npm-pkg.tgz";
             const string tarListMarker = "---TAR---";
             const string sizeMarker = "---SIZE---";
@@ -110,9 +111,9 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                     .AddCommand($"wget -O {npmTarPath} $NpmTarUrl")
                 // Print tar content lists
                     .AddCommand("echo " + tarListMarker)
-                    .AddCommand($"tar -tf {oryxPackOutput}")
+                    .AddCommand($"{tarListCmd} {oryxPackOutput}")
                     .AddCommand("echo " + tarListMarker)
-                    .AddCommand($"tar -tf {npmTarPath}")
+                    .AddCommand($"{tarListCmd} {npmTarPath}")
                     .AddCommand("echo " + tarListMarker)
                 // Print tar sizes
                     .AddCommand("echo " + sizeMarker)
@@ -144,6 +145,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
         private IEnumerable<string> NormalizeTarList(string rawTarList)
         {
             return rawTarList.Trim().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                .Where(line => !line.StartsWith('d')) // Filter out directories
+                .Select(line => line.Split(null).Last()) // Select only the name column
                 .Where(fname => !IgnoredTarEntries.Contains(fname))
                 .OrderBy(s => s);
         }
