@@ -58,8 +58,8 @@ echo "Destination directory: $DESTINATION_DIR"
 echo
 
 {{ if BenvArgs | IsNotBlank }}
-if [ -f /opt/oryx/defaultversions/benv ]; then
-	source /opt/oryx/defaultversions/benv {{ BenvArgs }}
+if [ -f {{ BenvPath }} ]; then
+	source {{ BenvPath }} {{ BenvArgs }}
 fi
 {{ end }}
 
