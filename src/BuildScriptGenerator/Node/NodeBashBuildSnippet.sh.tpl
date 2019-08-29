@@ -104,9 +104,13 @@ echo
 
 {{ if RunNpmPack }}
 echo
-echo "Running `npm run package || npm pack`..."
+echo "Running custom packaging scripts that might exist..."
 echo
-npm run package || npm pack
+npm run package || true
+echo
+echo "Running `npm pack`..."
+echo
+npm pack
 {{ end }}
 
 if [ "$copyOnlyProdModulesToOutput" == "true" ]
