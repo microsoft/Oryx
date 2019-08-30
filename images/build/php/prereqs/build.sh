@@ -146,4 +146,7 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
 
-ln -s $INSTALLATION_PREFIX "$INSTALLATION_BASE_DIR$PHP_MAJOR.$PHP_MINOR"
+compressedSdkDir="/tmp/compressedSdk"
+mkdir -p $compressedSdkDir
+cd "$INSTALLATION_PREFIX"
+tar -zcf $compressedSdkDir/php-$PHP_VERSION.tar.gz .

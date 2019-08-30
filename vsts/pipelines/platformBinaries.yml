@@ -1,0 +1,75 @@
+variables:
+  - group: Oryx
+
+stages:
+- stage: Build
+  jobs:
+  - job: Python
+    pool:
+      name: OryxLinux
+    steps:
+    - template: templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'python'
+
+  - job: Php
+    pool:
+      name: OryxLinux
+    steps:
+    - template: templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'php'
+
+  - job: Node
+    pool:
+      name: OryxLinux
+    steps:
+    - template: templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'node'
+
+  - job: DotNetCore
+    pool:
+      name: OryxLinux
+    steps:
+    - template: templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'dotnet'
+
+- stage: Release
+  dependsOn: Build
+  jobs:
+  - job: Publish_Platform_Binaries
+    displayName: Publish to Azure Blob Storage
+    pool:
+      name: OryxLinux
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Artifacts'
+      inputs:
+        artifactName: drop
+
+    - task: AzureCLI@1
+      displayName: Upload files to Azure Storage
+      inputs:
+        azureSubscription: oryxSP
+        scriptLocation: inlineScript
+        inlineScript: |
+          az storage blob upload-batch \
+            -s "$(System.ArtifactsDirectory)/drop/platformSdks" \
+            -d sdks \
+            --account-name oryxsdks \
+            --pattern '*.tar.gz'
+       
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - images/build/python
+    - images/build/php
+    - images/build/dotnet
+    - images/build/node
+    - build/
+    - vsts/
