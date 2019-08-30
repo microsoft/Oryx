@@ -6,7 +6,7 @@ Docker's basic [debian][library/debian:stable] image.
 The build image copies some required platforms from separate intermediate images,
 which can be built locally using the `build-buildimage-platforms.sh` script.
 
-[build image]: https://hub.docker.com/r/microsoft/oryx-build
+[build image]: https://hub.docker.com/_/microsoft-oryx-images
 [library/buildpack-deps:stable]: https://hub.docker.com/_/buildpack-deps
 [library/debian:stable]: https://hub.docker.com/_/debian
 
