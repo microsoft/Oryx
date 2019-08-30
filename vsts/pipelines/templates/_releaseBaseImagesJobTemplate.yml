@@ -71,6 +71,24 @@ jobs:
     parameters:
       baseImageName: 'node'
 
+- job: Release_PlatformSdks
+  displayName: Publish platform sdks to Azure Blob Storage
+  pool:
+    name: OryxLinux
+  dependsOn:
+    - Release_PhpBuildBaseImage
+    - Release_PythonBaseImage
+  steps:
+  - task: AzureFileCopy@2
+    displayName: 'Copy compressed SDK binaries to Azure Storage'
+    inputs:
+      SourcePath: '$(Build.ArtifactStagingDirectory)/drop/platformSdks'
+      azureSubscription: Oryx
+      Destination: AzureBlob
+      storage: oryxsdks
+      ContainerName: sdks
+      ConnectedServiceNameARM: oryxARM
+
 - job: Release_YarnCacheBuildBaseImage
   displayName: Push Yarn Cache Build Base Image to MCR
   pool:

@@ -1,7 +1,5 @@
 # Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
-ARG PYTHON_BASE_TAG
-ARG PHP_BUILD_BASE_TAG
 FROM buildpack-deps:stretch AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
@@ -60,7 +58,6 @@ RUN chmod +x /tmp/scripts/installDotNetCore.sh
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
     /tmp/scripts/installDotNetCore.sh
 
 RUN set -ex \
@@ -96,16 +93,15 @@ RUN apt-get update \
         jq \
     && rm -rf /var/lib/apt/lists/*
 COPY build/__nodeVersions.sh /tmp/scripts
-RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
- && . /tmp/scripts/__nodeVersions.sh \
- && curl -sL https://git.io/n-install | bash -s -- -ny - \
- && ~/n/bin/n -d $NODE8_VERSION \
- && ~/n/bin/n -d $NODE10_VERSION \
- && mv /usr/local/n/versions/node /opt/nodejs \
- && rm -rf /usr/local/n ~/n
-COPY images/build/installNpm.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/installNpm.sh
-RUN /tmp/scripts/installNpm.sh
+COPY images/build/installPlatform.sh /tmp/scripts
+RUN cd /tmp/scripts \
+ && . /__nodeVersions.sh \
+ && ./installPlatform.sh node $NODE8_VERSION \
+ && ./installPlatform.sh node $NODE10_VERSION 
+COPY images/build/createNpmLinks.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/createNpmLinks.sh
+RUN /tmp/scripts/createNpmLinks.sh
+
 COPY images/receivePgpKeys.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/receivePgpKeys.sh
 RUN set -ex \
@@ -141,15 +137,6 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-###
-# Python intermediate stages
-# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
-###
-FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
-###
-# End Python intermediate stages
-###
-
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -160,7 +147,8 @@ RUN apt-get update \
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__pythonVersions.sh /tmp/scripts
-COPY --from=py37-build-base /opt /opt
+COPY images/build/installPlatform.sh /tmp/scripts
+RUN /tmp/scripts/installPlatform.sh python $PYTHON37_VERSION
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
@@ -202,7 +190,9 @@ FROM python AS final
 WORKDIR /
 
 COPY images/build/benv.sh /usr/local/bin/benv
+COPY images/build/prepEnv.sh /usr/local/bin/prepEnv
 RUN chmod +x /usr/local/bin/benv
+RUN chmod +x /usr/local/bin/prepEnv
 RUN mkdir -p /usr/local/share/pip-cache/lib
 RUN chmod -R 777 /usr/local/share/pip-cache
 

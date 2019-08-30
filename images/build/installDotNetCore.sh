@@ -10,18 +10,10 @@ echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
 echo
 
-# .NET Core 1.1 follows a different pattern for url, so we give a chance for the caller
-# to specify a different url
-DEFAULT_DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz
-DOTNET_SDK_URL="${DOTNET_SDK_URL:-$DEFAULT_DOTNET_SDK_URL}"
+ORYX_BLOB_URL_BASE="https://oryxsdks.blob.core.windows.net/sdks"
+DOTNET_SDK_URL=$ORYX_BLOB_URL_BASE/dotnet-$DOTNET_SDK_VER.tar.gz
 
 curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz
-if [ "$DOTNET_SDK_SHA" != "" ]
-then
-    echo
-    echo "Verifying archive hash..."
-    echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c -
-fi
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 

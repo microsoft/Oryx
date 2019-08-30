@@ -1,7 +1,6 @@
 # Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 ARG PYTHON_BASE_TAG
-ARG PHP_BUILD_BASE_TAG
 FROM oryxdevmcr.azurecr.io/public/oryx/build-slim AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
@@ -17,6 +16,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts
+COPY build/installPlatform.sh /tmp/scripts
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -37,20 +37,16 @@ RUN chmod +x /tmp/scripts/installDotNetCore.sh
 
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_11_SDK_SHA512 \
-    DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
     /tmp/scripts/installDotNetCore.sh
 
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
     /tmp/scripts/installDotNetCore.sh
 
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
     /tmp/scripts/installDotNetCore.sh
 
 RUN set -ex \
@@ -101,36 +97,34 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /tmp/scripts
 COPY build/__nodeVersions.sh /tmp/scripts
-RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
- && . /tmp/scripts/__nodeVersions.sh \
- && curl -sL https://git.io/n-install | bash -s -- -ny - \
- && ~/n/bin/n -d 4.4.7 \
- && ~/n/bin/n -d 4.5.0 \
- && ~/n/bin/n -d 4.8.0 \
- && ~/n/bin/n -d 6.2.2 \
- && ~/n/bin/n -d 6.6.0 \
- && ~/n/bin/n -d 6.9.3 \
- && ~/n/bin/n -d 6.10.3 \
- && ~/n/bin/n -d 6.11.0 \
- && ~/n/bin/n -d 8.0.0 \
- && ~/n/bin/n -d 8.1.4 \
- && ~/n/bin/n -d 8.2.1 \
- && ~/n/bin/n -d 8.8.1 \
- && ~/n/bin/n -d 8.9.4 \
- && ~/n/bin/n -d 8.11.2 \
- && ~/n/bin/n -d 8.12.0 \
- && ~/n/bin/n -d 8.15.1 \
- && ~/n/bin/n -d 9.4.0 \
- && ~/n/bin/n -d 10.1.0 \
- && ~/n/bin/n -d 10.10.0 \
- && ~/n/bin/n -d 10.14.2 \
- && ~/n/bin/n -d $NODE6_VERSION \
- && ~/n/bin/n -d $NODE12_VERSION \
- && mv /usr/local/n/versions/node /opt/nodejs \
- && rm -rf /usr/local/n ~/n
-COPY images/build/installNpm.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/installNpm.sh
-RUN /tmp/scripts/installNpm.sh
+COPY build/installPlatform.sh /tmp/scripts
+RUN cd /tmp/scripts \
+    && . /__nodeVersions.sh \
+    && ./installPlatform.sh node 4.4.7 \
+    && ./installPlatform.sh node 4.5.0 \
+    && ./installPlatform.sh node 4.8.0 \
+    && ./installPlatform.sh node 6.2.2 \
+    && ./installPlatform.sh node 6.6.0 \
+    && ./installPlatform.sh node 6.9.3 \
+    && ./installPlatform.sh node 6.10.3 \
+    && ./installPlatform.sh node 6.11.0 \
+    && ./installPlatform.sh node 8.0.0 \
+    && ./installPlatform.sh node 8.1.4 \
+    && ./installPlatform.sh node 8.2.1 \
+    && ./installPlatform.sh node 8.8.1 \
+    && ./installPlatform.sh node 8.9.4 \
+    && ./installPlatform.sh node 8.11.2 \
+    && ./installPlatform.sh node 8.12.0 \
+    && ./installPlatform.sh node 8.15.1 \
+    && ./installPlatform.sh node 9.4.0 \
+    && ./installPlatform.sh node 10.1.0 \
+    && ./installPlatform.sh node 10.10.0 \
+    && ./installPlatform.sh node 10.14.2 \
+    && ./installPlatform.sh node $NODE6_VERSION \
+    && ./installPlatform.sh node $NODE12_VERSION
+COPY images/build/createNpmLinks.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/createNpmLinks.sh
+RUN /tmp/scripts/createNpmLinks.sh
 
 RUN set -ex \
  && ln -s 4.4.7 /opt/nodejs/4.4 \
@@ -172,24 +166,18 @@ RUN set -ex \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5
 
-###
-# Python intermediate stages
-# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
-###
-FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
-###
-# End Python intermediate stages
-###
+FROM buildpack-deps:stretch as pythonBits
+COPY build/__pythonVersions.sh /tmp/scripts
 
 FROM main AS python
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__pythonVersions.sh /tmp/scripts
-COPY --from=py27-build-base /opt /opt
-COPY --from=py36-build-base /opt /opt
-COPY --from=py38-build-base /opt /opt
+COPY build/installPlatform.sh /tmp/scripts
+RUN . /tmp/scripts/__pythonVersions.sh \
+    && /tmp/scripts/installPlatform.sh python $PYTHON27_VERSION \
+    && /tmp/scripts/installPlatform.sh python $PYTHON36_VERSION \
+    && /tmp/scripts/installPlatform.sh python $PYTHON38_VERSION
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
@@ -210,17 +198,14 @@ RUN set -ex \
 # stages in buildBuildImages.sh file
 FROM dotnet-install AS buildscriptbuilder
 
-###
-# PHP intermediate stages
-# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
-###
-FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
-###
-# End PHP intermediate stages
-###
+FROM buildpack-deps:stretch as phpBits
+COPY build/__phpVersions.sh /tmp/scripts
+COPY build/installPlatform.sh /tmp/scripts
+RUN . /tmp/scripts/__phpVersions.sh \
+    && /tmp/scripts/installPlatform.sh php $PHP56_VERSION \
+    && /tmp/scripts/installPlatform.sh php $PHP70_VERSION \
+    && /tmp/scripts/installPlatform.sh php $PHP72_VERSION \
+    && /tmp/scripts/installPlatform.sh php $PHP73_VERSION
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
@@ -252,6 +237,14 @@ COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
 COPY --from=dotnet-install /usr/local/bin /usr/local/bin
 
+# Copy PHP versions
+COPY build/__phpVersions.sh /tmp/scripts
+COPY build/installPlatform.sh /tmp/scripts
+RUN . /tmp/scripts/__phpVersions.sh \
+    && /tmp/scripts/installPlatform.sh php $PHP56_VERSION \
+    && /tmp/scripts/installPlatform.sh php $PHP70_VERSION \
+    && /tmp/scripts/installPlatform.sh php $PHP72_VERSION
+
 # Make sure the alias 'python' always refers to Python 2 by default
 RUN cd /usr/local/bin \
  && rm -f python \
@@ -270,18 +263,10 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
-# Copy PHP versions
-COPY --from=php56-build-base /opt /opt
-COPY --from=php70-build-base /opt /opt
-COPY --from=php72-build-base /opt /opt
-COPY --from=php73-build-base /opt /opt
-
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
  && ln -s /opt/php/lts/bin/php /usr/local/bin/php
-
-RUN rm -rf /tmp/scripts
 
 RUN rm -rf /tmp/scripts
 
