@@ -131,7 +131,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
             // Assert tar file sizes
             var tarSizeDiff = Math.Abs(npmTarSize - oryxTarSize);
-            Assert.True(tarSizeDiff < npmTarSize * 0.05); // Accepting differences of less than 5% of the official artifact size
+            Assert.True(tarSizeDiff < npmTarSize * 0.1, // Accepting differences of less than 10% of the official artifact size
+                $"Size difference is too big. Oryx build: {oryxTarSize}, NPM build: {npmTarSize}");
         }
 
         private (IEnumerable<string>, int) ParseTarList(string rawTarList)
