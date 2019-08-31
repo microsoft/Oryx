@@ -59,13 +59,17 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 "52a0510087667a18cc3524450ae946183f6a4c7d" },
             new object[] { "sudo-prompt", "9.0.0", "https://github.com/jorangreef/sudo-prompt.git",
                 "3bfa62163b59e45111436c695ee8e7e2befbe310" },
+            new object[] { "v8-inspect-profiler", "0.0.20", "https://github.com/jrieken/v8-inspect-profiler.git",
+                "71c714d4ee24af26828ba7c75928cf4493c7a255" },
+            new object[] { "vscode-chokidar", "2.1.7", "https://github.com/paulmillr/chokidar.git",
+                "f53aaac0472c0f464fdb8031cb27e91c759c2ac5" },
+            new object[] { "vscode-minimist", "1.2.1", "https://github.com/substack/minimist.git",
+                "39bc39518f81b69a5deab422e0aac656ef653318" },
+            new object[] { "vscode-proxy-agent", "0.4.0", "https://github.com/Microsoft/vscode-proxy-agent.git",
+                "2b3ed03ae8621271008f49d32f23cba84a1cf89b" },
+            new object[] { "vscode-ripgrep", "1.5.6", "https://github.com/microsoft/vscode-ripgrep.git",
+                "50354992f3c2c13436e5fbe600661fb739a4c43c" },
             /*
-            "sudo-prompt": "9.0.0",
-            "v8-inspect-profiler": "^0.0.20",
-            "vscode-chokidar": "2.1.7",
-            "vscode-minimist": "^1.2.1",
-            "vscode-proxy-agent": "0.4.0",
-            "vscode-ripgrep": "^1.5.6",
             "vscode-sqlite3": "4.0.8",
             "vscode-textmate": "^4.2.2",
             "xterm": "3.15.0-beta101",
@@ -96,7 +100,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             const string tarListCmd = "tar -tvf";
             const string npmTarPath = "/tmp/npm-pkg.tgz";
             const string tarListMarker = "---TAR---";
-            const string sizeMarker = "---SIZE---";
 
             var script = new ShellScriptBuilder()
             // Fetch source code
@@ -114,12 +117,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                     .AddCommand($"{tarListCmd} {oryxPackOutput}")
                     .AddCommand("echo " + tarListMarker)
                     .AddCommand($"{tarListCmd} {npmTarPath}")
-                    .AddCommand("echo " + tarListMarker)
-                // Print tar sizes
-                    .AddCommand("echo " + sizeMarker)
-                    .AddCommand($"stat --format %s {oryxPackOutput}")
-                    .AddCommand("echo " + sizeMarker)
-                    .AddCommand($"stat --format %s {npmTarPath}")
                 .ToString();
 
             // Act
@@ -128,27 +125,25 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             // Assert contained file names
             var tarLists = result.StdOut.Split(tarListMarker);
 
-            var oryxTarList = NormalizeTarList(tarLists[1]);
-            var npmTarList  = NormalizeTarList(tarLists[2]);
+            var (oryxTarList, oryxTarSize) = ParseTarList(tarLists[1]);
+            var (npmTarList,  npmTarSize)  = ParseTarList(tarLists[2]);
             Assert.Equal(npmTarList, oryxTarList);
 
             // Assert tar file sizes
-            var tarSizes = result.StdOut.Split(sizeMarker);
-
-            var oryxTarSize = int.Parse(tarSizes[1].Trim());
-            var npmTarSize = int.Parse(tarSizes[2].Trim());
-
-            var tarSizeDiff = Math.Abs(oryxTarSize - npmTarSize);
-            Assert.True(tarSizeDiff < npmTarSize * 0.1); // Less than 10% of the official build size
+            var tarSizeDiff = Math.Abs(npmTarSize - oryxTarSize);
+            Assert.True(tarSizeDiff < npmTarSize * 0.05); // Accepting differences of less than 5% of the official artifact size
         }
 
-        private IEnumerable<string> NormalizeTarList(string rawTarList)
+        private (IEnumerable<string>, int) ParseTarList(string rawTarList)
         {
-            return rawTarList.Trim().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+            var fileEntries = rawTarList.Trim().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
                 .Where(line => !line.StartsWith('d')) // Filter out directories
-                .Select(line => line.Split(null).Last()) // Select only the name column
-                .Where(fname => !IgnoredTarEntries.Contains(fname))
-                .OrderBy(s => s);
+                .Select(line => line.Split(new char[0], StringSplitOptions.RemoveEmptyEntries))
+                .Select(cols => (Size: int.Parse(cols[2]), Name: cols.Last())) // Keep only the size and the name
+                .Where(entry => !IgnoredTarEntries.Contains(entry.Name))
+                .OrderBy(entry => entry.Name);
+
+            return (fileEntries.Select(entry => entry.Name), fileEntries.Sum(entry => entry.Size));
         }
     }
 }
