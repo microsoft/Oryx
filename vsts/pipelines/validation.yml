@@ -16,7 +16,7 @@ jobs:
 - job: Job_BuildImage
   displayName: Build and Test Build Image
   pool:
-    name: OryxLinux
+    name: ubuntu-latest
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -31,7 +31,7 @@ jobs:
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
   pool:
-    name: OryxLinux
+    name: ubuntu-latest
   timeoutInMinutes: 100
   steps:
   - script: |
