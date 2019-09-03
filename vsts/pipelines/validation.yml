@@ -44,3 +44,12 @@ jobs:
   - template: templates/_buildTemplate.yml
 
 trigger: none
+
+pr:
+  branches:
+    include:
+      - '*'
+  paths:
+    exclude:
+    - README.md
+    - docs/*
