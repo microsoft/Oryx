@@ -12,9 +12,6 @@ steps:
     fi
   displayName: 'Validate pipeline run'
 
-- checkout: self
-  clean: true
-
 - task: DownloadPipelineArtifact@0
   displayName: 'Download Pipeline Artifact'
   inputs:
