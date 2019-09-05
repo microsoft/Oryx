@@ -49,7 +49,7 @@ func shouldApplicationInsightsBeConfigured() bool {
 	nodeAppInsightsKeyEnv := os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY")
 	nodeAppInsightsEnabledEnv := os.Getenv("ApplicationInsightsAgent_EXTENSION_VERSION")
 
-	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) == "disabled" {
+	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) !== "disabled" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
