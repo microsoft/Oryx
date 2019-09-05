@@ -107,6 +107,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             const string tarListMarker = "---TAR---";
 
             string commitId = GetGitHeadFromNpmRegistry(pkgName, pkgVersion) ?? altCommitId;
+            Assert.NotNull(commitId);
 
             var script = new ShellScriptBuilder()
             // Fetch source code
