@@ -54,5 +54,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the path to the directory where the manifest file needs to be put.
         /// </summary>
         public string ManifestDir { get; set; }
+
+        /// <summary>
+        /// Gets or set the path to benv file.
+        /// </summary>
+        public string BenvPath { get; set; }
     }
 }
