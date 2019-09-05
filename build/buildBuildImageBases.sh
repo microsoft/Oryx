@@ -19,6 +19,11 @@ source $REPO_DIR/build/__phpVersions.sh
 IMAGE_DIR_TO_BUILD=$1
 BUILD_DIR_PREFIX="$__REPO_DIR/images/build"
 ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$IMAGE_DIR_TO_BUILD-buildimage-bases.txt"
+
+# Clean artifacts
+mkdir -p `dirname $ARTIFACTS_FILE`
+> $ARTIFACTS_FILE
+
 volumeHostDir="$ARTIFACTS_DIR/platformSdks"
 volumeContainerDir="/tmp/sdk"
 mkdir -p "$volumeHostDir"
@@ -27,7 +32,7 @@ imageName="oryx/platformsdk"
 getSdkFromImage() {
 	local imageName="$1"
 
-	echo "Copying compressed sdk file to host directory..."
+	echo "Copying sdk file to host directory..."
 	echo
 	docker run \
 		-v $volumeHostDir:$volumeContainerDir \
@@ -39,15 +44,15 @@ blobDoesNotExist() {
 	local blobName="$1"
 	local exitCode=1
 	curl -sSf https://oryxsdks.blob.core.windows.net/sdks/$blobName &> /dev/null || exitCode=$?
-    if [ "$exitCode" == "0" ]; then
-        echo "Blob '$blobName' already exists."
+	if [ "$exitCode" == "0" ]; then
+		echo "Blob '$blobName' already exists."
 		echo
 		return 1
-    else
+	else
 		echo "Blob '$blobName' not found."
 		echo
 		return 0
-    fi
+	fi
 }
 
 buildPythonSdk() {
@@ -157,7 +162,7 @@ getDotNetCoreSdk() {
 	rm -f "$downloadedFile"
 	curl -SL $downloadUrl --output "$downloadedFile"
 	echo "Verifying archive hash..."
-    echo "$sha $downloadedFile" | sha512sum -c -
+	echo "$sha $downloadedFile" | sha512sum -c -
 	cp -f "$downloadedFile" "$volumeHostDir"
 	rm -rf /tmp/oryx-dotnetInstall
 }
