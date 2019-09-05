@@ -65,6 +65,31 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }
 
+        [Theory]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        // mcrypt only exists in 5.6 and 7.0, it's deprecated from php 7.2  and newer
+        public void Mcrypt_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep mcrypt);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("mcrypt", output);
+                },
+                result.GetDebugInfo());
+            
+        }
+
         [SkippableTheory]
         [InlineData("7.3")]
         [InlineData("7.2")]
