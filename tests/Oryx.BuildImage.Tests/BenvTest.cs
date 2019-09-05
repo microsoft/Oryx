@@ -15,8 +15,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         // For the tests in this class we are using a non-test build image since we will be playing with paths
         // and would get permission errors otherwise.
-        private const string FullBuildImageName = "oryx/build";
-        private const string SlimBuildImageName = "oryx/build-slim";
+        public const string FullBuildImageName = Settings.ProdBuildImageName;
+        public const string SlimBuildImageName = Settings.ProdSlimBuildImageName;
 
         private ITestOutputHelper _output;
         private DockerCli _dockerCli;
