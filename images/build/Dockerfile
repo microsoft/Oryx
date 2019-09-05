@@ -14,12 +14,6 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         # Required for .NET Core 1.1
         libunwind8 \
-		# Required for building the `keytar` NPM package
-		libsecret-1-dev \
-		# Required for building the `native-keymap` NPM package
-		libx11-dev libxkbfile-dev \
-        # Required for building the `node-spdlog` NPM package
-        libspdlog-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts
