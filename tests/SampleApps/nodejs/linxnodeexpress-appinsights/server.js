@@ -5,9 +5,9 @@ var appInsights = require('applicationinsights');
 var responseString = "";
 
 console.log(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-console.log(process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED)
+console.log(process.env.ApplicationInsightsAgent_EXTENSION_VERSION)
 
-if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED === "true") {
+if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.ApplicationInsightsAgent_EXTENSION_VERSION !== "disabled") {
 	console.log("hello world here")
 	appInsights
 		.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)

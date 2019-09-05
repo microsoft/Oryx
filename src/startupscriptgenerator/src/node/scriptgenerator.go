@@ -47,9 +47,9 @@ const inspectParamVariableName = "ORYX_NODE_INSPECT_PARAM"
 // Checks if the application insights needs to be enabled for the current runtime
 func shouldApplicationInsightsBeConfigured() bool {
 	nodeAppInsightsKeyEnv := os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY")
-	nodeAppInsightsEnabledEnv := os.Getenv("APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED")
+	nodeAppInsightsEnabledEnv := os.Getenv("ApplicationInsightsAgent_EXTENSION_VERSION")
 
-	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) == "true" {
+	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) == "disabled" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
@@ -75,7 +75,7 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 
 			return true;
 		}
-		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED === "true") {
+		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.ApplicationInsightsAgent_EXTENSION_VERSION !== "disabled") {
 			appInsights
 				.setup()
 				.setSendLiveMetrics(true)
