@@ -125,50 +125,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
         }
 
-        [Fact]
-        public void GeneratedScript_CanRunStartupScripts_WithAppInsightsConfigured()
-        {
-            // Arrange
-            const int exitCodeSentinel = 222;
-            var appPath = "/tmp/app";
-            var aiNodesdkLoaderContent = @"var appInsights = require('applicationinsights');  
-                if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-                { 
-                    try 
-                    { 
-                       appInsights.setup().start();
-                    } catch (e) { 
-                       console.error(e); 
-                    } 
-                }";
-            var manifestFileContent = $"'{NodeConstants.InjectedAppInsights}=\"True\"'";
-
-            var script = new ShellScriptBuilder()
-                .CreateDirectory(appPath)
-                .CreateFile($"{appPath}/entry.sh", $"exit {exitCodeSentinel}")
-                .CreateFile($"{appPath}/{FilePaths.BuildManifestFileName}", manifestFileContent)
-                .CreateFile($"{appPath}/oryx-appinsightsloader.js", $"\"{aiNodesdkLoaderContent}\"")
-                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
-                .AddCommand(". ./run.sh") // Source the default output path
-                .AddStringExistsInFileCheck("export NODE_OPTIONS='--require ./oryx-appinsightsloader.js'", "./run.sh")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = "oryxdevmcr.azurecr.io/public/oryx/node-10.14",
-                EnvironmentVariables = new List<EnvironmentVariable>
-                {
-                    new EnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", "asdas")
-                },
-                CommandToExecuteOnRun = "/bin/sh",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
-        }
-
         [Theory(Skip = "Investigating debugging using pm2")]
         [MemberData(
             nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),

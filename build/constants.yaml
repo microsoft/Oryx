@@ -4,6 +4,8 @@
     application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
+    user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
+    user-app-insights-enable-env: ApplicationInsightsAgent_EXTENSION_VERSION
   outputs:
     - type: csharp
       directory: src/Common
