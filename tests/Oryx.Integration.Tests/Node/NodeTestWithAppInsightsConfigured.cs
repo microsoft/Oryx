@@ -31,8 +31,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
-            var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-            var aIEnabled = "ApplicationInsightsAgent_EXTENSION_VERSION";
+            var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
@@ -81,8 +81,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
-            var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-            var aIEnabled = "ApplicationInsightsAgent_EXTENSION_VERSION";
+            var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();

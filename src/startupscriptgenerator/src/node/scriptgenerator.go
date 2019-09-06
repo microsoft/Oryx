@@ -46,10 +46,10 @@ const inspectParamVariableName = "ORYX_NODE_INSPECT_PARAM"
 
 // Checks if the application insights needs to be enabled for the current runtime
 func shouldApplicationInsightsBeConfigured() bool {
-	nodeAppInsightsKeyEnv := os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY")
-	nodeAppInsightsEnabledEnv := os.Getenv("ApplicationInsightsAgent_EXTENSION_VERSION")
+	nodeAppInsightsKeyEnv := os.Getenv(consts.UserAppInsightsKeyEnv)
+	nodeAppInsightsEnabledEnv := os.Getenv(consts.UserAppInsightsEnableEnv)
 
-	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) !== "disabled" {
+	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) != "disabled" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
@@ -75,7 +75,7 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 
 			return true;
 		}
-		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.ApplicationInsightsAgent_EXTENSION_VERSION !== "disabled") {
+		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled") {
 			appInsights
 				.setup()
 				.setSendLiveMetrics(true)
@@ -130,7 +130,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("mkdir -p " + targetNodeModulesDir + "\n")
 		scriptBuilder.WriteString("echo Extracting modules...\n")
 		scriptBuilder.WriteString("$extractionCommand\n")
-		
+
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
 		scriptBuilder.WriteString("export NODE_PATH=\"" + targetNodeModulesDir + "\":$NODE_PATH\n")
@@ -229,7 +229,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		loaderFile := filepath.Join(gen.SourcePath, consts.NodeAppInsightsLoaderFileName)
 
 		if !common.FileExists(loaderFile) {
-			createApplicationInsightsLoaderFile(loaderFile)			
+			createApplicationInsightsLoaderFile(loaderFile)
 		}
 
 		var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " ' $NODE_OPTIONS"
