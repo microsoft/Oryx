@@ -36,8 +36,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 "git://github.com/ashtuchkin/iconv-lite.git" },
             new object[] { "keytar", "4.11.0",
                 "git://github.com/atom/node-keytar.git", new[] { "libsecret-1-dev" } },
-            new object[] { "native-is-elevated", "0.3.0",
-                "git://github.com/arkon/native-is-elevated.git" },
             new object[] { "native-keymap", "2.0.0",
                 "git://github.com/Microsoft/node-native-keymap.git", new[] { "libx11-dev", "libxkbfile-dev" } },
         };
@@ -67,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var osReqsParam = string.Empty;
             if (requiredOsPackages != null)
             {
-                osReqsParam = $"--os-requirements {string.Join(' ', requiredOsPackages)}";
+                osReqsParam = $"--os-requirements {string.Join(',', requiredOsPackages)}";
             }
 
             var script = new ShellScriptBuilder()

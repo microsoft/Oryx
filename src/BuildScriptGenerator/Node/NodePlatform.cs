@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
                 }
 
-                if (scriptsNode["build:azure"] != null)
+                if (scriptsNode["build:azure"] != null && !ctx.IsPackage)
                 {
                     runBuildAzureCommand = string.Format(
                         NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
