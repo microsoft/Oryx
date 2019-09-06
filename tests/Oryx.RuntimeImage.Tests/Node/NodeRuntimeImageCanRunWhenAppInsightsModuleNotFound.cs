@@ -37,8 +37,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);
-            var aIKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-            var aIEnabled = "APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED";
+            var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
@@ -86,11 +86,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);
-            var aIEnabled = "APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED";
+            var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
-                .AddCommand($"export {aIEnabled}=TRUE")
+                .AddCommand($"export {aIEnabled}=disabled")
                 .AddCommand($"cd {appDir}")
                 .AddCommand("npm install")
                 .AddCommand($"oryx -appPath {appDir}")

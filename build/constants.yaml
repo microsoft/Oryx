@@ -4,6 +4,8 @@
     application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
+    user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
+    user-app-insights-enable-env: ApplicationInsightsAgent_EXTENSION_VERSION
   outputs:
     - type: csharp
       directory: src/Common
@@ -20,9 +22,9 @@
     dot-net-core-22-sdk-sha512: 08E1FCAFA4F898C80FF5E88EEB40C7497B4F5651AF3B8EC85F65A3DAA2F1509A766D833477358D3FF83D179E014034AB0C48120847EF24736C8D1A5B67FEC10B
     # Since preview names of .NET Core break the semver norms, it does not work well with the code
     # that we depend on for semantic version checks, so having two constants here.
-    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview8-013656
+    dot-net-core-30-sdk-version-preview-name: 3.0.100-preview9-014004
     dot-net-core-30-sdk-version: 3.0.100
-    dot-net-core-30-sdk-sha512: 448C740418F0AB43B3A8D9F7CCB532E71E590692D3B64239C3F21D46DF3A46788B5B824E1A10236E5ABE51D4A5143C27B90D08B342A683C96BD9ABEBC2D33017
+    dot-net-core-30-sdk-sha512: B4E4580250F172C7B14CBCE96D2DE54D13A0B312ED71F86986CC53A9392491347E83CDEFC2805A23BD652FC2CC0658C2E74FC8C05212C3983C19E2ADBC1FE9A3
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -38,7 +40,7 @@
     net-core-app-21: 2.1.12
     net-core-app-22: 2.2.6
     net-core-app-30: 3.0.0
-    net-core-app-30-preview-name: 3.0.0-preview8-28405-07
+    net-core-app-30-preview-name: 3.0.0-preview9-19423-09
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -48,12 +50,12 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20190814.1
+    python-base-tag: 20190906.1
     pip-version: 19.1.1
     python27-version: 2.7.16
     python36-version: 3.6.9
     python37-version: 3.7.4
-    python38-version: 3.8.0b3
+    python38-version: 3.8.0b4
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator

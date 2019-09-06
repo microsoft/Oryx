@@ -12,7 +12,7 @@ Just copy the generic [Dockerfile.oryx][] to your repo and register a
 one-time or recurring task with the following commands.
 
 [Azure Container Registry Tasks]: https://docs.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview
-[Dockerfile.oryx]: ./Dockerfile.oryx
+[Dockerfile.oryx]: https://github.com/microsoft/Oryx/blob/master/doc/hosts/Dockerfile.oryx
 
 ## Build once
 
@@ -22,10 +22,11 @@ Inject the Dockerfile and build your repo once.
 registry_name=your-registry-name
 image_name=your-image-name
 repo_url='.'  # or an accessible git repo URL
-runtime=node-10.14  # choose from https://hub.docker.com/u/oryxprod
+runtime=node:10.14  # choose tags from https://mcr.microsoft.com/v2/oryx/node/tags/list
+
 
 cd path/to/your/repo
-curl -sSLO https://raw.githubusercontent.com/Microsoft/Oryx/master/doc/acr/Dockerfile.oryx
+curl -sSLO https://github.com/microsoft/Oryx/blob/master/doc/hosts/Dockerfile.oryx
 
 az acr build \
     --registry ${registry_name} \
@@ -43,10 +44,11 @@ Commit the Dockerfile to your repo and schedule fresh builds on new commits.
 registry_name=your-registry-name
 image_name=your-image-name
 repo_url=https://github.com/myorg/myrepo.git # cannot be `.` for recurring task
-runtime=node-10.14  # choose from https://hub.docker.com/u/oryxprod
+runtime=node:10.14  # choose from https://mcr.microsoft.com/v2/oryx/node/tags/list
+
 
 cd path/to/your/repo
-curl -sSLO https://raw.githubusercontent.com/Microsoft/Oryx/master/doc/acr/Dockerfile.oryx
+curl -sSLO https://github.com/microsoft/Oryx/blob/master/doc/hosts/Dockerfile.oryx
 
 # commit and push the Oryx Dockerfile to your repo
 git add Dockerfile.oryx && git commit -m "add generic Oryx Dockerfile" && git push
