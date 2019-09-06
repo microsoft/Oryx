@@ -48,7 +48,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20190814.1
+    python-base-tag: 20190906.1
     pip-version: 19.1.1
     python27-version: 2.7.16
     python36-version: 3.6.9
