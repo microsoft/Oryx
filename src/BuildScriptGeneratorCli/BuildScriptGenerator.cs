@@ -48,6 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Language = options.PlatformName,
                 LanguageVersion = options.PlatformVersion,
                 IsPackage = options.ShouldPackage,
+                RequiredOsPackages = options.RequiredOsPackages,
                 Properties = options.Properties,
                 EnableCheckers = !envSettings.DisableCheckers,
                 EnableDotNetCore = !envSettings.DisableDotNetCore,

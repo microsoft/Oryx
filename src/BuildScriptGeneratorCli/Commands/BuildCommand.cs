@@ -103,6 +103,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "Package the built sources into a platform-specific format.")]
         public bool ShouldPackage { get; set; }
 
+        [Option("--os-requirements", CommandOptionType.SingleValue,
+            Description = "Comma-separated list of operating system packages that will be installed (using apt-get) before building the application.")]
+        public string OsRequirements { get; set; }
+
         [Option(
             OptionTemplates.Property,
             CommandOptionType.MultipleValue,
@@ -357,6 +361,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 platform: PlatformName,
                 platformVersion: PlatformVersion,
                 shouldPackage: ShouldPackage,
+                requiredOsPackages: string.IsNullOrWhiteSpace(OsRequirements) ? null : OsRequirements.Split(','),
                 scriptOnly: false,
                 properties: Properties);
         }

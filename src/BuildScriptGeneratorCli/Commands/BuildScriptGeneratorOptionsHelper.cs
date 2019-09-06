@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string platform,
             string platformVersion,
             bool shouldPackage,
+            string[] requiredOsPackages,
             bool scriptOnly,
             string[] properties)
         {
@@ -46,6 +47,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             options.ShouldPackage = shouldPackage;
+
+            options.RequiredOsPackages = requiredOsPackages;
 
             options.ScriptOnly = scriptOnly;
 
