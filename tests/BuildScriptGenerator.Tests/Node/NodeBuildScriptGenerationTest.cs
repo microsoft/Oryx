@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           ""license"": ""ISC""
         }";
 
-        private const string NpmInstallCommand = "npm install";
+        private const string NpmInstallCommand = NodeConstants.NpmPackageInstallCommand;
         private const string YarnInstallCommand = "yarn install --prefer-offline";
 
         [Fact]
@@ -152,6 +152,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
                 HasProductionOnlyDependencies = false,
@@ -164,12 +165,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var renderedTemplate = TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(
-                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
-                snippet.BashBuildScriptSnippet);
+            Assert.Equal(renderedTemplate, snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
