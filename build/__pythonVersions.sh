@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-PYTHON_BASE_TAG='20190814.1'
+PYTHON_BASE_TAG='20190906.1'
 PIP_VERSION='19.1.1'
 PYTHON27_VERSION='2.7.16'
 PYTHON36_VERSION='3.6.9'
