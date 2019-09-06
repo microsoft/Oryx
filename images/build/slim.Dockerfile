@@ -9,6 +9,12 @@ FROM buildpack-deps:stretch AS main
 # NOTE: Do NOT move it from here as it could have global implications
 ENV LANG C.UTF-8
 
+# Oryx's path is at the end of the PATH environment variable value and so earlier presence
+# of python in the path folders (in this case /usr/bin) will cause Oryx's platform sdk to be not
+# picked up.
+RUN rm -rf /usr/bin/python*
+RUN rm -rf /usr/bin/pydoc*
+
 # Install basic build tools
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -29,7 +35,13 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
+# A temporary folder to hold all scripts temporarily used to build this image. 
+# This folder is deleted in the final stage of building this image.
 RUN mkdir -p /tmp/scripts
+
+# This is the folder containing 'links' to versions of sdks present under '/opt' folder
+# These versions are typically the LTS or stable versions of those platforms.
+RUN mkdir -p /opt/oryx/defaultversions
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -170,7 +182,7 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3
 RUN set -ex \
- && cd /usr/local/bin \
+ && cd /opt/oryx/defaultversions \
  && cp -sn /opt/python/3/bin/* . \
  # Make sure the alias 'python' always refers to Python 3 by default
  && ln -sf /opt/python/3/bin/python python
@@ -191,8 +203,6 @@ ARG AGENTBUILD=${AGENTBUILD}
 ARG BUILD_NUMBER=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-COPY images/build/benv.sh /usr/local/bin/benv
-RUN chmod +x /usr/local/bin/benv
 RUN if [ -z "$AGENTBUILD" ]; then \
         dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
     fi
@@ -201,8 +211,9 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
-COPY images/build/benv.sh /usr/local/bin/benv
-RUN chmod +x /usr/local/bin/benv
+ENV PATH=$PATH:/opt/oryx/defaultversions
+COPY images/build/benv.sh /opt/oryx/defaultversions/benv
+RUN chmod +x /opt/oryx/defaultversions/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib
 RUN chmod -R 777 /usr/local/share/pip-cache
 
@@ -212,19 +223,19 @@ ENV NUGET_XMLDOC_MODE=skip \
 	NUGET_PACKAGES=/var/nuget
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-COPY --from=dotnet-install /usr/local/bin /usr/local/bin
+COPY --from=dotnet-install /usr/local/bin /opt/oryx/defaultversions
 # Grant read-write permissions to the nuget folder so that dotnet restore
 # can write into it.
 RUN chmod a+rw /var/nuget
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
-COPY --from=node-install /links/ /usr/local/bin
+COPY --from=node-install /links/ /opt/oryx/defaultversions
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN ln -s /opt/buildscriptgen/GenerateBuildScript /usr/local/bin/oryx
+RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/defaultversions/oryx
 
 RUN rm -rf /tmp/scripts
 

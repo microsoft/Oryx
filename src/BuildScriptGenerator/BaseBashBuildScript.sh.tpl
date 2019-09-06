@@ -58,8 +58,8 @@ echo "Destination directory: $DESTINATION_DIR"
 echo
 
 {{ if BenvArgs | IsNotBlank }}
-if [ -f /usr/local/bin/benv ]; then
-	source /usr/local/bin/benv {{ BenvArgs }}
+if [ -f {{ BenvPath }} ]; then
+	source {{ BenvPath }} {{ BenvArgs }}
 fi
 {{ end }}
 
