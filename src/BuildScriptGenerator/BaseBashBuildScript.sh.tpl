@@ -63,6 +63,10 @@ if [ -f {{ BenvPath }} ]; then
 fi
 {{ end }}
 
+{{ if !OsPackagesToInstall.empty? }}
+apt-get update && apt-get install --yes --no-install-recommends {{ for PackageName in OsPackagesToInstall }}{{ PackageName }} {{ end }}
+{{ end }}
+
 # Export these variables so that they are available for the pre and post build scripts.
 export SOURCE_DIR
 export DESTINATION_DIR

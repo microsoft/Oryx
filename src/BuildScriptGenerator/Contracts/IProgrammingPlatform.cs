@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             [NotNull] IDictionary<string, string> toolsToVersion);
 
         /// <summary>
-        /// Tries generating a bash script based on the application in source directory.
+        /// Generates a build Bash script based on the application in source directory.
         /// </summary>
         /// <param name="scriptGeneratorContext">The <see cref="BuildScriptGeneratorContext"/>.</param>
         /// <returns><see cref="BuildScriptSnippet "/> with the build snippet if successful,
