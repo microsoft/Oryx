@@ -56,12 +56,15 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           set -ex
-          echo foo
+          binariesDir="$(System.ArtifactsDirectory)/drop/platformSdks"
+          ls -l "$binariesDir"
+          echo
           az storage blob upload-batch \
-            -s "$(System.ArtifactsDirectory)/drop/platformSdks" \
+            -s "$binariesDir" \
             -d sdks \
             --account-name oryxsdks \
             --pattern *.tar.gz
+          $?
        
 trigger:
   branches:
