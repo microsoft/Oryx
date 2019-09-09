@@ -106,19 +106,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 COPY build/__nodeVersions.sh /tmp/scripts
 COPY images/build/installPlatform.sh /tmp/scripts
-RUN cd /tmp/scripts \
- && . /__nodeVersions.sh \
- && ./installPlatform.sh node $NODE8_VERSION \
- && ./installPlatform.sh node $NODE10_VERSION 
 COPY images/build/createNpmLinks.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/createNpmLinks.sh
-RUN /tmp/scripts/createNpmLinks.sh
+RUN cd /tmp/scripts \
+ && . ./__nodeVersions.sh \
+ && ./installPlatform.sh node $NODE8_VERSION \
+ && ./installPlatform.sh node $NODE10_VERSION \
+ && chmod +x ./createNpmLinks.sh \
+ && /tmp/scripts/createNpmLinks.sh
 
 COPY images/receivePgpKeys.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
-RUN set -ex \
- && . /tmp/scripts/__nodeVersions.sh \
- && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+RUN cd /tmp/scripts \
+ && chmod +x ./receivePgpKeys.sh \
+ && . ./__nodeVersions.sh \
+ && ./receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
