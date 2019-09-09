@@ -63,8 +63,8 @@ stages:
             -s "$binariesDir" \
             -d sdks \
             --account-name oryxsdks \
-            --pattern *.tar.gz
-          $?
+            --pattern *.tar.gz \
+            --debug
        
 trigger:
   branches:
