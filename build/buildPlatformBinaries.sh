@@ -197,8 +197,8 @@ buildSdks() {
 	local funcToCall="$2"
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
-		# Ignore comments
-		if [[ $VERSION_INFO = \#* ]] ; then
+		# Ignore whitespace and comments
+		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
 			continue
 		fi
 
