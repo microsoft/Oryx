@@ -54,7 +54,7 @@ stages:
       inputs:
         azureSubscription: oryxSP
         scriptLocation: inlineScript
-        inlineScript: az storage blob upload-batch -d sdks --account-name oryxsdks -s "$(System.ArtifactsDirectory)/drop/platformSdks" --pattern *.tar.gz
+        inlineScript: echo foo; ls -l "$(System.ArtifactsDirectory)/drop/platformSdks"; az storage blob upload-batch -d sdks --account-name oryxsdks -s "$(System.ArtifactsDirectory)/drop/platformSdks" --pattern *.tar.gz
         
 trigger:
   branches:
