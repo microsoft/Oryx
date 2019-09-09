@@ -5,6 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
+    //comment
     internal class PhpConstants
     {
         internal const string PhpName = "php";
