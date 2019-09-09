@@ -55,6 +55,8 @@ stages:
         azureSubscription: oryxSP
         scriptLocation: inlineScript
         inlineScript: |
+          set -ex
+          echo foo
           az storage blob upload-batch \
             -s "$(System.ArtifactsDirectory)/drop/platformSdks" \
             -d sdks \
