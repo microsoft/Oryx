@@ -49,7 +49,8 @@ func shouldApplicationInsightsBeConfigured() bool {
 	nodeAppInsightsKeyEnv := os.Getenv(consts.UserAppInsightsKeyEnv)
 	nodeAppInsightsEnabledEnv := os.Getenv(consts.UserAppInsightsEnableEnv)
 
-	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) != "disabled" {
+	// Check if the application insights environment variables are present
+	if nodeAppInsightsKeyEnv != "" && nodeAppInsightsEnabledEnv != "" && nodeAppInsightsEnabledEnv != "disabled" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
@@ -75,13 +76,19 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 
 			return true;
 		}
-		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled") {
-			appInsights
+
+		// Enable Telemetry only when Application Insight's env variables are correctly set by user
+		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + `) {
+			
+			if(process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled"){
+				
+				appInsights
 				.setup()
 				.setSendLiveMetrics(true)
 				.start();
 
-			appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
+				appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
+			}
 		}
 	}catch (e) {
 			console.log('Application Insights could not be automatically configured for this application'); 
