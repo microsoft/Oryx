@@ -266,7 +266,10 @@ RUN set -ex \
  && ln -s 5.6 5 \
  && ln -s 7.3 7 \
  && ln -s 7 lts \
- && ln -s /opt/php/lts/bin/php /opt/oryx/defaultversions/php
+ && ln -s /opt/php/lts/bin/php /opt/oryx/defaultversions/php \
+ && cd /opt/php-composer \
+ && ln -s 1.8 1
+RUN ln -s /opt/php-composer/1/composer.phar /opt/oryx/defaultversions/composer
 
 RUN rm -rf /tmp/scripts
 

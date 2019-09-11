@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -66,7 +65,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 {
                     // Leave malformed composer.json files for Composer to handle.
                     // This prevents Oryx from erroring out when Composer itself might be able to tolerate the file.
-                    _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
+                    _logger.LogWarning(
+                        exc,
+                        $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
                 }
             }
 
@@ -95,13 +96,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             throw new NotImplementedException();
         }
 
-        public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
                 toolsToVersion[PhpConstants.PhpName] = targetPlatformVersion;
             }
+            toolsToVersion[PhpConstants.ComposerName] = PhpVersions.ComposerVersion;
         }
 
         public void SetVersion(BuildScriptGeneratorContext context, string version)

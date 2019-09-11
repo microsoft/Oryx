@@ -158,6 +158,20 @@ benv-resolve() {
     return 0
   fi
 
+  if matchesName "composer" "$name" || matchesName "composer_version" "$name" && [ "${value::1}" != "/" ]; then
+    if [ ! -d "/opt/php-composer/$value" ]; then
+      echo >&2 benv: php composer version \'$value\' not found\; choose one of:
+      benv-versions >&2 /opt/php_composer
+      return 1
+    fi
+
+    local DIR="/opt/php-composer/$value"
+    updatePath "$DIR"
+    export composer="$DIR/composer.phar"
+
+    return 0
+  fi
+
   # Resolve dotnet versions
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
     local runtimesDir="/opt/dotnet/runtimes"

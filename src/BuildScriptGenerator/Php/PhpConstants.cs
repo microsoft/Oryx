@@ -8,6 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     internal class PhpConstants
     {
         internal const string PhpName = "php";
+        internal const string ComposerName = "composer";
         internal const string PhpFileNamePattern = "*.php";
         internal const string ComposerFileName = "composer.json";
         internal const string SupportedVersionsEnvVarName = "ORYX_PHP_SUPPORTED_VERSIONS";
