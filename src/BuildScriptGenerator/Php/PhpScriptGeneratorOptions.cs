@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public string InstalledPhpVersionsDir { get; set; }
 
         /// <summary>
-        /// Gets or sets the user-provided list of python versions.
+        /// Gets or sets the user-provided list of PHP versions.
         /// </summary>
         public IList<string> SupportedPhpVersions { get; set; }
     }
