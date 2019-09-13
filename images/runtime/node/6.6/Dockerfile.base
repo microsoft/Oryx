@@ -1,9 +1,9 @@
 # The official Node 6.6 image has vulnerabilities, so we build our own version
 # to fetch the latest stretch release with the required fixes.
-# https://github.com/node/docker-node.git, commit ID 9cd8d4c47e9e695bb38d98a32c4dd45dfa981962.
+# https://github.com/nodejs/docker-node.git, commit ID 9cd8d4c47e9e695bb38d98a32c4dd45dfa981962.
 FROM oryx-run-base AS node-original
 
-# gpg keys listed at https://github.com/node/node
+# gpg keys listed at https://github.com/nodejs/node
 RUN /tmp/scripts/receivePgpKeys.sh \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
@@ -17,13 +17,13 @@ RUN /tmp/scripts/receivePgpKeys.sh \
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 6.6.0
 
-RUN curl -SLO "https://node.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
-  && curl -SLO "https://node.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
+  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
   && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
   && grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && ln -s /usr/local/bin/node /usr/local/bin/node
+  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 CMD [ "node" ]
 

@@ -14,7 +14,7 @@ and run images too.
 # Base image
 
 Node.js runtime images are built on [the official Node.js
-image](https://github.com/node/docker-node).
+image](https://github.com/nodejs/docker-node).
 
 # Detect
 
@@ -49,7 +49,7 @@ will run before and after `build` respectively if specified; and `preinstall` an
 
 The version of npm used to install dependencies and run npm scripts is the
 one bundled with the specified Node.js version as listed
-[here](https://node.org/en/download/releases/).
+[here](https://nodejs.org/en/download/releases/).
 
 If a `yarn.lock` file is found in your repo root or if you specify "yarn" in
 the `engines` field of package.json, the latest or specified version of yarn
@@ -80,7 +80,7 @@ The following process is applied to determine how to start an app.
 
 # Version support
 
-<img width=500 src="https://raw.githubusercontent.com/node/Release/master/schedule.svg?sanitize=true" />
+<img width=500 src="https://raw.githubusercontent.com/nodejs/Release/master/schedule.svg?sanitize=true" />
 
 The Node.js project follows the above [release schedule][]. Oryx will support
 Long Term Stable (LTS) releases supported by the Node.js project and the
@@ -95,5 +95,5 @@ We will release updated versions of supported release lines at least
 once every 3 months. Previous minor versions will remain available
 as long as the release is available.
 
-[release schedule]: https://github.com/node/Release#release-schedule
+[release schedule]: https://github.com/nodejs/Release#release-schedule
 [Azure Updates]: https://azure.microsoft.com/updates/

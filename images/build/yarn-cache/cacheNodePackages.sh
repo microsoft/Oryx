@@ -156,7 +156,7 @@ for pkg in \
     @angular/forms@~7.2.0 \
     @angular/platform-browser@~7.2.0 \
     @angular/platform-browser-dynamic@~7.2.0 \
-    bcrypt-node@0.0.3 \
+    bcrypt-nodejs@0.0.3 \
     redux-thunk@^2.3.0 \
     react-scripts@2.1.5 \
     jsonwebtoken@^8.3.0 \
