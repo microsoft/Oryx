@@ -1,7 +1,7 @@
 import React from "react";
 // node library that concatenates classes
 import classNames from "classnames";
-// node library to set properties for components
+// nodejs library to set properties for components
 import PropTypes from "prop-types";
 
 // material-ui components
