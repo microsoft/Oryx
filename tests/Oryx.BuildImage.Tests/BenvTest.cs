@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
-            var nodeSetupByBenv = "/opt/nodejs/8/bin/node";
+            var nodeSetupByBenv = "/opt/node/8/bin/node";
             var script = new ShellScriptBuilder()
                 .AddCommand($"echo > {userInstalledDotNet}")
                 .AddCommand($"chmod +x {userInstalledDotNet}")

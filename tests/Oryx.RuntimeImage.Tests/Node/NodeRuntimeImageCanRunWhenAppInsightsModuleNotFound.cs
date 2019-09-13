@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Arrange
             var appName = "linxnodeexpress";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var hostDir = Path.Combine(_hostSamplesDir, "node", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Arrange
             var appName = "linxnodeexpress";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var hostDir = Path.Combine(_hostSamplesDir, "node", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);

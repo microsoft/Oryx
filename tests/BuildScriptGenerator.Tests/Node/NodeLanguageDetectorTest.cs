@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
@@ -201,7 +201,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
@@ -265,7 +265,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal("500.500.500", result.LanguageVersion);
         }
 
@@ -288,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal("6.11.0", result.LanguageVersion);
         }
 
@@ -308,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("node", result.Language);
             Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
@@ -326,7 +326,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
             Assert.Equal(
-                $"Platform '{NodeConstants.NodeJsName}' version '20.20.20' is unsupported. Supported versions: 6.11.0",
+                $"Platform '{NodeConstants.NodeName}' version '20.20.20' is unsupported. Supported versions: 6.11.0",
                 exception.Message);
         }
 

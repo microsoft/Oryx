@@ -292,7 +292,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform nodejs --platform-version 8.2.1")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform node --platform-version 8.2.1")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
@@ -359,7 +359,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform nodejs --platform-version 8.2.1 > {generatedScript}")
+                .AddScriptCommand($"{appDir} --platform node --platform-version 8.2.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -511,7 +511,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform nodejs --platform-version 6")
+                .AddBuildCommand($"{appDir} --platform node --platform-version 6")
                 .ToString();
 
             // Act
@@ -528,10 +528,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/node/6.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/node/6.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/node/6.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/node/6.\d+.\d+/bin/npm", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

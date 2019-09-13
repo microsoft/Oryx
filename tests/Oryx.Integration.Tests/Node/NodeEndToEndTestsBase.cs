@@ -25,6 +25,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         protected DockerVolume CreateAppVolume(string appName) =>
-            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "node", appName));
     }
 }

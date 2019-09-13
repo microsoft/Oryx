@@ -8,7 +8,7 @@ system and how to configure or change them.
     * [Custom Dockerfile](./hosts/Dockerfile.md) that calls Oryx to build and run the application.
 1. [Configure](./configuration.md) specific features, including support for multiple platforms.
 1. [Runtimes](./runtimes)
-    * [Node.js](./runtimes/nodejs.md)
+    * [Node.js](./runtimes/node.md)
     * [Python](./runtimes/python.md)
     * [.NET Core](./runtimes/dotnetcore.md)
     * [PHP](./runtimes/php.md)

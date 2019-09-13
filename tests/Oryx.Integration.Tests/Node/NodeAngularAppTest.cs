@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform node --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=4200")
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform node " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform node --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=4200")
@@ -200,7 +200,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform node " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();

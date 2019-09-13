@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"{NodeConstants.NodeJsName}=\"{NodeConstants.NodeLtsVersion}\"",
+                $"{NodeConstants.NodeName}=\"{NodeConstants.NodeLtsVersion}\"",
                 console.StdOutput);
         }
 

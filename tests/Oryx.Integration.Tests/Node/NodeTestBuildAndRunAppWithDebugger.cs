@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform node " +
                 $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();

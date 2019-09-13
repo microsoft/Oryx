@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public async Task RunNodeAppUsingProcessJson_withDebugging(string nodeVersion)
         {
             var appName = "express-process-json";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var hostDir = Path.Combine(_hostSamplesDir, "node", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var dir = volume.ContainerDir;
             int containerDebugPort = 8080;

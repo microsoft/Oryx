@@ -26,13 +26,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.Platform,
             CommandOptionType.SingleValue,
-            Description = "The name of the programming platform, e.g. 'nodejs'.")]
+            Description = "The name of the programming platform, e.g. 'node'.")]
         public string PlatformName { get; set; }
 
         [Option(
             OptionTemplates.PlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.")]
+            Description = "The version of the platform to run the application on, e.g. '10' for node.")]
         public string PlatformVersion { get; set; }
 
         [Option(

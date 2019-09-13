@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "node-mssql";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var hostDir = Path.Combine(_hostSamplesDir, "node", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { volume },
                 Settings.BuildImageName,
                 "oryx",
-                new[] { "build", appDir, "-l", "nodejs", "--language-version", "10.14" },
+                new[] { "build", appDir, "-l", "node", "--language-version", "10.14" },
                 "oryxdevmcr.azurecr.io/public/oryx/node-10.14",
                 GetEnvironmentVariables(),
                 ContainerPort,

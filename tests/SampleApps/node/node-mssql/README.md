@@ -75,7 +75,7 @@ This RUN command will update all the installed packages in the image, install th
 RUN apt-get -y update  && \
         apt-get install -y curl && \
         curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
-        apt-get install -y nodejs
+        apt-get install -y node
 ```
 
 This installs the tedious driver for SQL Server which allows node applications to connect to SQL Server and run SQL commands.  This is an open source project to which Microsoft is now one of the main contributors.

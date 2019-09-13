@@ -33,7 +33,7 @@ function test-repo() {
     local repo_path=${1:-"$(pwd)"}
     local host_port=${2:-"8080"}
     local container_port=${3:-"8080"}
-    local runtime=${4:-"nodejs"}
+    local runtime=${4:-"node"}
     local start_script=${5:-""}
 
     DOCKER_FLAGS=''
@@ -51,7 +51,7 @@ function test-repo() {
 
     # run
     case $runtime in
-        nodejs)
+        node)
             RUN_IMAGE="${RUN_IMAGE_NODEJS}"
             ;;
         python)

@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Fact]
         public async Task NodeApp_PostgreSqlDB()
         {
-            await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-postgres"));
+            await RunTestAsync("node", "10.14", Path.Combine(HostSamplesDir, "node", "node-postgres"));
         }
 
         [Fact]

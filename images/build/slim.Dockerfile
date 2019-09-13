@@ -113,7 +113,7 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d $NODE8_VERSION \
  && ~/n/bin/n -d $NODE10_VERSION \
- && mv /usr/local/n/versions/node /opt/nodejs \
+ && mv /usr/local/n/versions/node /opt/node \
  && rm -rf /usr/local/n ~/n
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
@@ -133,11 +133,11 @@ RUN set -ex \
 
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
- && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
- && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s 10 /opt/nodejs/lts
+ && ln -s $NODE8_VERSION /opt/node/$NODE8_MAJOR_MINOR_VERSION \
+ && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/node/8 \
+ && ln -s $NODE10_VERSION /opt/node/$NODE10_MAJOR_MINOR_VERSION \
+ && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/node/10 \
+ && ln -s 10 /opt/node/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \
  && ln -s 6.9 /opt/npm/6 \
@@ -150,7 +150,7 @@ RUN set -ex \
  && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
 RUN set -ex \
  && mkdir -p /links \
- && cp -s /opt/nodejs/lts/bin/* /links \
+ && cp -s /opt/node/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
 ###

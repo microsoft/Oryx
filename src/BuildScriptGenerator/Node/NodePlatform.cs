@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _environment = environment;
         }
 
-        public string Name => NodeConstants.NodeJsName;
+        public string Name => NodeConstants.NodeName;
 
         public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
 

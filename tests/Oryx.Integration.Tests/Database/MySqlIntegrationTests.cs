@@ -27,9 +27,9 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task NodeApp_MySqlDB(string buildImageName)
         {
             await RunTestAsync(
-                "nodejs",
+                "node",
                 NodeVersions.Node10MajorMinorVersion,
-                Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
+                Path.Combine(HostSamplesDir, "node", "node-mysql"),
                 buildImageName: buildImageName);
         }
 

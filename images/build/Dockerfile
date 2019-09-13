@@ -126,40 +126,40 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && ~/n/bin/n -d 10.14.2 \
  && ~/n/bin/n -d $NODE6_VERSION \
  && ~/n/bin/n -d $NODE12_VERSION \
- && mv /usr/local/n/versions/node /opt/nodejs \
+ && mv /usr/local/n/versions/node /opt/node \
  && rm -rf /usr/local/n ~/n
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
 RUN /tmp/scripts/installNpm.sh
 
 RUN set -ex \
- && ln -s 4.4.7 /opt/nodejs/4.4 \
- && ln -s 4.5.0 /opt/nodejs/4.5 \
- && ln -s 4.8.0 /opt/nodejs/4.8 \
- && ln -s 4.8 /opt/nodejs/4 \
- && ln -s 6.2.2 /opt/nodejs/6.2 \
- && ln -s 6.6.0 /opt/nodejs/6.6 \
- && ln -s 6.9.3 /opt/nodejs/6.9 \
- && ln -s 6.10.3 /opt/nodejs/6.10 \
- && ln -s 6.11.0 /opt/nodejs/6.11 \ 
- && ln -s 8.0.0 /opt/nodejs/8.0 \
- && ln -s 8.1.4 /opt/nodejs/8.1 \
- && ln -s 8.2.1 /opt/nodejs/8.2 \
- && ln -s 8.8.1 /opt/nodejs/8.8 \
- && ln -s 8.9.4 /opt/nodejs/8.9 \
- && ln -s 8.11.2 /opt/nodejs/8.11 \
- && ln -s 8.12.0 /opt/nodejs/8.12 \
- && ln -s 8.15.1 /opt/nodejs/8.15 \
- && ln -s 9.4.0 /opt/nodejs/9.4 \
- && ln -s 9.4 /opt/nodejs/9 \
- && ln -s 10.1.0 /opt/nodejs/10.1 \
- && ln -s 10.10.0 /opt/nodejs/10.10 \
- && ln -s 10.14.2 /opt/nodejs/10.14 \
+ && ln -s 4.4.7 /opt/node/4.4 \
+ && ln -s 4.5.0 /opt/node/4.5 \
+ && ln -s 4.8.0 /opt/node/4.8 \
+ && ln -s 4.8 /opt/node/4 \
+ && ln -s 6.2.2 /opt/node/6.2 \
+ && ln -s 6.6.0 /opt/node/6.6 \
+ && ln -s 6.9.3 /opt/node/6.9 \
+ && ln -s 6.10.3 /opt/node/6.10 \
+ && ln -s 6.11.0 /opt/node/6.11 \ 
+ && ln -s 8.0.0 /opt/node/8.0 \
+ && ln -s 8.1.4 /opt/node/8.1 \
+ && ln -s 8.2.1 /opt/node/8.2 \
+ && ln -s 8.8.1 /opt/node/8.8 \
+ && ln -s 8.9.4 /opt/node/8.9 \
+ && ln -s 8.11.2 /opt/node/8.11 \
+ && ln -s 8.12.0 /opt/node/8.12 \
+ && ln -s 8.15.1 /opt/node/8.15 \
+ && ln -s 9.4.0 /opt/node/9.4 \
+ && ln -s 9.4 /opt/node/9 \
+ && ln -s 10.1.0 /opt/node/10.1 \
+ && ln -s 10.10.0 /opt/node/10.10 \
+ && ln -s 10.14.2 /opt/node/10.14 \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
- && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
- && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12
+ && ln -s $NODE6_VERSION /opt/node/$NODE6_MAJOR_MINOR_VERSION \ 
+ && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/node/6 \
+ && ln -s $NODE12_VERSION /opt/node/$NODE12_MAJOR_MINOR_VERSION \
+ && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/node/12
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -237,7 +237,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
-RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh node       /opt/startupcmdgen/node
 RUN ./build.sh php        /opt/startupcmdgen/php
 RUN ./build.sh python     /opt/startupcmdgen/python
 ###

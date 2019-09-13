@@ -5,8 +5,8 @@ A barebones Node.js app using Express 4
 ## Running Locally
 
 ```sh
-cd \Oryx\tests\SampleApps\nodejs\webfrontend
-npm install
+cd \Oryx\tests\SampleApps\node\webfrontend-yarnlock
+yarn install
 node server.js
 ```
 
@@ -25,8 +25,8 @@ Error: listen EACCES 0.0.0.0:80
     at Server.setupListenHandle [as _listen2] (net.js:1338:19)
     at listenInCluster (net.js:1396:12)
     at Server.listen (net.js:1480:7)
-    at Function.listen (c:\repo\Oryx\tests\SampleApps\nodejs\webfrontend\node_modules\express\lib\application.js:618:24)
-    at Object.<anonymous> (c:\repo\Oryx\tests\SampleApps\nodejs\webfrontend\server.js:14:18)
+    at Function.listen (c:\repo\Oryx\tests\SampleApps\node\webfrontend\node_modules\express\lib\application.js:618:24)
+    at Object.<anonymous> (c:\repo\Oryx\tests\SampleApps\node\webfrontend\server.js:14:18)
     at Module._compile (module.js:652:30)
     at Object.Module._extensions..js (module.js:663:10)
     at Module.load (module.js:565:32)

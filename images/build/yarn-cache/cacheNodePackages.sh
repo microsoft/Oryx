@@ -34,7 +34,7 @@ function installPackage() {
 # let packageRE = "([@/a-zA-Z-_]+),?([~^><=0-9]{0,2}[0-9.]*[-]?.*)";
 # traces
 # | where timestamp > ago(30d)
-# | where message startswith prefix and customDimensions["platform"] == "nodejs"
+# | where message startswith prefix and customDimensions["platform"] == "node"
 # | project Package = substring(message, strlen(prefix)), 
 #           customDimensions,
 #           PackageName = extract(packageRE, 1, substring(message, strlen(prefix))),
@@ -156,7 +156,7 @@ for pkg in \
     @angular/forms@~7.2.0 \
     @angular/platform-browser@~7.2.0 \
     @angular/platform-browser-dynamic@~7.2.0 \
-    bcrypt-nodejs@0.0.3 \
+    bcrypt-node@0.0.3 \
     redux-thunk@^2.3.0 \
     react-scripts@2.1.5 \
     jsonwebtoken@^8.3.0 \

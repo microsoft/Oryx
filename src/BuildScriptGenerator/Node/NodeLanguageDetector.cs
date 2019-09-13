@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                 return new LanguageDetectorResult
                 {
-                    Language = NodeConstants.NodeJsName,
+                    Language = NodeConstants.NodeName,
                     LanguageVersion = nodeVersion,
                 };
             }
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 if (string.IsNullOrWhiteSpace(nodeVersion))
                 {
                     var exc = new UnsupportedVersionException(
-                        NodeConstants.NodeJsName,
+                        NodeConstants.NodeName,
                         nodeVersionRange,
                         _versionProvider.SupportedNodeVersions);
                     _logger.LogError(exc, "Exception caught");

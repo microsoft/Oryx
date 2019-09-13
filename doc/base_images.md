@@ -46,5 +46,5 @@ specific runtimes are described in their documentation.
 Runtimes and versions supported by Oryx are listed in [the main
 README](../README.md#supported-runtimes).
 
-[Node.js]: https://github.com/nodejs/docker-node
+[Node.js]: https://github.com/node/docker-node
 [Python]: https://github.com/docker-library/python
