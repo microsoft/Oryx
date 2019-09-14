@@ -8,12 +8,24 @@ using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class PhpImageTest : TestBase
+    public class PhpSampleAppsTestBase : SampleAppsTestBase
+    {
+        public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
+
+        public PhpSampleAppsTestBase(ITestOutputHelper output) : base(output)
+        {
+        }
+    }
+
+    public class PhpImageTest : PhpSampleAppsTestBase
     {
         public PhpImageTest(ITestOutputHelper output) : base(output)
         {
@@ -63,6 +75,82 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
+        }
+
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public void Apache_IsConfigured_For_PHP(string imageTag)
+        {
+            // Arrange
+            var appName = "imagick-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = CreateSampleAppVolume(hostDir);
+            var appDir = volume.ContainerDir;
+
+
+            var testSiteConfigApache2 =
+                @"<VirtualHost *:80>
+                    ServerAdmin php-x@localhost
+                    DocumentRoot /var/www/php-x
+                    ServerName php-x.com
+                    ServerAlias www.php-x.com
+                    ErrorLog ${ APACHE_LOG_DIR}/ error.log
+                    CustomLog ${ APACHE_LOG_DIR}/ access.log combined
+                  </VirtualHost>";
+
+            var script = new ShellScriptBuilder()
+                .AddCommand("mkdir -p /var/www/php-x")
+                .AddCommand("echo -e '<? php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
+                .AddCommand("sed -ri -e 's!${APACHE_DOCUMENT_ROOT}!/var/www/html!g' /etc/apache2/sites-available/*.conf")
+                .AddCommand("sed -ri -e 's!${APACHE_DOCUMENT_ROOT}!/var/www/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf")
+                .AddCommand("sed -ri -e 's!<VirtualHost *:${APACHE_PORT}>!<VirtualHost \*:80>!g' /etc/apache2/sites-available/*.conf")
+                .AddCommand("sed -ri -e 's!<VirtualHost _default_:${APACHE_PORT}>!<VirtualHost _default_:443>!g' /etc/apache2/sites-available/*.conf")
+                .AddCommand("sed - ri - e 's!Listen ${APACHE_PORT}!Listen 80!g' /etc/apache2/ports.conf")
+                .AddCommand("echo -e '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf")
+                .AddCommand("a2ensite php-x.conf")
+                .AddCommand("service apache2 restart")
+                .ToString();
+
+            //var result = _dockerCli.Run(new DockerRunArguments
+            //{
+            //    ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+            //    CommandToExecuteOnRun = "/bin/bash",
+            //    CommandArguments = new[] { "-c", script }
+            //});
+
+            // Assert
+            var task = Task.Run(async() => await 
+                EndToEndTestHelper.RunAndAssertAppAsync(
+                    $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+                    _output,
+                    new[] { volume }, 
+                    null, 
+                    ContainerPort,
+                    null,
+                    "/bin/bash",
+                    new[] { "-c", script },
+                    async (hostPort) =>
+                    {
+                       string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                       Assert.Equal("64x64", imagickOutput);
+                    },
+                    _dockerCli
+                 ));
+
+            var result = task.ConfigureAwait(true);
+
+            var output = result.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("mcrypt", output);
+            },
+                result.GetDebugInfo());
+
         }
 
         [Theory]

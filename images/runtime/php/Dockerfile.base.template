@@ -15,7 +15,7 @@ RUN sed -ri -e 's!<VirtualHost \*:80>!<VirtualHost *:${APACHE_PORT}>!g' /etc/apa
 RUN sed -ri -e 's!<VirtualHost _default_:443>!<VirtualHost _default_:${APACHE_PORT}>!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!Listen 80!Listen ${APACHE_PORT}!g' /etc/apache2/ports.conf
 # Edit Configuration to instruct Apache on how to process PHP files
-RUN echo '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$"> SetHandler application/x-httpd-php </FilesMatch>' >> /etc/apache2/apache2.conf
+RUN echo -e '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">\n SetHandler application/x-httpd-php\n </FilesMatch>' >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
 RUN apt-get update \
