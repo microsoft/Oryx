@@ -115,16 +115,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             //var logConfig = @"sed - i - e 's!\${APACHE_LOG_DIR}!/var/www/!g' / etc / apache2 / apache2.conf / etc / apache2 / conf - available/*.conf /etc/apache2/sites-available/*.conf";
             var script = new ShellScriptBuilder()
                 .AddCommand("mkdir -p /var/www/php-x")
-                .AddCommand("echo -e '' >> /var/www/php-x/error.log")
-                .AddCommand("echo -e '' >> /var/www/php-x/access.log")
+                .AddCommand("echo -e '' > /var/www/php-x/error.log")
+                .AddCommand("echo -e '' > /var/www/php-x/access.log")
                 .AddCommand("echo -e '<?php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
                 .AddCommand(documentRootConfig)
                 .AddCommand(portConfig)
                 .AddCommand("echo -e '\nServerName localhost' >> /etc/apache2/apache2.conf")
                 .AddCommand("echo -e '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf")
                 .AddCommand("a2ensite php-x.conf")
-                .AddCommand("service apache2 reload")
                 .AddCommand("service apache2 start")
+                //.AddCommand("service apache2 restart")
                 .ToString();
 
             // Assert
