@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var testSiteConfigApache2 =
                 @"<VirtualHost *:80>
                     ServerAdmin php-x@localhost
-                    DocumentRoot /var/www/php-x
+                    DocumentRoot /var/www/php-x/
                     ServerName php-x.com
                     ServerAlias www.php-x.com
                     
@@ -106,12 +106,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                         Require all granted
                     </Directory>
 
-                    ErrorLog /var/www/error.log
-                    CustomLog /var/www/access.log combined
+                    ErrorLog /var/www/php-x/error.log
+                    CustomLog /var/www/php-x/access.log combined
                   </VirtualHost>";
 
             var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + ContainerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
-            var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
+            var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/php-x/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
             //var logConfig = @"sed - i - e 's!\${APACHE_LOG_DIR}!/var/www/!g' / etc / apache2 / apache2.conf / etc / apache2 / conf - available/*.conf /etc/apache2/sites-available/*.conf";
             var script = new ShellScriptBuilder()
                 .AddCommand("mkdir -p /var/www/php-x")
@@ -120,9 +120,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand("echo -e '<?php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
                 .AddCommand(documentRootConfig)
                 .AddCommand(portConfig)
-                .AddCommand("echo -e '\n\n ServerName localhost' >> /etc/apache2/apache2.conf")
+                .AddCommand("echo -e '\nServerName localhost' >> /etc/apache2/apache2.conf")
                 .AddCommand("echo -e '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf")
                 .AddCommand("a2ensite php-x.conf")
+                .AddCommand("service apache2 reload")
                 .AddCommand("service apache2 start")
                 .ToString();
 
