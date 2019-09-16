@@ -93,38 +93,38 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var testSiteConfigApache2 =
                 @"<VirtualHost *:80>
-                    ServerAdmin php-x@localhost
-                    DocumentRoot /var/www/php-x/
-                    ServerName php-x.com
-                    ServerAlias www.php-x.com
+                    \nServerAdmin php-x@localhost
+                    \nDocumentRoot /var/www/php-x/
+                    \nServerName localhost
+                    \nServerAlias www.php-x.com
                     
-                    <Directory />
-                        Options FollowSymLinks
-                        AllowOverride None
-                    </Directory>
-                    <Directory /var/www/x/>
+                    \n<Directory />
+                    \n    Options FollowSymLinks
+                    \n    AllowOverride None
+                    \n</Directory>
+                    \n<Directory /var/www/php-x/>
                         Require all granted
-                    </Directory>
+                    \n</Directory>
 
-                    ErrorLog /var/www/php-x/error.log
-                    CustomLog /var/www/php-x/access.log combined
+                    \nErrorLog /var/www/php-x/error.log
+                    \nCustomLog /var/www/php-x/access.log combined
                   </VirtualHost>";
 
+            var customSiteConfig = @"echo '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf";
             var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + ContainerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
             var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/php-x/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
-            //var logConfig = @"sed - i - e 's!\${APACHE_LOG_DIR}!/var/www/!g' / etc / apache2 / apache2.conf / etc / apache2 / conf - available/*.conf /etc/apache2/sites-available/*.conf";
             var script = new ShellScriptBuilder()
                 .AddCommand("mkdir -p /var/www/php-x")
                 .AddCommand("echo -e '' > /var/www/php-x/error.log")
                 .AddCommand("echo -e '' > /var/www/php-x/access.log")
                 .AddCommand("echo -e '<?php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
+                .AddCommand("chmod -R +x /var/www/php-x")
                 .AddCommand(documentRootConfig)
                 .AddCommand(portConfig)
-                .AddCommand("echo -e '\nServerName localhost' >> /etc/apache2/apache2.conf")
-                .AddCommand("echo -e '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf")
+                .AddCommand("echo 'ServerName localhost' >> /etc/apache2/apache2.conf")
+                .AddCommand(customSiteConfig)
                 .AddCommand("a2ensite php-x.conf")
-                .AddCommand("service apache2 start")
-                //.AddCommand("service apache2 restart")
+                .AddCommand("service apache2 restart")
                 .ToString();
 
             // Assert
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 runArgs: new[] { "-c", script },
                 assertAction: async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/php-x/");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/php-x/inDex.PhP");
                     Assert.DoesNotContain("<?", data);
                 },
                 dockerCli: _dockerCli);
