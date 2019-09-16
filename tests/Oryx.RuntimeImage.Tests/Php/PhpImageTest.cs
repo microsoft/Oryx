@@ -10,25 +10,32 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class PhpSampleAppsTestBase : SampleAppsTestBase
+    public class PhpTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
     {
+        public readonly string _hostSamplesDir;
+        public readonly string _tempRootDir;
+        public readonly HttpClient _httpClient = new HttpClient();
+
         public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
-        public PhpSampleAppsTestBase(ITestOutputHelper output) : base(output)
+        public PhpTestBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
         {
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
     }
 
-    public class PhpImageTest : PhpSampleAppsTestBase
+    public class PhpImageTest : PhpTestBase
     {
-        public PhpImageTest(ITestOutputHelper output) : base(output)
+        public PhpImageTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output, testTempDirTestFixture)
         {
         }
 
@@ -110,8 +117,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     \nCustomLog /var/www/php-x/access.log combined
                   </VirtualHost>";
 
+            int containerPort = 80;
             var customSiteConfig = @"echo '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf";
-            var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + ContainerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
+            var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + containerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
             var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/php-x/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
             var script = new ShellScriptBuilder()
                 .AddCommand("mkdir -p /var/www/php-x")
@@ -133,7 +141,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
-                port: ContainerPort,
+                port: containerPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", script },
