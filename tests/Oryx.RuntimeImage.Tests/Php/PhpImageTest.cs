@@ -117,22 +117,23 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     \nCustomLog /var/www/php-x/access.log combined
                   </VirtualHost>";
 
-            int containerPort = 80;
+            int containerPort = 8080;
             var customSiteConfig = @"echo '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf";
             var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + containerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
             var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/php-x/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
             var script = new ShellScriptBuilder()
                 .AddCommand("mkdir -p /var/www/php-x")
-                .AddCommand("echo -e '' > /var/www/php-x/error.log")
-                .AddCommand("echo -e '' > /var/www/php-x/access.log")
-                .AddCommand("echo -e '<?php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
+                .AddCommand("echo '' > /var/www/php-x/error.log")
+                .AddCommand("echo '' > /var/www/php-x/access.log")
+                .AddCommand("echo '<?php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
                 .AddCommand("chmod -R +x /var/www/php-x")
                 .AddCommand(documentRootConfig)
                 .AddCommand(portConfig)
                 .AddCommand("echo 'ServerName localhost' >> /etc/apache2/apache2.conf")
                 .AddCommand(customSiteConfig)
-                .AddCommand("a2ensite php-x.conf")
-                .AddCommand("service apache2 restart")
+                .AddCommand("a2ensite php-x.conf") // load custom site
+                .AddCommand("service apache2 restart") // start apache with the custom site configuration
+                .AddCommand("tail -f /dev/null") //foreground process to keep the container alive
                 .ToString();
 
             // Assert
@@ -147,8 +148,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 runArgs: new[] { "-c", script },
                 assertAction: async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/php-x/inDex.PhP");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/inDex.PhP");
                     Assert.DoesNotContain("<?", data);
+                    Assert.DoesNotContain("<?php", data);
+                    Assert.DoesNotContain("?>", data);
                 },
                 dockerCli: _dockerCli);
         }
