@@ -1,4 +1,8 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 set -ex
 
@@ -7,7 +11,7 @@ VERSION="$2"
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 platformDir="/opt/$PLATFORM_NAME"
 targetDir="$platformDir/$VERSION"
-ORYX_BLOB_URL_BASE="https://oryxsdks.blob.core.windows.net/sdks"
+ORYX_BLOB_URL_BASE="https://oryxsdksdev.blob.core.windows.net/$PLATFORM_NAME"
 
 echo
 echo "Installing $PLATFORM_NAME version '$VERSION'..."

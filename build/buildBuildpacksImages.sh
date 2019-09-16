@@ -6,15 +6,7 @@
 
 set -e
 
-# Enables running from within other scripts that already declared $REPO_DIR
-if [ -z "$REPO_DIR" ]; then
-	declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-fi
-
-# Enables running from within other scripts that already sourced __variables.sh
-if [ -z "$__REPO_DIR" ]; then
-	source $REPO_DIR/build/__variables.sh
-fi
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 if [ -n "$BUILD_BUILDIMAGES_USING_NOCACHE" ]; then
 	echo

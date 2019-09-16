@@ -4,13 +4,13 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
 echo
 
-ORYX_BLOB_URL_BASE="https://oryxsdks.blob.core.windows.net/sdks"
+ORYX_BLOB_URL_BASE="https://oryxsdksdev.blob.core.windows.net/dotnet"
 DOTNET_SDK_URL=$ORYX_BLOB_URL_BASE/dotnet-$DOTNET_SDK_VER.tar.gz
 
 curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz

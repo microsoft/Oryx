@@ -1,25 +1,31 @@
 #!/bin/bash
 set -e
 
-declare -r __REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+# Since this file is expected to be 'sourced' from any script under any folder in this repo, 
+# we cannot get the repo directory from this file itself and instead rely on the parent script
+# which does the sourcing.
+if [ -z "$REPO_DIR" ]; then
+    "The variable 'REPO_DIR' cannot be empty. It should point to repo root."
+    exit 1
+fi
 
 # VSTS environment variables
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r BUILD_CONFIGURATION="${BUILDCONFIGURATION:-Debug}"
 
-declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$__REPO_DIR/"
-declare -r BUILD_IMAGES_DOCKERFILE="$__REPO_DIR/images/build/Dockerfile"
-declare -r BUILD_IMAGES_SLIM_DOCKERFILE="$__REPO_DIR/images/build/slim.Dockerfile"
-declare -r PACK_IMAGE_DOCKERFILE="$__REPO_DIR/images/pack-builder/pack-runner.Dockerfile"
-declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$__REPO_DIR/tests/images/build/Dockerfile"
-declare -r ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE="$__REPO_DIR/tests/images/build/slim.Dockerfile"
-declare -r RUNTIME_IMAGES_SRC_DIR="$__REPO_DIR/images/runtime"
+declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$REPO_DIR/"
+declare -r BUILD_IMAGES_DOCKERFILE="$REPO_DIR/images/build/Dockerfile"
+declare -r BUILD_IMAGES_SLIM_DOCKERFILE="$REPO_DIR/images/build/slim.Dockerfile"
+declare -r PACK_IMAGE_DOCKERFILE="$REPO_DIR/images/pack-builder/pack-runner.Dockerfile"
+declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/Dockerfile"
+declare -r ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/slim.Dockerfile"
+declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
-declare -r SOURCES_SRC_DIR="$__REPO_DIR/src"
-declare -r TESTS_SRC_DIR="$__REPO_DIR/tests"
+declare -r SOURCES_SRC_DIR="$REPO_DIR/src"
+declare -r TESTS_SRC_DIR="$REPO_DIR/tests"
 
-declare -r ARTIFACTS_DIR="$__REPO_DIR/artifacts"
+declare -r ARTIFACTS_DIR="$REPO_DIR/artifacts"
 declare -r BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images.txt"
 declare -r BASE_IMAGES_ARTIFACTS_FILE_PREFIX="$ARTIFACTS_DIR/images"
 declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.txt"

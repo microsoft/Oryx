@@ -1,9 +1,15 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 set -ex
 
 version="$1"
 
+# Certain versions (ex: 6.4.1) of NPM have issues installing native modules
+# like 'grpc', so upgrading them to a version whch we know works.
 upgradeNpm() {
     local node_ver="$1"
 

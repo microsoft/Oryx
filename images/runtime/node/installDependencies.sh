@@ -11,8 +11,13 @@ set -ex
 mkdir -p /node_modules
 chmod 777 /node_modules
 
+# Certain versions (ex: 6.4.1) of NPM have issues installing native modules
+# like 'grpc', so upgrading them to a version whch we know works.
 npm_ver=$(npm --version)
-if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then
+IFS='.' read -ra versionParts <<< "$npm_ver"
+majorPart="${versionParts[0]}"
+minorPart="${versionParts[1]}"
+if [ "$majorPart" -eq "6" ] && [ "$minorPart" -lt "9" ] ; then
     echo "Upgrading npm version from $npm_ver to 6.9.0";
     npm install -g npm@6.9.0;
 fi
