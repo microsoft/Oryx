@@ -125,6 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _logger.LogDebug("{platformName} has been disabled", p.Name);
                     return false;
                 }
+
                 return true;
             });
 
@@ -336,6 +337,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
+                OsPackagesToInstall = context.RequiredOsPackages ?? new string[0],
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildCommand = preBuildCommand,
@@ -345,6 +347,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ManifestFileName = FilePaths.BuildManifestFileName,
                 ManifestDir = context.ManifestDir,
                 BuildProperties = buildProperties,
+                BenvPath = FilePaths.Benv,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

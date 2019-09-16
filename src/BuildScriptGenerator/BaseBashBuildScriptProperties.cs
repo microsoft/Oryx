@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -21,7 +22,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IEnumerable<string> BuildScriptSnippets { get; set; }
 
         /// <summary>
-        /// Gets or sets the the pre build script content
+        /// Gets or sets a list of OS packages that shuld be installed for this build.
+        /// </summary>
+        [NotNull]
+        public string[] OsPackagesToInstall { get; set; } = new string[0];
+
+        /// <summary>
+        /// Gets or sets the the pre-build script content.
         /// </summary>
         public string PreBuildCommand { get; set; }
 
@@ -31,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BenvArgs { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the post build script content.
+        /// Gets or sets the path to the post-build script content.
         /// </summary>
         public string PostBuildCommand { get; set; }
 
@@ -54,5 +61,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the path to the directory where the manifest file needs to be put.
         /// </summary>
         public string ManifestDir { get; set; }
+
+        /// <summary>
+        /// Gets or set the path to benv file.
+        /// </summary>
+        public string BenvPath { get; set; }
     }
 }

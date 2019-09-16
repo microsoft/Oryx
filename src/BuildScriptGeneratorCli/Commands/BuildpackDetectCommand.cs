@@ -82,6 +82,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 manifestDir: null,
                 platform: null,
                 platformVersion: null,
+                shouldPackage: false,
+                requiredOsPackages: null,
                 scriptOnly: false,
                 properties: null);
         }

@@ -13,8 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     [Checker(NodeConstants.NodeToolName)]
     public class NodePackageScriptsChecker : IChecker
     {
-        public static readonly Regex NpmGlobalPattern =
-            new Regex(@"\bnpm[^&|;#]+\s\-?\-g(lobal)?\b");
+        public static readonly Regex NpmGlobalPattern = new Regex(@"\bnpm[^&|;#]+\s\-?\-g(lobal)?\b");
 
         private readonly IEnvironment _env;
 

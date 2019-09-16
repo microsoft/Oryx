@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
                 }
 
-                if (scriptsNode["build:azure"] != null)
+                if (scriptsNode["build:azure"] != null && !ctx.IsPackage)
                 {
                     runBuildAzureCommand = string.Format(
                         NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
@@ -138,20 +138,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
 
-            var scriptProps = new NodeBashBuildSnippetProperties(
-                packageInstallCommand: packageInstallCommand,
-                runBuildCommand: runBuildCommand,
-                runBuildAzureCommand: runBuildAzureCommand,
-                hasProductionOnlyDependencies: hasProductionOnlyDependencies,
-                productionOnlyPackageInstallCommand: productionOnlyPackageInstallCommand,
-                compressNodeModulesCommand: compressNodeModulesCommand,
-                compressedNodeModulesFileName: compressedNodeModulesFileName,
-                configureYarnCache: configureYarnCache,
-                pruneDevDependencies: pruneDevDependencies,
-                appInsightsInjectCommand: appInsightsInjectCommand,
-                appInsightsPackageName: NodeConstants.NodeAppInsightsPackageName,
-                appInsightsLoaderFileName: NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
-                packageInstallerVersionCommand: packageInstallerVersionCommand);
+            var scriptProps = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = packageInstallCommand,
+                NpmRunBuildCommand = runBuildCommand,
+                NpmRunBuildAzureCommand = runBuildAzureCommand,
+                HasProductionOnlyDependencies = hasProductionOnlyDependencies,
+                ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand,
+                CompressNodeModulesCommand = compressNodeModulesCommand,
+                CompressedNodeModulesFileName = compressedNodeModulesFileName,
+                ConfigureYarnCache = configureYarnCache,
+                PruneDevDependencies = pruneDevDependencies,
+                AppInsightsInjectCommand = appInsightsInjectCommand,
+                AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
+                AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
+                PackageInstallerVersionCommand = packageInstallerVersionCommand,
+                RunNpmPack = ctx.IsPackage,
+            };
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
@@ -229,7 +232,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
 
             // If the node modules folder is being packaged in a file, we don't copy it to the output
-            if (GetNodeModulesPackOptions(ctx, out string compressCommand, out string compressedFileName))
+            if (GetNodeModulesPackOptions(ctx, out _, out string compressedFileName))
             {
                 dirs.Add(NodeConstants.NodeModulesDirName);
             }

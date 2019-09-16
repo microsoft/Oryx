@@ -9,6 +9,6 @@ namespace Microsoft.Oryx.Common
         public const string RunScriptGeneratorDir = "/opt/startupcmdgen";
         public const string NodeAppInsightsLoaderFileName = "oryx-appinsightsloader.js";
         public const string Bash = "/bin/bash";
-        public const string Benv = "/usr/local/bin/benv";
+        public const string Benv = "/opt/oryx/defaultversions/benv";
     }
 }

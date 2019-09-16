@@ -58,9 +58,13 @@ echo "Destination directory: $DESTINATION_DIR"
 echo
 
 {{ if BenvArgs | IsNotBlank }}
-if [ -f /usr/local/bin/benv ]; then
-	source /usr/local/bin/benv {{ BenvArgs }}
+if [ -f {{ BenvPath }} ]; then
+	source {{ BenvPath }} {{ BenvArgs }}
 fi
+{{ end }}
+
+{{ if !OsPackagesToInstall.empty? }}
+apt-get update && apt-get install --yes --no-install-recommends {{ for PackageName in OsPackagesToInstall }}{{ PackageName }} {{ end }}
 {{ end }}
 
 # Export these variables so that they are available for the pre and post build scripts.

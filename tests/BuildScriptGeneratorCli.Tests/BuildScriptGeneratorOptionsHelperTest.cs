@@ -37,6 +37,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 manifestDir: ".",
                 platform: null,
                 platformVersion: null,
+                shouldPackage: false,
+                requiredOsPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -66,6 +68,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 manifestDir: providedPath,
                 platform: null,
                 platformVersion: null,
+                shouldPackage: false,
+                requiredOsPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -92,6 +96,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 manifestDir: absolutePath,
                 platform: null,
                 platformVersion: null,
+                shouldPackage: false,
+                requiredOsPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -119,6 +125,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 manifestDir: "..",
                 platform: null,
                 platformVersion: null,
+                shouldPackage: false,
+                requiredOsPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -148,6 +156,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 manifestDir: relativePath,
                 platform: null,
                 platformVersion: null,
+                shouldPackage: false,
+                requiredOsPackages: null,
                 scriptOnly: false,
                 properties: null);
 

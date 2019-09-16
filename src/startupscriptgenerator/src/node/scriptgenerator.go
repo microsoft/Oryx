@@ -46,10 +46,11 @@ const inspectParamVariableName = "ORYX_NODE_INSPECT_PARAM"
 
 // Checks if the application insights needs to be enabled for the current runtime
 func shouldApplicationInsightsBeConfigured() bool {
-	nodeAppInsightsKeyEnv := os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY")
-	nodeAppInsightsEnabledEnv := os.Getenv("APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED")
+	nodeAppInsightsKeyEnv := os.Getenv(consts.UserAppInsightsKeyEnv)
+	nodeAppInsightsEnabledEnv := os.Getenv(consts.UserAppInsightsEnableEnv)
 
-	if nodeAppInsightsKeyEnv != "" && strings.ToLower(nodeAppInsightsEnabledEnv) == "true" {
+	// Check if the application insights environment variables are present
+	if nodeAppInsightsKeyEnv != "" && nodeAppInsightsEnabledEnv != "" && nodeAppInsightsEnabledEnv != "disabled" {
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists..\n")
 		return true
 	}
@@ -75,13 +76,19 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 
 			return true;
 		}
-		if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_ENABLED === "true") {
-			appInsights
+
+		// Enable Telemetry only when Application Insight's env variables are correctly set by user
+		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + `) {
+			
+			if(process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled"){
+				
+				appInsights
 				.setup()
 				.setSendLiveMetrics(true)
 				.start();
 
-			appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
+				appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
+			}
 		}
 	}catch (e) {
 			console.log('Application Insights could not be automatically configured for this application'); 
@@ -130,7 +137,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("mkdir -p " + targetNodeModulesDir + "\n")
 		scriptBuilder.WriteString("echo Extracting modules...\n")
 		scriptBuilder.WriteString("$extractionCommand\n")
-		
+
 		// Some versions of node, in particular Node 4.8 and 6.2 according to our tests, do not find the node_modules
 		// folder at the root. To handle these versions, we also add /node_modules to the NODE_PATH directory.
 		scriptBuilder.WriteString("export NODE_PATH=\"" + targetNodeModulesDir + "\":$NODE_PATH\n")
@@ -229,7 +236,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		loaderFile := filepath.Join(gen.SourcePath, consts.NodeAppInsightsLoaderFileName)
 
 		if !common.FileExists(loaderFile) {
-			createApplicationInsightsLoaderFile(loaderFile)			
+			createApplicationInsightsLoaderFile(loaderFile)
 		}
 
 		var nodeOptions = "'--require ./" + consts.NodeAppInsightsLoaderFileName + " ' $NODE_OPTIONS"

@@ -21,6 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string manifestDir,
             string platform,
             string platformVersion,
+            bool shouldPackage,
+            string[] requiredOsPackages,
             bool scriptOnly,
             string[] properties)
         {
@@ -43,6 +45,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 options.ManifestDir = Path.GetFullPath(manifestDir);
             }
+
+            options.ShouldPackage = shouldPackage;
+
+            options.RequiredOsPackages = requiredOsPackages;
 
             options.ScriptOnly = scriptOnly;
 

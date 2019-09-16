@@ -43,12 +43,10 @@ The build image manifest is at
 [/images/build/Dockerfile](../images/build/Dockerfile). It is built and
 published via the Microsoft Container Registry (MCR) ([info][]) as
 `mcr.microsoft.com/oryx/build` and syndicated to Docker Hub as
-[index.docker.io/oryxprod/build:latest][]. Pull with `docker pull
+[https://hub.docker.com/_/microsoft-oryx-images][]. Pull with `docker pull
 mcr.microsoft.com/oryx/build:latest`.
 
 [info]: https://azure.microsoft.com/en-us/blog/microsoft-syndicates-container-catalog/
-[index.docker.io/oryxprod/build:latest]: https://hub.docker.com/r/oryxprod/build
-[index.docker.io/microsoft/oryx-build]: https://hub.docker.com/r/microsoft/oryx-build
 
 ### Startup script generators
 
@@ -77,8 +75,7 @@ official images released for a given platform.
 
 Each runtime image contains the startup script generator for its platform.
 
-The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;) and Docker Hub at
-<https://hub.docker.com/u/oryxprod>.
+The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
 
 ## Repo structure

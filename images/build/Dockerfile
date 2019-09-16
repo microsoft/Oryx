@@ -203,7 +203,7 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON38_VERSION /opt/python/3.8.0 \
  && ln -s $PYTHON38_VERSION /opt/python/3.8
 RUN set -ex \
- && cd /usr/local/bin \
+ && cd /opt/oryx/defaultversions \
  && cp -sn /opt/python/2/bin/* .
   
 # This stage is a no-op and exists to satisfy a pattern of building different
@@ -250,10 +250,10 @@ WORKDIR /
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-COPY --from=dotnet-install /usr/local/bin /usr/local/bin
+COPY --from=dotnet-install /usr/local/bin /opt/oryx/defaultversions
 
 # Make sure the alias 'python' always refers to Python 2 by default
-RUN cd /usr/local/bin \
+RUN cd /opt/oryx/defaultversions \
  && rm -f python \
  && ln -sf /opt/python/2/bin/python python
 
@@ -279,9 +279,7 @@ COPY --from=php73-build-base /opt /opt
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
- && ln -s /opt/php/lts/bin/php /usr/local/bin/php
-
-RUN rm -rf /tmp/scripts
+ && ln -s /opt/php/lts/bin/php /opt/oryx/defaultversions/php
 
 RUN rm -rf /tmp/scripts
 
