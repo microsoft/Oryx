@@ -15,7 +15,7 @@ nodePlatformDir="$REPO_DIR/platforms/node"
 builtNodeImage=false
 getNode() {
 	local version="$1"
-	local hostNodeArtifactsDir="$volumeHostDir/node"
+	local hostNodeArtifactsDir="$volumeHostDir/nodejs"
 	
 	if blobExists nodejs nodejs-$version.tar.gz; then
 		echo "Node version '$version' already present in blob storage. Skipping it..."
