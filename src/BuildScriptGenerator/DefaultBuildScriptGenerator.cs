@@ -156,6 +156,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     }
 
                     platformVersion = detectionResult.LanguageVersion;
+                    _logger.LogDebug(
+                        "Using user supplied platform {platformName} and detected version {platformVersion}.",
+                        userSuppliedPlatform,
+                        platformVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Using user supplied platform {platformName} and version {platformVersion}.",
+                        userSuppliedPlatform,
+                        platformVersion);
                 }
 
                 resultPlatforms.Add(Tuple.Create(userSuppliedPlatform, platformVersion));
