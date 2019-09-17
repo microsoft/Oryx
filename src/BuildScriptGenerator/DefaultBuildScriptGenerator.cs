@@ -157,15 +157,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                     platformVersion = detectionResult.LanguageVersion;
                     _logger.LogDebug(
+                        eventId: 100,
                         "Using user supplied platform {platformName} and detected version {platformVersion}.",
-                        userSuppliedPlatform,
+                        userSuppliedPlatform.Name,
                         platformVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
+                        eventId: 100,
                         "Using user supplied platform {platformName} and version {platformVersion}.",
-                        userSuppliedPlatform,
+                        userSuppliedPlatform.Name,
                         platformVersion);
                 }
 
