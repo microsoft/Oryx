@@ -39,7 +39,7 @@ getNode() {
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 	fi
 
-	echo "$version" >> "$targetDir/versions.txt"
+	echo "$version" >> "$hostNodeArtifactsDir/versions.txt"
 }
 
 echo "Getting Node Sdk..."
