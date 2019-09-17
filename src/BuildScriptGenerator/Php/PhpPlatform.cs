@@ -17,26 +17,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpPlatform : IProgrammingPlatform
     {
-        private readonly PhpScriptGeneratorOptions _pythonScriptGeneratorOptions;
-        private readonly IPhpVersionProvider _pythonVersionProvider;
+        private readonly PhpScriptGeneratorOptions _phpScriptGeneratorOptions;
+        private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
         private readonly PhpLanguageDetector _detector;
 
         public PhpPlatform(
-            IOptions<PhpScriptGeneratorOptions> pythonScriptGeneratorOptions,
-            IPhpVersionProvider pythonVersionProvider,
+            IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
+            IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
             PhpLanguageDetector detector)
         {
-            _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
-            _pythonVersionProvider = pythonVersionProvider;
+            _phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
+            _phpVersionProvider = phpVersionProvider;
             _logger = logger;
             _detector = detector;
         }
 
         public string Name => PhpConstants.PhpName;
 
-        public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPhpVersions;
+        public IEnumerable<string> SupportedVersions => _phpVersionProvider.SupportedPhpVersions;
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
         {
