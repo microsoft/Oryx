@@ -156,19 +156,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     }
 
                     platformVersion = detectionResult.LanguageVersion;
-                    _logger.LogDebug(
-                        LoggingEventID.UserSuppliedPlatformAndVersion,
-                        "Using user supplied platform {platformName} and detected version {platformVersion}.",
-                        userSuppliedPlatform.Name,
-                        platformVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        LoggingEventID.UserSuppliedPlatformAndDetectedVersion,
-                        "Using user supplied platform {platformName} and version {platformVersion}.",
-                        userSuppliedPlatform.Name,
-                        platformVersion);
                 }
 
                 resultPlatforms.Add(Tuple.Create(userSuppliedPlatform, platformVersion));
@@ -261,6 +248,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippets = new List<BuildScriptSnippet>();
 
             var platformsToUse = GetCompatiblePlatforms(context);
+
             foreach (Tuple<IProgrammingPlatform, string> platformAndVersion in platformsToUse)
             {
                 var (platform, targetVersionSpec) = platformAndVersion;
@@ -292,7 +280,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var snippet = platform.GenerateBashBuildScriptSnippet(context);
                 if (snippet != null)
                 {
-                    _logger.LogDebug("Platform {platformType} was used", platform.GetType());
+                    _logger.LogDebug(
+                        "Platform {platformName} with version {platformVersion} was used.",
+                        platform.Name,
+                        targetVersion);
                     snippets.Add(snippet);
                     platform.SetRequiredTools(context.SourceRepo, targetVersion, toolsToVersion);
                 }
