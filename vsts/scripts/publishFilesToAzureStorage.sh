@@ -11,11 +11,13 @@ storageAccount="$1"
 uploadFiles() {
     local platform="$1"
     local artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/platformSdks/$platform"
-    if ls "$artifactsDir/$platform-*.tar.gz" 1> /dev/null 2>&1; then
+    if ls "$artifactsDir/$platform-*.tar.gz"; then
+        echo "Uploading files under $artifactsDir..."
         az storage blob upload-batch \
             -s "$artifactsDir" \
             -d $platform \
-            --account-name $storageAccount
+            --account-name $storageAccount \
+            --pattern '*.*'
     fi
 }
 
