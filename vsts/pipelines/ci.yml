@@ -87,4 +87,23 @@ stages:
     jobs:
     - template: templates/_releaseJobTemplate.yml
 
+  - stage: Notify
+    displayName: Notify Failure stage
+    dependsOn: 
+    - Build
+    - Release
+    condition: >
+      and(failed(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), 
+      eq(variables['Build.Reason'],'Schedule' ))
+
+    jobs:
+    - job: FailureBug
+      displayName: Create Bug for CI Failure
+      
+      steps:
+      - task: ShellScript@2
+        displayName: Create Bug for CI failure
+        inputs:
+          scriptPath: ./vsts/scripts/notifyBuildFailure.sh
+
 trigger: none
