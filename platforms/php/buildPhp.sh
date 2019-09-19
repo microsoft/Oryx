@@ -29,6 +29,7 @@ buildPhp() {
 	local dockerFile="$4"
 	local imageName="oryx/php-sdk"
 	local targetDir="$volumeHostDir/php"
+	mkdir -p "$targetDir"
 
 	if blobExists php php-$version.tar.gz; then
 		echo "Php version '$version' already present in blob storage. Skipping building it..."
@@ -54,7 +55,6 @@ buildPhp() {
 			-t $imageName \
 			$REPO_DIR
 
-		mkdir -p "$targetDir"
 		getSdkFromImage $imageName "$targetDir"
 	fi
 

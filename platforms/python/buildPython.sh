@@ -30,6 +30,7 @@ buildPython() {
 	local dockerFile="$4"
 	local imageName="oryx/python"
 	local targetDir="$volumeHostDir/python"
+	mkdir -p "$targetDir"
 
 	if blobExists python python-$version.tar.gz; then
 		echo "Python version '$version' already present in blob storage. Skipping building it..."
@@ -60,7 +61,6 @@ buildPython() {
 			-t $imageName \
 			$REPO_DIR
 
-		mkdir -p "$targetDir"
 		getSdkFromImage $imageName "$targetDir"
 	fi
 

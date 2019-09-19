@@ -17,6 +17,7 @@ getDotNetCoreSdk() {
 	local sha="$2"
 	local downloadUrl="$3"
 	local targetDir="$volumeHostDir/dotnet"
+	mkdir -p "$targetDir"
 
 	if blobExists dotnet dotnet-$version.tar.gz; then
 		echo ".NET Core version '$version' already present in blob storage. Skipping it..."
@@ -38,7 +39,6 @@ getDotNetCoreSdk() {
 		curl -SL $downloadUrl --output "$downloadedFile"
 		echo "Verifying archive hash..."
 		echo "$sha $downloadedFile" | sha512sum -c -
-		mkdir -p "$targetDir"
 		cp -f "$downloadedFile" "$targetDir"
 		rm -rf /tmp/oryx-dotnetInstall
 	fi

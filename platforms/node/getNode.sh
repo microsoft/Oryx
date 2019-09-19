@@ -16,7 +16,8 @@ builtNodeImage=false
 getNode() {
 	local version="$1"
 	local hostNodeArtifactsDir="$volumeHostDir/nodejs"
-	
+	mkdir -p "$hostNodeArtifactsDir"
+
 	if blobExists nodejs nodejs-$version.tar.gz; then
 		echo "Node version '$version' already present in blob storage. Skipping it..."
 		echo
@@ -32,7 +33,6 @@ getNode() {
 			builtNodeImage=true
 		fi
 
-		mkdir -p "$hostNodeArtifactsDir"
 		docker run \
 			-v $hostNodeArtifactsDir:$volumeContainerDir \
 			$imageName \
