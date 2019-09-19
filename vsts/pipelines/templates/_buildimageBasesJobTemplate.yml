@@ -10,6 +10,7 @@ jobs:
   displayName: ${{ parameters.displayName }}
   timeoutInMinutes: 250
   steps:
+  - template: _cleanImageCacheTemplate.yml
 
   - task: ShellScript@2
     displayName: Build images

@@ -1,0 +1,6 @@
+steps:
+- script: |
+    docker ps -a
+    docker system prune -af
+    docker ps -a
+  displayName: 'Remove all existing docker images from machine'
