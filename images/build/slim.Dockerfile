@@ -207,10 +207,8 @@ FROM python AS final
 WORKDIR /
 
 ENV PATH=$PATH:/opt/oryx/defaultversions
-COPY images/build/prepEnv.sh /opt/oryx/defaultversions/prepEnv
 COPY images/build/benv.sh /opt/oryx/defaultversions/benv
 RUN chmod +x /opt/oryx/defaultversions/benv
-RUN chmod +x /opt/oryx/defaultversions/prepEnv
 RUN mkdir -p /usr/local/share/pip-cache/lib
 RUN chmod -R 777 /usr/local/share/pip-cache
 
