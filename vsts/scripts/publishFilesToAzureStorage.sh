@@ -18,7 +18,8 @@ uploadFiles() {
             -d $platform \
             --account-name $storageAccount \
             --metadata BuildNumber=$BUILD_BUILDNUMBER \
-            --metadata Commit=$commit
+            --metadata Commit=$commit \
+            --metadata Branch=$BUILD_SOURCEBRANCHNAME
     fi
 }
 
