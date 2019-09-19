@@ -6,6 +6,7 @@
 
 set -ex
 
+commit=$(git rev-parse HEAD)
 storageAccount="$1"
 
 uploadFiles() {
@@ -15,7 +16,9 @@ uploadFiles() {
         az storage blob upload-batch \
             -s "$artifactsDir" \
             -d $platform \
-            --account-name $storageAccount
+            --account-name $storageAccount \
+            --metadata BuildNumber=$BUILD_BUILDNUMBER \
+            --metadata Commit=$commit
     fi
 }
 
