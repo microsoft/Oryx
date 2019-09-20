@@ -45,7 +45,7 @@ extension is used. For example, if your app includes a file
 `dotnet-react.csproj`, it will be run with `dotnet run dotnet-react.dll`.
 
 The startup command can be set manually as described in
-[../configuration.md#startup-file](../configuration.md#startup=file).
+[`appservice.md`](../hosts/appservice.md#startup-file).
 
 # Version support
 
