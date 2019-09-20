@@ -11,7 +11,7 @@ container images directly from source without requiring your own Dockerfile.
 Just copy the generic [Dockerfile.oryx][] to your repo and register a
 one-time or recurring task with the following commands.
 
-[Azure Container Registry Tasks]: https://docs.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview
+[Azure Container Registry (ACR) Tasks]: https://docs.microsoft.com/en-us/azure/container-registry/container-registry-tasks-overview
 [Dockerfile.oryx]: https://github.com/microsoft/Oryx/blob/master/doc/hosts/Dockerfile.oryx
 
 ## Build once
