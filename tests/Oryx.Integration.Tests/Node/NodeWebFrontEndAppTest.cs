@@ -64,12 +64,13 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrue()
+        [Theory]
+        [InlineData("webfrontend")]
+        [InlineData("webfrontend-yarnlock")]
+        public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrue(string appName)
         {
             // Arrange
             var nodeVersion = "10";
-            var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -120,49 +121,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                .AddCommand(buildCommand)
                .AddCommand(buildCommand)
-               .ToString();
-            var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    buildScript
-                },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
-                ContainerPort,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    runScript
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Say It Again", data);
-                });
-        }
-
-        [Fact]
-        public async Task CanBuildAndRun_NodeWebFrontEndAppUsingYarn_WhenPruneDevDependenciesIsTrue()
-        {
-            // Arrange
-            var nodeVersion = "10";
-            var appName = "webfrontend-yarnlock";
-            var volume = CreateAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand(
-                $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} " +
-                $"-p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
