@@ -35,18 +35,19 @@ fi
 # rename the folders back appropriately for the current build
 if [ -d $allModulesDirName ]
 then
+	echo
+	echo "Found existing folder '$SOURCE_DIR/$allModulesDirName'"
+
 	if [ -d node_modules ]
 	then
-		if [ "$copyOnlyProdModulesToOutput" == "true" ]
-		then
-			# Rename existing node_modules back to prod modules since current build wants them separate
-			mv node_modules $prodModulesDirName
-		else
-			rm -rf node_modules
-		fi
+		echo
+		echo "Deleting existing folder '$SOURCE_DIR/node_modules'..." 
+		rm -rf node_modules
 	fi
 
 	# Rename the folder which has all the node modules to reuse for later builds to improve perf
+	echo
+	echo "Renaming '$SOURCE_DIR/$allModulesDirName' to '$SOURCE_DIR/node_modules'..."
 	mv $allModulesDirName node_modules
 fi
 
@@ -68,13 +69,14 @@ then
 	fi
 
 	echo
-	echo "Installing production dependencies in '$prodModulesDirName'..."
+	echo "Installing production dependencies in '$SOURCE_DIR/$prodModulesDirName'..."
+	echo
 	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
 	echo
 	{{ ProductionOnlyPackageInstallCommand }}
 
 	echo
-	echo "Copying production dependencies from '$prodModulesDirName' to '$SOURCE_DIR'..."
+	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
 	START_TIME=$SECONDS
 	rsync -rtE --links node_modules "$SOURCE_DIR"
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -117,10 +119,14 @@ if [ "$copyOnlyProdModulesToOutput" == "true" ]
 then
 	# Rename folder having all node_modules as we want only prod dependencies
 	# to be synced with destination directory
+	echo
+	echo "Renaming '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
 	mv node_modules $allModulesDirName
 
-	# Rename the folder having prod modules to be the one which we want to be present in output directory		
-	mv $prodModulesDirName node_modules
+	# Rename the folder having prod modules to be the one which we want to be present in output directory
+	echo
+	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
+	cp -rf "$prodModulesDirName/node_modules" node_modules
 fi
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}
