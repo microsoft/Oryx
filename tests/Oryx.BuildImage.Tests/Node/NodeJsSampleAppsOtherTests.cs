@@ -667,7 +667,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules/{unexpectedPackageName}")
-                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules/{expectedPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{expectedPackageName}")
                 .ToString();
 
             // Act
