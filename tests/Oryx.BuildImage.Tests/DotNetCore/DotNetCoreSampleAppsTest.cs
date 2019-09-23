@@ -240,7 +240,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         string.Format(
                             SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNetCore30SdkVersionPreviewName),
+                            DotNetCoreSdkVersions.DotNetCore30SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
