@@ -49,7 +49,7 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     /tmp/scripts/installDotNetCore.sh
 
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION_PREVIEW_NAME \
+    DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
     /tmp/scripts/installDotNetCore.sh
 
