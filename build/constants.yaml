@@ -20,9 +20,6 @@
     dot-net-core-21-sdk-sha512: 8601EC68FA8978C5A08A696CC69F5E0AA9DABF274BADE40E2FD9DED2E563F2CC7A1CB418A95C9B52E1FA9B6C4A30993BE68CB3B6BBDA4598C57B37EC9CE992AD
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-22-sdk-sha512: 81937DE0874EE837E3B42E36D1CF9E04BD9DEFF6BA60D0162AE7CA9336A78F733E624136D27F559728DF3F681A72A669869BF91D02DB47C5331398C0CFDA9B44
-    # Since preview names of .NET Core break the semver norms, it does not work well with the code
-    # that we depend on for semantic version checks, so having two constants here.
-    dot-net-core-30-sdk-version-preview-name: 3.0.100-rc1-014190
     dot-net-core-30-sdk-version: 3.0.100
     dot-net-core-30-sdk-sha512: 24CFE258849579399B93AC81813BDDDADD1D1C546E3EB5DAE7586263F157A4B3DE3223E6A54B5458ECD103E4C70499CAECC330B57570302E378A2203EADDE671
   outputs:
@@ -40,7 +37,6 @@
     net-core-app-21: 2.1.13
     net-core-app-22: 2.2.7
     net-core-app-30: 3.0.0
-    net-core-app-30-preview-name: 3.0.0-rc1-19456-20
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
