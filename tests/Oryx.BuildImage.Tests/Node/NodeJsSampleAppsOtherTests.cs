@@ -28,12 +28,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange
+            var devPackageName = "nodemon";
+            var prodPackageName = "express";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
                 .ToString();
 
             // Act
@@ -668,6 +672,51 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules/{unexpectedPackageName}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{expectedPackageName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsNodeApp_DoesNotPruneDevDependencies_IfPruneDevDependenciesIsFalse()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", "webfrontend"));
+
+            // Make sure there is a package in devDependencies node that we verify is still copied to
+            // destination folder
+            var devPackageName = "nodemon";
+            var prodPackageName = "express";
+            var packageJsonContent = File.ReadAllText(Path.Combine(volume.OriginalHostDir, "package.json"));
+            dynamic packageJson = JsonConvert.DeserializeObject(packageJsonContent);
+            Assert.NotNull(packageJson);
+            Assert.NotNull(packageJson.devDependencies);
+            Assert.NotNull(packageJson.devDependencies.nodemon);
+
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p {NodePlatform.PruneDevDependenciesPropertyKey}=false")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
                 .ToString();
 
             // Act
