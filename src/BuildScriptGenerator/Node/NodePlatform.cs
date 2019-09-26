@@ -24,10 +24,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         PruneDevDependenciesPropertyKey,
         "When using different intermediate and output folders, only the prod dependencies are copied to the output. " +
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
+    [BuildProperty(
+        UseYarnPnpPropertyKey,
+        "Plug’n’Play is an alternative installation strategy supported by Yarn. " +
+        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class NodePlatform : IProgrammingPlatform
     {
-        internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
+        internal const string CompressNodeModulesPropertyKey  = "compress_node_modules";
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
+        internal const string UseYarnPnpPropertyKey = "use_yarn_pnp";
         internal const string ZipNodeModulesOption = "zip";
         internal const string TarGzNodeModulesOption = "tar-gz";
 
@@ -71,11 +76,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageManagerCmd = null;
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
+            bool shouldUseYarnPnp = BuildPropertiesHelper.IsTrue(UseYarnPnpPropertyKey, ctx, valueIsRequired: false);
 
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+
+                if (shouldUseYarnPnp)
+                {
+                    _logger.LogInformation("Enabling yarn PnP");
+                    packageInstallCommand += " --pnp";
+                }
+
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
             }
@@ -83,6 +96,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 packageManagerCmd = NodeConstants.NpmCommand;
                 packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+
+                if (shouldUseYarnPnp)
+                {
+                    _logger.LogWarning("Cannot enable yarn PnP when npm is used");
+                }
+
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
             }
 
@@ -135,7 +154,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 buildProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
             }
 
-            bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
 
             var scriptProps = new NodeBashBuildSnippetProperties
@@ -148,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
                 ConfigureYarnCache = configureYarnCache,
-                PruneDevDependencies = pruneDevDependencies,
+                PruneDevDependencies = ShouldPruneDevDependencies(ctx),
                 AppInsightsInjectCommand = appInsightsInjectCommand,
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,

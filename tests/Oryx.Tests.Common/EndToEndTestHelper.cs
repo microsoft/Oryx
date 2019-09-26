@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
@@ -224,6 +225,7 @@ namespace Microsoft.Oryx.Tests.Common
                 // An exception could have occurred when a Docker process failed to start.
                 Assert.Null(runResult.Exception);
                 Assert.False(runResult.Process.HasExited);
+                Assert.Throws<InvalidOperationException>(() => runResult.ExitCode);
 
                 var hostPort = await GetHostPortAsync(dockerCli, runResult.ContainerName, portInContainer: port);
 
@@ -325,6 +327,10 @@ namespace Microsoft.Oryx.Tests.Common
                         "Did not get the port mapping in expected format. StdOut: " + getPortMappingResult.StdOut);
                     var hostPort = Convert.ToInt32(portMapping[1]);
                     return hostPort;
+                }
+                else
+                {
+                    Debug.WriteLine("Docker CLI exited with {0}", getPortMappingResult.ExitCode);
                 }
             }
 

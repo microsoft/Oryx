@@ -331,8 +331,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFile()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFile(bool useYarnPnp)
         {
             // Arrange
             var appName = "webfrontend-yarnlock";
@@ -340,8 +342,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
+            var pnpParam = useYarnPnp ? "-p use_yarn_pnp" : string.Empty;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion} {pnpParam}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
