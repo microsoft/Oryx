@@ -3,13 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,7 +17,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class NodeNuxtJsAppTest : NodeEndToEndTestsBase
     {
-        public const string AppName = "hackernews";
+        public const string AppName = "hackernews-nuxtjs";
         public const int ContainerAppPort = 3000;
 
         public NodeNuxtJsAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)

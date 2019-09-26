@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class NodeNextJsAppTest : NodeEndToEndTestsBase
     {
-        public const string AppName = "blog-starter";
+        public const string AppName = "blog-starter-nextjs";
         public const int ContainerAppPort = 3000;
         public NodeNextJsAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)

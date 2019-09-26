@@ -37,5 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string PackageInstallerVersionCommand { get; set; }
 
         public bool RunNpmPack { get; set; }
+
+        public string OutputDir { get; set; }
     }
 }
