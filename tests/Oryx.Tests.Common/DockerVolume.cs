@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Tests.Common
             // create content in a well known location on the CI agent so that these folders are deleted during the
             // clean-up task.
             var agentName = Environment.GetEnvironmentVariable(VstsAgentNameEnivronmentVariable);
-            string tempDirRoot = null;
+            string tempDirRoot;
             if (string.IsNullOrEmpty(agentName))
             {
                 // On dev machines, create the temporary folders underneath the 'bin' hierarchy itself. This way
