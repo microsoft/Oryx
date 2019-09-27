@@ -33,25 +33,25 @@ fi
 
 # if node modules exist separately for dev & prod (like from an earlier build),
 # rename the folders back appropriately for the current build
-if [ -d $allModulesDirName ]
+if [ -d "$allModulesDirName" ]
 then
-	if [ -d node_modules ]
-	then
-		if [ "$copyOnlyProdModulesToOutput" == "true" ]
-		then
-			# Rename existing node_modules back to prod modules since current build wants them separate
-			mv node_modules $prodModulesDirName
-		else
-			rm -rf node_modules
-		fi
-	fi
-
-	# Rename the folder which has all the node modules to reuse for later builds to improve perf
-	mv $allModulesDirName node_modules
+	echo
+	echo "Found existing folder '$SOURCE_DIR/$allModulesDirName'."
+	echo "Copying modules from '$SOURCE_DIR/$allModulesDirName' to '$SOURCE_DIR/node_modules'..."
+	cd "$SOURCE_DIR"
+	mkdir -p node_modules
+	rsync -rtE --links "$allModulesDirName/" node_modules
 fi
 
 if [ "$copyOnlyProdModulesToOutput" == "true" ]
 then
+	# Delete existing prod modules folder so that we do not publish
+	# any unused modules to final destination directory.
+	if [ -d "$prodModulesDirName" ]; then
+		echo "Found existing '$SOURCE_DIR/$prodModulesDirName'. Deleting it..."
+		rm -rf "$prodModulesDirName"
+	fi
+
 	mkdir -p "$prodModulesDirName"
 	cd "$prodModulesDirName"
 
@@ -68,15 +68,16 @@ then
 	fi
 
 	echo
-	echo "Installing production dependencies in '$prodModulesDirName'..."
+	echo "Installing production dependencies in '$SOURCE_DIR/$prodModulesDirName'..."
+	echo
 	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
 	echo
 	{{ ProductionOnlyPackageInstallCommand }}
 
 	echo
-	echo "Copying production dependencies from '$prodModulesDirName' to '$SOURCE_DIR'..."
+	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
 	START_TIME=$SECONDS
-	rsync -rtE --links node_modules "$SOURCE_DIR"
+	rsync -rtE --links "node_modules/" "$SOURCE_DIR/node_modules"
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 fi
@@ -115,12 +116,13 @@ npm pack
 
 if [ "$copyOnlyProdModulesToOutput" == "true" ]
 then
-	# Rename folder having all node_modules as we want only prod dependencies
-	# to be synced with destination directory
-	mv node_modules $allModulesDirName
+	echo
+	echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
+	rsync -rtE --links "node_modules/" "$allModulesDirName" --delete
 
-	# Rename the folder having prod modules to be the one which we want to be present in output directory		
-	mv $prodModulesDirName node_modules
+	echo
+	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
+	rsync -rtE --links "$prodModulesDirName/node_modules/" node_modules --delete
 fi
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}
@@ -128,14 +130,14 @@ if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	if [ -f $zippedModulesFileName ]; then
 		echo
-		echo "File '$zippedModulesFileName' already exists under '$SOURCE_DIR'. Deleting it ..."
+		echo "File '$zippedModulesFileName' already exists under '$SOURCE_DIR'. Deleting it..."
 		rm -f $zippedModulesFileName
 	fi
 
 	if [ -d node_modules ]
 	then
 		echo
-		echo Zipping existing 'node_modules' folder ...
+		echo Zipping existing 'node_modules' folder...
 		START_TIME=$SECONDS
 		# Make the contents of the node_modules folder appear in the zip file, not the folder itself
 		cd node_modules

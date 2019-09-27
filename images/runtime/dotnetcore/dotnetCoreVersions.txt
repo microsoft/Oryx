@@ -1,2 +1,2 @@
 2.2, mcr.microsoft.com/dotnet/core/aspnet:2.2.7
-3.0, mcr.microsoft.com/dotnet/core/aspnet:3.0.0-rc1
+3.0, mcr.microsoft.com/dotnet/core/aspnet:3.0.0

@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
