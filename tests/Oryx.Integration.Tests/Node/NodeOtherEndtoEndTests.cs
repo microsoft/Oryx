@@ -15,9 +15,9 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Trait("category", "node")]
-    public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
+    public class NodeOtherEndToEndTests : NodeEndToEndTestsBase
     {
-        public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public NodeOtherEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -334,7 +334,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFile(bool useYarnPnp)
+        public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFile(bool usePnp)
         {
             // Arrange
             var appName = "webfrontend-yarnlock";
@@ -342,9 +342,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
-            var pnpParam = useYarnPnp ? "-p use_yarn_pnp" : string.Empty;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion} {pnpParam}")
+               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -p use_yarn_pnp={usePnp.ToString()}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
