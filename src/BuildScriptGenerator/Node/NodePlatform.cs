@@ -27,7 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     [BuildProperty(
         UseYarnPnpPropertyKey,
         "Plug’n’Play is an alternative installation strategy supported by Yarn. " +
-        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
+        "See https://yarnpkg.com/lang/en/docs/pnp/ for more information. " +
+        "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false. ")]
     internal class NodePlatform : IProgrammingPlatform
     {
         internal const string CompressNodeModulesPropertyKey  = "compress_node_modules";
