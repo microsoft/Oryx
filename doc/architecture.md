@@ -24,9 +24,9 @@ It analyzes the codebase, detecting which programming platforms are being used a
 
 ### Build image
 
-We have a single build image which supports all of the SDKs and their versions. This allows developers to use 
-multiple languages in their build, for instance run a Python setup script when building their .NET Core app, 
-or have a TypeScript frontend for their Python app. You can take a look at its 
+We have a single build image which supports all of the SDKs and their versions. This allows developers to use
+multiple languages in their build, for instance run a Python setup script when building their .NET Core app,
+or have a TypeScript frontend for their Python app. You can take a look at its
 [Dockerfile](../images/build/Dockerfile) to better understand its contents.
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
@@ -45,6 +45,76 @@ published via the Microsoft Container Registry (MCR) ([info][]) as
 `mcr.microsoft.com/oryx/build` and syndicated to Docker Hub as
 [https://hub.docker.com/_/microsoft-oryx-images][]. Pull with `docker pull
 mcr.microsoft.com/oryx/build:latest`.
+
+<details>
+<summary>For a high-level image of how the build image is constructed, click here.</summary>
+
+![Build images](./resources/build-images.png)
+</details>
+
+<details>
+<summary>For a list of packages installed as a part of this build image, click here.</summary>
+
+#### [Slim Build Image](../images/build/slim.Dockerfile)
+
+**Docker**
+
+- [`buildpack-deps:stretch`](../images/build/slim.Dockerfile#L5)
+- [`mcr.microsoft.com/oryx/python-build-base:3.7-{BUILD}`](../images/build/slim.Dockerfile#L160)
+
+**`apt-get`**
+
+- Basic build tools
+    - [`build-essential`](../images/build/slim.Dockerfile#L25)
+    - [`default-libmysqlclient-dev`](../images/build/slim.Dockerfile#L31)
+    - [`git`](../images/build/slim.Dockerfile#L21)
+    - [`libpq-dev`](../images/build/slim.Dockerfile#L29)
+    - [`make`](../images/build/slim.Dockerfile#L22)
+    - [`moreutils`](../images/build/slim.Dockerfile#L33)
+    - [`rsync`](../images/build/slim.Dockerfile#L34)
+    - [`unixodbc-dev`](../images/build/slim.Dockerfile#L27)
+    - [`unzip`](../images/build/slim.Dockerfile#L23)
+    - [`zip`](../images/build/slim.Dockerfile#L35)
+- .NET Core
+    - [`libc6`](../images/build/slim.Dockerfile#L50)
+    - [`libgcc1`](../images/build/slim.Dockerfile#L51)
+    - [`libgssapi-krb5-2`](../images/build/slim.Dockerfile#L52)
+    - [`libicu57`](../images/build/slim.Dockerfile#L53)
+    - [`liblttng-ust0`](../images/build/slim.Dockerfile#L54)
+    - [`libssl1.0.2`](../images/build/slim.Dockerfile#L55)
+    - [`libstdc++6`](../images/build/slim.Dockerfile#L56)
+    - [`zlib1g`](../images/build/slim.Dockerfile#L57)
+- Node
+    - [`jq`](../images/build/slim.Dockerfile#L108)
+- Python
+    - [`tk-dev`](../images/build/slim.Dockerfile#L169)
+    - [`uuid-dev`](../images/build/slim.Dockerfile#L170)
+
+#### [Full build image](../images/build/Dockerfile)
+
+**Docker**
+
+- Python
+    - [`mcr.microsoft.com/oryx/python-build-base:2.7-{BUILD}`](../images/build/Dockerfile#L179)
+    - [`mcr.microsoft.com/oryx/python-build-base:3.6-{BUILD}`](../images/build/Dockerfile#L180)
+    - [`mcr.microsoft.com/oryx/python-build-base:3.8-{BUILD}`](../images/build/Dockerfile#L181)
+- PHP
+    - [`mcr.microsoft.com/oryx/php-build-base:5.6-{BUILD}`](../images/build/Dockerfile#L217)
+    - [`mcr.microsoft.com/oryx/php-build-base:7.0-{BUILD}`](../images/build/Dockerfile#L218)
+    - [`mcr.microsoft.com/oryx/php-build-base:7.2-{BUILD}`](../images/build/Dockerfile#L219)
+    - [`mcr.microsoft.com/oryx/php-build-base:7.3-{BUILD}`](../images/build/Dockerfile#L220)
+- [`golang:1.11-stretch`](../images/build/Dockerfile#L228)
+
+**`apt-get`**
+
+- .NET Core
+    - [`libunwind8`](../images/build/Dockerfile#L16)
+    - [`libcurl3`](../images/build/Dockerfile#L26)
+    - [`libuuid1`](../images/build/Dockerfile#L27)
+- Node
+    - [`jq`](../images/build/Dockerfile#L100)
+
+</details>
 
 [info]: https://azure.microsoft.com/en-us/blog/microsoft-syndicates-container-catalog/
 
@@ -65,7 +135,7 @@ folder there, Go should be able to find the packages and produce builds.
 ### Run images
 
 We have a set of runtime images, and their Dockerfiles are located in [/images/runtime](../images/runtime).
-Some of the Dockerfiles are generated from a template, also located in this folder, with a corresponding 
+Some of the Dockerfiles are generated from a template, also located in this folder, with a corresponding
 script to turn those scripts into actual Dockerfiles. Having templates helps us maintain consistency
 across the Dockerfiles.
 
@@ -77,6 +147,57 @@ Each runtime image contains the startup script generator for its platform.
 
 The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
+<details>
+<summary>For a high-level image of how the runtime images are constructed, click here.</summary>
+
+![Runtime images](./resources/runtime-images.png)
+</details>
+
+<details>
+<summary>For a list of packages installed as a part of the runtime images, click here.</summary>
+
+#### [Common base image](../images/runtime/commonbase/Dockerfile)
+
+**Docker**
+
+- [`buildpack-deps:stretch-curl`](../images/runtime/commonbase/Dockerfile#L1)
+
+**`apt-get`**
+
+- [`xz-utils`](../images/runtime/commonbase/Dockerfile#L4)
+
+#### [.NET Core template](../images/runtime/dotnetcore/Dockerfile.template)
+
+**Docker**
+
+- [`golang:1.11-stretch`](../images/runtime/dotnetcore/Dockerfile.template#L2)
+- [`mcr.microsoft.com/dotnet/core/runtime:{VERSION}](../images/runtime/dotnetcore/Dockerfile.template#L12)
+
+**`apt-get`**
+
+- [`file`](../images/runtime/dotnetcore/Dockerfile.template#L16)
+
+#### [Node template](../images/runtime/node/Dockerfile.template)
+
+**Docker**
+
+- [`golang:1.11-stretch`](../images/runtime/node/Dockerfile.template#L2)
+- [`mcr.microsoft.com/oryx/node-base:{VERSION}`](../images/runtime/node/Dockerfile.template#L12)
+
+#### [PHP template](../images/runtime/php/Dockerfile.template)
+
+**Docker**
+
+- [`golang:1.11-stretch`](../images/runtime/php/Dockerfile.template#L2)
+- [`mcr.microsoft.com/oryx/php-base:{VERSION}`](../images/runtime/php/Dockerfile.template#L12)
+
+#### [Python template](../images/runtime/python/Dockerfile.template)
+
+**Docker**
+
+- [`golang:1.11-stretch`](../images/runtime/python/Dockerfile.template#L2)
+
+</details>
 
 ## Repo structure
 
