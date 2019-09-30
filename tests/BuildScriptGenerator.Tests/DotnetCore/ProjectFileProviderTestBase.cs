@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                     Options.Create(options),
                     NullLogger<ExplicitProjectFileProvider>.Instance),
                 new RootDirectoryProjectFileProvider(NullLogger<RootDirectoryProjectFileProvider>.Instance),
-                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance),
+                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance, new DefaultWriter()),
             };
 
             return new DefaultProjectFileProvider(providers);

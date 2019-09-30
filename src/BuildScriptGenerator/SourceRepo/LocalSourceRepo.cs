@@ -4,8 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common;
 
@@ -37,8 +39,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories)
         {
-            var searchOption = searchSubDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            return Directory.EnumerateFiles(RootPath, searchPattern, searchOption);
+            if (searchSubDirectories)
+            {
+                return SafeEnumerateFiles(RootPath, searchPattern);
+            }
+
+            return Directory.EnumerateFiles(RootPath, searchPattern);
+        }
+
+        /// <summary>
+        /// This method will recursively enumerate the files under a given path since the
+        /// Directory.EnumerateFiles call does not check to see if a directory exists before
+        /// enumerating it.
+        /// </summary>
+        /// <param name="path">The directory to recursively enumerate the files in.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <returns>All files that are accessible under the given directory.</returns>
+        public IEnumerable<string> SafeEnumerateFiles(string path, string searchPattern)
+        {
+            var fileResult = Directory.EnumerateFiles(path, searchPattern);
+            var directoryResult = Directory.EnumerateDirectories(path)
+                                            .Where(Directory.Exists)
+                                            .SelectMany(d => SafeEnumerateFiles(d, searchPattern));
+            return fileResult.Concat(directoryResult);
         }
 
         public string ReadFile(params string[] paths)

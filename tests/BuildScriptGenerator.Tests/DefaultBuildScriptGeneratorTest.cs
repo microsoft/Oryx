@@ -656,7 +656,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 platforms,
                 new TestEnvironmentSettingsProvider(),
                 checkers,
-                NullLogger<DefaultBuildScriptGenerator>.Instance);
+                NullLogger<DefaultBuildScriptGenerator>.Instance,
+                new DefaultWriter());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(

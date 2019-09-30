@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using JetBrains.Annotations;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -23,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private IServiceCollection _serviceCollection;
 
-        public ServiceProviderBuilder(string logFilePath = null)
+        public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
             LogManager.Configuration = BuildNLogConfiguration(logFilePath);
             LogManager.ReconfigExistingLoggers();
@@ -31,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             _serviceCollection = new ServiceCollection();
             _serviceCollection
                 .AddBuildScriptGeneratorServices()
-                .AddCliServices()
+                .AddCliServices(console)
                 .AddLogging(builder =>
                 {
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);

@@ -24,17 +24,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
+        private readonly IWriter _writer;
 
         public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             IEnumerable<IChecker> checkers,
-            ILogger<DefaultBuildScriptGenerator> logger)
+            ILogger<DefaultBuildScriptGenerator> logger,
+            IWriter writer)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
+            _writer = writer;
             _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
         }
 
