@@ -11,8 +11,8 @@ namespace Microsoft.Oryx.Integration.Tests
 {
     public class NodeEndToEndTestsBase : PlatformEndToEndTestsBase
     {
-        public readonly int ContainerPort = 3000;
-        public readonly string DefaultStartupFilePath = "./run.sh";
+        public const int ContainerPort = 3000;
+        public const string DefaultStartupFilePath = "./run.sh";
         public readonly ITestOutputHelper _output;
         public readonly string _hostSamplesDir;
         public readonly string _tempRootDir;
