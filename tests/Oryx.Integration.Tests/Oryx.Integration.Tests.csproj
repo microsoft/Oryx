@@ -8,6 +8,7 @@
     <AssemblyOriginatorKeyFile>..\..\build\TestAssembliesKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <SignAssembly>true</SignAssembly>
+    <RootNamespace>Microsoft.Oryx.Integration.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

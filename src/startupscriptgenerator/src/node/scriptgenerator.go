@@ -65,32 +65,25 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 	// --------------------------------------------------------------------------------------------
 
 	// Created by Oryx
-	try 
-	{
+	try {
 		var appInsights = require('applicationinsights');
 		var prefixInternalSdkVersion = function (envelope, contextObjects) {
 			try {
 				var appInsightsSDKVersion = appInsights.defaultClient.context.keys.internalSdkVersion;
 				envelope.tags[appInsightsSDKVersion] = "ad_" + envelope.tags[appInsightsSDKVersion];
-			} catch(e) {}
+			} catch (e) {}
 
 			return true;
 		}
 
 		// Enable Telemetry only when Application Insight's env variables are correctly set by user
 		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + `) {
-			
-			if(process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled"){
-				
-				appInsights
-				.setup()
-				.setSendLiveMetrics(true)
-				.start();
-
+			if (process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled") {
+				appInsights.setup().setSendLiveMetrics(true).start();
 				appInsights.defaultClient.addTelemetryProcessor(prefixInternalSdkVersion);
 			}
 		}
-	}catch (e) {
+	} catch (e) {
 			console.log('Application Insights could not be automatically configured for this application'); 
 			console.log(e);
 	}`
