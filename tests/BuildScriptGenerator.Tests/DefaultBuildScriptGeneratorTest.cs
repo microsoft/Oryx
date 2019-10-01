@@ -657,7 +657,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new TestEnvironmentSettingsProvider(),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultWriter());
+                new DefaultStandardOutputWriter());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(

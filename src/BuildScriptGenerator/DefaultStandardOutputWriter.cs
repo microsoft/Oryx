@@ -8,40 +8,40 @@ using System;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Default implementation of IWriter that takes an action to write messages to the output.
+    /// Default implementation of IStandardOutputWriter that takes an action to write messages to the output.
     /// </summary>
-    public class DefaultWriter : IWriter
+    public class DefaultStandardOutputWriter : IStandardOutputWriter
     {
         private readonly Action<string> _write;
         private readonly Action<string> _writeLine;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultWriter"/> class.
+        /// Initializes a new instance of the <see cref="DefaultStandardOutputWriter"/> class.
         /// Default constructor that doesn't write anything if no parameters provided.
         /// </summary>
-        public DefaultWriter()
+        public DefaultStandardOutputWriter()
         {
             _write = (message) => { };
             _writeLine = (message) => { };
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultWriter"/> class.
+        /// Initializes a new instance of the <see cref="DefaultStandardOutputWriter"/> class.
         /// The provided action will also be used for the WriteLine() call by adding the proper line terminator.
         /// </summary>
         /// <param name="write">Action that takes a string and writes it to the output.</param>
-        public DefaultWriter(Action<string> write)
+        public DefaultStandardOutputWriter(Action<string> write)
         {
             _write = write;
             _writeLine = (message) => { write(string.Format("{0}\n", message)); };
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultWriter"/> class.
+        /// Initializes a new instance of the <see cref="DefaultStandardOutputWriter"/> class.
         /// </summary>
         /// <param name="write">Action that takes a string and writes it to the output.</param>
         /// <param name="writeLine">Action that takes a string and writes it to the output with a line terminator.</param>
-        public DefaultWriter(Action<string> write, Action<string> writeLine)
+        public DefaultStandardOutputWriter(Action<string> write, Action<string> writeLine)
         {
             _write = write;
             _writeLine = writeLine;

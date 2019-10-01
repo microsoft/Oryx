@@ -32,15 +32,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodeVersionProvider _versionProvider;
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly ILogger<NodeLanguageDetector> _logger;
+        private readonly IStandardOutputWriter _writer;
 
         public NodeLanguageDetector(
             INodeVersionProvider nodeVersionProvider,
             IOptions<NodeScriptGeneratorOptions> options,
-            ILogger<NodeLanguageDetector> logger)
+            ILogger<NodeLanguageDetector> logger,
+            IStandardOutputWriter writer)
         {
             _versionProvider = nodeVersionProvider;
             _nodeScriptGeneratorOptions = options.Value;
             _logger = logger;
+            _writer = writer;
         }
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)

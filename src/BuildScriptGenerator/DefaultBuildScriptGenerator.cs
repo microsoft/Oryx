@@ -24,14 +24,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
-        private readonly IWriter _writer;
+        private readonly IStandardOutputWriter _writer;
 
         public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger,
-            IWriter writer)
+            IStandardOutputWriter writer)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;

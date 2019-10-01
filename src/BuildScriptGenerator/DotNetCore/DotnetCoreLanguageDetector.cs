@@ -20,14 +20,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
         DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
-        private readonly IWriter _writer;
+        private readonly IStandardOutputWriter _writer;
 
         public DotNetCoreLanguageDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
             DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCoreLanguageDetector> logger,
-            IWriter writer)
+            IStandardOutputWriter writer)
         {
             _versionProvider = versionProvider;
             _scriptGeneratorOptions = options.Value;

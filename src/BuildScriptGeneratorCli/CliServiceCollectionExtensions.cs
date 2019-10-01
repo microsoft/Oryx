@@ -16,8 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             services.AddSingleton<IConsole, PhysicalConsole>();
             services.AddSingleton<CliEnvironmentSettings>();
             return console == null ?
-                services.AddSingleton<IWriter, DefaultWriter>() :
-                services.AddSingleton<IWriter>(new DefaultWriter(
+                services.AddSingleton<IStandardOutputWriter, DefaultStandardOutputWriter>() :
+                services.AddSingleton<IStandardOutputWriter>(new DefaultStandardOutputWriter(
                                                 (message) => { console.Write(message); },
                                                 (message) => { console.WriteLine(message); }));
         }

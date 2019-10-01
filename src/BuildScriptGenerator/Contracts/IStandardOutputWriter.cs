@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// that a user would be able to view. This is separate from logging as this does not
     /// go through telemetry, only to the console, or whichever medium is used.
     /// </summary>
-    public interface IWriter
+    public interface IStandardOutputWriter
     {
         /// <summary>
         /// Writes a string.
