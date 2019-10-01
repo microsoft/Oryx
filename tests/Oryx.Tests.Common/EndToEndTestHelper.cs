@@ -328,9 +328,9 @@ namespace Microsoft.Oryx.Tests.Common
                     var hostPort = Convert.ToInt32(portMapping[1]);
                     return hostPort;
                 }
-                else
+                else if (getPortMappingResult.StdErr.Contains("No such container"))
                 {
-                    Debug.WriteLine("Docker CLI exited with {0}", getPortMappingResult.ExitCode);
+                    break;
                 }
             }
 
