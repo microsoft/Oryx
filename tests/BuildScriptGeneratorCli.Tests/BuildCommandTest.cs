@@ -279,13 +279,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         [Fact]
         public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
         {
-            var stdError = "Error: Could not detect the language from repo.\r\n";
+            var stdError = "Error: Could not detect the language from repo.";
             var enumerateMessage = "Enumerating repo to find any files with extension 'csproj'...";
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole();
             var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
             Assert.Equal(1, exitCode);
-            Assert.Equal(stdError, testConsole.StdError);
+            Assert.Equal(stdError, testConsole.StdError.ReplaceNewLine());
             Assert.Contains(enumerateMessage, testConsole.StdOutput);
         }
 
