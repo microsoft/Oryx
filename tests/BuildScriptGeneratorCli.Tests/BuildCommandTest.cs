@@ -272,6 +272,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Empty(testConsole.StdError);
         }
 
+        /// <summary>
+        /// Verify that the build command will write to standard output when checking for .csproj files as a part
+        /// of the .NET Core detector. The command doesn't need to succeed as we're only checking for output written.
+        /// </summary>
+        [Fact]
+        public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
+        {
+            var stdError = "Error: Could not detect the language from repo.\r\n";
+            var enumerateMessage = "Enumerating repo to find any files with extension 'csproj'...";
+            var buildCommand = new BuildCommand();
+            var testConsole = new TestConsole();
+            var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            Assert.Equal(1, exitCode);
+            Assert.Equal(stdError, testConsole.StdError);
+            Assert.Contains(enumerateMessage, testConsole.StdOutput);
+        }
+
         // We want to test that only build output is visible on standard output stream when a build happens
         // successfully. But for this we cannot rely on the built-in generators as their content could change
         // making this test unreliable. So we use a test generator which always outputs content that we know for
