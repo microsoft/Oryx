@@ -17,6 +17,7 @@ RUN rm -rf /usr/bin/pydoc*
 
 # Install basic build tools
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
         make \
@@ -46,6 +47,7 @@ RUN mkdir -p /opt/oryx/defaultversions
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         libc6 \
         libgcc1 \
@@ -104,6 +106,7 @@ RUN set -ex \
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
@@ -165,10 +168,11 @@ FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-bui
 FROM main AS python
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 COPY build/__pythonVersions.sh /tmp/scripts

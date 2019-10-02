@@ -46,8 +46,8 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20190918.7
-    pip-version: 19.1.1
+    python-base-tag: 20191016.7
+    pip-version: 19.2.3
     python27-version: 2.7.16
     python36-version: 3.6.9
     python37-version: 3.7.4
@@ -61,17 +61,17 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-build-base-tag: 20190918.7
-    php-runtime-base-tag: 20190918.7
+    php-build-base-tag: 20191016.7
+    php-runtime-base-tag: 20191016.7
     composer-version: 1.8.6
     composer-sha384: a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1
     # hashes are for .tar.xz
-    php73-version: 7.3.9
+    php73-version: 7.3.10
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
-    php73-tar-sha256: 4007f24a39822bef2805b75c625551d30be9eeed329d52eb0838fa5c1b91c1fd
-    php72-version: 7.2.22
+    php73-tar-sha256: 42f00a15419e05771734b7159c8d39d639b8a5a6770413adfa2615f6f923d906
+    php72-version: 7.2.23
     php72-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
-    php72-tar-sha256: eb597fcf8dc0a6211a42a6346de4f63ee166829a6df6d8ed767fe14be8d1c3a3
+    php72-tar-sha256: 74e045ec8ff26290db6a3688826dcdf43b87bc509e508e9cb76dab742804ca14
     php70-version: 7.0.33
     php70-keys: 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php70-tar-sha256: ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96
@@ -106,12 +106,12 @@
     yarn-major-version: 1
     node6-version: 6.17.1
     node6-major-minor-version: 6.17
-    node8-version: 8.16.1
+    node8-version: 8.16.2
     node8-major-minor-version: 8.16
     node10-version: 10.16.3
     node10-major-minor-version: 10.16
-    node12-version: 12.9.1
-    node12-major-minor-version: 12.9
+    node12-version: 12.12.0
+    node12-major-minor-version: 12.12
   outputs:
     - type: shell
       directory: build
