@@ -138,6 +138,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
 
+            GetAppOutputDirPath(packageJson, buildProperties);
+
             var scriptProps = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = packageInstallCommand,
@@ -166,6 +168,53 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 BashBuildScriptSnippet = script,
                 BuildProperties = buildProperties,
             };
+        }
+
+        private void GetAppOutputDirPath(dynamic packageJson, Dictionary<string, string> buildProperties)
+        {
+            if (packageJson == null || packageJson.scripts == null || packageJson.scripts["build"] == null)
+            {
+                return;
+            }
+
+            var buildNode = packageJson.scripts["build"] as JValue;
+            var buildCommand = buildNode.Value as string;
+
+            if (string.IsNullOrEmpty(buildCommand))
+            {
+                return;
+            }
+
+            string outputDirPath = null;
+            if (buildCommand.Contains("ng build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "dist";
+            }
+            else if (buildCommand.Contains("gatsby build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "public";
+            }
+            else if (buildCommand.Contains("react-scripts build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "build";
+            }
+            else if (buildCommand.Contains("next build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = ".next";
+            }
+            else if (buildCommand.Contains("nuxt build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = ".nuxt";
+            }
+            else if (buildCommand.Contains("vue-cli-service build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "dist";
+            }
+
+            if (!string.IsNullOrEmpty(outputDirPath))
+            {
+                buildProperties[NodeManifestFilePropertyKeys.OutputDirPath] = outputDirPath;
+            }
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
