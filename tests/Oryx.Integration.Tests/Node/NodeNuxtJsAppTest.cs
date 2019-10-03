@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class NodeNuxtJsAppTest : NodeEndToEndTestsBase
     {
-        public const string AppName = "hackernews-nuxtjs";
+        public const string AppName = "helloworld-nuxtjs";
         public const int ContainerAppPort = 3000;
 
         public NodeNuxtJsAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -36,7 +36,9 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT={ContainerAppPort}")
+                // Note: NuxtJS needs the host to be specified this way
+                .SetEnvironmentVariable("HOST", "0.0.0.0")
+                .SetEnvironmentVariable("PORT", ContainerAppPort.ToString())
                 .AddCommand($"oryx -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -61,8 +63,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("WeWork and Counterfeit Capitalism", data);
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
+                    Assert.Contains("Welcome!", data);
                 });
         }
 
@@ -86,7 +88,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT={ContainerAppPort}")
+                // Note: NuxtJS needs the host to be specified this way
+                .SetEnvironmentVariable("HOST", "0.0.0.0")
+                .SetEnvironmentVariable("PORT", ContainerAppPort.ToString())
                 .AddCommand($"oryx -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -117,8 +121,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("WeWork and Counterfeit Capitalism", data);
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
+                    Assert.Contains("Welcome!", data);
                 });
         }
     }

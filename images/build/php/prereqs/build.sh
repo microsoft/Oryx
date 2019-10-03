@@ -102,6 +102,7 @@ fi
 		--enable-ftp \
 		--enable-mbstring \
 		--enable-mysqlnd \
+		--enable-bcmath \
 		$versionConfigureArgs \
 		--with-curl \
 		--with-libedit \
