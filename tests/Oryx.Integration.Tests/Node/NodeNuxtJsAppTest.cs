@@ -36,7 +36,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT={ContainerAppPort}")
+                .SetEnvironmentVariable("HOST", "0.0.0.0")
+                .SetEnvironmentVariable("PORT", ContainerAppPort.ToString())
                 .AddCommand($"oryx -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -86,7 +87,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT={ContainerAppPort}")
+                .SetEnvironmentVariable("HOST", "0.0.0.0")
+                .SetEnvironmentVariable("PORT", ContainerAppPort.ToString())
                 .AddCommand($"oryx -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
