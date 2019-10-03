@@ -281,7 +281,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         [Fact]
         public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
         {
-            var stdError = $"Error: ${Labels.UnableToDetectLanguageMessage}";
+            var stdError = $"Error: {Labels.UnableToDetectLanguageMessage}";
             var enumerateMessage = string.Format(Labels.DotNetCoreEnumeratingFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole();
