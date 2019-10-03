@@ -31,7 +31,7 @@ or have a TypeScript frontend for their Python app. You can take a look at its
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
 modularization and for faster build times. You can see what are those images and how they are built in their
-[build script](../build/build-buildimage-bases.sh).
+[build script](../build/buildBuildImageBases.sh).
 
 To help the user select which version they want for each platform, they can use the `benv` script pre-installed
 in the build image. For example, `source benv python=3.6 node=8` will make Python 3.6 and the latest supported
@@ -43,7 +43,7 @@ The build image manifest is at
 [/images/build/Dockerfile](../images/build/Dockerfile). It is built and
 published via the Microsoft Container Registry (MCR) ([info][]) as
 `mcr.microsoft.com/oryx/build` and syndicated to Docker Hub as
-[https://hub.docker.com/_/microsoft-oryx-images][]. Pull with `docker pull
+[`https://hub.docker.com/_/microsoft-oryx-images`](https://hub.docker.com/_/microsoft-oryx-images). Pull with `docker pull
 mcr.microsoft.com/oryx/build:latest`.
 
 <details>
@@ -211,7 +211,7 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
 The following are required to run and test this project locally.
 
-- bash v4.4
-- dotnet v2.1
-- go 1.11+ (for startup script generator)
-- docker v18.06.1-ce
+- Bash v4.4
+- [.NET Core 2.1](https://dotnet.microsoft.com/download/dotnet-core)
+- [Go 1.11+](https://golang.org/dl/) (for startup script generator)
+- [Docker v18.06.1-ce](https://docs.docker.com/install/)

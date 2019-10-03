@@ -1,10 +1,10 @@
 # Build
 
 The Oryx [build image][] layers on Docker's
-[buildpack-deps][library/buildpack-deps:stable] image, itself layered on
+[`buildpack-deps`][library/buildpack-deps:stable] image, itself layered on
 Docker's basic [debian][library/debian:stable] image.
 The build image copies some required platforms from separate intermediate images,
-which can be built locally using the `build-buildimage-platforms.sh` script.
+which can be built locally using the [`buildBuildImageBases.sh`](../build/buildBuildImageBases.sh) script.
 
 [build image]: https://hub.docker.com/_/microsoft-oryx-images
 [library/buildpack-deps:stable]: https://hub.docker.com/_/buildpack-deps
@@ -31,7 +31,7 @@ and for each one that it finds, it adds the corresponding commands to the build 
 user wants to disable a specific programming platform, there are a set of environment variables
 that can be set - please refer to [Oryx configuration](./configuration.md#oryx-configuration).
 
-For instace, if there is a `package.json` file at the root of the repo but it is not in the format expected
+For instance, if there is a `package.json` file at the root of the repo but it is not in the format expected
 by npm, Oryx build will fail since it assumes that having that file in the repo's root means Node is
 being used. There's also an option to disable _all_ platforms other than the one specified in `oryx build` 
 or in AppService's language selection.
@@ -44,7 +44,7 @@ and [Python][]. A start script generator is included. Packages included for
 specific runtimes are described in their documentation.
 
 Runtimes and versions supported by Oryx are listed in [the main
-README](../README.md#supported-runtimes).
+README](../README.md#supported-platforms).
 
 [Node.js]: https://github.com/nodejs/docker-node
 [Python]: https://github.com/docker-library/python
