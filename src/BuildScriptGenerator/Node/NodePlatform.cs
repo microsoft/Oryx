@@ -172,13 +172,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private void GetAppOutputDirPath(dynamic packageJson, Dictionary<string, string> buildProperties)
         {
-            var scriptsNode = packageJson.scripts;
-            if (scriptsNode == null || scriptsNode["build"] == null)
+            if (packageJson == null || packageJson.scripts == null || packageJson.scripts["build"] == null)
             {
                 return;
             }
 
-            var buildNode = scriptsNode["build"] as JValue;
+            var buildNode = packageJson.scripts["build"] as JValue;
             var buildCommand = buildNode.Value as string;
 
             if (string.IsNullOrEmpty(buildCommand))
