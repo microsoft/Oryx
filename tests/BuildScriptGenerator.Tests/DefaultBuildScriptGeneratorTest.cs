@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -126,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
-            Assert.Equal("Could not detect the language from repo.", exception.Message);
+            Assert.Equal(Labels.UnableToDetectLanguageMessage, exception.Message);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -289,7 +290,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Act & Assert
             var exception = Assert.Throws<UnsupportedLanguageException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
-            Assert.Equal("Could not detect the language from repo.", exception.Message);
+            Assert.Equal(Labels.UnableToDetectLanguageMessage, exception.Message);
             Assert.True(detector.DetectInvoked);
         }
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -41,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             // Since enumerating all files in the directory may take some time, write a message using the
             // given IStandardOutputWriter to alert the user of what is happening.
-            _writer.WriteLine(string.Format(Constants.EnumerateFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension));
+            _writer.WriteLine(string.Format(Labels.DotNetCoreEnumeratingFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension));
 
             // search for .csproj files
             var projectFiles = GetAllProjectFilesInRepo(

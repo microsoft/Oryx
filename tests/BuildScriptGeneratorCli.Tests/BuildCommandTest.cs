@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -279,8 +281,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         [Fact]
         public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
         {
-            var stdError = "Error: Could not detect the language from repo.";
-            var enumerateMessage = "Enumerating repo to find any files with extension 'csproj'...";
+            var stdError = $"Error: ${Labels.UnableToDetectLanguageMessage}";
+            var enumerateMessage = string.Format(Labels.DotNetCoreEnumeratingFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole();
             var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);

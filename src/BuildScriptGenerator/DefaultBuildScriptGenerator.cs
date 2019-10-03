@@ -10,6 +10,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -386,7 +387,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             finally
             {
-                throw new UnsupportedLanguageException("Could not detect the language from repo.");
+                throw new UnsupportedLanguageException(Labels.UnableToDetectLanguageMessage);
             }
         }
 

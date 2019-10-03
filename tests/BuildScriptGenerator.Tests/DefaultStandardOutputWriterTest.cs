@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void DefaultStandardOutputWriterEmptyConstructor()
+        public void DefaultStandardOutputWriter_EmptyConstructor_ValidateWriteMethods()
         {
             var writer = new DefaultStandardOutputWriter();
             writer.Write("Hello world!");
@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void DefaultStandardOutputWriterWriteConstructor()
+        public void DefaultStandardOutputWriter_SingleParameterConstructor_ValidateWriteMethods()
         {
             var writer = new DefaultStandardOutputWriter(_write);
             writer.Write("Hello world!");
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void DefaultStandardOutputWriterFullConstructor()
+        public void DefaultStandardOutputWriter_BothParametersConstructor_ValidateWriteMethods()
         {
             var writer = new DefaultStandardOutputWriter(_write, _writeLine);
             writer.Write("Hello world!");
