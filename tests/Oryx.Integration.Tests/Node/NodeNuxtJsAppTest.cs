@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact(Skip = "Temporarily skipping this test")]
+        [Fact]
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModules()
         {
             // Arrange
@@ -63,12 +63,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/index");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
                     Assert.Contains("Welcome!", data);
                 });
         }
 
-        [Fact(Skip = "Temporarily skipping this test")]
+        [Fact]
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules()
         {
             var nodeVersion = "10";
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/index");
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
                     Assert.Contains("Welcome!", data);
                 });
         }
