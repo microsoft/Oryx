@@ -3,13 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,12 +24,11 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
-        public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModules(string nodeVersion)
+        [Fact]
+        public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModules()
         {
             // Arrange
+            var nodeVersion = "10";
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -67,11 +65,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
-        public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModules(string nodeVersion)
+        [Fact]
+        public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModules()
         {
+            var nodeVersion = "10";
             string compressFormat = "tar-gz";
             // NOTE:
             // 1. Use intermediate directory(which here is local to container) to avoid errors like

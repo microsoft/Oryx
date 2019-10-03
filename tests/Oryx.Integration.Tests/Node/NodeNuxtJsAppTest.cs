@@ -25,12 +25,11 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
-        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModules(string nodeVersion)
+        [Fact]
+        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModules()
         {
             // Arrange
+            var nodeVersion = "10";
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -67,11 +66,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
-        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules(string nodeVersion)
+        [Fact]
+        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules()
         {
+            var nodeVersion = "10";
             string compressFormat = "zip";
             // NOTE:
             // 1. Use intermediate directory(which here is local to container) to avoid errors like
@@ -96,7 +94,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
-                .AddCommand($"cp -rf /tmp/out/. {appOutputDir}") 
+                .AddCommand($"cp -rf /tmp/out/. {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
