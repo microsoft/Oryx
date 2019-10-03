@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .AddCommand($"cp -rf /tmp/out/. {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
