@@ -11,27 +11,24 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
-	"strconv"
 	"strings"
 )
 
-
 type PythonStartupScriptGenerator struct {
-	AppPath                     string
-	UserStartupCommand          string
-	DefaultAppPath              string
-	DefaultAppModule            string
-	DefaultAppDebugModule       string
-	DebugAdapter                string // Remote debugger adapter to use. Currently, only `ptvsd` is supported.
-	DebugPort                   string
-	DebugWait                   bool   // Whether debugger adapter should pause and wait for a client
-	                                   //  connection before running the app.
-	BindPort                    string
-	VirtualEnvName              string
-	PackageDirectory            string
-	SkipVirtualEnvExtraction    bool
-	Manifest                    common.BuildManifest
+	AppPath               string
+	UserStartupCommand    string
+	DefaultAppPath        string
+	DefaultAppModule      string
+	DefaultAppDebugModule string
+	DebugAdapter          string // Remote debugger adapter to use. Currently, only `ptvsd` is supported.
+	DebugPort             string
+	DebugWait             bool // Whether debugger adapter should pause and wait for a client
+	//  connection before running the app.
+	BindPort                 string
+	VirtualEnvName           string
+	PackageDirectory         string
+	SkipVirtualEnvExtraction bool
+	Manifest                 common.BuildManifest
 }
 
 const SupportedDebugAdapter = "ptvsd" // Not using an array since there's only one at the moment
@@ -57,12 +54,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	packageSetupBlock := gen.getPackageSetupCommand()
 	scriptBuilder.WriteString(packageSetupBlock)
 
-	appType := "" // "Django", "Flask", etc.
+	appType := ""         // "Django", "Flask", etc.
 	appDebugAdapter := "" // Used debugger adapter
 	appDirectory := ""
-	appModule := ""   // Suspected entry module in app
+	appModule := ""      // Suspected entry module in app
 	appDebugModule := "" // Command to run under a debugger in case debugging mode was requested
-	
+
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
 	if command != "" {
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.AppPath)
@@ -73,16 +70,16 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 		if appFw != nil {
 			println("Detected an app based on " + appFw.Name())
-			appType        = appFw.Name()
-			appDirectory   = gen.AppPath
-			appModule      = appFw.GetGunicornModuleArg()
+			appType = appFw.Name()
+			appDirectory = gen.AppPath
+			appModule = appFw.GetGunicornModuleArg()
 			appDebugModule = appFw.GetDebuggableModule()
 		} else {
 			println("No framework detected; using default app from " + gen.DefaultAppPath)
 			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
-			appType        = "Default"
-			appDirectory   = gen.DefaultAppPath
-			appModule      = gen.DefaultAppModule
+			appType = "Default"
+			appDirectory = gen.DefaultAppPath
+			appModule = gen.DefaultAppModule
 			appDebugModule = gen.DefaultAppDebugModule
 		}
 
@@ -104,8 +101,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	logger.LogProperties(
 		"Finalizing script",
-		map[string]string { "appType": appType, "appDebugAdapter": appDebugAdapter,
-							"appModule": appModule, "venv": gen.Manifest.VirtualEnvName })
+		map[string]string{"appType": appType, "appDebugAdapter": appDebugAdapter,
+			"appModule": appModule, "venv": gen.Manifest.VirtualEnvName})
 
 	var runScript = scriptBuilder.String()
 	logger.LogInformation("Run script content:\n" + runScript)
@@ -216,10 +213,8 @@ func getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
 // `module` is of the pattern "<dotted module path>:<variable name>".
 // The variable name refers to a WSGI callable that should be found in the specified module.
 func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module string, appDir string) string {
-	workerCount := getWorkerCount()
-
 	// Default to App Service's timeout value (in seconds)
-	args := "--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" + workerCount
+	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
 	if gen.BindPort != "" {
 		args = appendArgs(args, "--bind="+DefaultHost+":"+gen.BindPort)
@@ -264,7 +259,7 @@ func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArg
 	}
 
 	pycmd := fmt.Sprintf("%spython -m ptvsd --host %s --port %s %s -m %s",
-						 cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
+		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
 }
@@ -275,11 +270,4 @@ func appendArgs(currentArgs string, argToAppend string) string {
 	}
 	currentArgs += argToAppend
 	return currentArgs
-}
-
-func getWorkerCount() string {
-	// http://docs.gunicorn.org/en/stable/design.html#how-many-workers
-	cpuCount := runtime.NumCPU()
-	workerCount := (2 * cpuCount) + 1
-	return strconv.Itoa(workerCount)
 }

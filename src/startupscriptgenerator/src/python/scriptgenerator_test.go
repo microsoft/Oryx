@@ -6,8 +6,6 @@
 package main
 
 import (
-	"runtime"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,9 +13,8 @@ import (
 
 func Test_ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_onlyModule(t *testing.T) {
 	// Arrange
-	workerCount := getWorkerCount()
-	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" +
-		workerCount + "\" gunicorn module.py"
+	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
+		"\" gunicorn module.py"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "",
 	}
@@ -31,9 +28,8 @@ func Test_ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_only
 
 func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAndPath(t *testing.T) {
 	// Arrange
-	workerCount := getWorkerCount()
-	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workders=" +
-		workerCount + " --chdir=/a/b/c\" gunicorn module.py"
+	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
+		" --chdir=/a/b/c\" gunicorn module.py"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "",
 	}
@@ -47,27 +43,14 @@ func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAnd
 
 func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAndPathAndHost(t *testing.T) {
 	// Arrange
-	workerCount := getWorkerCount()
-	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" +
-		workerCount + "--bind=0.0.0.0:12345 --chdir=/a/b/c\" gunicorn module.py"
+	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
+		" --bind=0.0.0.0:12345 --chdir=/a/b/c\" gunicorn module.py"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "12345",
 	}
 
 	// Act
 	actual := gen.buildGunicornCommandForModule("module.py", "/a/b/c")
-
-	// Assert
-	assert.Equal(t, expected, actual)
-}
-
-func Test_GetsWorkerCountBasedOnNumberOfCores(t *testing.T) {
-	// Arrange
-	cpuCount := runtime.NumCPU()
-	expected := strconv.Itoa((2 * cpuCount) + 1)
-
-	// Act
-	actual := getWorkerCount()
 
 	// Assert
 	assert.Equal(t, expected, actual)
