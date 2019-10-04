@@ -114,7 +114,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             return new PhpLanguageDetector(
                 Options.Create(options),
                 new TestPhpVersionProvider(supportedPhpVersions),
-                NullLogger<PhpLanguageDetector>.Instance);
+                NullLogger<PhpLanguageDetector>.Instance,
+                new DefaultStandardOutputWriter());
         }
 
         private class TestPhpVersionProvider : IPhpVersionProvider

@@ -16,15 +16,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpScriptGeneratorOptions _opts;
         private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpLanguageDetector> _logger;
+        private readonly IStandardOutputWriter _writer;
 
         public PhpLanguageDetector(
             IOptions<PhpScriptGeneratorOptions> options,
             IPhpVersionProvider versionProvider,
-            ILogger<PhpLanguageDetector> logger)
+            ILogger<PhpLanguageDetector> logger,
+            IStandardOutputWriter writer)
         {
             _opts = options.Value;
             _versionProvider = versionProvider;
             _logger = logger;
+            _writer = writer;
         }
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)

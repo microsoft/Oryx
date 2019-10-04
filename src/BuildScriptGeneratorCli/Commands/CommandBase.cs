@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             try
             {
-                _serviceProvider = GetServiceProvider();
+                _serviceProvider = GetServiceProvider(console);
 
                 logger = _serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
@@ -90,8 +90,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal virtual IServiceProvider GetServiceProvider()
+        internal virtual IServiceProvider GetServiceProvider(IConsole console)
         {
+            // Don't use the IConsole instance in this method -- override this method in the command
+            // and pass IConsole through to ServiceProviderBuilder to write to the output.
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
                 .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();

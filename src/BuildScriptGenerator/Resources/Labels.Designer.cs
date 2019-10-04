@@ -79,6 +79,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enumerating repo to find any files with extension &apos;{0}&apos;....
+        /// </summary>
+        internal static string DotNetCoreEnumeratingFilesInRepo {
+            get {
+                return ResourceManager.GetString("DotNetCoreEnumeratingFilesInRepo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The package &apos;{0}&apos;, specified in package.json&apos;s {1},\nis known to have been superseded by &apos;{2}&apos;. Consider switching over..
         /// </summary>
         internal static string NodeDependencyCheckerMessageFormat {
@@ -111,6 +120,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         internal static string ToolVersionCheckerMessageFormat {
             get {
                 return ResourceManager.GetString("ToolVersionCheckerMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not detect the language from repo..
+        /// </summary>
+        internal static string UnableToDetectLanguageMessage {
+            get {
+                return ResourceManager.GetString("UnableToDetectLanguageMessage", resourceCulture);
             }
         }
     }

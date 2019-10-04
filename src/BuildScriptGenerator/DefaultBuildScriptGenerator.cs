@@ -10,6 +10,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -24,17 +25,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
+        private readonly IStandardOutputWriter _writer;
 
         public DefaultBuildScriptGenerator(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             IEnumerable<IChecker> checkers,
-            ILogger<DefaultBuildScriptGenerator> logger)
+            ILogger<DefaultBuildScriptGenerator> logger,
+            IStandardOutputWriter writer)
         {
             _programmingPlatforms = programmingPlatforms;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
+            _writer = writer;
             _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
         }
 
@@ -383,7 +387,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             finally
             {
-                throw new UnsupportedLanguageException("Could not detect the language from repo.");
+                throw new UnsupportedLanguageException(Labels.UnableToDetectLanguageMessage);
             }
         }
 

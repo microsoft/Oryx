@@ -410,7 +410,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             return new NodeLanguageDetector(
                 new TestVersionProvider(supportedNodeVersions, supportedNpmVersions),
                 Options.Create(options),
-                NullLogger<NodeLanguageDetector>.Instance);
+                NullLogger<NodeLanguageDetector>.Instance,
+                new DefaultStandardOutputWriter());
         }
     }
 }

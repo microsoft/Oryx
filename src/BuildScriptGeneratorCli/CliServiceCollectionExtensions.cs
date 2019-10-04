@@ -5,16 +5,21 @@
 
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal static class CliServiceCollectionExtensions
     {
-        public static IServiceCollection AddCliServices(this IServiceCollection services)
+        public static IServiceCollection AddCliServices(this IServiceCollection services, IConsole console = null)
         {
             services.AddSingleton<IConsole, PhysicalConsole>();
             services.AddSingleton<CliEnvironmentSettings>();
-            return services;
+            return console == null ?
+                services.AddSingleton<IStandardOutputWriter, DefaultStandardOutputWriter>() :
+                services.AddSingleton<IStandardOutputWriter>(new DefaultStandardOutputWriter(
+                                                (message) => { console.Write(message); },
+                                                (message) => { console.WriteLine(message); }));
         }
     }
 }

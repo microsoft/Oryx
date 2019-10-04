@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
@@ -222,7 +223,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(0, result.ExitCode);
-                    Assert.Contains("Could not detect the language from repo", result.StdErr);
+                    Assert.Contains(Labels.UnableToDetectLanguageMessage, result.StdErr);
                 },
                 result.GetDebugInfo());
         }

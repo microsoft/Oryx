@@ -17,15 +17,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonLanguageDetector> _logger;
+        private readonly IStandardOutputWriter _writer;
 
         public PythonLanguageDetector(
             IOptions<PythonScriptGeneratorOptions> options,
             IPythonVersionProvider pythonVersionProvider,
-            ILogger<PythonLanguageDetector> logger)
+            ILogger<PythonLanguageDetector> logger,
+            IStandardOutputWriter writer)
         {
             _pythonScriptGeneratorOptions = options.Value;
             _versionProvider = pythonVersionProvider;
             _logger = logger;
+            _writer = writer;
         }
 
         public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)

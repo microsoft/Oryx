@@ -187,7 +187,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             return new PythonLanguageDetector(
                 Options.Create(options),
                 new TestPythonVersionProvider(supportedPythonVersions),
-                NullLogger<PythonLanguageDetector>.Instance);
+                NullLogger<PythonLanguageDetector>.Instance,
+                new DefaultStandardOutputWriter());
         }
 
         private class TestPythonVersionProvider : IPythonVersionProvider

@@ -123,6 +123,10 @@
   <data name="DotNetCoreCouldNotFindProjectFileToBuild" xml:space="preserve">
     <value>Could not find the project file '{0}' specified in settings. Make sure the path to the project file is relative to the root of the repo. For example: PROJECT=src/Dashboard/Dashboard.csproj</value>
   </data>
+  <data name="DotNetCoreEnumeratingFilesInRepo" xml:space="preserve">
+    <value>Enumerating repo to find any files with extension '{0}'...</value>
+    <comment>{0} - file extension of target files</comment>
+  </data>
   <data name="NodeDependencyCheckerMessageFormat" xml:space="preserve">
     <value>The package '{0}', specified in package.json's {1},\nis known to have been superseded by '{2}'. Consider switching over.</value>
     <comment>{0} - detected package; {1} - key of object in package.json; {2} - alternative package</comment>
@@ -138,5 +142,8 @@
   <data name="ToolVersionCheckerMessageFormat" xml:space="preserve">
     <value>An outdated version of {0} was detected ({1}). Consider updating.\nVersions supported by Oryx: {2}</value>
     <comment>{0} - platform name; {1} - detected version; {2} - Oryx GitHub URL</comment>
+  </data>
+  <data name="UnableToDetectLanguageMessage" xml:space="preserve">
+    <value>Could not detect the language from repo.</value>
   </data>
 </root>

@@ -5,22 +5,26 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
+        private readonly IStandardOutputWriter _writer;
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
         private bool _probedForProjectFile;
         private string _projectFileRelativePath;
 
-        public ProbeAndFindProjectFileProvider(ILogger<ProbeAndFindProjectFileProvider> logger)
+        public ProbeAndFindProjectFileProvider(ILogger<ProbeAndFindProjectFileProvider> logger, IStandardOutputWriter writer)
         {
             _logger = logger;
+            _writer = writer;
         }
 
         public string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
@@ -35,6 +39,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             // Check if any of the sub-directories has a .csproj or .fsproj file and if that file has references
             // to websdk or azure functions
+
+            // Since enumerating all files in the directory may take some time, write a message using the
+            // given IStandardOutputWriter to alert the user of what is happening.
+            _writer.WriteLine(string.Format(Labels.DotNetCoreEnumeratingFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension));
 
             // search for .csproj files
             var projectFiles = GetAllProjectFilesInRepo(
