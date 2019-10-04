@@ -238,8 +238,8 @@ namespace Microsoft.Oryx.Tests.Common
                         showDebugInfo = false;
                         break;
                     }
-                    catch (Exception ex) when (ex.InnerException is IOException ||
-                    ex.InnerException is SocketException)
+                    catch (Exception ex) when (ex.InnerException is IOException
+                                            || ex.InnerException is SocketException)
                     {
                         if (i == MaxRetryCount - 1)
                         {
