@@ -326,6 +326,10 @@ namespace Microsoft.Oryx.Tests.Common
                     var hostPort = Convert.ToInt32(portMapping[1]);
                     return hostPort;
                 }
+                else if (getPortMappingResult.StdErr.Contains("No such container"))
+                {
+                    break;
+                }
             }
 
             throw new InvalidOperationException("Could not retreive the host port of the container.");
