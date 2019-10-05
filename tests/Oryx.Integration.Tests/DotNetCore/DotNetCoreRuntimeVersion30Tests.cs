@@ -107,6 +107,50 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        public async Task CanBuildAndRun_NetCore30MvcApp()
+        {
+            // Arrange
+            var dotnetcoreVersion = "3.0";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30MvcApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp30WebApp,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{dotnetcoreVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+                });
+        }
+
+        [Fact]
         public async Task CanRun_SelfContainedApp_TargetedForLinux()
         {
             // ****************************************************************
