@@ -48,6 +48,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
 
+        [Option(
+            "--output",
+            CommandOptionType.SingleValue,
+            Description = "The path that the build script will be written to. If not specified, the result will be written to STDOUT.")]
+        public string OutputPath { get; set; }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var scriptGenerator = new BuildScriptGenerator(
@@ -61,7 +67,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitFailure;
             }
 
-            console.WriteLine(generatedScript);
+            if (string.IsNullOrEmpty(OutputPath))
+            {
+                console.WriteLine(generatedScript);
+            }
+            else
+            {
+                File.WriteAllText(OutputPath, generatedScript);
+                console.WriteLine($"Script written to '{OutputPath}'");
+
+                // Try making the script executable
+                ProcessHelper.TrySetExecutableMode(OutputPath);
+            }
 
             return ProcessConstants.ExitSuccess;
         }
