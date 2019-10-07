@@ -47,7 +47,7 @@ jobs:
 
   - task: ShellScript@2
     inputs:
-      scriptPath: vsts/scripts/createReleaseTag.sh
+      scriptPath: ./vsts/scripts/createReleaseTag.sh
 
   - task: GitHubRelease@0
     displayName: 'GitHub release (create)'
