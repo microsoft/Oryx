@@ -20,7 +20,7 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     [Command(Name, Description = "Build an app.")]
-    internal class BuildCommand : CommandBase
+    internal class BuildCommand : BuildCommandBase
     {
         public const string Name = "build";
 
@@ -36,10 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Oryx.BuildScriptGenerator.Constants.PostBuildCommandPrologue,
                 Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue),
         };
-
-        [Argument(0, Description = "The source directory.")]
-        [DirectoryExists]
-        public string SourceDir { get; set; }
 
         [Option(
             "-i|--intermediate-dir <dir>",
@@ -64,12 +60,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
         }
 
-        [Option(
-            OptionTemplates.Platform,
-            CommandOptionType.SingleValue,
-            Description = "The name of the programming platform used in the provided source directory.")]
-        public string PlatformName { get; set; }
-
         private bool _languageVersionWasSet;
 
         [Option(
@@ -88,30 +78,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         }
 
         [Option(
-            OptionTemplates.PlatformVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the programming platform used in the provided source directory.")]
-        public string PlatformVersion { get; set; }
-
-        [Option(
             "-o|--output <dir>",
             CommandOptionType.SingleValue,
             Description = "The destination directory.")]
         public string DestinationDir { get; set; }
-
-        [Option("--package", CommandOptionType.NoValue,
-            Description = "Package the built sources into a platform-specific format.")]
-        public bool ShouldPackage { get; set; }
-
-        [Option("--os-requirements", CommandOptionType.SingleValue,
-            Description = "Comma-separated list of operating system packages that will be installed (using apt-get) before building the application.")]
-        public string OsRequirements { get; set; }
-
-        [Option(
-            OptionTemplates.Property,
-            CommandOptionType.MultipleValue,
-            Description = "Additional information used by this tool to generate and run build scripts.")]
-        public string[] Properties { get; set; }
 
         [Option(
             OptionTemplates.ManifestDir,
