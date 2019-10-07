@@ -45,10 +45,14 @@ jobs:
     inputs:
       artifactName: drop
 
+  - task: ShellScript@2
+    inputs:
+      scriptPath: vsts/scripts/createReleaseTag.sh
+
   - task: GitHubRelease@0
     displayName: 'GitHub release (create)'
     inputs:
       gitHubConnection: 'Oryx-GitHub'
       repositoryName: Microsoft/Oryx
       tagSource: manual
-      tag: '$(Build.BuildNumber)'
+      tag: '$(ReleaseTagName)'
