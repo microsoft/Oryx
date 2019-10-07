@@ -37,5 +37,5 @@ echo
 echo "Building package..."
 cd "$PLATFORM_DIR"
 go build \
-    -ldflags "-X common.BuildNumber=$BUILD_NUMBER -X common.Commit=$GIT_COMMIT" \
+    -ldflags "-X common.BuildNumber=$BUILD_NUMBER -X common.Commit=$GIT_COMMIT -X common.ReleaseTagName=$ReleaseTagName" \
     -v -o "$TARGET_OUTPUT" .

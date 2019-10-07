@@ -40,6 +40,7 @@ steps:
    $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
    $env:GIT_COMMIT
    $env:BUILD_NUMBER
+   $env:ReleaseTagName
    dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
   displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))

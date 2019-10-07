@@ -5,8 +5,23 @@ variables:
 - group: Oryx
 
 stages:
+  - stage: CreateReleaseTag
+    jobs:
+    - job: CreateReleaseTag
+      pool:
+        name: OryxLinux
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - task: ShellScript@2
+        inputs:
+          scriptPath: ./vsts/scripts/createReleaseTag.sh
+      - script: |
+        echo "$(ReleaseTagName)" > $(Build.ArtifactStagingDirectory)/releaseTag.txt
+
   - stage: Build
     displayName: Build Stage
+    dependsOn: CreateReleaseTag
     jobs:
     - job: Job_Security
       displayName: Security
@@ -16,7 +31,10 @@ stages:
       steps:
       - template: templates/_securityChecks.yml
 
+    - template: templates/jobs/_setReleaseTag.yml
+
     - job: Job_SignBinaries
+      dependsOn: Job_SetReleaseTag
       displayName: Sign Oryx Binaries
       pool:
         name: VSEng-MicroBuildVS2017
@@ -24,6 +42,7 @@ stages:
         - msbuild
         - visualstudio
       variables:
+        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
@@ -37,6 +56,7 @@ stages:
       pool:
         name: OryxLinux
       variables:
+        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -61,6 +81,7 @@ stages:
       pool:
         name: OryxLinux
       variables:
+        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -86,7 +107,8 @@ stages:
       and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), 
       startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
-    jobs:
+    - template: templates/jobs/_setReleaseTag.yml
+    
     - template: templates/_releaseJobTemplate.yml
 
 trigger: none

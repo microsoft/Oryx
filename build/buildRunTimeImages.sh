@@ -24,12 +24,16 @@ then
     fi
 fi
 
-labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
+labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+labels="$labels --label com.microsoft.oryx.release-tag-name=$ReleaseTagName"
 
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
-	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+	args="--build-arg GIT_COMMIT=$GIT_COMMIT"
+    args="$args --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+    args="$args --build-arg ReleaseTagName=$ReleaseTagName"
 fi
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"

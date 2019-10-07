@@ -32,6 +32,7 @@ jobs:
 - job: Release_GitHub
   displayName: Create GitHub release
   dependsOn: 
+    - Job_SetReleaseTag
     - Release_BuildImage
     - Release_RuntimeImages
   pool:
@@ -51,4 +52,4 @@ jobs:
       gitHubConnection: 'Oryx-GitHub'
       repositoryName: Microsoft/Oryx
       tagSource: manual
-      tag: '$(Build.BuildNumber)'
+      tag: '$(ReleaseTagName)'
