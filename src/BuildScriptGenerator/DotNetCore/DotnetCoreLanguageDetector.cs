@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
         {
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))

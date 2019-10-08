@@ -45,19 +45,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            string appPath = Path.GetFullPath(AppDir);
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var sourceRepo = new LocalSourceRepo(appPath, loggerFactory);
+            var sourceRepo = new LocalSourceRepo(AppDir, loggerFactory);
 
-            var options = new RunScriptGeneratorOptions
+            var ctx = new RunScriptGeneratorContext
             {
                 SourceRepo = sourceRepo,
-                PlatformVersion = PlatformVersion,
+                Language = PlatformName,
+                LanguageVersion = PlatformVersion,
                 PassThruArguments = RemainingArgs,
             };
 
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
-            var script = runScriptGenerator.GenerateBashScript(PlatformName, options);
+            var script = runScriptGenerator.GenerateBashScript(ctx);
             if (string.IsNullOrEmpty(script))
             {
                 console.WriteErrorLine("Couldn't generate startup script.");
@@ -82,9 +82,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            if (string.IsNullOrWhiteSpace(PlatformName))
+            AppDir = string.IsNullOrEmpty(AppDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(AppDir);
+            if (!Directory.Exists(AppDir))
             {
-                console.WriteErrorLine("Platform name is required.");
+                console.WriteErrorLine($"Could not find the source directory '{AppDir}'.");
                 return false;
             }
 

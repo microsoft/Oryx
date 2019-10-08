@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPythonVersions;
 
-        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
         {
             return _detector.Detect(context);
         }

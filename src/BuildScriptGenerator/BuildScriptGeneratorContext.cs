@@ -3,21 +3,17 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
     /// Options for the build script generation process.
     /// </summary>
-    public partial class BuildScriptGeneratorContext
+    public partial class BuildScriptGeneratorContext : ScriptGeneratorContext
     {
         /// <summary>
         /// Gets or sets the information which is used to correlate log messages.
         /// </summary>
         public string OperationId { get; set; }
-
-        public ISourceRepo SourceRepo { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the main programming language used in the repo.
@@ -27,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         /// <summary>
         /// Gets or sets the version of the programming language used in the repo.
-        /// If provided, the <see cref="BuildScriptGeneratorContext.Language"/> property should also be provided.
+        /// If provided, the <see cref="Language"/> property should also be provided.
         /// </summary>
         public string LanguageVersion { get; set; }
 
@@ -47,11 +43,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// are disabled even if they are enabled by their specific flags.
         /// </summary>
         public bool DisableMultiPlatformBuild { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets specific properties for the build script.
-        /// </summary>
-        public IDictionary<string, string> Properties { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether build-time checkers should run.

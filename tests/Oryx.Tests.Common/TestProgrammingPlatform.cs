@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public IEnumerable<string> SupportedVersions { get; }
 
-        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
         {
             return _detector?.Detect(context);
         }

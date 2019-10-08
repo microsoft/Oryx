@@ -26,10 +26,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Detects the programming platform name and version required by the application in source directory.
         /// </summary>
-        /// <param name="context">The <see cref="BuildScriptGeneratorContext"/>.</param>
+        /// <param name="context">The <see cref="ScriptGeneratorContext"/>.</param>
         /// <returns>An instance of <see cref="LanguageDetectorResult"/> if detection was
         /// successful, <c>null</c> otherwise</returns>
-        LanguageDetectorResult Detect(BuildScriptGeneratorContext context);
+        LanguageDetectorResult Detect(ScriptGeneratorContext context);
 
         /// <summary>
         /// Sets the version of the platform in the <see cref="BuildScriptGeneratorContext"/>.
