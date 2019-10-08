@@ -1,7 +1,10 @@
 #!/bin/bash
 
 set -ex
-sourceBranch="$BUILD_SOURCEBRANCHNAME"
+
+# branch name is of the format: refs/heads/patch/21090924.1
+replacingText="refs/heads"
+sourceBranch=$(echo "$BUILD_SOURCEBRANCH" | sed -e "s.$replacingText..g")
 
 if [ "$sourceBranch" == "master" ]; then
     echo "##vso[task.setvariable variable=ReleaseTagName;]$BUILD_BUILDNUMBER"
