@@ -3,7 +3,7 @@
 set -ex
 
 # branch name is of the format: refs/heads/patch/21090924.1
-replacingText="refs/heads"
+replacingText="refs/heads/"
 sourceBranch=$(echo "$BUILD_SOURCEBRANCH" | sed -e "s.$replacingText..g")
 
 if [ "$sourceBranch" == "master" ]; then
