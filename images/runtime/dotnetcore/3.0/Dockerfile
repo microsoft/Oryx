@@ -1,0 +1,48 @@
+# Startup script generator
+FROM golang:1.11-stretch as startupCmdGen
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS tools-install
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.0.0
+
+RUN apt-get update \
+  && apt-get install -y \
+     file \
+     lldb \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
+ENV PATH="/opt/dotnetcore-tools:${PATH}"
+RUN dotnet-sos install
+
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_KEY
+ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+
+COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
+
+# Following is a pattern that AppService currently uses
+RUN groupadd -g 1002 oryx_group
+RUN useradd -u 1001 -g oryx_group oryx_user
+RUN chown -R oryx_user:oryx_group /tmp
+
+# Grant permissions to user's home folder as languages like .NET Core and Node
+# try using it.
+RUN mkdir -p /home/oryx_user
+RUN chmod -R 777 /home/oryx_user
+
+# Run the container as the following user
+USER oryx_user

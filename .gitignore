@@ -255,7 +255,6 @@ paket-files/
 
 # Node and .NET Core runtime Dockerfiles, that are auto generated
 images/runtime/node/*/Dockerfile
-images/runtime/dotnetcore/*.*/
 images/runtime/python/*.*/
 images/runtime/php/*.*/
 

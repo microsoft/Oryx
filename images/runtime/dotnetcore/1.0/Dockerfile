@@ -5,13 +5,11 @@ WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM %DOTNETCORE_BASE_IMAGE%
+FROM mcr.microsoft.com/dotnet/core/runtime:1.0.16
 
 # Older .NET core versions, which have reached end of life and therefore are no longer updated, use
 # a version of `curl` that has known issues.
