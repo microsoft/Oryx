@@ -75,7 +75,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             else
             {
-                OutputPath = Path.GetFullPath(OutputPath);
                 OutputPath.SafeWriteAllText(generatedScript);
                 console.WriteLine($"Script written to '{OutputPath}'");
 

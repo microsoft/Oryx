@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.Common.Extensions
                 return;
             }
 
-            var trimmedOutputPath = outputPath.TrimEnd('/').TrimEnd('\\');
-            var parentPath = Directory.GetParent(trimmedOutputPath).FullName;
+            outputPath = Path.GetFullPath(outputPath);
+            var parentPath = Directory.GetParent(outputPath).FullName;
             if (!Directory.Exists(parentPath))
             {
                 Directory.CreateDirectory(parentPath);
@@ -38,8 +38,8 @@ namespace Microsoft.Oryx.Common.Extensions
         }
 
         /// <summary>
-        /// This method will recursively enumerate the files under a given path since the
-        /// Directory.EnumerateFiles call does not check to see if a directory exists before
+        /// This method will recursively enumerate the files under a given path since the Directory.EnumerateFiles
+        /// call does not check to see if a directory exists, or if the directory is accessible, before
         /// enumerating it.
         /// </summary>
         /// <param name="path">The directory to recursively enumerate the files in.</param>

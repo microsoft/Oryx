@@ -21,7 +21,28 @@ namespace Microsoft.Oryx.Common.Extensions
         }
 
         [Fact]
-        public void SafeWriteAllText_Sanity()
+        public void SafeWriteAllText_Validate_EmptyPath()
+        {
+            var contents = "Test content";
+
+            // No failure for empty string
+            string.Empty.SafeWriteAllText(contents);
+        }
+
+        [Fact]
+        public void SafeWriteAllText_Validate_ExistingParentDirectory()
+        {
+            var contents = "Test content";
+
+            // Existing parent directory, no file
+            var outputPath = Path.Combine(_testDirPath, "test.txt");
+            outputPath.SafeWriteAllText(contents);
+            Assert.True(File.Exists(outputPath));
+            Assert.Equal(File.ReadAllText(outputPath), contents);
+        }
+
+        [Fact]
+        public void SafeWriteAllText_Validate_ExistingFile()
         {
             var contents = "Test content";
             var overwrittenContents = "Overwritten test contents";
@@ -38,8 +59,15 @@ namespace Microsoft.Oryx.Common.Extensions
             // Existing parent directory, overwrites file
             outputPath.SafeWriteAllText(overwrittenContents);
             Assert.Equal(File.ReadAllText(outputPath), overwrittenContents);
+        }
+
+        [Fact]
+        public void SafeWriteAllText_Validate_NonExistentParentDirectory()
+        {
+            var contents = "Test content";
 
             // Non-existent parent directory
+            var outputPath = Path.Combine(_testDirPath, "test.txt");
             var nonExistentDirectory = _testDir.GenerateRandomChildDirPath();
             outputPath = Path.Combine(nonExistentDirectory, "test.txt");
             outputPath.SafeWriteAllText(contents);
