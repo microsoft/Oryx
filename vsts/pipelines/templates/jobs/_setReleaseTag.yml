@@ -1,6 +1,7 @@
 # File: templates/jobs.yml
 jobs:
 - job: Job_SetReleaseTag
+  displayName: 'Set ReleaseTagName as environment variable'
   pool:
     name: OryxLinux
   steps:

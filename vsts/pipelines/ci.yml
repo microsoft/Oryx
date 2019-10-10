@@ -18,13 +18,15 @@ stages:
           scriptPath: ./vsts/scripts/createReleaseTag.sh
         displayName: 'Create release tag'
       - script: |
-          echo "$(ReleaseTagName)" > $(Build.ArtifactStagingDirectory)/releaseTag.txt
+          set -ex
+          sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
+          mkdir -p "$sourcesArtifactsDir"
+          echo "$(ReleaseTagName)" > "$sourcesArtifactsDir/releaseTag.txt"
         displayName: 'Write release tag'
-      - task: PublishBuildArtifacts@1
+      - task: PublishPipelineArtifact@1
         inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)
+          pathToPublish: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
           artifactName: releaseTag
-        
 
   - stage: Build
     displayName: Build Stage
