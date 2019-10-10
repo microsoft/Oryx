@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -17,6 +18,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class BuildScriptCommand : BuildCommandBase
     {
         public const string Name = "build-script";
+
+        [Option(
+            "--output",
+            CommandOptionType.SingleValue,
+            Description = "The path that the build script will be written to. " +
+                          "If not specified, the result will be written to STDOUT.")]
+        public string OutputPath { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -31,7 +39,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitFailure;
             }
 
-            console.WriteLine(generatedScript);
+            if (string.IsNullOrEmpty(OutputPath))
+            {
+                console.WriteLine(generatedScript);
+            }
+            else
+            {
+                OutputPath.SafeWriteAllText(generatedScript);
+                console.WriteLine($"Script written to '{OutputPath}'");
+
+                // Try making the script executable
+                ProcessHelper.TrySetExecutableMode(OutputPath);
+            }
 
             return ProcessConstants.ExitSuccess;
         }
