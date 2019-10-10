@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Common.Extensions
                 return;
             }
 
-            outputPath = Path.GetFullPath(outputPath);
+            outputPath = Path.GetFullPath(outputPath).TrimEnd('/').TrimEnd('\\');
             var parentPath = Directory.GetParent(outputPath).FullName;
             if (!Directory.Exists(parentPath))
             {
