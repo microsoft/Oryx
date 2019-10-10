@@ -18,6 +18,7 @@ stages:
           scriptPath: ./vsts/scripts/createReleaseTag.sh
       - script: |
           echo "$(ReleaseTagName)" > $(Build.ArtifactStagingDirectory)/releaseTag.txt
+        displayName: 'Write release tag'
 
   - stage: Build
     displayName: Build Stage
