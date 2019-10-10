@@ -11,7 +11,9 @@ jobs:
       artifactName: 'releaseTag'
 
   - script: |
-      set -x
+      set -ex
+      ls -l $(Build.SourcesDirectory)/artifacts
+      ls -l $(Build.SourcesDirectory)/artifacts/releaseTag
       file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
       tagName=""
       if [ -f "$file" ]; then
