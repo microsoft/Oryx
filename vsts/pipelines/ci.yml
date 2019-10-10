@@ -24,6 +24,7 @@ stages:
         inputs:
           pathToPublish: $(Build.ArtifactStagingDirectory)
           artifactName: releaseTag
+        
 
   - stage: Build
     displayName: Build Stage

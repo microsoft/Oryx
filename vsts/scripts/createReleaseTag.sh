@@ -3,8 +3,9 @@
 set -ex
 sourceBranch="$BUILD_SOURCEBRANCHNAME"
 
+tagName=""
 if [ "$sourceBranch" == "master" ]; then
-    echo "##vso[task.setvariable variable=ReleaseTagName;]$BUILD_BUILDNUMBER"
+    tagName="$BUILD_BUILDNUMBER"
 elif [[ "$sourceBranch" == patch/* ]]; then
     IFS=/
     read -ra branchNameParts <<< "$sourceBranch"
@@ -27,8 +28,10 @@ elif [[ "$sourceBranch" == patch/* ]]; then
         exitCode=$?
         rm -f /tmp/createReleaseTag.txt
         if [ $exitCode -eq 0 ]; then
-            echo "##vso[task.setvariable variable=ReleaseTagName;]$fullPatchTagName"
+            tagName="$fullPatchTagName"
             break
         fi
     done
 fi
+
+echo "##vso[task.setvariable variable=ReleaseTagName;]$tagName"
