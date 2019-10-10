@@ -7,8 +7,9 @@ jobs:
   steps:
   - task: DownloadPipelineArtifact@2
     inputs:
-      artifactName: 'releaseTag'
       targetPath: $(Build.SourcesDirectory)/artifacts
+      artifactName: 'releaseTag'
+
   - script: |
       set -x
       file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"

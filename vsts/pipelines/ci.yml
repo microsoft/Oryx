@@ -25,7 +25,7 @@ stages:
         displayName: 'Write release tag'
       - task: PublishPipelineArtifact@1
         inputs:
-          pathToPublish: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
+          targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
           artifactName: releaseTag
 
   - stage: Build
