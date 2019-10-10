@@ -12,5 +12,9 @@
       <_Parameter1>GitCommit</_Parameter1>
       <_Parameter2>$(GIT_COMMIT)</_Parameter2>
     </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition="'$(RELEASE_TAG_NAME)' != ''">
+      <_Parameter1>RELEASE_TAG_NAME</_Parameter1>
+      <_Parameter2>$(RELEASE_TAG_NAME)</_Parameter2>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>

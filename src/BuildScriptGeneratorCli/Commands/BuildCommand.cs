@@ -223,7 +223,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildEventProps = new Dictionary<string, string>()
             {
                 { "oryxVersion", Program.GetVersion() },
-                { "oryxCommitId", Program.GetCommit() },
+                { "oryxCommitId", Program.GetMetadataValue("GitCommit") },
+                { "oryxReleaseTagName", Program.GetMetadataValue("RELEASE_TAG_NAME") },
                 {
                     "oryxCommandLine",
                     string.Join(

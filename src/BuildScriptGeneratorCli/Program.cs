@@ -54,8 +54,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (Version)
             {
                 var version = GetVersion();
-                var commit = GetCommit();
-                console.WriteLine($"Version: {version}, Commit: {commit}");
+                var commit = GetMetadataValue("GitCommit");
+                var releaseTagName = GetMetadataValue("RELEASE_TAG_NAME");
+                console.WriteLine($"Version: {version}, Commit: {commit}, ReleaseTagName: {releaseTagName}");
 
                 return ProcessConstants.ExitSuccess;
             }

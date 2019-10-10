@@ -25,17 +25,21 @@ else
 	echo "Building buildpack runner image..."
 fi
 
+labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
+labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+labels="$labels --label com.microsoft.oryx.release-tag-name=$RELEASE_TAG_NAME"
+
 # Build an image that runs `pack`
 echo "-> Building pack runner image: $ACR_PACK_IMAGE_REPO"
 echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 docker build -f "$PACK_IMAGE_DOCKERFILE" $noCacheFlag \
-			 --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+			 $labels \
 			 -t $ACR_PACK_IMAGE_REPO:latest \
 			 .
 
 if [ "$AGENT_BUILD" == "true" ]; then
-	BUILD_SUFFIX="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+	BUILD_SUFFIX="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 
 	docker tag "$ACR_PACK_IMAGE_REPO:latest" "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX"
 	echo "$ACR_PACK_IMAGE_REPO:$BUILD_SUFFIX" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE

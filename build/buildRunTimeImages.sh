@@ -12,7 +12,6 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 
-
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir="$1"
 if [ ! -z "$runtimeSubDir" ]
@@ -24,12 +23,16 @@ then
     fi
 fi
 
-labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
+labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+labels="$labels --label com.microsoft.oryx.release-tag-name=$RELEASE_TAG_NAME"
 
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
-	args="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+	args="--build-arg GIT_COMMIT=$GIT_COMMIT"
+    args="$args --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+    args="$args --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
 fi
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
@@ -46,7 +49,11 @@ fi
 # We don't retrieve this image from a repository but rather build locally to make sure we get 
 # the latest version of its own base image. 
 
-docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" -t "$RUNTIME_BASE_IMAGE_NAME" $REPO_DIR
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME" \
+    $REPO_DIR
 
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
@@ -63,16 +70,20 @@ for dockerFile in $dockerFiles; do
     cd $REPO_DIR
 
     echo
-    docker build -f $dockerFile -t $localImageTagName \
+    docker build \
+        -f $dockerFile \
+        -t $localImageTagName \
         --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-        $args $labels .
+        $args \
+        $labels \
+        .
 
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 
     # Retag image with build number (for images built in oryxlinux buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
     then
-        uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+        uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
