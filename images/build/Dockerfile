@@ -233,10 +233,10 @@ COPY src/startupscriptgenerator/src .
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG ReleaseTagName=unspecified
+ARG RELEASE_TAG_NAME=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV ReleaseTagName=${ReleaseTagName}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
@@ -287,7 +287,7 @@ RUN rm -rf /tmp/scripts
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG ReleaseTagName=unspecified
+ARG RELEASE_TAG_NAME=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${ReleaseTagName}
+LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}

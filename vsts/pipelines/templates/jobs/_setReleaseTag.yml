@@ -1,7 +1,7 @@
 # File: templates/jobs.yml
 jobs:
 - job: Job_SetReleaseTag
-  displayName: 'Set ReleaseTagName as environment variable'
+  displayName: 'Set RELEASE_TAG_NAME as environment variable'
   pool:
     name: OryxLinux
   steps:
@@ -12,14 +12,12 @@ jobs:
 
   - script: |
       set -ex
-      ls -l $(Build.SourcesDirectory)/artifacts
-      ls -l $(Build.SourcesDirectory)/artifacts/releaseTag
       file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
       cat "$file"
       tagName=""
       if [ -f "$file" ]; then
         tagName=`cat $file`
       fi
-      echo "##vso[task.setvariable variable=ReleaseTagName;isOutput=true]$tagName"
+      echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;isOutput=true]$tagName"
     displayName: 'Set release tag as environment variable'
     name: setReleaseTag

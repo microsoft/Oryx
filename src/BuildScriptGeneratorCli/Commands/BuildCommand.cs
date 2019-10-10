@@ -194,7 +194,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 { "oryxVersion", Program.GetVersion() },
                 { "oryxCommitId", Program.GetMetadataValue("GitCommit") },
-                { "oryxReleaseTagName", Program.GetMetadataValue("ReleaseTagName") },
+                { "oryxReleaseTagName", Program.GetMetadataValue("RELEASE_TAG_NAME") },
                 {
                     "oryxCommandLine",
                     string.Join(

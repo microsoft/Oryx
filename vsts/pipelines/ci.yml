@@ -21,7 +21,7 @@ stages:
           set -ex
           sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
           mkdir -p "$sourcesArtifactsDir"
-          echo "$(ReleaseTagName)" > "$sourcesArtifactsDir/releaseTag.txt"
+          echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
         displayName: 'Write release tag'
       - task: PublishPipelineArtifact@1
         inputs:
@@ -51,7 +51,7 @@ stages:
         - msbuild
         - visualstudio
       variables:
-        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
+        RELEASE_TAG_NAME: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.RELEASE_TAG_NAME'] ]
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
@@ -65,7 +65,7 @@ stages:
       pool:
         name: OryxLinux
       variables:
-        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
+        RELEASE_TAG_NAME: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.RELEASE_TAG_NAME'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -90,7 +90,7 @@ stages:
       pool:
         name: OryxLinux
       variables:
-        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
+        RELEASE_TAG_NAME: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.RELEASE_TAG_NAME'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 

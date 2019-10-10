@@ -37,4 +37,4 @@ elif [[ "$sourceBranch" == patch/* ]]; then
     done
 fi
 
-echo "##vso[task.setvariable variable=ReleaseTagName;]$tagName"
+echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$tagName"

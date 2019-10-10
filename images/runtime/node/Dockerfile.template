@@ -5,8 +5,8 @@ WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG ReleaseTagName=unspecified
-ENV ReleaseTagName=${ReleaseTagName}
+ARG RELEASE_TAG_NAME=unspecified
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
