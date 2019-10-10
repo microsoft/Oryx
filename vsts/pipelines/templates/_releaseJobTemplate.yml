@@ -32,7 +32,6 @@ jobs:
 - job: Release_GitHub
   displayName: Create GitHub release
   dependsOn: 
-    - Job_SetReleaseTag
     - Release_BuildImage
     - Release_RuntimeImages
   pool:
