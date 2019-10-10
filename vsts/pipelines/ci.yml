@@ -16,6 +16,7 @@ stages:
       - task: ShellScript@2
         inputs:
           scriptPath: ./vsts/scripts/createReleaseTag.sh
+        displayName: 'Create release tag'
       - script: |
           echo "$(ReleaseTagName)" > $(Build.ArtifactStagingDirectory)/releaseTag.txt
         displayName: 'Write release tag'
