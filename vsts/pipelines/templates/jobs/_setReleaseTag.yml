@@ -1,5 +1,4 @@
 # File: templates/jobs.yml
-jobs:
 - job: Job_SetReleaseTag
   pool:
     name: OryxLinux
