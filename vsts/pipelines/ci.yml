@@ -19,6 +19,10 @@ stages:
       - script: |
           echo "$(ReleaseTagName)" > $(Build.ArtifactStagingDirectory)/releaseTag.txt
         displayName: 'Write release tag'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: releaseTag
 
   - stage: Build
     displayName: Build Stage
