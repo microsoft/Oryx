@@ -7,7 +7,7 @@ jobs:
   steps:
   - task: DownloadPipelineArtifact@2
     inputs:
-      targetPath: $(Build.SourcesDirectory)/artifacts
+      targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
       artifactName: 'releaseTag'
 
   - script: |
@@ -15,6 +15,7 @@ jobs:
       ls -l $(Build.SourcesDirectory)/artifacts
       ls -l $(Build.SourcesDirectory)/artifacts/releaseTag
       file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
+      cat "$file"
       tagName=""
       if [ -f "$file" ]; then
         tagName=`cat $file`
