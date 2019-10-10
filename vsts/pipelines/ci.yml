@@ -51,7 +51,17 @@ stages:
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
-      - template: templates/steps/_setReleaseTag.yml
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          targetPath: $env:Build.SourcesDirectory\artifacts\releaseTag
+          artifactName: 'releaseTag'
+      - powershell: |
+          $file = "$env:Build.SourcesDirectory\artifacts\releaseTag\releaseTag.txt"
+          if (Test-Path $file) {
+            $tagName = [IO.File]::ReadAllText($file)
+            echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;isOutput=true]$tagName"
+          }
+        displayName: 'Set RELEASE_TAG_NAME as environment variable'
       - template: templates/_signBinary.yml
 
     - job: Job_BuildImage
