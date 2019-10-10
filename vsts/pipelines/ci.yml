@@ -33,6 +33,7 @@ stages:
       displayName: Build and Test Build Image
       dependsOn: Job_SignBinaries
       condition: succeeded()
+      timeoutInMinutes: 120
       pool:
         name: OryxLinux
       variables:
@@ -56,6 +57,7 @@ stages:
       displayName: Build and Test Runtime Images
       dependsOn: Job_SignBinaries
       condition: succeeded()
+      timeoutInMinutes: 120
       pool:
         name: OryxLinux
       variables:
