@@ -40,10 +40,7 @@ stages:
       steps:
       - template: templates/_securityChecks.yml
 
-    - template: templates/jobs/_setReleaseTag.yml
-
     - job: Job_SignBinaries
-      dependsOn: Job_SetReleaseTag
       displayName: Sign Oryx Binaries
       pool:
         name: VSEng-MicroBuildVS2017
@@ -51,10 +48,10 @@ stages:
         - msbuild
         - visualstudio
       variables:
-        RELEASE_TAG_NAME: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.RELEASE_TAG_NAME'] ]
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
+      - template: templates/steps/_setReleaseTag.yml
       - template: templates/_signBinary.yml
 
     - job: Job_BuildImage
@@ -65,7 +62,6 @@ stages:
       pool:
         name: OryxLinux
       variables:
-        RELEASE_TAG_NAME: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.RELEASE_TAG_NAME'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -80,6 +76,8 @@ stages:
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
         displayName: 'Set variables'
       
+      - template: templates/steps/_setReleaseTag.yml
+
       - template: templates/_buildTemplate.yml
 
     - job: Job_RuntimeImages
@@ -90,7 +88,6 @@ stages:
       pool:
         name: OryxLinux
       variables:
-        RELEASE_TAG_NAME: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.RELEASE_TAG_NAME'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -105,6 +102,8 @@ stages:
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
         displayName: 'Set variables'
 
+      - template: templates/steps/_setReleaseTag.yml
+
       - template: templates/_buildTemplate.yml
 
     - template: templates/_integrationJobTemplate.yml
@@ -117,7 +116,11 @@ stages:
       startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
     jobs:
-    - template: templates/jobs/_setReleaseTag.yml
+    - job: SetReleaseTag
+      pool:
+        name: OryxLinux
+      steps:
+      - template: templates/steps/_setReleaseTag.yml
     
     - template: templates/_releaseJobTemplate.yml
 

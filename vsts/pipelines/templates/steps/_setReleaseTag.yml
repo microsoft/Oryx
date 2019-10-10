@@ -1,0 +1,17 @@
+steps:
+- task: DownloadPipelineArtifact@2
+  inputs:
+    targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
+    artifactName: 'releaseTag'
+
+- script: |
+    set -ex
+    file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
+    cat "$file"
+    tagName=""
+    if [ -f "$file" ]; then
+      tagName=`cat $file`
+    fi
+    echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;isOutput=true]$tagName"
+  displayName: 'Set release tag as environment variable'
+  name: setReleaseTag
