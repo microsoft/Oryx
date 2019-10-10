@@ -32,7 +32,6 @@ jobs:
 - job: Release_GitHub
   displayName: Create GitHub release
   dependsOn: 
-    - Job_SetReleaseTag
     - Release_BuildImage
     - Release_RuntimeImages
   pool:
@@ -46,10 +45,12 @@ jobs:
     inputs:
       artifactName: drop
 
+  - template: _setReleaseTag.yml
+
   - task: GitHubRelease@0
     displayName: 'GitHub release (create)'
     inputs:
       gitHubConnection: 'Oryx-GitHub'
       repositoryName: Microsoft/Oryx
       tagSource: manual
-      tag: '$(ReleaseTagName)'
+      tag: '$(RELEASE_TAG_NAME)'

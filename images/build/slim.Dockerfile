@@ -200,10 +200,10 @@ COPY binaries /opt/buildscriptgen/
 WORKDIR /usr/oryx/src
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG ReleaseTagName=unspecified
+ARG RELEASE_TAG_NAME=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV ReleaseTagName=${ReleaseTagName}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ARG AGENTBUILD=${AGENTBUILD}
 RUN if [ -z "$AGENTBUILD" ]; then \
         dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
@@ -247,9 +247,9 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG ReleaseTagName=unspecified
+ARG RELEASE_TAG_NAME=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${ReleaseTagName}
+LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
 
 ENTRYPOINT [ "benv" ]

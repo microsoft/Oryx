@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
@@ -42,7 +42,7 @@ fi
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
-	ctxArgs="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER --build-arg ReleaseTagName=$ReleaseTagName"
+	ctxArgs="--build-arg GIT_COMMIT=$GIT_COMMIT --build-arg BUILD_NUMBER=$BUILD_NUMBER --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
 	echo "Build context args: $ctxArgs"
 fi
 
@@ -92,7 +92,8 @@ function buildDockerImage() {
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
 	then
-		uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+		releasetag="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
+		uniqueTag="$BUILD_DEFINITIONNAME.$releasetag"
 
 		echo
 		echo "Retagging image '$builtImageTag' with ACR related tags..."

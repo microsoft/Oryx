@@ -26,14 +26,14 @@ fi
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
-labels="$labels --label com.microsoft.oryx.release-tag-name=$ReleaseTagName"
+labels="$labels --label com.microsoft.oryx.release-tag-name=$RELEASE_TAG_NAME"
 
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
 	args="--build-arg GIT_COMMIT=$GIT_COMMIT"
     args="$args --build-arg BUILD_NUMBER=$BUILD_NUMBER"
-    args="$args --build-arg ReleaseTagName=$ReleaseTagName"
+    args="$args --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
 fi
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
@@ -76,7 +76,8 @@ for dockerFile in $dockerFiles; do
     # Retag image with build number (for images built in oryxlinux buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
     then
-        uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+        releasetag="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
+        uniqueTag="$BUILD_DEFINITIONNAME.$releasetag"
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"

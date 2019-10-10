@@ -21,11 +21,11 @@ stages:
           set -ex
           sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
           mkdir -p "$sourcesArtifactsDir"
-          echo "$(ReleaseTagName)" > "$sourcesArtifactsDir/releaseTag.txt"
+          echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
         displayName: 'Write release tag'
       - task: PublishPipelineArtifact@1
         inputs:
-          pathToPublish: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
+          targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
           artifactName: releaseTag
 
   - stage: Build
@@ -40,10 +40,7 @@ stages:
       steps:
       - template: templates/_securityChecks.yml
 
-    - template: templates/jobs/_setReleaseTag.yml
-
     - job: Job_SignBinaries
-      dependsOn: Job_SetReleaseTag
       displayName: Sign Oryx Binaries
       pool:
         name: VSEng-MicroBuildVS2017
@@ -51,10 +48,21 @@ stages:
         - msbuild
         - visualstudio
       variables:
-        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
+          artifactName: 'releaseTag'
+      - powershell: |
+          $file = "$env:BUILD_SOURCESDIRECTORY\artifacts\releaseTag\releaseTag.txt"
+          if (Test-Path $file) {
+            $tagName = [IO.File]::ReadAllText($file)
+            Write-Host "Content is $tagName"
+            echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$tagName"
+          }
+        displayName: 'Set RELEASE_TAG_NAME as environment variable'
       - template: templates/_signBinary.yml
 
     - job: Job_BuildImage
@@ -65,7 +73,6 @@ stages:
       pool:
         name: OryxLinux
       variables:
-        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -80,6 +87,8 @@ stages:
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
         displayName: 'Set variables'
       
+      - template: templates/_setReleaseTag.yml
+
       - template: templates/_buildTemplate.yml
 
     - job: Job_RuntimeImages
@@ -90,7 +99,6 @@ stages:
       pool:
         name: OryxLinux
       variables:
-        ReleaseTagName: $[ dependencies.Job_SetReleaseTag.outputs['setReleaseTag.ReleaseTagName'] ]
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
 
@@ -105,6 +113,8 @@ stages:
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
         displayName: 'Set variables'
 
+      - template: templates/_setReleaseTag.yml
+
       - template: templates/_buildTemplate.yml
 
     - template: templates/_integrationJobTemplate.yml
@@ -117,8 +127,6 @@ stages:
       startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
     jobs:
-    - template: templates/jobs/_setReleaseTag.yml
-    
     - template: templates/_releaseJobTemplate.yml
 
 trigger: none
