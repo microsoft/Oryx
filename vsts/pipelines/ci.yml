@@ -108,6 +108,7 @@ stages:
       and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), 
       startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
+    jobs:
     - template: templates/jobs/_setReleaseTag.yml
     
     - template: templates/_releaseJobTemplate.yml
