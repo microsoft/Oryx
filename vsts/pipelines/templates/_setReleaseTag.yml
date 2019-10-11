@@ -3,10 +3,12 @@ steps:
   inputs:
     targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
     artifactName: 'releaseTag'
+  displayName: 'Get release tag name for this pipeline run'
 
-- script: |
-    set -ex
+  - script: |
+    set -e
     file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
+    echo "Release tag name is:"
     cat "$file"
     tagName=""
     if [ -f "$file" ]; then
