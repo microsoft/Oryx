@@ -51,10 +51,6 @@ stages:
         SignType: 'test'
         skipComponentGovernanceDetection: true
       steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          targetPath: $env:Build.SourcesDirectory\artifacts\releaseTag
-          artifactName: 'releaseTag'
       - powershell: |
           gci env:* | sort-object name
           Write-Host "This is $env:Build.SourcesDirectory"
