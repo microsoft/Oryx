@@ -35,7 +35,6 @@ steps:
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - powershell: |
-    gci env:* | sort-object name
     Write-Host "Setting up git_commit and build_number as env variable"
     $env:GIT_COMMIT=$(git rev-parse HEAD)
     $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
