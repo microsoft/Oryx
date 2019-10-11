@@ -57,7 +57,8 @@ stages:
           artifactName: 'releaseTag'
       - powershell: |
           gci env:* | sort-object name
-          $file = "$env:Build.SourcesDirectory\artifacts\releaseTag\releaseTag.txt"
+          Write-Host "This is $env:Build.SourcesDirectory"
+          $file = "artifacts\releaseTag\releaseTag.txt"
           if (Test-Path $file) {
             $tagName = [IO.File]::ReadAllText($file)
             echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;isOutput=true]$tagName"
