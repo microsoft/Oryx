@@ -56,11 +56,11 @@ stages:
           targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
           artifactName: 'releaseTag'
       - powershell: |
-          gci env:* | sort-object name
           $file = "$env:BUILD_SOURCESDIRECTORY\artifacts\releaseTag\releaseTag.txt"
           if (Test-Path $file) {
             $tagName = [IO.File]::ReadAllText($file)
-            echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;isOutput=true]$tagName"
+            Write-Host "Content is $tagName"
+            echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$tagName"
           }
         displayName: 'Set RELEASE_TAG_NAME as environment variable'
       - template: templates/_signBinary.yml
