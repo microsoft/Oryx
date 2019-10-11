@@ -92,7 +92,8 @@ function buildDockerImage() {
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
 	then
-		uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+		releasetag="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
+		uniqueTag="$BUILD_DEFINITIONNAME.$releasetag"
 
 		echo
 		echo "Retagging image '$builtImageTag' with ACR related tags..."

@@ -126,13 +126,6 @@ stages:
       and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), 
       startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
-    jobs:
-    - job: SetReleaseTag
-      pool:
-        name: OryxLinux
-      steps:
-      - template: templates/steps/_setReleaseTag.yml
-    
     - template: templates/_releaseJobTemplate.yml
 
 trigger: none

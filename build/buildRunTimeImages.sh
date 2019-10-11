@@ -76,7 +76,8 @@ for dockerFile in $dockerFiles; do
     # Retag image with build number (for images built in oryxlinux buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
     then
-        uniqueTag="$BUILD_DEFINITIONNAME.$BUILD_NUMBER"
+        releasetag="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
+        uniqueTag="$BUILD_DEFINITIONNAME.$releasetag"
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
