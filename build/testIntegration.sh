@@ -53,9 +53,13 @@ echo
 
 testProjectName="Oryx.Integration"
 cd "$TESTS_SRC_DIR/$testProjectName.Tests"
+artifactsDir="$REPO_DIR/artifacts"
+mkdir -p "$artifactsDir"
+diagnosticFileLocation="$artifactsDir/testIntegration-$testProjectName.Tests-log.txt"
 
 dotnet test \
     $testCaseFilter \
+    -d "$diagnosticFileLocation" \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION

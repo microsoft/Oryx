@@ -26,7 +26,13 @@ fi
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
+
 artifactsDir="$REPO_DIR/artifacts"
 mkdir -p "$artifactsDir"
-diagnosticFileLocation="$artifactsDir/testBuildImages-log.txt"
-dotnet test -d "$diagnosticFileLocation" --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
+diagnosticFileLocation="$artifactsDir/testBuildImages-$testProjectName-log.txt"
+
+dotnet test \
+    -d "$diagnosticFileLocation" \
+    --test-adapter-path:. \
+    --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
+    -c $BUILD_CONFIGURATION
