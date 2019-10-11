@@ -45,7 +45,7 @@ jobs:
     inputs:
       artifactName: drop
 
-  - template: _setReleaseTag.yml
+  - template: /vsts/pipelines/templates/steps/_setReleaseTag.yml
 
   - task: GitHubRelease@0
     displayName: 'GitHub release (create)'
