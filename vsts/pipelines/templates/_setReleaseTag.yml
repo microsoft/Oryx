@@ -1,11 +1,11 @@
 steps:
 - task: DownloadPipelineArtifact@2
+  displayName: 'Get release tag name for this pipeline run'
   inputs:
     targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
     artifactName: 'releaseTag'
-  displayName: 'Get release tag name for this pipeline run'
 
-  - script: |
+- script: |
     set -e
     file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
     echo "Release tag name is:"
