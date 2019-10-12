@@ -32,7 +32,8 @@ mkdir -p "$artifactsDir"
 diagnosticFileLocation="$artifactsDir/testRuntimeImages-$testProjectName-log.txt"
 
 dotnet test \
-    -d "$diagnosticFileLocation" \
+    --diag "$diagnosticFileLocation" \
+    -verbosity diag \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
     -c $BUILD_CONFIGURATION
