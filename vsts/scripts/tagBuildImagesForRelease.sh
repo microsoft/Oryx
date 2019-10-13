@@ -7,7 +7,6 @@
 set -o pipefail
 
 releasetag="${RELEASE_TAG_NAME:-$BUILD_BUILDNUMBER}"
-uniqueTag="$BUILD_DEFINITIONNAME.$releasetag"
 
 function tagBuildImage() {
     local devRegistryImageName="$1"
@@ -38,5 +37,5 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$uniqueTag" "latest" "$uniqueTag"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$uniqueTag" "slim" "slim-$uniqueTag"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$releasetag" "latest" "$releasetag"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$releasetag" "slim" "slim-$releasetag"
