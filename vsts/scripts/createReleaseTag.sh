@@ -26,8 +26,8 @@ elif [[ "$sourceBranch" == patch/* ]]; then
         fullPatchTagName="$patchedTagName-patch$patchNumber"
         releaseUrl="$baseReleaseTagUrl/$fullPatchTagName"
 
-        curl -I "$releaseUrl" 1> /tmp/createReleaseTag.txt 2> /dev/null
-        grep "HTTP/1.1 404 Not Found" /tmp/createReleaseTag.txt &> /dev/null
+        curl -I "$releaseUrl" 1> /tmp/createReleaseTag.txt 2> /dev/null || true
+        grep "HTTP/1.1 404 Not Found" /tmp/createReleaseTag.txt &> /dev/null || true
         exitCode=$?
         rm -f /tmp/createReleaseTag.txt
         if [ $exitCode -eq 0 ]; then
