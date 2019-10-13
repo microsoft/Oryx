@@ -26,7 +26,7 @@ while read sourceImage; do
     repo=${imageNameParts[0]}
     tag=${imageNameParts[1]}
     replaceText="Oryx-CI."
-    buildNumber=$(echo $tag | sed "s/$replaceText//g")
+    releaseTagName=$(echo $tag | sed "s/$replaceText//g")
 
     IFS='-'
     read -ra repoParts <<< "$repo"
@@ -34,7 +34,7 @@ while read sourceImage; do
     acrProdRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/oryxmcr/g")
     version=${repoParts[1]}
     acrLatest="$acrProdRepo:$version"
-    acrSpecific="$acrProdRepo:$version-$buildNumber"
+    acrSpecific="$acrProdRepo:$version-$releaseTagName"
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."

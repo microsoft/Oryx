@@ -6,6 +6,9 @@
 
 set -o pipefail
 
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
+source $REPO_DIR/build/__variables.sh
+
 releasetag="${RELEASE_TAG_NAME:-$BUILD_BUILDNUMBER}"
 
 function tagBuildImage() {
@@ -37,5 +40,5 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$releasetag" "latest" "$releasetag"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$releasetag" "slim" "slim-$releasetag"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$RELEASE_TAG_NAME" "slim" "slim-$RELEASE_TAG_NAME"

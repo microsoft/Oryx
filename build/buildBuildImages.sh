@@ -80,7 +80,9 @@ function buildDockerImage() {
 		--build-arg AGENTBUILD=$BUILD_SIGNED \
 		$BASE_TAG_BUILD_ARGS \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		$ctxArgs -f "$dockerFileToBuild" .
+		$ctxArgs \
+		-f "$dockerFileToBuild" \
+		.
 
 	echo
 	echo Building a base image for tests...
@@ -92,8 +94,7 @@ function buildDockerImage() {
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
 	then
-		releasetag="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
-		uniqueTag="$BUILD_DEFINITIONNAME.$releasetag"
+		uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 
 		echo
 		echo "Retagging image '$builtImageTag' with ACR related tags..."

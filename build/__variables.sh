@@ -6,6 +6,7 @@ declare -r __REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 # VSTS environment variables
 declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r BUILD_CONFIGURATION="${BUILDCONFIGURATION:-Debug}"
+declare -r RELEASE_TAG_NAME="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
 
 declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$__REPO_DIR/"
 declare -r BUILD_IMAGES_DOCKERFILE="$__REPO_DIR/images/build/Dockerfile"
