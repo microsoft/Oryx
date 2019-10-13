@@ -22,7 +22,7 @@ stages:
           sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
           mkdir -p "$sourcesArtifactsDir"
           echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
-        displayName: 'Write release tag'
+        displayName: 'Write release tag name to an artifact file'
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt

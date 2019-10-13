@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 # branch name is of the format: refs/heads/patch/21090924.1
 replacingText="refs/heads/"
@@ -37,4 +37,5 @@ elif [[ "$sourceBranch" == patch/* ]]; then
     done
 fi
 
+echo "Setting release tag name to '$tagName'..."
 echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$tagName"
