@@ -60,7 +60,7 @@ diagnosticFileLocation="$artifactsDir/testIntegration-$testProjectName.Tests-log
 dotnet test \
     $testCaseFilter \
     --diag "$diagnosticFileLocation" \
-    -verbosity diag \
+    --verbosity diag \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION
