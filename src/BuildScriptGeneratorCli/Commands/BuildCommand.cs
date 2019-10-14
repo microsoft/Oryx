@@ -162,7 +162,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.WriteLine();
 
             var buildInfo = new DefinitionListFormatter();
-            buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
+            buildInfo.AddDefinition(
+                "Oryx Version",
+                $"{Program.GetVersion()}, " +
+                $"Commit: {Program.GetMetadataValue("GitCommit")}, " +
+                $"ReleaseTagName: {Program.GetMetadataValue("RELEASE_TAG_NAME")}");
             buildInfo.AddDefinition("Build Operation ID", buildOperationId);
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();

@@ -36,10 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return null;
         }
 
-        internal static string GetCommit()
+        internal static string GetMetadataValue(string name)
         {
             var commitMetadata = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>()
-                    .Where(attr => attr.Key.Equals("GitCommit"))
+                    .Where(attr => attr.Key.Equals(name))
                     .FirstOrDefault();
             if (commitMetadata != null)
             {
