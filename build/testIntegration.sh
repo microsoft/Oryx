@@ -55,7 +55,7 @@ testProjectName="Oryx.Integration"
 cd "$TESTS_SRC_DIR/$testProjectName.Tests"
 artifactsDir="$REPO_DIR/artifacts"
 mkdir -p "$artifactsDir"
-diagnosticFileLocation="$artifactsDir/testIntegration-$testProjectName.Tests-log.txt"
+diagnosticFileLocation="$artifactsDir/$testProjectName.Tests$integrationTestPlatform-log.txt"
 
 dotnet test \
     $testCaseFilter \

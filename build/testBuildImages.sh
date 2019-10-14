@@ -29,7 +29,7 @@ cd "$TESTS_SRC_DIR/$testProjectName"
 
 artifactsDir="$REPO_DIR/artifacts"
 mkdir -p "$artifactsDir"
-diagnosticFileLocation="$artifactsDir/testBuildImages-$testProjectName-log.txt"
+diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 
 dotnet test \
     --diag "$diagnosticFileLocation" \
