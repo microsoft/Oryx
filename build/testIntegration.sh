@@ -6,6 +6,11 @@
 
 set -e
 
+echo
+echo "Current list of running processes:"
+ps aux | less
+echo
+
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
@@ -53,9 +58,20 @@ echo
 
 testProjectName="Oryx.Integration"
 cd "$TESTS_SRC_DIR/$testProjectName.Tests"
+artifactsDir="$REPO_DIR/artifacts"
+mkdir -p "$artifactsDir"
+diagnosticFileLocation="$artifactsDir/$testProjectName.Tests$integrationTestPlatform-log.txt"
+
+# Create a directory to capture any debug logs that MSBuild generates
+msbuildDebugLogsDir="$artifactsDir/msbuildDebugLogs"
+mkdir -p "$msbuildDebugLogsDir"
+export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
+export MSBUILDDISABLENODEREUSE=1
 
 dotnet test \
     $testCaseFilter \
+    --diag "$diagnosticFileLocation" \
+    --verbosity diag \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION

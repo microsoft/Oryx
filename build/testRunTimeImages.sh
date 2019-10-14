@@ -6,6 +6,11 @@
 
 set -e
 
+echo
+echo "Current list of running processes:"
+ps aux | less
+echo
+
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 declare -r buildRuntimeImagesScript="$REPO_DIR/build/buildRunTimeImages.sh"
 declare -r testProjectName="Oryx.RuntimeImage.Tests"
@@ -26,4 +31,20 @@ fi
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
-dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" -c $BUILD_CONFIGURATION
+
+artifactsDir="$REPO_DIR/artifacts"
+mkdir -p "$artifactsDir"
+diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
+
+# Create a directory to capture any debug logs that MSBuild generates
+msbuildDebugLogsDir="$artifactsDir/msbuildDebugLogs"
+mkdir -p "$msbuildDebugLogsDir"
+export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
+export MSBUILDDISABLENODEREUSE=1
+
+dotnet test \
+    --diag "$diagnosticFileLocation" \
+    --verbosity diag \
+    --test-adapter-path:. \
+    --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
+    -c $BUILD_CONFIGURATION
