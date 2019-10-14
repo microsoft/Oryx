@@ -30,7 +30,7 @@ labels="$labels --label com.microsoft.oryx.release-tag-name=$RELEASE_TAG_NAME"
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
-	args="--build-arg GIT_COMMIT=$GIT_COMMIT"
+    args="--build-arg GIT_COMMIT=$GIT_COMMIT"
     args="$args --build-arg BUILD_NUMBER=$BUILD_NUMBER"
     args="$args --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
 fi

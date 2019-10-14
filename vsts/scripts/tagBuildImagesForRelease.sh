@@ -9,8 +9,6 @@ set -o pipefail
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
-releasetag="${RELEASE_TAG_NAME:-$BUILD_BUILDNUMBER}"
-
 function tagBuildImage() {
     local devRegistryImageName="$1"
     local prodRegistryLatestTagName="$2"
