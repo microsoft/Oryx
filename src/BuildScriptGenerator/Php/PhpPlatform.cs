@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public IEnumerable<string> SupportedVersions => _phpVersionProvider.SupportedPhpVersions;
 
-        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
         {
             return _detector.Detect(context);
         }

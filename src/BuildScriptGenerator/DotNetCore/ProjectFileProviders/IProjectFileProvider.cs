@@ -7,6 +7,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public interface IProjectFileProvider
     {
-        string GetRelativePathToProjectFile(BuildScriptGeneratorContext context);
+        string GetRelativePathToProjectFile(ScriptGeneratorContext context);
     }
 }

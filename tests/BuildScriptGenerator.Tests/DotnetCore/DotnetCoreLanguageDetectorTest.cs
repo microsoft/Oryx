@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 _projectFilePath = projectFilePath;
             }
 
-            public override string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
+            public override string GetRelativePathToProjectFile(ScriptGeneratorContext context)
             {
                 return _projectFilePath;
             }

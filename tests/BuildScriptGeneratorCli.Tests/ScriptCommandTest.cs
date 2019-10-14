@@ -6,24 +6,15 @@
 using System;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
-    public class ScriptCommandTest : IClassFixture<TestTempDirTestFixture>
+    public class ScriptCommandTest : ScriptCommandTestBase
     {
-        private static TestTempDirTestFixture _testDir;
-        private static string _testDirPath;
-
-        public ScriptCommandTest(TestTempDirTestFixture testFixture)
-        {
-            _testDir = testFixture;
-            _testDirPath = testFixture.RootDirPath;
-        }
+        public ScriptCommandTest(TestTempDirTestFixture testFixture) : base(testFixture) { }
 
         [Fact]
         public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
@@ -152,67 +143,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             var outputFileContent = File.ReadAllText(scriptPath);
             Assert.Contains(scriptContentWithCRLF.Replace("\r\n", "\n"), outputFileContent);
-        }
-
-        private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
-        {
-            var sourceCodeFolder = Path.Combine(_testDirPath, "src");
-            Directory.CreateDirectory(sourceCodeFolder);
-            var outputFolder = Path.Combine(_testDirPath, "output");
-            Directory.CreateDirectory(outputFolder);
-            var servicesBuilder = new ServiceProviderBuilder()
-                .ConfigureServices(services =>
-                {
-                    // Add 'test' script generator here as we can control what the script output is rather
-                    // than depending on in-built script generators whose script could change overtime causing
-                    // this test to be difficult to manage.
-
-                    services.RemoveAll<ILanguageDetector>();
-                    services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
-
-                    services.RemoveAll<IProgrammingPlatform>();
-                    services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
-
-                    services.AddSingleton<ITempDirectoryProvider>(
-                        new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
-                })
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = sourceCodeFolder;
-                    o.DestinationDir = outputFolder;
-                    o.ScriptOnly = scriptOnly;
-                });
-            return servicesBuilder.Build();
-        }
-
-        private class TestTempDirectoryProvider : ITempDirectoryProvider
-        {
-            private readonly string _tempDir;
-
-            public TestTempDirectoryProvider(string tempDir)
-            {
-                _tempDir = tempDir;
-            }
-
-            public string GetTempDirectory()
-            {
-                Directory.CreateDirectory(_tempDir);
-                return _tempDir;
-            }
-        }
-
-        private class TestLanguageDetector : ILanguageDetector
-        {
-            public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
-            {
-                return new LanguageDetectorResult
-                {
-                    Language = "test",
-                    LanguageVersion = "1.0.0"
-                };
-            }
         }
     }
 }

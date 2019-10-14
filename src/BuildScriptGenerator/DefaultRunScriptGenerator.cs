@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
+using NLog.Targets;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -35,31 +36,63 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _logger = logger;
         }
 
-        public string GenerateBashScript(string targetPlatformName, RunScriptGeneratorOptions opts)
+        public string GenerateBashScript(RunScriptGeneratorContext ctx)
         {
-            if (opts.SourceRepo == null)
+            if (ctx.SourceRepo == null)
             {
-                throw new ArgumentNullException(nameof(opts.SourceRepo), "Source repository must be supplied.");
+                throw new ArgumentNullException(nameof(ctx.SourceRepo), "Source repository must be supplied.");
             }
 
-            var targetPlatform = _programmingPlatforms
-                .Where(p => p.Name.EqualsIgnoreCase(targetPlatformName))
-                .FirstOrDefault();
-
-            if (targetPlatform == null)
+            IProgrammingPlatform targetPlatform = null;
+            if (!string.IsNullOrEmpty(ctx.Platform))
             {
-                throw new UnsupportedLanguageException($"Platform '{targetPlatformName}' is not supported.");
+                targetPlatform = _programmingPlatforms
+                    .Where(p => p.Name.EqualsIgnoreCase(ctx.Platform))
+                    .FirstOrDefault();
+
+                if (targetPlatform == null)
+                {
+                    throw new UnsupportedLanguageException($"Platform '{ctx.Platform}' is not supported.");
+                }
+            }
+            else
+            {
+                _logger.LogDebug("No platform provided for run-script command; attempting to determine platform...");
+                foreach (var platform in _programmingPlatforms)
+                {
+                    _logger.LogDebug($"Checking if platform '{platform.Name}' is compatible...");
+                    var detectionResult = platform.Detect(ctx);
+                    if (detectionResult != null)
+                    {
+                        _logger.LogDebug($"Detected platform '{detectionResult.Language}' with version '{detectionResult.LanguageVersion}'.");
+                        if (string.IsNullOrEmpty(detectionResult.LanguageVersion))
+                        {
+                            throw new UnsupportedVersionException($"Couldn't detect a version for platform '{detectionResult.Language}' in the repo.");
+                        }
+
+                        targetPlatform = platform;
+                        break;
+                    }
+                }
+
+                if (targetPlatform == null)
+                {
+                    throw new UnsupportedLanguageException("Unable to determine the platform for the given repo.");
+                }
             }
 
-            return RunStartupScriptGeneratorForPlatform(targetPlatform, opts);
+            return RunStartupScriptGeneratorForPlatform(targetPlatform, ctx);
         }
 
-        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform plat, RunScriptGeneratorOptions opts)
+        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform plat, RunScriptGeneratorContext ctx)
         {
             var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + plat.Name;
 
-            var scriptGenArgs = new List<string> { "-appPath", opts.SourceRepo.RootPath, "-output", _tempScriptPath };
-            scriptGenArgs.AddRange(opts.PassThruArguments);
+            var scriptGenArgs = new List<string> { "-appPath", ctx.SourceRepo.RootPath, "-output", _tempScriptPath };
+            if (ctx.PassThruArguments != null)
+            {
+                scriptGenArgs.AddRange(ctx.PassThruArguments);
+            }
 
             (int exitCode, string stdout, string stderr) = ProcessHelper.RunProcess(
                 scriptGenPath, scriptGenArgs, Environment.CurrentDirectory, RunScriptGeneratorTimeout);

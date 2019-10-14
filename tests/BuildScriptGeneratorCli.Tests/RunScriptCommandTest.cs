@@ -4,25 +4,38 @@
 // --------------------------------------------------------------------------------------------
 
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Tests.Common;
+using System;
+using System.Diagnostics;
+using System.IO;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
-    public class RunScriptCommandTest
+    public class RunScriptCommandTest : ScriptCommandTestBase
     {
+        public RunScriptCommandTest(TestTempDirTestFixture testFixture) : base(testFixture) { }
+
         [Fact]
-        public void OnExecute_ShowsErrorExits_WhenNoPlatformSpecified()
+        public void OnExecute_ShowsHelp_AndExits_WhenSourceDirectoryDoesNotExist()
         {
             // Arrange
-            var cmd = new RunScriptCommand();
+            var scriptCommand = new RunScriptCommand
+            {
+                AppDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
+            };
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = scriptCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
 
             // Assert
             Assert.NotEqual(0, exitCode);
-            Assert.Contains($"Platform name is required", testConsole.StdError);
+            var error = testConsole.StdError;
+            Assert.DoesNotContain("Usage:", error);
+            Assert.Contains("Could not find the source directory", error);
         }
 
         [Fact]
@@ -42,6 +55,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.NotEqual(0, exitCode);
             Assert.Contains($"Platform '{nonexistentPlatformName}' is not supported", testConsole.StdError);
+        }
+
+        [Fact]
+        public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
+        {
+            // Arrange
+            var scriptCommand = new RunScriptCommand { AppDir = string.Empty };
+
+            // Act
+            var processedInput = scriptCommand.IsValidInput(null, null);
+
+            // Assert
+            Assert.True(processedInput);
+            Assert.Equal(Directory.GetCurrentDirectory(), scriptCommand.AppDir);
         }
     }
 }

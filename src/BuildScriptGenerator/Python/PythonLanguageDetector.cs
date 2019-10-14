@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName))

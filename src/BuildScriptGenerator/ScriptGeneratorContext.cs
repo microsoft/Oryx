@@ -3,15 +3,20 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public interface IRunScriptGenerator
+    /// <summary>
+    /// Abstraction over the context used for the script generation process.
+    /// </summary>
+    public abstract class ScriptGeneratorContext
     {
+        public ISourceRepo SourceRepo { get; set; }
+
         /// <summary>
-        /// Generates a bash script to run the application.
+        /// Gets or sets specific properties for the generated script.
         /// </summary>
-        /// <param name="ctx">The <see cref="RunScriptGeneratorContext"/> with parameters for the script.</param>
-        /// <returns>Bash script to run the application.</returns>
-        string GenerateBashScript(RunScriptGeneratorContext ctx);
+        public IDictionary<string, string> Properties { get; set; }
     }
 }

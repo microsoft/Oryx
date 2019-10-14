@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
         }
 
-        public string GetRelativePathToProjectFile(BuildScriptGeneratorContext context)
+        public string GetRelativePathToProjectFile(ScriptGeneratorContext context)
         {
             var projectPath = GetProjectInfoFromSettings(context);
             if (string.IsNullOrEmpty(projectPath))
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return projectFileWithRelativePath;
         }
 
-        private string GetProjectInfoFromSettings(BuildScriptGeneratorContext context)
+        private string GetProjectInfoFromSettings(ScriptGeneratorContext context)
         {
             // Value from command line has higher precedence than from environment variables
             if (context.Properties != null && context.Properties.TryGetValue(

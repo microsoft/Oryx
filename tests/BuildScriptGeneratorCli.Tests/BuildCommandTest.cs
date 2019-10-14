@@ -452,7 +452,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         private class TestLanguageDetector : ILanguageDetector
         {
-            public LanguageDetectorResult Detect(BuildScriptGeneratorContext context)
+            public LanguageDetectorResult Detect(ScriptGeneratorContext context)
             {
                 return new LanguageDetectorResult
                 {
