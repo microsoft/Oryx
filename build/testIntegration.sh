@@ -6,6 +6,11 @@
 
 set -e
 
+echo
+echo "Current list of running processes:"
+ps aux | less
+echo
+
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
