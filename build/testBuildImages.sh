@@ -6,6 +6,11 @@
 
 set -e
 
+echo
+echo "Current list of running processes:"
+ps aux | less
+echo
+
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 declare -r buildBuildImagesScript="$REPO_DIR/build/buildBuildImages.sh"
 declare -r testProjectName="Oryx.BuildImage.Tests"
