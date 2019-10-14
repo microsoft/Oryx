@@ -11,16 +11,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class RunScriptGeneratorContext : ScriptGeneratorContext
     {
         /// <summary>
-        /// Gets or sets the name of the main programming language used in the repo.
-        /// If none is given, a language detection algorithm will attemp to detect it.
+        /// Gets or sets the name of the main programming platform used in the repo.
+        /// If none is given, a platform detection algorithm will attemp to detect it.
         /// </summary>
-        public string Language { get; set; }
+        public string Platform { get; set; }
 
         /// <summary>
-        /// Gets or sets the version of the programming language used in the repo.
-        /// If provided, the <see cref="Language"/> property should also be provided.
+        /// Gets or sets the version of the programming platform used in the repo.
+        /// If provided, the <see cref="Platform"/> property should also be provided.
         /// </summary>
-        public string LanguageVersion { get; set; }
+        public string PlatformVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the arguments to be passed into the run script generator.

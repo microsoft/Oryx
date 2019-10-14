@@ -44,15 +44,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             IProgrammingPlatform targetPlatform = null;
-            if (!string.IsNullOrEmpty(ctx.Language))
+            if (!string.IsNullOrEmpty(ctx.Platform))
             {
                 targetPlatform = _programmingPlatforms
-                    .Where(p => p.Name.EqualsIgnoreCase(ctx.Language))
+                    .Where(p => p.Name.EqualsIgnoreCase(ctx.Platform))
                     .FirstOrDefault();
 
                 if (targetPlatform == null)
                 {
-                    throw new UnsupportedLanguageException($"Platform '{ctx.Language}' is not supported.");
+                    throw new UnsupportedLanguageException($"Platform '{ctx.Platform}' is not supported.");
                 }
             }
             else

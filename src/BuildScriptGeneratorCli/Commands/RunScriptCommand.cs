@@ -51,8 +51,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var ctx = new RunScriptGeneratorContext
             {
                 SourceRepo = sourceRepo,
-                Language = PlatformName,
-                LanguageVersion = PlatformVersion,
+                Platform = PlatformName,
+                PlatformVersion = PlatformVersion,
                 PassThruArguments = RemainingArgs,
             };
 
