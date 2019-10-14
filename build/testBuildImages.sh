@@ -36,6 +36,12 @@ artifactsDir="$REPO_DIR/artifacts"
 mkdir -p "$artifactsDir"
 diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 
+# Create a directory to capture any debug logs that MSBuild generates
+msbuildDebugLogsDir="$artifactsDir/msbuildDebugLogs"
+mkdir -p "$msbuildDebugLogsDir"
+export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
+export MSBUILDDISABLENODEREUSE=1
+
 dotnet test \
     --diag "$diagnosticFileLocation" \
     --verbosity diag \
