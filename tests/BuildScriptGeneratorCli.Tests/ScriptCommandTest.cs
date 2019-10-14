@@ -72,6 +72,33 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void ScriptOnly_OnSuccess_Execute_WritesOnlyScriptContent_ToFile()
+        {
+            // Arrange
+            const string scriptContent = "script content only";
+            var serviceProvider = CreateServiceProvider(
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent, new TestLanguageDetector()),
+                scriptOnly: true);
+            var scriptCommand = new BuildScriptCommand();
+            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+            var outputDirectory = _testDir.CreateChildDir();
+            var scriptPath = Path.Join(outputDirectory, "build.sh");
+            scriptCommand.OutputPath = scriptPath;
+
+            // Act
+            var exitCode = scriptCommand.Execute(serviceProvider, testConsole);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.Contains("Script written to", testConsole.StdOutput);
+            Assert.Equal(string.Empty, testConsole.StdError);
+
+            var outputFileContent = File.ReadAllText(scriptPath);
+            Assert.Contains(scriptContent, outputFileContent);
+        }
+
+        [Fact]
         public void ScriptOnly_OnSuccess_GeneratesScript_ReplacingCRLF_WithLF()
         {
             // Arrange
@@ -89,6 +116,33 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(0, exitCode);
             Assert.Contains(scriptContentWithCRLF.Replace("\r\n", "\n"), testConsole.StdOutput);
             Assert.Equal(string.Empty, testConsole.StdError);
+        }
+
+        [Fact]
+        public void ScriptOnly_OnSuccess_GenerateScript_ReplacingCRLF_WithLF_ToFile()
+        {
+            // Arrange
+            const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
+            var serviceProvider = CreateServiceProvider(
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF, new TestLanguageDetector()),
+                scriptOnly: true);
+            var scriptCommand = new BuildScriptCommand();
+            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+            var outputDirectory = _testDir.CreateChildDir();
+            var scriptPath = Path.Join(outputDirectory, "build.sh");
+            scriptCommand.OutputPath = scriptPath;
+
+            // Act
+            var exitCode = scriptCommand.Execute(serviceProvider, testConsole);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.Contains("Script written to", testConsole.StdOutput);
+            Assert.Equal(string.Empty, testConsole.StdError);
+
+            var outputFileContent = File.ReadAllText(scriptPath);
+            Assert.Contains(scriptContentWithCRLF.Replace("\r\n", "\n"), outputFileContent);
         }
     }
 }
