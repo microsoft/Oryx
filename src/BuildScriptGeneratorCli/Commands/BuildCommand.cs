@@ -132,7 +132,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.WriteLine();
 
             var buildInfo = new DefinitionListFormatter();
-            buildInfo.AddDefinition("Oryx Version", $"{Program.GetVersion()}, Commit: {Program.GetCommit()}");
+            buildInfo.AddDefinition(
+                "Oryx Version",
+                $"{Program.GetVersion()}, " +
+                $"Commit: {Program.GetMetadataValue("GitCommit")}, " +
+                $"ReleaseTagName: {Program.GetMetadataValue("RELEASE_TAG_NAME")}");
             buildInfo.AddDefinition("Build Operation ID", buildOperationId);
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
@@ -193,7 +197,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildEventProps = new Dictionary<string, string>()
             {
                 { "oryxVersion", Program.GetVersion() },
-                { "oryxCommitId", Program.GetCommit() },
+                { "oryxCommitId", Program.GetMetadataValue("GitCommit") },
+                { "oryxReleaseTagName", Program.GetMetadataValue("RELEASE_TAG_NAME") },
                 {
                     "oryxCommandLine",
                     string.Join(

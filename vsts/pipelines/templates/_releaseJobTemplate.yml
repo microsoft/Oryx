@@ -45,10 +45,12 @@ jobs:
     inputs:
       artifactName: drop
 
+  - template: _setReleaseTag.yml
+
   - task: GitHubRelease@0
     displayName: 'GitHub release (create)'
     inputs:
       gitHubConnection: 'Oryx-GitHub'
       repositoryName: Microsoft/Oryx
       tagSource: manual
-      tag: '$(Build.BuildNumber)'
+      tag: '$(RELEASE_TAG_NAME)'

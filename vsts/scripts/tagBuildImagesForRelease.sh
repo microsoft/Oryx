@@ -6,7 +6,8 @@
 
 set -o pipefail
 
-buildNumber=$BUILD_BUILDNUMBER
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
+source $REPO_DIR/build/__variables.sh
 
 function tagBuildImage() {
     local devRegistryImageName="$1"
@@ -37,5 +38,5 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$buildNumber" "latest" "$buildNumber"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$buildNumber" "slim" "slim-$buildNumber"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$RELEASE_TAG_NAME" "slim" "slim-$RELEASE_TAG_NAME"

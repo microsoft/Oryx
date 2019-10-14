@@ -36,10 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return null;
         }
 
-        internal static string GetCommit()
+        internal static string GetMetadataValue(string name)
         {
             var commitMetadata = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>()
-                    .Where(attr => attr.Key.Equals("GitCommit"))
+                    .Where(attr => attr.Key.Equals(name))
                     .FirstOrDefault();
             if (commitMetadata != null)
             {
@@ -54,8 +54,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (Version)
             {
                 var version = GetVersion();
-                var commit = GetCommit();
-                console.WriteLine($"Version: {version}, Commit: {commit}");
+                var commit = GetMetadataValue("GitCommit");
+                var releaseTagName = GetMetadataValue("RELEASE_TAG_NAME");
+                console.WriteLine($"Version: {version}, Commit: {commit}, ReleaseTagName: {releaseTagName}");
 
                 return ProcessConstants.ExitSuccess;
             }
