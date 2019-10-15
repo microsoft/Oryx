@@ -6,11 +6,6 @@
 
 set -e
 
-echo
-echo "Current list of running processes:"
-ps aux | less
-echo
-
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
@@ -66,13 +61,12 @@ diagnosticFileLocation="$artifactsDir/$testProjectName.Tests$integrationTestPlat
 msbuildDebugLogsDir="$artifactsDir/msbuildDebugLogs"
 mkdir -p "$msbuildDebugLogsDir"
 export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
-export MSBUILDDISABLENODEREUSE=1
+export COMPlus_DbgEnableMiniDump="1"
+export COMPlus_DbgMiniDumpName="$ARTIFACTS_DIR/$testProjectName.Tests-dump.%d"
 
 dotnet test \
     --blame \
     $testCaseFilter \
-    --diag "$diagnosticFileLocation" \
-    --verbosity diag \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION
