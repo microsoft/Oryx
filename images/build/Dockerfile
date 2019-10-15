@@ -47,7 +47,6 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_22_SDK_SHA512 \
-    INSTALL_TOOLS=true \
     /tmp/scripts/installDotNetCore.sh
 
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
