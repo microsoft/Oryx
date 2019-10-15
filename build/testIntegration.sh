@@ -76,3 +76,11 @@ dotnet test \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION
+
+# --blame flag generates an xml file which it drops under the project directory.
+# Copy that file to artifacts directory too
+if [ -d "TestResults" ]; then
+    resultsDir="$ARTIFACTS_DIR/$testProjectName.TestResults"
+    mkdir -p "$resultsDir"
+    cp -rf TestResults/. "$resultsDir/"
+fi
