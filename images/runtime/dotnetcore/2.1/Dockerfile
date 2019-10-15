@@ -9,6 +9,9 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS tools-install
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
+
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.1.13
 
 # Older .NET core versions, which have reached end of life and therefore are no longer updated, use
@@ -24,6 +27,9 @@ RUN apt-get update \
      openssl \
      lldb \
   && rm -rf /var/lib/apt/lists/*
+
+COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
+ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
