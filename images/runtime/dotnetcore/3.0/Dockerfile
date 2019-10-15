@@ -9,6 +9,8 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
+# dotnet tools are currently available as part of SDK so we need to create them in an sdk image
+# and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
