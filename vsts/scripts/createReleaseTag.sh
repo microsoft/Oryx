@@ -4,12 +4,9 @@
 replacingText="refs/heads/"
 sourceBranch=$(echo "$BUILD_SOURCEBRANCH" | sed -e "s.$replacingText..g")
 
-# branch name is of the format: refs/heads/patch/21090924.1
-replacingText="refs/heads/"
-sourceBranch=$(echo "$BUILD_SOURCEBRANCH" | sed -e "s.$replacingText..g")
-
+tagName=""
 if [ "$sourceBranch" == "master" ]; then
-    echo "##vso[task.setvariable variable=ReleaseTagName;]$BUILD_BUILDNUMBER"
+    tagName="$BUILD_BUILDNUMBER"
 elif [[ "$sourceBranch" == patch/* ]]; then
     IFS=/
     read -ra branchNameParts <<< "$sourceBranch"
@@ -32,7 +29,7 @@ elif [[ "$sourceBranch" == patch/* ]]; then
         exitCode=$?
         rm -f /tmp/createReleaseTag.txt
         if [ $exitCode -eq 0 ]; then
-            echo "##vso[task.setvariable variable=ReleaseTagName;]$fullPatchTagName"
+            tagName="$fullPatchTagName"
             break
         fi
     done
