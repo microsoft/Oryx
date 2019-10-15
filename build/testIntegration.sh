@@ -69,6 +69,7 @@ export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
 export MSBUILDDISABLENODEREUSE=1
 
 dotnet test \
+    --blame \
     $testCaseFilter \
     --diag "$diagnosticFileLocation" \
     --verbosity diag \
