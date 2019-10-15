@@ -55,6 +55,14 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     INSTALL_TOOLS=true \
     /tmp/scripts/installDotNetCore.sh
 
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION_PREVIEW_NAME \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_31_SDK_SHA512 \
+    # Since this is a preview version, do not warm up with nuget packages
+    INSTALL_PACKAGES=false \
+    INSTALL_TOOLS=true \
+    /tmp/scripts/installDotNetCore.sh
+
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
     && find /var/nuget -type d -exec chmod 777 {} \;
@@ -93,7 +101,10 @@ RUN set -ex \
  && mkdir $NET_CORE_APP_30 \
  && ln -s $NET_CORE_APP_30 3.0 \
  && ln -s 3.0 3 \
- && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk
+ && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
+ && mkdir $NET_CORE_APP_31 \
+ && ln -s $NET_CORE_APP_31 3.1 \
+ && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk
 
 # Install Node.js, NPM, Yarn
 FROM buildpack-deps:stretch AS node-install
