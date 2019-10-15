@@ -42,12 +42,13 @@ echo
 echo "Created link from $MAJOR_MINOR to $DOTNET_SDK_VER"
 ln -s $DOTNET_SDK_VER $SDK_DIR/$MAJOR_MINOR
 
+dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
+
 # Install MVC template based packages
 if [ "$INSTALL_PACKAGES" != "false" ]
 then
     echo
     echo Installing MVC template based packages ...
-    dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
     mkdir warmup
     cd warmup
     echo "$globalJsonContent" > global.json
@@ -55,4 +56,13 @@ then
     $dotnet restore
     cd ..
     rm -rf warmup
+fi
+
+if [ "$INSTALL_TOOLS" == "true" ]; then
+    toolsDir="$SDK_DIR/$DOTNET_SDK_VER/tools"
+    mkdir -p "$toolsDir"
+    dotnet tool install --tool-path "$toolsDir" dotnet-sos
+    dotnet tool install --tool-path "$toolsDir" dotnet-trace
+    dotnet tool install --tool-path "$toolsDir" dotnet-dump
+    dotnet tool install --tool-path "$toolsDir" dotnet-counters
 fi

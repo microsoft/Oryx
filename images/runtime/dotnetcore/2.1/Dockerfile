@@ -5,13 +5,16 @@ WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM %DOTNETCORE_BASE_IMAGE%
+# dotnet tools are currently available as part of SDK so we need to create them in an sdk image
+# and copy them to our final runtime image
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS tools-install
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.1.13
 
 # Older .NET core versions, which have reached end of life and therefore are no longer updated, use
 # a version of `curl` that has known issues.
@@ -24,7 +27,11 @@ RUN apt-get update \
      curl \
      file \
      openssl \
+     lldb \
   && rm -rf /var/lib/apt/lists/*
+
+COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
+ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

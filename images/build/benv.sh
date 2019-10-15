@@ -167,9 +167,15 @@ benv-resolve() {
       return 1
     fi
 
-    local DIR=$(readlink $"$runtimesDir/$value/sdk")
-    updatePath "$DIR"
-    export dotnet="$DIR/dotnet"
+    local SDK_DIR=$(readlink $"$runtimesDir/$value/sdk")
+
+    toolsDir="$SDK_DIR/tools"
+    if [ -d "$toolsDir" ]; then
+      updatePath "$SDK_DIR/tools"
+    fi
+
+    updatePath "$SDK_DIR"
+    export dotnet="$SDK_DIR/dotnet"
     
     return 0
   fi
