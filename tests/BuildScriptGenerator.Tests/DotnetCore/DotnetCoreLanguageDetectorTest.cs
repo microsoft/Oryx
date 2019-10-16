@@ -254,6 +254,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 DotNetCoreRunTimeVersions.NetCoreApp21,
                 DotNetCoreRunTimeVersions.NetCoreApp22,
                 DotNetCoreRunTimeVersions.NetCoreApp30,
+                DotNetCoreRunTimeVersions.NetCoreApp31,
             };
         }
 
