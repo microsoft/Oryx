@@ -100,11 +100,12 @@ RUN set -ex \
  # 3.0 sdk <-- 3.0 runtime's sdk
  && mkdir $NET_CORE_APP_30 \
  && ln -s $NET_CORE_APP_30 3.0 \
- && ln -s 3.0 3 \
  && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
+ # 3.1 sdk <-- 3.1 runtime's sdk
  && mkdir $NET_CORE_APP_31 \
  && ln -s $NET_CORE_APP_31 3.1 \
- && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk
+ && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
+ && ln -s 3.0 3
 
 # Install Node.js, NPM, Yarn
 FROM buildpack-deps:stretch AS node-install
