@@ -37,8 +37,10 @@ export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
 export COMPlus_DbgEnableMiniDump="1"
 export COMPlus_DbgMiniDumpName="$ARTIFACTS_DIR/$testProjectName-dump.%d"
 
+diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 dotnet test \
     --blame \
+    --diag "$diagnosticFileLocation" \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
     -c $BUILD_CONFIGURATION
