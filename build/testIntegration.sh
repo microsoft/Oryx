@@ -61,6 +61,7 @@ diagnosticFileLocation="$artifactsDir/$testProjectName.Tests$integrationTestPlat
 msbuildDebugLogsDir="$artifactsDir/msbuildDebugLogs"
 mkdir -p "$msbuildDebugLogsDir"
 export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
+# Enable automatic creation of crash dump when a .NET Core process crashes (ex: TestHost)
 export COMPlus_DbgEnableMiniDump="1"
 export COMPlus_DbgMiniDumpName="$ARTIFACTS_DIR/$testProjectName.Tests-dump.%d"
 
