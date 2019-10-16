@@ -58,6 +58,13 @@ steps:
     scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
+- task: ShellScript@2
+  displayName: 'Test runtime images'
+  inputs:
+    scriptPath: ./build/testRunTimeImages.sh
+    args: skipBuildingImages ${{ parameters.acrProdName }}
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
 - task: Docker@1
   displayName: 'Push build image to ACR'
   inputs:

@@ -13,15 +13,10 @@ namespace Microsoft.Oryx.Integration.Tests
     {
         public readonly int ContainerPort = 3000;
         public readonly string DefaultStartupFilePath = "./run.sh";
-        public readonly ITestOutputHelper _output;
-        public readonly string _hostSamplesDir;
-        public readonly string _tempRootDir;
 
         public NodeEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output, testTempDirTestFixture)
         {
-            _output = output;
-            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
         protected DockerVolume CreateAppVolume(string appName) =>

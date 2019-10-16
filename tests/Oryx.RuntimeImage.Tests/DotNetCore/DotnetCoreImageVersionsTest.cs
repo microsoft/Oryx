@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void DotNetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
-            // so we should check agent_os environment variable to know if the build is happening in azure devops agent 
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent
             // or locally, locally we need to skip this test
             var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
             Skip.If(string.IsNullOrEmpty(agentOS));
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{version}:latest",
+                ImageId = $"{_imageBase}/dotnetcore:{version}",
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{version}:latest",
+                ImageId = $"{_imageBase}/dotnetcore:{version}",
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--version" }
             });
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{version}:latest",
+                ImageId = $"{_imageBase}/dotnetcore:{version}",
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });

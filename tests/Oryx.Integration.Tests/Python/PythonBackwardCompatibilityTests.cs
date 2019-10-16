@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
+                $"{_imageBase}/python:3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
+                $"{_imageBase}/python:3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]

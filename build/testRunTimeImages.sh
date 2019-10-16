@@ -28,6 +28,13 @@ else
     $buildRuntimeImagesScript "$@"
 fi
 
+if [ -n "$2" ]
+then
+    echo
+    echo "Setting environment variable 'ORYX_TEST_IMAGE_BASE' to provided value '$2'."
+    export ORYX_TEST_IMAGE_BASE="$2"
+fi
+
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"

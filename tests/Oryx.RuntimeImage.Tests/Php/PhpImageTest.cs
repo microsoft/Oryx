@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+                $"{_imageBase}/php:{imageTag}",
                 "php",
                 new[] { "--version" }
             );
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+                ImageId = $"{_imageBase}/php:{imageTag}",
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}",
+                imageName: $"{_imageBase}/php:{imageTag}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
+                ImageId = $"{_imageBase}/php:{imageTag}",
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mcrypt);" }
             });
@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Contains("mcrypt", output);
                 },
                 result.GetDebugInfo());
-            
+
         }
 
         [SkippableTheory]
@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = "oryxdevmcr.azurecr.io/public/oryx/php-" + version + ":latest",
+                ImageId = $"{_imageBase}/php:{version}",
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

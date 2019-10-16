@@ -45,9 +45,9 @@ then
     exit 1
 fi
 
-# Build the common base image first, so other images that depend on it get the latest version. 
-# We don't retrieve this image from a repository but rather build locally to make sure we get 
-# the latest version of its own base image. 
+# Build the common base image first, so other images that depend on it get the latest version.
+# We don't retrieve this image from a repository but rather build locally to make sure we get
+# the latest version of its own base image.
 
 docker build \
     --pull \
@@ -62,11 +62,11 @@ clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
-    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result:latest"
-    
+    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
-    
+
     cd $REPO_DIR
 
     echo
@@ -86,7 +86,7 @@ for dockerFile in $dockerFiles; do
         uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
+        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
 
         if [ $clearedOutput == "false" ]
         then
@@ -98,10 +98,10 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating runtime image artifacts file with build number..."
-        echo "$acrRuntimeImageTagNameRepo:$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     else
         devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
-        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo:latest"
+        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo"
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR

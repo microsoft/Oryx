@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                $"{_imageBase}/node:{nodeVersion}",
                 4200,
                 "/bin/sh",
                 new[]
@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                $"{_imageBase}/node:{nodeVersion}",
                 4200,
                 "/bin/sh",
                 new[]
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                $"{_imageBase}/node:{nodeVersion}",
                 4200,
                 "/bin/sh",
                 new[]
@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                $"{_imageBase}/node:{nodeVersion}",
                 4200,
                 "/bin/sh",
                 new[]

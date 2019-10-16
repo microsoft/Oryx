@@ -24,7 +24,7 @@ function getTagName()
 	local replacedPath="$RUNTIME_IMAGES_SRC_DIR/"
 	local remainderPath="${1//$replacedPath/}"
 	local slashChar="/"
-	getTagName_result=${remainderPath//$slashChar/"-"}
+	getTagName_result=${remainderPath//$slashChar/":"}
 	return 0
 }
 

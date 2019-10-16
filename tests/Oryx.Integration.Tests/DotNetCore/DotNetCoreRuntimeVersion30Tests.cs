@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-2.1",
+                $"{_imageBase}/dotnetcore:2.1",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{dotnetcoreVersion}",
+                $"{_imageBase}/dotnetcore:{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{dotnetcoreVersion}",
+                $"{_imageBase}/dotnetcore:{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -191,7 +191,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                "oryxdevmcr.azurecr.io/public/oryx/dotnetcore-1.1",
+                $"{_imageBase}/dotnetcore:1.1",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -222,7 +222,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                "oryxdevmcr.azurecr.io/public/oryx/dotnetcore-3.0",
+                $"{_imageBase}/dotnetcore:3.0",
                 _output,
                 new List<DockerVolume>() { volume },
                 environmentVariables: null,
@@ -271,7 +271,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{dotnetcoreVersion}",
+                $"{_imageBase}/dotnetcore:{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -315,7 +315,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/dotnetcore-{dotnetcoreVersion}",
+                $"{_imageBase}/dotnetcore:{dotnetcoreVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]

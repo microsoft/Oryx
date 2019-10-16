@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevmcr.azurecr.io/public/oryx/python-3.6",
+                $"{_imageBase}/python:3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevmcr.azurecr.io/public/oryx/python-3.6",
+                $"{_imageBase}/python:3.6",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
+                $"{_imageBase}/python:3.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]

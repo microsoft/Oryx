@@ -56,6 +56,13 @@ fi
 
 echo
 
+if [ -n "$2" ]; then
+    echo "Setting environment variable 'ORYX_TEST_IMAGE_BASE' to provided value '$2'."
+    export ORYX_TEST_IMAGE_BASE="$2"
+fi
+
+echo
+
 testProjectName="Oryx.Integration"
 cd "$TESTS_SRC_DIR/$testProjectName.Tests"
 artifactsDir="$REPO_DIR/artifacts"

@@ -18,15 +18,29 @@ namespace Microsoft.Oryx.Integration.Tests
 {
     public abstract class DatabaseTestsBase
     {
+        protected const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
+        protected const string _defaultImageBase = "oryxdevmcr.azurecr.io";
+        protected const string _oryxImageSuffix = "/public/oryx";
+
         protected readonly ITestOutputHelper _output;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly HttpClient _httpClient = new HttpClient();
+        protected readonly string _imageBase;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _output = outputHelper;
             _dbFixture = dbFixture;
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _imageBase = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
+            if (string.IsNullOrEmpty(_imageBase))
+            {
+                _output.WriteLine($"Could not find a value for environment variable " +
+                                  $"'{_imageBaseEnvironmentVariable}', using default image base '{_defaultImageBase}'.");
+                _imageBase = _defaultImageBase;
+            }
+
+            _imageBase += _oryxImageSuffix;
         }
 
         protected string HostSamplesDir { get; }
@@ -49,10 +63,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = $"oryxdevmcr.azurecr.io/public/oryx/{language}-{languageVersion}";
+            var runtimeImageName = $"{_imageBase}/{language}:{languageVersion}";
             if (string.Equals(language, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = $"oryxdevmcr.azurecr.io/public/oryx/node-{languageVersion}";
+                runtimeImageName = $"{_imageBase}/node:{languageVersion}";
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";

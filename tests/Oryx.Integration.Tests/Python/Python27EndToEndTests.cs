@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevmcr.azurecr.io/public/oryx/python-2.7",
+                $"{_imageBase}/python:2.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                "oryxdevmcr.azurecr.io/public/oryx/python-2.7",
+                $"{_imageBase}/python:2.7",
                 ContainerPort,
                 "/bin/bash",
                 new[]
