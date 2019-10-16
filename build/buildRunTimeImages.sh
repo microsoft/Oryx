@@ -58,7 +58,12 @@ docker build \
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
 
-clearedOutput=false
+if [ "$AGENT_BUILD" == "true" ]
+then
+    # clear existing contents of the file, if any
+    > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+fi
+
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
     getTagName $dockerFileDir
@@ -87,13 +92,6 @@ for dockerFile in $dockerFiles; do
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
-
-        if [ $clearedOutput == "false" ]
-        then
-            # clear existing contents of the file, if any
-            > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
-            clearedOutput=true
-        fi
 
         # add new content
         echo
