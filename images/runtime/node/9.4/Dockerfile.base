@@ -52,7 +52,6 @@ CMD [ "node" ]
 FROM node-original AS main
 
 RUN apt-get update \
-  && apt-get upgrade -y \
   && apt-get install -y \
     unzip \
   && rm -rf /var/lib/apt/lists/*
