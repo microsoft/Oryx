@@ -6,11 +6,6 @@
 
 set -e
 
-echo
-echo "Current list of running processes:"
-ps aux | less
-echo
-
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
@@ -66,12 +61,22 @@ diagnosticFileLocation="$artifactsDir/$testProjectName.Tests$integrationTestPlat
 msbuildDebugLogsDir="$artifactsDir/msbuildDebugLogs"
 mkdir -p "$msbuildDebugLogsDir"
 export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
-export MSBUILDDISABLENODEREUSE=1
+# Enable automatic creation of crash dump when a .NET Core process crashes (ex: TestHost)
+export COMPlus_DbgEnableMiniDump="1"
+export COMPlus_DbgMiniDumpName="$ARTIFACTS_DIR/$testProjectName.Tests-dump.%d"
 
 dotnet test \
-    $testCaseFilter \
+    --blame \
     --diag "$diagnosticFileLocation" \
-    --verbosity diag \
+    $testCaseFilter \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     -c $BUILD_CONFIGURATION
+
+# --blame flag generates an xml file which it drops under the project directory.
+# Copy that file to artifacts directory too
+if [ -d "TestResults" ]; then
+    resultsDir="$ARTIFACTS_DIR/$testProjectName.TestResults"
+    mkdir -p "$resultsDir"
+    cp -rf TestResults/. "$resultsDir/"
+fi
