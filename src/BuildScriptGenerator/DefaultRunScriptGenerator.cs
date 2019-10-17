@@ -99,8 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                _logger.LogError("{scriptGenPath} returned {exitCode}", scriptGenPath, exitCode);
-                throw new Exception("{scriptGenPath} failed");
+                _logger.LogError("Generated run script returned exit code '{exitCode}'", exitCode);
+                throw new Exception($"{scriptGenPath} failed");
             }
 
             return File.ReadAllText(_tempScriptPath);

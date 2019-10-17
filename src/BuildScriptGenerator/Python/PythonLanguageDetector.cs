@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -82,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     PythonConstants.PythonName,
                     version,
                     _versionProvider.SupportedPythonVersions);
-                _logger.LogError(exc, "Exception caught");
+                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the Python platform.");
                 throw exc;
             }
 
@@ -107,7 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         _logger.LogDebug(
                             "Prefix {verPrefix} was not found in file {rtFileName}",
                             versionPrefix,
-                            PythonConstants.RuntimeFileName);
+                            PythonConstants.RuntimeFileName.Hash());
                         return null;
                     }
 
@@ -120,7 +121,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     _logger.LogError(
                         ex,
                         "An error occurred while reading file {rtFileName}",
-                        PythonConstants.RuntimeFileName);
+                        PythonConstants.RuntimeFileName.Hash());
                 }
             }
             else

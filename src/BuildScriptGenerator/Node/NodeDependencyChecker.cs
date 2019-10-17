@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -32,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
             if (packageJson == null)
             {
-                _logger.LogDebug("packageJson is null; skipping checking for superseded packages");
+                _logger.LogDebug($"{NodeConstants.PackageJsonFileName.Hash()} is null; skipping checking for superseded packages");
                 return Enumerable.Empty<ICheckerMessage>();
             }
 

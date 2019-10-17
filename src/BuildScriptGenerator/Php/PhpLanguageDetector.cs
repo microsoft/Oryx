@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -51,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 // some errors in the composer.json file.
                 _logger.LogWarning(
                     ex,
-                    $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
+                    $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
             }
 
             string runtimeVersion = VerifyAndResolveVersion(composerFile?.require?.php?.Value as string);
@@ -78,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     PhpConstants.PhpName,
                     version,
                     _versionProvider.SupportedPhpVersions);
-                _logger.LogError(exc, "Exception caught");
+                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the PHP platform.");
                 throw exc;
             }
 

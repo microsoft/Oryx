@@ -10,6 +10,7 @@ using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -52,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (string.IsNullOrEmpty(targetFramework))
             {
                 _logger.LogDebug(
-                    $"Could not find 'TargetFramework' element in the project file '{projectFile}'.");
+                    $"Could not find 'TargetFramework' element in the project file.");
                 return null;
             }
 
@@ -137,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         DotNetCoreConstants.LanguageName,
                         version,
                         _versionProvider.SupportedDotNetCoreVersions);
-                    _logger.LogError(exc, "Exception caught");
+                    _logger.LogError(exc, $"Exception caught, the given version '{version}' is not supported for the .NET Core platform.");
                     throw exc;
                 }
 
@@ -161,7 +162,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // in the package.json file.
                 _logger.LogError(
                     ex,
-                    $"An error occurred while trying to deserialize {DotNetCoreConstants.GlobalJsonFileName}");
+                    $"An error occurred while trying to deserialize {DotNetCoreConstants.GlobalJsonFileName.Hash()}");
             }
 
             return globalJson;
