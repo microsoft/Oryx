@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             _output = output;
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _tempRootDir = testTempDirTestFixture.RootDirPath;
+            _tempRootDir = testTempDirTestFixture?.RootDirPath;
             _imageBase = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
             if (string.IsNullOrEmpty(_imageBase))
             {
