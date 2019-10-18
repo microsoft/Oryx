@@ -275,7 +275,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191016.7 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191018.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt
