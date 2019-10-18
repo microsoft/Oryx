@@ -20,6 +20,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0.0
 
 RUN apt-get update \
+  && apt-get upgrade -y \
   && apt-get install -y \
      file \
      lldb \

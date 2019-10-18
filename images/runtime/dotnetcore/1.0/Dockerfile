@@ -18,6 +18,7 @@ FROM mcr.microsoft.com/dotnet/core/runtime:1.0.16
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
 
 RUN apt-get update \
+  && apt-get upgrade -y \
   && apt-get install -y \
      curl \
      file \
