@@ -29,34 +29,35 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         // DotNet
-        [InlineData("dotnet")]
+        [InlineData("dotnet", "/opt/dotnet/")]
         // Node
-        [InlineData("node")]
-        [InlineData("npm")]
-        [InlineData("npx")]
-        [InlineData("yarn")]
-        [InlineData("yarnpkg")]
+        [InlineData("node", "/opt/nodejs/")]
+        [InlineData("npm", "/opt/nodejs/")]
+        [InlineData("npx", "/opt/nodejs/")]
+        [InlineData("yarn", "/opt/yarn/")]
+        [InlineData("yarnpkg", "/opt/yarn/")]
         // Python
-        [InlineData("python")]
-        [InlineData("pip")]
-        [InlineData("pip2")]
-        [InlineData("pip2.7")]
-        [InlineData("pip3")]
-        [InlineData("pip3.7")]
-        [InlineData("pydoc")]
-        [InlineData("pydoc3")]
-        [InlineData("wheel")]
-        [InlineData("pyvenv")]
-        [InlineData("virtualenv")]
-        [InlineData("python-config")]
-        [InlineData("python2-config")]
-        [InlineData("python3-config")]
+        [InlineData("python", "/opt/python/")]
+        [InlineData("pip", "/opt/python/")]
+        [InlineData("pip2", "/opt/python/")]
+        [InlineData("pip2.7", "/opt/python/")]
+        [InlineData("pip3", "/opt/python/")]
+        [InlineData("pip3.7", "/opt/python/")]
+        [InlineData("pydoc", "/opt/python/")]
+        [InlineData("pydoc3", "/opt/python/")]
+        [InlineData("wheel", "/opt/python/")]
+        [InlineData("pyvenv", "/opt/python/")]
+        [InlineData("virtualenv", "/opt/python/")]
+        [InlineData("python-config", "/opt/python/")]
+        [InlineData("python2-config", "/opt/python/")]
+        [InlineData("python3-config", "/opt/python/")]
         // Php
-        [InlineData("php")]
-        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen(string executableName)
+        [InlineData("php", "/opt/php/")]
+        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen(
+            string executableName,
+            string expectedPathPrefix)
         {
             // Arrange
-            var oryxInstalledExecutable = $"/opt/oryx/defaultversions/{executableName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"which {executableName}")
                 .ToString();
@@ -69,33 +70,34 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(oryxInstalledExecutable, result.StdOut);
+                    Assert.Contains(expectedPathPrefix, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Theory]
         // DotNet
-        [InlineData("dotnet")]
+        [InlineData("dotnet", "/opt/dotnet/")]
         // Node
-        [InlineData("node")]
-        [InlineData("npm")]
-        [InlineData("npx")]
-        [InlineData("yarn")]
-        [InlineData("yarnpkg")]
+        [InlineData("node", "/opt/nodejs/")]
+        [InlineData("npm", "/opt/nodejs/")]
+        [InlineData("npx", "/opt/nodejs/")]
+        [InlineData("yarn", "/opt/nodejs/")]
+        [InlineData("yarnpkg", "/opt/nodejs/")]
         // Python
-        [InlineData("python")]
-        [InlineData("pip")]
-        [InlineData("pip3")]
-        [InlineData("pip3.7")]
-        [InlineData("wheel")]
-        [InlineData("pydoc3")]
-        [InlineData("pyvenv")]
-        [InlineData("python3-config")]
-        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InSlimBuildImage(string executableName)
+        [InlineData("python", "/opt/python/")]
+        [InlineData("pip", "/opt/python/")]
+        [InlineData("pip3", "/opt/python/")]
+        [InlineData("pip3.7", "/opt/python/")]
+        [InlineData("wheel", "/opt/python/")]
+        [InlineData("pydoc3", "/opt/python/")]
+        [InlineData("pyvenv", "/opt/python/")]
+        [InlineData("python3-config", "/opt/python/")]
+        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InSlimBuildImage(
+            string executableName,
+            string expectedPathPrefix)
         {
             // Arrange
-            var oryxInstalledExecutable = $"/opt/oryx/defaultversions/{executableName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"which {executableName}")
                 .ToString();
@@ -108,7 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(oryxInstalledExecutable, result.StdOut);
+                    Assert.Contains(expectedPathPrefix, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -186,7 +188,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
-            var oryxInstalledNode = "/opt/oryx/defaultversions/node";
+            var oryxInstalledNode = "/opt/nodejs/";
             var script = new ShellScriptBuilder()
                 .AddCommand($"echo > {userInstalledDotNet}")
                 .AddCommand($"chmod +x {userInstalledDotNet}")
@@ -216,7 +218,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
-            var nodeSetupByBenv = "/opt/nodejs/8/bin/node";
+            var nodeSetupByBenv = "/opt/nodejs/";
             var script = new ShellScriptBuilder()
                 .AddCommand($"echo > {userInstalledDotNet}")
                 .AddCommand($"chmod +x {userInstalledDotNet}")
@@ -237,6 +239,56 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(userInstalledDotNet, result.StdOut);
                     Assert.Contains(nodeSetupByBenv, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData(FullBuildImageName)]
+        [InlineData(SlimBuildImageName)]
+        public void InstalledNodeModulesExecutablesAreOnPath(string buildImageName)
+        {
+            // Arrange
+            var serveNodeModulePathPrefix = "/opt/nodejs/";
+            var script = new ShellScriptBuilder()
+                .AddCommand("npm install -g serve > /dev/null 2>&1")
+                .AddCommand("which serve")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(buildImageName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(serveNodeModulePathPrefix, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData(FullBuildImageName)]
+        [InlineData(SlimBuildImageName)]
+        public void InstalledPythonExecutablesAreOnPath(string buildImageName)
+        {
+            // Arrange
+            var pythonPacakageExecutablePathPrefix = "/opt/python/";
+            var script = new ShellScriptBuilder()
+                .AddCommand("pip install pylint > /dev/null 2>&1")
+                .AddCommand("which pylint")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(buildImageName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(pythonPacakageExecutablePathPrefix, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
