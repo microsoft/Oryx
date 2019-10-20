@@ -39,17 +39,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         // Python
         [InlineData("python", "/opt/python/")]
         [InlineData("pip", "/opt/python/")]
-        [InlineData("pip2", "/opt/python/")]
-        [InlineData("pip2.7", "/opt/python/")]
         [InlineData("pip3", "/opt/python/")]
         [InlineData("pip3.7", "/opt/python/")]
-        [InlineData("pydoc", "/opt/python/")]
         [InlineData("pydoc3", "/opt/python/")]
         [InlineData("wheel", "/opt/python/")]
         [InlineData("pyvenv", "/opt/python/")]
-        [InlineData("virtualenv", "/opt/python/")]
-        [InlineData("python-config", "/opt/python/")]
-        [InlineData("python2-config", "/opt/python/")]
         [InlineData("python3-config", "/opt/python/")]
         // Php
         [InlineData("php", "/opt/php/")]
@@ -82,8 +76,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("node", "/opt/nodejs/")]
         [InlineData("npm", "/opt/nodejs/")]
         [InlineData("npx", "/opt/nodejs/")]
-        [InlineData("yarn", "/opt/nodejs/")]
-        [InlineData("yarnpkg", "/opt/nodejs/")]
+        [InlineData("yarn", "/opt/yarn/")]
+        [InlineData("yarnpkg", "/opt/yarn/")]
         // Python
         [InlineData("python", "/opt/python/")]
         [InlineData("pip", "/opt/python/")]

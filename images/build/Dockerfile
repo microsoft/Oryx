@@ -290,7 +290,7 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts
 
-ENV PATH="$PATH:/opt/php/lts"
+ENV PATH="$PATH:/opt/php/lts/bin"
 
 RUN rm -rf /tmp/scripts
 

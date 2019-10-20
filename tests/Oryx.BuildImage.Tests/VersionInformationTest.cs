@@ -158,32 +158,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "python")]
-        [Fact]
-        public void PythonAlias_UsesPython2_ByDefault_WhenNoExplicitVersionIsProvided()
-        {
-            // Arrange
-            var expectedOutput = Python27VersionInfo;
-
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "python",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdErr.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
+        
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.SlimBuildImageName)]
