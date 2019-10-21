@@ -11,6 +11,7 @@ ENV LANG C.UTF-8
 
 # Install basic build tools
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # Required for .NET Core 1.1
         libunwind8 \
@@ -21,6 +22,7 @@ RUN mkdir -p /tmp/scripts
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # For .NET Core 1.1
         libcurl3 \
@@ -52,6 +54,14 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
+    INSTALL_TOOLS=true \
+    /tmp/scripts/installDotNetCore.sh
+
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION_PREVIEW_NAME \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_31_SDK_SHA512 \
+    # Since this is a preview version, do not warm up with nuget packages
+    INSTALL_PACKAGES=false \
     INSTALL_TOOLS=true \
     /tmp/scripts/installDotNetCore.sh
 
@@ -92,12 +102,17 @@ RUN set -ex \
  # 3.0 sdk <-- 3.0 runtime's sdk
  && mkdir $NET_CORE_APP_30 \
  && ln -s $NET_CORE_APP_30 3.0 \
- && ln -s 3.0 3 \
- && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk
+ && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
+ # 3.1 sdk <-- 3.1 runtime's sdk
+ && mkdir $NET_CORE_APP_31 \
+ && ln -s $NET_CORE_APP_31 3.1 \
+ && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
+ && ln -s 3.0 3
 
 # Install Node.js, NPM, Yarn
 FROM buildpack-deps:stretch AS node-install
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
@@ -272,7 +287,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191018.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt

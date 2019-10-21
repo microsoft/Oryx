@@ -19,6 +19,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.7
 
 RUN apt-get update \
+  && apt-get upgrade -y \
   && apt-get install -y \
      file \
      lldb \

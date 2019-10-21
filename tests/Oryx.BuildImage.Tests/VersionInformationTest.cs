@@ -103,6 +103,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData("3", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData("3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersionPreviewName)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
         {
             // Arrange
@@ -232,7 +233,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("12.9.1", "v12.9.1")]
+        [InlineData("12.12.0", "v12.12.0")]
         [InlineData("6", "v" + NodeVersions.Node6Version)]
         [InlineData("8", "v" + NodeVersions.Node8Version)]
         [InlineData("10", "v" + NodeVersions.Node10Version)]
