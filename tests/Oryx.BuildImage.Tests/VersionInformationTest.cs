@@ -15,9 +15,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class VersionInformationTest
     {
-        private const string Python27VersionInfo = "Python " + Settings.Python27Version;
-        private const string Python36VersionInfo = "Python " + Common.PythonVersions.Python36Version;
-        private const string Python37VersionInfo = "Python " + Common.PythonVersions.Python37Version;
+        private const string Python27VersionInfo = "Python " + PythonVersions.Python27Version;
+        private const string Python36VersionInfo = "Python " + PythonVersions.Python36Version;
+        private const string Python37VersionInfo = "Python " + PythonVersions.Python37Version;
 
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
@@ -208,7 +208,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("12.12.0", "v12.12.0")]
         [InlineData("6", "v" + NodeVersions.Node6Version)]
         [InlineData("8", "v" + NodeVersions.Node8Version)]
         [InlineData("10", "v" + NodeVersions.Node10Version)]
@@ -217,6 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NodeVersions.Node8MajorMinorVersion, "v" + NodeVersions.Node8Version)]
         [InlineData(NodeVersions.Node10MajorMinorVersion, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12MajorMinorVersion, "v" + NodeVersions.Node12Version)]
+        [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
         [InlineData("lts", "v" + NodeVersions.Node10Version)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
@@ -326,7 +326,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
-        [InlineData(Settings.Python27Version, Python27VersionInfo)]
+        [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
         public void PythonAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -359,7 +359,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
-        [InlineData(Settings.Python27Version, Python27VersionInfo)]
+        [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
         public void Python2Alias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -392,9 +392,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("latest", Python37VersionInfo)]
         [InlineData("3", Python37VersionInfo)]
         [InlineData("3.6", Python36VersionInfo)]
-        [InlineData(Common.PythonVersions.Python36Version, Python36VersionInfo)]
+        [InlineData(PythonVersions.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
-        [InlineData(Common.PythonVersions.Python37Version, Python37VersionInfo)]
+        [InlineData(PythonVersions.Python37Version, Python37VersionInfo)]
         public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange

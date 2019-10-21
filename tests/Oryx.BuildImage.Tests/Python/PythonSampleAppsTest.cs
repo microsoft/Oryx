@@ -421,7 +421,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     string errorMessage = "Platform 'python' version '4.0.1' is unsupported. Supported versions: " +
-                        $"{Settings.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
+                        $"{PythonVersions.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
                     Assert.False(result.IsSuccess);
                     Assert.Contains(errorMessage, result.StdErr);
                 },
@@ -432,7 +432,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void CanBuild_Python2_WithScriptOnlyOption()
         {
             // Arrange
-            var langVersion = Settings.Python27Version;
+            var langVersion = PythonVersions.Python27Version;
             var appName = "python2-flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;

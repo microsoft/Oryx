@@ -56,10 +56,10 @@
   constants:
     python-base-tag: 20191023.4
     pip-version: 19.2.3
-    python27-version: 2.7.16
+    python27-version: 2.7.17
     python36-version: 3.6.9
-    python37-version: 3.7.4
-    python38-version: 3.8.0b4
+    python37-version: 3.7.5
+    python38-version: 3.8.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -71,7 +71,7 @@
   constants:
     php-build-base-tag: 20191023.4
     php-runtime-base-tag: 20191023.4
-    composer-version: 1.8.6
+    composer-version: 1.9.0
     composer-sha384: a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1
     # hashes are for .tar.xz
     php73-version: 7.3.10
@@ -118,10 +118,10 @@
     node6-major-minor-version: 6.17
     node8-version: 8.16.2
     node8-major-minor-version: 8.16
-    node10-version: 10.16.3
-    node10-major-minor-version: 10.16
-    node12-version: 12.12.0
-    node12-major-minor-version: 12.12
+    node10-version: 10.17.0
+    node10-major-minor-version: 10.17
+    node12-version: 12.13.0
+    node12-major-minor-version: 12.13
   outputs:
     - type: shell
       directory: build
