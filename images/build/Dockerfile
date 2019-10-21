@@ -2,6 +2,7 @@
 ARG AGENTBUILD
 ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
+ARG YARN_CACHE_BASE_TAG
 FROM oryxdevmcr.azurecr.io/public/oryx/build-slim AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
@@ -287,7 +288,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191018.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt
