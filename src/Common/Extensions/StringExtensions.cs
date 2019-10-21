@@ -88,16 +88,18 @@ namespace Microsoft.Oryx.Common.Extensions
                 return str;
             }
 
-            var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(str);
-            var hash = sha.ComputeHash(bytes);
-            var result = new StringBuilder();
-            foreach (var x in bytes)
+            using (var sha = SHA256.Create())
             {
-                result.AppendFormat("{0:x2}", x);
-            }
+                var bytes = Encoding.UTF8.GetBytes(str);
+                var hash = sha.ComputeHash(bytes);
+                var result = new StringBuilder();
+                foreach (var x in bytes)
+                {
+                    result.AppendFormat("{0:x2}", x);
+                }
 
-            return result.ToString();
+                return result.ToString();
+            }
         }
     }
 }
