@@ -51,8 +51,9 @@ CMD [ "node" ]
 
 FROM node-original as main
 
-RUN apt-get update && apt-get install -y \
-  unzip \
+RUN apt-get update \
+  && apt-get install -y \
+    unzip \
   && rm -rf /var/lib/apt/lists/*
 
 COPY images/runtime/node/installDependencies.sh /tmp/scripts/installDependencies.sh

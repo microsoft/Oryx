@@ -9,11 +9,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string YarnMajorVersion = "1";
         public const string Node6Version = "6.17.1";
         public const string Node6MajorMinorVersion = "6.17";
-        public const string Node8Version = "8.16.1";
+        public const string Node8Version = "8.16.2";
         public const string Node8MajorMinorVersion = "8.16";
         public const string Node10Version = "10.16.3";
         public const string Node10MajorMinorVersion = "10.16";
-        public const string Node12Version = "12.9.1";
-        public const string Node12MajorMinorVersion = "12.9";
+        public const string Node12Version = "12.12.0";
+        public const string Node12MajorMinorVersion = "12.12";
     }
 }

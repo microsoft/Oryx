@@ -8,6 +8,7 @@ set -ex
 
 # libpq-dev is for PostgreSQL
 apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         libexpat1 \
         curl \

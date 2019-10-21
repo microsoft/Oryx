@@ -22,6 +22,7 @@ RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     	libzip-dev \
         libpng-dev \
@@ -120,12 +121,12 @@ RUN { \
                 echo 'zend_extension=opcache'; \
     } > /usr/local/etc/php/conf.d/php.ini
 
-
 RUN set -x \
     && docker-php-source extract \
     && cd /usr/src/php/ext/odbc \
     && phpize \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
+    && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
 

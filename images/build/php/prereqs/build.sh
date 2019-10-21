@@ -31,7 +31,7 @@ if ! command -v gpg > /dev/null; then
 	fetchDeps="$fetchDeps dirmngr gnupg"
 fi
 
-apt-get update && apt-get install -y --no-install-recommends $fetchDeps
+apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends $fetchDeps
 rm -rf /var/lib/apt/lists/*
 
 mkdir -p /usr/src
@@ -63,6 +63,7 @@ fi
 
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
+apt-get upgrade -y;
 apt-get install -y --no-install-recommends \
 	libcurl4-openssl-dev \
 	libedit-dev \
