@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"{_imageBase}/dotnetcore:{dotnetcoreVersion}",
+                GenerateRuntimeImage("dotnetcore", dotnetcoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                $"{_imageBase}/dotnetcore:{dotnetcoreVersion}",
+                GenerateRuntimeImage("dotnetcore", dotnetcoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

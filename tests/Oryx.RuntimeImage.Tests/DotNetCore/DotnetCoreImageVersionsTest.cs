@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"{_imageBase}/dotnetcore:{version}",
+                ImageId = GenerateRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"{_imageBase}/dotnetcore:{version}",
+                ImageId = GenerateRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--version" }
             });
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"{_imageBase}/dotnetcore:{version}",
+                ImageId = GenerateRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });

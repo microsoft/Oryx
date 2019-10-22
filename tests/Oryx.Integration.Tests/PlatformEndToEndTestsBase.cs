@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.Integration.Tests
     public abstract class PlatformEndToEndTestsBase : IClassFixture<TestTempDirTestFixture>
     {
         protected const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
+        protected const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
         protected const string _defaultImageBase = "oryxdevmcr.azurecr.io";
         protected const string _oryxImageSuffix = "/public/oryx";
 
@@ -25,6 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         protected readonly string _hostSamplesDir;
         protected readonly string _tempRootDir;
         protected readonly string _imageBase;
+        protected readonly string _tagSuffix;
 
         public PlatformEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
         {
@@ -40,6 +42,14 @@ namespace Microsoft.Oryx.Integration.Tests
             }
 
             _imageBase += _oryxImageSuffix;
+
+            _tagSuffix = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
+            if (string.IsNullOrEmpty(_tagSuffix))
+            {
+                _output.WriteLine($"Could not find a value for environment variable " +
+                                  $"'{_tagSuffixEnvironmentVariable}', no suffix will be added to image tags.");
+                _tagSuffix = string.Empty;
+            }
         }
 
         // The following method is used to avoid following exception from HttpClient when trying to read a response:
@@ -49,6 +59,16 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             var bytes = await _httpClient.GetByteArrayAsync(url);
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        protected string GenerateRuntimeImage(string imageBase, string platform, string platformVersion)
+        {
+            return $"{imageBase}/{platform}:{platformVersion}{_tagSuffix}";
+        }
+
+        protected string GenerateRuntimeImage(string platform, string platformVersion)
+        {
+            return GenerateRuntimeImage(_imageBase, platform, platformVersion);
         }
     }
 }

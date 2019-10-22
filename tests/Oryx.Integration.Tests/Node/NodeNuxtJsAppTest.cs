@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"{_imageBase}/node:{nodeVersion}",
+                GenerateRuntimeImage("node", nodeVersion),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"{_imageBase}/node:{nodeVersion}",
+                GenerateRuntimeImage("node", nodeVersion),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
