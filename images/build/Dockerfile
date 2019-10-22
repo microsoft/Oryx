@@ -240,6 +240,8 @@ FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-bu
 # End PHP intermediate stages
 ###
 
+FROM mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} AS yarn-cache-base
+
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
@@ -288,7 +290,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt
