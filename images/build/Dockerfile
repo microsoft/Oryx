@@ -11,6 +11,7 @@ ENV LANG C.UTF-8
 
 # Install basic build tools
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # Required for .NET Core 1.1
         libunwind8 \
@@ -21,6 +22,7 @@ RUN mkdir -p /tmp/scripts
 # Install .NET Core
 FROM main AS dotnet-install
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # For .NET Core 1.1
         libcurl3 \
@@ -110,6 +112,7 @@ RUN set -ex \
 # Install Node.js, NPM, Yarn
 FROM buildpack-deps:stretch AS node-install
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
@@ -284,7 +287,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20190802.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191018.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt

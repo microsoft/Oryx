@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"{_imageBase}/python:3.6",
+                GenerateRuntimeImage("python", "3.6"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"{_imageBase}/python:3.6",
+                GenerateRuntimeImage("python", "3.6"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"{_imageBase}/python:3.7",
+                GenerateRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

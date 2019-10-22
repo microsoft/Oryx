@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                $"{_imageBase}/php:{imageTag}",
+                GenerateRuntimeImage("php", imageTag),
                 "php",
                 new[] { "--version" }
             );
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"{_imageBase}/php:{imageTag}",
+                ImageId = GenerateRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"{_imageBase}/php:{imageTag}",
+                imageName: GenerateRuntimeImage("php", imageTag),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"{_imageBase}/php:{imageTag}",
+                ImageId = GenerateRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mcrypt);" }
             });
@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"{_imageBase}/php:{version}",
+                ImageId = GenerateRuntimeImage("php", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

@@ -6,8 +6,9 @@ COPY images/build/python/prereqs/build.sh /tmp/
 COPY images/receivePgpKeys.sh /tmp/receivePgpKeys.sh
 RUN chmod +x /tmp/receivePgpKeys.sh
 RUN chmod +x /tmp/build.sh && \
-	apt-get update && \
-	apt-get install -y --no-install-recommends \
+	apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
 		tk-dev \
 		uuid-dev \
 		libgeos-dev

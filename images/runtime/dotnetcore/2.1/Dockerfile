@@ -23,6 +23,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:2.1.13
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
 
 RUN apt-get update \
+  && apt-get upgrade -y \
   && apt-get install -y \
      curl \
      file \
