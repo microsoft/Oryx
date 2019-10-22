@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 LayersDir = Path.GetFullPath(LayersDir);
                 if (!Directory.Exists(LayersDir))
                 {
-                    logger.LogError("Could not find layers directory {layersDir}", LayersDir);
+                    logger.LogError("Could not find provided layers directory.");
                     console.WriteErrorLine($"Could not find layers directory '{LayersDir}'.");
                     result = false;
                 }

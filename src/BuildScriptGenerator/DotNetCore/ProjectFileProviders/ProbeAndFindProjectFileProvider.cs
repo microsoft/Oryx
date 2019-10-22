@@ -9,6 +9,7 @@ using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -93,9 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (projectFile == null)
             {
-                _logger.LogDebug(
-                    $"Could not find a project file to build. Available project files: " +
-                    $"{string.Join(',', allProjects)}");
+                _logger.LogDebug("Could not find a .NET Core project file to build.");
                 return null;
             }
 

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -73,6 +74,32 @@ namespace Microsoft.Oryx.Common.Extensions
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Hash a string using SHA-256
+        /// </summary>
+        /// <param name="str">The string to hash.</param>
+        /// <returns>The SHA-256 hash of the given string.</returns>
+        public static string Hash(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
+            using (var sha = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(str);
+                var hash = sha.ComputeHash(bytes);
+                var result = new StringBuilder();
+                foreach (var x in bytes)
+                {
+                    result.AppendFormat("{0:x2}", x);
+                }
+
+                return result.ToString();
+            }
         }
     }
 }

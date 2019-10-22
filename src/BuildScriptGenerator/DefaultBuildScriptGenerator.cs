@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 // TODO: Should an UnsupportedLanguageException be thrown here?
                 // Seeing as the issue was that platforms were IDENTIFIED, but no build snippets were emitted from them
-                LogAndThrowNoPlatformFound(context);
+                throw new UnsupportedLanguageException(Labels.UnableToDetectLanguageMessage);
             }
         }
 
@@ -306,7 +306,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var languages = _programmingPlatforms.Select(sg => sg.Name);
             var exc = new UnsupportedLanguageException($"'{context.Language}' platform is not supported. " +
                 $"Supported platforms are: {string.Join(", ", languages)}");
-            _logger.LogError(exc, "Exception caught");
+            _logger.LogError(exc, $"Exception caught, the given platform '{context.Language}' is not supported.");
             throw exc;
         }
 
@@ -314,7 +314,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (!string.IsNullOrWhiteSpace(scriptPath))
             {
-                _logger.LogInformation("Using {type} script from {scriptPath}", type, scriptPath);
+                _logger.LogInformation("Using {type} script", type);
             }
         }
 
@@ -369,29 +369,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// Handles the error when no platform was found, logging information about the repo.
-        /// </summary>
-        private void LogAndThrowNoPlatformFound(BuildScriptGeneratorContext context)
-        {
-            try
-            {
-                var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(
-                    context.SourceRepo.RootPath);
-                _logger.LogTrace(
-                    "logDirectoryStructure",
-                    new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception caught");
-            }
-            finally
-            {
-                throw new UnsupportedLanguageException(Labels.UnableToDetectLanguageMessage);
-            }
-        }
-
-        /// <summary>
         /// Gets a matching version for the platform given a version in SemVer format.
         /// If the given version is not supported, an exception is thrown.
         /// </summary>
@@ -406,7 +383,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(platform.Name, targetVersionSpec, platform.SupportedVersions);
-                _logger.LogError(exc, "Exception caught");
+                _logger.LogError(exc, $"Exception caught, the given version '{targetVersionSpec}' is not supported for platform '{platform.Name}'.");
                 throw exc;
             }
             else

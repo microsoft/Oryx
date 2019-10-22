@@ -258,7 +258,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                _logger.LogDebug($"packageJson is null; skipping setting {NodeConstants.NpmToolName} tool");
+                _logger.LogDebug($"{NodeConstants.PackageJsonFileName} is null; skipping setting {NodeConstants.NpmToolName} tool");
             }
         }
 
@@ -319,7 +319,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
                 logger.LogWarning(
                     exc,
-                    $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName}");
+                    $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName.Hash()}");
             }
 
             return packageJson;
