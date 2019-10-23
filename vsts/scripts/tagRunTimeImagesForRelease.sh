@@ -21,6 +21,7 @@ while read sourceImage; do
     # node:10.10-latest) as part of tag. We need to parse the tags so that we can reconstruct tags suitable for our
     # prod images.
 
+    IFS=':'
     read -ra imageNameParts <<< "$sourceImage"
     repo=${imageNameParts[0]}
     tag=${imageNameParts[1]}
