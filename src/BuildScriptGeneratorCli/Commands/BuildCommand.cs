@@ -201,8 +201,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var oryxReleaseTagName = Program.GetMetadataValue("RELEASE_TAG_NAME");
             var buildEventProps = new Dictionary<string, string>()
             {
-                { "oryxVersion",  oryxVersion },
-                { "oryxCommitId",  Program.GetMetadataValue("GitCommit") },
+                { "oryxVersion", oryxVersion },
+                { "oryxCommitId", Program.GetMetadataValue("GitCommit") },
                 { "oryxReleaseTagName", oryxReleaseTagName },
                 {
                     "oryxCommandLine",
