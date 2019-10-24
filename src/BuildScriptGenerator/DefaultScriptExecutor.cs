@@ -30,34 +30,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             int exitCode = ProcessHelper.TrySetExecutableMode(scriptPath, workingDirectory);
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                _logger.LogError(
-                    "Failed to set execute permission on script {scriptPath} ({exitCode})",
-                    scriptPath,
-                    exitCode);
                 return exitCode;
             }
 
-            exitCode = ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
-            if (exitCode != ProcessConstants.ExitSuccess)
-            {
-                try
-                {
-                    var directoryStructureData = OryxDirectoryStructureHelper.GetDirectoryStructure(workingDirectory);
-                    _logger.LogTrace(
-                        "logDirectoryStructure",
-                        new Dictionary<string, string> { { "directoryStructure", directoryStructureData } });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Exception caught");
-                }
-                finally
-                {
-                    _logger.LogError("Execution of script {scriptPath} failed ({exitCode})", scriptPath, exitCode);
-                }
-            }
-
-            return exitCode;
+            return ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
         }
 
         protected virtual int ExecuteScriptInternal(
@@ -68,9 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdErrHandler)
         {
             int exitCode;
-            using (var timedEvent = _logger.LogTimedEvent(
-                "ExecuteScript",
-                new Dictionary<string, string> { { "scriptPath", scriptPath } }))
+            using (var timedEvent = _logger.LogTimedEvent("ExecuteScript"))
             {
                 exitCode = ProcessHelper.RunProcess(
                     scriptPath,

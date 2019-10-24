@@ -192,7 +192,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
             logger.LogTrace("Build script written to file");
-            logger.LogDebug("Build script content:\n" + scriptContent);
+            if (DebugMode)
+            {
+                console.WriteLine($"Build script content:\n{scriptContent}");
+            }
 
             var buildEventProps = new Dictionary<string, string>()
             {
@@ -270,8 +273,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
-            logger.LogLongMessage(LogLevel.Debug, "Build script output", buildScriptOutput.ToString());
-
             if (exitCode != ProcessConstants.ExitSuccess)
             {
                 logger.LogError("Build script exited with {exitCode}", exitCode);
@@ -312,9 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (IsSubDirectory(options.IntermediateDir, options.SourceDir))
                 {
                     logger.LogError(
-                        "Intermediate directory {intermediateDir} cannot be a child of {srcDir}",
-                        options.IntermediateDir,
-                        options.SourceDir);
+                        "Intermediate directory cannot be a child of the source directory.");
                     console.WriteErrorLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");

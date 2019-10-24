@@ -40,9 +40,8 @@ RUN apt-get update \
 # This folder is deleted in the final stage of building this image.
 RUN mkdir -p /tmp/scripts
 
-# This is the folder containing 'links' to versions of sdks present under '/opt' folder
-# These versions are typically the LTS or stable versions of those platforms.
-RUN mkdir -p /opt/oryx/defaultversions
+# This is the folder containing 'links' to benv and build script generator
+RUN mkdir -p /opt/oryx
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -84,7 +83,8 @@ RUN set -ex \
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
- && ln -s 2.1 2
+ && ln -s 2.1 2 \
+ && ln -s 2 lts
 
 RUN set -ex \
  && dotnetDir=/opt/dotnet \
@@ -185,11 +185,6 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s 3.7 /opt/python/3
-RUN set -ex \
- && cd /opt/oryx/defaultversions \
- && cp -sn /opt/python/3/bin/* . \
- # Make sure the alias 'python' always refers to Python 3 by default
- && ln -sf /opt/python/3/bin/python python
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
@@ -218,9 +213,9 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
-ENV PATH=$PATH:/opt/oryx/defaultversions
-COPY images/build/benv.sh /opt/oryx/defaultversions/benv
-RUN chmod +x /opt/oryx/defaultversions/benv
+ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin"
+COPY images/build/benv.sh /opt/oryx/benv
+RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib
 RUN chmod -R 777 /usr/local/share/pip-cache
 
@@ -230,19 +225,17 @@ ENV NUGET_XMLDOC_MODE=skip \
 	NUGET_PACKAGES=/var/nuget
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-COPY --from=dotnet-install /usr/local/bin /opt/oryx/defaultversions
 # Grant read-write permissions to the nuget folder so that dotnet restore
 # can write into it.
 RUN chmod a+rw /var/nuget
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
-COPY --from=node-install /links/ /opt/oryx/defaultversions
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/defaultversions/oryx
+RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
 RUN rm -rf /tmp/scripts
 

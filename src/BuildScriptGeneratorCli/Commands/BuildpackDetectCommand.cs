@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Set from ConfigureBuildScriptGeneratorOptions
             if (!Directory.Exists(options.SourceDir))
             {
-                logger.LogError("Could not find the source directory {srcDir}", options.SourceDir);
+                logger.LogError("Could not find the source directory.");
                 console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }

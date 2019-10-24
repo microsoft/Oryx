@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -95,8 +96,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return;
             }
 
-            foreach (var line in lines)
+            for (int idx = 0; idx < lines.Length;idx++)
             {
+                var line = lines[idx];
                 // Ignore comments and blank lines
                 if (line.StartsWith("#") || string.IsNullOrEmpty(line))
                 {
@@ -111,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 else
                 {
                     _logger.LogDebug(
-                        $"Ignoring invalid line '{line}' in '{Constants.BuildEnvironmentFileName}' file.");
+                        $"Ignoring invalid line number '{idx + 1}' in '{Constants.BuildEnvironmentFileName.Hash()}' file.");
                 }
             }
         }

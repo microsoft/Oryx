@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -66,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 {
                     // Leave malformed composer.json files for Composer to handle.
                     // This prevents Oryx from erroring out when Composer itself might be able to tolerate the file.
-                    _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName}");
+                    _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
                 }
             }
 

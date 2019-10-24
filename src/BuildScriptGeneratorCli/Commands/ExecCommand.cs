@@ -42,8 +42,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             var shellPath = env.GetEnvironmentVariable("BASH") ?? FilePaths.Bash;
-            logger.LogInformation("Using shell {shell}", shellPath);
-
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
             ctx.DisableMultiPlatformBuild = false;
             var tools = generator.GetRequiredToolVersions(ctx);
@@ -62,7 +60,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 var script = scriptBuilder.AddCommand(Command).ToString();
-                logger.LogDebug("Script content:\n{script}", script);
 
                 // Create temporary file to store script
                 var tempScriptPath = Path.GetTempFileName();
