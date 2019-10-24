@@ -30,7 +30,7 @@ then
     export ORYX_TEST_IMAGE_BASE="$2"
 fi
 
-if [-n "$3"]
+if [ -n "$3" ]
 then
     echo
     echo "Setting environment variable 'ORYX_TEST_TAG_SUFFIX' to provided value '$3'."
