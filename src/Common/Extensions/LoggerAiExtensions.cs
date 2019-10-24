@@ -3,9 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.NLogTarget;
@@ -64,15 +62,20 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">logger instance</param>
         /// <param name="level">log level. will apply to all chunks</param>
         /// <param name="header">chunk header. will be followed by chunk index, a colon, and a line break</param>
-        /// <param name="message">long message to be chunkified and logged</param>
-        public static void LogLongMessage(this ILogger logger, LogLevel level, [NotNull] string header, string message)
+        /// <param name="nonFormattedMessage">long message to be chunkified and logged</param>
+        public static void LogLongMessage(
+            this ILogger logger,
+            LogLevel level,
+            [NotNull] string header,
+            string nonFormattedMessage,
+            IDictionary<string, object> properties)
         {
             int maxChunkLen = AiMessageLengthLimit - header.Length - 16; // 16 should cover for the header formatting
             int i = 0;
-            var chunks = message.Chunkify(maxChunkLen);
+            var chunks = nonFormattedMessage.Chunkify(maxChunkLen);
             foreach (string chunk in chunks)
             {
-                logger.Log(level, $"{header} ({++i}/{chunks.Count}):\n{chunk}");
+                logger.Log(level, $"{header} ({++i}/{chunks.Count}):\n{chunk}", properties: properties);
             }
         }
 
