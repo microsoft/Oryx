@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private const string Python27VersionInfo = "Python " + PythonVersions.Python27Version;
         private const string Python36VersionInfo = "Python " + PythonVersions.Python36Version;
         private const string Python37VersionInfo = "Python " + PythonVersions.Python37Version;
+        private const string Python38VersionInfo = "Python " + PythonVersions.Python38Version;
 
         private readonly ITestOutputHelper _output;
         private readonly DockerCli _dockerCli;
@@ -137,7 +138,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = "v" + NodeVersions.Node10Version;
+            var expectedOutput = "v" + NodeConstants.NodeLtsVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -157,7 +158,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
         
         [Theory]
         [InlineData(Settings.BuildImageName)]
@@ -217,7 +217,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NodeVersions.Node10MajorMinorVersion, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12MajorMinorVersion, "v" + NodeVersions.Node12Version)]
         [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
-        [InlineData("lts", "v" + NodeVersions.Node10Version)]
+        [InlineData("lts", "v" + NodeConstants.NodeLtsVersion)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -389,7 +389,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "python")]
         [Theory]
-        [InlineData("latest", Python37VersionInfo)]
+        [InlineData("latest", Python38VersionInfo)]
         [InlineData("3", Python37VersionInfo)]
         [InlineData("3.6", Python36VersionInfo)]
         [InlineData(PythonVersions.Python36Version, Python36VersionInfo)]
