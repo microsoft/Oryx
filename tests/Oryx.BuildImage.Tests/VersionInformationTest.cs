@@ -390,11 +390,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("platform", "python")]
         [Theory]
         [InlineData("latest", Python38VersionInfo)]
-        [InlineData("3", Python37VersionInfo)]
+        [InlineData("stable", Python38VersionInfo)]
+        [InlineData("3", Python38VersionInfo)]
         [InlineData("3.6", Python36VersionInfo)]
         [InlineData(PythonVersions.Python36Version, Python36VersionInfo)]
         [InlineData("3.7", Python37VersionInfo)]
         [InlineData(PythonVersions.Python37Version, Python37VersionInfo)]
+        [InlineData("3.8", Python38VersionInfo)]
+        [InlineData(PythonVersions.Python38Version, Python38VersionInfo)]
         public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange

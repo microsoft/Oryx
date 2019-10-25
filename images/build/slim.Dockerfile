@@ -187,9 +187,10 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s $PYTHON38_VERSION /opt/python/3.8 \
+ && ln -s $PYTHON38_VERSION /opt/python/latest \
+ && ln -s $PYTHON38_VERSION /opt/python/stable \
  && ln -s 3.8 /opt/python/3
 
 # This stage is used only when building locally
