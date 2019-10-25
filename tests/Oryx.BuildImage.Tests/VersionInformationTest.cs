@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"Python {Common.PythonVersions.Python37Version}";
+            var expectedOutput = $"Python {Common.PythonVersions.Python38Version}";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments

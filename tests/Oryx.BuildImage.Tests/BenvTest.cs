@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("python", "/opt/python/")]
         [InlineData("pip", "/opt/python/")]
         [InlineData("pip3", "/opt/python/")]
-        [InlineData("pip3.7", "/opt/python/")]
+        [InlineData("pip3.8", "/opt/python/")]
         [InlineData("wheel", "/opt/python/")]
         [InlineData("pydoc3", "/opt/python/")]
         [InlineData("pyvenv", "/opt/python/")]
