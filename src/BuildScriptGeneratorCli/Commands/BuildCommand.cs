@@ -192,13 +192,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
             logger.LogTrace("Build script written to file");
-            logger.LogDebug("Build script content:\n" + scriptContent);
+            if (DebugMode)
+            {
+                console.WriteLine($"Build script content:\n{scriptContent}");
+            }
 
+            var oryxVersion = Program.GetVersion();
+            var oryxReleaseTagName = Program.GetMetadataValue("RELEASE_TAG_NAME");
             var buildEventProps = new Dictionary<string, string>()
             {
-                { "oryxVersion", Program.GetVersion() },
+                { "oryxVersion", oryxVersion },
                 { "oryxCommitId", Program.GetMetadataValue("GitCommit") },
-                { "oryxReleaseTagName", Program.GetMetadataValue("RELEASE_TAG_NAME") },
+                { "oryxReleaseTagName", oryxReleaseTagName },
                 {
                     "oryxCommandLine",
                     string.Join(
@@ -270,11 +275,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
-            logger.LogLongMessage(LogLevel.Debug, "Build script output", buildScriptOutput.ToString());
-
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                logger.LogError("Build script exited with {exitCode}", exitCode);
+                logger.LogLongMessage(
+                    LogLevel.Error,
+                    header: "Error running build script",
+                    buildScriptOutput.ToString(),
+                    new Dictionary<string, object>
+                    {
+                        ["buildExitCode"] = exitCode,
+                        ["oryxVersion"] = oryxVersion,
+                        ["oryxReleaseTagName"] = oryxReleaseTagName,
+                    });
                 return exitCode;
             }
 
@@ -312,9 +324,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (IsSubDirectory(options.IntermediateDir, options.SourceDir))
                 {
                     logger.LogError(
-                        "Intermediate directory {intermediateDir} cannot be a child of {srcDir}",
-                        options.IntermediateDir,
-                        options.SourceDir);
+                        "Intermediate directory cannot be a child of the source directory.");
                     console.WriteErrorLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");

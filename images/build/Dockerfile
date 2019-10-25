@@ -2,6 +2,7 @@
 ARG AGENTBUILD
 ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
+ARG YARN_CACHE_BASE_TAG
 FROM oryxdevmcr.azurecr.io/public/oryx/build-slim AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
@@ -219,9 +220,6 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON36_VERSION /opt/python/3.6 \
  && ln -s $PYTHON38_VERSION /opt/python/3.8.0 \
  && ln -s $PYTHON38_VERSION /opt/python/3.8
-RUN set -ex \
- && cd /opt/oryx/defaultversions \
- && cp -sn /opt/python/2/bin/* .
   
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
@@ -238,6 +236,8 @@ FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-bu
 ###
 # End PHP intermediate stages
 ###
+
+FROM mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} AS yarn-cache-base
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
@@ -269,12 +269,6 @@ WORKDIR /
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-COPY --from=dotnet-install /usr/local/bin /opt/oryx/defaultversions
-
-# Make sure the alias 'python' always refers to Python 2 by default
-RUN cd /opt/oryx/defaultversions \
- && rm -f python \
- && ln -sf /opt/python/2/bin/python python
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
@@ -287,7 +281,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191018.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt
@@ -297,8 +291,9 @@ COPY --from=php73-build-base /opt /opt
 
 RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
- && ln -s /opt/php/7 /opt/php/lts \
- && ln -s /opt/php/lts/bin/php /opt/oryx/defaultversions/php
+ && ln -s /opt/php/7 /opt/php/lts
+
+ENV PATH="$PATH:/opt/php/lts/bin"
 
 RUN rm -rf /tmp/scripts
 

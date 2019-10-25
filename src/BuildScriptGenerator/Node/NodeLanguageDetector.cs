@@ -6,6 +6,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -87,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         {
                             _logger.LogDebug(
                                 "App in repo is not a Node.js app as it has the file {iisStartupFile}",
-                                iisStartupFile);
+                                iisStartupFile.Hash());
                             return null;
                         }
                     }
@@ -141,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         NodeConstants.NodeJsName,
                         nodeVersionRange,
                         _versionProvider.SupportedNodeVersions);
-                    _logger.LogError(exc, "Exception caught");
+                    _logger.LogError(exc, $"Exception caught, the version '{nodeVersionRange}' is not supported for the node platform.");
                     throw exc;
                 }
             }

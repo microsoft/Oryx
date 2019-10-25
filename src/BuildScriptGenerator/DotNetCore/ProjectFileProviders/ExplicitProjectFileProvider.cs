@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -43,11 +44,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var projectFile = Path.Combine(context.SourceRepo.RootPath, projectFileWithRelativePath);
             if (context.SourceRepo.FileExists(projectFile))
             {
-                _logger.LogDebug($"Using the project file '{projectFile}' to build.");
+                _logger.LogDebug($"Using the given .NET Core project file to build.");
             }
             else
             {
-                _logger.LogWarning($"Could not find the project file '{projectFile}'.");
+                _logger.LogWarning($"Could not find the .NET Core project file.");
                 throw new InvalidUsageException(
                     string.Format(Resources.Labels.DotNetCoreCouldNotFindProjectFileToBuild, projectFile));
             }

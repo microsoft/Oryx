@@ -13,9 +13,11 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__pythonVersions.sh # For PYTHON_BASE_TAG
 source $REPO_DIR/build/__phpVersions.sh    # For PHP_BUILD_BASE_TAG
+source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
 
 declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
-                                --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG"
+                                --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
+                                --build-arg YARN_CACHE_BASE_TAG=$YARN_CACHE_BASE_TAG" \
 
 echo
 echo Base tag args used:
@@ -25,8 +27,6 @@ echo
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 declare BUILD_SIGNED=""
-
-echo "SignType is: $SIGNTYPE"
 
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
