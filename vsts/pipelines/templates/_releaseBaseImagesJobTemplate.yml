@@ -35,6 +35,25 @@ jobs:
     parameters:
       baseImageName: 'php'
 
+- job: Release_DotNetCoreRuntimeBaseImage
+  displayName: Push DotNetCore Runtime Base Images to MCR
+  pool:
+    name: OryxLinux
+
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]false"
+      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]false"
+      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]false"
+      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]false"
+      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]false"
+      echo "##vso[task.setvariable variable=ReleaseDotNetCoreRunBaseImage;]true"
+    displayName: 'Set variables'
+      
+  - template: _releaseBaseImagesStepTemplate.yml
+    parameters:
+      baseImageName: 'dotnetcore'
+
 - job: Release_PythonBaseImage
   displayName: Push Python Build Base Image to MCR
   pool:

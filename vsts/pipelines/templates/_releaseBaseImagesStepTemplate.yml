@@ -12,11 +12,11 @@ steps:
 - script: |
     if [ "$(ReleasePHPBuildBaseImage)" != "true" ] && [ "$(ReleasePythonBuildBaseImage)" != "true" ] && \
        [ "$(ReleasePHPRunBaseImage)" != "true" ] && [ "$(ReleaseNodeRunBaseImage)" != "true" ] && \
-       [ "$(ReleaseYarnBuildCacheImage)" != "true" ]
+       [ "$(ReleaseDotNetCoreRunBaseImage)" != "true" ] && [ "$(ReleaseYarnBuildCacheImage)" != "true" ]
     then
       echo "Invalid configuration."
       echo "Variable 'ReleasePHPBuildBaseImage' or 'ReleasePythonBuildBaseImage' or 'ReleasePHPRunBaseImage'
-      or 'ReleaseNodeRunBaseImage' or 'ReleaseYarnBuildCacheImage' needs to be 'true' to run this "
+      or 'ReleaseNodeRunBaseImage' or 'ReleaseDotNetCoreRunBaseImage' or 'ReleaseYarnBuildCacheImage' needs to be 'true' to run this "
       exit 1
     fi
   displayName: 'Validate release pipeline run'

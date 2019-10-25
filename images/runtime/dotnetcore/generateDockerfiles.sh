@@ -8,7 +8,7 @@ set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
 
-source $REPO_DIR/build/__nodeVersions.sh
+source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
@@ -23,6 +23,6 @@ do
 	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
 	# Replace placeholders
-	RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/node-base:$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
+	RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/dotnetcore-base:$VERSION_DIRECTORY-$DOT_NET_CORE_RUNTIME_BASE_TAG"
 	sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 done
