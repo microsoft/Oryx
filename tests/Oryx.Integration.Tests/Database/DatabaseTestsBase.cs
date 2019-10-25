@@ -18,39 +18,17 @@ namespace Microsoft.Oryx.Integration.Tests
 {
     public abstract class DatabaseTestsBase
     {
-        protected const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
-        protected const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
-        protected const string _defaultImageBase = "oryxdevmcr.azurecr.io";
-        protected const string _oryxImageSuffix = "/public/oryx";
-
         protected readonly ITestOutputHelper _output;
+        protected readonly ImageTestHelper _imageHelper;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly HttpClient _httpClient = new HttpClient();
-        protected readonly string _imageBase;
-        protected readonly string _tagSuffix;
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _output = outputHelper;
+            _imageHelper = new ImageTestHelper(_output);
             _dbFixture = dbFixture;
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
-            _imageBase = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            if (string.IsNullOrEmpty(_imageBase))
-            {
-                _output.WriteLine($"Could not find a value for environment variable " +
-                                  $"'{_imageBaseEnvironmentVariable}', using default image base '{_defaultImageBase}'.");
-                _imageBase = _defaultImageBase;
-            }
-
-            _imageBase += _oryxImageSuffix;
-
-            _tagSuffix = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            if (string.IsNullOrEmpty(_tagSuffix))
-            {
-                _output.WriteLine($"Could not find a value for environment variable " +
-                                  $"'{_tagSuffixEnvironmentVariable}', no suffix will be added to image tags.");
-                _tagSuffix = string.Empty;
-            }
         }
 
         protected string HostSamplesDir { get; }
@@ -73,10 +51,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = $"{_imageBase}/{language}:{languageVersion}";
+            var runtimeImageName = _imageHelper.GetRuntimeImage(language, languageVersion);
             if (string.Equals(language, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = $"{_imageBase}/node:{languageVersion}";
+                runtimeImageName = _imageHelper.GetRuntimeImage("node", languageVersion);
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
@@ -113,16 +91,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output.WriteLine(message);
                 throw;
             }
-        }
-
-        protected string GenerateRuntimeImage(string imageBase, string platform, string platformVersion)
-        {
-            return $"{imageBase}/{platform}:{platformVersion}{_tagSuffix}";
-        }
-
-        protected string GenerateRuntimeImage(string platform, string platformVersion)
-        {
-            return GenerateRuntimeImage(_imageBase, platform, platformVersion);
         }
     }
 }
