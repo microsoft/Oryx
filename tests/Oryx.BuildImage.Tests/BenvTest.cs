@@ -40,10 +40,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("python", "/opt/python/")]
         [InlineData("pip", "/opt/python/")]
         [InlineData("pip3", "/opt/python/")]
-        [InlineData("pip3.7", "/opt/python/")]
         [InlineData("pydoc3", "/opt/python/")]
         [InlineData("wheel", "/opt/python/")]
-        [InlineData("pyvenv", "/opt/python/")]
         [InlineData("python3-config", "/opt/python/")]
         // Php
         [InlineData("php", "/opt/php/")]
@@ -82,10 +80,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("python", "/opt/python/")]
         [InlineData("pip", "/opt/python/")]
         [InlineData("pip3", "/opt/python/")]
-        [InlineData("pip3.8", "/opt/python/")]
         [InlineData("wheel", "/opt/python/")]
         [InlineData("pydoc3", "/opt/python/")]
-        [InlineData("pyvenv", "/opt/python/")]
         [InlineData("python3-config", "/opt/python/")]
         public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InSlimBuildImage(
             string executableName,
