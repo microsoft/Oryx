@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { NodeConstants.NodeToolName, NodeVersions.Node10Version } });
+                new Dictionary<string, string> { { NodeConstants.NodeToolName, NodeConstants.NodeLtsVersion } });
 
             // Assert
             Assert.Empty(messages);

@@ -16,8 +16,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         public const string OryxVersion = "0.2.";
 
-        public const string Python27Version = "2.7.16";
-
         public const string MySqlDbImageName = "mysql/mysql-server:5.7";
         public const string PostgresDbImageName = "postgres";
 
