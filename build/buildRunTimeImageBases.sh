@@ -49,7 +49,11 @@ ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-b
 clearedOutput=false
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
+
+    # Set $getTagName_result to the following format: {platformName}:{platformVersion}
     getTagName $dockerFileDir
+
+    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
     localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
     echo
@@ -70,10 +74,13 @@ for dockerFile in $dockerFiles; do
     # Retag build image with build numbers as ACR tags
     if [ "$AGENT_BUILD" == "true" ]
     then
+        # $tag will follow a similar format to 20191024.1
         tag="$BUILD_NUMBER"
 
+        # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
+        # Tag the image to follow a similar format to .../python:3.7-20191028.1
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$tag"
 
         if [ $clearedOutput == "false" ]

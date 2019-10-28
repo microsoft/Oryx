@@ -53,29 +53,16 @@ namespace Microsoft.Oryx.Tests.Common
 
         /// <summary>
         /// Constructs a runtime image from the given parameters that follows the format
-        /// {image}/{platform}:{platformVersion}. If any tag suffix was set as an environment variable,
+        /// {image}/{platform}:{platformVersion}. Since no image is provided, the default image 'oryxdevmcr.azurecr.io',
+        /// or any image set by environment variable will be used. If any tag suffix was set as an environment variable,
         /// it will be appended to the end of the tag.
-        /// </summary>
-        /// <param name="image">The registry and repository to pull the runtime image from.</param>
-        /// <param name="platform">The platform to pull the runtime image from.</param>
-        /// <param name="platformVersion">The version of the platform to pull the runtime image from.</param>
-        /// <returns>A runtime image that can be pulled for testing.</returns>
-        public string GetRuntimeImage(string image, string platform, string platformVersion)
-        {
-            return $"{image}/{platform}:{platformVersion}{_tagSuffix}";
-        }
-
-        /// <summary>
-        /// Constructs a runtime image from the given parameters that follows the format
-        /// {image}/{platform}:{platformVersion}. Since no image is provided, the default image 'oryxdevmcr.azurecr.io'
-        /// will be used. If any tag suffix was set as an environment variable, it will be appended to the end of the tag.
         /// </summary>
         /// <param name="platform">The platform to pull the runtime image from.</param>
         /// <param name="platformVersion">The version of the platform to pull the runtime image from.</param>
         /// <returns>A runtime image that can be pulled for testing.</returns>
         public string GetRuntimeImage(string platform, string platformVersion)
         {
-            return GetRuntimeImage(_image, platform, platformVersion);
+            return $"{_image}/{platform}:{platformVersion}{_tagSuffix}";
         }
     }
 }
