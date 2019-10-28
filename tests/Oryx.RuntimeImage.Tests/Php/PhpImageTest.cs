@@ -44,6 +44,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("7.2", PhpVersions.Php72Version)]
         [InlineData("7.0", PhpVersions.Php70Version)]
         [InlineData("5.6", PhpVersions.Php56Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
             // Arrange & Act

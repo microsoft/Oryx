@@ -58,6 +58,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("3.6", "Python " + Common.PythonVersions.Python36Version)]
         [InlineData("3.7", "Python " + Common.PythonVersions.Python37Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
             // Arrange & Act
@@ -80,6 +81,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Fact]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void Python2MatchesImageName()
         {
             string pythonVersion = "2.7";

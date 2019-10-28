@@ -37,6 +37,13 @@ then
     export ORYX_TEST_TAG_SUFFIX="-$3"
 fi
 
+if [ -n "$4" ]; then
+    testCaseFilter="--filter $4"
+    echo "Running runtime image tests with filter '$testCaseFilter'..."
+else
+    echo "Running all runtime image tests..."
+fi
+
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
@@ -56,6 +63,7 @@ diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 dotnet test \
     --blame \
     --diag "$diagnosticFileLocation" \
+    $testCaseFilter \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
     -c $BUILD_CONFIGURATION
