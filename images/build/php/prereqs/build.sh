@@ -101,22 +101,9 @@ fi
 		--enable-option-checking=fatal \
 		--with-mhash \
 		--enable-ftp \
-		--enable-mbstring \
-		--enable-exif \
 		--enable-gd \
-		--enable-mongodb \
-		--enable-pcntl \
-		--enable-zip \
-		--enable-sockets \
-		--enable-ldap \
-		--enable-gmp \
-		--enable-pdo_mysql \
-		--enable-pdo_pgsql \
-		--enable-pgsql \
-		--enable-imap \
-		--enable-posix \
-		--enable-tidy \
-		--enable-soap \
+		--enable-exif \
+		--enable-mbstring \
 		--enable-mysqlnd \
 		--enable-bcmath \
 		$versionConfigureArgs \
