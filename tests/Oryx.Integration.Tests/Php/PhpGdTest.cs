@@ -50,6 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    // The test app: `echo $info['JPEG Support'] . ',' . $info['PNG Support']`
                     Assert.Equal("1,1", gdInfoOutput);
                 });
         }
