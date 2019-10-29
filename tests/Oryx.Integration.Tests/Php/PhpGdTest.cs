@@ -49,8 +49,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
                 {
-                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("64x64", imagickOutput);
+                    string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("1,1", gdInfoOutput);
                 });
         }
     }
