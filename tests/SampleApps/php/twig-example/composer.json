@@ -1,6 +1,15 @@
 {
   "name": "microsoft/echo",
   "require": {
-    "twig/twig": "^2.0"
+    "twig/twig": "^2.0",
+    "phpoffice/phpspreadsheet": "1.9.0",
+    "nuovo/spreadsheet-reader": "0.5.11",
+    "mongodb/mongodb": "1.3.2",
+    "laravel/horizon": "3.3.0",
+    "svajiraya/ldap-bundle": "2.4.8",
+    "cakephp/cakephp": "3.8.1",
+    "spatie/pdf-to-image": "1.8.2",
+    "jamesiarmes/php-ntlm": "dev-master",
+    "web-token/jwt-framework": "2.0.9"
   }
 }

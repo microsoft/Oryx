@@ -102,6 +102,8 @@ fi
 		--with-mhash \
 		--enable-ftp \
 		--enable-mbstring \
+		--enable-gd \
+		--enable-exif \
 		--enable-mysqlnd \
 		--enable-bcmath \
 		$versionConfigureArgs \
