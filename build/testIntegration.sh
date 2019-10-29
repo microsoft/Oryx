@@ -54,8 +54,8 @@ echo
 if [ -n "$2" ]
 then
     echo
-    echo "Setting environment variable 'ORYX_TEST_REGISTRY_NAME' to provided value '$2'."
-    export ORYX_TEST_REGISTRY_NAME="$2"
+    echo "Setting environment variable 'ORYX_TEST_IMAGE_BASE' to provided value '$2'."
+    export ORYX_TEST_IMAGE_BASE="$2"
 fi
 
 if [ -n "$3" ]

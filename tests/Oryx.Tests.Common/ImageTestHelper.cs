@@ -13,10 +13,9 @@ namespace Microsoft.Oryx.Tests.Common
     /// </summary>
     public class ImageTestHelper
     {
-        private const string _registryNameEnvironmentVariable = "ORYX_TEST_REGISTRY_NAME";
+        private const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
         private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
-        private const string _defaultRegistryName = "oryxdevmcr.azurecr.io";
-        private const string _defaultRepositoryPrefix = "/public/oryx";
+        private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
 
         private readonly ITestOutputHelper _output;
         private string _image;
@@ -25,19 +24,17 @@ namespace Microsoft.Oryx.Tests.Common
         public ImageTestHelper(ITestOutputHelper output)
         {
             _output = output;
-            _image = Environment.GetEnvironmentVariable(_registryNameEnvironmentVariable);
+            _image = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
             if (string.IsNullOrEmpty(_image))
             {
-                // If the ORYX_TEST_REGISTRY_NAME environment variable was not set in the .sh script calling this test,
-                // then use the default value of 'oryxdevmcr.azurecr.io' as the container registry for the tests. This
-                // should be used in cases where a specific registry should be used for the tests rather than the
-                // development registry (e.g., oryxmcr.azurecr.io)
+                // If the ORYX_TEST_IMAGE_BASE environment variable was not set in the .sh script calling this test,
+                // then use the default value of 'oryxdevmcr.azurecr.io/public/oryx' as the image base for the tests.
+                // This should be used in cases where a image base should be used for the tests rather than the
+                // development registry (e.g., oryxmcr.azurecr.io/public/oryx)
                 _output.WriteLine($"Could not find a value for environment variable " +
-                                  $"'{_registryNameEnvironmentVariable}', using default container registry '{_defaultRegistryName}'.");
-                _image = _defaultRegistryName;
+                                  $"'{_imageBaseEnvironmentVariable}', using default image base '{_defaultImageBase}'.");
+                _image = _defaultImageBase;
             }
-
-            _image += _defaultRepositoryPrefix;
 
             _tagSuffix = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
             if (string.IsNullOrEmpty(_tagSuffix))
