@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
@@ -63,12 +63,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("1.0", "Version  : 1.0.1")]
         [InlineData("1.1", "Version  : 1.1.13")]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_HasExecptedDotNetVersion_NetCoreApp10Versions(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--version" }
             });
@@ -89,12 +90,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
         [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31PreviewName)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });

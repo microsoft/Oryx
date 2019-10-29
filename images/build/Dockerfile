@@ -2,6 +2,7 @@
 ARG AGENTBUILD
 ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
+ARG YARN_CACHE_BASE_TAG
 FROM oryxdevmcr.azurecr.io/public/oryx/build-slim AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
@@ -142,7 +143,6 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.2 \
  && ~/n/bin/n -d $NODE6_VERSION \
- && ~/n/bin/n -d $NODE12_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 COPY images/build/installNpm.sh /tmp/scripts
@@ -174,9 +174,7 @@ RUN set -ex \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
  && . /tmp/scripts/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
- && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6 \
- && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12
+ && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -195,7 +193,6 @@ RUN set -ex \
 ###
 FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
 FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
 ###
 # End Python intermediate stages
 ###
@@ -206,19 +203,14 @@ ENV PYTHONIOENCODING UTF-8
 COPY build/__pythonVersions.sh /tmp/scripts
 COPY --from=py27-build-base /opt /opt
 COPY --from=py36-build-base /opt /opt
-COPY --from=py38-build-base /opt /opt
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-# The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
- && ln -s $PYTHON36_VERSION /opt/python/3.6 \
- && ln -s $PYTHON38_VERSION /opt/python/3.8.0 \
- && ln -s $PYTHON38_VERSION /opt/python/3.8
+ && ln -s $PYTHON36_VERSION /opt/python/3.6
   
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
@@ -235,6 +227,8 @@ FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-bu
 ###
 # End PHP intermediate stages
 ###
+
+FROM mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} AS yarn-cache-base
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
@@ -278,7 +272,7 @@ RUN /tmp/scripts/installPhpPrereqs.sh
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=mcr.microsoft.com/oryx/build-yarn-cache:20191018.1 /usr/local/share/yarn-cache /usr/local/share/yarn-cache
+COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
 COPY --from=php56-build-base /opt /opt

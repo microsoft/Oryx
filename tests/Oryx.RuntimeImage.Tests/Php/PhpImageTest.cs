@@ -44,11 +44,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("7.2", PhpVersions.Php72Version)]
         [InlineData("7.0", PhpVersions.Php70Version)]
         [InlineData("5.6", PhpVersions.Php56Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                GenerateRuntimeImage("php", imageTag),
+                _imageHelper.GetRuntimeImage("php", imageTag),
                 "php",
                 new[] { "--version" }
             );
@@ -72,7 +73,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("php", imageTag),
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -138,7 +139,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: GenerateRuntimeImage("php", imageTag),
+                imageName: _imageHelper.GetRuntimeImage("php", imageTag),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -165,7 +166,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("php", imageTag),
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mcrypt);" }
             });
@@ -202,7 +203,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("php", version),
+                ImageId = _imageHelper.GetRuntimeImage("php", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

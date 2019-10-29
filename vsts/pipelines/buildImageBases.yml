@@ -37,6 +37,13 @@ stages:
 
   - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
+      displayName: Build and push DotNetCore runtime base images
+      scriptPath: ./build/buildRunTimeImageBases.sh
+      imageDir: dotnetcore
+      artifactsFileName: dotnetcore-runtimeimage-bases.txt
+
+  - template: templates/_buildimageBasesJobTemplate.yml
+    parameters:
       displayName: Build and push Yarn Cache base image
       scriptPath: ./build/buildBuildImageBases.sh
       imageDir: yarn-cache

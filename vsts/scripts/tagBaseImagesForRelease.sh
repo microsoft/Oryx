@@ -130,6 +130,10 @@ elif [ "$imageName" == "php" ]
 then
   echo ""
   retagBaseImages php-runtimeimage-bases.txt $imageName
+elif [ "$imageName" == "dotnetcore" ]
+then
+  echo ""
+  retagBaseImages dotnetcore-runtimeimage-bases.txt $imageName
 else
   echo "ImageName $imageName is invalid/not supported.. "
   exit 1

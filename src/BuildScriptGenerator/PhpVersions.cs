@@ -4,9 +4,9 @@ namespace Microsoft.Oryx.Common
 {
     public static class PhpVersions
     {
-        public const string PhpBuildBaseTag = "20191018.1";
-        public const string PhpRuntimeBaseTag = "20191018.1";
-        public const string ComposerVersion = "1.8.6";
+        public const string PhpBuildBaseTag = "20191025.2";
+        public const string PhpRuntimeBaseTag = "20191025.2";
+        public const string ComposerVersion = "1.9.0";
         public const string ComposerSha384 = "a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1";
         public const string Php73Version = "7.3.10";
         public const string Php73Keys = "CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D";

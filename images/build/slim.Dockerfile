@@ -116,6 +116,7 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && curl -sL https://git.io/n-install | bash -s -- -ny - \
  && ~/n/bin/n -d $NODE8_VERSION \
  && ~/n/bin/n -d $NODE10_VERSION \
+ && ~/n/bin/n -d $NODE12_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
 COPY images/build/installNpm.sh /tmp/scripts
@@ -140,7 +141,9 @@ RUN set -ex \
  && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
  && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
  && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s 10 /opt/nodejs/lts
+ && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
+ && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12 \
+ && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \
  && ln -s 6.9 /opt/npm/6 \
@@ -161,6 +164,7 @@ RUN set -ex \
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
 FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
+FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
 ###
 # End Python intermediate stages
 ###
@@ -177,14 +181,17 @@ RUN apt-get update \
 ENV PYTHONIOENCODING UTF-8
 COPY build/__pythonVersions.sh /tmp/scripts
 COPY --from=py37-build-base /opt /opt
+COPY --from=py38-build-base /opt /opt
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-# The link from PYTHON38_VERSION to 3.8.0 exists because "3.8.0b1" isn't a valid SemVer string.
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON37_VERSION /opt/python/latest \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
- && ln -s 3.7 /opt/python/3
+ && ln -s $PYTHON38_VERSION /opt/python/3.8 \
+ && ln -s $PYTHON38_VERSION /opt/python/latest \
+ && ln -s $PYTHON38_VERSION /opt/python/stable \
+ && ln -s 3.8 /opt/python/3
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder

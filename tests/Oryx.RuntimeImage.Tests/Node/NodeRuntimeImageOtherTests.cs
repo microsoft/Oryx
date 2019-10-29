@@ -38,23 +38,24 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.9", "8.9.4")]
         [InlineData("8.11", "8.11.4")]
         [InlineData("8.12", "8.12.0")]
-        [InlineData("8.16", "8.16.2")]
+        [InlineData("8.16", NodeVersions.Node8Version)]
         [InlineData("9.4", "9.4.0")]
-        [InlineData("10", "10.16.3")]
+        [InlineData("10", NodeVersions.Node10Version)]
         [InlineData("10.1", "10.1.0")]
         [InlineData("10.10", "10.10.0")]
         [InlineData("10.12", "10.12.0")]
         [InlineData("10.14", "10.14.2")]
-        [InlineData("10.16", "10.16.3")]
-        [InlineData("12", "12.12.0")]
-        [InlineData("12.12", "12.12.0")]
+        [InlineData(NodeVersions.Node10MajorMinorVersion, NodeVersions.Node10Version)]
+        [InlineData("12", NodeVersions.Node12Version)]
+        [InlineData(NodeVersions.Node12MajorMinorVersion, NodeVersions.Node12Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
                 CommandToExecuteOnRun = "node",
                 CommandArguments = new[] { "--version" }
             });
@@ -83,7 +84,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
                 CommandToExecuteOnRun = "npm",
                 CommandArguments = new[] { "--version" }
             });
@@ -116,7 +117,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = GenerateRuntimeImage("node", "10.14"),
+                ImageId = _imageHelper.GetRuntimeImage("node", "10.14"),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });
@@ -146,7 +147,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: GenerateRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

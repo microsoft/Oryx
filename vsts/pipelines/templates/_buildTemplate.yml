@@ -1,6 +1,7 @@
 parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
+  imageName: oryxdevmcr.azurecr.io/public/oryx
 
 steps:
 - script: |
@@ -22,10 +23,10 @@ steps:
     artifactName: 'drop-$(Build.BuildNumber)'
     targetPath: '$(Build.SourcesDirectory)'
   condition: >
-    and(succeeded(), 
+    and(succeeded(),
     or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
     or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
-     
+
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
@@ -78,7 +79,7 @@ steps:
   displayName: 'Test runtime images'
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.acrName }} $(Build.BuildNumber)
+    args: skipBuildingImages ${{ parameters.imageName }} $(RELEASE_TAG_NAME)
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: DownloadBuildArtifacts@0
@@ -106,7 +107,7 @@ steps:
   displayName: 'Test integration'
   inputs:
     scriptPath: ./build/testIntegration.sh
-    args: $(TestIntegrationCaseFilter) ${{ parameters.acrName }} $(Build.BuildNumber)
+    args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(RELEASE_TAG_NAME)
   env:
     SQLSERVER_DATABASE_HOST: $(SQLSERVER-DATABASE-HOST)
     SQLSERVER_DATABASE_NAME: $(SQLSERVER-DATABASE-NAME)
