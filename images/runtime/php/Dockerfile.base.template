@@ -50,7 +50,8 @@ RUN apt-get update \
     && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install gd \
+    && docker-php-ext-install \
+        gd \
         mysqli \
         opcache \
         pdo \
@@ -79,6 +80,7 @@ RUN apt-get update \
         wddx \
         xmlrpc \
         xsl \
+        mongodb \
     && pecl install imagick && docker-php-ext-enable imagick
 
 # mcrypt was deprecated in 7.2 but exists in 5.6 and 7.0

@@ -102,8 +102,21 @@ fi
 		--with-mhash \
 		--enable-ftp \
 		--enable-mbstring \
-		--enable-gd \
 		--enable-exif \
+		--enable-gd \
+		--enable-mongodb \
+		--enable-pcntl \
+		--enable-zip \
+		--enable-sockets \
+		--enable-ldap \
+		--enable-gmp \
+		--enable-pdo_mysql \
+		--enable-pdo_pgsql \
+		--enable-pgsql \
+		--enable-imap \
+		--enable-posix \
+		--enable-tidy \
+		--enable-soap \
 		--enable-mysqlnd \
 		--enable-bcmath \
 		$versionConfigureArgs \
