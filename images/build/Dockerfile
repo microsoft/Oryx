@@ -264,7 +264,7 @@ COPY --from=dotnet-install /var/nuget /var/nuget
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 
-# Copy PHP versions
+# Install PHP pre-reqs
 COPY images/build/php/prereqs/installPrereqs.sh /tmp/scripts/installPhpPrereqs.sh
 RUN chmod +x /tmp/scripts/installPhpPrereqs.sh
 RUN /tmp/scripts/installPhpPrereqs.sh

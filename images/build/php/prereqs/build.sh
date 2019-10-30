@@ -120,7 +120,7 @@ make clean;
 
 # https://github.com/docker-library/php/issues/692 (copy default example "php.ini" files somewhere easily discoverable)
 cp -v php.ini-* "$PHP_INI_DIR/";
-cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini";
 
 cd /;
 /php/docker-php-source.sh delete;
