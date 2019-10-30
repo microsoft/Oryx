@@ -13,9 +13,11 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Trait("category", "php")]
-    public class PhpImagickExampleTest : PhpEndToEndTestsBase
+    public class PhpExifTest : PhpEndToEndTestsBase
     {
-        public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        private const string ExifImageTypePng = "3";
+
+        public PhpExifTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -25,10 +27,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("7.2")]
         [InlineData("7.0")]
         [InlineData("5.6")]
-        public async Task ImagickExample(string phpVersion)
+        public async Task ExifExample(string phpVersion)
         {
             // Arrange
-            var appName = "imagick-example";
+            var appName = "exif-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -49,8 +51,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
                 {
-                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("64x64", imagickOutput);
+                    string exifOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    // The test app: `echo exif_imagetype('64x64.png')`
+                    Assert.Equal(ExifImageTypePng, exifOutput);
                 });
         }
     }
