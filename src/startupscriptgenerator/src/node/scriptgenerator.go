@@ -149,6 +149,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("if [ -d node_modules ] || [ -L node_modules ]; then\n")
 		// We move the directory/link first to prevent node from start using it
 		scriptBuilder.WriteString("    mv -f node_modules _del_node_modules || true\n")
+		scriptBuilder.WriteString("    nohup rm -fr _del_node_modules &> /dev/null &\n")
 		scriptBuilder.WriteString("fi\n\n")
 		scriptBuilder.WriteString("if [ -d /node_modules/.bin ]; then\n")
 		// We move the directory/link first to prevent node from start using it
