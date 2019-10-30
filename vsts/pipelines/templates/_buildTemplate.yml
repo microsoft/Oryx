@@ -27,8 +27,6 @@ steps:
     or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
     or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
-- template: _setReleaseTag.yml
-
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
