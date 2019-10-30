@@ -13,9 +13,9 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Trait("category", "php")]
-    public class PhpImagickExampleTest : PhpEndToEndTestsBase
+    public class PhpGdTest : PhpEndToEndTestsBase
     {
-        public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
+        public PhpGdTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
         }
@@ -25,10 +25,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("7.2")]
         [InlineData("7.0")]
         [InlineData("5.6")]
-        public async Task ImagickExample(string phpVersion)
+        public async Task GdExample(string phpVersion)
         {
             // Arrange
-            var appName = "imagick-example";
+            var appName = "gd-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -49,8 +49,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
                 {
-                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("64x64", imagickOutput);
+                    string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    // The test app: `echo $info['JPEG Support'] . ',' . $info['PNG Support']`
+                    Assert.Equal("1,1", gdInfoOutput);
                 });
         }
     }
