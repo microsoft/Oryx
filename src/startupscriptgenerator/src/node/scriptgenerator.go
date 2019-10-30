@@ -151,7 +151,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("    mv -f node_modules _del_node_modules || true\n")
 		scriptBuilder.WriteString("fi\n\n")
 		scriptBuilder.WriteString("if [ -d /node_modules/.bin ]; then\n")
-		// We move the directory/link first to prevent node from start using it
+		// Create a symlink to extracted nodemodules directory so that binaries mentioned in package.json(ex: 'ng serve')
+		// can still find the nodemodules.
 		scriptBuilder.WriteString("    ln -s /node_modules ./node_modules \n")
 		scriptBuilder.WriteString("    ln -s /node_modules/.bin ./node_modules/.bin \n")
 		scriptBuilder.WriteString("fi\n\n")
