@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
         }
 
-        public string GetRelativePathToProjectFile(ScriptGeneratorContext context)
+        public string GetRelativePathToProjectFile(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
 

@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AddPhpScriptGeneratorServices();
 
             services.AddSingleton<IBuildScriptGenerator, DefaultBuildScriptGenerator>();
+            services.AddSingleton<ICompatiblePlatformDetector, DefaultCompatiblePlatformDetector>();
             services.AddSingleton<IEnvironment, DefaultEnvironment>();
             services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
             services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();

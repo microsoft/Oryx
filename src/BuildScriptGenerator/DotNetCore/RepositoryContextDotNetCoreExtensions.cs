@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public partial class BuildScriptGeneratorContext
+    public partial class RepositoryContext
     {
         /// <summary>
         /// Gets or sets a value indicating whether the detection and build of .NET core

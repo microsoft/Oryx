@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public IEnumerable<string> SupportedVersions => _versionProvider.SupportedDotNetCoreVersions;
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -206,12 +206,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             throw new NotImplementedException();
         }
 
-        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabled(RepositoryContext ctx)
         {
-            return scriptGeneratorContext.EnableDotNetCore;
+            return ctx.EnableDotNetCore;
         }
 
-        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             // A user has the power to either enable or disable multi-platform builds entirely.
             // However if user enables it, ASP.NET Core platform still explicitly opts out of it.

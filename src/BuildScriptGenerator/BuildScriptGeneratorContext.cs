@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Options for the build script generation process.
     /// </summary>
-    public partial class BuildScriptGeneratorContext : ScriptGeneratorContext
+    public partial class BuildScriptGeneratorContext : RepositoryContext
     {
         /// <summary>
         /// Gets or sets the information which is used to correlate log messages.
@@ -36,13 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets a list of OS packages required for this build.
         /// </summary>
         public string[] RequiredOsPackages { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether only the provided platform should be built, disabling
-        /// the detection and build of all other platforms. If set to <c>true</c>, all other languages
-        /// are disabled even if they are enabled by their specific flags.
-        /// </summary>
-        public bool DisableMultiPlatformBuild { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether build-time checkers should run.
