@@ -100,9 +100,7 @@ fi
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
 		--enable-option-checking=fatal \
 		--with-mhash \
-		--with-gd \
 		--enable-ftp \
-		--enable-exif \
 		--enable-mbstring \
 		--enable-mysqlnd \
 		--enable-bcmath \
