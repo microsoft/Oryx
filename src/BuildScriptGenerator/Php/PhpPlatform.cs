@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public IEnumerable<string> SupportedVersions => _phpVersionProvider.SupportedPhpVersions;
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -76,12 +76,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet };
         }
 
-        public bool IsEnabled(BuildScriptGeneratorContext ctx)
+        public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnablePhp;
         }
 
-        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }

@@ -5,18 +5,18 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public partial class BuildScriptGeneratorContext
+    public partial class RepositoryContext
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the detection and build of Node.js code
+        /// Gets or sets a value indicating whether the detection and build of PHP code
         /// in the repo should be enabled.
         /// Defaults to true.
         /// </summary>
-        public bool EnableNodeJs { get; set; } = true;
+        public bool EnablePhp { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the version of Node used in the repo.
+        /// Gets or sets the version of PHP used in the repo.
         /// </summary>
-        public string NodeVersion { get; set; }
+        public string PhpVersion { get; set; }
     }
 }

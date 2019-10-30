@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public IEnumerable<string> SupportedVersions { get; }
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector?.Detect(context);
         }
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Tests.Common
             return true;
         }
 
-        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabled(RepositoryContext ctx)
         {
             return _enabled;
         }
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.Tests.Common
         {
         }
 
-        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext scriptGeneratorContext)
         {
             return _platformIsEnabledForMultiPlatformBuild;
         }

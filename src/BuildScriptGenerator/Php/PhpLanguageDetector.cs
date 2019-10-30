@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))

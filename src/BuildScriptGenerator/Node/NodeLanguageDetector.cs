@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             bool isNodeApp = false;
 

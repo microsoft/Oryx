@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -21,20 +22,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
-        private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
+        private readonly ICompatiblePlatformDetector _platformDetector;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IStandardOutputWriter _writer;
 
         public DefaultBuildScriptGenerator(
-            IEnumerable<IProgrammingPlatform> programmingPlatforms,
+            ICompatiblePlatformDetector platformDetector,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger,
             IStandardOutputWriter writer)
         {
-            _programmingPlatforms = programmingPlatforms;
+            _platformDetector = platformDetector;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
@@ -122,92 +123,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var resultPlatforms = new List<Tuple<IProgrammingPlatform, string>>();
 
-            var enabledPlatforms = _programmingPlatforms.Where(p =>
-            {
-                if (!p.IsEnabled(ctx))
-                {
-                    _logger.LogDebug("{platformName} has been disabled", p.Name);
-                    return false;
-                }
-
-                return true;
-            });
-
             // If a user supplied the language explicitly, check if the platform is enabled for that
-            IProgrammingPlatform userSuppliedPlatform = null;
-            string platformVersion = null;
             if (!string.IsNullOrEmpty(ctx.Language))
             {
-                var selectedPlatform = enabledPlatforms
-                    .Where(p => ctx.Language.EqualsIgnoreCase(p.Name))
-                    .FirstOrDefault();
-
-                if (selectedPlatform == null)
+                if (_platformDetector.IsCompatiblePlatform(ctx, ctx.Language, ctx.LanguageVersion, out var platformResult))
                 {
-                    ThrowInvalidLanguageProvided(ctx);
-                }
-
-                userSuppliedPlatform = selectedPlatform;
-
-                platformVersion = ctx.LanguageVersion;
-                if (string.IsNullOrEmpty(platformVersion))
-                {
-                    var detectionResult = userSuppliedPlatform.Detect(ctx);
-                    if (detectionResult == null || string.IsNullOrEmpty(detectionResult.LanguageVersion))
-                    {
-                        throw new UnsupportedVersionException(
-                            $"Couldn't detect a version for the platform '{userSuppliedPlatform.Name}' in the repo.");
-                    }
-
-                    platformVersion = detectionResult.LanguageVersion;
-                }
-
-                resultPlatforms.Add(Tuple.Create(userSuppliedPlatform, platformVersion));
-
-                // if the user explicitly supplied a platform and if that platform does not want to be part of
-                // multi-platform builds, then short-circuit immediately ignoring going through other platforms
-                if (!IsEnabledForMultiPlatformBuild(userSuppliedPlatform, ctx))
-                {
-                    return resultPlatforms;
-                }
-            }
-
-            // Ignore processing the same platform again
-            if (userSuppliedPlatform != null)
-            {
-                enabledPlatforms = enabledPlatforms.Where(p => !ReferenceEquals(p, userSuppliedPlatform));
-            }
-
-            foreach (var platform in enabledPlatforms)
-            {
-                string targetVersionSpec = null;
-
-                _logger.LogDebug("Detecting platform using {platformName}", platform.Name);
-                var detectionResult = platform.Detect(ctx);
-                if (detectionResult != null)
-                {
-                    _logger.LogDebug(
-                        "Detected {platformName} version {platformVersion} for app in repo",
-                        platform.Name,
-                        detectionResult.LanguageVersion);
-
-                    targetVersionSpec = detectionResult.LanguageVersion;
-                    if (string.IsNullOrEmpty(targetVersionSpec))
-                    {
-                        throw new UnsupportedVersionException(
-                            $"Couldn't detect a version for the platform '{platform.Name}' in the repo.");
-                    }
-
-                    resultPlatforms.Add(Tuple.Create(platform, targetVersionSpec));
-
+                    resultPlatforms.Add(platformResult);
+                    var platform = platformResult.Item1;
                     if (!IsEnabledForMultiPlatformBuild(platform, ctx))
                     {
                         return resultPlatforms;
                     }
                 }
+                else
+                {
+                    throw new UnsupportedVersionException(
+                        $"Couldn't detect a version for the platform '{ctx.Language}' in the repo.");
+                }
             }
 
-            return resultPlatforms;
+            return _platformDetector.GetCompatiblePlatforms(ctx);
         }
 
         public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
@@ -299,15 +234,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return snippets;
-        }
-
-        private void ThrowInvalidLanguageProvided(BuildScriptGeneratorContext context)
-        {
-            var languages = _programmingPlatforms.Select(sg => sg.Name);
-            var exc = new UnsupportedLanguageException($"'{context.Language}' platform is not supported. " +
-                $"Supported platforms are: {string.Join(", ", languages)}");
-            _logger.LogError(exc, $"Exception caught, the given platform '{context.Language}' is not supported.");
-            throw exc;
         }
 
         private void LogScriptIfGiven(string type, string scriptPath)
