@@ -29,9 +29,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <inheritdoc/>
-        public IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(RepositoryContext ctx)
+        public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(
+            RepositoryContext ctx,
+            string platformName = null,
+            string platformVersion = null)
         {
-            var resultPlatforms = new List<Tuple<IProgrammingPlatform, string>>();
+            var resultPlatforms = new Dictionary<IProgrammingPlatform, string>();
+            if (!string.IsNullOrEmpty(platformName))
+            {
+                if (IsCompatiblePlatform(ctx, platformName, platformVersion, out var platformResult))
+                {
+                    resultPlatforms.Add(platformResult.Item1, platformResult.Item2);
+                    if (!IsEnabledForMultiPlatformBuild(platformResult.Item1, ctx))
+                    {
+                        return resultPlatforms;
+                    }
+                }
+                else
+                {
+                    throw new UnsupportedVersionException(
+                        $"Couldn't detect a version for the platform '{platformName}' in the repo.");
+                }
+            }
+
             var enabledPlatforms = _programmingPlatforms.Where(p =>
             {
                 if (!p.IsEnabled(ctx))
@@ -48,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _logger.LogDebug($"Detecting platform using '{platform.Name}'...");
                 if (IsCompatiblePlatform(ctx, platform.Name, out var platformResult))
                 {
-                    resultPlatforms.Add(platformResult);
+                    resultPlatforms.Add(platformResult.Item1, platformResult.Item2);
                     if (!IsEnabledForMultiPlatformBuild(platform, ctx))
                     {
                         return resultPlatforms;
@@ -59,8 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return resultPlatforms;
         }
 
-        /// <inheritdoc/>
-        public bool IsCompatiblePlatform(
+        private bool IsCompatiblePlatform(
             RepositoryContext ctx,
             string platformName,
             out Tuple<IProgrammingPlatform, string> platformResult)
@@ -68,8 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return IsCompatiblePlatform(ctx, platformName, null, out platformResult);
         }
 
-        /// <inheritdoc/>
-        public bool IsCompatiblePlatform(
+        private bool IsCompatiblePlatform(
             RepositoryContext ctx,
             string platformName,
             string platformVersion,
@@ -98,9 +116,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (!selectedPlatform.IsEnabled(ctx))
                 {
-                    var exec = new UnsupportedLanguageException($"Platform '{selectedPlatform.Name}' has been disabled.");
-                    _logger.LogError(exec, $"Exception caught, platform '{selectedPlatform.Name}' has been disabled.");
-                    throw exec;
+                    var exc = new UnsupportedLanguageException($"Platform '{selectedPlatform.Name}' has been disabled.");
+                    _logger.LogError(exc, $"Exception caught, platform '{selectedPlatform.Name}' has been disabled.");
+                    throw exc;
                 }
 
                 if (string.IsNullOrEmpty(platformVersion))

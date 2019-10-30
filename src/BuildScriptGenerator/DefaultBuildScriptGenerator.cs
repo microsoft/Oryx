@@ -119,30 +119,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        public IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
+        public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
         {
-            var resultPlatforms = new List<Tuple<IProgrammingPlatform, string>>();
-
-            // If a user supplied the language explicitly, check if the platform is enabled for that
-            if (!string.IsNullOrEmpty(ctx.Language))
-            {
-                if (_platformDetector.IsCompatiblePlatform(ctx, ctx.Language, ctx.LanguageVersion, out var platformResult))
-                {
-                    resultPlatforms.Add(platformResult);
-                    var platform = platformResult.Item1;
-                    if (!IsEnabledForMultiPlatformBuild(platform, ctx))
-                    {
-                        return resultPlatforms;
-                    }
-                }
-                else
-                {
-                    throw new UnsupportedVersionException(
-                        $"Couldn't detect a version for the platform '{ctx.Language}' in the repo.");
-                }
-            }
-
-            return _platformDetector.GetCompatiblePlatforms(ctx);
+            return _platformDetector.GetCompatiblePlatforms(ctx, ctx.Language, ctx.LanguageVersion);
         }
 
         public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
@@ -188,7 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var platformsToUse = GetCompatiblePlatforms(context);
 
-            foreach (Tuple<IProgrammingPlatform, string> platformAndVersion in platformsToUse)
+            foreach (KeyValuePair<IProgrammingPlatform, string> platformAndVersion in platformsToUse)
             {
                 var (platform, targetVersionSpec) = platformAndVersion;
 

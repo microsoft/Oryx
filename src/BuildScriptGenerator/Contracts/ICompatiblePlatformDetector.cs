@@ -3,8 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -15,36 +13,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public interface ICompatiblePlatformDetector
     {
         /// <summary>
-        /// Returns the compatible platforms for the given repository context.
+        /// Returns the compatible platforms for the given repository context. If a platform name (and version) was
+        /// provided, this method only checks to see if the given platform is compatible.
         /// </summary>
         /// <param name="ctx">The <see cref="RepositoryContext"/>.</param>
-        /// <returns>A collection of tuples mapping the valid platforms to the compatible version.</returns>
-        IList<Tuple<IProgrammingPlatform, string>> GetCompatiblePlatforms(RepositoryContext ctx);
-
-        /// <summary>
-        /// Returns a bool specifying whether or not the given platform is compatible with the provided repository.
-        /// </summary>
-        /// <param name="ctx">The <see cref="RepositoryContext"/>.</param>
-        /// <param name="platformName">The name of the platform.</param>
-        /// <param name="platformResult">If the given platform is compatible, this will be a tuple that maps
-        /// the platform object to a compatible version.</param>
-        /// <returns>True if the platform is compatible, false otherwise.</returns>
-        bool IsCompatiblePlatform(RepositoryContext ctx,
-                                  string platformName,
-                                  out Tuple<IProgrammingPlatform, string> platformResult);
-
-        /// <summary>
-        /// Returns a bool specifying whether or not the given platform is compatible with the provided repository.
-        /// </summary>
-        /// <param name="ctx">The <see cref="RepositoryContext"/>.</param>
-        /// <param name="platformName">The name of the platform.</param>
-        /// <param name="platformVersion">The version of the platform.</param>
-        /// <param name="platformResult">If the given platform is compatible, this will be a tuple that maps
-        /// the platform object to a compatible version.</param>
-        /// <returns>True if the platform is compatible, false otherwise.</returns>
-        bool IsCompatiblePlatform(RepositoryContext ctx,
-                                  string platformName,
-                                  string platformVersion,
-                                  out Tuple<IProgrammingPlatform, string> platformResult);
+        /// <param name="platformName">The name of the platform to check compatibility for. If not provided,
+        /// all platforms will be checked for compatibility.</param>
+        /// <param name="platformVersion">The version of the platform to check compatibility for. If not provided,
+        /// a compatible version will be checked for.</param>
+        /// <returns>A dictionary mapping the valid platforms to the compatible version.</returns>
+        IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(RepositoryContext ctx,
+                                                                         string platformName = null,
+                                                                         string platformVersion = null);
     }
 }
