@@ -17,15 +17,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultCompatiblePlatformDetector> _logger;
 
-        private IDictionary<string, Tuple<IProgrammingPlatform, string>> _cachedPlatformResult;
-
         public DefaultCompatiblePlatformDetector(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             ILogger<DefaultCompatiblePlatformDetector> logger)
         {
             _programmingPlatforms = programmingPlatforms;
             _logger = logger;
-            _cachedPlatformResult = new Dictionary<string, Tuple<IProgrammingPlatform,string>>();
         }
 
         /// <inheritdoc/>
@@ -65,6 +62,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             foreach (var platform in enabledPlatforms)
             {
+                // If the user provided a platform name, it has already been processed, so skip processing again
+                if (!string.IsNullOrEmpty(platformName) &&
+                     string.Equals(platform.Name, platformName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 _logger.LogDebug($"Detecting platform using '{platform.Name}'...");
                 if (IsCompatiblePlatform(ctx, platform.Name, out var platformResult))
                 {
@@ -94,65 +98,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             out Tuple<IProgrammingPlatform, string> platformResult)
         {
             platformResult = null;
-            try
+            var selectedPlatform = _programmingPlatforms
+                                    .Where(p => string.Equals(platformName, p.Name, StringComparison.OrdinalIgnoreCase))
+                                    .FirstOrDefault();
+            if (selectedPlatform == null)
             {
-                if (_cachedPlatformResult.ContainsKey(platformName))
-                {
-                    platformResult = _cachedPlatformResult[platformName];
-                    return platformResult == null ? false : true;
-                }
-
-                var selectedPlatform = _programmingPlatforms
-                                        .Where(p => string.Equals(platformName, p.Name, StringComparison.OrdinalIgnoreCase))
-                                        .FirstOrDefault();
-                if (selectedPlatform == null)
-                {
-                    var languages = string.Join(", ", _programmingPlatforms.Select(p => p.Name));
-                    var exec = new UnsupportedLanguageException($"'{platformName}' platform is not supported. " +
-                        $"Supported platforms are: {languages}");
-                    _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' is not supported.");
-                    throw exec;
-                }
-
-                if (!selectedPlatform.IsEnabled(ctx))
-                {
-                    var exc = new UnsupportedLanguageException($"Platform '{selectedPlatform.Name}' has been disabled.");
-                    _logger.LogError(exc, $"Exception caught, platform '{selectedPlatform.Name}' has been disabled.");
-                    throw exc;
-                }
-
-                if (string.IsNullOrEmpty(platformVersion))
-                {
-                    var detectionResult = selectedPlatform.Detect(ctx);
-                    if (detectionResult == null)
-                    {
-                        _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");
-                        return false;
-                    }
-                    else if (string.IsNullOrEmpty(detectionResult.LanguageVersion))
-                    {
-                        _logger.LogError($"Platform '{platformName}' was detected in the given repository, but " +
-                                         $"no compatible version was found.");
-                        return false;
-                    }
-
-                    _logger.LogDebug($"No platform version found, " +
-                                     $"setting to the detected version '{detectionResult.LanguageVersion}'.");
-                    platformVersion = detectionResult.LanguageVersion;
-                }
-
-                _logger.LogDebug($"Detected platform '{platformName}' with version '{platformVersion}'.");
-                platformResult = Tuple.Create(selectedPlatform, platformVersion);
-                return true;
+                var languages = string.Join(", ", _programmingPlatforms.Select(p => p.Name));
+                var exec = new UnsupportedLanguageException($"'{platformName}' platform is not supported. " +
+                    $"Supported platforms are: {languages}");
+                _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' is not supported.");
+                throw exec;
             }
-            finally
+
+            if (!selectedPlatform.IsEnabled(ctx))
             {
-                // Cache the result of previous platform detections.
-                if (!_cachedPlatformResult.ContainsKey(platformName))
-                {
-                    _cachedPlatformResult.Add(platformName, platformResult);
-                }
+                var exc = new UnsupportedLanguageException($"Platform '{selectedPlatform.Name}' has been disabled.");
+                _logger.LogError(exc, $"Exception caught, platform '{selectedPlatform.Name}' has been disabled.");
+                throw exc;
             }
+
+            if (string.IsNullOrEmpty(platformVersion))
+            {
+                var detectionResult = selectedPlatform.Detect(ctx);
+                if (detectionResult == null)
+                {
+                    _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");
+                    return false;
+                }
+                else if (string.IsNullOrEmpty(detectionResult.LanguageVersion))
+                {
+                    _logger.LogError($"Platform '{platformName}' was detected in the given repository, but " +
+                                     $"no compatible version was found.");
+                    return false;
+                }
+
+                _logger.LogDebug($"No platform version found, " +
+                                 $"setting to the detected version '{detectionResult.LanguageVersion}'.");
+                platformVersion = detectionResult.LanguageVersion;
+            }
+
+            _logger.LogDebug($"Detected platform '{platformName}' with version '{platformVersion}'.");
+            platformResult = Tuple.Create(selectedPlatform, platformVersion);
+            return true;
         }
 
         private bool IsEnabledForMultiPlatformBuild(IProgrammingPlatform platform, RepositoryContext ctx)
