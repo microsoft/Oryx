@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
