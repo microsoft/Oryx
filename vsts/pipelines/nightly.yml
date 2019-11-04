@@ -36,7 +36,7 @@ jobs:
   condition: succeeded()
   pool:
     name: OryxLinux
-  # Building runtime images can take a long time due our PHP images
+  # Building runtime images can take a long time due to our PHP images
   timeoutInMinutes: 180
   steps:
   - script: |
