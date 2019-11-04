@@ -112,9 +112,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 case DotNetCoreConstants.NetCoreApp30:
                     return DotNetCoreRunTimeVersions.NetCoreApp30;
-
-                case DotNetCoreConstants.NetCoreApp31:
-                    return DotNetCoreRunTimeVersions.NetCoreApp31;
             }
 
             return null;

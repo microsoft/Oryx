@@ -18,7 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp21 = "netcoreapp2.1";
         public const string NetCoreApp22 = "netcoreapp2.2";
         public const string NetCoreApp30 = "netcoreapp3.0";
-        public const string NetCoreApp31 = "netcoreapp3.1";
 
         public const string AspNetCorePackageReference = "Microsoft.AspNetCore";
         public const string AspNetCoreAllPackageReference = "Microsoft.AspNetCore.All";

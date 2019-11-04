@@ -11,7 +11,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp21 = "2.1.13";
         public const string NetCoreApp22 = "2.2.7";
         public const string NetCoreApp30 = "3.0.0";
-        public const string NetCoreApp31 = "3.1.0";
-        public const string NetCoreApp31PreviewName = "3.1.0-preview1.19506.1";
     }
 }
