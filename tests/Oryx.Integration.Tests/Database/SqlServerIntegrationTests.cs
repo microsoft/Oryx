@@ -27,8 +27,13 @@ namespace Microsoft.Oryx.Integration.Tests
         private const int ContainerPort = 3000;
         private const string DefaultStartupFilePath = "./run.sh";
 
-        public SqlServerIntegrationTests(ITestOutputHelper output) : base(output, null)
+        private readonly ITestOutputHelper _output;
+        private readonly string _hostSamplesDir;
+
+        public SqlServerIntegrationTests(ITestOutputHelper output)
         {
+            _output = output;
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
 
         [Fact]
@@ -51,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 Settings.BuildImageName,
                 "oryx",
                 new[] { "build", appDir, "-l", "nodejs", "--language-version", "10.14" },
-                _imageHelper.GetRuntimeImage("node", "10.14"),
+                "oryxdevmcr.azurecr.io/public/oryx/node-10.14",
                 GetEnvironmentVariables(),
                 ContainerPort,
                 "/bin/bash",
@@ -91,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 Settings.BuildImageName,
                 "oryx",
                 new[] { "build", appDir, "-l", "python", "--language-version", "3.7" },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 GetEnvironmentVariables(),
                 ContainerPort,
                 "/bin/bash",
@@ -134,7 +139,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 Settings.BuildImageName,
                 "oryx",
                 new[] { "build", appDir, "-l", "php", "--language-version", phpVersion },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                $"oryxdevmcr.azurecr.io/public/oryx/php-{phpVersion}",
                 GetEnvironmentVariables(),
                 ContainerPort,
                 "/bin/bash",

@@ -14,10 +14,17 @@ namespace Microsoft.Oryx.Integration.Tests
     {
         public readonly int ContainerPort = 8080;
         public readonly string RunScriptPath = "/tmp/startup.sh";
+
+        public readonly ITestOutputHelper _output;
+        public readonly string _hostSamplesDir;
+        public readonly string _hostTempDir;
         public readonly IList<string> _downloadedPaths = new List<string>();
 
-        public PhpEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture fixture) : base(output, fixture)
+        public PhpEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture fixture)
         {
+            _output = output;
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _hostTempDir = fixture.RootDirPath;
         }
     }
 }

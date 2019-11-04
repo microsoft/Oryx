@@ -44,12 +44,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("7.2", PhpVersions.Php72Version)]
         [InlineData("7.0", PhpVersions.Php70Version)]
         [InlineData("5.6", PhpVersions.Php56Version)]
-        [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                _imageHelper.GetRuntimeImage("php", imageTag),
+                $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
                 "php",
                 new[] { "--version" }
             );
@@ -73,7 +72,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -139,7 +138,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("php", imageTag),
+                imageName: $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}",
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -166,7 +165,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/php-{imageTag}:latest",
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mcrypt);" }
             });
@@ -179,7 +178,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Contains("mcrypt", output);
                 },
                 result.GetDebugInfo());
-
+            
         }
 
         [SkippableTheory]
@@ -203,7 +202,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", version),
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/php-" + version + ":latest",
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

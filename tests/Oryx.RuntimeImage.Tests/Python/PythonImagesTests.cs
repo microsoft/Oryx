@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", version),
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/python-" + version + ":latest",
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
@@ -58,13 +58,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("3.6", "Python " + Common.PythonVersions.Python36Version)]
         [InlineData("3.7", "Python " + Common.PythonVersions.Python37Version)]
-        [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion),
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/python-" + pythonVersion + ":latest",
                 CommandToExecuteOnRun = "python",
                 CommandArguments = new[] { "--version" }
             });
@@ -81,7 +80,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Fact]
-        [Trait(TestConstants.Category, TestConstants.Release)]
         public void Python2MatchesImageName()
         {
             string pythonVersion = "2.7";
@@ -90,7 +88,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion),
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/python-" + pythonVersion + ":latest",
                 CommandToExecuteOnRun = "python",
                 CommandArguments = new[] { "--version" }
             });
@@ -124,7 +122,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", "3.7"),
+                ImageId = "oryxdevmcr.azurecr.io/public/oryx/python-3.7",
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });

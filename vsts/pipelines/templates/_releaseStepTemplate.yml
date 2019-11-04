@@ -2,7 +2,6 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   acrProdName: oryxmcr.azurecr.io
-  prodImageName: oryxmcr.azurecr.io/public/oryx
 
 steps:
 
@@ -58,13 +57,6 @@ steps:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Test runtime images'
-  inputs:
-    scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.prodImageName }} $(RELEASE_TAG_NAME) Category=Release
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@1
   displayName: 'Push build image to ACR'
