@@ -13,12 +13,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
     {
         protected readonly ITestOutputHelper _output;
         protected readonly DockerCli _dockerCli = new DockerCli();
-        protected readonly ImageTestHelper _imageHelper;
 
         public TestBase(ITestOutputHelper output)
         {
             _output = output;
-            _imageHelper = new ImageTestHelper(output);
         }
 
         protected void RunAsserts(Action action, string message)

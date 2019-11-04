@@ -30,15 +30,15 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task WordPress51(string phpVersion)
         {
             // Arrange
-            string hostDir = Path.Combine(_tempRootDir, "wordpress");
+            string hostDir = Path.Combine(_hostTempDir, "wordpress");
             if (!Directory.Exists(hostDir))
             {
                 using (var webClient = new WebClient())
                 {
-                    var wpZipPath = Path.Combine(_tempRootDir, "wp.zip");
+                    var wpZipPath = Path.Combine(_hostTempDir, "wp.zip");
                     webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
                     // The ZIP already contains a `wordpress` folder
-                    ZipFile.ExtractToDirectory(wpZipPath, _tempRootDir);
+                    ZipFile.ExtractToDirectory(wpZipPath, _hostTempDir);
                 }
             }
 
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                $"oryxdevmcr.azurecr.io/public/oryx/php-{phpVersion}",
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
