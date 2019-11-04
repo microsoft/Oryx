@@ -6,7 +6,7 @@
 
 # Folder structure is used to decide the tag name
 # For example, if a Dockerfile is located at "images/runtime/node/10.1.0/Dockerfile",
-# then the tag name would be 'node:10.1.0' (i.e. the path between 'runtime' and 'Dockerfile' segments)
+# then the tag name would be 'node-10.1.0' (i.e. the path between 'runtime' and 'Dockerfile' segments)
 function getTagName()
 {
 	if [ ! $# -eq 1 ]
@@ -24,7 +24,7 @@ function getTagName()
 	local replacedPath="$RUNTIME_IMAGES_SRC_DIR/"
 	local remainderPath="${1//$replacedPath/}"
 	local slashChar="/"
-	getTagName_result=${remainderPath//$slashChar/":"}
+	getTagName_result=${remainderPath//$slashChar/"-"}
 	return 0
 }
 

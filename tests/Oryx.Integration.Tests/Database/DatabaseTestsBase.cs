@@ -19,14 +19,12 @@ namespace Microsoft.Oryx.Integration.Tests
     public abstract class DatabaseTestsBase
     {
         protected readonly ITestOutputHelper _output;
-        protected readonly ImageTestHelper _imageHelper;
         protected readonly Fixtures.DbContainerFixtureBase _dbFixture;
         protected readonly HttpClient _httpClient = new HttpClient();
 
         protected DatabaseTestsBase(ITestOutputHelper outputHelper, Fixtures.DbContainerFixtureBase dbFixture)
         {
             _output = outputHelper;
-            _imageHelper = new ImageTestHelper(_output);
             _dbFixture = dbFixture;
             HostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         }
@@ -51,10 +49,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = _imageHelper.GetRuntimeImage(language, languageVersion);
+            var runtimeImageName = $"oryxdevmcr.azurecr.io/public/oryx/{language}-{languageVersion}";
             if (string.Equals(language, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = _imageHelper.GetRuntimeImage("node", languageVersion);
+                runtimeImageName = $"oryxdevmcr.azurecr.io/public/oryx/node-{languageVersion}";
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";

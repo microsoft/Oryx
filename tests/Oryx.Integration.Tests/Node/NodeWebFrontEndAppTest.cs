@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
                 ContainerPort,
                 "/bin/sh",
                 new[]

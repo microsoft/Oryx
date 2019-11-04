@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 appVolume,
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                $"oryxdevmcr.azurecr.io/public/oryx/python-{pythonVersion}",
                 debugPort.GetValueOrDefault(DefaultPtvsdPort),
                 "/bin/bash", new[] { "-c", runScript },
                 async (ptvsdHostPort) =>

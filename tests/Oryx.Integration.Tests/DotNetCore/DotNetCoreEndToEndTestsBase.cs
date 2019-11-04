@@ -22,9 +22,15 @@ namespace Microsoft.Oryx.Integration.Tests
         protected const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
         protected const string DefaultStartupFilePath = "./run.sh";
 
+        protected readonly ITestOutputHelper _output;
+        protected readonly string _hostSamplesDir;
+        protected readonly string _tempRootDir;
+
         public DotNetCoreEndToEndTestsBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
-            : base(output, testTempDirTestFixture)
         {
+            _output = output;
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
         protected DockerVolume CreateDefaultWebAppVolume()
