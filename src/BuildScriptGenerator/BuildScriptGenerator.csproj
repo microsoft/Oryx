@@ -68,6 +68,7 @@
 
   <ItemGroup>
     <Content Remove="BaseBashBuildScript.sh.tpl" />
+    <Content Remove="Dockerfile.oryx.tpl" />
     <Content Remove="Node\NodeBashBuildSnippet.sh.tpl" />
     <Content Remove="Php\PhpBashBuildSnippet.sh.tpl" />
     <Content Remove="Python\PythonBashBuildSnippet.sh.tpl" />
@@ -75,6 +76,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" />
+    <EmbeddedResource Include="Dockerfile.oryx.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />

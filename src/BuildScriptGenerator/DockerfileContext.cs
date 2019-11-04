@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         /// <summary>
         /// Gets or sets the name of the main programming platform used in the repo.
-        /// If none is given, a platform detection algorithm will attemp to detect it.
+        /// If none is given, a platform detection algorithm will attempt to detect it.
         /// </summary>
         public string Platform { get; set; }
 

@@ -26,19 +26,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 { "python", new List<string>() { "3.7" } },
             };
 
-        private readonly string _templateDockerfile =
-            @"ARG RUNTIME=RUN_IMAGE:RUN_TAG
-
-FROM mcr.microsoft.com/oryx/build:BUILD_TAG as build
-WORKDIR /app
-COPY . .
-RUN oryx build /app
-
-FROM mcr.microsoft.com/oryx/${RUNTIME}
-COPY --from=build /app /app
-RUN cd /app && oryx
-ENTRYPOINT [""/app/run.sh""]";
-
         public DefaultDockerfileGenerator(
             ICompatiblePlatformDetector platformDetector,
             ILogger<DefaultDockerfileGenerator> logger)
@@ -72,9 +59,17 @@ ENTRYPOINT [""/app/run.sh""]";
                 runImageTag = GenerateRuntimeTag(version);
             }
 
-            return _templateDockerfile.Replace("RUN_IMAGE", runImage)
-                                      .Replace("RUN_TAG", runImageTag)
-                                      .Replace("BUILD_TAG", buildImageTag);
+            var properties = new DockerfileProperties()
+            {
+                RuntimeImageName = runImage,
+                RuntimeImageTag = runImageTag,
+                BuildImageTag = buildImageTag,
+            };
+
+            return TemplateHelper.Render(
+                TemplateHelper.TemplateResource.Dockerfile,
+                properties,
+                _logger);
         }
 
         private IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(DockerfileContext ctx)
@@ -92,17 +87,18 @@ ENTRYPOINT [""/app/run.sh""]";
             return platform.IsEnabledForMultiPlatformBuild(ctx);
         }
 
+        /// <summary>
+        /// For runtime images, the tag follows the format `{MAJOR}.{MINOR}`, so we need to correctly format the
+        /// version that is returned from the detector to ensure we are pulling from a valid tag.
+        /// </summary>
+        /// <param name="version">The version of the platform returned from the detector.</param>
+        /// <returns>A formatted version tag to pull the runtime image from.</returns>
         private string GenerateRuntimeTag(string version)
         {
             var split = version.Split('.');
             if (split.Length < 3)
             {
                 return version;
-            }
-
-            if (split[1] == "0")
-            {
-                return split[0];
             }
 
             return $"{split[0]}.{split[1]}";
