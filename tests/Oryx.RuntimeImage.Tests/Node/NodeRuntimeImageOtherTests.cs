@@ -48,13 +48,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData(NodeVersions.Node10MajorMinorVersion, NodeVersions.Node10Version)]
         [InlineData("12", NodeVersions.Node12Version)]
         [InlineData(NodeVersions.Node12MajorMinorVersion, NodeVersions.Node12Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeTag}:latest",
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
                 CommandToExecuteOnRun = "node",
                 CommandArguments = new[] { "--version" }
             });
@@ -83,7 +84,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeTag}:latest",
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
                 CommandToExecuteOnRun = "npm",
                 CommandArguments = new[] { "--version" }
             });
@@ -116,7 +117,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = "oryxdevmcr.azurecr.io/public/oryx/node-10.14",
+                ImageId = _imageHelper.GetRuntimeImage("node", "10.14"),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });
@@ -146,7 +147,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
