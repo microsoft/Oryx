@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
@@ -35,6 +35,16 @@ then
     args="$args --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
 fi
 
+# Build the common base image first, so other images that depend on it get the latest version.
+# We don't retrieve this image from a repository but rather build locally to make sure we get
+# the latest version of its own base image.
+
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME" \
+    $REPO_DIR
+
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
 # The common base image is built separately, so we ignore it
@@ -44,16 +54,6 @@ then
     echo "Couldn't find any Dockerfiles under '$runtimeImagesSourceDir' and its sub-directories."
     exit 1
 fi
-
-# Build the common base image first, so other images that depend on it get the latest version. 
-# We don't retrieve this image from a repository but rather build locally to make sure we get 
-# the latest version of its own base image. 
-
-docker build \
-    --pull \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME" \
-    $REPO_DIR
 
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
@@ -113,6 +113,9 @@ then
     echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
     cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
 fi
+
+echo
+showDockerImageSizes
 
 echo
 dockerCleanupIfRequested
