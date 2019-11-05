@@ -93,17 +93,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         internal string DetermineRuntimeVersion(string targetFramework)
         {
-            // Ex: "netcoreapp22" => "22"
+            // Ex: "netcoreapp2.2" => "2.2"
             targetFramework = targetFramework.Replace(
                 "netcoreapp",
                 string.Empty,
                 StringComparison.OrdinalIgnoreCase);
 
-            // Ex: "22" => 22
+            // Ex: "2.2" => 2.2
             if (double.TryParse(targetFramework, out var val))
             {
-                // Ex: 2.2
-                val = val / 10;
                 return val.ToString();
             }
 
