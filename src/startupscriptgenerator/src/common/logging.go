@@ -40,7 +40,7 @@ func SetGlobalOperationID(buildManifest BuildManifest) {
 		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}
 
-	logger := common.GetLogger("logging.SetGlobalOperationID")
+	logger := GetLogger("logging.SetGlobalOperationID")
 	defer logger.Shutdown()
 
 	if buildManifest.OperationID == "" {
