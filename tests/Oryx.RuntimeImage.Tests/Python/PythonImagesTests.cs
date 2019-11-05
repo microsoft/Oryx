@@ -48,9 +48,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.NotNull(result.StdErr);
-                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
-                    Assert.Contains(gitCommitID, result.StdErr);
-                    Assert.Contains(expectedOryxVersion, result.StdErr);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdOut);
+                    Assert.Contains(gitCommitID, result.StdOut);
+                    Assert.Contains(expectedOryxVersion, result.StdOut);
                 },
                 result.GetDebugInfo());
         }

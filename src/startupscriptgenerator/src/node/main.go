@@ -33,6 +33,10 @@ func main() {
 			"otherwise the application might not work.")
 	flag.Parse()
 
+	logger := common.GetLogger("node.main")
+	defer logger.Shutdown()
+	logger.StartupScriptRequested()
+
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 	useLegacyDebugger := isLegacyDebuggerNeeded()
