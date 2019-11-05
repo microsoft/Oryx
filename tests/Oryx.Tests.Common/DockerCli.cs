@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Tests.Common
         private readonly IEnumerable<EnvironmentVariable> _globalEnvVars;
 
         public DockerCli(IEnumerable<EnvironmentVariable> globalEnvVars = null)
-            : this(TimeSpan.FromMinutes(10), globalEnvVars)
+            : this(TimeSpan.FromSeconds(1), globalEnvVars)
         {
         }
 
