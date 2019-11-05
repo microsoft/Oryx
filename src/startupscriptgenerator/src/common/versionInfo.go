@@ -5,6 +5,10 @@
 
 package common
 
+import (
+	"fmt"
+)
+
 // NOTE: The 'BuildNumber' and 'Commit' variables here are modified during build time. Look at
 // the 'go build' command in file 'startupscriptgenerator/build.sh'
 var (
