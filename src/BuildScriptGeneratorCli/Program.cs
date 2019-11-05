@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand(typeof(ExecCommand))]
     [Subcommand(typeof(BuildpackDetectCommand))]
     [Subcommand(typeof(BuildpackBuildCommand))]
+    [Subcommand(typeof(DockerfileCommand))]
     internal class Program
     {
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]
