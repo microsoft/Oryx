@@ -12,7 +12,7 @@ mkdir -p /node_modules
 chmod 777 /node_modules
 
 # Npm version 6.4 has issues installing native modules like grpc,
-# upgrade it a version which we know works fine.    
+# so upgrading it to a version which we know works fine. 
 npm_ver=$(npm --version)
 IFS='.' read -ra SPLIT_VERSION <<< "$npm_ver"
 major="${SPLIT_VERSION[0]}"

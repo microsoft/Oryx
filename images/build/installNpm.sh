@@ -8,7 +8,7 @@ do
     npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
 
     # Npm version 6.4 has issues installing native modules like grpc,
-    # upgrade it a version which we know works fine.    
+    # so upgrading it to a version which we know works fine.
     IFS='.' read -ra SPLIT_VERSION <<< "$npm_ver"
     major="${SPLIT_VERSION[0]}"
     minor="${SPLIT_VERSION[1]}"
