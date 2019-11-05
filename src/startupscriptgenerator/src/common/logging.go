@@ -39,6 +39,14 @@ func SetGlobalOperationID(buildManifest BuildManifest) {
 	} else {
 		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}
+
+	logger := common.GetLogger("logging.SetGlobalOperationID")
+	defer logger.Shutdown()
+
+	if buildManifest.OperationID == "" {
+		logger.LogInformation("No operation ID found in manifest.")
+	}
+
 	fmt.Println("Build Operation ID: " + buildOpID)
 }
 

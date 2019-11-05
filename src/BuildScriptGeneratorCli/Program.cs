@@ -21,6 +21,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand(typeof(BuildpackBuildCommand))]
     internal class Program
     {
+        public const string GitCommit = "GitCommit";
+        public const string ReleaseTagName = "RELEASE_TAG_NAME";
+
         [Option(CommandOptionType.NoValue, Description = "Print version information.")]
         public bool Version { get; set; }
 
@@ -54,8 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (Version)
             {
                 var version = GetVersion();
-                var commit = GetMetadataValue("GitCommit");
-                var releaseTagName = GetMetadataValue("RELEASE_TAG_NAME");
+                var commit = GetMetadataValue(GitCommit);
+                var releaseTagName = GetMetadataValue(ReleaseTagName);
                 console.WriteLine($"Version: {version}, Commit: {commit}, ReleaseTagName: {releaseTagName}");
 
                 return ProcessConstants.ExitSuccess;

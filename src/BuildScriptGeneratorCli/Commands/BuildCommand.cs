@@ -125,6 +125,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildOperationId = logger.StartOperation(
                 BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
 
+            var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
+            var sourceRepoCommitId = GetSourceRepoCommitId(
+                serviceProvider.GetRequiredService<IEnvironment>(),
+                sourceRepo,
+                logger);
+
+            var oryxVersion = Program.GetVersion();
+            var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
+            var oryxReleaseTagName = Program.GetMetadataValue(Program.ReleaseTagName);
+            var buildEventProps = new Dictionary<string, string>()
+            {
+                { "oryxVersion", oryxVersion },
+                { "oryxCommitId", oryxCommitId },
+                { "oryxReleaseTagName", oryxReleaseTagName },
+                {
+                    "oryxCommandLine",
+                    string.Join(
+                        ' ',
+                        serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs())
+                },
+                { "sourceRepoCommitId", sourceRepoCommitId },
+            };
+
+            logger.LogEvent("BuildRequested", buildEventProps);
+
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
@@ -134,19 +159,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildInfo = new DefinitionListFormatter();
             buildInfo.AddDefinition(
                 "Oryx Version",
-                $"{Program.GetVersion()}, " +
-                $"Commit: {Program.GetMetadataValue("GitCommit")}, " +
-                $"ReleaseTagName: {Program.GetMetadataValue("RELEASE_TAG_NAME")}");
+                $"{oryxVersion}, " +
+                $"Commit: {oryxCommitId}, " +
+                $"ReleaseTagName: {oryxReleaseTagName}");
             buildInfo.AddDefinition("Build Operation ID", buildOperationId);
 
-            var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var commitId = GetSourceRepoCommitId(
-                serviceProvider.GetRequiredService<IEnvironment>(),
-                sourceRepo,
-                logger);
-            if (!string.IsNullOrWhiteSpace(commitId))
+            if (!string.IsNullOrWhiteSpace(sourceRepoCommitId))
             {
-                buildInfo.AddDefinition("Repository Commit", commitId);
+                buildInfo.AddDefinition("Repository Commit", sourceRepoCommitId);
             }
 
             console.WriteLine(buildInfo.ToString());
@@ -197,20 +217,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.WriteLine($"Build script content:\n{scriptContent}");
             }
 
-            var oryxVersion = Program.GetVersion();
-            var oryxReleaseTagName = Program.GetMetadataValue("RELEASE_TAG_NAME");
-            var buildEventProps = new Dictionary<string, string>()
+            // Merge the earlier build event properties
+            buildEventProps = new Dictionary<string, string>(buildEventProps)
             {
-                { "oryxVersion", oryxVersion },
-                { "oryxCommitId", Program.GetMetadataValue("GitCommit") },
-                { "oryxReleaseTagName", oryxReleaseTagName },
-                {
-                    "oryxCommandLine",
-                    string.Join(
-                        ' ',
-                        serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs())
-                },
-                { nameof(commitId), commitId },
                 { "scriptPath", buildScriptPath },
                 { "envVars", string.Join(",", GetEnvVarNames(serviceProvider.GetRequiredService<IEnvironment>())) },
             };
