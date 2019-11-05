@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 StringComparison.OrdinalIgnoreCase);
 
             // Ex: "2.2" => 2.2
-            if (double.TryParse(targetFramework, out var val))
+            if (decimal.TryParse(targetFramework, out var val))
             {
                 return val.ToString();
             }

@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Detect_ReturnsNull_ForUnknownNetCoreAppVersion()
+        public void Detect_ThrowsUnsupportedException_ForUnknownNetCoreAppVersion()
         {
             // Arrange
             var projectFile = "test.csproj";
@@ -172,14 +172,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Returns(projectFileContent);
             var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCoreLanguageDetector(
-                supportedVersions: GetAllSupportedRuntimeVersions(),
+                supportedVersions: new[] { "2.2" },
                 projectFile);
 
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.Null(result);
+            var exception = Assert.Throws<UnsupportedVersionException>(
+                () => detector.Detect(context));
+            Assert.Equal(
+                $"Platform 'dotnet' version '0.0' is unsupported. " +
+                "Supported versions: 2.2",
+                exception.Message);
         }
 
         [Fact]
@@ -203,7 +204,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var exception = Assert.Throws<UnsupportedVersionException>(
                 () => detector.Detect(context));
             Assert.Equal(
-                $"Platform 'dotnet' version '{DotNetCoreRunTimeVersions.NetCoreApp21}' is unsupported. " +
+                $"Platform 'dotnet' version '2.1' is unsupported. " +
                 "Supported versions: 2.2",
                 exception.Message);
         }
