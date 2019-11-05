@@ -12,8 +12,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string DotNetCore22SdkSha512 = "81937DE0874EE837E3B42E36D1CF9E04BD9DEFF6BA60D0162AE7CA9336A78F733E624136D27F559728DF3F681A72A669869BF91D02DB47C5331398C0CFDA9B44";
         public const string DotNetCore30SdkVersion = "3.0.100";
         public const string DotNetCore30SdkSha512 = "766da31f9a0bcfbf0f12c91ea68354eb509ac2111879d55b656f19299c6ea1c005d31460dac7c2a4ef82b3edfea30232c82ba301fb52c0ff268d3e3a1b73d8f7";
-        public const string DotNetCore31SdkVersionPreviewName = "3.1.100-preview1-014459";
-        public const string DotNetCore31SdkVersion = "3.1.100";
-        public const string DotNetCore31SdkSha512 = "2d0d4c4af775d46a0a3bf25d1ebb1f6ee51df07a82e53176efb1055cef746ca5074ab95e6dc65ae8f738c34f6a45eae42941c342b24efac5e04fa82ccbcf27d2";
     }
 }

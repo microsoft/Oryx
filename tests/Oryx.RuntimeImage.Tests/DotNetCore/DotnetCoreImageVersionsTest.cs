@@ -88,7 +88,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp21)]
         [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
-        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31PreviewName)]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act

@@ -99,7 +99,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("netcoreapp2.1", DotNetCoreRunTimeVersions.NetCoreApp21)]
         [InlineData("netcoreapp2.2", DotNetCoreRunTimeVersions.NetCoreApp22)]
         [InlineData("netcoreapp3.0", DotNetCoreRunTimeVersions.NetCoreApp30)]
-        [InlineData("netcoreapp3.1", DotNetCoreRunTimeVersions.NetCoreApp31)]
         public void Detect_ReturnsExpectedLanguageVersion_ForTargetFrameworkVersions(
             string netCoreAppVersion,
             string expectedSdkVersion)
@@ -254,7 +253,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 DotNetCoreRunTimeVersions.NetCoreApp21,
                 DotNetCoreRunTimeVersions.NetCoreApp22,
                 DotNetCoreRunTimeVersions.NetCoreApp30,
-                DotNetCoreRunTimeVersions.NetCoreApp31,
             };
         }
 
