@@ -77,7 +77,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("10.10", "6.9.0")]
         [InlineData("10.12", "6.9.0")]
         [InlineData("10.14", "6.9.0")]
-        [InlineData("12", "6.9.0")]
         public void HasExpectedNpmVersion(string nodeTag, string expectedNpmVersion)
         {
             // Arrange & Act

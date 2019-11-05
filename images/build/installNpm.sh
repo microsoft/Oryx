@@ -6,7 +6,13 @@ for ver in `ls /opt/nodejs`
 do
     nodeModulesDir="/opt/nodejs/$ver/lib/node_modules"
     npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
-    if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then
+
+    # Npm version 6.4 has issues installing native modules like grpc,
+    # so upgrading it to a version which we know works fine.
+    IFS='.' read -ra SPLIT_VERSION <<< "$npm_ver"
+    major="${SPLIT_VERSION[0]}"
+    minor="${SPLIT_VERSION[1]}"
+    if [ "$major" == "6" ] && [ "$minor" == "4" ]; then
         echo "Upgrading node $ver's npm version from $npm_ver to 6.9.0"
         cd $nodeModulesDir
         PATH="/opt/nodejs/$ver/bin:$PATH" \
