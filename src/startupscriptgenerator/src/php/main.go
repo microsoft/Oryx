@@ -20,6 +20,10 @@ func main() {
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
 
+	logger := common.GetLogger("php.main")
+	defer logger.Shutdown()
+	logger.StartupScriptRequested()
+
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 
 	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)

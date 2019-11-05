@@ -129,3 +129,13 @@ func (logger *Logger) Shutdown() {
 		// to complete, so let's just exit.
 	}
 }
+
+func (logger *Logger) StartupScriptRequested() {
+	logger.LogProperties(
+		"StartupScriptRequested",
+		map[string]string{
+			"oryxVersion":        Version,
+			"oryxCommitId":       Commit,
+			"oryxReleaseTagName": ReleaseTagName,
+		})
+}
