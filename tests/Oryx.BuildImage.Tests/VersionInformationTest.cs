@@ -252,7 +252,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         // Make sure the we get the upgraded version of npm in the following cases
         [InlineData("10.10.0", "6.9.0")]
         [InlineData("10.14.2", "6.9.0")]
-        [InlineData(NodeVersions.Node10MajorMinorVersion, "6.9.0")]
         public void UsesExpectedNpmVersion(string nodeVersion, string expectedOutput)
         {
             // Arrange
@@ -276,6 +275,35 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void NpmVersion_IsNotUpgraded_To_6_9_0()
+        {
+            // Arrange
+            var nodeVersion = NodeVersions.Node12Version;
+            var script = new ShellScriptBuilder()
+                .Source($"benv node={nodeVersion}")
+                .AddCommand("npm --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.DoesNotContain("6.9.0", actualOutput);
                 },
                 result.GetDebugInfo());
         }
