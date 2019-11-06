@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
@@ -71,14 +71,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (string.IsNullOrEmpty(languageVersion))
             {
-                languageVersion = DetermineSdkVersion(targetFramework);
+                languageVersion = DetermineRuntimeVersion(targetFramework);
             }
 
             if (languageVersion == null)
             {
                 _logger.LogDebug(
-                    $"Could not find a {DotNetCoreConstants.LanguageName} version corresponding to 'TargetFramework'" +
-                    $" '{targetFramework}'.");
+                    $"Could not find a {DotNetCoreConstants.LanguageName} core runtime version " +
+                    $"corresponding to 'TargetFramework' '{targetFramework}'.");
                 return null;
             }
 
@@ -91,30 +91,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             };
         }
 
-        internal string DetermineSdkVersion(string targetFramework)
+        internal string DetermineRuntimeVersion(string targetFramework)
         {
-            switch (targetFramework)
+            // Ex: "netcoreapp2.2" => "2.2"
+            targetFramework = targetFramework.Replace(
+                "netcoreapp",
+                string.Empty,
+                StringComparison.OrdinalIgnoreCase);
+
+            // Ex: "2.2" => 2.2
+            if (decimal.TryParse(targetFramework, out var val))
             {
-                case DotNetCoreConstants.NetCoreApp10:
-                    return DotNetCoreRunTimeVersions.NetCoreApp10;
-
-                case DotNetCoreConstants.NetCoreApp11:
-                    return DotNetCoreRunTimeVersions.NetCoreApp11;
-
-                case DotNetCoreConstants.NetCoreApp20:
-                    return DotNetCoreRunTimeVersions.NetCoreApp20;
-
-                case DotNetCoreConstants.NetCoreApp21:
-                    return DotNetCoreRunTimeVersions.NetCoreApp21;
-
-                case DotNetCoreConstants.NetCoreApp22:
-                    return DotNetCoreRunTimeVersions.NetCoreApp22;
-
-                case DotNetCoreConstants.NetCoreApp30:
-                    return DotNetCoreRunTimeVersions.NetCoreApp30;
-
-                case DotNetCoreConstants.NetCoreApp31:
-                    return DotNetCoreRunTimeVersions.NetCoreApp31;
+                return val.ToString();
             }
 
             return null;

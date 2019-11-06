@@ -82,6 +82,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.BaseBashBuildScript.sh.tpl");
             }
 
+            public static TemplateResource Dockerfile
+            {
+                get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Dockerfile.oryx.tpl");
+            }
+
             public static TemplateResource PhpBuildSnippet
             {
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Php.PhpBashBuildSnippet.sh.tpl");

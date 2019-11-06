@@ -304,7 +304,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var stringToPrint = "Hello World";
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script, new TestLanguageDetector()),
+                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script,
+                    new TestLanguageDetectorUsingLangName(
+                        detectedLanguageName: "test",
+                        detectedLanguageVersion: "1.0.0")),
                 scriptOnly: false);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -409,7 +412,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     // this test to be difficult to manage.
                     services.RemoveAll<ILanguageDetector>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
+                        ServiceDescriptor.Singleton<ILanguageDetector>(
+                            new TestLanguageDetectorUsingLangName(
+                                detectedLanguageName: "test",
+                                detectedLanguageVersion: "1.0.0")));
                     services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
@@ -447,18 +453,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             {
                 Directory.CreateDirectory(_tempDir);
                 return _tempDir;
-            }
-        }
-
-        private class TestLanguageDetector : ILanguageDetector
-        {
-            public LanguageDetectorResult Detect(ScriptGeneratorContext context)
-            {
-                return new LanguageDetectorResult
-                {
-                    Language = "test",
-                    LanguageVersion = "1.0.0"
-                };
             }
         }
 

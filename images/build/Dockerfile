@@ -44,7 +44,6 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-dev-debian.9-x64.$DOTNET_SDK_VER.tar.gz \
     # To save disk space do not install packages for this old version which is soon going to be out of support
     INSTALL_PACKAGES=false \
-    INSTALL_TOOLS=true \
     /tmp/scripts/installDotNetCore.sh
 
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
@@ -55,15 +54,6 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
 RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION \
     DOTNET_SDK_SHA=$DOT_NET_CORE_30_SDK_SHA512 \
-    INSTALL_TOOLS=true \
-    /tmp/scripts/installDotNetCore.sh
-
-RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION_PREVIEW_NAME \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_31_SDK_SHA512 \
-    # Since this is a preview version, do not warm up with nuget packages
-    INSTALL_PACKAGES=false \
-    INSTALL_TOOLS=true \
     /tmp/scripts/installDotNetCore.sh
 
 RUN set -ex \
@@ -103,12 +93,8 @@ RUN set -ex \
  # 3.0 sdk <-- 3.0 runtime's sdk
  && mkdir $NET_CORE_APP_30 \
  && ln -s $NET_CORE_APP_30 3.0 \
- && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk \
- # 3.1 sdk <-- 3.1 runtime's sdk
- && mkdir $NET_CORE_APP_31 \
- && ln -s $NET_CORE_APP_31 3.1 \
- && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
- && ln -s 3.0 3
+ && ln -s 3.0 3 \
+ && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk
 
 # Install Node.js, NPM, Yarn
 FROM buildpack-deps:stretch AS node-install
@@ -264,7 +250,7 @@ COPY --from=dotnet-install /var/nuget /var/nuget
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 
-# Copy PHP versions
+# Install PHP pre-reqs
 COPY images/build/php/prereqs/installPrereqs.sh /tmp/scripts/installPhpPrereqs.sh
 RUN chmod +x /tmp/scripts/installPhpPrereqs.sh
 RUN /tmp/scripts/installPhpPrereqs.sh

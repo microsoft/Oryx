@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -222,12 +222,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return !repo.DirExists(NodeConstants.NodeModulesDirName);
         }
 
-        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabled(RepositoryContext ctx)
         {
-            return scriptGeneratorContext.EnableNodeJs;
+            return ctx.EnableNodeJs;
         }
 
-        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }

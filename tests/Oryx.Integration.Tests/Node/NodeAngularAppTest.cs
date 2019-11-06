@@ -126,6 +126,31 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Angular6app", data);
                 });
+
+            // Re-run the runtime container multiple times against the same output to catch any issues.
+            var dockerCli = new DockerCli();
+            for (var i = 0; i < 5; i++)
+            {
+                await EndToEndTestHelper.RunAndAssertAppAsync(
+                    imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                    output: _output,
+                    volumes: new List<DockerVolume> { appOutputDirVolume, volume },
+                    environmentVariables: new List<EnvironmentVariable>(),
+                    port: 4200,
+                    link: null,
+                    runCmd: "/bin/sh",
+                    runArgs: new[]
+                    {
+                    "-c",
+                    runAppScript
+                    },
+                    assertAction: async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Angular6app", data);
+                    },
+                    dockerCli);
+            }
         }
 
         // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater

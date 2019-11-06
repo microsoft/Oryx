@@ -39,6 +39,14 @@ func SetGlobalOperationID(buildManifest BuildManifest) {
 	} else {
 		buildOpID = strings.TrimSpace(buildManifest.OperationID)
 	}
+
+	logger := GetLogger("logging.SetGlobalOperationID")
+	defer logger.Shutdown()
+
+	if buildManifest.OperationID == "" {
+		logger.LogInformation("No operation ID found in manifest.")
+	}
+
 	fmt.Println("Build Operation ID: " + buildOpID)
 }
 
@@ -120,4 +128,14 @@ func (logger *Logger) Shutdown() {
 		// Either way, we don't want to wait around for it
 		// to complete, so let's just exit.
 	}
+}
+
+func (logger *Logger) StartupScriptRequested() {
+	logger.LogProperties(
+		"StartupScriptRequested",
+		map[string]string{
+			"oryxVersion":        Version,
+			"oryxCommitId":       Commit,
+			"oryxReleaseTagName": ReleaseTagName,
+		})
 }

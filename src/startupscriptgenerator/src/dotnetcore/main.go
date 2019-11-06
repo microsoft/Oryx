@@ -42,6 +42,10 @@ func main() {
 			"Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
 	flag.Parse()
 
+	logger := common.GetLogger("dotnetcore.main")
+	defer logger.Shutdown()
+	logger.StartupScriptRequested()
+
 	fullAppPath := ""
 	if *appPathPtr != "" {
 		providedPath := *appPathPtr

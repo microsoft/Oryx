@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPythonVersions;
 
-        public LanguageDetectorResult Detect(ScriptGeneratorContext context)
+        public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -155,12 +155,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             throw new NotImplementedException();
         }
 
-        public bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabled(RepositoryContext ctx)
         {
-            return scriptGeneratorContext.EnablePython;
+            return ctx.EnablePython;
         }
 
-        public bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext)
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
