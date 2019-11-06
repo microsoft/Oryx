@@ -87,7 +87,7 @@ stages:
           echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
         displayName: 'Set variables'
-      
+
       - template: templates/_setReleaseTag.yml
 
       - template: templates/_buildTemplate.yml
@@ -118,13 +118,14 @@ stages:
 
       - template: templates/_buildTemplate.yml
 
+    - template: templates/_setReleaseTag.yml
     - template: templates/_integrationJobTemplate.yml
-  
+
   - stage: Release
     displayName: Release Stage
     dependsOn: Build
     condition: >
-      and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), 
+      and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'),
       startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
     jobs:
