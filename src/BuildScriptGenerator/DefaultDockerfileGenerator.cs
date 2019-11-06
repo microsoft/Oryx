@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IDictionary<string, IList<string>> _slimPlatformVersions =
             new Dictionary<string, IList<string>>()
             {
-                { "dotnetcore", new List<string>() { "2.1" } },
+                { "dotnet", new List<string>() { "2.1" } },
                 { "node",   new List<string>() { "8.16", "10.16" } },
                 { "python", new List<string>() { "3.7" } },
             };
