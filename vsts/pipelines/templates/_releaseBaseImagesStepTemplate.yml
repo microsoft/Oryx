@@ -46,17 +46,6 @@ steps:
     scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
     args: ${{ parameters.baseImageName }}
 
-- task: Docker@1
-  displayName: 'Push build image to ACR'
-  inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/base-images-mcr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: true
-
 - task: ShellScript@2
   displayName: 'Clean up Docker containers and images'
   inputs:
