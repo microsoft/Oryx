@@ -106,7 +106,7 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating artifacts file with the built runtime image information..."
-        echo "$acrRuntimeImageTagNameRepo:$tag" >> $ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo-$tag" >> $ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
