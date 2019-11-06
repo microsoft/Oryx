@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _writer = writer;
         }
 
-        public string GetRelativePathToProjectFile(ScriptGeneratorContext context)
+        public string GetRelativePathToProjectFile(RepositoryContext context)
         {
             if (_probedForProjectFile)
             {

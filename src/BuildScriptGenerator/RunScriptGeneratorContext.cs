@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Options for the run script generation process.
     /// </summary>
-    public class RunScriptGeneratorContext : ScriptGeneratorContext
+    public class RunScriptGeneratorContext : RepositoryContext
     {
         /// <summary>
         /// Gets or sets the name of the main programming platform used in the repo.

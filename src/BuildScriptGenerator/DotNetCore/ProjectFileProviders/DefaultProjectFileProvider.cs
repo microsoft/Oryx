@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _projectFileProviders = projectFileProviders;
         }
 
-        public virtual string GetRelativePathToProjectFile(ScriptGeneratorContext context)
+        public virtual string GetRelativePathToProjectFile(RepositoryContext context)
         {
             foreach (var projectFileProvider in _projectFileProviders)
             {

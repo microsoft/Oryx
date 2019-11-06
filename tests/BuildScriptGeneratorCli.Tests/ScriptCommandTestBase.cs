@@ -41,7 +41,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
                     services.RemoveAll<ILanguageDetector>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageDetector, TestLanguageDetector>());
+                        ServiceDescriptor.Singleton<ILanguageDetector>(
+                            new TestLanguageDetectorUsingLangName(
+                                detectedLanguageName: "test",
+                                detectedLanguageVersion: "1.0.0")));
 
                     services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
@@ -72,18 +75,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             {
                 Directory.CreateDirectory(_tempDir);
                 return _tempDir;
-            }
-        }
-
-        internal class TestLanguageDetector : ILanguageDetector
-        {
-            public LanguageDetectorResult Detect(ScriptGeneratorContext context)
-            {
-                return new LanguageDetectorResult
-                {
-                    Language = "test",
-                    LanguageVersion = "1.0.0"
-                };
             }
         }
     }

@@ -26,10 +26,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Detects the programming platform name and version required by the application in source directory.
         /// </summary>
-        /// <param name="context">The <see cref="ScriptGeneratorContext"/>.</param>
+        /// <param name="context">The <see cref="RepositoryContext"/>.</param>
         /// <returns>An instance of <see cref="LanguageDetectorResult"/> if detection was
         /// successful, <c>null</c> otherwise</returns>
-        LanguageDetectorResult Detect(ScriptGeneratorContext context);
+        LanguageDetectorResult Detect(RepositoryContext context);
 
         /// <summary>
         /// Sets the version of the platform in the <see cref="BuildScriptGeneratorContext"/>.
@@ -72,9 +72,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Checks if the programming platform should be included in a build script.
         /// </summary>
-        /// <param name="scriptGeneratorContext">The script generator context.</param>
+        /// <param name="ctx">The repository context.</param>
         /// <returns>true if the platform should be included, false otherwise.</returns>
-        bool IsEnabled(BuildScriptGeneratorContext scriptGeneratorContext);
+        bool IsEnabled(RepositoryContext ctx);
 
         /// <summary>
         /// Checks if the source repository seems to have artifacts from a previous build.
@@ -100,8 +100,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Checks if the programming platform wants to participate in a multi-platform build.
         /// </summary>
-        /// <param name="scriptGeneratorContext">The script generator context.</param>
+        /// <param name="ctx">The repository context.</param>
         /// <returns>true, if the platform wants to participate, false otherwise.</returns>
-        bool IsEnabledForMultiPlatformBuild(BuildScriptGeneratorContext scriptGeneratorContext);
+        bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx);
     }
 }

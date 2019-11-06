@@ -654,7 +654,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             IEnumerable<IChecker> checkers = null)
         {
             return new DefaultBuildScriptGenerator(
-                platforms,
+                new DefaultCompatiblePlatformDetector(platforms, NullLogger<DefaultCompatiblePlatformDetector>.Instance),
                 new TestEnvironmentSettingsProvider(),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
@@ -673,72 +673,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 SourceRepo = new TestSourceRepo(),
                 DisableMultiPlatformBuild = !enableMultiPlatformBuild
             };
-        }
-
-        private class TestLanguageDetectorUsingLangName : ILanguageDetector
-        {
-            private readonly string _languageName;
-            private readonly string _languageVersion;
-
-            public TestLanguageDetectorUsingLangName(string detectedLanguageName, string detectedLanguageVersion)
-            {
-                _languageName = detectedLanguageName;
-                _languageVersion = detectedLanguageVersion;
-            }
-
-            public bool DetectInvoked { get; private set; }
-
-            public LanguageDetectorResult Detect(ScriptGeneratorContext context)
-            {
-                DetectInvoked = true;
-
-                if (!string.IsNullOrEmpty(_languageName))
-                {
-                    return new LanguageDetectorResult
-                    {
-                        Language = _languageName,
-                        LanguageVersion = _languageVersion,
-                    };
-                }
-                return null;
-            }
-        }
-
-        private class TestLanguageDetectorSimpleMatch : ILanguageDetector
-        {
-            private readonly string _languageVersion;
-            private bool _shouldMatch;
-            private readonly string _language;
-
-            public TestLanguageDetectorSimpleMatch(
-                bool shouldMatch,
-                string language = "universe",
-                string languageVersion = "42")
-            {
-                _shouldMatch = shouldMatch;
-                _language = language;
-                _languageVersion = languageVersion;
-            }
-
-            public bool DetectInvoked { get; private set; }
-
-            public LanguageDetectorResult Detect(ScriptGeneratorContext context)
-            {
-                DetectInvoked = true;
-
-                if (_shouldMatch)
-                {
-                    return new LanguageDetectorResult
-                    {
-                        Language = _language,
-                        LanguageVersion = _languageVersion
-                    };
-                }
-                else
-                {
-                    return null;
-                }
-            }
         }
 
         [Checker(TestPlatformName)]

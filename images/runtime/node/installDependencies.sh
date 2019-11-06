@@ -11,10 +11,16 @@ set -ex
 mkdir -p /node_modules
 chmod 777 /node_modules
 
+# Npm version 6.4 has issues installing native modules like grpc,
+# so upgrading it to a version which we know works fine. 
 npm_ver=$(npm --version)
-if [ ! "$npm_ver" = "${npm_ver#6.}" ]; then
-    echo "Upgrading npm version from $npm_ver to 6.9.0";
-    npm install -g npm@6.9.0;
+IFS='.' read -ra SPLIT_VERSION <<< "$npm_ver"
+major="${SPLIT_VERSION[0]}"
+minor="${SPLIT_VERSION[1]}"
+if [ "$major" == "6" ] && [ "$minor" == "4" ]; then
+    echo
+    echo "Upgrading npm version from $npm_ver to 6.9.0"
+    npm install -g npm@6.9.0
 fi
 
 # PM2 is supported as an option when running the app,

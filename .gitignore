@@ -257,7 +257,7 @@ paket-files/
 images/runtime/node/*/Dockerfile
 images/runtime/dotnetcore/*/Dockerfile
 images/runtime/python/*.*/
-images/runtime/php/*.*/
+images/runtime/php/*.*/Dockerfile
 
 # Go packages from GitHub
 src/startupscriptgenerator/bin/

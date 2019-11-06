@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
@@ -25,7 +25,20 @@ then
     fi
 fi
 
-labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
+echo
+echo "Building the common base image '$RUNTIME_BASE_IMAGE_NAME'..."
+echo
+# Build the common base image first, so other images that depend on it get the latest version.
+# We don't retrieve this image from a repository but rather build locally to make sure we get
+# the latest version of its own base image.
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME" \
+    $REPO_DIR
+
+labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
+labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
@@ -37,14 +50,14 @@ then
     exit 1
 fi
 
-# Build the common base image first, so other images that depend on it get the latest version.
-# We don't retrieve this image from a repository but rather build locally to make sure we get
-# the latest version of its own base image.
-docker build --pull -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" -t "$RUNTIME_BASE_IMAGE_NAME" $REPO_DIR
-
 # Write the list of images that were built to artifacts folder
 mkdir -p "$BASE_IMAGES_ARTIFACTS_FILE_PREFIX"
 ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-bases.txt"
+
+initFile="$runtimeImagesSourceDir/buildRunTimeImageBases_Init.sh"
+if [ -f "$initFile" ]; then
+    $initFile
+fi
 
 clearedOutput=false
 for dockerFile in $dockerFiles; do
@@ -93,7 +106,7 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating artifacts file with the built runtime image information..."
-        echo "$acrRuntimeImageTagNameRepo:$tag" >> $ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo-$tag" >> $ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
@@ -105,6 +118,9 @@ then
     echo "List of images tagged (from '$ARTIFACTS_FILE'):"
     cat $ARTIFACTS_FILE
 fi
+
+echo
+showDockerImageSizes
 
 echo
 dockerCleanupIfRequested

@@ -52,9 +52,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.NotNull(result.StdErr);
-                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdErr);
-                    Assert.Contains(gitCommitID, result.StdErr);
-                    Assert.Contains(expectedOryxVersion, result.StdErr);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdOut);
+                    Assert.Contains(gitCommitID, result.StdOut);
+                    Assert.Contains(expectedOryxVersion, result.StdOut);
 
                 },
                 result.GetDebugInfo());
@@ -89,7 +89,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp21)]
         [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
-        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31PreviewName)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {

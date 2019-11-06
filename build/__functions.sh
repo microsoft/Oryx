@@ -51,6 +51,12 @@ function execAllGenerateDockerfiles()
 	for generateDockerFile in $generateDockerfiles; do
 		echo
 		echo "Executing '$generateDockerFile'..."
+		echo
 		"$generateDockerFile"
 	done
+}
+
+function showDockerImageSizes()
+{
+	docker system df -v
 }
