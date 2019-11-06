@@ -118,7 +118,6 @@ stages:
 
       - template: templates/_buildTemplate.yml
 
-    - template: templates/_setReleaseTag.yml
     - template: templates/_integrationJobTemplate.yml
 
   - stage: Release
