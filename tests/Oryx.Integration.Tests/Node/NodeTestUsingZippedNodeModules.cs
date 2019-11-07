@@ -164,5 +164,48 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Say It Again", data);
                 });
         }
+
+        [Fact]
+        public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressed()
+        {
+            // Arrange
+            // Use a separate volume for output due to rsync errors
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var nodeVersion = "10";
+            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appName = "kudu-bug";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                //.AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
+                .ToString();
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"--platform-version {nodeVersion} -p {NodePlatform.CompressNodeModulesPropertyKey}=tar-gz" +
+                $" -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
+               //.AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+               .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                ContainerPort,
+                "/bin/sh",
+                new[] { "-c", runAppScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to Express", data);
+                });
+        }
     }
 }
