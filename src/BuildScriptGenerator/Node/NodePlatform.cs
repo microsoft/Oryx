@@ -300,7 +300,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.AllNodeModulesDirName,
                 NodeConstants.ProdNodeModulesDirName,
                 NodeConstants.NodeModulesDirName,
-                NodeConstants.NodeModulesToBeDeletedName,
+                "/"+NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
                 NodeConstants.NodeModulesTarGzFileName,
             };
