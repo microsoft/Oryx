@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     buildImageTag = "latest";
                 }
 
-                runImage = platform.Name == "dotnet" ? "dotnetcore" : platform.Name;
+                runImage = ConvertToRuntimeName(platform.Name);
                 runImageTag = GenerateRuntimeTag(version);
             }
 
@@ -102,6 +102,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return $"{split[0]}.{split[1]}";
+        }
+
+        private string ConvertToRuntimeName(string platformName)
+        {
+            if (string.Equals(platformName, "dotnet", StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "dotnetcore";
+            }
+
+            return platformName;
         }
     }
 }

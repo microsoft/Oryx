@@ -123,7 +123,23 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
-echo "-------------Creating CLI build image-------------------"
+echo "-------------Creating slim build image-------------------"
+buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
+				"$ACR_SLIM_BUILD_IMAGE_REPO" \
+				"$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" \
+				"$ORYXTESTS_SLIM_BUILDIMAGE_REPO" \
+				"$DEVBOX_SLIM_BUILD_IMAGE_REPO"
+
+echo
+echo "-------------Creating full build image-------------------"
+buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
+				"$ACR_BUILD_IMAGES_REPO" \
+				"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
+				"$ORYXTESTS_BUILDIMAGE_REPO" \
+				"$DEVBOX_BUILD_IMAGES_REPO"
+
+echo
+echo "-------------Creating CLI image-------------------"
 builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
 docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
@@ -133,7 +149,9 @@ docker build -t $builtImageTag \
 	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 	.
 
-echo "$ACR_CLI_BUILD_IMAGE_REPO:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo
+echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
 # Retag build image with build number tags
 if [ "$AGENT_BUILD" == "true" ]
 then
@@ -153,22 +171,6 @@ then
 else
 	docker tag "$builtImageTag" "$DEVBOX_CLI_BUILD_IMAGE_REPO:latest"
 fi
-
-echo
-echo "-------------Creating slim build image-------------------"
-buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
-				"$ACR_SLIM_BUILD_IMAGE_REPO" \
-				"$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" \
-				"$ORYXTESTS_SLIM_BUILDIMAGE_REPO" \
-				"$DEVBOX_SLIM_BUILD_IMAGE_REPO"
-
-echo
-echo "-------------Creating full build image-------------------"
-buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
-				"$ACR_BUILD_IMAGES_REPO" \
-				"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
-				"$ORYXTESTS_BUILDIMAGE_REPO" \
-				"$DEVBOX_BUILD_IMAGES_REPO"
 
 # Build buildpack images
 # 'pack create-builder' is not supported on Windows
