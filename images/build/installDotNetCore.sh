@@ -16,11 +16,13 @@ DEFAULT_DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNE
 DOTNET_SDK_URL="${DOTNET_SDK_URL:-$DEFAULT_DOTNET_SDK_URL}"
 
 curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz
+
+# temporarily disabling this verification due to https://github.com/dotnet/core/issues/3774
 if [ "$DOTNET_SDK_SHA" != "" ]
 then
     echo
     echo "Verifying archive hash..."
-    echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c -
+#    echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c -
 fi
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
