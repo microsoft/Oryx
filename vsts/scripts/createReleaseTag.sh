@@ -4,10 +4,8 @@
 replacingText="refs/heads/"
 sourceBranch=$(echo "$BUILD_SOURCEBRANCH" | sed -e "s.$replacingText..g")
 
-tagName=""
-if [ "$sourceBranch" == "master" ]; then
-    tagName="$BUILD_BUILDNUMBER"
-elif [[ "$sourceBranch" == patch/* ]]; then
+tagName="$BUILD_BUILDNUMBER"
+if [[ "$sourceBranch" == patch/* ]]; then
     IFS=/
     read -ra branchNameParts <<< "$sourceBranch"
 
@@ -33,11 +31,6 @@ elif [[ "$sourceBranch" == patch/* ]]; then
             break
         fi
     done
-
-    if [ -z "$tagName" ]; then
-        echo "Could not create a tag name from the branch, setting to build number."
-        tagName="$BUILD_BUILDNUMBER"
-    fi
 fi
 
 echo "Setting release tag name to '$tagName'..."
