@@ -58,7 +58,7 @@ func (detector *djangoDetector) detect() bool {
 
 	appRootEntries, err := ioutil.ReadDir(detector.appPath)
 	if err != nil {
-		logReadDirError(logger, detector.appPath, err)
+		logger.LogError("ioutil.ReadDir() failed: %s", err.Error())
 		panic("Couldn't read app directory '" + detector.appPath + "'")
 	}
 
@@ -111,7 +111,7 @@ func (detector *flaskDetector) detect() bool {
 		// TODO: app code might be under 'src'
 		fullPath := filepath.Join(detector.appPath, file)
 		if common.FileExists(fullPath) {
-			logger.LogInformation("Found main file '%s'", fullPath)
+			logger.LogInformation("Found main file.")
 			detector.mainFile = file
 			return true
 		}

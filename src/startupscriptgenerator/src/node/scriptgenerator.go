@@ -65,7 +65,7 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 	// --------------------------------------------------------------------------------------------
 
 	// Created by Oryx
-	try 
+	try
 	{
 		var appInsights = require('applicationinsights');
 		var prefixInternalSdkVersion = function (envelope, contextObjects) {
@@ -79,9 +79,9 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 
 		// Enable Telemetry only when Application Insight's env variables are correctly set by user
 		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + `) {
-			
+
 			if(process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled"){
-				
+
 				appInsights
 				.setup()
 				.setSendLiveMetrics(true)
@@ -91,7 +91,7 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 			}
 		}
 	}catch (e) {
-			console.log('Application Insights could not be automatically configured for this application'); 
+			console.log('Application Insights could not be automatically configured for this application');
 			console.log(e);
 	}`
 	common.WriteScript(appInsightsLoaderFilePath, appInsightsLoaderFileContent)
@@ -101,7 +101,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("node.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+	logger.LogInformation("Generating script for source.")
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
@@ -127,7 +127,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 					" -C " + targetNodeModulesDir + "\"\n")
 		} else {
 			fmt.Printf(
-				"Error: Unrecognizable file '%s'. Expected a file with an extesion '.zip' or '.tar.gz'\n",
+				"Error: Unrecognizable file '%s'. Expected a file with an extension '.zip' or '.tar.gz'\n",
 				gen.Manifest.CompressedNodeModulesFile)
 			os.Exit(consts.FAILURE_EXIT_CODE)
 		}
@@ -223,7 +223,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	} else {
 		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.SourcePath)
 		logger.LogInformation("Permission added: %t", isPermissionAdded)
-		logger.LogInformation("User-supplied startup command: '%s'", gen.UserStartupCommand)
+		logger.LogInformation("User has supplied a startup command.")
 		startupCommand = common.ExtendPathForCommand(startupCommand, gen.SourcePath)
 	}
 
@@ -240,10 +240,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	}
 	scriptBuilder.WriteString(startupCommand + "\n")
 
-	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
-
 	var runScript = scriptBuilder.String()
-	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }
 
@@ -257,7 +254,7 @@ func getPackageJsonObject(appPath string, userProvidedPath string) (obj *package
 	// We prioritize the file the user provided
 	if userProvidedPath != "" {
 		if strings.HasSuffix(userProvidedPath, packageFileName) {
-			logger.LogInformation("Using user-provided path for packageJson: " + userProvidedPath)
+			logger.LogInformation("Using user-provided path for packageJson.")
 			packageJsonPath = userProvidedPath
 		}
 	} else {
@@ -402,7 +399,7 @@ func (gen *NodeStartupScriptGenerator) getCandidateFilesStartCommand(appPath str
 	for _, file := range filesToSearch {
 		fullPath := filepath.Join(gen.SourcePath, file)
 		if common.FileExists(fullPath) {
-			logger.LogInformation("Found startup candidate '%s'", fullPath)
+			logger.LogInformation("Found startup candidate.")
 			startupFileCommand = gen.getStartupCommandFromJsFile(file)
 			break
 		}
