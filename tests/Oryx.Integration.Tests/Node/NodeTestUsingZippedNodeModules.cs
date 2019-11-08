@@ -165,8 +165,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressed()
+        [Theory]
+        [InlineData("true")]
+        [InlineData("false")]
+        public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressed(string pruneDevDependency)
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
@@ -175,20 +177,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var nodeVersion = "10";
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "kudu-bug";
+            var appName = "node-nested-nodemodules";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
-                $"--platform-version {nodeVersion} -p {NodePlatform.CompressNodeModulesPropertyKey}=tar-gz" +
-                $" -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
-               //.AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                $"--platform-version {nodeVersion} -p {NodePlatform.CompressNodeModulesPropertyKey}=tar-gz"+
+                $" -p {NodePlatform.PruneDevDependenciesPropertyKey}={pruneDevDependency}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

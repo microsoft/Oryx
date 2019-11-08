@@ -283,7 +283,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // If the node modules folder is being packaged in a file, we don't copy it to the output
             if (GetNodeModulesPackOptions(ctx, out _, out string compressedFileName))
             {
-                dirs.Add(NodeConstants.NodeModulesDirName);
+                dirs.Add(string.Concat("/", NodeConstants.NodeModulesDirName));
             }
             else if (!string.IsNullOrWhiteSpace(compressedFileName))
             {
@@ -299,8 +299,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 NodeConstants.AllNodeModulesDirName,
                 NodeConstants.ProdNodeModulesDirName,
-                NodeConstants.NodeModulesDirName,
-                "/"+NodeConstants.NodeModulesToBeDeletedName,
+                string.Concat("/", NodeConstants.NodeModulesDirName),
+                NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
                 NodeConstants.NodeModulesTarGzFileName,
             };
