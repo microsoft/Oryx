@@ -99,6 +99,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder.WriteString(command + "\n")
 
+	logger.LogProperties(
+		"Finalizing script",
+		map[string]string{"appType": appType, "appDebugAdapter": appDebugAdapter,
+			"appModule": appModule, "venv": gen.Manifest.VirtualEnvName})
+
 	var runScript = scriptBuilder.String()
 	return runScript
 }
