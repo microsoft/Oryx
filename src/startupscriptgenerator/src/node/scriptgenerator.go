@@ -240,6 +240,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	}
 	scriptBuilder.WriteString(startupCommand + "\n")
 
+	logger.LogProperties("Finalizing script", map[string]string{"commandSource": commandSource})
+
 	var runScript = scriptBuilder.String()
 	return runScript
 }
