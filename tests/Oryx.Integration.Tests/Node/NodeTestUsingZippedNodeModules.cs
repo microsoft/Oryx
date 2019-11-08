@@ -181,7 +181,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                //.AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
