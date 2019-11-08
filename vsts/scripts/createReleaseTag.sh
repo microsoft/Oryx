@@ -33,6 +33,11 @@ elif [[ "$sourceBranch" == patch/* ]]; then
             break
         fi
     done
+
+    if [ -z "$tagName" ]; then
+        echo "Could not create a tag name from the branch, setting to build number."
+        tagName="$BUILD_BUILDNUMBER"
+    fi
 fi
 
 echo "Setting release tag name to '$tagName'..."
