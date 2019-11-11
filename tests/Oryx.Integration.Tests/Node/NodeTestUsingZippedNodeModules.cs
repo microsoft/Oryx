@@ -188,9 +188,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
                 $"--platform-version {nodeVersion} -p {NodePlatform.CompressNodeModulesPropertyKey}=tar-gz"+
                 $" -p {NodePlatform.PruneDevDependenciesPropertyKey}={pruneDevDependency}")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                .ToString();

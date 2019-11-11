@@ -155,15 +155,16 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
-                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
                 $"--platform-version {nodeVersion}" +
                 $" -p {NodePlatform.PruneDevDependenciesPropertyKey}={pruneDevDependency}")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
-                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
