@@ -3,7 +3,7 @@ ARG AGENTBUILD
 ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
 ARG YARN_CACHE_BASE_TAG
-FROM oryxdevmcr.azurecr.io/public/oryx/build-slim AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/build:slim AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
 # Configure locale (required for Python)

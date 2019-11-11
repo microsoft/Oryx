@@ -61,10 +61,11 @@ function BuildAndTagStage()
 
 function buildDockerImage() {
 	local dockerFileToBuild="$1"
-	local dockerImageRepoName="$2"
-	local dockerFileForTestsToBuild="$3"
-	local dockerImageForTestsRepoName="$4"
-	local dockerImageForDevelopmentRepoName="$5"
+	local dockerImageBaseTag="$2"
+	local dockerImageRepoName="$3"
+	local dockerFileForTestsToBuild="$4"
+	local dockerImageForTestsRepoName="$5"
+	local dockerImageForDevelopmentRepoName="$6"
 
 	# Tag stages to avoid creating dangling images.
 	# NOTE:
@@ -77,7 +78,7 @@ function buildDockerImage() {
 	BuildAndTagStage "$dockerFileToBuild" python
 	BuildAndTagStage "$dockerFileToBuild" buildscriptbuilder
 
-	builtImageTag="$dockerImageRepoName:latest"
+	builtImageTag="$dockerImageRepoName:$dockerImageBaseTag"
 	docker build -t $builtImageTag \
 		--build-arg AGENTBUILD=$BUILD_SIGNED \
 		$BASE_TAG_BUILD_ARGS \
@@ -89,18 +90,19 @@ function buildDockerImage() {
 	echo
 	echo Building a base image for tests...
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	docker build -t $dockerImageForTestsRepoName -f "$dockerFileForTestsToBuild" .
-	
-	echo "$dockerImageRepoName:latest" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	testImageTag="$dockerImageForTestsRepoName:$dockerImageBaseTag"
+	docker build -t $testImageTag -f "$dockerFileForTestsToBuild" .
+
+	echo "$dockerImageRepoName:$dockerImageBaseTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
 	then
-		uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+		uniqueTag="$dockerImageBaseTag-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 
 		echo
 		echo "Retagging image '$builtImageTag' with ACR related tags..."
-		docker tag "$builtImageTag" "$dockerImageRepoName:latest"
+		docker tag "$builtImageTag" "$dockerImageRepoName:$dockerImageBaseTag"
 		docker tag "$builtImageTag" "$dockerImageRepoName:$uniqueTag"
 
 		# Write the list of images that were built to artifacts folder
@@ -110,7 +112,7 @@ function buildDockerImage() {
 		# Write image list to artifacts file
 		echo "$dockerImageRepoName:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	else
-		docker tag "$builtImageTag" "$dockerImageForDevelopmentRepoName:latest"
+		docker tag "$builtImageTag" "$dockerImageForDevelopmentRepoName:$dockerImageBaseTag"
 	fi
 }
 
@@ -125,14 +127,16 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 echo
 echo "-------------Creating slim build image-------------------"
 buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
-				"$ACR_SLIM_BUILD_IMAGE_REPO" \
+                "slim" \
+				"$ACR_BUILD_IMAGES_REPO" \
 				"$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" \
-				"$ORYXTESTS_SLIM_BUILDIMAGE_REPO" \
-				"$DEVBOX_SLIM_BUILD_IMAGE_REPO" 
+				"$ORYXTESTS_BUILDIMAGE_REPO" \
+				"$DEVBOX_BUILD_IMAGES_REPO"
 
 echo
 echo "-------------Creating full build image-------------------"
 buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
+                "latest" \
 				"$ACR_BUILD_IMAGES_REPO" \
 				"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_REPO" \

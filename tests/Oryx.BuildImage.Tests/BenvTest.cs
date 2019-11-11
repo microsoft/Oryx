@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestImage("build-slim", "latest");
+            var image = _imageHelper.GetTestImage("build", "slim");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestImage("build-slim", "latest");
+            var image = _imageHelper.GetTestImage("build", "slim");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("build", "latest")]
-        [InlineData("build-slim", "latest")]
+        [InlineData("build", "slim")]
         public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string repositoryName, string tag)
         {
             // Arrange
@@ -205,7 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("build", "latest")]
-        [InlineData("build-slim", "latest")]
+        [InlineData("build", "slim")]
         public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string repositoryName, string tag)
         {
             // Arrange
@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("build", "latest")]
-        [InlineData("build-slim", "latest")]
+        [InlineData("build", "slim")]
         public void InstalledNodeModulesExecutablesAreOnPath(string repositoryName, string tag)
         {
             // Arrange
@@ -264,7 +264,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("build", "latest")]
-        [InlineData("build-slim", "latest")]
+        [InlineData("build", "slim")]
         public void InstalledPythonExecutablesAreOnPath(string repositoryName, string tag)
         {
             // Arrange

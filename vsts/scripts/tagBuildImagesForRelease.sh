@@ -39,4 +39,4 @@ function tagBuildImage() {
 }
 
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build-slim:Oryx-CI.$RELEASE_TAG_NAME" "slim" "slim-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:slim-Oryx-CI.$RELEASE_TAG_NAME" "slim" "slim-$RELEASE_TAG_NAME"
