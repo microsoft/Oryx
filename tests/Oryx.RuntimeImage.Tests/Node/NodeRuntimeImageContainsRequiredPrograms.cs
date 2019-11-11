@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetTestImage("node", nodeTag),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetTestImage("node", nodeTag),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {

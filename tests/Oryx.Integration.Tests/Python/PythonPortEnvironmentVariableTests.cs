@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

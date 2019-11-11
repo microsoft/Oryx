@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

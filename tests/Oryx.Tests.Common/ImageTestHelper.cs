@@ -49,17 +49,17 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         /// <summary>
-        /// Constructs a runtime image from the given parameters that follows the format
-        /// {image}/{platform}:{platformVersion}. Since no image is provided, the default image 'oryxdevmcr.azurecr.io',
-        /// or any image set by environment variable will be used. If any tag suffix was set as an environment variable,
-        /// it will be appended to the end of the tag.
+        /// Constructs anm image from the given parameters that follows the format '{imageBase}/{repositoryName}:{tag}'.
+        /// The default image base used is 'oryxdevmcr.azurecr.io/public/oryx'; the image base can be set manually by
+        /// assigning a value to the corresponding environment variable (see constructor). If any tag suffix was set
+        /// as an environment variable, it will be appended to the end of the given tag.
         /// </summary>
-        /// <param name="platform">The platform to pull the runtime image from.</param>
-        /// <param name="platformVersion">The version of the platform to pull the runtime image from.</param>
-        /// <returns>A runtime image that can be pulled for testing.</returns>
-        public string GetRuntimeImage(string platform, string platformVersion)
+        /// <param name="repositoryName">The name of the repository to pull from (e.g., 'build', 'python', 'pack', etc.).</param>
+        /// <param name="tag">The name of the tag to pull from; if there is a tag suffix, it will be appended.</param>
+        /// <returns>An image that can be pulled for testing.</returns>
+        public string GetTestImage(string repositoryName, string tag)
         {
-            return $"{_image}/{platform}:{platformVersion}{_tagSuffix}";
+            return $"{_image}/{repositoryName}:{tag}{_tagSuffix}";
         }
     }
 }

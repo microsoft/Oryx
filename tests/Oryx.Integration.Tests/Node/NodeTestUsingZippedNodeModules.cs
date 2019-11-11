@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
