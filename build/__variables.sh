@@ -44,6 +44,8 @@ declare -r ACR_SLIM_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/build-slim"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
 declare -r ACR_PACK_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_IMAGE_NAME"
 
+declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
+
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
 declare -r GIT_COMMIT=$(git rev-parse HEAD)
