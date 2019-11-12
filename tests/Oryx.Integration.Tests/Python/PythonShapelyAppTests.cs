@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
+            var imageVersion = _imageHelper.GetTestRuntimeImage("python", pythonVersion);
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
+            var imageVersion = _imageHelper.GetTestRuntimeImage("python", pythonVersion);
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,

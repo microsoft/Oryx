@@ -275,11 +275,12 @@ namespace Microsoft.Oryx.Tests.Common
             Func<int, Task> assertAction)
         {
             const int port = 8080;
+            var imageHelper = new ImageTestHelper(output);
 
             return BuildRunAndAssertAppAsync(
                 output,
                 new[] { appVolume, DockerVolume.DockerDaemonSocket },
-                Settings.PackImageName,
+                imageHelper.GetTestPackImage(),
                 buildCmd: null, // `pack` is already in the image's ENTRYPOINT
                 new[]
                 {
