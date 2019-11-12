@@ -3,7 +3,6 @@ jobs:
   displayName: Push PHP Build Base Image to MCR
   pool:
     name: OryxLinux
-
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -13,7 +12,6 @@ jobs:
   displayName: Push PHP Runtime Base Image to MCR
   pool:
     name: OryxLinux
-
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -23,7 +21,6 @@ jobs:
   displayName: Push DotNetCore Runtime Base Images to MCR
   pool:
     name: OryxLinux
-
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -33,7 +30,6 @@ jobs:
   displayName: Push Python Build Base Image to MCR
   pool:
     name: OryxLinux
-
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -43,7 +39,6 @@ jobs:
   displayName: Push Node Base Image to MCR
   pool:
     name: OryxLinux
-
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -53,7 +48,6 @@ jobs:
   displayName: Push Yarn Cache Build Base Image to MCR
   pool:
     name: OryxLinux
-
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:

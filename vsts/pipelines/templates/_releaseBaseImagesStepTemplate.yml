@@ -34,7 +34,7 @@ steps:
     args: ${{ parameters.baseImageName }}
 
 - task: Docker@1
-  displayName: 'Push build image to ACR'
+  displayName: 'Push image(s) to staging registry'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrProdName }}
