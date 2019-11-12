@@ -173,9 +173,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("build", "latest")]
-        [InlineData("build", "slim")]
-        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string repositoryName, string tag)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string tag)
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestImage(repositoryName);
+            var image = _imageHelper.GetTestBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -204,9 +204,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("build", "latest")]
-        [InlineData("build", "slim")]
-        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string repositoryName, string tag)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string tag)
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -222,7 +222,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestImage(repositoryName);
+            var image = _imageHelper.GetTestBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -237,9 +237,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("build", "latest")]
-        [InlineData("build", "slim")]
-        public void InstalledNodeModulesExecutablesAreOnPath(string repositoryName, string tag)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
             var serveNodeModulePathPrefix = "/opt/nodejs/";
@@ -249,7 +249,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestImage(repositoryName);
+            var image = _imageHelper.GetTestBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -263,9 +263,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("build", "latest")]
-        [InlineData("build", "slim")]
-        public void InstalledPythonExecutablesAreOnPath(string repositoryName, string tag)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange
             var pythonPacakageExecutablePathPrefix = "/opt/python/";
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestImage(repositoryName);
+            var image = _imageHelper.GetTestBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert

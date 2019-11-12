@@ -75,15 +75,33 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         /// <summary>
-        /// Constructs a 'build-slim' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// Constructs a 'build' or 'build:slim' image based on the provided tag.
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public string GetTestBuildImage(string tag)
+        {
+            if (string.Equals(tag, "latest"))
+            {
+                return GetTestBuildImage();
+            }
+            else if (string.Equals(tag, "slim"))
+            {
+                return GetTestSlimBuildImage();
+            }
+
+            throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
+        }
+
+        /// <summary>
+        /// Constructs a 'build:slim' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
         /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
-        /// <returns>A 'build-slim' image that can be pulled for testing.</returns>
+        /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
         public string GetTestSlimBuildImage()
         {
-            var tag = GetTestTag();
-            return $"{_image}/build-slim:{tag}";
+            return $"{_image}/build:slim{_tagSuffix}";
         }
 
         /// <summary>
