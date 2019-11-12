@@ -4,10 +4,8 @@
 replacingText="refs/heads/"
 sourceBranch=$(echo "$BUILD_SOURCEBRANCH" | sed -e "s.$replacingText..g")
 
-tagName=""
-if [ "$sourceBranch" == "master" ]; then
-    tagName="$BUILD_BUILDNUMBER"
-elif [[ "$sourceBranch" == patch/* ]]; then
+tagName="$BUILD_BUILDNUMBER"
+if [[ "$sourceBranch" == patch/* ]]; then
     IFS=/
     read -ra branchNameParts <<< "$sourceBranch"
 

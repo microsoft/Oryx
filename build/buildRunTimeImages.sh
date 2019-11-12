@@ -58,15 +58,24 @@ fi
 # Write the list of images that were built to artifacts folder
 mkdir -p "$ARTIFACTS_DIR/images"
 
-clearedOutput=false
+if [ "$AGENT_BUILD" == "true" ]
+then
+    # clear existing contents of the file, if any
+    > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+fi
+
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
+
+    # Set $getTagName_result to the following format: {platformName}:{platformVersion}
     getTagName $dockerFileDir
-    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result:latest"
-    
+
+    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
+    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
-    
+
     cd $REPO_DIR
 
     echo
@@ -83,25 +92,25 @@ for dockerFile in $dockerFiles; do
     # Retag image with build number (for images built in oryxlinux buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
     then
+        # $uniqueTag will follow a similar format to Oryx-CI.20191028.1
+        # $BUILD_DEFINITIONNAME is the name of the build (e.g., Oryx-CI)
+        # $RELEASE_TAG_NAME is either the date of the build if the branch is master, or
+        # the name of the branch the build is against
         uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+
+        # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo:$uniqueTag"
-
-        if [ $clearedOutput == "false" ]
-        then
-            # clear existing contents of the file, if any
-            > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
-            clearedOutput=true
-        fi
+        # Tag the image to follow a similar format to .../python:3.7-Oryx-CI.20191028.1
+        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
 
         # add new content
         echo
         echo "Updating runtime image artifacts file with build number..."
-        echo "$acrRuntimeImageTagNameRepo:$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
     else
         devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
-        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo:latest"
+        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo"
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
