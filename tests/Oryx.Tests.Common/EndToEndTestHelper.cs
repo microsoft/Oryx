@@ -280,7 +280,7 @@ namespace Microsoft.Oryx.Tests.Common
             return BuildRunAndAssertAppAsync(
                 output,
                 new[] { appVolume, DockerVolume.DockerDaemonSocket },
-                imageHelper.GetTestImage("pack", "latest"),
+                imageHelper.GetTestImage("pack"),
                 buildCmd: null, // `pack` is already in the image's ENTRYPOINT
                 new[]
                 {

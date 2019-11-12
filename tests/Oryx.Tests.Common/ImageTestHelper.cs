@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         /// <summary>
-        /// Constructs anm image from the given parameters that follows the format '{imageBase}/{repositoryName}:{tag}'.
+        /// Constructs an image from the given parameters that follows the format '{imageBase}/{repositoryName}:{tag}'.
         /// The default image base used is 'oryxdevmcr.azurecr.io/public/oryx'; the image base can be set manually by
         /// assigning a value to the corresponding environment variable (see constructor). If any tag suffix was set
         /// as an environment variable, it will be appended to the end of the given tag.
@@ -60,6 +60,20 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetTestImage(string repositoryName, string tag)
         {
             return $"{_image}/{repositoryName}:{tag}{_tagSuffix}";
+        }
+
+        /// <summary>
+        /// Constructs an image from the given parameters that follows the format '{imageBase}/{repositoryName}:{tag}'.
+        /// The default image base used is 'oryxdevmcr.azurecr.io/public/oryx'; the image base can be set manually by
+        /// assigning a value to the corresponding environment variable (see constructor). If any tag suffix was set
+        /// as an environment variable, it will be used as the tag, otherwise 'latest' will be used.
+        /// </summary>
+        /// <param name="repositoryName">The name of the repository to pull from (e.g., 'build', 'python', 'pack', etc.).</param>
+        /// <returns>An image that can be pulled for testing.</returns>
+        public string GetTestImage(string repositoryName)
+        {
+            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            return $"{_image}/{repositoryName}:{tag}";
         }
     }
 }

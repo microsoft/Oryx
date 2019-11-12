@@ -553,7 +553,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestImage("build", "latest"),
+                runtimeImageName: _imageHelper.GetTestImage("build"),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -597,7 +597,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestImage("build", "latest"),
+                runtimeImageName: _imageHelper.GetTestImage("build"),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -639,7 +639,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestImage("build", "latest"),
+                runtimeImageName: _imageHelper.GetTestImage("build"),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
