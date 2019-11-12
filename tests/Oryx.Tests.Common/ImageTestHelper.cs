@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build' image that can be pulled for testing.</returns>
         public string GetTestBuildImage()
         {
-            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            var tag = GetTestTag();
             return $"{_image}/build:{tag}";
         }
 
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build-slim' image that can be pulled for testing.</returns>
         public string GetTestSlimBuildImage()
         {
-            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            var tag = GetTestTag();
             return $"{_image}/build-slim:{tag}";
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'pack' image that can be pulled for testing.</returns>
         public string GetTestPackImage()
         {
-            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            var tag = GetTestTag();
             return $"{_image}/pack:{tag}";
         }
 
@@ -107,8 +107,23 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>An image that can be pulled for testing.</returns>
         public string GetTestImage(string repositoryName)
         {
-            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            var tag = GetTestTag();
             return $"{_image}/{repositoryName}:{tag}";
+        }
+
+        private string GetTestTag()
+        {
+            if (string.IsNullOrEmpty(_tagSuffix))
+            {
+                return "latest";
+            }
+
+            if (_tagSuffix.StartsWith("-"))
+            {
+                return _tagSuffix.TrimStart('-');
+            }
+
+            return _tagSuffix;
         }
     }
 }
