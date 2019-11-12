@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.Common
 {
     public static class PythonVersions
     {
-        public const string PythonBaseTag = "20191105.2";
+        public const string PythonBaseTag = "20191112.4";
         public const string PipVersion = "19.3.1";
         public const string Python27Version = "2.7.17";
         public const string Python36Version = "3.6.9";

@@ -177,8 +177,8 @@ RUN set -ex \
 # Python intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-2.7-${PYTHON_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-3.6-${PYTHON_BASE_TAG} AS py36-build-base
 ###
 # End Python intermediate stages
 ###
@@ -206,15 +206,15 @@ FROM dotnet-install AS buildscriptbuilder
 # PHP intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
 ###
 # End PHP intermediate stages
 ###
 
-FROM mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} AS yarn-cache-base
+FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)

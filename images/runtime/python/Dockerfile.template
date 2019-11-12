@@ -16,7 +16,7 @@ FROM oryx-run-base AS main
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 
 # Add python binaries from Oryx base image
-COPY --from=mcr.microsoft.com/oryx/python-build-base:%PYTHON_VERSION%-%IMAGE_TAG% /opt /opt
+COPY --from=mcr.microsoft.com/oryx/base:python-build-%PYTHON_VERSION%-%IMAGE_TAG% /opt /opt
 RUN set -ex \
  && cd /opt/python/ \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
