@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestImage("node", version),
+                ImageId = _imageHelper.GetTestRuntimeImage("node", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
