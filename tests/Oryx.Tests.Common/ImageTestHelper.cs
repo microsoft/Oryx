@@ -49,26 +49,61 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         /// <summary>
-        /// Constructs an image from the given parameters that follows the format '{imageBase}/{repositoryName}:{tag}'.
-        /// The default image base used is 'oryxdevmcr.azurecr.io/public/oryx'; the image base can be set manually by
-        /// assigning a value to the corresponding environment variable (see constructor). If any tag suffix was set
-        /// as an environment variable, it will be appended to the end of the given tag.
+        /// Constructs a runtime image from the given parameters that follows the format
+        /// '{image}/{platformName}:{platformVersion}{tagSuffix}'. The base image can be set with the environment
+        /// variable ORYX_TEST_IMAGE_BASE, otherwise the default base 'oryxdevmcr.azurecr.io/public/oryx' will be used.
+        /// If a tag suffix was set with the environment variable ORYX_TEST_TAG_SUFFIX, it will be appended to the tag.
         /// </summary>
-        /// <param name="repositoryName">The name of the repository to pull from (e.g., 'build', 'python', 'pack', etc.).</param>
-        /// <param name="tag">The name of the tag to pull from; if there is a tag suffix, it will be appended.</param>
-        /// <returns>An image that can be pulled for testing.</returns>
-        public string GetTestImage(string repositoryName, string tag)
+        /// <param name="platformName">The platform to pull the runtime image from.</param>
+        /// <param name="platformVersion">The version of the platform to pull the runtime image from.</param>
+        /// <returns>A runtime image that can be pulled for testing.</returns>
+        public string GetTestRuntimeImage(string platformName, string platformVersion)
         {
-            return $"{_image}/{repositoryName}:{tag}{_tagSuffix}";
+            return $"{_image}/{platformName}:{platformVersion}{_tagSuffix}";
         }
 
         /// <summary>
-        /// Constructs an image from the given parameters that follows the format '{imageBase}/{repositoryName}:{tag}'.
-        /// The default image base used is 'oryxdevmcr.azurecr.io/public/oryx'; the image base can be set manually by
-        /// assigning a value to the corresponding environment variable (see constructor). If any tag suffix was set
-        /// as an environment variable, it will be used as the tag, otherwise 'latest' will be used.
+        /// Constructs a 'build' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
+        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
-        /// <param name="repositoryName">The name of the repository to pull from (e.g., 'build', 'python', 'pack', etc.).</param>
+        /// <returns>A 'build' image that can be pulled for testing.</returns>
+        public string GetTestBuildImage()
+        {
+            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            return $"{_image}/build:{tag}";
+        }
+
+        /// <summary>
+        /// Constructs a 'build-slim' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
+        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
+        /// </summary>
+        /// <returns>A 'build-slim' image that can be pulled for testing.</returns>
+        public string GetTestSlimBuildImage()
+        {
+            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            return $"{_image}/build-slim:{tag}";
+        }
+
+        /// <summary>
+        /// Constructs a 'pack' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
+        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
+        /// </summary>
+        /// <returns>A 'pack' image that can be pulled for testing.</returns>
+        public string GetTestPackImage()
+        {
+            var tag = string.IsNullOrEmpty(_tagSuffix) ? "latest" : _tagSuffix;
+            return $"{_image}/pack:{tag}";
+        }
+
+        /// <summary>
+        /// Constructs an image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the base set
+        /// by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment variable
+        /// ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
+        /// </summary>
+        /// <param name="repositoryName">The name of the repository to pull the image from (e.g., 'build', 'build-slim').</param>
         /// <returns>An image that can be pulled for testing.</returns>
         public string GetTestImage(string repositoryName)
         {
