@@ -1,9 +1,15 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license.
+# --------------------------------------------------------------------------------------------
 
 set -ex
 
-source ./__dotNetCoreSdkVersions.sh
-source ./__dotNetCoreRunTimeVersions.sh
+declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+source "$DIR/__dotNetCoreSdkVersions.sh"
+source "$DIR/__dotNetCoreRunTimeVersions.sh"
 
 splitSdksDir="/opt/dotnet/sdks"
 
