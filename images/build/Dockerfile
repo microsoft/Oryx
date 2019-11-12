@@ -19,6 +19,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts
+COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
+COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
+COPY images/build/createFlattenedDotNetCoreInstall.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/createFlattenedDotNetCoreInstall.sh
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -31,8 +35,6 @@ RUN apt-get update \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
-COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
 COPY images/build/installDotNetCore.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installDotNetCore.sh
 
@@ -246,6 +248,8 @@ WORKDIR /
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
+RUN /tmp/scripts/createFlattenedDotNetCoreInstall.sh
+COPY images/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
