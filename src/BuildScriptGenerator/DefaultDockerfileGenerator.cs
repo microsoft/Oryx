@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IDictionary<string, IList<string>> _slimPlatformVersions =
             new Dictionary<string, IList<string>>()
             {
-                { "dotnetcore", new List<string>() { "2.1" } },
+                { "dotnet", new List<string>() { "2.1" } },
                 { "node",   new List<string>() { "8.16", "10.16" } },
                 { "python", new List<string>() { "3.7" } },
             };
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     buildImageTag = "latest";
                 }
 
-                runImage = platform.Name == "dotnet" ? "dotnetcore" : platform.Name;
+                runImage = ConvertToRuntimeName(platform.Name);
                 runImageTag = GenerateRuntimeTag(version);
             }
 
@@ -102,6 +102,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return $"{split[0]}.{split[1]}";
+        }
+
+        private string ConvertToRuntimeName(string platformName)
+        {
+            if (string.Equals(platformName, "dotnet", StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "dotnetcore";
+            }
+
+            return platformName;
         }
     }
 }
