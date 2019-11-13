@@ -91,6 +91,18 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: Docker@1
+  displayName: 'Push CLI images to ACR'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/cli-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: Docker@1
   displayName: 'Push runtime images to ACR'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
