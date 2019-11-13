@@ -61,11 +61,11 @@ function BuildAndTagStage()
 
 function buildDockerImage() {
 	local dockerFileToBuild="$1"
-	local dockerImageBaseTag="$2"
-	local dockerImageRepoName="$3"
-	local dockerFileForTestsToBuild="$4"
-	local dockerImageForTestsRepoName="$5"
-	local dockerImageForDevelopmentRepoName="$6"
+	local dockerImageRepoName="$2"
+	local dockerFileForTestsToBuild="$3"
+	local dockerImageForTestsRepoName="$4"
+	local dockerImageForDevelopmentRepoName="$5"
+	local dockerImageBaseTag="$6"
 
 	# Tag stages to avoid creating dangling images.
 	# NOTE:
@@ -77,6 +77,12 @@ function buildDockerImage() {
 	BuildAndTagStage "$dockerFileToBuild" dotnet-install
 	BuildAndTagStage "$dockerFileToBuild" python
 	BuildAndTagStage "$dockerFileToBuild" buildscriptbuilder
+
+	# If no tag was provided, use a default tag of "latest"
+	if [ -z "$dockerImageBaseTag" ]
+	then
+		dockerImageBaseTag="latest"
+	fi
 
 	builtImageTag="$dockerImageRepoName:$dockerImageBaseTag"
 	docker build -t $builtImageTag \
@@ -98,7 +104,11 @@ function buildDockerImage() {
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
 	then
-		uniqueTag="$dockerImageBaseTag-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+		uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+		if [ "$dockerImageBaseTag" != "latest" ]
+		then
+			uniqueTag="$dockerImageBaseTag-$uniqueTag"
+		fi
 
 		echo
 		echo "Retagging image '$builtImageTag' with ACR related tags..."
@@ -127,16 +137,15 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 echo
 echo "-------------Creating slim build image-------------------"
 buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
-                "slim" \
 				"$ACR_BUILD_IMAGES_REPO" \
 				"$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_REPO" \
-				"$DEVBOX_BUILD_IMAGES_REPO"
+				"$DEVBOX_BUILD_IMAGES_REPO" \
+				"slim"
 
 echo
 echo "-------------Creating full build image-------------------"
 buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
-                "latest" \
 				"$ACR_BUILD_IMAGES_REPO" \
 				"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_REPO" \
