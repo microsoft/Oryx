@@ -7,7 +7,7 @@ RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 # gpg keys listed at https://github.com/nodejs/node#release-team
-RUN /tmp/scripts/receivePgpKeys.sh \
+RUN /tmp/scripts/receiveGpgKeys.sh \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -30,7 +30,7 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 
 ENV YARN_VERSION 1.17.3
 
-RUN /tmp/scripts/receivePgpKeys.sh \
+RUN /tmp/scripts/receiveGpgKeys.sh \
     6A010C5166006599AA17F08146C2130DFD2497F5 \
   && curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
   && curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \

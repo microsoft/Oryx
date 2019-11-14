@@ -122,11 +122,11 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
 RUN /tmp/scripts/installNpm.sh
-COPY images/receivePgpKeys.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
+COPY images/receiveGpgKeys.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/receiveGpgKeys.sh
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+ && /tmp/scripts/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
