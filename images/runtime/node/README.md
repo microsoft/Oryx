@@ -21,4 +21,4 @@ To generate the dockerfiles for all the images, run `./generateDockerfiles.sh`.
 
 ## Adding new versions of Node
 
-To add a new Node version, add a new directory with the version name, and a base Dockerfile named `./Dockerfile.base`, that should contain the node binaries. The script `./generateDockerfiles.sh` will then produce the Dockerfile for the final image using the `./Dockerfile.base` image as its base.
+To add a new Node version, add a new directory with the version name, and a base Dockerfile named `./base.Dockerfile`, that should contain the node binaries. The script `./generateDockerfiles.sh` will then produce the Dockerfile for the final image using the `./base.Dockerfile` image as its base.

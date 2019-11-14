@@ -41,7 +41,7 @@ labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
-dockerFileName="Dockerfile.base"
+dockerFileName="base.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 if [ -z "$dockerFiles" ]
 then
