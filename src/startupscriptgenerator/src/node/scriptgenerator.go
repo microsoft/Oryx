@@ -71,14 +71,15 @@ func createApplicationInsightsLoaderFile(appInsightsLoaderFilePath string) {
 		var prefixInternalSdkVersion = function (envelope, contextObjects) {
 			try {
 				var appInsightsSDKVersion = appInsights.defaultClient.context.keys.internalSdkVersion;
-				envelope.tags[appInsightsSDKVersion] = "ad_" + envelope.tags[appInsightsSDKVersion];
+				envelope.tags[appInsightsSDKVersion] = "alr_" + envelope.tags[appInsightsSDKVersion];
 			} catch(e) {}
 
 			return true;
 		}
 
 		// Enable Telemetry only when Application Insight's env variables are correctly set by user
-		if (process.env.` + consts.UserAppInsightsKeyEnv + ` && process.env.` + consts.UserAppInsightsEnableEnv + `) {
+		var setupString = process.env.` + consts.UserAppInsightsConnectionString + ` || process.env.` + consts.UserAppInsightsKeyEnv + `;
+		if (setupString && process.env.` + consts.UserAppInsightsEnableEnv + `) {
 			
 			if(process.env.` + consts.UserAppInsightsEnableEnv + ` !== "disabled"){
 				

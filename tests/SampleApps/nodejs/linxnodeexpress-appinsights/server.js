@@ -3,15 +3,16 @@ var app = express();
 var appInsights = require('applicationinsights');
 
 var responseString = "AppInsights is not configured!";
+var setupString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING || process.env.APPINSIGHTS_INSTRUMENTATIONKEY;
 
-console.log(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+console.log(setupString);
 console.log(process.env.ApplicationInsightsAgent_EXTENSION_VERSION)
 
-if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.ApplicationInsightsAgent_EXTENSION_VERSION
+if (setupString && process.env.ApplicationInsightsAgent_EXTENSION_VERSION
     && process.env.ApplicationInsightsAgent_EXTENSION_VERSION !== "disabled") {
 	console.log("hello world here")
 	appInsights
-		.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+		.setup(setupString)
 		.setSendLiveMetrics(true)
 		.start();
     responseString = "AppInsights is set to send telemetry!"
