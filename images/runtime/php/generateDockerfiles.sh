@@ -9,7 +9,7 @@ set -e
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$DIR/__versions.sh"
 
-declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
+declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
 declare -r DOCKERFILE_BASE_TEMPLATE="$DIR/template.base.Dockerfile"
 declare -r IMAGE_NAME_PLACEHOLDER="%PHP_BASE_IMAGE%"
 declare -r PHP_VERSION_PLACEHOLDER="%PHP_VERSION%"
