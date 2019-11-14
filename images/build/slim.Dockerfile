@@ -163,8 +163,8 @@ RUN set -ex \
 # Python intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-3.7-${PYTHON_BASE_TAG} AS py37-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-3.8-${PYTHON_BASE_TAG} AS py38-build-base
 ###
 # End Python intermediate stages
 ###

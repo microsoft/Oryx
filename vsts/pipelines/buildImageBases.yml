@@ -62,9 +62,10 @@ trigger:
   paths:
     include:
     - images/runtime/node
+    - images/runtime/dotnetcore
+    - images/runtime/php
     - images/build/python
     - images/build/php
-    - images/runtime/php
     - images/build/yarn-cache
     - build/
     - vsts/
