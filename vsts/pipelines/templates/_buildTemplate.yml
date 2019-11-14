@@ -72,7 +72,7 @@ steps:
   displayName: 'Test build images'
   inputs:
     scriptPath: ./build/testBuildImages.sh
-    args: skipBuildingImages
+    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
