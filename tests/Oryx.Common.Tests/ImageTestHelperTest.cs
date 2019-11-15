@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_ImageBaseEnvironmentVariableSet()
+        public void GetTestRuntimeImage_Validate_ImageBaseSet()
         {
             // Arrange
             var platformName = "test";
@@ -48,13 +48,13 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_TagSuffixEnvironmentVariableSet()
+        public void GetTestRuntimeImage_Validate_TagSuffixSet()
         {
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
             var imageBaseValue = string.Empty;
-            var tagSuffixValue = "testSuffix";
+            var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_NoEnvironmentVariableSet()
+        public void GetTestRuntimeImage_Validate_NoImageBaseOrTagSuffixSet()
         {
             // Arrange
             var platformName = "test";
@@ -84,13 +84,13 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestRuntimeImage_Validate_BothEnvironmentVariablesSet()
+        public void GetTestRuntimeImage_Validate_BothImageBaseAndTagSuffixSet()
         {
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
             var imageBaseValue = "oryxtest";
-            var tagSuffixValue = "testSuffix";
+            var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_ImageBaseEnvironmentVariableSet()
+        public void GetTestBuildImage_Validate_ImageBaseSet()
         {
             // Arrange
             var imageBaseValue = "oryxtest";
@@ -118,23 +118,24 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_TagSuffixEnvironmentVariableSet()
+        public void GetTestBuildImage_Validate_TagSuffixSet()
         {
             // Arrange
             var imageBaseValue = string.Empty;
-            var tagSuffixValue = "testSuffix";
+            var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
             var buildImage = imageHelper.GetTestBuildImage();
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{tagSuffixValue}";
+            var expectedTag = tagSuffixValue.TrimStart('-');
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{expectedTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestSlimBuildImage_Validate_ImageBaseEnvironmentVariableSet()
+        public void GetTestSlimBuildImage_Validate_ImageBaseSet()
         {
             // Arrange
             var imageBaseValue = "oryxtest";
@@ -150,11 +151,11 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestSlimBuildImage_Validate_TagSuffixEnvironmentVariableSet()
+        public void GetTestSlimBuildImage_Validate_TagSuffixSet()
         {
             // Arrange
             var imageBaseValue = string.Empty;
-            var tagSuffixValue = "testSuffix";
+            var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
@@ -166,7 +167,7 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestPackImage_Validate_ImageBaseEnvironmentVariableSet()
+        public void GetTestPackImage_Validate_ImageBaseSet()
         {
             // Arrange
             var imageBaseValue = "oryxtest";
@@ -182,18 +183,19 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestPackImage_Validate_TagSuffixEnvironmentVariableSet()
+        public void GetTestPackImage_Validate_TagSuffixSet()
         {
             // Arrange
             var imageBaseValue = string.Empty;
-            var tagSuffixValue = "testSuffix";
+            var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
             var packImage = imageHelper.GetTestPackImage();
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_packRepository}:{tagSuffixValue}";
+            var expectedTag = tagSuffixValue.TrimStart('-');
+            var expectedImage = $"{_defaultImageBase}/{_packRepository}:{expectedTag}";
             Assert.Equal(expectedImage, packImage);
         }
 
