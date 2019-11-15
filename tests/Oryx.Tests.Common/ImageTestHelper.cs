@@ -48,9 +48,34 @@ namespace Microsoft.Oryx.Tests.Common
                 // then don't append a suffix to the tag of this image. This should be used in cases where a specific
                 // runtime version tag should be used (e.g., node:8.8-20191025.1 instead of node:8.8)
                 _output.WriteLine($"Could not find a value for environment variable " +
-                                  $"'{_tagSuffixEnvironmentVariable}', not suffix will be added to image tags.");
+                                  $"'{_tagSuffixEnvironmentVariable}', no suffix will be added to image tags.");
                 _tagSuffix = string.Empty;
             }
+        }
+
+        /// <summary>
+        /// NOTE: This constructor should only be used for ImageTestHelper unit tests.
+        /// </summary>
+        /// <param name="output">XUnit output helper for logging.</param>
+        /// <param name="imageBase">The image base used to mimic the ORYX_TEST_IMAGE_BASE environment variable.</param>
+        /// <param name="tagSuffix">The tag suffix used to mimic the ORYX_TEST_TAG_SUFFIX environment variable.</param>
+        public ImageTestHelper(ITestOutputHelper output, string imageBase, string tagSuffix)
+        {
+            _output = output;
+            if (string.IsNullOrEmpty(imageBase))
+            {
+                _output.WriteLine($"No value provided for imageBase, using default image base '{_defaultImageBase}'.");
+                imageBase = _defaultImageBase;
+            }
+
+            _image = imageBase;
+
+            if (string.IsNullOrEmpty(tagSuffix))
+            {
+                _output.WriteLine("No value provided for tagSuffix, no suffix will be added to image tags.");
+            }
+
+            _tagSuffix = tagSuffix;
         }
 
         /// <summary>

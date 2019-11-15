@@ -9,7 +9,7 @@ using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Oryx.Common.Tests
+namespace Microsoft.Oryx.Common.Tests
 {
     public class ImageTestHelperTest
     {
@@ -32,395 +32,213 @@ namespace Oryx.Common.Tests
         [Fact]
         public void GetTestRuntimeImage_Validate_ImageBaseEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var platformName = "test";
-                var platformVersion = "1.0";
-                var imageBaseValue = "oryxtest";
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var platformName = "test";
+            var platformVersion = "1.0";
+            var imageBaseValue = "oryxtest";
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
 
-                // Act
-                var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
-
-                // Assert
-                var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}";
-                Assert.Equal(expectedImage, runtimeImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}";
+            Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
         public void GetTestRuntimeImage_Validate_TagSuffixEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var platformName = "test";
-                var platformVersion = "1.0";
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = "testSuffix";
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var platformName = "test";
+            var platformVersion = "1.0";
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = "testSuffix";
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
 
-                // Act
-                var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}{tagSuffixValue}";
-                Assert.Equal(expectedImage, runtimeImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}{tagSuffixValue}";
+            Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
         public void GetTestRuntimeImage_Validate_NoEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var platformName = "test";
-                var platformVersion = "1.0";
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var platformName = "test";
+            var platformVersion = "1.0";
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
 
-                // Act
-                var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}";
-                Assert.Equal(expectedImage, runtimeImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}";
+            Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
         public void GetTestRuntimeImage_Validate_BothEnvironmentVariablesSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var platformName = "test";
-                var platformVersion = "1.0";
-                var imageBaseValue = "oryxtest";
-                var tagSuffixValue = "testSuffix";
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var platformName = "test";
+            var platformVersion = "1.0";
+            var imageBaseValue = "oryxtest";
+            var tagSuffixValue = "testSuffix";
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
 
-                // Act
-                var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
-
-                // Assert
-                var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}{tagSuffixValue}";
-                Assert.Equal(expectedImage, runtimeImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}{tagSuffixValue}";
+            Assert.Equal(expectedImage, runtimeImage);
         }
 
         [Fact]
         public void GetTestBuildImage_Validate_ImageBaseEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = "oryxtest";
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = "oryxtest";
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var buildImage = imageHelper.GetTestBuildImage();
 
-                // Act
-                var buildImage = imageHelper.GetTestBuildImage();
-
-                // Assert
-                var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_latestTag}";
-                Assert.Equal(expectedImage, buildImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_latestTag}";
+            Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
         public void GetTestBuildImage_Validate_TagSuffixEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = "testSuffix";
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = "testSuffix";
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var buildImage = imageHelper.GetTestBuildImage();
 
-                // Act
-                var buildImage = imageHelper.GetTestBuildImage();
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{tagSuffixValue}";
-                Assert.Equal(expectedImage, buildImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{tagSuffixValue}";
+            Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
         public void GetTestSlimBuildImage_Validate_ImageBaseEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = "oryxtest";
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = "oryxtest";
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var buildImage = imageHelper.GetTestSlimBuildImage();
 
-                // Act
-                var buildImage = imageHelper.GetTestSlimBuildImage();
-
-                // Assert
-                var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_slimTag}";
-                Assert.Equal(expectedImage, buildImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_slimTag}";
+            Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
         public void GetTestSlimBuildImage_Validate_TagSuffixEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = "testSuffix";
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = "testSuffix";
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var buildImage = imageHelper.GetTestSlimBuildImage();
 
-                // Act
-                var buildImage = imageHelper.GetTestSlimBuildImage();
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}{tagSuffixValue}";
-                Assert.Equal(expectedImage, buildImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}{tagSuffixValue}";
+            Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
         public void GetTestPackImage_Validate_ImageBaseEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = "oryxtest";
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = "oryxtest";
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var packImage = imageHelper.GetTestPackImage();
 
-                // Act
-                var packImage = imageHelper.GetTestPackImage();
-
-                // Assert
-                var expectedImage = $"{imageBaseValue}/{_packRepository}:{_latestTag}";
-                Assert.Equal(expectedImage, packImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{imageBaseValue}/{_packRepository}:{_latestTag}";
+            Assert.Equal(expectedImage, packImage);
         }
 
         [Fact]
         public void GetTestPackImage_Validate_TagSuffixEnvironmentVariableSet()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = "testSuffix";
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = "testSuffix";
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var packImage = imageHelper.GetTestPackImage();
 
-                // Act
-                var packImage = imageHelper.GetTestPackImage();
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{_packRepository}:{tagSuffixValue}";
-                Assert.Equal(expectedImage, packImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{_packRepository}:{tagSuffixValue}";
+            Assert.Equal(expectedImage, packImage);
         }
 
         [Fact]
         public void GetTestBuildImage_Validate_LatestTag()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var buildImage = imageHelper.GetTestBuildImage(_latestTag);
 
-                // Act
-                var buildImage = imageHelper.GetTestBuildImage(_latestTag);
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_latestTag}";
-                Assert.Equal(expectedImage, buildImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_latestTag}";
+            Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
         public void GetTestBuildImage_Validate_SlimTag()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
+            // Act
+            var buildImage = imageHelper.GetTestBuildImage(_slimTag);
 
-                // Act
-                var buildImage = imageHelper.GetTestBuildImage(_slimTag);
-
-                // Assert
-                var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}";
-                Assert.Equal(expectedImage, buildImage);
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}";
+            Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
         public void GetTestBuildImage_Validate_InvalidTag()
         {
-            var previousImageBaseValue = Environment.GetEnvironmentVariable(_imageBaseEnvironmentVariable);
-            var previousTagSuffixValue = Environment.GetEnvironmentVariable(_tagSuffixEnvironmentVariable);
-            try
-            {
-                // Arrange
-                var imageBaseValue = string.Empty;
-                var tagSuffixValue = string.Empty;
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, imageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, tagSuffixValue);
+            // Arrange
+            var imageBaseValue = string.Empty;
+            var tagSuffixValue = string.Empty;
+            var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
-                var imageHelper = new ImageTestHelper(_output);
-
-                // Assert
-                Assert.Throws<NotSupportedException>(() => { imageHelper.GetTestBuildImage("invalidTag"); });
-            }
-            finally
-            {
-                // Set the environment variables back to their original value
-                Environment.SetEnvironmentVariable(_imageBaseEnvironmentVariable, previousImageBaseValue);
-                Environment.SetEnvironmentVariable(_tagSuffixEnvironmentVariable, previousTagSuffixValue);
-            }
+            // Assert
+            Assert.Throws<NotSupportedException>(() => { imageHelper.GetTestBuildImage("invalidTag"); });
         }
     }
 }
