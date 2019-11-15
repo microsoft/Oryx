@@ -158,7 +158,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [Theory]
         [InlineData("node", "8", "dotnetcore", "2.1", "slim")]
         [InlineData("node", "8", "dotnetcore", "3.0", "latest")]
-        [InlineData("node", "12", "dotnetcore", "2.1", "latest")]
+        [InlineData("node", "12", "dotnetcore", "2.1", "slim")]
         [InlineData("node", "12", "dotnetcore", "3.0", "latest")]
         [InlineData("node", "8", "python", "3.7", "slim")]
         [InlineData("node", "8", "python", "2.7", "latest")]
