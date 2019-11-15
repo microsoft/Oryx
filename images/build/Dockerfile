@@ -130,6 +130,8 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.2 \
+ && ~/n/bin/n -d 10.16.3 \
+ && ~/n/bin/n -d 12.9.1 \
  && ~/n/bin/n -d $NODE6_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
@@ -160,9 +162,10 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
+ && ln -s 10.16.3 /opt/nodejs/10.16 \
+ && ln -s 12.9.1 /opt/nodejs/12.9 \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
- && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6
+ && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \

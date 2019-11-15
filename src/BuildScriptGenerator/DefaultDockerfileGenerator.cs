@@ -21,15 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             new Dictionary<string, IList<string>>()
             {
                 { "dotnetcore", new List<string>() { "2.1" } },
-                {
-                    "node",
-                    new List<string>()
-                    {
-                        NodeVersions.Node8MajorMinorVersion,
-                        NodeVersions.Node10MajorMinorVersion,
-                    }
-                },
-                { "python", new List<string>() { "3.7" } },
+                { "node", new List<string>() { "8", "10", "12" } },
+                { "python", new List<string>() { "3.7", "3.8" } },
             };
 
         public DefaultDockerfileGenerator(

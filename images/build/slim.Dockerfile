@@ -137,12 +137,9 @@ RUN set -ex \
 
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
- && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
- && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12 \
+ && ln -s $NODE8_VERSION /opt/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/nodejs/10 \
+ && ln -s $NODE12_VERSION /opt/nodejs/12 \
  && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \

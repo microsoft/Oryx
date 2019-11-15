@@ -108,13 +108,9 @@
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
-    node6-major-minor-version: 6.17
     node8-version: 8.16.2
-    node8-major-minor-version: 8.16
     node10-version: 10.17.0
-    node10-major-minor-version: 10.17
     node12-version: 12.13.0
-    node12-major-minor-version: 12.13
   outputs:
     - type: shell
       directory: build
