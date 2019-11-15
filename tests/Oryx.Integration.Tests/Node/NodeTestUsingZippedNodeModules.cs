@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
