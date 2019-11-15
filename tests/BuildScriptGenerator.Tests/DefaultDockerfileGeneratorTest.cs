@@ -3,11 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Castle.Core.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
-using System.Xml;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -40,10 +39,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("dotnetcore", "2.0", "latest")]
         [InlineData("dotnetcore", "2.1", "slim")]
         [InlineData("dotnetcore", "3.0", "latest")]
-        [InlineData("node", "6.17", "latest")]
-        [InlineData("node", "8.16", "slim")]
-        [InlineData("node", "10.16", "slim")]
-        [InlineData("node", "12.12", "latest")]
+        [InlineData("node", NodeVersions.Node6MajorMinorVersion, "latest")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "slim")]
+        [InlineData("node", NodeVersions.Node10MajorMinorVersion, "slim")]
+        [InlineData("node", NodeVersions.Node12MajorMinorVersion, "latest")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
@@ -80,10 +79,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("dotnetcore", "2.0", "latest")]
         [InlineData("dotnetcore", "2.1", "slim")]
         [InlineData("dotnetcore", "3.0", "latest")]
-        [InlineData("node", "6.17", "latest")]
-        [InlineData("node", "8.16", "slim")]
-        [InlineData("node", "10.16", "slim")]
-        [InlineData("node", "12.12", "latest")]
+        [InlineData("node", NodeVersions.Node6MajorMinorVersion, "latest")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "slim")]
+        [InlineData("node", NodeVersions.Node10MajorMinorVersion, "slim")]
+        [InlineData("node", NodeVersions.Node12MajorMinorVersion, "latest")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
@@ -120,10 +119,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("dotnetcore", "2.0", "latest")]
         [InlineData("dotnetcore", "2.1", "slim")]
         [InlineData("dotnetcore", "3.0", "latest")]
-        [InlineData("node", "6.17", "latest")]
-        [InlineData("node", "8.16", "slim")]
-        [InlineData("node", "10.16", "slim")]
-        [InlineData("node", "12.12", "latest")]
+        [InlineData("node", NodeVersions.Node6MajorMinorVersion, "latest")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "slim")]
+        [InlineData("node", NodeVersions.Node10MajorMinorVersion, "slim")]
+        [InlineData("node", NodeVersions.Node12MajorMinorVersion, "latest")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
@@ -157,12 +156,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Theory]
-        [InlineData("node", "8.16", "dotnetcore", "2.1", "slim")]
-        [InlineData("node", "8.16", "dotnetcore", "3.0", "latest")]
-        [InlineData("node", "12.12", "dotnetcore", "2.1", "latest")]
-        [InlineData("node", "12.12", "dotnetcore", "3.0", "latest")]
-        [InlineData("node", "8.16", "python", "3.7", "slim")]
-        [InlineData("node", "8.16", "python", "2.7", "latest")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "dotnetcore", "2.1", "slim")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "dotnetcore", "3.0", "latest")]
+        [InlineData("node", NodeVersions.Node12MajorMinorVersion, "dotnetcore", "2.1", "latest")]
+        [InlineData("node", NodeVersions.Node12MajorMinorVersion, "dotnetcore", "3.0", "latest")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "python", "3.7", "slim")]
+        [InlineData("node", NodeVersions.Node8MajorMinorVersion, "python", "2.7", "latest")]
         [InlineData("python", "3.7", "dotnetcore", "2.1", "slim")]
         [InlineData("python", "3.7", "dotnetcore", "3.0", "latest")]
         [InlineData("dotnetcore", "2.1", "php", "5.6", "latest")]
