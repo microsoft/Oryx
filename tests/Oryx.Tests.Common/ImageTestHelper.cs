@@ -17,6 +17,11 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
         private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
 
+        private const string _buildRepository = "build";
+        private const string _packRepository = "pack";
+        private const string _latestTag = "latest";
+        private const string _slimTag = "slim";
+
         private readonly ITestOutputHelper _output;
         private string _image;
         private string _tagSuffix;
@@ -71,7 +76,7 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetTestBuildImage()
         {
             var tag = GetTestTag();
-            return $"{_image}/build:{tag}";
+            return $"{_image}/{_buildRepository}:{tag}";
         }
 
         /// <summary>
@@ -81,11 +86,11 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns></returns>
         public string GetTestBuildImage(string tag)
         {
-            if (string.Equals(tag, "latest"))
+            if (string.Equals(tag, _latestTag))
             {
                 return GetTestBuildImage();
             }
-            else if (string.Equals(tag, "slim"))
+            else if (string.Equals(tag, _slimTag))
             {
                 return GetTestSlimBuildImage();
             }
@@ -101,7 +106,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
         public string GetTestSlimBuildImage()
         {
-            return $"{_image}/build:slim{_tagSuffix}";
+            return $"{_image}/{_buildRepository}:{_slimTag}{_tagSuffix}";
         }
 
         /// <summary>
@@ -113,27 +118,14 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetTestPackImage()
         {
             var tag = GetTestTag();
-            return $"{_image}/pack:{tag}";
-        }
-
-        /// <summary>
-        /// Constructs an image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the base set
-        /// by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment variable
-        /// ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
-        /// </summary>
-        /// <param name="repositoryName">The name of the repository to pull the image from (e.g., 'build', 'build-slim').</param>
-        /// <returns>An image that can be pulled for testing.</returns>
-        public string GetTestImage(string repositoryName)
-        {
-            var tag = GetTestTag();
-            return $"{_image}/{repositoryName}:{tag}";
+            return $"{_image}/{_packRepository}:{tag}";
         }
 
         private string GetTestTag()
         {
             if (string.IsNullOrEmpty(_tagSuffix))
             {
-                return "latest";
+                return _latestTag;
             }
 
             if (_tagSuffix.StartsWith("-"))
