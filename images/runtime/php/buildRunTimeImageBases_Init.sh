@@ -20,5 +20,5 @@ do
     echo
     echo "Building php image '$PHP_IMAGE_NAME'..."
     echo
-	docker build -t $PHP_IMAGE_NAME -f "Dockerfile.$VERSION_DIRECTORY" .
+	docker build -t $PHP_IMAGE_NAME -f "$VERSION_DIRECTORY.Dockerfile" .
 done

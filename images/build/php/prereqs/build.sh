@@ -48,7 +48,7 @@ fi;
 if [ -n "$PHP_ASC_URL" ]; then
 	wget -O php.tar.xz.asc "$PHP_ASC_URL";
 	export GNUPGHOME="$(mktemp -d)";
-	/tmp/receivePgpKeys.sh ${GPG_KEYS[0]} ${GPG_KEYS[1]}
+	/tmp/receiveGpgKeys.sh ${GPG_KEYS[0]} ${GPG_KEYS[1]}
 	gpg --batch --verify php.tar.xz.asc php.tar.xz;
 	command -v gpgconf > /dev/null && gpgconf --kill all;
 	rm -rf "$GNUPGHOME";
