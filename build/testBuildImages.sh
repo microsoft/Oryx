@@ -20,7 +20,7 @@ then
 else
     echo
     echo "Invoking script '$buildBuildImagesScript'..."
-    $buildBuildImagesScript "$@"
+    $buildBuildImagesScript "$0"
 fi
 
 if [ -n "$2" ]
