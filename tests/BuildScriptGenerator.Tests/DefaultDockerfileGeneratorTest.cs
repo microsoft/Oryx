@@ -3,11 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Castle.Core.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
-using System.Xml;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -40,15 +39,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("dotnetcore", "2.0", "latest")]
         [InlineData("dotnetcore", "2.1", "slim")]
         [InlineData("dotnetcore", "3.0", "latest")]
-        [InlineData("node", "6.17", "latest")]
-        [InlineData("node", "8.16", "slim")]
-        [InlineData("node", "10.16", "slim")]
-        [InlineData("node", "12.12", "latest")]
+        [InlineData("node", "6", "latest")]
+        [InlineData("node", "8", "slim")]
+        [InlineData("node", "10", "slim")]
+        [InlineData("node", "12", "slim")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
         [InlineData("python", "3.7", "slim")]
-        [InlineData("python", "3.8", "latest")]
+        [InlineData("python", "3.8", "slim")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion(
             string platformName,
             string platformVersion,
@@ -80,15 +79,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("dotnetcore", "2.0", "latest")]
         [InlineData("dotnetcore", "2.1", "slim")]
         [InlineData("dotnetcore", "3.0", "latest")]
-        [InlineData("node", "6.17", "latest")]
-        [InlineData("node", "8.16", "slim")]
-        [InlineData("node", "10.16", "slim")]
-        [InlineData("node", "12.12", "latest")]
+        [InlineData("node", "6", "latest")]
+        [InlineData("node", "8", "slim")]
+        [InlineData("node", "10", "slim")]
+        [InlineData("node", "12", "slim")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
         [InlineData("python", "3.7", "slim")]
-        [InlineData("python", "3.8", "latest")]
+        [InlineData("python", "3.8", "slim")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,
@@ -120,15 +119,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("dotnetcore", "2.0", "latest")]
         [InlineData("dotnetcore", "2.1", "slim")]
         [InlineData("dotnetcore", "3.0", "latest")]
-        [InlineData("node", "6.17", "latest")]
-        [InlineData("node", "8.16", "slim")]
-        [InlineData("node", "10.16", "slim")]
-        [InlineData("node", "12.12", "latest")]
+        [InlineData("node", "6", "latest")]
+        [InlineData("node", "8", "slim")]
+        [InlineData("node", "10", "slim")]
+        [InlineData("node", "12", "slim")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
         [InlineData("python", "3.7", "slim")]
-        [InlineData("python", "3.8", "latest")]
+        [InlineData("python", "3.8", "slim")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
             string detectedPlatformName,
             string detectedPlatformVersion,
@@ -157,12 +156,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Theory]
-        [InlineData("node", "8.16", "dotnetcore", "2.1", "slim")]
-        [InlineData("node", "8.16", "dotnetcore", "3.0", "latest")]
-        [InlineData("node", "12.12", "dotnetcore", "2.1", "latest")]
-        [InlineData("node", "12.12", "dotnetcore", "3.0", "latest")]
-        [InlineData("node", "8.16", "python", "3.7", "slim")]
-        [InlineData("node", "8.16", "python", "2.7", "latest")]
+        [InlineData("node", "8", "dotnetcore", "2.1", "slim")]
+        [InlineData("node", "8", "dotnetcore", "3.0", "latest")]
+        [InlineData("node", "12", "dotnetcore", "2.1", "slim")]
+        [InlineData("node", "12", "dotnetcore", "3.0", "latest")]
+        [InlineData("node", "8", "python", "3.7", "slim")]
+        [InlineData("node", "8", "python", "2.7", "latest")]
         [InlineData("python", "3.7", "dotnetcore", "2.1", "slim")]
         [InlineData("python", "3.7", "dotnetcore", "3.0", "latest")]
         [InlineData("dotnetcore", "2.1", "php", "5.6", "latest")]

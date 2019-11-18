@@ -122,11 +122,11 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
 RUN /tmp/scripts/installNpm.sh
-COPY images/receivePgpKeys.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
+COPY images/receiveGpgKeys.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/receiveGpgKeys.sh
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+ && /tmp/scripts/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
@@ -137,12 +137,9 @@ RUN set -ex \
 
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
- && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
- && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12 \
+ && ln -s $NODE8_VERSION /opt/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/nodejs/10 \
+ && ln -s $NODE12_VERSION /opt/nodejs/12 \
  && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \

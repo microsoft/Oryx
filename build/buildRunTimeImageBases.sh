@@ -36,12 +36,19 @@ docker build \
     -t "$RUNTIME_BASE_IMAGE_NAME" \
     $REPO_DIR
 
+if [ "$runtimeSubDir" == "node" ]; then
+    docker build \
+        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
+        -t "oryx-node-run-base" \
+        $REPO_DIR
+fi
+
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
-dockerFileName="Dockerfile.base"
+dockerFileName="base.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 if [ -z "$dockerFiles" ]
 then

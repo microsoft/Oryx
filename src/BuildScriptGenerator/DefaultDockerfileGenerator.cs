@@ -3,12 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -22,8 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             new Dictionary<string, IList<string>>()
             {
                 { "dotnetcore", new List<string>() { "2.1" } },
-                { "node",   new List<string>() { "8.16", "10.16" } },
-                { "python", new List<string>() { "3.7" } },
+                { "node", new List<string>() { "8", "10", "12" } },
+                { "python", new List<string>() { "3.7", "3.8" } },
             };
 
         public DefaultDockerfileGenerator(
