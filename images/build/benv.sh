@@ -85,7 +85,7 @@ benv-getVersions() {
     for i in $(find "$rootDir" -maxdepth 1)
     do
         local name=$(basename "$i")
-        if [ ! -z "$versions" ]; then
+        if [ ! -z --versions "$versions" ]; then
             versions+=","
         fi
         versions+="$name"
@@ -102,7 +102,7 @@ benv-resolve() {
   # Resolve node versions
   if matchesName "node" "$name" || matchesName "node_version" "$name" && [ "${value::1}" != "/" ]; then
     versions=`benv-getVersions /opt/nodejs`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
+    resolvedVersion=`oryx resolveVersion "$value" --versions "$versions"`
 
     if [ -z "$resolvedVersion" ]; then
       echo >&2 benv: node version \'$value\' not found\; choose one of:
@@ -124,7 +124,7 @@ benv-resolve() {
   # Resolve npm versions
   if matchesName "npm" "$name" || matchesName "npm_version" "$name" && [ "${value::1}" != "/" ]; then
     versions=`benv-getVersions /opt/npm`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
+    resolvedVersion=`oryx resolveVersion "$value" --versions "$versions"`
     
     if [ -z "$resolvedVersion" ]; then
       echo >&2 benv: npm version \'$value\' not found\; choose one of:
@@ -145,7 +145,7 @@ benv-resolve() {
   # Resolve python versions
   if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
     versions=`benv-getVersions /opt/python`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
+    resolvedVersion=`oryx resolveVersion "$value" --versions "$versions"`
 
     if [ -z "$resolvedVersion" ]; then
       echo >&2 benv: python version \'$value\' not found\; choose one of:
@@ -171,7 +171,7 @@ benv-resolve() {
   # Resolve PHP versions
   if matchesName "php" "$name" || matchesName "php_version" "$name" && [ "${value::1}" != "/" ]; then
     versions=`benv-getVersions /opt/php`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
+    resolvedVersion=`oryx resolveVersion "$value" --versions "$versions"`
 
     if [ -z "$resolvedVersion" ]; then
       echo >&2 benv: php version \'$value\' not found\; choose one of:
@@ -190,7 +190,7 @@ benv-resolve() {
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
     local runtimesDir="/opt/dotnet/runtimes"
     versions=`benv-getVersions $runtimesDir`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
+    resolvedVersion=`oryx resolveVersion "$value" --versions "$versions"`
     
     if [ -z "$resolvedVersion" ]; then
       echo >&2 benv: dotnet version \'$value\' not found\; choose one of:

@@ -16,15 +16,23 @@ then
 fi
 {{ end }}
 
+echo
+echo "Using Python version:"
+python --version
+
+echo
+echo "Python binary location:"
+which python
+
 VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
 VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
 VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}
 zippedVirtualEnvFileName={{ CompressedVirtualEnvFileName }}
 
+echo
 echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
-
 echo Creating virtual environment ...
-$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
+python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
 
 echo Activating virtual environment ...
 source $VIRTUALENVIRONMENTNAME/bin/activate
@@ -73,7 +81,7 @@ else
 fi
 
 # We need to use the python binary selected by benv
-python_bin=$python
+python_bin=`which python`
 
 # Detect the location of the site-packages to add the .pth file
 # For the local site package, only major and minor versions are provided, so we fetch it again
