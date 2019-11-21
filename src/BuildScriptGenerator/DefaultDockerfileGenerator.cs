@@ -3,9 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
@@ -20,8 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IDictionary<string, IList<string>> _slimPlatformVersions =
             new Dictionary<string, IList<string>>()
             {
-                { "dotnetcore", new List<string>() { "2.1" } },
-                { "node", new List<string>() { "8", "10", "12" } },
+                { "dotnet", new List<string>() { "2.1" } },
+                { "nodejs",   new List<string>() { "8.16", "10.17", "12.13" } },
                 { "python", new List<string>() { "3.7", "3.8" } },
             };
 
@@ -49,12 +51,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var platform = platformAndVersion.Key;
                 var version = platformAndVersion.Value;
                 if (!_slimPlatformVersions.ContainsKey(platform.Name) ||
-                    !_slimPlatformVersions[platform.Name].Any(v => version.StartsWith(v)))
+                    (!_slimPlatformVersions[platform.Name].Any(v => version.StartsWith(v)) &&
+                     !_slimPlatformVersions[platform.Name].Any(v => v.StartsWith(version))))
                 {
                     buildImageTag = "latest";
                 }
 
-                runImage = platform.Name == "dotnet" ? "dotnetcore" : platform.Name;
+                runImage = ConvertToRuntimeName(platform.Name);
                 runImageTag = GenerateRuntimeTag(version);
             }
 
@@ -101,6 +104,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return $"{split[0]}.{split[1]}";
+        }
+
+        private string ConvertToRuntimeName(string platformName)
+        {
+            if (string.Equals(platformName, DotNetCoreConstants.LanguageName, StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "dotnetcore";
+            }
+
+            if (string.Equals(platformName, NodeConstants.NodeJsName, StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "node";
+            }
+
+            return platformName;
         }
     }
 }
