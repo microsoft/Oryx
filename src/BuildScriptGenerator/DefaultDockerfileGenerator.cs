@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             new Dictionary<string, IList<string>>()
             {
                 { "dotnet", new List<string>() { "2.1" } },
-                { "nodejs",   new List<string>() { "8.16", "10.17", "12.13" } },
+                { "nodejs",   new List<string>() { "8", "10", "12" } },
                 { "python", new List<string>() { "3.7", "3.8" } },
             };
 
@@ -55,10 +55,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                      !_slimPlatformVersions[platform.Name].Any(v => v.StartsWith(version))))
                 {
                     buildImageTag = "latest";
+                    runImageTag = GenerateRuntimeTag(version);
+                }
+                else
+                {
+                    runImageTag = _slimPlatformVersions[platform.Name].Where(v => version.StartsWith(v)).FirstOrDefault();
                 }
 
                 runImage = ConvertToRuntimeName(platform.Name);
-                runImageTag = GenerateRuntimeTag(version);
+
             }
 
             var properties = new DockerfileProperties()

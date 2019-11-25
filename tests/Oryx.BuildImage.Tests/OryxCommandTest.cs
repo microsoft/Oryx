@@ -190,6 +190,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var platformName = "nodejs";
             var runtimeName = ConvertToRuntimeName(platformName);
             var platformVersion = "10.17";
+            var runtimeTag = "10";
             var repositoryName = "build";
             var tagName = "slim";
             var script = new ShellScriptBuilder()
@@ -205,7 +206,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"{runtimeName}:{platformVersion}", result.StdOut);
+                    Assert.Contains($"{runtimeName}:{runtimeTag}", result.StdOut);
                     Assert.Contains($"{repositoryName}:{tagName}", result.StdOut);
                 },
                 result.GetDebugInfo());

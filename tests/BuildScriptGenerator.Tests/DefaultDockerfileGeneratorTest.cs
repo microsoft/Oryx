@@ -167,12 +167,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Theory]
-        [InlineData("nodejs", "8.16", "dotnet", "2.1", "slim")]
-        [InlineData("nodejs", "8.16", "dotnet", "3.0", "latest")]
-        [InlineData("nodejs", "12.12", "dotnet", "2.1", "latest")]
-        [InlineData("nodejs", "12.12", "dotnet", "3.0", "latest")]
-        [InlineData("nodejs", "8.16", "python", "3.7", "slim")]
-        [InlineData("nodejs", "8.16", "python", "2.7", "latest")]
+        [InlineData("nodejs", "8", "dotnet", "2.1", "slim")]
+        [InlineData("nodejs", "8", "dotnet", "3.0", "latest")]
+        [InlineData("nodejs", "12", "dotnet", "2.1", "slim")]
+        [InlineData("nodejs", "12", "dotnet", "3.0", "latest")]
+        [InlineData("nodejs", "8", "python", "3.7", "slim")]
+        [InlineData("nodejs", "8", "python", "2.7", "latest")]
         [InlineData("python", "3.7", "dotnet", "2.1", "slim")]
         [InlineData("python", "3.7", "dotnet", "3.0", "latest")]
         [InlineData("dotnet", "2.1", "php", "5.6", "latest")]
