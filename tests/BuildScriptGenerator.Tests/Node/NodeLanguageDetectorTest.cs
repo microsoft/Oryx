@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -38,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           },
           ""author"": ""Dev"",
           ""license"": ""ISC"",
-          ""engines"" : { ""node"" : ""6.11.0"" }
+          ""engines"" : { ""node"" : ""#NODE_VERSION#"" }
         }";
 
         private const string PackageJsonWithOnlyNpmVersion = @"{
@@ -205,6 +206,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
         }
 
+        public static TheoryData<string[], string> UnsupportedVersions
+        {
+            get
+            {
+                var data = new TheoryData<string[], string>();
+                data.Add(new[] { "8.11.2" }, "6.11.0");
+                data.Add(new[] { ">=4 <13" }, "13");
+                data.Add(new[] { ">=4 <13" }, "3.10 || 13.5.0");
+                data.Add(new[] { "4", "5" }, "3.10 || 13.5.0");
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(UnsupportedVersions))]
+        public void Detect_ReturnsNull_WhenNodeVersionSpecifiedInPackageJson_IsNotSupported(
+            string[] supportedVersions,
+            string nodeEngineVersion)
+        {
+            // Arrange
+            var detector = CreateNodeLanguageDetector(
+                supportedNodeVersions: supportedVersions,
+                supportedNpmVersions: new[] { "5.4.2" });
+            var repo = new MemorySourceRepo();
+            var packageJsonContents = PackageJsonWithNodeVersion.Replace("#NODE_VERSION#", nodeEngineVersion);
+            repo.AddFile(packageJsonContents, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+
+            // Act & Assert
+            var result = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
+        }
+
         [Fact]
         public void Detect_ReturnsNull_ForSourceRepoWithPackageJson_NotInRootDirectory()
         {
@@ -213,7 +246,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: new[] { "8.11.2" },
                 supportedNpmVersions: new[] { "5.4.2" });
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
+            var packageJsonContents = PackageJsonWithNodeVersion.Replace("#NODE_VERSION#", "6.11.0");
+            repo.AddFile(packageJsonContents, "subDir1", NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -269,18 +303,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal("500.500.500", result.LanguageVersion);
         }
 
-        [Fact]
-        public void Detect_ReturnsResult_WithNodeVersionSpecified_InPackageJson()
+        public static TheoryData<string[], string, string> SupportedVersions
+        {
+            get
+            {
+                var data = new TheoryData<string[], string, string>();
+                data.Add(new[] { "6.11.0" }, "6.11.0", "=6.11.0");
+                data.Add(new[] { "4", "5", "8" }, "8.12.8", "=8.12.8");
+                data.Add(new[] { ">=4 <13" }, "8.12.8", "=8.12.8");
+                data.Add(new[] { ">=4 <13" }, "12.14.1", "=12.14.1");
+                data.Add(new[] { ">=4 <13" }, ">=5 <9", ">=5.0.0 <9.0.0");
+                data.Add(new[] { ">=4 <13" }, ">=5 <9 || 12.10", ">=5.0.0 <9.0.0 || >=12.10.0 <12.11.0");
+                data.Add(new[] { ">=4 <13" }, ">=5 <9 || 14.10", ">=5.0.0 <9.0.0");
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(SupportedVersions))]
+        public void Detect_ReturnsResult_WithNodeVersionSpecified_InPackageJson(
+            string[] supportedVersions,
+            string nodeEnginesVersion,
+            string expected)
         {
             // Arrange
             var environment = new TestEnvironment();
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = "8.11.2";
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "6.11.0", "8.11.2" },
+                supportedNodeVersions: supportedVersions,
                 supportedNpmVersions: new[] { "5.4.2" },
                 environment);
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJsonWithNodeVersion, NodeConstants.PackageJsonFileName);
+            var packageJsonContents = PackageJsonWithNodeVersion.Replace("#NODE_VERSION#", nodeEnginesVersion);
+            repo.AddFile(packageJsonContents, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -289,7 +344,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("6.11.0", result.LanguageVersion);
+            Assert.Equal(expected, result.LanguageVersion);
         }
 
         [Fact]

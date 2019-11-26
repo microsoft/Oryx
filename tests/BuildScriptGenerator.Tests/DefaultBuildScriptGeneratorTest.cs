@@ -27,6 +27,69 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
+        public void GeneratesBashScript_WhenVersionRangeMatches_VersionRangeSupportedByPlatform()
+        {
+            // In case of Node apps, 'engines' field allows to specify a range of versions that the app can run
+            // on. Similarly here we are verifying that providing ranges explicitly to the build command also
+            // works.            
+
+            // Arrange
+            var supportedVersions = new[] { ">=5 <12" };
+            var detector = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var platform = new TestProgrammingPlatform(
+                "test",
+                supportedVersions,
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: detector);
+            var generator = CreateDefaultScriptGenerator(platform);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: ">=8 <10");
+
+            // Act
+            generator.GenerateBashScript(context, out var generatedScript);
+
+            // Assert
+            Assert.Contains("script-content", generatedScript);
+            Assert.False(detector.DetectInvoked);
+        }
+
+        [Fact]
+        public void GeneratesBashScript_ThrownsWhenExplicitlyProvidedVersionRange_DoesNotFallIntoSupportedRange()
+        {
+            // In case of Node apps, 'engines' field allows to specify a range of versions that the app can run
+            // on. Similarly here we are verifying that providing ranges explicitly to the build command also
+            // works.            
+
+            // Arrange
+            var supportedVersions = new[] { ">=5 <12" };
+            var detector = new TestLanguageDetectorUsingLangName(
+                detectedLanguageName: "test",
+                detectedLanguageVersion: "1.0.0");
+            var platform = new TestProgrammingPlatform(
+                "test",
+                supportedVersions,
+                canGenerateScript: true,
+                scriptContent: "script-content",
+                detector: detector);
+            var generator = CreateDefaultScriptGenerator(platform);
+            var context = CreateScriptGeneratorContext(
+                suppliedLanguageName: "test",
+                suppliedLanguageVersion: ">=13");
+
+            // Act & Assert
+            var exception = Assert.Throws<UnsupportedVersionException>(
+                () => generator.GenerateBashScript(context, out var generatedScript));
+            Assert.Equal(
+                "Platform 'test' version '>=13' is unsupported. Supported versions: >=5 <12",
+                exception.Message);
+            Assert.False(detector.DetectInvoked);
+        }
+
+        [Fact]
         public void TryGenerateScript_ReturnsTrue_IfNoLanguageIsProvided_AndCanDetectLanguage()
         {
             // Arrange
@@ -605,7 +668,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.Equal(platName, result.First().Key);
-            Assert.Equal(platVer, result.First().Value);
+            Assert.Equal($"={platVer}", result.First().Value);
         }
 
         [Fact]
@@ -685,7 +748,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 Func<IEnumerable<ICheckerMessage>> repoMessageProvider = null,
                 Func<IEnumerable<ICheckerMessage>> toolMessageProvider = null)
             {
-                _sourceRepoMessageProvider  = repoMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
+                _sourceRepoMessageProvider = repoMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
                 _toolVersionMessageProvider = toolMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
             }
 

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.Oryx.Common.Extensions
@@ -65,6 +66,46 @@ namespace Microsoft.Oryx.Common.Extensions
                 "before https://***@example.com/ and then ftp://***@example.org/subdir",
                 "before https://bla:123bla@example.com/ and " +
                 "then ftp://user:pass@example.org/subdir".ReplaceUrlUserInfo());
+        }
+
+        public static TheoryData<Dictionary<string, string>, string> UsesSingleQuotesToWrapValueData
+        {
+            get
+            {
+                var data = new TheoryData<Dictionary<string, string>, string>();
+                data.Add(
+                    new Dictionary<string, string>
+                    {
+                        ["dotnet"] = "2.1"
+                    },
+                    "dotnet='2.1'");
+                data.Add(
+                    new Dictionary<string, string>
+                    {
+                        ["dotnet"] = "2.1",
+                        ["node"] = "10.14",
+                    },
+                    "dotnet='2.1' node='10.14'");
+                data.Add(
+                    new Dictionary<string, string>
+                    {
+                        ["dotnet"] = ">=2.1.0 <2.2.0",
+                        ["node"] = "=10.14.3",
+                    },
+                    "dotnet='>=2.1.0 <2.2.0' node='=10.14.3'");
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(UsesSingleQuotesToWrapValueData))]
+        public void JoinKeyValuePairs_UsesSingleQuotesToWrapValue(Dictionary<string, string> pairs, string expected)
+        {
+            // Act
+            var actual = StringExtensions.JoinKeyValuePairs(pairs);
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
     }
 }

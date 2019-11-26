@@ -19,7 +19,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class NodeJsSampleAppsOtherTests : NodeJSSampleAppsTestBase
     {
-        public NodeJsSampleAppsOtherTests(ITestOutputHelper output) : base(output)
+        public NodeJsSampleAppsOtherTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
         {
         }
 
@@ -534,10 +535,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
+                    var version = NodeVersions.Node6Version;
+                    Assert.Contains($"Pre-build script: /opt/nodejs/{version}/bin/node", result.StdOut);
+                    Assert.Contains($"Pre-build script: /opt/nodejs/{version}/bin/npm", result.StdOut);
+                    Assert.Contains($"Post-build script: /opt/nodejs/{version}/bin/node", result.StdOut);
+                    Assert.Contains($"Post-build script: /opt/nodejs/{version}/bin/npm", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -734,6 +736,58 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("8", NodeVersions.Node8Version)]
+        [InlineData("10", NodeVersions.Node10Version)]
+        [InlineData("12", NodeVersions.Node12Version)]
+        //[InlineData(">=8 <11", "")]
+        public void BuildsUsingNodeVersion_ReadFromEnginesFieldInPackageJson(
+            string nodeVersion,
+            string expectedVersion)
+        {
+            // Arrange
+            const string PackageJsonWithNodeVersion = @"{
+              ""name"": ""mynodeapp"",
+              ""version"": ""1.0.0"",
+              ""description"": ""test app"",
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""start"": ""node server.js""
+              },
+              ""author"": ""Dev"",
+              ""license"": ""ISC"",
+              ""engines"" : { ""node"" : ""#NDOE_VERSION#"" }
+            }";
+            var packageJsonContents = PackageJsonWithNodeVersion.Replace("#NDOE_VERSION#", nodeVersion);
+            var appDirPath = Directory.CreateDirectory(
+                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            File.WriteAllText(Path.Combine(appDirPath, "package.json"), packageJsonContents);
+            var volume = DockerVolume.CreateMirror(appDirPath);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o /tmp/out")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.SlimBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"v{expectedVersion}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

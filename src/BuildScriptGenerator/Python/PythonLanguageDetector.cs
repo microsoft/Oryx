@@ -73,21 +73,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return _pythonScriptGeneratorOptions.PythonDefaultVersion;
             }
 
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+            var result = SemanticVersionResolver.GetMatchingRange(
                 version,
                 _versionProvider.SupportedPythonVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            if (!result.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                var exc = new UnsupportedVersionException(
-                    PythonConstants.PythonName,
-                    version,
-                    _versionProvider.SupportedPythonVersions);
-                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the Python platform.");
-                throw exc;
+                return result.ToString();
             }
 
-            return maxSatisfyingVersion;
+            _logger.LogError($"The version '{version}' is not supported for the Python platform.");
+            throw new UnsupportedVersionException(
+                PythonConstants.PythonName,
+                version,
+                _versionProvider.SupportedPythonVersions);
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

@@ -20,6 +20,7 @@ mkdir -p "$allSdksDir"
 # as the muxer to switch between different versions of SDKs
 currentMaxMajorVersion="0"
 currentMaxMinorVersion="0"
+currentMaxPatchVersion="0"
 cd "$splitSdksDir"
 integerRegex='^[0-9]+$'
 for sdkDir in "$splitSdksDir"/*/
@@ -30,6 +31,7 @@ do
     IFS='.' read -ra SDK_VERSION_PARTS <<< "$sdkDirName"
     majorVersion=${SDK_VERSION_PARTS[0]}
     minorVersion=${SDK_VERSION_PARTS[1]:-0}
+    patchVersion=${SDK_VERSION_PARTS[2]:-0}
 
     # Ignore strings like 'lts'
     if ! [[ $majorVersion =~ $integerRegex ]] ; then
@@ -41,10 +43,11 @@ do
             [ "$minorVersion" -gt "$currentMaxMinorVersion" ] ); then
         currentMaxMajorVersion=$majorVersion
         currentMaxMinorVersion=$minorVersion
+        currentMaxPatchVersion=$patchVersion
     fi
 done
 
-muxerVersion="$currentMaxMajorVersion.$currentMaxMinorVersion"
+muxerVersion="$currentMaxMajorVersion.$currentMaxMinorVersion.$currentMaxPatchVersion"
 echo "Using SDK version '$muxerVersion' for getting the muxer dotnet.exe..."
 cp -f "$splitSdksDir/$muxerVersion/dotnet" "$allSdksDir"
 cp -f "$splitSdksDir/$muxerVersion/LICENSE.txt" "$allSdksDir"

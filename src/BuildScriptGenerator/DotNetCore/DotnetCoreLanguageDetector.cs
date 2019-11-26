@@ -114,24 +114,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 return _scriptGeneratorOptions.DefaultVersion;
             }
-            else
+
+            var result = SemanticVersionResolver.GetMatchingRange(
+                version,
+                _versionProvider.SupportedDotNetCoreVersions);
+            if (!result.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    version,
-                    _versionProvider.SupportedDotNetCoreVersions);
-
-                if (string.IsNullOrEmpty(maxSatisfyingVersion))
-                {
-                    var exc = new UnsupportedVersionException(
-                        DotNetCoreConstants.LanguageName,
-                        version,
-                        _versionProvider.SupportedDotNetCoreVersions);
-                    _logger.LogError(exc, $"Exception caught, the given version '{version}' is not supported for the .NET Core platform.");
-                    throw exc;
-                }
-
-                return maxSatisfyingVersion;
+                return result.ToString();
             }
+
+            _logger.LogError($"The version '{version}' is not supported for the .NET Core platform.");
+            throw new UnsupportedVersionException(
+                DotNetCoreConstants.LanguageName,
+                version,
+                _versionProvider.SupportedDotNetCoreVersions);
         }
 
         private dynamic GetGlobalJsonObject(ISourceRepo sourceRepo)

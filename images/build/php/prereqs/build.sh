@@ -147,5 +147,3 @@ rm -rf /tmp/pear ~/.pearrc
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
-
-ln -s $INSTALLATION_PREFIX "$INSTALLATION_BASE_DIR$PHP_MAJOR.$PHP_MINOR"

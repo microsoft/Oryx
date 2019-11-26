@@ -24,9 +24,12 @@ namespace Microsoft.Oryx.Common.Extensions
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static string JoinKeyValuePairs(IDictionary<string, string> pairs, char pairSep = ' ', char kvSep = '=')
+        public static string JoinKeyValuePairs(
+            IDictionary<string, string> pairs,
+            char pairSep = ' ',
+            char kvSep = '=')
         {
-            return string.Join(pairSep, pairs.Select(pair => pair.Key + kvSep + pair.Value));
+            return string.Join(pairSep, pairs.Select(pair => pair.Key + kvSep + $"'{pair.Value}'"));
         }
 
         /// <summary>

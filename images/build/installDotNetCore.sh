@@ -35,13 +35,6 @@ mkdir -p $DOTNET_DIR
 tar -xzf dotnet.tar.gz -C $DOTNET_DIR
 rm dotnet.tar.gz
 
-# Create a link : major.minor => major.minor.path
-IFS='.' read -ra SDK_VERSION_PARTS <<< "$DOTNET_SDK_VER"
-MAJOR_MINOR="${SDK_VERSION_PARTS[0]}.${SDK_VERSION_PARTS[1]}"
-echo
-echo "Created link from $MAJOR_MINOR to $DOTNET_SDK_VER"
-ln -s $DOTNET_SDK_VER $SDK_DIR/$MAJOR_MINOR
-
 dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
 
 # Install MVC template based packages

@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json.Linq;
@@ -381,27 +382,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetNpmVersion(dynamic packageJson)
         {
-            string npmVersionRange = packageJson?.engines?.npm?.Value;
-            if (npmVersionRange == null)
+            string npmVersion = packageJson?.engines?.npm?.Value;
+            if (npmVersion == null)
             {
-                npmVersionRange = _nodeScriptGeneratorOptions.NpmDefaultVersion;
+                return _nodeScriptGeneratorOptions.NpmDefaultVersion;
             }
 
-            string npmVersion = null;
-            if (!string.IsNullOrWhiteSpace(npmVersionRange))
+            var matchingRange = SemanticVersionResolver.GetMatchingRange(
+                npmVersion,
+                _nodeVersionProvider.SupportedNpmVersions);
+            if (!matchingRange.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
-                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(npmVersionRange, supportedNpmVersions);
-                if (string.IsNullOrEmpty(npmVersion))
-                {
-                    _logger.LogWarning(
-                        "User requested npm version {npmVersion} but it wasn't resolved",
-                        npmVersionRange);
-                    return null;
-                }
+                return matchingRange.ToString();
             }
 
-            return npmVersion;
+            _logger.LogError($"Npm version {npmVersion} is not supported");
+            throw new UnsupportedVersionException(
+                NodeConstants.NodeJsName,
+                npmVersion,
+                _nodeVersionProvider.SupportedNpmVersions);
         }
     }
 }

@@ -3,10 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using SemVer;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -123,31 +125,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string DetectNodeVersion(dynamic packageJson)
         {
-            var nodeVersionRange = packageJson?.engines?.node?.Value as string;
-            if (nodeVersionRange == null)
+            var nodeVersion = packageJson?.engines?.node?.Value as string;
+            if (nodeVersion == null)
             {
-                nodeVersionRange = _nodeScriptGeneratorOptions.NodeJsDefaultVersion;
+                return _nodeScriptGeneratorOptions.NodeJsDefaultVersion;
             }
 
-            string nodeVersion = null;
-            if (!string.IsNullOrWhiteSpace(nodeVersionRange))
+            var matchingRange = SemanticVersionResolver.GetMatchingRange(
+                nodeVersion,
+                _versionProvider.SupportedNodeVersions);
+            if (!matchingRange.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                nodeVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                    nodeVersionRange,
-                    _versionProvider.SupportedNodeVersions);
-
-                if (string.IsNullOrWhiteSpace(nodeVersion))
-                {
-                    var exc = new UnsupportedVersionException(
-                        NodeConstants.NodeJsName,
-                        nodeVersionRange,
-                        _versionProvider.SupportedNodeVersions);
-                    _logger.LogError(exc, $"Exception caught, the version '{nodeVersionRange}' is not supported for the node platform.");
-                    throw exc;
-                }
+                return matchingRange.ToString();
             }
 
-            return nodeVersion;
+            _logger.LogError($"The version '{nodeVersion}' is not supported for the node platform.");
+            throw new UnsupportedVersionException(
+                NodeConstants.NodeJsName,
+                nodeVersion,
+                _versionProvider.SupportedNodeVersions);
         }
     }
 }

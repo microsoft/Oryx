@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         "If provided, packages will be downloaded to the given directory instead of to a virtual environment.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
+        internal const string DefaultVirtualEnvName = "pythonenv";
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
 
@@ -82,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 // If the package directory was not provided, we default to virtual envs
                 if (string.IsNullOrWhiteSpace(virtualEnvName))
                 {
-                    virtualEnvName = GetDefaultVirtualEnvName(context);
+                    virtualEnvName = DefaultVirtualEnvName;
                 }
 
                 manifestFileProperties[ManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
@@ -221,21 +222,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return excludeDirs;
         }
 
-        private static string GetDefaultVirtualEnvName(BuildScriptGeneratorContext context)
-        {
-            string pythonVersion = context.PythonVersion;
-            if (!string.IsNullOrWhiteSpace(pythonVersion))
-            {
-                var versionSplit = pythonVersion.Split('.');
-                if (versionSplit.Length > 1)
-                {
-                    pythonVersion = $"{versionSplit[0]}.{versionSplit[1]}";
-                }
-            }
-
-            return $"pythonenv{pythonVersion}";
-        }
-
         private static string GetPackageDirectory(BuildScriptGeneratorContext context)
         {
             string packageDir = null;
@@ -300,24 +286,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             string virtualEnvModule;
             string virtualEnvCopyParam = string.Empty;
-            switch (pythonVersion.Split('.')[0])
+
+            var detectedRange = new SemVer.Range(pythonVersion);
+            var matchingRange = PythonConstants.Python2.Intersect(detectedRange);
+            if (!matchingRange.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                case "2":
-                    virtualEnvModule = "virtualenv";
-                    break;
-
-                case "3":
-                    virtualEnvModule = "venv";
-                    virtualEnvCopyParam = "--copies";
-                    break;
-
-                default:
-                    string errorMessage = "Python version '" + pythonVersion + "' is not supported";
-                    _logger.LogError(errorMessage);
-                    throw new NotSupportedException(errorMessage);
+                virtualEnvModule = "virtualenv";
+                return (virtualEnvModule, virtualEnvCopyParam);
             }
 
-            return (virtualEnvModule, virtualEnvCopyParam);
+            matchingRange = PythonConstants.Python3.Intersect(detectedRange);
+            if (!matchingRange.Equals(SemanticVersionResolver.NoRangeMatch))
+            {
+                virtualEnvModule = "venv";
+                virtualEnvCopyParam = "--copies";
+                return (virtualEnvModule, virtualEnvCopyParam);
+            }
+
+            string errorMessage = "Python version '" + pythonVersion + "' is not supported";
+            _logger.LogError(errorMessage);
+            throw new NotSupportedException(errorMessage);
         }
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
