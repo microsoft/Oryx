@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData("1.0", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData("1.1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("lts", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
@@ -311,8 +311,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "node")]
         [Theory]
-        [InlineData("latest", "6.9.0")]
-        [InlineData("6", "6.9.0")]
+        [InlineData("latest", "6.12.0")]
+        [InlineData("6", "6.12.0")]
         [InlineData("6.9", "6.9.0")]
         [InlineData("5", "5.6.0")]
         [InlineData("5.6", "5.6.0")]
@@ -322,8 +322,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("3", "3.10.10")]
         [InlineData("3.10", "3.10.10")]
         [InlineData("3.9", "3.9.5")]
-        [InlineData("2", "2.15.9")]
-        [InlineData("2.15", "2.15.9")]
+        [InlineData("2", "2.15.11")]
+        [InlineData("2.15", "2.15.11")]
         public void Npm_UsesVersion_SpecifiedToBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange

@@ -88,9 +88,9 @@ RUN set -ex \
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
- && ln -s 2.1 2 \
- && ln -s 3.1 3 \
- && ln -s 3 lts
+ && . /tmp/scripts/__dotNetCoreSdkVersions.sh \
+ && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
+ && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts
 
 RUN set -ex \
  && dotnetDir=/opt/dotnet \
@@ -101,16 +101,13 @@ RUN set -ex \
  && . /tmp/scripts/__dotNetCoreSdkVersions.sh \
  && . /tmp/scripts/__dotNetCoreRunTimeVersions.sh \
  && mkdir $NET_CORE_APP_21 \
- && ln -s $NET_CORE_APP_21 2.1 \
- && ln -s 2.1 2 \
  && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
  && mkdir $NET_CORE_APP_31 \
- && ln -s $NET_CORE_APP_31 3.1 \
- && ln -s 3.1 3 \
  && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
  # LTS sdk <-- LTS runtime's sdk
- && ln -s 3 lts \
- && ltsSdk=$(readlink lts/sdk) \
+ && ln -s $NET_CORE_APP_21 2-lts \
+ && ln -s $NET_CORE_APP_31 3-lts \
+ && ltsSdk=$(readlink 3-lts/sdk) \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn
@@ -147,24 +144,13 @@ RUN set -ex \
 
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/12 \
- && ln -s 12 /opt/nodejs/lts
-RUN set -ex \
- && ln -s 6.9.0 /opt/npm/6.9 \
- && ln -s 6.9 /opt/npm/6 \
- && ln -s 6 /opt/npm/latest
-RUN set -ex \
- && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $YARN_VERSION /opt/yarn/stable \
- && ln -s $YARN_VERSION /opt/yarn/latest \
- && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
- && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
-RUN set -ex \
- && mkdir -p /links \
- && cp -s /opt/nodejs/lts/bin/* /links \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+ && cd /opt/nodejs \
+ && ln -s $NODE8_VERSION 8-lts \
+ && ln -s $NODE10_VERSION 10-lts \
+ && ln -s $NODE12_VERSION 12-lts \
+ && cd /opt/yarn \
+ && ln -s $YARN_VERSION stable \
+ && ln -s $YARN_VERSION latest
 
 ###
 # Python intermediate stages
@@ -194,11 +180,8 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON37_VERSION /opt/python/3.7 \
- && ln -s $PYTHON38_VERSION /opt/python/3.8 \
  && ln -s $PYTHON38_VERSION /opt/python/latest \
- && ln -s $PYTHON38_VERSION /opt/python/stable \
- && ln -s 3.8 /opt/python/3
+ && ln -s $PYTHON38_VERSION /opt/python/stable
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
@@ -227,7 +210,7 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin"
+ENV PATH="$PATH:/opt/oryx:/opt/nodejs/12-lts/bin:/opt/dotnet/sdks/3-lts:/opt/python/latest/bin:/opt/yarn/stable/bin"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib

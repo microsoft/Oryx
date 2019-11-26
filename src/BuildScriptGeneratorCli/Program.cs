@@ -6,6 +6,7 @@
 using System.Linq;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -20,6 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand(typeof(BuildpackDetectCommand))]
     [Subcommand(typeof(BuildpackBuildCommand))]
     [Subcommand(typeof(DockerfileCommand))]
+    [Subcommand(typeof(SemVerResolveCommand))]
     internal class Program
     {
         public const string GitCommit = "GitCommit";

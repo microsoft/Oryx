@@ -18,7 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("v1.2.3", "1.2.3")]
         [InlineData("^1.2.3", "1.3.5")] // get latest minor & patch
         [InlineData("~1.2.3", "1.2.5")] // get latest patch
-        public void GetMaxSatisfyingVersion_UnderstandComplexRangeSyntaxes(string providedRange, string expectedVersion)
+        public void GetMaxSatisfyingVersion_UnderstandComplexRangeSyntaxes(
+            string providedRange,
+            string expectedVersion)
         {
             // Arrange
             var supportedVersions = new[] { "1.2.3", "1.2.4", "1.2.5", "1.3.0", "1.3.5", "2.0.0", "2.3.0" };
@@ -125,26 +127,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("3.5", "2.1.1", 1)]
         [InlineData("3.5", "4.1", -1)]
         public void CompareVersion_ProvidedVersionToSupportedVersion(
-            string providedVersion, 
-            string supportedVersion, 
+            string providedVersion,
+            string supportedVersion,
             int resultExpected)
         {
             // Arrange and Act 
-            int comparisonResult= SemanticVersionResolver.CompareVersions(providedVersion, supportedVersion);
+            int comparisonResult = SemanticVersionResolver.CompareVersions(providedVersion, supportedVersion);
 
             // Assert 
             Assert.Equal(resultExpected, comparisonResult);
         }
 
         [Theory]
-        [InlineData("1", "1.2.3", int.MinValue)]
-        [InlineData("1", "1.2", int.MinValue)]
-        [InlineData("3.5.1", "4", int.MinValue)]
-        [InlineData("3.5", "4", int.MinValue)]
-        [InlineData("5", "6", int.MinValue)]
+        [InlineData("1", "1.2.3", -1)]
+        [InlineData("1", "1.2", -1)]
+        [InlineData("3.5.1", "4", -1)]
+        [InlineData("3.5", "4", -1)]
+        [InlineData("5", "6", -1)]
         public void CompareVersions_VersionDoesNotHaveMinorAndOrPatchVersion(
-            string providedVersion, 
-            string supportedVersion, 
+            string providedVersion,
+            string supportedVersion,
             int resultExpected)
         {
             // Arrange and Act 

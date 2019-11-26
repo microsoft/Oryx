@@ -4,13 +4,14 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpVersionProvider : IPhpVersionProvider
     {
+        public static readonly string[] SupportedVersions = new[] { ">=5 <8" };
+
         private readonly PhpScriptGeneratorOptions _opts;
         private IEnumerable<string> _supportedPhpVersions;
 
@@ -25,9 +26,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             {
                 if (_supportedPhpVersions == null)
                 {
-                    _supportedPhpVersions = VersionProviderHelper.GetSupportedVersions(
-                        _opts.SupportedPhpVersions,
-                        _opts.InstalledPhpVersionsDir);
+                    _supportedPhpVersions = _opts.SupportedPhpVersions != null
+                        ? _opts.SupportedPhpVersions : SupportedVersions;
                 }
 
                 return _supportedPhpVersions;

@@ -70,20 +70,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return _opts.PhpDefaultVersion;
             }
 
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+            var matchingRange = SemanticVersionResolver.GetMatchingRange(
                 version,
                 _versionProvider.SupportedPhpVersions);
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            if (!matchingRange.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                var exc = new UnsupportedVersionException(
-                    PhpConstants.PhpName,
-                    version,
-                    _versionProvider.SupportedPhpVersions);
-                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the PHP platform.");
-                throw exc;
+                return matchingRange.ToString();
             }
 
-            return maxSatisfyingVersion;
+            _logger.LogError($"The version '{version}' is not supported for the PHP platform.");
+            throw new UnsupportedVersionException(
+                PhpConstants.PhpName,
+                version,
+                _versionProvider.SupportedPhpVersions);
         }
     }
 }

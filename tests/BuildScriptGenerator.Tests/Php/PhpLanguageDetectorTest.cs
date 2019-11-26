@@ -54,20 +54,62 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Null(result);
         }
 
-        [Fact]
-        public void Detect_Throws_WhenUnsupportedPhpVersion_FoundInComposerFile()
+        public static TheoryData<string[], string, string> SupportedVersions
+        {
+            get
+            {
+                var data = new TheoryData<string[], string, string>();
+                data.Add(new[] { "6.11.0" }, "6.11.0", "=6.11.0");
+                data.Add(new[] { "4", "5", "8" }, "8.12.8", "=8.12.8");
+                data.Add(new[] { ">=4 <13" }, "8.12.8", "=8.12.8");
+                data.Add(new[] { ">=4 <13" }, "12.14.1", "=12.14.1");
+                data.Add(new[] { ">=4 <13" }, ">=5 <9", ">=5.0.0 <9.0.0");
+                data.Add(new[] { ">=4 <13" }, ">=5 <9 || 12.10", ">=5.0.0 <9.0.0 || >=12.10.0 <12.11.0");
+                data.Add(new[] { ">=4 <13" }, ">=5 <9 || 14.10", ">=5.0.0 <9.0.0");
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(SupportedVersions))]
+        public void Detect_ReturnsResult_ForSupportedVersions(
+            string[] supportedVersions,
+            string providedVersion,
+            string expectedVersion)
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
+            var detector = CreatePhpLanguageDetector(supportedVersions);
             var repo = new MemorySourceRepo();
-            var version = "0";
+            repo.AddFile("{\"require\":{\"php\":\"" + providedVersion + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PhpName, result.Language);
+            Assert.Equal(expectedVersion, result.LanguageVersion);
+        }
+
+        [Theory]
+        [InlineData("4")]
+        [InlineData("4.9")]
+        [InlineData("8")]
+        [InlineData("8.0.0")]
+        public void Detect_Throws_WhenUnsupportedPhpVersion_FoundInComposerFile(string version)
+        {
+            // Arrange
+            var supportedVersions = PhpVersionProvider.SupportedVersions;
+            var detector = CreatePhpLanguageDetector(supportedVersions);
+            var repo = new MemorySourceRepo();
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
-            Assert.Equal(
-                $"Platform 'php' version '{version}' is unsupported. Supported versions: {PhpVersions.Php73Version}",
+            Assert.Contains(
+                $"Platform 'php' version '{version}' is unsupported. " +
+                $"Supported versions: {string.Join(",", supportedVersions)}",
                 exception.Message);
         }
 

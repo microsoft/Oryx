@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -280,33 +279,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>The maximum version that satisfies the requested version spec.</returns>
         private string GetMatchingTargetVersion(IProgrammingPlatform platform, string targetVersionSpec)
         {
-            string targetVersion;
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-               targetVersionSpec,
-               platform.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            var matchingRange = SemanticVersionResolver.GetMatchingRange(
+                    targetVersionSpec,
+                    platform.SupportedVersions);
+            if (!matchingRange.Equals(SemanticVersionResolver.NoRangeMatch))
             {
-                var exc = new UnsupportedVersionException(platform.Name, targetVersionSpec, platform.SupportedVersions);
-                _logger.LogError(exc, $"Exception caught, the given version '{targetVersionSpec}' is not supported for platform '{platform.Name}'.");
-                throw exc;
-            }
-            else
-            {
-                targetVersion = maxSatisfyingVersion;
+                return matchingRange.ToString();
             }
 
-            return targetVersion;
-        }
-
-        private bool IsEnabledForMultiPlatformBuild(IProgrammingPlatform platform, BuildScriptGeneratorContext context)
-        {
-            if (context.DisableMultiPlatformBuild)
-            {
-                return false;
-            }
-
-            return platform.IsEnabledForMultiPlatformBuild(context);
+            var exc = new UnsupportedVersionException(platform.Name, targetVersionSpec, platform.SupportedVersions);
+            _logger.LogError(
+                exc,
+                $"Exception caught, the given version '{targetVersionSpec}' is " +
+                $"not supported for platform '{platform.Name}'.");
+            throw exc;
         }
     }
 }

@@ -10,6 +10,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeVersionProvider : INodeVersionProvider
     {
+        public static readonly string[] DefaultSupportedNodeVersions = new[] { ">=4 <=12" };
+        public static readonly string[] DefaultSupportedNpmVersions = new[] { "<7" };
+
         private readonly NodeScriptGeneratorOptions _options;
         private IEnumerable<string> _supportedNodeVersions;
         private IEnumerable<string> _supportedNpmVersions;
@@ -25,9 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNodeVersions == null)
                 {
-                    _supportedNodeVersions = VersionProviderHelper.GetSupportedVersions(
-                        _options.SupportedNodeVersions,
-                        _options.InstalledNodeVersionsDir);
+                    _supportedNodeVersions = _options.SupportedNodeVersions != null
+                        ? _options.SupportedNodeVersions : DefaultSupportedNodeVersions;
                 }
 
                 return _supportedNodeVersions;
@@ -40,9 +42,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (_supportedNpmVersions == null)
                 {
-                    _supportedNpmVersions = VersionProviderHelper.GetSupportedVersions(
-                        _options.SupportedNpmVersions,
-                        _options.InstalledNpmVersionsDir);
+                    _supportedNpmVersions = _options.SupportedNpmVersions != null
+                        ? _options.SupportedNpmVersions : DefaultSupportedNpmVersions;
                 }
 
                 return _supportedNpmVersions;

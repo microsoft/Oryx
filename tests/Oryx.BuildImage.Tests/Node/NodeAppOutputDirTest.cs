@@ -6,7 +6,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildImage.Tests;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -18,7 +17,8 @@ namespace Oryx.BuildImage.Tests.Node
 {
     public class NodeAppOutputDirTest : NodeJSSampleAppsTestBase
     {
-        public NodeAppOutputDirTest(ITestOutputHelper output) : base(output)
+        public NodeAppOutputDirTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
+            : base(output, fixture)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Oryx.BuildImage.Tests.Node
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddStringExistsInFileCheck(
-                $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"", 
+                $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
@@ -61,4 +61,4 @@ namespace Oryx.BuildImage.Tests.Node
                 result.GetDebugInfo());
         }
     }
-    }
+}

@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     destinationDir: destinationDir,
                     hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir,
                     zipAllOutput: zipAllOutput)
-                .AppendBenvCommand($"dotnet={context.DotNetCoreVersion}")
+                .AppendBenvCommand($"dotnet='{context.DotNetCoreVersion}'")
                 .AddScriptToRunPreBuildCommand(sourceDir: sourceDir, preBuildCommand: preBuildCommand)
                 .AppendLine("echo")
                 .AppendLine("dotnetCoreVersion=$(dotnet --version)")

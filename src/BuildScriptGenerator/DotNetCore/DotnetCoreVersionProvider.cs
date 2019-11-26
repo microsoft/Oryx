@@ -10,6 +10,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreVersionProvider : IDotNetCoreVersionProvider
     {
+        public static readonly string[] SupportedVersions = new[] { ">=1 <=3" };
+
         private readonly DotNetCoreScriptGeneratorOptions _options;
         private IEnumerable<string> _supportedVersions;
 
@@ -24,9 +26,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 if (_supportedVersions == null)
                 {
-                    _supportedVersions = VersionProviderHelper.GetSupportedVersions(
-                        _options.SupportedVersions,
-                        _options.InstalledVersionsDir);
+                    _supportedVersions = _options.SupportedVersions != null
+                        ? _options.SupportedVersions : SupportedVersions;
                 }
 
                 return _supportedVersions;

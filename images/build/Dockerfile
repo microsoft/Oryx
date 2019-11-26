@@ -63,12 +63,6 @@ RUN set -ex \
     && find /var/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
- && sdksDir=/opt/dotnet/sdks \
- && cd $sdksDir \
- && ln -s 1.1 1 \
- && ln -s 3.0 3
-
-RUN set -ex \
  && dotnetDir=/opt/dotnet \
  && sdksDir=$dotnetDir/sdks \
  && runtimesDir=$dotnetDir/runtimes \
@@ -77,24 +71,18 @@ RUN set -ex \
  && . /tmp/scripts/__dotNetCoreRunTimeVersions.sh \
  # 1.1 sdk <-- 1.0 runtime's sdk
  && mkdir $NET_CORE_APP_10 \
- && ln -s $NET_CORE_APP_10 1.0 \
  && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_10/sdk \
  # 1.1 sdk <-- 1.1 runtime's sdk
  && mkdir $NET_CORE_APP_11 \
- && ln -s $NET_CORE_APP_11 1.1 \
- && ln -s 1.1 1 \
  && ln -s $sdksDir/$DOT_NET_CORE_11_SDK_VERSION $NET_CORE_APP_11/sdk \
  # 2.1 sdk <-- 2.0 runtime's sdk
  && mkdir $NET_CORE_APP_20 \
- && ln -s $NET_CORE_APP_20 2.0 \
  && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_20/sdk \
  # 2.2 sdk <-- 2.2 runtime's sdk
  && mkdir $NET_CORE_APP_22 \
- && ln -s $NET_CORE_APP_22 2.2 \
  && ln -s $sdksDir/$DOT_NET_CORE_22_SDK_VERSION $NET_CORE_APP_22/sdk \
  # 3.0 sdk <-- 3.0 runtime's sdk
  && mkdir $NET_CORE_APP_30 \
- && ln -s $NET_CORE_APP_30 3.0 \
  && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk
 
 # Install Node.js, NPM, Yarn
@@ -138,45 +126,6 @@ COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
 RUN /tmp/scripts/installNpm.sh
 
-RUN set -ex \
- && ln -s 4.4.7 /opt/nodejs/4.4 \
- && ln -s 4.5.0 /opt/nodejs/4.5 \
- && ln -s 4.8.0 /opt/nodejs/4.8 \
- && ln -s 4.8 /opt/nodejs/4 \
- && ln -s 6.2.2 /opt/nodejs/6.2 \
- && ln -s 6.6.0 /opt/nodejs/6.6 \
- && ln -s 6.9.3 /opt/nodejs/6.9 \
- && ln -s 6.10.3 /opt/nodejs/6.10 \
- && ln -s 6.11.0 /opt/nodejs/6.11 \ 
- && ln -s 8.0.0 /opt/nodejs/8.0 \
- && ln -s 8.1.4 /opt/nodejs/8.1 \
- && ln -s 8.2.1 /opt/nodejs/8.2 \
- && ln -s 8.8.1 /opt/nodejs/8.8 \
- && ln -s 8.9.4 /opt/nodejs/8.9 \
- && ln -s 8.11.2 /opt/nodejs/8.11 \
- && ln -s 8.12.0 /opt/nodejs/8.12 \
- && ln -s 8.15.1 /opt/nodejs/8.15 \
- && ln -s 9.4.0 /opt/nodejs/9.4 \
- && ln -s 9.4 /opt/nodejs/9 \
- && ln -s 10.1.0 /opt/nodejs/10.1 \
- && ln -s 10.10.0 /opt/nodejs/10.10 \
- && ln -s 10.14.2 /opt/nodejs/10.14 \
- && ln -s 10.16.3 /opt/nodejs/10.16 \
- && ln -s 12.9.1 /opt/nodejs/12.9 \
- && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/nodejs/6
-RUN set -ex \
- && ln -s 2.15.9 /opt/npm/2.15 \
- && ln -s 2.15 /opt/npm/2 \
- && ln -s 3.9.5 /opt/npm/3.9 \
- && ln -s 3.10.10 /opt/npm/3.10 \
- && ln -s 3.10 /opt/npm/3 \
- && ln -s 5.0.3 /opt/npm/5.0 \
- && ln -s 5.3.0 /opt/npm/5.3 \
- && ln -s 5.4.2 /opt/npm/5.4 \
- && ln -s 5.6.0 /opt/npm/5.6 \
- && ln -s 5.6 /opt/npm/5
-
 ###
 # Python intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
@@ -197,10 +146,6 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON27_VERSION /opt/python/2.7 \
- && ln -s 2.7 /opt/python/2 \
- && ln -s $PYTHON36_VERSION /opt/python/3.6
   
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
@@ -272,9 +217,9 @@ COPY --from=php70-build-base /opt /opt
 COPY --from=php72-build-base /opt /opt
 COPY --from=php73-build-base /opt /opt
 
-RUN ln -s /opt/php/5.6 /opt/php/5 \
- && ln -s /opt/php/7.3 /opt/php/7 \
- && ln -s /opt/php/7 /opt/php/lts
+COPY build/__phpVersions.sh /tmp/scripts
+RUN . /tmp/scripts/__phpVersions.sh \
+ && ln -s $PHP73_VERSION /opt/php/lts
 
 ENV PATH="$PATH:/opt/php/lts/bin"
 
