@@ -5,12 +5,13 @@ set -ex
 for ver in `ls /opt/nodejs`
 do
     nodeModulesDir="/opt/nodejs/$ver/lib/node_modules"
-    
-    if [ ! -f "$nodeModulesDir/npm/package.json" ]; then
+    packageJson="$nodeModulesDir/npm/package.json"
+
+    if [ ! -f "$packageJson" ]; then
         continue
     fi
 
-    npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
+    npm_ver=`jq -r .version $packageJson`
 
     # Npm version 6.4 has issues installing native modules like grpc,
     # so upgrading it to a version which we know works fine.
