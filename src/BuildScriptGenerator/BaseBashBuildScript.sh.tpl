@@ -46,7 +46,13 @@ then
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToIntermediateDir }}
 	excludedDirectories+=" --exclude {{ excludedDir }}"
 	{{ end }}
-	rsync --delete -rt $excludedDirectories . "$INTERMEDIATE_DIR"
+
+	# The following preserves modification times on files/folders, which enables faster rsync copy.
+	# We use this here and not the '--checksum' because intermediate directory is local to
+	# a container and so preserving modification times does not cause the same errors that we
+	# see when copying to a directory which is for example, a volume mounted NFS directory.
+	rsync -rt --delete $excludedDirectories . "$INTERMEDIATE_DIR"
+
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 	SOURCE_DIR="$INTERMEDIATE_DIR"
@@ -104,7 +110,13 @@ then
 	{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
 	excludedDirectories+=" --exclude {{ excludedDir }}"
 	{{ end }}
-	rsync -rtE --links $excludedDirectories . "$DESTINATION_DIR"
+
+	# We use checksum and not the '--times' because the destination directory could be from
+	# a different file system (ex: NFS) where setting modification times results in errors.
+	# Even though checksum is slower compared to the '--times' option, it is more reliable
+	# which is important for us.
+	rsync -rEc --links $excludedDirectories . "$DESTINATION_DIR"
+
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 fi
