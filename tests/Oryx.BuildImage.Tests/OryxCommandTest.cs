@@ -9,6 +9,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using System;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -17,7 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public OryxCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
-        public void Build_UsesCwd_WhenNoSourceDirGiven()
+        public void BuildImage_Build_UsesCwd_WhenNoSourceDirGiven()
         {
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -39,7 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_WithNoUsableToolsDetected()
+        public void BuildImage_CanExec_WithNoUsableToolsDetected()
         {
             // Arrange
             var appPath = "/tmp";
@@ -63,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_SingleCommand()
+        public void BuildImage_CanExec_SingleCommand()
         {
             // Arrange
             var appPath = "/tmp";
@@ -91,7 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_CommandInSourceDir()
+        public void BuildImage_CanExec_CommandInSourceDir()
         {
             // Arrange
             var appPath = "/tmp";
@@ -120,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_MultipleCommands_WithOlderToolVersions()
+        public void BuildImage_CanExec_MultipleCommands_WithOlderToolVersions()
         {
             // Arrange
             var appPath = "/tmp";
@@ -155,7 +157,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Exec_PropagatesFailures()
+        public void BuildImage_Exec_PropagatesFailures()
         {
             // Arrange
             var appPath = "/tmp";
@@ -179,5 +181,51 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void CliImage_Dockerfile_SucceedsWithBasicNodeApp()
+        {
+            // Arrange
+            var appPath = "/tmp";
+            var platformName = "nodejs";
+            var runtimeName = ConvertToRuntimeName(platformName);
+            var platformVersion = "10.17";
+            var runtimeTag = "10";
+            var repositoryName = "build";
+            var tagName = "slim";
+            var script = new ShellScriptBuilder()
+                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
+                .AddCommand($"oryx dockerfile {appPath} --platform {platformName} --platform-version {platformVersion}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(_imageHelper.GetTestCliImage(), "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"{runtimeName}:{runtimeTag}", result.StdOut);
+                    Assert.Contains($"{repositoryName}:{tagName}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        private string ConvertToRuntimeName(string platformName)
+        {
+            if (string.Equals(platformName, DotNetCoreConstants.LanguageName, StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "dotnetcore";
+            }
+
+            if (string.Equals(platformName, NodeConstants.NodeJsName, StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "node";
+            }
+
+            return platformName;
+        }
+
     }
 }

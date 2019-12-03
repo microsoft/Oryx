@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
+        private const string _cliRepository = "cli";
         private const string _latestTag = "latest";
         private const string _slimTag = "slim";
 
@@ -144,6 +145,18 @@ namespace Microsoft.Oryx.Tests.Common
         {
             var tag = GetTestTag();
             return $"{_image}/{_packRepository}:{tag}";
+        }
+
+        /// <summary>
+        /// Constructs a 'cli' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
+        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
+        /// </summary>
+        /// <returns>A 'cli' image that can be pulled for testing.</returns>
+        public string GetTestCliImage()
+        {
+            var tag = GetTestTag();
+            return $"{_image}/{_cliRepository}:{tag}";
         }
 
         private string GetTestTag()
