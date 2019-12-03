@@ -6,22 +6,24 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
-using Microsoft.Oryx.BuildScriptGenerator.Resources;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _testDirPath;
+        private readonly ITestOutputHelper _output;
         private readonly TestTempDirTestFixture _testDir;
 
         public BuildCommandTest(TestTempDirTestFixture testFixture)
