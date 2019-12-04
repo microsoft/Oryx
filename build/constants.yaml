@@ -22,6 +22,8 @@
     dot-net-core-22-sdk-sha512: 81937DE0874EE837E3B42E36D1CF9E04BD9DEFF6BA60D0162AE7CA9336A78F733E624136D27F559728DF3F681A72A669869BF91D02DB47C5331398C0CFDA9B44
     dot-net-core-30-sdk-version: 3.0.100
     dot-net-core-30-sdk-sha512: 766da31f9a0bcfbf0f12c91ea68354eb509ac2111879d55b656f19299c6ea1c005d31460dac7c2a4ef82b3edfea30232c82ba301fb52c0ff268d3e3a1b73d8f7
+    dot-net-core-31-sdk-version: 3.1.100
+    dot-net-core-31-sdk-sha512: 5217ae1441089a71103694be8dd5bb3437680f00e263ad28317665d819a92338a27466e7d7a2b1f6b74367dd314128db345fa8fff6e90d0c966dea7a9a43bd21
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -38,6 +40,7 @@
     net-core-app-21: 2.1.13
     net-core-app-22: 2.2.7
     net-core-app-30: 3.0.0
+    net-core-app-31: 3.1.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
