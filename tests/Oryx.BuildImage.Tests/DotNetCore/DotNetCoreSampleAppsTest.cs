@@ -248,6 +248,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
+        {
+            // Arrange
+            var appName = "NetCoreApp31.MvcApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(
+                            SdkVersionMessageFormat,
+                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
@@ -653,6 +690,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange
