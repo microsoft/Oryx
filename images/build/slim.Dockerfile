@@ -76,6 +76,11 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
     /tmp/scripts/installDotNetCore.sh
 
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_31_SDK_SHA512 \
+    /tmp/scripts/installDotNetCore.sh
+
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
     && find /var/nuget -type d -exec chmod 777 {} \;
@@ -84,7 +89,8 @@ RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
  && ln -s 2.1 2 \
- && ln -s 2 lts
+ && ln -s 3.1 3 \
+ && ln -s 3 lts
 
 RUN set -ex \
  && dotnetDir=/opt/dotnet \
@@ -98,8 +104,12 @@ RUN set -ex \
  && ln -s $NET_CORE_APP_21 2.1 \
  && ln -s 2.1 2 \
  && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
+ && mkdir $NET_CORE_APP_31 \
+ && ln -s $NET_CORE_APP_31 3.1 \
+ && ln -s 3.1 3 \
+ && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
  # LTS sdk <-- LTS runtime's sdk
- && ln -s 2.1 lts \
+ && ln -s 3 lts \
  && ltsSdk=$(readlink lts/sdk) \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
