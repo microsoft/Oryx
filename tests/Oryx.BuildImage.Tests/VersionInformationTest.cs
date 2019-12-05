@@ -104,6 +104,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData("3", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData("3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
         {
             // Arrange
