@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -100,10 +100,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData("3", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData("3", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData("3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
         {
             // Arrange
@@ -558,7 +559,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet_foo=1")
                 .AddCommand("dotnet --version")

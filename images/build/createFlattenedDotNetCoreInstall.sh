@@ -73,6 +73,8 @@ function createLinks() {
     done
 }
 
+createLinks "$DOT_NET_CORE_31_SDK_VERSION" "$NET_CORE_APP_31"
+echo
 createLinks "$DOT_NET_CORE_30_SDK_VERSION" "$NET_CORE_APP_30"
 echo
 createLinks "$DOT_NET_CORE_22_SDK_VERSION" "$NET_CORE_APP_22"
