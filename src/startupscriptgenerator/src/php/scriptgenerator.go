@@ -29,8 +29,12 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
-	scriptBuilder.WriteString("export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
+	scriptBuilder.WriteString("if [[ -z '${PHP_ORIGIN}' ]]; then\n")
+	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "APACHE_PORT", gen.BindPort, DefaultBindPort)
+	scriptBuilder.WriteString("else\n\n")
+	scriptBuilder.WriteString("fi\n\n")
+	
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
 	logger.LogProperties("Finalizing script", map[string]string{"root": gen.SourcePath, "cmd": gen.StartupCmd})
