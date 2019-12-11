@@ -231,7 +231,7 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
+ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib
