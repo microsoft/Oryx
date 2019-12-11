@@ -58,6 +58,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 isNodeApp = true;
             }
+            else if (IsStaticSite(sourceRepo))
+            {
+                isNodeApp = true;
+            }
             else
             {
                 _logger.LogDebug(
@@ -148,6 +152,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return nodeVersion;
+        }
+
+        private bool IsStaticSite(ISourceRepo sourceRepo)
+        {
+            return IsHugoSite(sourceRepo);
+        }
+
+        private bool IsHugoSite(ISourceRepo sourceRepo)
+        {
+            if (sourceRepo.FileExists(NodeConstants.HugoJsonFileName) ||
+                sourceRepo.FileExists(NodeConstants.HugoTomlFileName) ||
+                sourceRepo.FileExists(NodeConstants.HugoYamlFileName) ||
+                sourceRepo.DirExists(NodeConstants.HugoConfigFolderName))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
