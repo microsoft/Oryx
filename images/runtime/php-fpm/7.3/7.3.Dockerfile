@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/php.git
-FROM php-run-base
+FROM php-fpm-run-base
 
 # do NOT merge this content with above line because the 
 # above line is shared across all php images

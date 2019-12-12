@@ -4,7 +4,7 @@ set -ex
 declare -r CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$CURRENT_DIR/__versions.sh"
 
-baseImage="php-run-base"
+baseImage="php-fpm-run-base"
 echo
 echo "Buildig image '$baseImage'..."
 docker build -t $baseImage -f "$CURRENT_DIR/runbase.Dockerfile" .
