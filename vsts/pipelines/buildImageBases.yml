@@ -37,10 +37,10 @@ stages:
 
   - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
-      displayName: Build and push PHP runtime base images
+      displayName: Build and push PHP-FPM runtime base images
       scriptPath: ./build/buildRunTimeImageBases.sh
       imageDir: php-fpm
-      artifactsFileName: php-runtimeimage-bases.txt
+      artifactsFileName: php-fpm-runtimeimage-bases.txt
 
   #- template: templates/_buildimageBasesJobTemplate.yml
   #  parameters:
