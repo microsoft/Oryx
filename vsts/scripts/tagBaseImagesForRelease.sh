@@ -70,6 +70,10 @@ elif [ "$imageName" == "php" ]
 then
   echo ""
   retagImageWithStagingRepository php-runtimeimage-bases.txt $imageName
+elif [ "$imageName" == "php-fpm" ]
+then
+  echo ""
+  retagImageWithStagingRepository php-runtimeimage-bases.txt $imageName
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""
