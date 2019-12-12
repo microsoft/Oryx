@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var compatiblePlatforms = GetCompatiblePlatforms(ctx);
             if (!compatiblePlatforms.Any())
             {
-                throw new UnsupportedLanguageException(Labels.UnableToDetectLanguageMessage);
+                throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
             }
 
             foreach (var platformAndVersion in compatiblePlatforms)

@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (selectedPlatform == null)
             {
                 var languages = string.Join(", ", _programmingPlatforms.Select(p => p.Name));
-                var exec = new UnsupportedLanguageException($"'{platformName}' platform is not supported. " +
+                var exec = new UnsupportedPlatformException($"'{platformName}' platform is not supported. " +
                     $"Supported platforms are: {languages}");
                 _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' is not supported.");
                 throw exec;
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (!selectedPlatform.IsEnabled(ctx))
             {
-                var exc = new UnsupportedLanguageException($"Platform '{selectedPlatform.Name}' has been disabled.");
+                var exc = new UnsupportedPlatformException($"Platform '{selectedPlatform.Name}' has been disabled.");
                 _logger.LogError(exc, $"Exception caught, platform '{selectedPlatform.Name}' has been disabled.");
                 throw exc;
             }

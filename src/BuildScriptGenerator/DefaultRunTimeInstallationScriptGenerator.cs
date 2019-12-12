@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (targetPlatform == null)
             {
-                throw new UnsupportedLanguageException($"Platform '{targetPlatformName}' is not supported.");
+                throw new UnsupportedPlatformException($"Platform '{targetPlatformName}' is not supported.");
             }
 
             if (!targetPlatform.SupportedVersions.Contains(opts.PlatformVersion))

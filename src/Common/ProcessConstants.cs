@@ -10,5 +10,9 @@ namespace Microsoft.Oryx.Common
         public const int ExitSuccess = 0;
 
         public const int ExitFailure = 1;
+
+        public const int UnsupportedPlatform = 2;
+
+        public const int UnsupportedPlatformVersion = 3;
     }
 }
