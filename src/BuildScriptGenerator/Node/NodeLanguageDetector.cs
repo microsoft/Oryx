@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -161,10 +162,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private bool IsHugoSite(ISourceRepo sourceRepo)
         {
-            if (sourceRepo.FileExists(NodeConstants.HugoJsonFileName) ||
-                sourceRepo.FileExists(NodeConstants.HugoTomlFileName) ||
-                sourceRepo.FileExists(NodeConstants.HugoYamlFileName) ||
-                sourceRepo.DirExists(NodeConstants.HugoConfigFolderName))
+            // Search for config.toml or config/config.toml.
+            if (sourceRepo.FileExists(NodeConstants.HugoTomlFileName) ||
+                sourceRepo.FileExists(NodeConstants.HugoConfigFolderName, NodeConstants.HugoTomlFileName))
+            {
+                return true;
+            }
+
+            // Search for config/*.toml.
+            if (sourceRepo.DirExists(NodeConstants.HugoConfigFolderName) &&
+                sourceRepo.EnumerateFiles("*.toml", true).Any())
             {
                 return true;
             }

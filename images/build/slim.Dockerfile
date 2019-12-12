@@ -120,10 +120,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.tar.gz" \
+ARG HUGO_VERSION=0.59.1
+RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" \
  && mkdir -p /opt/hugo \
- && tar -xzf hugo_0.59.1_Linux-64bit.tar.gz -C /opt/hugo \
- && rm hugo_0.59.1_Linux-64bit.tar.gz
+ && tar -xzf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
+ && rm hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
 COPY build/__nodeVersions.sh /tmp/scripts
 RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && . /tmp/scripts/__nodeVersions.sh \
