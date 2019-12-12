@@ -7,47 +7,54 @@ stages:
 - stage: Build
   displayName: Build Stage
   jobs:
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
-      displayName: Build and push Node base images for runtime
-      scriptPath: ./build/buildRunTimeImageBases.sh
-      imageDir: node
-      artifactsFileName: node-runtimeimage-bases.txt
+#  - template: templates/_buildimageBasesJobTemplate.yml
+#    parameters:
+#      displayName: Build and push Node base images for runtime
+#      scriptPath: ./build/buildRunTimeImageBases.sh
+#      imageDir: node
+#      artifactsFileName: node-runtimeimage-bases.txt
 
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
-      displayName: Build and push Python base images for build
-      scriptPath: ./build/buildBuildImageBases.sh
-      imageDir: python
-      artifactsFileName: python-buildimage-bases.txt
+#  - template: templates/_buildimageBasesJobTemplate.yml
+#    parameters:
+#      displayName: Build and push Python base images for build
+#      scriptPath: ./build/buildBuildImageBases.sh
+#      imageDir: python
+#      artifactsFileName: python-buildimage-bases.txt
 
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
-      displayName: Build and push PHP build base images
-      scriptPath: ./build/buildBuildImageBases.sh
-      imageDir: php
-      artifactsFileName: php-buildimage-bases.txt
+  #- template: templates/_buildimageBasesJobTemplate.yml
+  #  parameters:
+  #    displayName: Build and push PHP build base images
+  #    scriptPath: ./build/buildBuildImageBases.sh
+  #    imageDir: php
+  #    artifactsFileName: php-buildimage-bases.txt
+
+  #- template: templates/_buildimageBasesJobTemplate.yml
+  #  parameters:
+  #    displayName: Build and push PHP runtime base images
+  #    scriptPath: ./build/buildRunTimeImageBases.sh
+  #    imageDir: php
+  #    artifactsFileName: php-runtimeimage-bases.txt
 
   - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
       displayName: Build and push PHP runtime base images
       scriptPath: ./build/buildRunTimeImageBases.sh
-      imageDir: php
+      imageDir: php-fpm
       artifactsFileName: php-runtimeimage-bases.txt
 
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
-      displayName: Build and push DotNetCore runtime base images
-      scriptPath: ./build/buildRunTimeImageBases.sh
-      imageDir: dotnetcore
-      artifactsFileName: dotnetcore-runtimeimage-bases.txt
+  #- template: templates/_buildimageBasesJobTemplate.yml
+  #  parameters:
+  #    displayName: Build and push DotNetCore runtime base images
+  #    scriptPath: ./build/buildRunTimeImageBases.sh
+  #    imageDir: dotnetcore
+  #    artifactsFileName: dotnetcore-runtimeimage-bases.txt
 
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
-      displayName: Build and push Yarn Cache base image
-      scriptPath: ./build/buildBuildImageBases.sh
-      imageDir: yarn-cache
-      artifactsFileName: yarn-cache-buildimage-bases.txt
+  #- template: templates/_buildimageBasesJobTemplate.yml
+  #  parameters:
+  #    displayName: Build and push Yarn Cache base image
+  #    scriptPath: ./build/buildBuildImageBases.sh
+  #    imageDir: yarn-cache
+  #    artifactsFileName: yarn-cache-buildimage-bases.txt
 
 - stage: Release
   displayName: Release Stage
@@ -66,6 +73,7 @@ trigger:
     - images/runtime/php
     - images/build/python
     - images/build/php
+    - images/build/php-fpm
     - images/build/yarn-cache
     - build/
     - vsts/
