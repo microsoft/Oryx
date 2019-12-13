@@ -67,6 +67,7 @@
   constants:
     php-build-base-tag: 20191205.1
     php-runtime-base-tag: 20191205.1
+    php-fpm-runtime-base-tag: 20191213.15
     composer-version: 1.9.0
     composer-sha384: a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1
     # hashes are for .tar.xz
