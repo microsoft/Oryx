@@ -7,15 +7,26 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"flag"
+	"os"
 )
 
 func main() {
 	common.PrintVersionInfo()
-
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
 	manifestDirPtr := common.ManifestDirFlag
-	startupCmdPtr := flag.String("startupCommand", "apache2-foreground", "Command that will be executed to start the application server up.")
+
+	var _phpOrigin = os.Getenv(consts.PhpOriginEnvVarName)
+	var startupCommand = ""
+
+	if _phpOrigin == "php-fpm" {
+		startupCommand = "php-fpm"
+	} else {
+		startupCommand = "apache2-foreground"
+	}
+
+	startupCmdPtr := flag.String("startupCommand", startupCommand, "Command that will be executed to start the application server up.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
 	flag.Parse()
