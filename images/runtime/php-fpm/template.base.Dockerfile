@@ -10,7 +10,8 @@ ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 RUN apt-get update \
     && apt-get install nano nginx -y
 RUN ls -l /etc/nginx
-COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites*/default
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
 RUN ls -l /etc/nginx
 # Edit the default port setting
 ENV NGINX_PORT 8080
