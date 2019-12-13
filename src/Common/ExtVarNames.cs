@@ -8,6 +8,7 @@ namespace Microsoft.Oryx.Common
         public const string ApplicationInsightsInstrumentationKeyEnvVarName = "ORYX_AI_INSTRUMENTATION_KEY";
         public const string AppServiceAppNameEnvVarName = "APPSETTING_WEBSITE_SITE_NAME";
         public const string ScmCommitIdEnvVarName = "SCM_COMMIT_ID";
+        public const string PhpOriginEnvVarName = "PHP_ORIGIN";
         public const string UserAppInsightsKeyEnv = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string UserAppInsightsEnableEnv = "ApplicationInsightsAgent_EXTENSION_VERSION";
     }
