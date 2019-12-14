@@ -70,7 +70,7 @@
     php-runtime-base-tag: 20191205.1
     php-fpm-runtime-base-tag: 20191213.15
     composer-version: 1.9.0
-    composer-sha384: a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1
+    composer-sha384: c9dff69d092bdec14dee64df6677e7430163509798895fbd54891c166c5c0875
     # hashes are for .tar.xz
     php73-version: 7.3.12
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
