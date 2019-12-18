@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
             services.AddSingleton<IEnvironmentSettingsProvider, DefaultEnvironmentSettingsProvider>();
             services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
+            services.AddSingleton<DefaultToolDetector>();
 
             // Add all checkers (platform-dependent + platform-independent)
             foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())

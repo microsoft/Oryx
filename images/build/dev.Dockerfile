@@ -120,8 +120,8 @@ RUN cd /usr/local/include \
         libonig-dev
 
 # Install composer
-RUN phpbrew app get composer
-RUN echo 'export PATH="$PATH:$HOME/.phpbrew/bin"' >> $BASH_RC
+#RUN phpbrew app get composer
+#RUN echo 'export PATH="$PATH:$HOME/.phpbrew/bin"' >> $BASH_RC
 
 #RUN phpbrew install 7.3
 #RUN phpbrew install 7.4
