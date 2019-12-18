@@ -1,6 +1,7 @@
 jobs:
 - job: Release_PhpBuildBaseImage
   displayName: Push PHP Build Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
@@ -10,6 +11,7 @@ jobs:
 
 - job: Release_PhpRuntimeBaseImage
   displayName: Push PHP Runtime Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
@@ -19,6 +21,7 @@ jobs:
 
 - job: Release_DotNetCoreRuntimeBaseImage
   displayName: Push DotNetCore Runtime Base Images to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
@@ -28,6 +31,7 @@ jobs:
 
 - job: Release_PythonBaseImage
   displayName: Push Python Build Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
@@ -37,6 +41,7 @@ jobs:
 
 - job: Release_NodeBaseImage
   displayName: Push Node Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
@@ -46,6 +51,7 @@ jobs:
 
 - job: Release_YarnCacheBuildBaseImage
   displayName: Push Yarn Cache Build Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
   steps:
