@@ -29,7 +29,7 @@ func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript() {
 	//    service nginx start
 	// else
 	//    export APACHE_DOCUMENT_ROOT='abc'
-	//fi
+	// fi
 	//
 	// somecmd
 }
