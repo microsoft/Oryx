@@ -11,7 +11,7 @@ import (
 
 func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript() {
 	// Arrange
-	gen := PhpStartupScriptGenerator { SourcePath: "abc", StartupCmd: "somecmd", }
+	gen := PhpStartupScriptGenerator{SourcePath: "abc", StartupCmd: "somecmd"}
 	// Act
 	command := gen.GenerateEntrypointScript()
 	fmt.Println(command)
@@ -21,8 +21,15 @@ func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript() {
 	// cd abc
 	// export APACHE_DOCUMENT_ROOT='abc'
 	// if [ -z "$APACHE_PORT" ]; then
-	// 		export APACHE_PORT=8080
+	// 		 export APACHE_PORT=8080
 	// fi
-	// 
+	//
+	// if [ -n '$PHP_ORIGIN' ]; then
+	//    export NGINX_DOCUMENT_ROOT='abc'
+	//    service nginx start
+	// else
+	//    export APACHE_DOCUMENT_ROOT='abc'
+	//fi
+	//
 	// somecmd
 }
