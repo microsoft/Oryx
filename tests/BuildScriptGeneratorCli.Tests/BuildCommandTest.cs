@@ -288,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole();
             var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
-            Assert.Equal(1, exitCode);
+            Assert.NotEqual(0, exitCode);
             Assert.Equal(stdError, testConsole.StdError.ReplaceNewLine());
             Assert.Contains(enumerateMessage, testConsole.StdOutput);
         }
