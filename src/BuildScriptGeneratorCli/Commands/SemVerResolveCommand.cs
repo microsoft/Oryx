@@ -3,16 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
@@ -32,6 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         [Option("--platform", CommandOptionType.SingleValue, Description = "Platform for which to find the supporting version")]
         public string Platform { get; set; }
 
+        // If this option is provided, then we are not going to get the list of supported versions from official platform sources.
         [Option("--versions", CommandOptionType.SingleValue, Description = "Comma separated list of supported versions")]
         public string SupportedVersions { get; set; }
 
@@ -63,6 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 result = range.MaxSatisfying(supportedVersions);
                 if (string.IsNullOrEmpty(result))
                 {
+                    console.Error.WriteLine("Version not satisfied.");
                     return 1;
                 }
             }
@@ -122,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             }
             else
             {
-                throw new InvalidOperationException("Unknown platform " + Platform);
+                throw new InvalidOperationException($"Unknown platform {Platform}");
             }
 
             return supportedVersions;
