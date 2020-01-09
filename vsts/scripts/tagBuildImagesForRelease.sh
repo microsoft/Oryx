@@ -4,6 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
+set -x
 set -o pipefail
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
