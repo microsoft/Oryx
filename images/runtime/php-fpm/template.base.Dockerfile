@@ -2,6 +2,8 @@ FROM %PHP_BASE_IMAGE%
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION %PHP_VERSION%
 
+# An environment variable for oryx run-script to know the origin of php image so that
+# start-up command can be determined while creating run script
 ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
@@ -12,6 +14,8 @@ RUN apt-get update \
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
+RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
+RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
 RUN ls -l /etc/nginx
 # Edit the default port setting
 ENV NGINX_PORT 8080
