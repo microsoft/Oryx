@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var ctx = CreateDockerfileContext(null, null);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
+            var exception = Assert.Throws<UnsupportedPlatformException>(
                 () => generator.GenerateDockerfile(ctx));
         }
 
