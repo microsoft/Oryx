@@ -151,40 +151,6 @@ buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_REPO" \
 				"$DEVBOX_BUILD_IMAGES_REPO"
 
-echo
-echo "-------------Creating CLI image-------------------"
-builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
-docker build -t $builtImageTag \
-	--build-arg AGENTBUILD=$BUILD_SIGNED \
-	$BASE_TAG_BUILD_ARGS \
-	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-	$ctxArgs \
-	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
-	.
-
-echo
-echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-# Retag build image with build number tags
-if [ "$AGENT_BUILD" == "true" ]
-then
-	uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-
-	echo
-	echo "Retagging image '$builtImageTag' with ACR related tags..."
-	docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:latest"
-	docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag"
-
-	# Write the list of images that were built to artifacts folder
-	echo
-	echo "Writing the list of build images built to artifacts folder..."
-
-	# Write image list to artifacts file
-	echo "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-else
-	docker tag "$builtImageTag" "$DEVBOX_CLI_BUILD_IMAGE_REPO:latest"
-fi
-
 # Build buildpack images
 # 'pack create-builder' is not supported on Windows
 if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
