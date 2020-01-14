@@ -65,7 +65,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var config = new LoggingConfiguration();
 
-            var aiKey = Environment.GetEnvironmentVariable(
+            var disableTelemetryEnvVariableValue = Environment.GetEnvironmentVariable(
+                LoggingConstants.DisableOryxTelemetryEnvironmentVariableName);
+            _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
+
+            var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
                 LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             if (!string.IsNullOrWhiteSpace(aiKey))
             {
