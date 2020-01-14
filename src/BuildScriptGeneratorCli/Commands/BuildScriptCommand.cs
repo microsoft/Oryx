@@ -34,8 +34,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 checkerMessageSink: null,
                 operationId: null);
 
-            if (!scriptGenerator.TryGenerateScript(out var generatedScript))
+            if (!scriptGenerator.TryGenerateScript(out var generatedScript, out var exception))
             {
+                if (exception != null)
+                {
+                    return ProcessExitCodeHelper.GetExitCodeForException(exception);
+                }
+
                 return ProcessConstants.ExitFailure;
             }
 

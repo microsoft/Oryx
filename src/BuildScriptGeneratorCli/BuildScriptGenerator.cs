@@ -60,9 +60,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             };
         }
 
-        public bool TryGenerateScript(out string generatedScript)
+        public bool TryGenerateScript(out string generatedScript, out Exception exception)
         {
             generatedScript = null;
+            exception = null;
 
             try
             {
@@ -74,6 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (InvalidUsageException ex)
             {
+                exception = ex;
                 _logger.LogError(ex, "Invalid usage");
                 _console.WriteErrorLine(ex.Message);
                 return false;

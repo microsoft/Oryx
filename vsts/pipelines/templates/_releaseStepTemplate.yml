@@ -59,13 +59,6 @@ steps:
     scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Pull and create release tags for CLI images'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Test runtime images'
   inputs:
@@ -93,18 +86,6 @@ steps:
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/buildpack-images-mcr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: true
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Docker@1
-  displayName: 'Push CLI images to ACR'
-  inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/cli-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))

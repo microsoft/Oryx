@@ -143,7 +143,7 @@
     <value>An outdated version of {0} was detected ({1}). Consider updating.\nVersions supported by Oryx: {2}</value>
     <comment>{0} - platform name; {1} - detected version; {2} - Oryx GitHub URL</comment>
   </data>
-  <data name="UnableToDetectLanguageMessage" xml:space="preserve">
+  <data name="UnableToDetectPlatformMessage" xml:space="preserve">
     <value>Could not detect the language from repo.</value>
   </data>
 </root>
