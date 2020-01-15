@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
             }
-            else if (IsHugoSite(ctx.SourceRepo))
+            else if (StaticSiteGeneratorHelper.IsHugoApp(ctx.SourceRepo))
             {
                 packageManagerCmd = NodeConstants.HugoCommand;
                 packageInstallCommand = NodeConstants.HugoCommand;
@@ -412,47 +412,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return npmVersion;
-        }
-
-        private bool IsHugoSite(ISourceRepo sourceRepo)
-        {
-            // Hugo configuration variables: https://gohugo.io/getting-started/configuration/#all-configuration-settings
-            var hugoVariables = new[] { "baseURL", "title", "languageCode", "theme" };
-            var lines = new string[] { };
-
-            // Search for config.toml or config/config.toml
-            if (sourceRepo.FileExists(NodeConstants.HugoTomlFileName))
-            {
-                lines = sourceRepo.ReadAllLines(NodeConstants.HugoTomlFileName);
-            }
-            else if (sourceRepo.FileExists(NodeConstants.HugoConfigFolderName, NodeConstants.HugoTomlFileName))
-            {
-                lines = sourceRepo.ReadAllLines(NodeConstants.HugoConfigFolderName, NodeConstants.HugoTomlFileName);
-            }
-
-            if (lines.Any(l => hugoVariables.Any(v => l.TrimStart(' ').StartsWith(v))))
-            {
-                return true;
-            }
-
-            // Search for config/*.toml.
-            if (sourceRepo.DirExists(NodeConstants.HugoConfigFolderName))
-            {
-                var configFiles = sourceRepo.EnumerateFiles("*.toml", true);
-                if (configFiles.Any())
-                {
-                    foreach (var file in configFiles)
-                    {
-                        lines = sourceRepo.ReadAllLines(file);
-                        if (lines.Any(l => hugoVariables.Any(v => l.TrimStart(' ').StartsWith(v))))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

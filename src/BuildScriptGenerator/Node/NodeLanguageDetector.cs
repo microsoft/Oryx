@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
-using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -59,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 isNodeApp = true;
             }
-            else if (IsStaticSite(sourceRepo))
+            else if (StaticSiteGeneratorHelper.IsStaticSite(sourceRepo))
             {
                 isNodeApp = true;
             }
@@ -153,52 +152,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             return nodeVersion;
-        }
-
-        private bool IsStaticSite(ISourceRepo sourceRepo)
-        {
-            return IsHugoSite(sourceRepo);
-        }
-
-        private bool IsHugoSite(ISourceRepo sourceRepo)
-        {
-            // Hugo configuration variables: https://gohugo.io/getting-started/configuration/#all-configuration-settings
-            var hugoVariables = new[] { "baseURL", "title", "languageCode", "theme" };
-            var lines = new string[] { };
-
-            // Search for config.toml or config/config.toml
-            if (sourceRepo.FileExists(NodeConstants.HugoTomlFileName))
-            {
-                lines = sourceRepo.ReadAllLines(NodeConstants.HugoTomlFileName);
-            }
-            else if (sourceRepo.FileExists(NodeConstants.HugoConfigFolderName, NodeConstants.HugoTomlFileName))
-            {
-                lines = sourceRepo.ReadAllLines(NodeConstants.HugoConfigFolderName, NodeConstants.HugoTomlFileName);
-            }
-
-            if (lines.Any(l => hugoVariables.Any(v => l.TrimStart(' ').StartsWith(v))))
-            {
-                return true;
-            }
-
-            // Search for config/*.toml.
-            if (sourceRepo.DirExists(NodeConstants.HugoConfigFolderName))
-            {
-                var configFiles = sourceRepo.EnumerateFiles("*.toml", true);
-                if (configFiles.Any())
-                {
-                    foreach (var file in configFiles)
-                    {
-                        lines = sourceRepo.ReadAllLines(file);
-                        if (lines.Any(l => hugoVariables.Any(v => l.TrimStart(' ').StartsWith(v))))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }
