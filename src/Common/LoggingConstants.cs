@@ -13,8 +13,8 @@ namespace Microsoft.Oryx.Common
         public const string ApplicationInsightsInstrumentationKeyEnvironmentVariableName
             = "ORYX_AI_INSTRUMENTATION_KEY";
 
-        public const string DisableOryxTelemetryEnvironmentVariableName
-            = "DISABLE_ORYX_TELEMETRY";
+        public const string OryxDisableTelemetryEnvironmentVariableName
+            = "ORYX_DISABLE_TELEMETRY";
 
         public const string DefaultOperationName = ".oryx";
 
