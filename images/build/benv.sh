@@ -79,38 +79,19 @@ benv-versions() {
   done
 }
 
-benv-getVersions() {
-    local rootDir="$1"
-    local versions=""
-    for i in $(find "$rootDir" -maxdepth 1)
-    do
-        local name=$(basename "$i")
-        if [ ! -z "$versions" ]; then
-            versions+=","
-        fi
-        versions+="$name"
-    done
-    echo $versions
-}
-
 benv-resolve() {
-  # Splits the string based on the first occurrence of '='
-  # First occurrence is important because the value could have a '=' itself
-  # For example, benv dotnet="=2.1.14"
-  IFS="=" read -r name value <<< "$1"
+  local name=$(echo $1 | sed 's/=.*$//')
+  local value=$(echo $1 | sed 's/^.*=//')
 
   # Resolve node versions
   if matchesName "node" "$name" || matchesName "node_version" "$name" && [ "${value::1}" != "/" ]; then
-    versions=`benv-getVersions /opt/nodejs`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
-
-    if [ -z "$resolvedVersion" ]; then
+    if [ ! -d "/opt/nodejs/$value" ]; then
       echo >&2 benv: node version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/nodejs
       return 1
     fi
 
-    local DIR="/opt/nodejs/$resolvedVersion/bin"
+    local DIR="/opt/nodejs/$value/bin"
     updatePath "$DIR"
     export node="$DIR/node"
     export npm="$DIR/npm"
@@ -123,16 +104,13 @@ benv-resolve() {
 
   # Resolve npm versions
   if matchesName "npm" "$name" || matchesName "npm_version" "$name" && [ "${value::1}" != "/" ]; then
-    versions=`benv-getVersions /opt/npm`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
-    
-    if [ -z "$resolvedVersion" ]; then
+    if [ ! -d "/opt/npm/$value" ]; then
       echo >&2 benv: npm version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/npm
       return 1
     fi
 
-    local DIR="/opt/npm/$resolvedVersion"
+    local DIR="/opt/npm/$value"
     updatePath "$DIR"
     export npm="$DIR/npm"
     if [ -e "$DIR/npx" ]; then
@@ -144,16 +122,13 @@ benv-resolve() {
 
   # Resolve python versions
   if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
-    versions=`benv-getVersions /opt/python`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
-
-    if [ -z "$resolvedVersion" ]; then
+    if [ ! -d "/opt/python/$value" ]; then
       echo >&2 benv: python version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/python
       return 1
     fi
 
-    local DIR="/opt/python/$resolvedVersion/bin"
+    local DIR="/opt/python/$value/bin"
     updatePath "$DIR"
     if [ -e "$DIR/python2" ]; then
       export python="$DIR/python2"
@@ -170,16 +145,13 @@ benv-resolve() {
 
   # Resolve PHP versions
   if matchesName "php" "$name" || matchesName "php_version" "$name" && [ "${value::1}" != "/" ]; then
-    versions=`benv-getVersions /opt/php`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
-
-    if [ -z "$resolvedVersion" ]; then
+    if [ ! -d "/opt/php/$value" ]; then
       echo >&2 benv: php version \'$value\' not found\; choose one of:
       benv-versions >&2 /opt/php
       return 1
     fi
 
-    local DIR="/opt/php/$resolvedVersion/bin"
+    local DIR="/opt/php/$value/bin"
     updatePath "$DIR"
     export php="$DIR/php"
 
@@ -189,16 +161,13 @@ benv-resolve() {
   # Resolve dotnet versions
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
     local runtimesDir="/opt/dotnet/runtimes"
-    versions=`benv-getVersions $runtimesDir`
-    resolvedVersion=`oryx resolveVersion "$value" "$versions"`
-    
-    if [ -z "$resolvedVersion" ]; then
+    if [ ! -d "$runtimesDir/$value" ]; then
       echo >&2 benv: dotnet version \'$value\' not found\; choose one of:
       benv-versions >&2 $runtimesDir
       return 1
     fi
 
-    local SDK_DIR=$(readlink $"$runtimesDir/$resolvedVersion/sdk")
+    local SDK_DIR=$(readlink $"$runtimesDir/$value/sdk")
 
     toolsDir="$SDK_DIR/tools"
     if [ -d "$toolsDir" ]; then
