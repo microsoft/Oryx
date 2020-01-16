@@ -4,8 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
-using System.Linq;
-using Scriban.Syntax;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -20,9 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("hugo-sample-yaml")]
         public void Validate_IsHugoApp(string appName)
         {
+            var environment = new TestEnvironment();
             var sourceDirectory = Path.Combine(_nodeSampleDir, appName);
             var sourceRepo = new LocalSourceRepo(sourceDirectory);
-            var result = StaticSiteGeneratorHelper.IsHugoApp(sourceRepo);
+            var result = StaticSiteGeneratorHelper.IsHugoApp(sourceRepo, environment);
 
             Assert.True(result);
         }

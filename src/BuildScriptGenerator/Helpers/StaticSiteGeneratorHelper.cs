@@ -16,35 +16,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal static class StaticSiteGeneratorHelper
     {
+        private static string HugoEnvironmentVariablePrefix = "HUGO_";
+        private static string[] HugoConfigurationVariables =
+            { "archetypeDir", "baseURL", "contentDir", "languageCode", "layoutDir", "staticDir", "title", "theme" };
+
         /// <summary>
         /// Checks whether or not the given repository uses a static site generator.
         /// </summary>
         /// <param name="sourceRepo">Source repo for the application.</param>
+        /// <param name="environment">Environment abstraction.</param>
         /// <returns>True if the app uses a static site generator, false otherwise.</returns>
-        public static bool IsStaticSite(ISourceRepo sourceRepo)
+        public static bool IsStaticSite(ISourceRepo sourceRepo, IEnvironment environment)
         {
-            return IsHugoApp(sourceRepo);
+            return IsHugoApp(sourceRepo, environment);
         }
 
         /// <summary>
         /// Checks whether or not the given repository is a Hugo application.
         /// </summary>
         /// <param name="sourceRepo">Source repo for the application.</param>
+        /// <param name="environment">Environment abstraction.</param>
         /// <returns>True if the app is a Hugo app, false otherwise.</returns>
-        public static bool IsHugoApp(ISourceRepo sourceRepo)
+        public static bool IsHugoApp(ISourceRepo sourceRepo, IEnvironment environment)
         {
             // Check for Hugo environment variables
-            var environmentVariables = Environment.GetEnvironmentVariables();
+            var environmentVariables = environment.GetEnvironmentVariables();
             foreach (var key in environmentVariables?.Keys)
             {
-                if (key.ToString().StartsWith("HUGO"))
+                if (key.ToString().StartsWith(HugoEnvironmentVariablePrefix))
                 {
                     return true;
                 }
             }
 
             // Hugo configuration variables: https://gohugo.io/getting-started/configuration/#all-configuration-settings
-            var hugoVariables = new[] { "baseURL", "title", "languageCode", "theme" };
             var tomlFilePaths = new List<string>();
             var yamlFilePaths = new List<string>();
             var jsonFilePaths = new List<string>();
@@ -84,7 +89,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             foreach (var path in tomlFilePaths)
             {
                 var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, path);
-                if (tomlTable.Keys.Any(k => hugoVariables.Contains(k)))
+                if (tomlTable.Keys
+                    .Any(k => HugoConfigurationVariables.Contains(k, StringComparer.OrdinalIgnoreCase)))
                 {
                     return true;
                 }
@@ -93,7 +99,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             foreach (var path in yamlFilePaths)
             {
                 var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, path);
-                if (yamlNode.Children.Keys.Select(k => k.ToString()).Any(k => hugoVariables.Contains(k)))
+                if (yamlNode.Children.Keys
+                    .Select(k => k.ToString())
+                    .Any(k => HugoConfigurationVariables.Contains(k, StringComparer.OrdinalIgnoreCase)))
                 {
                     return true;
                 }
@@ -102,7 +110,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             foreach (var path in jsonFilePaths)
             {
                 var jObject = ParserHelper.ParseJsonFile(sourceRepo, path);
-                if (jObject.Children().Select(c => c.Path).Any(c => hugoVariables.Contains(c)))
+                if (jObject.Children()
+                    .Select(c => c.Path)
+                    .Any(c => HugoConfigurationVariables.Contains(c, StringComparer.OrdinalIgnoreCase)))
                 {
                     return true;
                 }

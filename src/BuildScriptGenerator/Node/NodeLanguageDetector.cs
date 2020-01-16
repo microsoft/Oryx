@@ -33,17 +33,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodeVersionProvider _versionProvider;
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly ILogger<NodeLanguageDetector> _logger;
+        private readonly IEnvironment _environment;
         private readonly IStandardOutputWriter _writer;
 
         public NodeLanguageDetector(
             INodeVersionProvider nodeVersionProvider,
             IOptions<NodeScriptGeneratorOptions> options,
             ILogger<NodeLanguageDetector> logger,
+            IEnvironment environment,
             IStandardOutputWriter writer)
         {
             _versionProvider = nodeVersionProvider;
             _nodeScriptGeneratorOptions = options.Value;
             _logger = logger;
+            _environment = environment;
             _writer = writer;
         }
 
@@ -58,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 isNodeApp = true;
             }
-            else if (StaticSiteGeneratorHelper.IsStaticSite(sourceRepo))
+            else if (StaticSiteGeneratorHelper.IsStaticSite(sourceRepo, _environment))
             {
                 isNodeApp = true;
             }
