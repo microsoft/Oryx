@@ -76,6 +76,11 @@ RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
     /tmp/scripts/installDotNetCore.sh
 
+RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    DOTNET_SDK_SHA=$DOT_NET_CORE_31_SDK_SHA512 \
+    /tmp/scripts/installDotNetCore.sh
+
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
     && find /var/nuget -type d -exec chmod 777 {} \;
@@ -84,7 +89,8 @@ RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
  && ln -s 2.1 2 \
- && ln -s 2 lts
+ && ln -s 3.1 3 \
+ && ln -s 3 lts
 
 RUN set -ex \
  && dotnetDir=/opt/dotnet \
@@ -98,8 +104,12 @@ RUN set -ex \
  && ln -s $NET_CORE_APP_21 2.1 \
  && ln -s 2.1 2 \
  && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
+ && mkdir $NET_CORE_APP_31 \
+ && ln -s $NET_CORE_APP_31 3.1 \
+ && ln -s 3.1 3 \
+ && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
  # LTS sdk <-- LTS runtime's sdk
- && ln -s 2.1 lts \
+ && ln -s 3 lts \
  && ltsSdk=$(readlink lts/sdk) \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
@@ -122,11 +132,11 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
 COPY images/build/installNpm.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installNpm.sh
 RUN /tmp/scripts/installNpm.sh
-COPY images/receivePgpKeys.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
+COPY images/receiveGpgKeys.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/receiveGpgKeys.sh
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+ && /tmp/scripts/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
@@ -137,12 +147,9 @@ RUN set -ex \
 
 RUN set -ex \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
- && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
- && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12 \
+ && ln -s $NODE8_VERSION /opt/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/nodejs/10 \
+ && ln -s $NODE12_VERSION /opt/nodejs/12 \
  && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \
@@ -163,8 +170,8 @@ RUN set -ex \
 # Python intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-3.7-${PYTHON_BASE_TAG} AS py37-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-3.8-${PYTHON_BASE_TAG} AS py38-build-base
 ###
 # End Python intermediate stages
 ###

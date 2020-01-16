@@ -13,18 +13,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class BenvTest
     {
-        // For the tests in this class we are using a non-test build image since we will be playing with paths
-        // and would get permission errors otherwise.
-        public const string FullBuildImageName = Settings.ProdBuildImageName;
-        public const string SlimBuildImageName = Settings.ProdSlimBuildImageName;
-
         private ITestOutputHelper _output;
         private DockerCli _dockerCli;
+        private ImageTestHelper _imageHelper;
 
         public BenvTest(ITestOutputHelper output)
         {
             _output = output;
             _dockerCli = new DockerCli();
+            _imageHelper = new ImageTestHelper(output);
         }
 
         [Theory]
@@ -55,7 +52,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(FullBuildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -93,7 +91,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(SlimBuildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestSlimBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -126,7 +125,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(FullBuildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -159,7 +159,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(SlimBuildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestSlimBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -172,9 +173,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(FullBuildImageName)]
-        [InlineData(SlimBuildImageName)]
-        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string buildImageName)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string tag)
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -188,7 +189,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(buildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestBuildImage(tag);
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -202,9 +204,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(FullBuildImageName)]
-        [InlineData(SlimBuildImageName)]
-        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string buildImageName)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string tag)
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -220,7 +222,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(buildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestBuildImage(tag);
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -234,9 +237,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(FullBuildImageName)]
-        [InlineData(SlimBuildImageName)]
-        public void InstalledNodeModulesExecutablesAreOnPath(string buildImageName)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
             var serveNodeModulePathPrefix = "/opt/nodejs/";
@@ -246,7 +249,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(buildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestBuildImage(tag);
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -259,9 +263,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(FullBuildImageName)]
-        [InlineData(SlimBuildImageName)]
-        public void InstalledPythonExecutablesAreOnPath(string buildImageName)
+        [InlineData("latest")]
+        [InlineData("slim")]
+        public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange
             var pythonPacakageExecutablePathPrefix = "/opt/python/";
@@ -271,7 +275,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(buildImageName, "/bin/bash", "-c", script);
+            var image = _imageHelper.GetTestBuildImage(tag);
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(

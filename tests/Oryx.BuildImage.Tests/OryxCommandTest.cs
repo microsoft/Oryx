@@ -3,21 +3,78 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Xunit;
-using Xunit.Abstractions;
+using System;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class OryxCommandTest : SampleAppsTestBase
     {
+        private const int UnsupportedPlatform = 2;
+        private const int UnsupportedPlatformVersion = 3;
+
         public OryxCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
-        public void Build_UsesCwd_WhenNoSourceDirGiven()
+        public void Build_ReturnsExpectedErrorCode_ForUnsupportedPlatformException()
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+               .AddCommand("mkdir /tmp/app")
+               .AddCommand("oryx build /tmp/app -o /tmp/out")
+               .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.Equal(UnsupportedPlatform, result.ExitCode);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ReturnsExpectedErrorCode_ForUnsupportedVersionException()
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+               .AddCommand("mkdir /tmp/app")
+               .AddCommand("oryx build /tmp/app -o /tmp/out --platform dotnet --platform-version 0.0")
+               .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.Equal(UnsupportedPlatformVersion, result.ExitCode);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildImage_Build_UsesCwd_WhenNoSourceDirGiven()
         {
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -39,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_WithNoUsableToolsDetected()
+        public void BuildImage_CanExec_WithNoUsableToolsDetected()
         {
             // Arrange
             var appPath = "/tmp";
@@ -63,7 +120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_SingleCommand()
+        public void BuildImage_CanExec_SingleCommand()
         {
             // Arrange
             var appPath = "/tmp";
@@ -91,7 +148,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_CommandInSourceDir()
+        public void BuildImage_CanExec_CommandInSourceDir()
         {
             // Arrange
             var appPath = "/tmp";
@@ -120,14 +177,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanExec_MultipleCommands_WithOlderToolVersions()
+        public void BuildImage_CanExec_MultipleCommands_WithOlderToolVersions()
         {
             // Arrange
             var appPath = "/tmp";
             var cmd = "node --version && php --version";
 
             var expectedNodeVersion = NodeVersions.Node8Version;
-            var expectedPhpVersion  = PhpVersions.Php72Version;
+            var expectedPhpVersion = PhpVersions.Php72Version;
 
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}",
@@ -155,7 +212,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Exec_PropagatesFailures()
+        public void BuildImage_Exec_PropagatesFailures()
         {
             // Arrange
             var appPath = "/tmp";
@@ -179,5 +236,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        private string ConvertToRuntimeName(string platformName)
+        {
+            if (string.Equals(platformName, DotNetCoreConstants.LanguageName, StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "dotnetcore";
+            }
+
+            if (string.Equals(platformName, NodeConstants.NodeJsName, StringComparison.OrdinalIgnoreCase))
+            {
+                platformName = "node";
+            }
+
+            return platformName;
+        }
+
     }
 }

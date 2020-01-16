@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
            MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
         {
-            // This test is for the following scenario: 
-            // When we find no application insight dependency in package.json, but env variables  for 
+            // This test is for the following scenario:
+            // When we find no application insight dependency in package.json, but env variables  for
             // configuring application insights has been set in portal
 
             // Arrange
@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);
+            var imageName = _imageHelper.GetTestRuntimeImage("node", nodeVersion);
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
            MemberType = typeof(TestValueGenerator))]
         public async Task GeneratesScript_CanRun_AppInsights_NotConfigured(string nodeVersion)
         {
-            // This test is for the following scenario: 
+            // This test is for the following scenario:
             // When we find no application insight dependency in package.json and env variables for
             // configuring application insights has not been set properly in portal
 
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = string.Concat("oryxdevmcr.azurecr.io/public/oryx/node-", nodeVersion);
+            var imageName = _imageHelper.GetTestRuntimeImage("node", nodeVersion);
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
 
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

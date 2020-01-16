@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

@@ -12,15 +12,15 @@ sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-  if [[ $sourceImage != *:latest ]]; then
+  if [[ $sourceImage == *:*-* ]]; then
     echo "Pulling the source image $sourceImage ..."
     docker pull "$sourceImage" | sed 's/^/     /'
-    
-    # We tag out runtime images in dev differently than in tag. In dev we have builddefnitionname as part of tag. 
-    # We don't want that in our prod tag. Also we want versions (like node-10.10:latest to be tagged as 
-    # node:10.10-latest) as part of tag. We need to parse the tags so that we can reconstruct tags suitable for our 
+
+    # We tag out runtime images in dev differently than in tag. In dev we have builddefnitionname as part of tag.
+    # We don't want that in our prod tag. Also we want versions (like node-10.10:latest to be tagged as
+    # node:10.10-latest) as part of tag. We need to parse the tags so that we can reconstruct tags suitable for our
     # prod images.
-    
+
     IFS=':'
     read -ra imageNameParts <<< "$sourceImage"
     repo=${imageNameParts[0]}
@@ -29,17 +29,19 @@ while read sourceImage; do
     releaseTagName=$(echo $tag | sed "s/$replaceText//g")
 
     IFS='-'
+    read -ra tagParts <<< "$tag"
+    version="${tagParts[0]}"
+
     read -ra repoParts <<< "$repo"
     acrRepoName=${repoParts[0]}
     acrProdRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/oryxmcr/g")
-    version=${repoParts[1]}
     acrLatest="$acrProdRepo:$version"
-    acrSpecific="$acrProdRepo:$version-$releaseTagName"
+    acrSpecific="$acrProdRepo:$releaseTagName"
 
     echo
     echo "Tagging the source image with tag $acrSpecific..."
     echo "$acrSpecific">>"$outFileMCR"
-    docker tag "$sourceImage" "$acrSpecific" 
+    docker tag "$sourceImage" "$acrSpecific"
 
     if [ "$sourceBranchName" == "master" ]; then
       echo "Tagging the source image with tag $acrLatest..."

@@ -3,7 +3,7 @@ ARG AGENTBUILD
 ARG PYTHON_BASE_TAG
 ARG PHP_BUILD_BASE_TAG
 ARG YARN_CACHE_BASE_TAG
-FROM oryxdevmcr.azurecr.io/public/oryx/build-slim AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/build:slim AS main
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
 # Configure locale (required for Python)
@@ -19,6 +19,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /tmp/scripts
+COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
+COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
+COPY images/build/createFlattenedDotNetCoreInstall.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/createFlattenedDotNetCoreInstall.sh
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -31,8 +35,6 @@ RUN apt-get update \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
-COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
 COPY images/build/installDotNetCore.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/installDotNetCore.sh
 
@@ -93,7 +95,6 @@ RUN set -ex \
  # 3.0 sdk <-- 3.0 runtime's sdk
  && mkdir $NET_CORE_APP_30 \
  && ln -s $NET_CORE_APP_30 3.0 \
- && ln -s 3.0 3 \
  && ln -s $sdksDir/$DOT_NET_CORE_30_SDK_VERSION $NET_CORE_APP_30/sdk
 
 # Install Node.js, NPM, Yarn
@@ -128,6 +129,8 @@ RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && ~/n/bin/n -d 10.1.0 \
  && ~/n/bin/n -d 10.10.0 \
  && ~/n/bin/n -d 10.14.2 \
+ && ~/n/bin/n -d 10.16.3 \
+ && ~/n/bin/n -d 12.9.1 \
  && ~/n/bin/n -d $NODE6_VERSION \
  && mv /usr/local/n/versions/node /opt/nodejs \
  && rm -rf /usr/local/n ~/n
@@ -158,9 +161,10 @@ RUN set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
+ && ln -s 10.16.3 /opt/nodejs/10.16 \
+ && ln -s 12.9.1 /opt/nodejs/12.9 \
  && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/nodejs/$NODE6_MAJOR_MINOR_VERSION \ 
- && ln -s $NODE6_MAJOR_MINOR_VERSION /opt/nodejs/6
+ && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -177,8 +181,8 @@ RUN set -ex \
 # Python intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/python-build-base:2.7-${PYTHON_BASE_TAG} AS py27-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.6-${PYTHON_BASE_TAG} AS py36-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-2.7-${PYTHON_BASE_TAG} AS py27-build-base
+FROM mcr.microsoft.com/oryx/base:python-build-3.6-${PYTHON_BASE_TAG} AS py36-build-base
 ###
 # End Python intermediate stages
 ###
@@ -206,15 +210,15 @@ FROM dotnet-install AS buildscriptbuilder
 # PHP intermediate stages
 # Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
 ###
-FROM mcr.microsoft.com/oryx/php-build-base:5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
-FROM mcr.microsoft.com/oryx/php-build-base:7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-5.6-${PHP_BUILD_BASE_TAG} AS php56-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-7.0-${PHP_BUILD_BASE_TAG} AS php70-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-7.2-${PHP_BUILD_BASE_TAG} AS php72-build-base
+FROM mcr.microsoft.com/oryx/base:php-build-7.3-${PHP_BUILD_BASE_TAG} AS php73-build-base
 ###
 # End PHP intermediate stages
 ###
 
-FROM mcr.microsoft.com/oryx/build-yarn-cache:${YARN_CACHE_BASE_TAG} AS yarn-cache-base
+FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
@@ -246,6 +250,8 @@ WORKDIR /
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
+RUN /tmp/scripts/createFlattenedDotNetCoreInstall.sh
+COPY images/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt

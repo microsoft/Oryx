@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -100,10 +100,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData("3", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData("3", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData("3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
         {
             // Arrange
@@ -207,14 +208,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
+        [InlineData("10.16", "v10.16.3")]
+        [InlineData("12.9", "v12.9.1")]
         [InlineData("6", "v" + NodeVersions.Node6Version)]
         [InlineData("8", "v" + NodeVersions.Node8Version)]
         [InlineData("10", "v" + NodeVersions.Node10Version)]
         [InlineData("12", "v" + NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node6MajorMinorVersion, "v" + NodeVersions.Node6Version)]
-        [InlineData(NodeVersions.Node8MajorMinorVersion, "v" + NodeVersions.Node8Version)]
-        [InlineData(NodeVersions.Node10MajorMinorVersion, "v" + NodeVersions.Node10Version)]
-        [InlineData(NodeVersions.Node12MajorMinorVersion, "v" + NodeVersions.Node12Version)]
+        [InlineData(NodeVersions.Node6Version, "v" + NodeVersions.Node6Version)]
+        [InlineData(NodeVersions.Node8Version, "v" + NodeVersions.Node8Version)]
+        [InlineData(NodeVersions.Node10Version, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
         [InlineData("lts", "v" + NodeConstants.NodeLtsVersion)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
@@ -557,7 +559,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet_foo=1")
                 .AddCommand("dotnet --version")

@@ -31,18 +31,17 @@ declare -r PACK_IMAGE_NAME='pack'
 declare -r PACK_STACK_BASE_IMAGE_NAME="pack-stack-base"
 declare -r PACK_BUILDER_IMAGE_NAME="pack-builder"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
-declare -r ORYXTESTS_SLIM_BUILDIMAGE_REPO="oryxtests/build-slim"
 
 declare -r DEVBOX_BUILD_IMAGES_REPO="oryx/build"
-declare -r DEVBOX_SLIM_BUILD_IMAGE_REPO="oryx/build-slim"
 declare -r DEVBOX_RUNTIME_IMAGES_REPO_PREFIX="oryx"
 
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
-declare -r ACR_SLIM_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/build-slim"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
 declare -r ACR_PACK_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_IMAGE_NAME"
+
+declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"

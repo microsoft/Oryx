@@ -20,8 +20,10 @@
     dot-net-core-21-sdk-sha512: 8601EC68FA8978C5A08A696CC69F5E0AA9DABF274BADE40E2FD9DED2E563F2CC7A1CB418A95C9B52E1FA9B6C4A30993BE68CB3B6BBDA4598C57B37EC9CE992AD
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-22-sdk-sha512: 81937DE0874EE837E3B42E36D1CF9E04BD9DEFF6BA60D0162AE7CA9336A78F733E624136D27F559728DF3F681A72A669869BF91D02DB47C5331398C0CFDA9B44
-    dot-net-core-30-sdk-version: 3.0.100
-    dot-net-core-30-sdk-sha512: 766da31f9a0bcfbf0f12c91ea68354eb509ac2111879d55b656f19299c6ea1c005d31460dac7c2a4ef82b3edfea30232c82ba301fb52c0ff268d3e3a1b73d8f7
+    dot-net-core-30-sdk-version: 3.0.101
+    dot-net-core-30-sdk-sha512: 8cd6070c9df1272ac3f2a0e9bd8c1fc2cfef38907fa2e3c81384f005168f45036b5904b4f731cbe37d2b3fe558f560008c481939093b0d08ef0f1778ca97f186
+    dot-net-core-31-sdk-version: 3.1.100
+    dot-net-core-31-sdk-sha512: 5217ae1441089a71103694be8dd5bb3437680f00e263ad28317665d819a92338a27466e7d7a2b1f6b74367dd314128db345fa8fff6e90d0c966dea7a9a43bd21
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -31,13 +33,14 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20191105.2
+    dot-net-core-runtime-base-tag: 20191205.1
     net-core-app-10: 1.0.16
-    net-core-app-11: 1.1.14
+    net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
     net-core-app-21: 2.1.13
     net-core-app-22: 2.2.7
-    net-core-app-30: 3.0.0
+    net-core-app-30: 3.0.1
+    net-core-app-31: 3.1.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -47,7 +50,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20191105.2
+    python-base-tag: 20191205.1
     pip-version: 19.3.1
     python27-version: 2.7.17
     python36-version: 3.6.9
@@ -62,17 +65,17 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-build-base-tag: 20191105.2
-    php-runtime-base-tag: 20191105.2
-    composer-version: 1.9.0
-    composer-sha384: a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1
+    php-build-base-tag: 20191219.3
+    php-runtime-base-tag: 20191219.3
+    composer-version: 1.9.1
+    composer-sha384: baf1608c33254d00611ac1705c1d9958c817a1a33bce370c0595974b342601bd80b92a3f46067da89e3b06bff421f182
     # hashes are for .tar.xz
-    php73-version: 7.3.11
+    php73-version: 7.3.12
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
-    php73-tar-sha256: 657cf6464bac28e9490c59c07a2cf7bb76c200f09cfadf6e44ea64e95fa01021
-    php72-version: 7.2.24
+    php73-tar-sha256: aafe5e9861ad828860c6af8c88cdc1488314785962328eb1783607c1fdd855df
+    php72-version: 7.2.25
     php72-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
-    php72-tar-sha256: a6a6cc03388060aa5f8f9e45799b72bce1c7ed7b9d7b3f1187787202aad91d25
+    php72-tar-sha256: 746efeedc38e6ff7b1ec1432440f5fa801537adf6cd21e4afb3f040e5b0760a9
     php70-version: 7.0.33
     php70-keys: 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php70-tar-sha256: ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96
@@ -102,19 +105,15 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20191105.2
-    yarn-cache-base-tag: 20191105.2
+    node-runtime-base-tag: 20191219.3
+    yarn-cache-base-tag: 20191219.3
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
-    node6-major-minor-version: 6.17
-    node8-version: 8.16.2
-    node8-major-minor-version: 8.16
-    node10-version: 10.17.0
-    node10-major-minor-version: 10.17
-    node12-version: 12.13.0
-    node12-major-minor-version: 12.13
+    node8-version: 8.17.0
+    node10-version: 10.18.0
+    node12-version: 12.14.0
   outputs:
     - type: shell
       directory: build

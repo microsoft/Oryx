@@ -28,13 +28,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
         {
-            // NOTE:
-            // 1. Use intermediate directory(which here is local to container) to avoid errors like
-            //      "tar: node_modules/form-data: file changed as we read it"
-            //    related to zipping files on a folder which is volume mounted.
-            // 2. Use output directory within the container due to 'rsync'
-            //    having issues with volume mounted directories
-
             // Arrange
             var compressFormat = "tar-gz";
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
@@ -50,9 +43,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
                 $"--language-version {nodeVersion} -p compress_node_modules={compressFormat}")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -65,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -101,9 +93,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
                 $"--platform-version {nodeVersion} -p compress_node_modules=zip")
-               .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -112,7 +103,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -142,10 +133,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
                 $"--platform-version {nodeVersion} -p {NodePlatform.CompressNodeModulesPropertyKey}=zip" +
                 $" -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
-               .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -154,7 +144,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                $"oryxdevmcr.azurecr.io/public/oryx/node-{nodeVersion}",
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -162,6 +152,54 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Say It Again", data);
+                });
+        }
+
+        [Theory]
+        [InlineData("true")]
+        [InlineData("false")]
+        public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressed(string pruneDevDependency)
+        {
+            // Arrange
+            // Use a separate volume for output due to rsync errors
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var nodeVersion = "10";
+            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appName = "node-nested-nodemodules";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .ToString();
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"--platform-version {nodeVersion} -p {NodePlatform.CompressNodeModulesPropertyKey}=tar-gz"+
+                $" -p {NodePlatform.PruneDevDependenciesPropertyKey}={pruneDevDependency}")
+                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+               .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[] { "-c", runAppScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to Express", data);
                 });
         }
     }

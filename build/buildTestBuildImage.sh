@@ -14,8 +14,8 @@ source $REPO_DIR/build/__functions.sh
 
 echo
 echo Building build images for tests...
-docker build -t $ORYXTESTS_BUILDIMAGE_REPO -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
-docker build -t $ORYXTESTS_SLIM_BUILDIMAGE_REPO -f "$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" .
+docker build -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+docker build -t "$ORYXTESTS_BUILDIMAGE_REPO:slim" -f "$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" .
 
 echo
 dockerCleanupIfRequested

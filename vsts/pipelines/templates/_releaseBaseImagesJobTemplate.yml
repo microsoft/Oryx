@@ -1,109 +1,60 @@
 jobs:
 - job: Release_PhpBuildBaseImage
   displayName: Push PHP Build Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
-
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]true"
-      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]false"
-    displayName: 'Set variables'
-      
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'php-build'
 
 - job: Release_PhpRuntimeBaseImage
   displayName: Push PHP Runtime Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
-
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]true"
-      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]false"
-    displayName: 'Set variables'
-      
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'php'
 
 - job: Release_DotNetCoreRuntimeBaseImage
   displayName: Push DotNetCore Runtime Base Images to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
-
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseDotNetCoreRunBaseImage;]true"
-    displayName: 'Set variables'
-      
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'dotnetcore'
 
 - job: Release_PythonBaseImage
   displayName: Push Python Build Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
-
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]true"
-      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]false"
-    displayName: 'Set variables'
-      
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'python-build'
 
 - job: Release_NodeBaseImage
   displayName: Push Node Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
-
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]true"
-      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]false"
-    displayName: 'Set variables'
-      
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'node'
 
 - job: Release_YarnCacheBuildBaseImage
   displayName: Push Yarn Cache Build Base Image to MCR
+  timeoutInMinutes: 250
   pool:
     name: OryxLinux
-
   steps:
-  - script: |
-      echo "##vso[task.setvariable variable=ReleasePHPBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePythonBuildBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleasePHPRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseNodeRunBaseImage;]false"
-      echo "##vso[task.setvariable variable=ReleaseYarnBuildCacheImage;]true"
-    displayName: 'Set variables'
-      
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'yarn-cache-build'

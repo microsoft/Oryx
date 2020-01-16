@@ -6,5 +6,5 @@ RUN apt-get update \
 		xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY images/receivePgpKeys.sh /tmp/scripts/receivePgpKeys.sh
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
+COPY images/receiveGpgKeys.sh /tmp/scripts/receiveGpgKeys.sh
+RUN chmod +x /tmp/scripts/receiveGpgKeys.sh

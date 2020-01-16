@@ -10,7 +10,7 @@ steps:
     file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"
     echo "Release tag name is:"
     cat "$file"
-    tagName=""
+    tagName="$(Build.BuildNumber)"
     if [ -f "$file" ]; then
       tagName=`cat $file`
     fi
