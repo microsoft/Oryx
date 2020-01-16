@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
-                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand($"oryx script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

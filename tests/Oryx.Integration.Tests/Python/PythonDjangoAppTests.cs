@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddBuildCommand($"{appDir} --platform python --language-version 3.6 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform python --language-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 // User would do this through app settings
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

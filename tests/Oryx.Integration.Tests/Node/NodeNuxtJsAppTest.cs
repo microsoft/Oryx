@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 // Note: NuxtJS needs the host to be specified this way
                 .SetEnvironmentVariable("HOST", "0.0.0.0")
                 .SetEnvironmentVariable("PORT", ContainerAppPort.ToString())
-                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand($"oryx script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 // Note: NuxtJS needs the host to be specified this way
                 .SetEnvironmentVariable("HOST", "0.0.0.0")
                 .SetEnvironmentVariable("PORT", ContainerAppPort.ToString())
-                .AddCommand($"oryx -appPath {appOutputDir}")
+                .AddCommand($"oryx script -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()

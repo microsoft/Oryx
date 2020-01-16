@@ -10,6 +10,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json.Linq;
 
@@ -37,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
         private readonly NodeLanguageDetector _detector;
+        private readonly NodePlatformInstaller _platformInstaller;
         private readonly IEnvironment _environment;
 
         public NodePlatform(
@@ -44,12 +46,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             INodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatform> logger,
             NodeLanguageDetector detector,
+            NodePlatformInstaller platformInstaller,
             IEnvironment environment)
         {
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
             _logger = logger;
             _detector = detector;
+            _platformInstaller = platformInstaller;
             _environment = environment;
         }
 
@@ -64,10 +68,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
-            var buildProperties = new Dictionary<string, string>();
+            string installationScriptSnippet = null;
+            var useLatestVersion = _environment.GetBoolEnvironmentVariable(SdkStorageConstants.UseLatestVersion);
+            if (useLatestVersion.HasValue && useLatestVersion.Value)
+            {
+                if (!_platformInstaller.IsVersionAlreadyInstalled(ctx.NodeVersion))
+                {
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.NodeVersion);
+                }
+            }
 
+            var buildProperties = new Dictionary<string, string>();
             // Write the version to the manifest file
-            buildProperties[$"{NodeConstants.NodeJsName}_version"] = ctx.NodeVersion;
+            buildProperties[ManifestFilePropertyKeys.NodeVersion] = ctx.NodeVersion;
 
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
@@ -190,6 +203,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = buildProperties,
+                InstallationScriptSnippet = installationScriptSnippet,
             };
         }
 

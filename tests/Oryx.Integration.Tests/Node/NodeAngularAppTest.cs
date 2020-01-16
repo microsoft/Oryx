@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=4200")
-                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand($"oryx script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=4200")
-                .AddCommand($"oryx -appPath {appOutputDir}")
+                .AddCommand($"oryx script -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=4200")
-                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand($"oryx script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -205,7 +205,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=4200")
-                .AddCommand($"oryx -appPath {appOutputDir}")
+                .AddCommand($"oryx script -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()

@@ -66,24 +66,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
-        private string VerifyAndResolveVersion(string version)
+        private string VerifyAndResolveVersion(string versionRange)
         {
-            if (string.IsNullOrEmpty(version))
-            {
-                return _pythonScriptGeneratorOptions.PythonDefaultVersion;
-            }
+            versionRange = versionRange ?? ">0";
 
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
+                versionRange,
                 _versionProvider.SupportedPythonVersions);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
                     PythonConstants.PythonName,
-                    version,
+                    versionRange,
                     _versionProvider.SupportedPythonVersions);
-                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the Python platform.");
+                _logger.LogError(exc, $"Exception caught, the version '{versionRange}' is not supported for the Python platform.");
                 throw exc;
             }
 

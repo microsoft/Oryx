@@ -543,6 +543,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new[] { "5.4.2", "6.0.0" });
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
 
@@ -551,6 +552,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
+                new NodePlatformInstaller(commonOptions, environment, new TestHttpClientFactory()),
                 environment);
         }
 

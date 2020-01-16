@@ -20,6 +20,7 @@ type DotnetCoreStartupScriptGenerator struct {
 	DefaultAppFilePath string
 	BindPort           string
 	Manifest           common.BuildManifest
+	SetupEnvironment   bool
 }
 
 const DefaultBindPort = "8080"
@@ -30,6 +31,10 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	defer logger.Shutdown()
 
 	logger.LogInformation("Generating script for published output.")
+
+	if gen.SetupEnvironment {
+		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.AppPath))
+	}
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)

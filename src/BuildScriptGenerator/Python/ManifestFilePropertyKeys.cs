@@ -10,5 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string CompressedVirtualEnvFile = "compressedVirtualEnvFile";
         internal const string VirtualEnvName = "virtualEnvName";
         internal const string PackageDir = "packagedir";
+        internal const string PythonVersion = nameof(PythonVersion);
     }
 }

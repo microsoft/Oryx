@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             testEnv.Variables[PythonConstants.PythonDefaultVersionEnvVarName] = defaultVersion;
 
             var nodeVersionProvider = new TestVersionProvider(new[] { Common.PythonVersions.Python37Version });
-
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
             var scriptGeneratorOptions = Options.Create(new PythonScriptGeneratorOptions());
             var optionsSetup = new PythonScriptGeneratorOptionsSetup(testEnv);
             optionsSetup.Configure(scriptGeneratorOptions.Value);
@@ -80,7 +80,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 nodeVersionProvider,
                 testEnv,
                 NullLogger<PythonPlatform>.Instance,
-                detector: null);
+                detector: null,
+                new PythonPlatformInstaller(commonOptions, testEnv, new TestHttpClientFactory()));
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appVolume.ContainerDir} --platform python --platform-version {pythonVersion} --debug")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appVolume.ContainerDir} -bindPort {ContainerPort}" +
+                .AddCommand($"oryx script -appPath {appVolume.ContainerDir} -bindPort {ContainerPort}" +
                             $" -debugAdapter ptvsd {scriptGenDebugPortArg} -debugWait")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();

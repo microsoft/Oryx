@@ -133,7 +133,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var nodeVersionRange = packageJson?.engines?.node?.Value as string;
             if (nodeVersionRange == null)
             {
-                nodeVersionRange = _nodeScriptGeneratorOptions.NodeJsDefaultVersion;
+                // Use the latest available version
+                nodeVersionRange = ">0";
             }
 
             string nodeVersion = null;

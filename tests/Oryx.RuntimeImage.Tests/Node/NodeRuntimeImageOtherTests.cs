@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
-                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
+                .AddCommand("oryx script -userStartupCommand entry.sh -appPath " + appPath)
                 .AddCommand(". ./run.sh") // Source the default output path
                 .ToString();
 
@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"cd {dir}/app")
                 .AddCommand("npm install")
                 .AddCommand("cd ..")
-                .AddCommand($"oryx -remoteDebug -debugPort={containerDebugPort}")
+                .AddCommand($"oryx script -remoteDebug -debugPort={containerDebugPort}")
                 .AddCommand("./run.sh")
                 .ToString();
 

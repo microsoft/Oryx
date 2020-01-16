@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -26,9 +27,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DefaultProjectFileProvider _projectFileProvider;
+        private readonly IEnvironment _environment;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
+        private readonly DotNetCorePlatformInstaller _platformInstallater;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
         private readonly BuildScriptGeneratorOptions _buildOptions;
 
@@ -38,14 +41,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
+            DotNetCorePlatformInstaller platformInstallater,
             IOptions<BuildScriptGeneratorOptions> buildOptions,
+            IEnvironment environment,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCorePlatformOptions)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
+            _environment = environment;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
+            _platformInstallater = platformInstallater;
             _dotNetCorePlatformOptions = dotNetCorePlatformOptions.Value;
             _buildOptions = buildOptions.Value;
         }
@@ -61,11 +68,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            string installationScriptSnippet = null;
+            var useLatestVersion = _environment.GetBoolEnvironmentVariable(SdkStorageConstants.UseLatestVersion);
+            if (useLatestVersion.HasValue && useLatestVersion.Value)
+            {
+                if (!_platformInstallater.IsVersionAlreadyInstalled(context.DotNetCoreVersion))
+                {
+                    installationScriptSnippet = _platformInstallater.GetInstallerScriptSnippet(
+                        context.DotNetCoreVersion);
+                }
+            }
+
             var buildProperties = new Dictionary<string, string>();
 
-            // Write the version to the manifest file
-            var key = $"{DotNetCoreConstants.LanguageName}_version";
-            buildProperties[key] = context.DotNetCoreVersion;
+            // Write the SDK version rather than the 
+            buildProperties[ManifestFilePropertyKeys.DotNetCoreRuntimeVersion] = context.DotNetCoreVersion;
+            buildProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] =
+                _platformInstallater.RuntimeAndSdkVersions[context.DotNetCoreVersion];
 
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
@@ -94,12 +113,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendLine("#!/bin/bash")
                 .AppendLine("set -e")
                 .AppendLine()
+                .AppendLine(installationScriptSnippet)
                 .AddScriptToCopyToIntermediateDirectory(
-                    sourceDir: ref sourceDir,
-                    intermediateDir: intermediateDir,
-                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
-                .AppendFormatWithLine("cd \"{0}\"", sourceDir)
-                .AppendLine();
+                 sourceDir: ref sourceDir,
+                 intermediateDir: intermediateDir,
+                 GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
+             .AppendFormatWithLine("cd \"{0}\"", sourceDir)
+             .AppendLine();
 
             scriptBuilder
                 .AddScriptToSetupSourceAndDestinationDirectories(

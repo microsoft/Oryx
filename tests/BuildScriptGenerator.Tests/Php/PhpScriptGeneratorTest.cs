@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -122,10 +123,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var phpVersionProvider = new TestPhpVersionProvider(new[] { "7.2.15", Common.PhpVersions.Php73Version });
 
             var scriptGeneratorOptions = Options.Create(new PhpScriptGeneratorOptions());
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
             var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(scriptGeneratorOptions.Value);
 
-            return new PhpPlatform(scriptGeneratorOptions, phpVersionProvider, NullLogger<PhpPlatform>.Instance, null);
+            return new PhpPlatform(
+                scriptGeneratorOptions, 
+                phpVersionProvider, 
+                NullLogger<PhpPlatform>.Instance, 
+                detector: null,
+                environment,
+                new PhpPlatformInstaller(commonOptions, environment, new TestHttpClientFactory()));
         }
 
         private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(

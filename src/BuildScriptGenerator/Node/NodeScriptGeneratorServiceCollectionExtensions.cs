@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ServiceDescriptor.Singleton<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());
             services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
             services.AddScoped<NodeLanguageDetector>();
+            services.AddScoped<NodePlatformInstaller>();
             return services;
         }
     }

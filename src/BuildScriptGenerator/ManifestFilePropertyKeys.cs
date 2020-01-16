@@ -10,5 +10,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string ZipAllOutput = nameof(ZipAllOutput);
 
         public const string OperationId = nameof(OperationId);
+
+        public const string PhpVersion = nameof(PhpVersion);
+
+        public const string NodeVersion = nameof(NodeVersion);
+
+        public const string DotNetCoreRuntimeVersion = nameof(DotNetCoreRuntimeVersion);
+
+        public const string DotNetCoreSdkVersion = nameof(DotNetCoreSdkVersion);
     }
 }

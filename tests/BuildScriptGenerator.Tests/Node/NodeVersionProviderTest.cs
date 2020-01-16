@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
@@ -60,7 +61,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 InstalledNodeVersionsDir = _rootDirPath,
                 InstalledNpmVersionsDir = _rootDirPath,
             };
-            return new NodeVersionProvider(Options.Create(options));
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
+            return new NodeVersionProvider(
+                Options.Create(options),
+                new TestEnvironment(),
+                new NodePlatformInstaller(commonOptions, new TestEnvironment(), new TestHttpClientFactory()));
         }
 
         public class TestFixture : IDisposable

@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} {bindPortFlag}")
+                .AddCommand($"oryx script -appPath {appDir} {bindPortFlag}")
                 .AddCommand(entrypointScript)
                 .ToString();
 

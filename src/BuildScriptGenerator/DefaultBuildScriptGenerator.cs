@@ -261,6 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ManifestDir = context.ManifestDir,
                 BuildProperties = buildProperties,
                 BenvPath = FilePaths.Benv,
+                InstallationScriptSnippets = snippets.Select(s => s.InstallationScriptSnippet),
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

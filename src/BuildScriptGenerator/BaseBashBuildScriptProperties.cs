@@ -66,5 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or set the path to benv file.
         /// </summary>
         public string BenvPath { get; set; }
+
+        public IEnumerable<string> InstallationScriptSnippets { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
@@ -40,18 +41,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IEnvironment _environment;
         private readonly ILogger<PythonPlatform> _logger;
         private readonly PythonLanguageDetector _detector;
+        private readonly PythonPlatformInstaller _platformInstaller;
 
         public PythonPlatform(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
             ILogger<PythonPlatform> logger,
-            PythonLanguageDetector detector)
+            PythonLanguageDetector detector,
+            PythonPlatformInstaller platformInstaller)
         {
             _pythonVersionProvider = pythonVersionProvider;
             _environment = environment;
             _logger = logger;
             _detector = detector;
+            _platformInstaller = platformInstaller;
         }
 
         public string Name => PythonConstants.PythonName;
@@ -65,11 +69,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            string installationScriptSnippet = null;
+            var useLatestVersion = _environment.GetBoolEnvironmentVariable(SdkStorageConstants.UseLatestVersion);
+            if (useLatestVersion.HasValue && useLatestVersion.Value)
+            {
+                if (!_platformInstaller.IsVersionAlreadyInstalled(context.PythonVersion))
+                {
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                        context.PythonVersion);
+                }
+            }
+
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PythonConstants.PythonName}_version";
-            manifestFileProperties[key] = context.PythonVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = context.PythonVersion;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -145,6 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                InstallationScriptSnippet = installationScriptSnippet,
             };
         }
 

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
@@ -22,17 +23,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
         private readonly PhpLanguageDetector _detector;
+        private readonly IEnvironment _environment;
+        private readonly PhpPlatformInstaller _platformInstaller;
 
         public PhpPlatform(
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
             IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
-            PhpLanguageDetector detector)
+            PhpLanguageDetector detector,
+            IEnvironment environment,
+            PhpPlatformInstaller platformInstaller)
         {
             _phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
             _phpVersionProvider = phpVersionProvider;
             _logger = logger;
             _detector = detector;
+            _environment = environment;
+            _platformInstaller = platformInstaller;
         }
 
         public string Name => PhpConstants.PhpName;
@@ -46,12 +53,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
+            string installationScriptSnippet = null;
+            var useLatestVersion = _environment.GetBoolEnvironmentVariable(SdkStorageConstants.UseLatestVersion);
+            if (useLatestVersion.HasValue && useLatestVersion.Value)
+            {
+                if (!_platformInstaller.IsVersionAlreadyInstalled(ctx.PhpVersion))
+                {
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.PhpVersion);
+                }
+            }
+
             var buildProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PhpConstants.PhpName}_version";
-            buildProperties[key] = ctx.PhpVersion;
-
+            buildProperties[ManifestFilePropertyKeys.PhpVersion] = ctx.PhpVersion;
             _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);
             bool composerFileExists = false;
 
@@ -77,9 +92,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
             }
 
-            var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
+
+            var props = new PhpBashBuildSnippetProperties
+            {
+                ComposerFileExists = composerFileExists,
+            };
             string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties =  buildProperties};
+            return new BuildScriptSnippet
+            { 
+                BashBuildScriptSnippet = snippet,
+                InstallationScriptSnippet = installationScriptSnippet,
+				BuildProperties =  buildProperties
+            };
         }
 
         public bool IsEnabled(RepositoryContext ctx)

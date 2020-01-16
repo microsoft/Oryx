@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ServiceDescriptor.Singleton<IConfigureOptions<DotNetCoreScriptGeneratorOptions>, DotNetCoreScriptGeneratorOptionsSetup>());
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
             services.AddScoped<DotNetCoreLanguageDetector>();
+            services.AddSingleton<DotNetCorePlatformInstaller>();
 
             // Note that the order of these project file providers is important. For example, if a user explicitly
             // specifies a project file using either the 'PROJECT' environment or the 'project' build property, we want

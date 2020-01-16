@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort} -output {startupFile}")
+                $"oryx script -appPath {appOutputDir} -bindPort {ContainerPort} -output {startupFile}")
                 .AddCommand(startupFile)
                 .ToString();
 
@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                $"oryx script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
                 .AddCommand(
-                $"oryx -appPath {appOutputDir}")
+                $"oryx script -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                $"oryx script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -217,7 +217,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                $"oryx script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {doesNotContainApp}")
                 .AddCommand(
-                $"oryx -appPath {doesNotContainApp} " +
+                $"oryx script -appPath {doesNotContainApp} " +
                 $"-defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
                 $"-bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
