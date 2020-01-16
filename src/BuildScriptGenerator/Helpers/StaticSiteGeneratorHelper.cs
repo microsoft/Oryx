@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>True if the app is a Hugo app, false otherwise.</returns>
         public static bool IsHugoApp(ISourceRepo sourceRepo)
         {
+            // Check for Hugo environment variables
+            var environmentVariables = Environment.GetEnvironmentVariables();
+            foreach (var key in environmentVariables?.Keys)
+            {
+                if (key.ToString().StartsWith("HUGO"))
+                {
+                    return true;
+                }
+            }
+
             // Hugo configuration variables: https://gohugo.io/getting-started/configuration/#all-configuration-settings
             var hugoVariables = new[] { "baseURL", "title", "languageCode", "theme" };
             var tomlFilePaths = new List<string>();
@@ -70,39 +81,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 jsonFilePaths.AddRange(configSourceRepo.EnumerateFiles("*.json", true));
             }
 
-            if (tomlFilePaths.Any())
+            foreach (var path in tomlFilePaths)
             {
-                foreach (var path in tomlFilePaths)
+                var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, path);
+                if (tomlTable.Keys.Any(k => hugoVariables.Contains(k)))
                 {
-                    var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, path);
-                    if (tomlTable.Keys.Any(k => hugoVariables.Contains(k)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
-            if (yamlFilePaths.Any())
+            foreach (var path in yamlFilePaths)
             {
-                foreach (var path in yamlFilePaths)
+                var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, path);
+                if (yamlNode.Children.Keys.Select(k => k.ToString()).Any(k => hugoVariables.Contains(k)))
                 {
-                    var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, path);
-                    if (yamlNode.Children.Keys.Select(k => k.ToString()).Any(k => hugoVariables.Contains(k)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
-            if (jsonFilePaths.Any())
+            foreach (var path in jsonFilePaths)
             {
-                foreach (var path in jsonFilePaths)
+                var jObject = ParserHelper.ParseJsonFile(sourceRepo, path);
+                if (jObject.Children().Select(c => c.Path).Any(c => hugoVariables.Contains(c)))
                 {
-                    var jObject = ParserHelper.ParseJsonFile(sourceRepo, path);
-                    if (jObject.Children().Select(c => c.Path).Any(c => hugoVariables.Contains(c)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
