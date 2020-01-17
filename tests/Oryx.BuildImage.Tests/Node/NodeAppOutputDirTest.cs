@@ -29,6 +29,7 @@ namespace Oryx.BuildImage.Tests.Node
         [InlineData("vue-sample", "dist")]
         [InlineData("create-react-app-sample", "build")]
         [InlineData("gatsbysample", "public")]
+        [InlineData("hexo-sample", "public")]
         public void BuildsApp_AndAddsOutputDirToManifestFile(string appName, string expectedOutputDirPath)
         {
             // Arrange
@@ -39,7 +40,7 @@ namespace Oryx.BuildImage.Tests.Node
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddStringExistsInFileCheck(
-                $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"", 
+                $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
@@ -61,4 +62,4 @@ namespace Oryx.BuildImage.Tests.Node
                 result.GetDebugInfo());
         }
     }
-    }
+}

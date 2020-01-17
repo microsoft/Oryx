@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -17,6 +18,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class LocalSourceRepo : ISourceRepo
     {
         private readonly ILogger<LocalSourceRepo> _logger;
+
+        public LocalSourceRepo(string sourceDirectory)
+        {
+            RootPath = sourceDirectory;
+            _logger = NullLogger<LocalSourceRepo>.Instance;
+        }
 
         public LocalSourceRepo(string sourceDirectory, ILoggerFactory loggerFactory)
         {

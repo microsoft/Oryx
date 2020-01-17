@@ -411,6 +411,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new TestVersionProvider(supportedNodeVersions, supportedNpmVersions),
                 Options.Create(options),
                 NullLogger<NodeLanguageDetector>.Instance,
+                environment,
                 new DefaultStandardOutputWriter());
         }
     }
