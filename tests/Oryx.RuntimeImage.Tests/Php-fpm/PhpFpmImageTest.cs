@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
+                ImageId = _imageHelper.GetTestRuntimeImage("php-fpm", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
