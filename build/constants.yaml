@@ -16,14 +16,14 @@
   constants:
     dot-net-core-11-sdk-version: 1.1.14
     dot-net-core-11-sdk-sha512: E36AA4B278B936E1E2989B5E556F4EC3AEF2CB1EBB5ABD1BD6011D511873FC3E72101D035CF4DAF1563C7A3C43C193863D38CBF24288D375DD143AB42AFAE524
-    dot-net-core-21-sdk-version: 2.1.802
-    dot-net-core-21-sdk-sha512: 8601EC68FA8978C5A08A696CC69F5E0AA9DABF274BADE40E2FD9DED2E563F2CC7A1CB418A95C9B52E1FA9B6C4A30993BE68CB3B6BBDA4598C57B37EC9CE992AD
+    dot-net-core-21-sdk-version: 2.1.803
+    dot-net-core-21-sdk-sha512: 57d48d6ca1bd92ac348dc05220d984811c0cf005774d7afdfbbf125a842acb0a26572146ed25a7eb26f4e0404fe840b70d1e7ec1fb7c9a5c6cfe81fefc41b363
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-22-sdk-sha512: 81937DE0874EE837E3B42E36D1CF9E04BD9DEFF6BA60D0162AE7CA9336A78F733E624136D27F559728DF3F681A72A669869BF91D02DB47C5331398C0CFDA9B44
-    dot-net-core-30-sdk-version: 3.0.101
-    dot-net-core-30-sdk-sha512: 8cd6070c9df1272ac3f2a0e9bd8c1fc2cfef38907fa2e3c81384f005168f45036b5904b4f731cbe37d2b3fe558f560008c481939093b0d08ef0f1778ca97f186
-    dot-net-core-31-sdk-version: 3.1.100
-    dot-net-core-31-sdk-sha512: 5217ae1441089a71103694be8dd5bb3437680f00e263ad28317665d819a92338a27466e7d7a2b1f6b74367dd314128db345fa8fff6e90d0c966dea7a9a43bd21
+    dot-net-core-30-sdk-version: 3.0.102
+    dot-net-core-30-sdk-sha512: 77bc287d9c20630976ac4c0736192ba4899154c9e7cc5b87bc9d94d5d8abafdd832cfe8f385b6ba584c702d9261566109df15ab46b0d62bd218d950d3b47893e
+    dot-net-core-31-sdk-version: 3.1.101
+    dot-net-core-31-sdk-sha512: eeee75323be762c329176d5856ec2ecfd16f06607965614df006730ed648a5b5d12ac7fd1942fe37cfc97e3013e796ef278e7c7bc4f32b8680585c4884a8a6a1
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -37,10 +37,10 @@
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
-    net-core-app-21: 2.1.13
+    net-core-app-21: 2.1.15
     net-core-app-22: 2.2.7
-    net-core-app-30: 3.0.1
-    net-core-app-31: 3.1.0
+    net-core-app-30: 3.0.2
+    net-core-app-31: 3.1.1
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -53,9 +53,9 @@
     python-base-tag: 20191205.1
     pip-version: 19.3.1
     python27-version: 2.7.17
-    python36-version: 3.6.9
-    python37-version: 3.7.5
-    python38-version: 3.8.0
+    python36-version: 3.6.10
+    python37-version: 3.7.6
+    python38-version: 3.8.1
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -70,12 +70,12 @@
     composer-version: 1.9.2
     composer-sha384: c5b9b6d368201a9db6f74e2611495f369991b72d9c8cbd3ffbc63edff210eb73d46ffbfce88669ad33695ef77dc76976
     # hashes are for .tar.xz
-    php73-version: 7.3.12
+    php73-version: 7.3.13
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
-    php73-tar-sha256: aafe5e9861ad828860c6af8c88cdc1488314785962328eb1783607c1fdd855df
-    php72-version: 7.2.25
+    php73-tar-sha256: 57ac55fe442d2da650abeb9e6fa161bd3a98ba6528c029f076f8bba43dd5c228
+    php72-version: 7.2.26
     php72-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
-    php72-tar-sha256: 746efeedc38e6ff7b1ec1432440f5fa801537adf6cd21e4afb3f040e5b0760a9
+    php72-tar-sha256: 1dd3bc875e105f5c9d21fb4dc240670bd2c22037820ff03890f5ab883c88b78d
     php70-version: 7.0.33
     php70-keys: 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php70-tar-sha256: ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96
@@ -112,8 +112,8 @@
     yarn-major-version: 1
     node6-version: 6.17.1
     node8-version: 8.17.0
-    node10-version: 10.18.0
-    node12-version: 12.14.0
+    node10-version: 10.18.1
+    node12-version: 12.14.1
   outputs:
     - type: shell
       directory: build
