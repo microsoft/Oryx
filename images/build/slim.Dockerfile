@@ -36,7 +36,7 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-# A temporary folder to hold all scripts temporarily used to build this image. 
+# A temporary folder to hold all scripts temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
 RUN mkdir -p /tmp/scripts
 
@@ -120,6 +120,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
+ARG HUGO_VERSION=0.59.1
+RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" \
+ && mkdir -p /opt/hugo \
+ && tar -xzf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
+ && rm hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
 COPY build/__nodeVersions.sh /tmp/scripts
 RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
  && . /tmp/scripts/__nodeVersions.sh \
@@ -227,7 +232,7 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin"
+ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib
