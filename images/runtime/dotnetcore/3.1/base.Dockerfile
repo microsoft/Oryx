@@ -1,6 +1,6 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1.100 AS tools-install
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1.101 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
@@ -34,10 +34,10 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install .NET Core
-ENV DOTNET_VERSION 3.1.0
+ENV DOTNET_VERSION 3.1.1
 
 RUN curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VERSION/dotnet-runtime-$DOTNET_VERSION-linux-x64.tar.gz \
-    && dotnet_sha512='99949807c00871d66e8ce7c25c14998e78a0ea60ba8cc42244643ed2e13aa360285df1c8d27729df3efb319f4af9163ea5626c1478a9dd4bed9d2a58e01d6343' \
+    && dotnet_sha512='991a89ac7b52d3bf6c00359ce94c5a3f7488cd3d9e4663ba0575e1a5d8214c5fcc459e2cb923c369c2cdb789a96f0b1dfb5c5aae1a04df6e7f1f365122072611' \
     && echo "$dotnet_sha512 dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
@@ -45,10 +45,10 @@ RUN curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotn
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
     
 # Install ASP.NET Core
-ENV ASPNETCORE_VERSION 3.1.0
+ENV ASPNETCORE_VERSION 3.1.1
 
 RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNETCORE_VERSION/aspnetcore-runtime-$ASPNETCORE_VERSION-linux-x64.tar.gz \
-    && aspnetcore_sha512='7d14e4617413fd7939f90a4e283b7abedbd51ecfbc150938d4c52ecca8182cab8c4946408c1f6369944c68757c91b580796d9e0c62349c377c5e90b739a87d8b' \
+    && aspnetcore_sha512='cc27828cacbc783ef83cc1378078e14ac558aec30726b36c4f154fad0d08ff011e7e1dfc17bc851926ea3b0da9c7d71496af14ee13184bdf503856eca30a89ae' \
     && echo "$aspnetcore_sha512  aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
