@@ -29,4 +29,11 @@
     <ProjectReference Include="..\Oryx.Tests.Common\Oryx.Tests.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\SampleApps\**\*">
+      <Link>SampleApps\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
