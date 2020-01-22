@@ -23,7 +23,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("php.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+	logger.LogInformation("Generating script for source.")
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
@@ -33,8 +33,6 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "APACHE_PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
-	logger.LogProperties("Finalizing script", map[string]string{"root": gen.SourcePath, "cmd": gen.StartupCmd})
 	var runScript = scriptBuilder.String()
-	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }
