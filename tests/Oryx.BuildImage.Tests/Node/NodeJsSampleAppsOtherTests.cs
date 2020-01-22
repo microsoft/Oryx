@@ -223,7 +223,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(0, result.ExitCode);
-                    Assert.Contains(Labels.UnableToDetectLanguageMessage, result.StdErr);
+                    Assert.Contains(Labels.UnableToDetectPlatformMessage, result.StdErr);
                 },
                 result.GetDebugInfo());
         }

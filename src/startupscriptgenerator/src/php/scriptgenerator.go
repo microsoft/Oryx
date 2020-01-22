@@ -25,7 +25,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("php.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+	logger.LogInformation("Generating script for source.")
 
 	var _phpOrigin = os.Getenv(consts.PhpOriginEnvVarName)
 	var portEnvVariable = "APACHE_PORT"
@@ -48,8 +48,6 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
-	logger.LogProperties("Finalizing script", map[string]string{"root": gen.SourcePath, "cmd": gen.StartupCmd})
 	var runScript = scriptBuilder.String()
-	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }

@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (targetPlatform == null)
                 {
-                    throw new UnsupportedLanguageException($"Platform '{ctx.Platform}' is not supported.");
+                    throw new UnsupportedPlatformException($"Platform '{ctx.Platform}' is not supported.");
                 }
             }
             else
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (targetPlatform == null)
                 {
-                    throw new UnsupportedLanguageException("Unable to determine the platform for the given repo.");
+                    throw new UnsupportedPlatformException("Unable to determine the platform for the given repo.");
                 }
             }
 

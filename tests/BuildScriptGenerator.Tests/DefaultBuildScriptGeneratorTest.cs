@@ -125,9 +125,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 enableMultiPlatformBuild: true);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
+            var exception = Assert.Throws<UnsupportedPlatformException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
-            Assert.Equal(Labels.UnableToDetectLanguageMessage, exception.Message);
+            Assert.Equal(Labels.UnableToDetectPlatformMessage, exception.Message);
             Assert.True(detector.DetectInvoked);
         }
 
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: null);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
+            var exception = Assert.Throws<UnsupportedPlatformException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal("'test2' platform is not supported. Supported platforms are: test1", exception.Message);
         }
@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: "1.0.0");
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
+            var exception = Assert.Throws<UnsupportedPlatformException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
         }
 
@@ -234,7 +234,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: "1.0.0");
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
+            var exception = Assert.Throws<UnsupportedPlatformException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
                 "'unsupported' platform is not supported. Supported platforms are: test",
@@ -288,9 +288,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 suppliedLanguageVersion: null);
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedLanguageException>(
+            var exception = Assert.Throws<UnsupportedPlatformException>(
                 () => generator.GenerateBashScript(context, out var generatedScript));
-            Assert.Equal(Labels.UnableToDetectLanguageMessage, exception.Message);
+            Assert.Equal(Labels.UnableToDetectPlatformMessage, exception.Message);
             Assert.True(detector.DetectInvoked);
         }
 

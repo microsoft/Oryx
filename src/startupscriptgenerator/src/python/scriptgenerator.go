@@ -41,7 +41,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.AppPath)
+	logger.LogInformation("Generating script for source.")
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
@@ -76,7 +76,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			appDebugModule = appFw.GetDebuggableModule()
 		} else {
 			println("No framework detected; using default app from " + gen.DefaultAppPath)
-			logger.LogInformation("Using default app '%s'", gen.DefaultAppPath)
+			logger.LogInformation("Using default app.")
 			appType = "Default"
 			appDirectory = gen.DefaultAppPath
 			appModule = gen.DefaultAppModule
@@ -85,12 +85,12 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 		if appModule != "" {
 			if gen.shouldStartAppInDebugMode() {
-				logger.LogInformation("Generating debug command for appDebugModule='%s'", appDebugModule)
+				logger.LogInformation("Generating debug command for appDebugModule.")
 				println(fmt.Sprintf(GeneratingCommandMessage, "ptvsd", appDebugModule))
 				command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
 				appDebugAdapter = gen.DebugAdapter
 			} else {
-				logger.LogInformation("Generating command for appModule='%s'", appModule)
+				logger.LogInformation("Generating command for appModule.")
 				println(fmt.Sprintf(GeneratingCommandMessage, "gunicorn", appModule))
 				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
 			}
@@ -105,12 +105,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			"appModule": appModule, "venv": gen.Manifest.VirtualEnvName})
 
 	var runScript = scriptBuilder.String()
-	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
-}
-
-func logReadDirError(logger *common.Logger, path string, err error) {
-	logger.LogError("ioutil.ReadDir('%s') failed: %s", path, err.Error())
 }
 
 // Builds the commands to setup the Python packages, using virtual env or a package folder.

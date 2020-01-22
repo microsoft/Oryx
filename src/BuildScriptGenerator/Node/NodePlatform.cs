@@ -79,6 +79,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
             }
+            else if (StaticSiteGeneratorHelper.IsHugoApp(ctx.SourceRepo, _environment))
+            {
+                packageManagerCmd = NodeConstants.HugoCommand;
+                packageInstallCommand = NodeConstants.HugoCommand;
+                packageInstallerVersionCommand = NodeConstants.HugoVersionCommand;
+            }
             else
             {
                 packageManagerCmd = NodeConstants.NpmCommand;
@@ -209,6 +215,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             else if (buildCommand.Contains("vue-cli-service build", StringComparison.OrdinalIgnoreCase))
             {
                 outputDirPath = "dist";
+            }
+            else if (buildCommand.Contains("hexo generate", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "public";
             }
 
             if (!string.IsNullOrEmpty(outputDirPath))

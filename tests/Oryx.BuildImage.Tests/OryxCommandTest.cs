@@ -3,20 +3,75 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Xunit;
-using Xunit.Abstractions;
+using System;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using System;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class OryxCommandTest : SampleAppsTestBase
     {
+        private const int UnsupportedPlatform = 2;
+        private const int UnsupportedPlatformVersion = 3;
+
         public OryxCommandTest(ITestOutputHelper output) : base(output) { }
+
+        [Fact]
+        public void Build_ReturnsExpectedErrorCode_ForUnsupportedPlatformException()
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+               .AddCommand("mkdir /tmp/app")
+               .AddCommand("oryx build /tmp/app -o /tmp/out")
+               .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.Equal(UnsupportedPlatform, result.ExitCode);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Build_ReturnsExpectedErrorCode_ForUnsupportedVersionException()
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+               .AddCommand("mkdir /tmp/app")
+               .AddCommand("oryx build /tmp/app -o /tmp/out --platform dotnet --platform-version 0.0")
+               .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.Equal(UnsupportedPlatformVersion, result.ExitCode);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact]
         public void BuildImage_Build_UsesCwd_WhenNoSourceDirGiven()
@@ -129,7 +184,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var cmd = "node --version && php --version";
 
             var expectedNodeVersion = NodeVersions.Node8Version;
-            var expectedPhpVersion  = PhpVersions.Php72Version;
+            var expectedPhpVersion = PhpVersions.Php72Version;
 
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}",
@@ -178,36 +233,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.False(result.IsSuccess);
                     Assert.Equal(expectedExitCode, result.ExitCode);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void CliImage_Dockerfile_SucceedsWithBasicNodeApp()
-        {
-            // Arrange
-            var appPath = "/tmp";
-            var platformName = "nodejs";
-            var runtimeName = ConvertToRuntimeName(platformName);
-            var platformVersion = "10.17";
-            var runtimeTag = "10";
-            var repositoryName = "build";
-            var tagName = "slim";
-            var script = new ShellScriptBuilder()
-                .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
-                .AddCommand($"oryx dockerfile {appPath} --platform {platformName} --platform-version {platformVersion}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(_imageHelper.GetTestCliImage(), "/bin/bash", "-c", script);
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains($"{runtimeName}:{runtimeTag}", result.StdOut);
-                    Assert.Contains($"{repositoryName}:{tagName}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

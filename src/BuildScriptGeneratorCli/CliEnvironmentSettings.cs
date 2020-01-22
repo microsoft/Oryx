@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private const string DisablePhpEnvVarName = "DISABLE_PHP_BUILD";
         private const string DisableNodeJsEnvVarName = "DISABLE_NODEJS_BUILD";
         private const string EnableMultiPlatformBuildEnvVarName = "ENABLE_MULTIPLATFORM_BUILD";
+        private const string GitHubActionsEnvVarName = "GITHUB_ACTIONS";
 
         private IEnvironment _environment;
 
@@ -33,6 +34,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public bool DisablePython => IsEnvVariableTrue(DisablePythonEnvVarName);
 
         public bool DisablePhp => IsEnvVariableTrue(DisablePhpEnvVarName);
+
+        // From the GitHub Actions environment variable documentation:
+        // GITHUB_ACTIONS: Always set to true when GitHub Actions is running the workflow.
+        public bool GitHubActions => IsEnvVariableTrue(GitHubActionsEnvVarName);
 
         /// <summary>
         /// Gets a value indicating whether multi-platform builds must be disabled.

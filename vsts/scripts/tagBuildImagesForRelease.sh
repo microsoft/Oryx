@@ -4,6 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
+set -x
 set -o pipefail
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
@@ -40,4 +41,3 @@ function tagBuildImage() {
 
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:slim-Oryx-CI.$RELEASE_TAG_NAME" "slim" "slim-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/cli:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"

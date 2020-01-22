@@ -13,6 +13,9 @@ namespace Microsoft.Oryx.Common
         public const string ApplicationInsightsInstrumentationKeyEnvironmentVariableName
             = "ORYX_AI_INSTRUMENTATION_KEY";
 
+        public const string OryxDisableTelemetryEnvironmentVariableName
+            = "ORYX_DISABLE_TELEMETRY";
+
         public const string DefaultOperationName = ".oryx";
 
         public const string DefaultLogPath = "/tmp/oryx.log";

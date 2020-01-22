@@ -126,9 +126,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Could not detect the language from repo..
         /// </summary>
-        internal static string UnableToDetectLanguageMessage {
+        internal static string UnableToDetectPlatformMessage {
             get {
-                return ResourceManager.GetString("UnableToDetectLanguageMessage", resourceCulture);
+                return ResourceManager.GetString("UnableToDetectPlatformMessage", resourceCulture);
             }
         }
     }
