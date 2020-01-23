@@ -37,6 +37,13 @@ stages:
 
   - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
+      displayName: Build and push PHP-FPM runtime base images
+      scriptPath: ./build/buildRunTimeImageBases.sh
+      imageDir: php-fpm
+      artifactsFileName: php-fpm-runtimeimage-bases.txt
+
+  - template: templates/_buildimageBasesJobTemplate.yml
+    parameters:
       displayName: Build and push DotNetCore runtime base images
       scriptPath: ./build/buildRunTimeImageBases.sh
       imageDir: dotnetcore
@@ -66,6 +73,7 @@ trigger:
     - images/runtime/php
     - images/build/python
     - images/build/php
+    - images/build/php-fpm
     - images/build/yarn-cache
     - build/
     - vsts/

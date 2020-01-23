@@ -4,6 +4,7 @@
     application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
+    php-origin-env-var-name: PHP_ORIGIN
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-enable-env: ApplicationInsightsAgent_EXTENSION_VERSION
   outputs:
@@ -65,8 +66,9 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-build-base-tag: 20200121.9
-    php-runtime-base-tag: 20200121.9
+    php-build-base-tag: 20200123.3
+    php-runtime-base-tag: 20200123.3
+    php-fpm-runtime-base-tag: 20200123.3
     composer-version: 1.9.2
     composer-sha384: c5b9b6d368201a9db6f74e2611495f369991b72d9c8cbd3ffbc63edff210eb73d46ffbfce88669ad33695ef77dc76976
     # hashes are for .tar.xz

@@ -19,6 +19,15 @@ jobs:
     parameters:
       baseImageName: 'php'
 
+- job: Release_PhpFpmNginxRuntimeBaseImage
+  displayName: Push PHP-FPM Runtime Base Image to MCR
+  pool:
+    name: OryxLinux
+  steps:
+  - template: _releaseBaseImagesStepTemplate.yml
+    parameters:
+      baseImageName: 'php-fpm'
+
 - job: Release_DotNetCoreRuntimeBaseImage
   displayName: Push DotNetCore Runtime Base Images to MCR
   timeoutInMinutes: 250
