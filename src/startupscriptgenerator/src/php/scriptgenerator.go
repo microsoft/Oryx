@@ -39,7 +39,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 	common.SetEnvironmentVariableInScript(&scriptBuilder, portEnvVariable, gen.BindPort, DefaultBindPort)
-	scriptBuilder.WriteString("if [ -n '$PHP_ORIGIN' ]; then\n")
+	scriptBuilder.WriteString("if [ ! -z '$PHP_ORIGIN' ]; then\n")
 	scriptBuilder.WriteString("   export NGINX_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("   service nginx start\n")
 	scriptBuilder.WriteString("else\n")

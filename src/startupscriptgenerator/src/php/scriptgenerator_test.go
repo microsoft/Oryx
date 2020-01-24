@@ -23,7 +23,7 @@ func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript() {
 	// 		export APACHE_PORT=8080
 	// fi
 	//
-	// if [ -n '$PHP_ORIGIN' ]; then
+	// if [ ! -z '$PHP_ORIGIN' ]; then
 	//    export NGINX_DOCUMENT_ROOT='abc'
 	//    service nginx start
 	// else
