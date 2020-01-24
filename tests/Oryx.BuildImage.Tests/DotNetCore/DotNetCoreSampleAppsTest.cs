@@ -38,10 +38,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act
@@ -61,6 +63,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{DotNetCoreConstants.LanguageName}_version=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",
                         result.StdOut);
                 },
                 result.GetDebugInfo());

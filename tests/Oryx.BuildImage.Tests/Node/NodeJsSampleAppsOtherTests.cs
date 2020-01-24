@@ -294,12 +294,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
         {
             // Arrange
+            var version = "8.2.1";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform nodejs --platform-version 8.2.1")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform nodejs --platform-version {version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act
@@ -316,6 +319,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                       $"{NodeConstants.NodeJsName}_version=\"{version}\"",
+                       result.StdOut);
                 },
                 result.GetDebugInfo());
         }
