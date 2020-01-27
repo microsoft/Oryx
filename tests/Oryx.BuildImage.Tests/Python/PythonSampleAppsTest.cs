@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -325,8 +326,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python36Version}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python36Version}")
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act
@@ -347,6 +351,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
                         result.StdOut);
+                    Assert.Contains(
+                       $"{PythonConstants.PythonName}_version=\"{PythonVersions.Python36Version}\"",
+                       result.StdOut);
                 },
                 result.GetDebugInfo());
         }
