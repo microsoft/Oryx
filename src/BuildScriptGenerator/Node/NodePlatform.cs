@@ -151,11 +151,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             GetAppOutputDirPath(packageJson, buildProperties);
 
-            ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out string customRegistryUrl);
-            if (!string.IsNullOrWhiteSpace(customRegistryUrl))
+            string customRegistryUrl = null;
+            if (ctx.Properties != null)
             {
-                // Write the custom registry to the build manifest
-                buildProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out string customRegistryUrl);
+                if (!string.IsNullOrWhiteSpace(customRegistryUrl))
+                {
+                    // Write the custom registry to the build manifest
+                    buildProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                }
             }
 
             var scriptProps = new NodeBashBuildSnippetProperties
