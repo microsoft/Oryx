@@ -67,8 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var buildProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{NodeConstants.NodeJsName}_version";
-            buildProperties[key] = ctx.NodeVersion;
+            buildProperties[$"{NodeConstants.NodeJsName}_version"] = ctx.NodeVersion;
 
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
@@ -152,7 +151,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             GetAppOutputDirPath(packageJson, buildProperties);
 
-            ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out var customRegistryUrl);
+            ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out string customRegistryUrl);
+            if (!string.IsNullOrWhiteSpace(customRegistryUrl))
+            {
+                // Write the custom registry to the build manifest
+                buildProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+            }
 
             var scriptProps = new NodeBashBuildSnippetProperties
             {

@@ -4,7 +4,7 @@ node --version
 echo
 {{ PackageInstallerVersionCommand }}
 
-{{ if PackageRegistryUrl }}
+{{ if PackageRegistryUrl | IsNotBlank }}
 echo
 echo "Adding package registry to .npmrc: {{ PackageRegistryUrl }}"
 echo "registry={{ PackageRegistryUrl }}" > ~/.npmrc
