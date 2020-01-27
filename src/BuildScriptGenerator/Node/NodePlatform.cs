@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string customRegistryUrl = null;
             if (ctx.Properties != null)
             {
-                ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out string customRegistryUrl);
+                ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out customRegistryUrl);
                 if (!string.IsNullOrWhiteSpace(customRegistryUrl))
                 {
                     // Write the custom registry to the build manifest
