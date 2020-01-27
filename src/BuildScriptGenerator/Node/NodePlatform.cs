@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    [BuildProperty(RegistryUrlPropertyKey, "Custom npm registry URL. Will be written to .npmrc during the build.")]
     [BuildProperty(
         CompressNodeModulesPropertyKey,
         "Indicates how and if 'node_modules' folder should be compressed into a single file in the output folder. " +
@@ -26,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class NodePlatform : IProgrammingPlatform
     {
+        internal const string RegistryUrlPropertyKey = "registry";
         internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
         internal const string ZipNodeModulesOption = "zip";
@@ -146,8 +148,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             GetAppOutputDirPath(packageJson, buildProperties);
 
+            ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out var customRegistryUrl);
+
             var scriptProps = new NodeBashBuildSnippetProperties
             {
+                PackageRegistryUrl = customRegistryUrl,
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,

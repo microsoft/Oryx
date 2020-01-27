@@ -4,10 +4,12 @@ node --version
 echo
 {{ PackageInstallerVersionCommand }}
 
+{{ if PackageRegistryUrl }}
 echo
 echo "Adding package registry to .npmrc: {{ PackageRegistryUrl }}"
 echo "registry={{ PackageRegistryUrl }}" > ~/.npmrc
 echo
+{{ end }}
 
 {{ if ConfigureYarnCache }}
 # Yarn config is per user, and since the build might run with a non-root account, we make sure
