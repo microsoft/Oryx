@@ -136,6 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain(".npmrc", snippet.BashBuildScriptSnippet); // No custom registry was specified
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
