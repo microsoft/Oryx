@@ -66,6 +66,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             var buildProperties = new Dictionary<string, string>();
 
+            // Write the version to the manifest file
+            var key = $"{NodeConstants.NodeJsName}_version";
+            buildProperties[key] = ctx.NodeVersion;
+
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;

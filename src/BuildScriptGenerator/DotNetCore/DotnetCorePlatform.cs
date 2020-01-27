@@ -62,6 +62,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
+
+            // Write the version to the manifest file
+            var key = $"{DotNetCoreConstants.LanguageName}_version";
+            buildProperties[key] = context.DotNetCoreVersion;
+
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
