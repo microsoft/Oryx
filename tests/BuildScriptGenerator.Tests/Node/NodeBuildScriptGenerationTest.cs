@@ -499,6 +499,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
+        [Fact]
+        public void GeneratedScript_WritesNpmRc_WithCustomRegistry()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            context.Properties[NodePlatform.RegistryUrlPropertyKey] = "https://example.com/registry/";
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains(
+                $"echo \"registry={context.Properties[NodePlatform.RegistryUrlPropertyKey]}\" > ~/.npmrc",
+                snippet.BashBuildScriptSnippet);
+        }
+
         private static IProgrammingPlatform GetNodePlatformInstance(
             string defaultNodeVersion = null,
             string defaultNpmVersion = null,
