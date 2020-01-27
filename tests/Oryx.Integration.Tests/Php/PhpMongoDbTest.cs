@@ -37,6 +37,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand($"ls -l {appDir}")
+                .AddCommand($"cat {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -52,6 +54,8 @@ namespace Microsoft.Oryx.Integration.Tests
                     string data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("<th>MongoDB support</th><th>enabled</th>", data);
                 });
+            //string data = await _httpClient.GetStringAsync($"http://localhost:8010/");
+            //Assert.Contains("<th>MongoDB support</th><th>enabled</th>", data);
         }
     }
 }
