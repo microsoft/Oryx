@@ -10,6 +10,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     /// </summary>
     public class NodeBashBuildSnippetProperties
     {
+        public string PackageRegistryUrl { get; set; }
+
         public string PackageInstallCommand { get; set; }
 
         public string NpmRunBuildCommand { get; set; }

@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     using (var debugClient = new SimpleDAPClient("127.0.0.1", ptvsdHostPort, "oryxtests"))
                     {
                         string initResponse = await debugClient.Initialize();
-                        // Deliberatly weak assertion; don't care what's in the response, only that there IS a response
+                        // Deliberately weak assertion; don't care what's in the response, only that there IS a response
                         Assert.False(string.IsNullOrEmpty(initResponse));
                     }
                 });

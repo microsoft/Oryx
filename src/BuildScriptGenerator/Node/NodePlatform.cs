@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    [BuildProperty(RegistryUrlPropertyKey, "Custom npm registry URL. Will be written to .npmrc during the build.")]
     [BuildProperty(
         CompressNodeModulesPropertyKey,
         "Indicates how and if 'node_modules' folder should be compressed into a single file in the output folder. " +
@@ -26,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class NodePlatform : IProgrammingPlatform
     {
+        internal const string RegistryUrlPropertyKey = "registry";
         internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
         internal const string ZipNodeModulesOption = "zip";
@@ -65,8 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var buildProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{NodeConstants.NodeJsName}_version";
-            buildProperties[key] = ctx.NodeVersion;
+            buildProperties[$"{NodeConstants.NodeJsName}_version"] = ctx.NodeVersion;
 
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
@@ -150,8 +151,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             GetAppOutputDirPath(packageJson, buildProperties);
 
+            string customRegistryUrl = null;
+            if (ctx.Properties != null)
+            {
+                ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out customRegistryUrl);
+                if (!string.IsNullOrWhiteSpace(customRegistryUrl))
+                {
+                    // Write the custom registry to the build manifest
+                    buildProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                }
+            }
+
             var scriptProps = new NodeBashBuildSnippetProperties
             {
+                PackageRegistryUrl = customRegistryUrl,
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,
