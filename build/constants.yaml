@@ -34,7 +34,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20200128.11
+    dot-net-core-runtime-base-tag: 20200129.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -51,7 +51,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20200128.11
+    python-base-tag: 20200129.1
     pip-version: 19.3.1
     python27-version: 2.7.17
     python36-version: 3.6.10
@@ -66,9 +66,9 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-build-base-tag: 20200128.2
-    php-runtime-base-tag: 20200128.2
-    php-fpm-runtime-base-tag: 20200128.2
+    php-build-base-tag: 20200129.1
+    php-runtime-base-tag: 20200129.1
+    php-fpm-runtime-base-tag: 20200129.1
     composer-version: 1.9.2
     composer-sha384: c5b9b6d368201a9db6f74e2611495f369991b72d9c8cbd3ffbc63edff210eb73d46ffbfce88669ad33695ef77dc76976
     # hashes are for .tar.xz
@@ -107,8 +107,8 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200128.11
-    yarn-cache-base-tag: 20200128.11
+    node-runtime-base-tag: 20200129.1
+    yarn-cache-base-tag: 20200129.1
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
     yarn-major-version: 1
