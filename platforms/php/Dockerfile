@@ -1,0 +1,8 @@
+FROM php-build-prereqs AS php73-build
+ARG PHP_VERSION
+ARG GPG_KEYS
+ARG PHP_SHA256
+RUN PHP_VERSION=$PHP_VERSION \
+    GPG_KEYS=$GPG_KEYS \
+    PHP_SHA256=$PHP_SHA256 \
+    /php/build.sh

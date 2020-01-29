@@ -97,3 +97,5 @@ RUN set -x \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
+
+RUN rm -rf /tmp/oryx

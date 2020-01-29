@@ -6,10 +6,9 @@
 
 set -e
 
-declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-
-source "$DIR/__dotNetCoreSdkVersions.sh"
-source "$DIR/__dotNetCoreRunTimeVersions.sh"
+__CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source "$__CURRENT_DIR/../../build/__dotNetCoreSdkVersions.sh"
+source "$__CURRENT_DIR/../../build/__dotNetCoreRunTimeVersions.sh"
 
 splitSdksDir="/opt/dotnet/sdks"
 

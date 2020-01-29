@@ -1,5 +1,6 @@
 # Commit b4319e8f767f1200c9013e08baf2c34b9c84e301 from repo https://github.com/docker-library/php.git
 FROM php-run-base
+ARG IMAGES_DIR=/tmp/oryx/images
 
 RUN apt-get update \
   && apt-get install -y \
@@ -118,7 +119,7 @@ RUN set -xe; \
 	if [ -n "$PHP_ASC_URL" ]; then \
 		wget -O php.tar.xz.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
-		/tmp/scripts/receiveGpgKeys.sh $GPG_KEYS; \
+		${IMAGES_DIR}/receiveGpgKeys.sh $GPG_KEYS; \
 		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
 		command -v gpgconf > /dev/null && gpgconf --kill all; \
 		rm -rf "$GNUPGHOME"; \

@@ -4,15 +4,13 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
-# Enables running from within other scripts that already declared $REPO_DIR
-if [ -z "$REPO_DIR" ]; then
+if [ -z $REPO_DIR ]; then
 	declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 fi
 
-# Enables running from within other scripts that already sourced __variables.sh
-if [ -z "$__REPO_DIR" ]; then
+if [ -z $_LOADED_COMMON_VARIABLES ]; then
 	source $REPO_DIR/build/__variables.sh
 fi
 
