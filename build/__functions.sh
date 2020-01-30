@@ -24,11 +24,8 @@ function getTagName()
 	local replacedPath="$RUNTIME_IMAGES_SRC_DIR/"
 	echo "Runtime Image Source Directory: "$RUNTIME_IMAGES_SRC_DIR
 	local remainderPath="${1//$replacedPath/}"
-	echo "RemainderPath: "$remainderPath
 	tagNameFile="$RUNTIME_IMAGES_SRC_DIR/$remainderPath/tag.txt"
-	echo "TagFileName: "$tagNameFile
-	ls -l $replacedPath
-	echo "*************************************"
+	
 	if [ -f "$tagNameFile" ]
 	then
 		getTagName_result=$(cat $tagNameFile)
