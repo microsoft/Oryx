@@ -40,14 +40,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("7.3", PhpVersions.Php73Version)]
-        [InlineData("7.2", PhpVersions.Php72Version)]
+        [InlineData("7.3-fpm", PhpVersions.Php73Version)]
+        [InlineData("7.2-fpm", PhpVersions.Php72Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                _imageHelper.GetTestRuntimeImage("php-fpm", imageTag),
+                _imageHelper.GetTestRuntimeImage("php", imageTag),
                 "php",
                 new[] { "--version" }
             );
@@ -62,14 +62,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
+        [InlineData("7.3-fpm")]
+        [InlineData("7.2-fpm")]
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("php-fpm", imageTag),
+                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -83,8 +83,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
+        [InlineData("7.3-fpm")]
+        [InlineData("7.2-fpm")]
         public void PhpFpmRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("php-fpm", version),
+                ImageId = _imageHelper.GetTestRuntimeImage("php", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

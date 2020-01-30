@@ -2,10 +2,7 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   acrProdName: oryxmcr.azurecr.io
-  prodNodeImageName: oryxmcr.azurecr.io/public/oryx/node
-  prodPythonImageName: oryxmcr.azurecr.io/public/oryx/python
-  prodDotNetCoreImageName: oryxmcr.azurecr.io/public/oryx/dotnetcore
-  prodPhpImageName: oryxmcr.azurecr.io/public/oryx/php
+  prodImageName: oryxmcr.azurecr.io/public/oryx
 
 steps:
 
@@ -66,28 +63,7 @@ steps:
   displayName: 'Test runtime images'
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.prodNodeImageName }} $(RELEASE_TAG_NAME) Category=Release
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Test dotnetcore runtime images'
-  inputs:
-    scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.prodDotNetCoreImageName }} $(RELEASE_TAG_NAME) Category=Release
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
- 
-- task: ShellScript@2
-  displayName: 'Test python runtime images'
-  inputs:
-    scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.prodPythonImageName }} $(RELEASE_TAG_NAME) Category=Release
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Test Php runtime images'
-  inputs:
-    scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.prodPhpImageName }} $(RELEASE_TAG_NAME) Category=Release
+    args: skipBuildingImages ${{ parameters.prodImageName }} $(RELEASE_TAG_NAME) Category=Release
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@1
