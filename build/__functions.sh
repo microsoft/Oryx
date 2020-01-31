@@ -22,7 +22,17 @@ function getTagName()
 	fi
 
 	local replacedPath="$RUNTIME_IMAGES_SRC_DIR/"
+	echo "Runtime Image Source Directory: "$RUNTIME_IMAGES_SRC_DIR
 	local remainderPath="${1//$replacedPath/}"
+	tagNameFile="$RUNTIME_IMAGES_SRC_DIR/$remainderPath/tag.txt"
+	
+	if [ -f "$tagNameFile" ]
+	then
+		getTagName_result=$(cat $tagNameFile)
+		echo "tagname for "$replacedPath" is :"$getTagName_result
+		return 0
+	fi
+
 	local slashChar="/"
 	getTagName_result=${remainderPath//$slashChar/":"}
 	return 0
