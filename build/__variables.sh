@@ -24,6 +24,7 @@ declare -r PACK_IMAGE_DOCKERFILE="$REPO_DIR/images/pack-builder/pack-runner.Dock
 declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/Dockerfile"
 declare -r ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/slim.Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
+declare -r BUILD_IMAGES_CLI_DOCKERFILE="$REPO_DIR/images/build/cli.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
 declare -r SOURCES_SRC_DIR="$REPO_DIR/src"
@@ -42,11 +43,13 @@ declare -r PACK_BUILDER_IMAGE_NAME="pack-builder"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 
 declare -r DEVBOX_BUILD_IMAGES_REPO="oryx/build"
+declare -r DEVBOX_CLI_BUILD_IMAGE_REPO="oryx/cli"
 declare -r DEVBOX_RUNTIME_IMAGES_REPO_PREFIX="oryx"
 
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
+declare -r ACR_CLI_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/cli"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
 declare -r ACR_PACK_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_IMAGE_NAME"
 
