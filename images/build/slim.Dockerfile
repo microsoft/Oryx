@@ -2,6 +2,8 @@
 # These are deleted in the final stage of the build
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
@@ -228,6 +230,8 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 FROM python AS final
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
 ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
@@ -266,5 +270,7 @@ ARG RELEASE_TAG_NAME=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
 LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
+
+ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 
 ENTRYPOINT [ "benv" ]

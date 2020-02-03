@@ -123,10 +123,27 @@
     - type: csharp
       directory: src/BuildScriptGenerator/Node
       namespace: Microsoft.Oryx.BuildScriptGenerator.Node
-- name: common-constants
+- name: sdk-storage-constants
   constants:
-    dev-storage-base-url: https://oryxsdksdev.blob.core.windows.net
+    use-latest-version: USE_LATEST_VERSION
+    sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
+    dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
+    prod-sdk-storage-base-url: https://oryxsdks.blob.core.windows.net
   outputs:
     - type: shell
-      directory: images
+      directory: build
       file-name-prefix: __
+    - type: csharp
+      directory: src/Common
+      namespace: Microsoft.Oryx.Common
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
+- name: runtime-dynamic-installation-constants
+  constants:
+    node-installation-dir: '/tmp/oryx/nodejs'
+    dot-net-core-installation-dir: '/tmp/oryx/dotnet'
+    python-installation-root-dir: '/opt/python'
+    setup-script-location: '/tmp/oryx/setupEnv.sh'
+  outputs:
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts

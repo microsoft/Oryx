@@ -33,5 +33,10 @@ ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+RUN pip install --upgrade pip \
+    && pip install gunicorn \
+    && pip install ptvsd \
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
+
 RUN rm -rf /tmp/oryx
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
