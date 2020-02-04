@@ -3,7 +3,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
-
+set -x
 # Perform case-insensitive comparison
 matchesName() {
   local expectedName="$1"
@@ -54,9 +54,9 @@ done < <(set | grep -i '^dotnet_version=')
 unset benvvar # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
-# sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/'
-# (as in /opt/dotnet) and inserting a more specific provided path before it.
-# Example: (note that all Oryx related patlform paths come in the end)
+# sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/oryx'
+# and inserting a more specific provided path after it.
+# Example: (note that all Oryx related patlform paths come after the typical debian paths)
 # /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401
 updatePath() {
   local replacingText=":/opt/oryx:$1:"
@@ -66,6 +66,11 @@ updatePath() {
   export PATH="$newPath"
 }
 
+# NOTE: We handle .NET Core specially because there are 2 version types:
+# SDK version and Runtime version
+# For platforms other than dotnet, we look at a folder structure like '/opt/nodejs/10.14.1', but
+# for dotnet, it would be '/opt/dotnet/runtimes/10.14.1'
+# i.e Versioning of .NET Core is based on the runtime versions rather than sdk version
 benv-showSupportedVersionsErrorInfo() {
   local userPlatformName="$1"
   local platformDirName="$2"
@@ -91,7 +96,7 @@ benv-getPlatformDir() {
   local userSuppliedVersion="$2"
   local builtInInstallDir="/opt/$platformDirName"
   local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
-
+  
   if [ "$platformDirName" == "dotnet" ]; then
     builtInInstallDir="$builtInInstallDir/runtimes"
     dynamicInstallDir="$dynamicInstallDir/runtimes"
@@ -150,7 +155,7 @@ benv-resolve() {
       return 1
     fi
 
-    local DIR="$platformDir/$value"
+    local DIR="$platformDir"
     updatePath "$DIR"
     export npm="$DIR/npm"
     if [ -e "$DIR/npx" ]; then
