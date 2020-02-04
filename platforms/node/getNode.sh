@@ -37,9 +37,9 @@ getNode() {
 			-v $hostNodeArtifactsDir:$volumeContainerDir \
 			$imageName \
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
+		
+		echo "version=$version" >> "$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
 	fi
-
-	echo "$version" >> "$hostNodeArtifactsDir/available_versions.txt"
 }
 
 echo "Getting Node Sdk..."

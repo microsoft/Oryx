@@ -51,9 +51,9 @@ buildPhp() {
 			$REPO_DIR
 
 		getSdkFromImage $imageName "$targetDir"
+		
+		echo "version=$version" >> "$targetDir/php-$version-metadata.txt"
 	fi
-
-	echo "$version" >> "$targetDir/available_versions.txt"
 }
 
 buildPhpComposer() {
@@ -87,9 +87,9 @@ buildPhpComposer() {
 			$REPO_DIR
 
 		getSdkFromImage $imageName "$targetDir"
+		
+		echo "version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
 	fi
-
-	echo "$version" >> "$targetDir/available_versions.txt"
 }
 
 echo "Building Php..."

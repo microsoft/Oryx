@@ -46,9 +46,9 @@ getDotNetCoreSdk() {
 		runtimeVersion=$(basename $runtimeVersionDir)
 		cp -f "$downloadedFile" "$targetDir"
 		rm -rf $tempDir
+
+		echo "runtime_version=$runtimeVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
 	fi
-	
-	echo "$runtimeVersion, $sdkVersion" >> "$targetDir/available_versions.txt"
 }
 
 echo
