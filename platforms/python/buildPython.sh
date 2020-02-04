@@ -64,9 +64,9 @@ buildPython() {
 			$REPO_DIR
 
 		getSdkFromImage $imageName "$targetDir"
+		
+		echo "version=$version" >> "$targetDir/python-$version-metadata.txt"
 	fi
-
-	echo "$version" >> "$targetDir/available_versions.txt"
 }
 
 echo "Building Python..."
