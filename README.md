@@ -60,7 +60,7 @@ placed; if not specified the source directory is used for output as well.
 
 For all options, specify `oryx --help`.
 
-### `oryx script -appPath`
+### `oryx -appPath`
 
 When `oryx` is run in the runtime images it generates a start script named
 run.sh, by default in the same folder as the compiled artifact.
@@ -92,7 +92,7 @@ docker run --detach --rm \
     --env PORT=8080 \
     --publish 8080:8080 \
     'docker.io/oryxprod/node-10.14:latest' \
-    sh -c 'oryx script -appPath /app && /run.sh'
+    sh -c 'oryx -appPath /app && /run.sh'
 ```
 
 # Components

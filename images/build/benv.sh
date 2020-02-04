@@ -57,7 +57,7 @@ unset benvvar # Remove all traces of this part of the script
 # sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/'
 # (as in /opt/dotnet) and inserting a more specific provided path before it.
 # Example: (note that all Oryx related patlform paths come in the end)
-# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401:/opt/oryx
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401
 updatePath() {
   local replacingText=":/opt/oryx:$1:"
   local lookUpText=":\/opt\/oryx:"
