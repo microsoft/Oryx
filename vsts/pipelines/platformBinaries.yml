@@ -5,6 +5,7 @@ stages:
 - stage: Build
   jobs:
   - job: Python
+    timeoutInMinutes: 250
     pool:
       name: OryxLinux
     steps:
@@ -13,6 +14,7 @@ stages:
         platformName: 'python'
 
   - job: Php
+    timeoutInMinutes: 250
     pool:
       name: OryxLinux
     steps:
@@ -21,6 +23,7 @@ stages:
         platformName: 'php'
 
   - job: Node
+    timeoutInMinutes: 250
     pool:
       name: OryxLinux
     steps:
@@ -29,6 +32,7 @@ stages:
         platformName: 'node'
 
   - job: DotNetCore
+    timeoutInMinutes: 250
     pool:
       name: OryxLinux
     steps:
@@ -40,6 +44,7 @@ stages:
   dependsOn: Build
   jobs:
   - job: Publish_Platform_Binaries
+    timeoutInMinutes: 250
     displayName: Publish to Azure Blob Storage
     pool:
       name: OryxLinux
