@@ -3,7 +3,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
-set -x
+
 # Perform case-insensitive comparison
 matchesName() {
   local expectedName="$1"
