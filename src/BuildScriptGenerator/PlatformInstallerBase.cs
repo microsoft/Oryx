@@ -9,6 +9,8 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common;
 
@@ -112,23 +114,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return snippet.ToString();
         }
 
-        protected IEnumerable<string> GetAvailableVersionsInBuildImage(string platformName)
+        protected IEnumerable<string> GetAvailableVersionsInBuildImage(
+            string platformName,
+            string versionMetadataElementName)
         {
             var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
-            var availableVersions = _httpClient
-                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/available_versions.txt")
+            var blobList = _httpClient
+                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}?restype=container&comp=list&include=metadata")
                 .Result;
+            var xdoc = XDocument.Parse(blobList);
             var supportedVersions = new List<string>();
-            var reader = new StringReader(availableVersions);
-            while (true)
+            foreach (var runtimeVersionElement in xdoc.XPathSelectElements(
+                $"//Blobs/Blob/Metadata/{versionMetadataElementName}"))
             {
-                var version = reader.ReadLine();
-                if (version == null)
-                {
-                    break;
-                }
-
-                supportedVersions.Add(version);
+                supportedVersions.Add(runtimeVersionElement.Value);
             }
 
             return supportedVersions;

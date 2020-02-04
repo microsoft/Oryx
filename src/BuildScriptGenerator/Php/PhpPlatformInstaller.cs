@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     public class PhpPlatformInstaller : PlatformInstallerBase
     {
         public PhpPlatformInstaller(
-            IOptions<BuildScriptGeneratorOptions> commonOptions, 
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IEnvironment environment,
             IHttpClientFactory httpClientFactory)
             : base(commonOptions, environment, httpClientFactory)
@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public override IEnumerable<string> GetAvailableVersionsForBuildImage()
         {
-            return GetAvailableVersionsInBuildImage(PhpConstants.PhpName);
+            return GetAvailableVersionsInBuildImage(PhpConstants.PhpName, versionMetadataElementName: "version");
         }
 
         public override IEnumerable<string> GetAvailableVersionsForDeveloperImage()

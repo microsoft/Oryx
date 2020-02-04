@@ -44,7 +44,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (RuntimeAndSdkVersions == null)
             {
                 // Each version is a pair of runtime and sdk version
-                var versions = GetAvailableVersionsInBuildImage(DotNetCoreConstants.LanguageName);
+                var versions = GetAvailableVersionsInBuildImage(
+                    DotNetCoreConstants.LanguageName,
+                    versionMetadataElementName: "runtime_version");
                 var runtimeAndSdkVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var version in versions)
                 {

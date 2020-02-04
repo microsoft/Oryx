@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     public class NodePlatformInstaller : PlatformInstallerBase
     {
         public NodePlatformInstaller(
-            IOptions<BuildScriptGeneratorOptions> commonOptions, 
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IEnvironment environment,
             IHttpClientFactory httpClientFactory)
             : base(commonOptions, environment, httpClientFactory)
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public override IEnumerable<string> GetAvailableVersionsForBuildImage()
         {
-            return GetAvailableVersionsInBuildImage(NodeConstants.NodeJsName);
+            return GetAvailableVersionsInBuildImage(NodeConstants.NodeJsName, versionMetadataElementName: "version");
         }
 
         public override IEnumerable<string> GetAvailableVersionsForDeveloperImage()

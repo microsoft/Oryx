@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public override IEnumerable<string> GetAvailableVersionsForBuildImage()
         {
-            return GetAvailableVersionsInBuildImage(PythonConstants.PythonName);
+            return GetAvailableVersionsInBuildImage(PythonConstants.PythonName, versionMetadataElementName: "version");
         }
 
         public override IEnumerable<string> GetAvailableVersionsForDeveloperImage()
