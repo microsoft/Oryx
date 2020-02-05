@@ -10,7 +10,7 @@ function downloadFileAndVerifyChecksum() {
     echo "Downloading $platformName version '$version'..."
     curl \
         -D $headersFile \
-        -SL "$DEV_STORAGE_BASE_URL/$platformName/$platformName-$version.tar.gz" \
+        -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$platformName-$version.tar.gz" \
         --output $downloadedFileName
 
     headerName="x-ms-meta-checksum"

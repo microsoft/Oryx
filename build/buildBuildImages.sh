@@ -14,6 +14,8 @@ source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__pythonVersions.sh # For PYTHON_BASE_TAG
 source $REPO_DIR/build/__phpVersions.sh    # For PHP_BUILD_BASE_TAG
 source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
+source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
+source $REPO_DIR/build/__sdkStorageConstants.sh
 
 declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
                                 --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
@@ -89,6 +91,8 @@ function buildDockerImage() {
 		--build-arg AGENTBUILD=$BUILD_SIGNED \
 		$BASE_TAG_BUILD_ARGS \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
 		$ctxArgs \
 		-f "$dockerFileToBuild" \
 		.
