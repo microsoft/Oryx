@@ -56,11 +56,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The tar-gz option.
         /// </summary>
         internal const string TarGzOption = "tar-gz";
-
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
         private readonly ILogger<PythonPlatform> _logger;
         private readonly PythonLanguageDetector _detector;
+        private readonly PythonPlatformInstaller _platformInstaller;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
@@ -71,23 +72,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <param name="logger">The logger of Python platform.</param>
         /// <param name="detector">The detector of Python platform.</param>
         public PythonPlatform(
-            IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
             ILogger<PythonPlatform> logger,
-            PythonLanguageDetector detector)
+            PythonLanguageDetector detector,
+            PythonPlatformInstaller platformInstaller)
         {
+            _commonOptions = commonOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
             _environment = environment;
             _logger = logger;
             _detector = detector;
+            _platformInstaller = platformInstaller;
         }
 
         /// <inheritdoc/>
         public string Name => PythonConstants.PythonName;
 
-        /// <inheritdoc/>
-        public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPythonVersions;
+        public IEnumerable<string> SupportedVersions
+        {
+            get
+            {
+                var versionInfo = _pythonVersionProvider.GetVersionInfo();
+                return versionInfo.SupportedVersions;
+            }
+        }
 
         /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
@@ -98,11 +108,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            string installationScriptSnippet = null;
+            if (_commonOptions.EnableDynamicInstall
+                && !_platformInstaller.IsVersionAlreadyInstalled(context.PythonVersion))
+            {
+                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.PythonVersion);
+            }
+
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PythonConstants.PythonName}_version";
-            manifestFileProperties[key] = context.PythonVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = context.PythonVersion;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -122,11 +138,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     virtualEnvName = GetDefaultVirtualEnvName(context);
                 }
 
-                manifestFileProperties[ManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
+                manifestFileProperties[PythonManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
             }
             else
             {
-                manifestFileProperties[ManifestFilePropertyKeys.PackageDir] = packageDir;
+                manifestFileProperties[PythonManifestFilePropertyKeys.PackageDir] = packageDir;
             }
 
             var virtualEnvModule = string.Empty;
@@ -155,7 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (!string.IsNullOrWhiteSpace(compressedVirtualEnvFileName))
             {
-                manifestFileProperties[ManifestFilePropertyKeys.CompressedVirtualEnvFile]
+                manifestFileProperties[PythonManifestFilePropertyKeys.CompressedVirtualEnvFile]
                     = compressedVirtualEnvFileName;
             }
 
@@ -178,6 +194,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                PlatformInstallationScriptSnippet = installationScriptSnippet,
             };
         }
 

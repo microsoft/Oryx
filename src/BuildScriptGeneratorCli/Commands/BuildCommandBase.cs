@@ -38,5 +38,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
+
+        [Option("--enable-dynamic-install", CommandOptionType.NoValue,
+            Description = "Enables dynamic installation of platform versions when a version is not found on the disk.")]
+        public bool EnableDynamicInstall { get; set; }
     }
 }

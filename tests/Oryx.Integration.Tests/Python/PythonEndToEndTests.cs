@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform python --language-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var runScript = new ShellScriptBuilder()
                 .AddDirectoryDoesNotExistCheck("__oryx_packages__")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

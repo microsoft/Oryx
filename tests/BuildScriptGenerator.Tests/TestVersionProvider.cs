@@ -9,20 +9,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     class TestVersionProvider :
         BuildScriptGenerator.Node.INodeVersionProvider,
-        BuildScriptGenerator.Python.IPythonVersionProvider,
         BuildScriptGenerator.DotNetCore.IDotNetCoreVersionProvider
     {
         public TestVersionProvider(string[] supportedVersions, string[] supportedNpmVersions = null)
         {
-            SupportedNodeVersions = SupportedPythonVersions = SupportedDotNetCoreVersions = supportedVersions;
+            SupportedNodeVersions = SupportedDotNetCoreVersions = supportedVersions;
             SupportedNpmVersions = supportedNpmVersions;
         }
 
         public IEnumerable<string> SupportedNodeVersions { get; }
 
         public IEnumerable<string> SupportedNpmVersions { get; }
-
-        public IEnumerable<string> SupportedPythonVersions { get; }
 
         public IEnumerable<string> SupportedDotNetCoreVersions { get; }
     }

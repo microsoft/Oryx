@@ -15,7 +15,11 @@ import (
 func main() {
 	common.PrintVersionInfo()
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
-	manifestDirPtr := common.ManifestDirFlag
+	manifestDirPtr := flag.String(
+		"manifestDir",
+		"",
+		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
+			"it is assumed to be under the directory specified by 'appPath'.")
 
 	var _phpOrigin = os.Getenv(consts.PhpOriginEnvVarName)
 	var startupCommand = ""

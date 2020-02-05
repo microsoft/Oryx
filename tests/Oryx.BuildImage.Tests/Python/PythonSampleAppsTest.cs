@@ -352,7 +352,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
-                       $"{PythonConstants.PythonName}_version=\"{PythonVersions.Python36Version}\"",
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());
