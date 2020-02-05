@@ -25,6 +25,7 @@ declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/Dockerf
 declare -r ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/slim.Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
 declare -r BUILD_IMAGES_CLI_DOCKERFILE="$REPO_DIR/images/build/cli.Dockerfile"
+declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/AzureFunctions.JamStack.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
 declare -r SOURCES_SRC_DIR="$REPO_DIR/src"
@@ -52,6 +53,7 @@ declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
 declare -r ACR_CLI_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/cli"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
 declare -r ACR_PACK_IMAGE_REPO="$ACR_PUBLIC_PREFIX/$PACK_IMAGE_NAME"
+declare -r ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_REPO="$ACR_BUILD_IMAGES_REPO:azfunc-jamstack"
 
 declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
 

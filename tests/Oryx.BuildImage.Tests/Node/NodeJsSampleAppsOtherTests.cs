@@ -23,9 +23,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                //data.Add(Settings.BuildImageName);
+                //data.Add(Settings.SlimBuildImageName);
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                return data;
+            }
+        }
+
         [Theory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange

@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
         private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
 
+        private const string _azureFunctionsJamStack = "azfunc-jamstack";
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
@@ -26,6 +27,10 @@ namespace Microsoft.Oryx.Tests.Common
         private readonly ITestOutputHelper _output;
         private string _image;
         private string _tagSuffix;
+
+        public ImageTestHelper() : this(output: null)
+        {
+        }
 
         public ImageTestHelper(ITestOutputHelper output)
         {
@@ -37,7 +42,7 @@ namespace Microsoft.Oryx.Tests.Common
                 // then use the default value of 'oryxdevmcr.azurecr.io/public/oryx' as the image base for the tests.
                 // This should be used in cases where a image base should be used for the tests rather than the
                 // development registry (e.g., oryxmcr.azurecr.io/public/oryx)
-                _output.WriteLine($"Could not find a value for environment variable " +
+                _output?.WriteLine($"Could not find a value for environment variable " +
                                   $"'{_imageBaseEnvironmentVariable}', using default image base '{_defaultImageBase}'.");
                 _image = _defaultImageBase;
             }
@@ -48,7 +53,7 @@ namespace Microsoft.Oryx.Tests.Common
                 // If the ORYX_TEST_TAG_SUFFIX environment variable was not set in the .sh script calling this test,
                 // then don't append a suffix to the tag of this image. This should be used in cases where a specific
                 // runtime version tag should be used (e.g., node:8.8-20191025.1 instead of node:8.8)
-                _output.WriteLine($"Could not find a value for environment variable " +
+                _output?.WriteLine($"Could not find a value for environment variable " +
                                   $"'{_tagSuffixEnvironmentVariable}', no suffix will be added to image tags.");
                 _tagSuffix = string.Empty;
             }
@@ -65,7 +70,7 @@ namespace Microsoft.Oryx.Tests.Common
             _output = output;
             if (string.IsNullOrEmpty(imageBase))
             {
-                _output.WriteLine($"No value provided for imageBase, using default image base '{_defaultImageBase}'.");
+                _output?.WriteLine($"No value provided for imageBase, using default image base '{_defaultImageBase}'.");
                 imageBase = _defaultImageBase;
             }
 
@@ -73,7 +78,7 @@ namespace Microsoft.Oryx.Tests.Common
 
             if (string.IsNullOrEmpty(tagSuffix))
             {
-                _output.WriteLine("No value provided for tagSuffix, no suffix will be added to image tags.");
+                _output?.WriteLine("No value provided for tagSuffix, no suffix will be added to image tags.");
             }
 
             _tagSuffix = tagSuffix;
@@ -133,6 +138,17 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetTestSlimBuildImage()
         {
             return $"{_image}/{_buildRepository}:{_slimTag}{_tagSuffix}";
+        }
+
+        /// <summary>
+        /// Constructs a 'build:slim' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
+        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
+        /// </summary>
+        /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
+        public string GetAzureFunctionsJamStackBuildImage()
+        {
+            return $"{_image}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
         }
 
         /// <summary>
