@@ -21,7 +21,7 @@ case "$1" in
 			tar -Jxf /usr/src/php.tar.xz -C "$dir" --strip-components=1
 			touch "$dir/.docker-extracted"
 		fi
-		;;
+		;; 
 
 	delete)
 		rm -rf "$dir"

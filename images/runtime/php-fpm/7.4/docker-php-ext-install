@@ -17,7 +17,7 @@ if [ -z "$srcExists" ]; then
 fi
 
 cd /usr/src/php/ext
-
+ 
 usage() {
 	echo "usage: $0 [-jN] ext-name [ext-name ...]"
 	echo "   ie: $0 gd mysqli"

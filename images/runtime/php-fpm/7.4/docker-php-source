@@ -13,7 +13,7 @@ usage() {
 	echo "   delete   delete extracted php source located into $dir if not already done."
 	echo
 }
-
+ 
 case "$1" in
 	extract)
 		mkdir -p "$dir"
