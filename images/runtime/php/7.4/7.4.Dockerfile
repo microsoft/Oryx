@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/php.git
-FROM debian:buster-slim
+FROM oryx-base-buster
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542

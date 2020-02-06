@@ -26,7 +26,9 @@ declare -r ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/sl
 declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
 declare -r BUILD_IMAGES_CLI_DOCKERFILE="$REPO_DIR/images/build/cli.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
+declare -r RUNTIME_BUSTER_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/buster.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
+declare -r RUNTIME_BUSTER_BASE_IMAGE_NAME="oryx-base-buster"
 declare -r SOURCES_SRC_DIR="$REPO_DIR/src"
 declare -r TESTS_SRC_DIR="$REPO_DIR/tests"
 

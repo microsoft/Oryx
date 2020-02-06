@@ -11,7 +11,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:php-fpm-7.3-20200123.3
+FROM mcr.microsoft.com/oryx/base:php-fpm-7.3-20200129.1
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
