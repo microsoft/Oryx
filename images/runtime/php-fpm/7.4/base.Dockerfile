@@ -1,6 +1,6 @@
-FROM %PHP_BASE_IMAGE%
+FROM php-fpm-7.4
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 7.4.2
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
@@ -58,15 +58,17 @@ RUN apt-get update \
         wddx \
         xmlrpc \
         xsl \
-    && pecl install imagick && docker-php-ext-enable imagick \
-    && pecl install mongodb && docker-php-ext-enable mongodb
+    && pecl install imagick && docker-php-ext-enable imagick
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-RUN pecl install sqlsrv pdo_sqlsrv \
+RUN set -eux; \
+    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* ]]; then \
+        pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini;
+        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
+    fi
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \
