@@ -1,17 +1,4 @@
-FROM debian:buster-slim
-ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
-
-RUN apt-get update \
-	&& apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends \
-		xz-utils \
-	&& rm -rf /var/lib/apt/lists/*
-
-ADD images ${IMAGES_DIR}
-ADD build ${BUILD_DIR}
-RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+FROM oryx-base-buster
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
