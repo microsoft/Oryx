@@ -1,5 +1,6 @@
 # From https://github.com/docker-library/php.git
 FROM oryx-base-buster
+ARG IMAGES_DIR=/tmp/oryx/images
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
@@ -31,27 +32,26 @@ RUN set -eux; \
 		ca-certificates \
 		curl \
 		xz-utils \
-		libzip-dev \
-		libpng-dev \
-		libjpeg-dev \
-		libpq-dev \
-		libldap2-dev \
-		libldb-dev \
-		libicu-dev \
-		libgmp-dev \
-		libmagickwand-dev \
-		libc-client-dev \
-		libtidy-dev \
-		libkrb5-dev \
-		libxslt-dev \
-		unixodbc-dev \
-		openssh-server \
-		vim \
-		curl \
-		wget \
-		tcptraceroute \
-		mariadb-client \
-		openssl \
+#		libzip-dev \
+#		libpng-dev \
+#		libjpeg-dev \
+#		libpq-dev \
+#		libldap2-dev \
+#		libldb-dev \
+#		libicu-dev \
+#		libgmp-dev \
+#		libmagickwand-dev \
+#		libc-client-dev \
+#		libtidy-dev \
+#		libkrb5-dev \
+#		libxslt-dev \
+#		unixodbc-dev \
+#		openssh-server \
+#		vim \
+#		wget \
+#		tcptraceroute \
+#		mariadb-client \
+#		openssl \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -179,9 +179,7 @@ RUN set -eux; \
 	if [ -n "$PHP_ASC_URL" ]; then \
 		curl -fsSL -o php.tar.xz.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
-		for key in $GPG_KEYS; do \
-			gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-		done; \
+		${IMAGES_DIR}/receiveGpgKeys.sh $GPG_KEYS; \
 		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
 		gpgconf --kill all; \
 		rm -rf "$GNUPGHOME"; \
@@ -208,6 +206,28 @@ RUN set -eux; \
 		libxml2-dev \
 		zlib1g-dev \
 		${PHP_EXTRA_BUILD_DEPS:-} \
+# Start of persistent / runtime deps
+		libzip-dev \
+		libpng-dev \
+		libjpeg-dev \
+		libpq-dev \
+		libldap2-dev \
+		libldb-dev \
+		libicu-dev \
+		libgmp-dev \
+		libmagickwand-dev \
+		libc-client-dev \
+		libtidy-dev \
+		libkrb5-dev \
+		libxslt-dev \
+		unixodbc-dev \
+		openssh-server \
+		vim \
+		wget \
+		tcptraceroute \
+		mariadb-client \
+		openssl \
+# End of persistent / runtime deps
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
