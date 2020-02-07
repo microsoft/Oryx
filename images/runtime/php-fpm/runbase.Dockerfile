@@ -30,6 +30,17 @@ RUN set -eux; \
 		ca-certificates \
 		curl \
 		xz-utils \
+# Start of some more php fpm dependencies
+		libargon2-dev \
+		libcurl4-openssl-dev \
+		libedit2 \
+		libonig-dev \
+		libsodium-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		libxml2-dev \
+		zlib1g-dev \
+# End of some more php fpm dependencies
 		libzip-dev \
 		libpng-dev \
 		libjpeg-dev \
@@ -46,7 +57,6 @@ RUN set -eux; \
 		unixodbc-dev \
 		openssh-server \
 		vim \
-		curl \
 		wget \
 		tcptraceroute \
 		mariadb-client \
