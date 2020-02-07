@@ -33,6 +33,7 @@ RUN set -eux; \
 # Start of some more php fpm dependencies
 		libargon2-dev \
 		libcurl4-openssl-dev \
+		libedit-dev \
 		libedit2 \
 		libonig-dev \
 		libsodium-dev \
