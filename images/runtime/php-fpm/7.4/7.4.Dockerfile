@@ -69,9 +69,7 @@ RUN set -eux; \
 	if [ -n "$PHP_ASC_URL" ]; then \
 		curl -fsSL -o php.tar.xz.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
-		for key in $GPG_KEYS; do \
-			gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-		done; \
+		${IMAGES_DIR}/receiveGpgKeys.sh $GPG_KEYS; \
 		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
 		gpgconf --kill all; \
 		rm -rf "$GNUPGHOME"; \
@@ -90,7 +88,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libargon2-dev \
 		libcurl4-openssl-dev \
-		libedit-dev \
+		libedit2 \
 		libonig-dev \
 		libsodium-dev \
 		libsqlite3-dev \

@@ -46,7 +46,6 @@ RUN set -eux; \
 		unixodbc-dev \
 		openssh-server \
 		vim \
-		curl \
 		wget \
 		tcptraceroute \
 		mariadb-client \
