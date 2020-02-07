@@ -10,7 +10,7 @@ ENV NGINX_RUN_USER www-data
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX 
 RUN apt-get update \
-    && apt-get install nano nginx -y
+    && apt-get install nginx -y
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
@@ -29,9 +29,9 @@ RUN apt-get update \
 
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.4.* ]]; then \
-        docker-php-ext-configure gd --with-png=/usr --with-jpeg=/usr \
+        docker-php-ext-configure gd --with-png=/usr --with-jpeg=/usr ; \
     else \
-        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr ; \
     fi
 
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
