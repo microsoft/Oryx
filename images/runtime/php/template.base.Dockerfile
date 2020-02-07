@@ -29,9 +29,9 @@ RUN apt-get update \
 
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.4.* ]]; then \
-        docker-php-ext-configure gd --with-png=/usr --with-jpeg=/usr \
+        docker-php-ext-configure gd --with-png=/usr --with-jpeg=/usr ; \
     else \
-        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr ; \
     fi
 
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
