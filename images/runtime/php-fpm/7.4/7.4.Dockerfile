@@ -86,15 +86,15 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-dev \
-		libcurl4-openssl-dev \
-		libedit2 \
-		libonig-dev \
-		libsodium-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		libxml2-dev \
-		zlib1g-dev \
+#		libargon2-dev \
+#		libcurl4-openssl-dev \
+#		libedit2 \
+#		libonig-dev \
+#		libsodium-dev \
+#		libsqlite3-dev \
+#		libssl-dev \
+#		libxml2-dev \
+#		zlib1g-dev \
 		${PHP_EXTRA_BUILD_DEPS:-} \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
