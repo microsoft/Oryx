@@ -10,7 +10,7 @@ ENV NGINX_RUN_USER www-data
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX 
 RUN apt-get update \
-    && apt-get install nginx-full -y --no-install-recommends
+    && apt-get install nginx -y --no-install-recommends
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
