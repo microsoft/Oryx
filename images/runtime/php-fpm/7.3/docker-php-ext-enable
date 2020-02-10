@@ -21,7 +21,7 @@ usage() {
 	echo 'Some of the above modules are already compiled into PHP; please check'
 	echo 'the output of "php -i" to see which modules are already loaded.'
 }
- 
+
 opts="$(getopt -o 'h?' --long 'help,ini-name:' -- "$@" || { usage >&2 && false; })"
 eval set -- "$opts"
 
