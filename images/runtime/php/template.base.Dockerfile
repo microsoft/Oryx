@@ -27,14 +27,8 @@ RUN apt-get update \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
-RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* ]]; then \
-        docker-php-ext-configure gd --with-png=/usr --with-jpeg=/usr ; \
-    else \
-        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr ; \
-    fi
-
-RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
         mysqli \

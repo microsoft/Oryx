@@ -42,7 +42,7 @@ while true; do
 			;;
 	esac
 done
- 
+
 modules=
 for module; do
 	if [ -z "$module" ]; then
