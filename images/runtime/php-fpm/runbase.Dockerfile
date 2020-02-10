@@ -42,25 +42,25 @@ RUN set -eux; \
 		libxml2-dev \
 		zlib1g-dev \
 # End of some more php fpm dependencies
-		libzip-dev \
-		libpng-dev \
-		libjpeg-dev \
-		libpq-dev \
-		libldap2-dev \
-		libldb-dev \
-		libicu-dev \
-		libgmp-dev \
-		libmagickwand-dev \
-		libc-client-dev \
-		libtidy-dev \
-		libkrb5-dev \
-		libxslt-dev \
-		unixodbc-dev \
-		openssh-server \
-		vim \
-		wget \
-		tcptraceroute \
-		mariadb-client \
-		openssl \
+#		libzip-dev \
+#		libpng-dev \
+#		libjpeg-dev \
+#		libpq-dev \
+#		libldap2-dev \
+#		libldb-dev \
+#		libicu-dev \
+#		libgmp-dev \
+#		libmagickwand-dev \
+#		libc-client-dev \
+#		libtidy-dev \
+#		libkrb5-dev \
+#		libxslt-dev \
+#		unixodbc-dev \
+#		openssh-server \
+#		vim \
+#		wget \
+#		tcptraceroute \
+#		mariadb-client \
+#		openssl \
 	; \
 	rm -rf /var/lib/apt/lists/*
