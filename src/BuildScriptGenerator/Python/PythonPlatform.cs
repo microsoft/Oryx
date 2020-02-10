@@ -177,7 +177,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[PythonConstants.PythonName] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.PythonName] = targetPlatformVersion;
             }
         }
 
