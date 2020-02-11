@@ -15,6 +15,9 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
+    /// <summary>
+    /// Python Platform.
+    /// </summary>
     [BuildProperty(
         VirtualEnvironmentNamePropertyKey,
         "Name of the virtual environment to be created. Defaults to 'pythonenv<Python version>'.")]
@@ -63,10 +66,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
         /// </summary>
         /// <param name="pythonScriptGeneratorOptions">The options of pythonScriptGenerator.</param>
-        /// <param name="pythonVersionProvider">The python version provider.</param>
-        /// <param name="environment">The environment of python platform.</param>
-        /// <param name="logger">The logger of python platform.</param>
-        /// <param name="detector">The detector of python platform.</param>
+        /// <param name="pythonVersionProvider">The Python version provider.</param>
+        /// <param name="environment">The environment of Python platform.</param>
+        /// <param name="logger">The logger of Python platform.</param>
+        /// <param name="detector">The detector of Python platform.</param>
         public PythonPlatform(
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
@@ -81,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <summary>
-        /// Gets the name of the platform which this generator will create builds for.
+        /// Gets the name of Python platform which this generator will create builds for.
         /// </summary>
         public string Name => PythonConstants.PythonName;
 
@@ -103,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <summary>
         /// Generates a build Bash script based on the application in source directory.
         /// </summary>
-        /// <param name="context">The Build Script Generator Context.</param>
+        /// <param name="context">The context for BuildScriptGenerator.</param>
         /// <returns>The build script snippet.</returns>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
@@ -205,7 +208,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// Generates a bash script that can install the required runtime bits for the application's platforms.
         /// </summary>
         /// <param name="options">The runtime installation script generator options.</param>
-        /// <returns>Throws a NotImplementedException.</returns>
+        /// <exception cref="NotImplementedException">Thrown when it's not implemented.</exception>
+        /// <returns>Message from exception.</returns>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
@@ -245,22 +249,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[ToolNameConstants.PythonName] = targetPlatformVersion;
+                toolsToVersion[PythonConstants.PythonName] = targetPlatformVersion;
             }
         }
 
         /// <summary>
-        /// Sets the version of the platform in BuildScriptGeneratorContext.
+        /// Sets the version of the Python platform in BuildScriptGeneratorContext.
         /// </summary>
         /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <param name="version">The version of the platform.</param>
+        /// <param name="version">The version of the Python platform.</param>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
         }
 
         /// <summary>
-        /// Gets  list of directories which need to be excluded from being copied to the output directory.
+        /// Gets list of directories which need to be excluded from being copied to the output directory.
         /// </summary>
         /// <param name="context">The context of BuildScriptGenerator.</param>
         /// <returns>A list of directories.</returns>
@@ -286,7 +290,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <summary>
-        /// Gets  list of directories which need to be excluded from being copied to the intermediate directory, if used.
+        /// Gets list of directories which need to be excluded from being copied to the intermediate directory, if used.
         /// </summary>
         /// <param name="context">The context of BuildScriptGenerator.</param>
         /// <returns>A list of directories.</returns>
