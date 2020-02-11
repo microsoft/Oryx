@@ -2,21 +2,6 @@
 FROM php-fpm-run-base
 ARG IMAGES_DIR=/tmp/oryx/images
 
-# do NOT merge this content with above line because the 
-# above line is shared across all php images
-# Install the Microsoft SQL Server PDO driver on supported versions only.
-#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
-#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-RUN set -eux \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		gnupg2 \
-		apt-transport-https \
-	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-	&& curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
-
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
 	mkdir -p "$PHP_INI_DIR/conf.d"; \
@@ -98,14 +83,14 @@ RUN set -eux; \
 ##</argon2-stretch>##
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-dev \
-		libcurl4-openssl-dev \
-		libedit-dev \
-		libsodium-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		libxml2-dev \
-		zlib1g-dev \
+#		libargon2-dev \
+#		libcurl4-openssl-dev \
+#		libedit-dev \
+#		libsodium-dev \
+#		libsqlite3-dev \
+#		libssl-dev \
+#		libxml2-dev \
+#		zlib1g-dev \
 		${PHP_EXTRA_BUILD_DEPS:-} \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
