@@ -8,9 +8,9 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX 
-RUN apt-get update \
-    && apt-get install nginx -y --no-install-recommends
+# Configure NGINX 
+#RUN apt-get update \
+#    && apt-get install nginx -y --no-install-recommends
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
