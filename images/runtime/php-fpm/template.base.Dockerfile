@@ -11,12 +11,10 @@ ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Configure NGINX 
 #RUN apt-get update \
 #    && apt-get install nginx -y --no-install-recommends
-RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
 RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
 RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
-RUN ls -l /etc/nginx
 # Edit the default port setting
 ENV NGINX_PORT 8080
 
