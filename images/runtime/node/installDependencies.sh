@@ -29,4 +29,4 @@ npm install -g pm2@3.5.1
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
-npm install -g applicationinsights@1.7.1
+npm install -g applicationinsights@1.7.2
