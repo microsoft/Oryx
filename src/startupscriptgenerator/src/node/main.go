@@ -9,6 +9,7 @@ import (
 	"common"
 	"flag"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -38,6 +39,7 @@ func main() {
 	logger.StartupScriptRequested()
 
 	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
+	globalModulesPath := exec.Command("npm", "root", "--quiet", "-g")
 	defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 	useLegacyDebugger := isLegacyDebuggerNeeded()
 
@@ -46,6 +48,7 @@ func main() {
 
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,
+		GlobalModulesPath                string(globalModulesPath)
 		UserStartupCommand:              *userStartupCommandPtr,
 		DefaultAppJsFilePath:            defaultAppFullPAth,
 		UsePm2:                          *usePm2Ptr,

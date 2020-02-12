@@ -91,7 +91,7 @@
     compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
     run-script-generator-dir: /opt/startupcmdgen
-    node-app-insights-loader-file-name: oryx-appinsightsloader.js
+    node-app-insights-loader-file-name: applicationinsights/out/Bootstrap/Oryx.js
     bash: /bin/bash
     benv: /opt/oryx/benv
   outputs:
@@ -121,4 +121,4 @@
       file-name-prefix: __
     - type: csharp
       directory: src/BuildScriptGenerator/Node
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Node      
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
