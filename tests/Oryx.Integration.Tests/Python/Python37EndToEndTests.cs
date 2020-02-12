@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 volume,
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetTestRuntimeImage("python", pythonVersion),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -112,14 +112,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var tempOutputDir = "/tmp/output";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir}" +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir}" +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
-                .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
-                .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
-                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck($"{appOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -136,7 +134,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -167,14 +165,12 @@ namespace Microsoft.Oryx.Integration.Tests
             Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
             var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
             var manifestDir = manifestDirVolume.ContainerDir;
-            var tempOutputDir = "/tmp/output";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {tempOutputDir} --manifest-dir {manifestDir} " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --manifest-dir {manifestDir} " +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv=tar-gz")
-                .AddDirectoryDoesNotExistCheck($"{tempOutputDir}/{virtualEnvName}")
-                .AddFileExistsCheck($"{tempOutputDir}/{virtualEnvName}.tar.gz")
-                .AddCommand($"cp -rf {tempOutputDir}/* {appOutputDir}")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck($"{appOutputDir}/{virtualEnvName}.tar.gz")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -192,7 +188,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -233,7 +229,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -272,9 +268,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform python --language-version 3.7 " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform python --language-version 3.7 " +
                 $"-p virtualenv_name={virtualEnvName}")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -292,7 +287,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetTestRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

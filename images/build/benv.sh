@@ -54,16 +54,61 @@ done < <(set | grep -i '^dotnet_version=')
 unset benvvar # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
-# sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/'
-# (as in /opt/dotnet) and inserting a more specific provided path before it.
-# Example: (note that all Oryx related patlform paths come in the end)
-# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401:/opt/oryx
+# sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/oryx'
+# and inserting a more specific provided path after it.
+# Example: (note that all Oryx related patlform paths come after the typical debian paths)
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401
 updatePath() {
-  local replacingText="$1:/opt/"
+  local replacingText=":/opt/oryx:$1:"
+  local lookUpText=":\/opt\/oryx:"
   local currentPath="$PATH"
-  local lookUpText="\/opt\/"
   local newPath=$(echo $currentPath | sed "0,/$lookUpText/ s##$replacingText#")
   export PATH="$newPath"
+}
+
+# NOTE: We handle .NET Core specially because there are 2 version types:
+# SDK version and Runtime version
+# For platforms other than dotnet, we look at a folder structure like '/opt/nodejs/10.14.1', but
+# for dotnet, it would be '/opt/dotnet/runtimes/10.14.1'
+# i.e Versioning of .NET Core is based on the runtime versions rather than sdk version
+benv-showSupportedVersionsErrorInfo() {
+  local userPlatformName="$1"
+  local platformDirName="$2"
+  local userSuppliedVersion="$3"
+  local builtInInstallDir="/opt/$platformDirName"
+  local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
+
+  if [ "$platformDirName" == "dotnet" ]; then
+    builtInInstallDir="$builtInInstallDir/runtimes"
+    dynamicInstallDir="$dynamicInstallDir/runtimes"
+  fi
+
+  echo >&2 benv: "$userPlatformName" version \'$userSuppliedVersion\' not found\; choose one of:
+  benv-versions >&2 "$builtInInstallDir"
+
+  if [ -d "$dynamicInstallDir" ]; then
+    benv-versions >&2 "$dynamicInstallDir"
+  fi
+}
+
+benv-getPlatformDir() {
+  local platformDirName="$1"
+  local userSuppliedVersion="$2"
+  local builtInInstallDir="/opt/$platformDirName"
+  local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
+  
+  if [ "$platformDirName" == "dotnet" ]; then
+    builtInInstallDir="$builtInInstallDir/runtimes"
+    dynamicInstallDir="$dynamicInstallDir/runtimes"
+  fi
+
+  if [ -d "$builtInInstallDir/$userSuppliedVersion" ]; then
+    echo "$builtInInstallDir/$userSuppliedVersion"
+  elif [ -d "$dynamicInstallDir/$userSuppliedVersion" ]; then
+    echo "$dynamicInstallDir/$userSuppliedVersion"
+  else
+    echo "NotFound"
+  fi
 }
 
 benv-versions() {
@@ -85,13 +130,13 @@ benv-resolve() {
 
   # Resolve node versions
   if matchesName "node" "$name" || matchesName "node_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/nodejs/$value" ]; then
-      echo >&2 benv: node version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/nodejs
+    platformDir=$(benv-getPlatformDir "nodejs" "$value")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "node" "nodejs" "$value"
       return 1
     fi
 
-    local DIR="/opt/nodejs/$value/bin"
+    local DIR="$platformDir/bin"
     updatePath "$DIR"
     export node="$DIR/node"
     export npm="$DIR/npm"
@@ -104,13 +149,13 @@ benv-resolve() {
 
   # Resolve npm versions
   if matchesName "npm" "$name" || matchesName "npm_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/npm/$value" ]; then
-      echo >&2 benv: npm version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/npm
+    platformDir=$(benv-getPlatformDir "npm" "$value")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "npm" "npm" "$value"
       return 1
     fi
 
-    local DIR="/opt/npm/$value"
+    local DIR="$platformDir"
     updatePath "$DIR"
     export npm="$DIR/npm"
     if [ -e "$DIR/npx" ]; then
@@ -122,13 +167,15 @@ benv-resolve() {
 
   # Resolve python versions
   if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/python/$value" ]; then
-      echo >&2 benv: python version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/python
+    platformDir=$(benv-getPlatformDir "python" "$value")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "node" "python" "$value"
       return 1
     fi
 
-    local DIR="/opt/python/$value/bin"
+    export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
+
+    local DIR="$platformDir/bin"
     updatePath "$DIR"
     if [ -e "$DIR/python2" ]; then
       export python="$DIR/python2"
@@ -145,13 +192,15 @@ benv-resolve() {
 
   # Resolve PHP versions
   if matchesName "php" "$name" || matchesName "php_version" "$name" && [ "${value::1}" != "/" ]; then
-    if [ ! -d "/opt/php/$value" ]; then
-      echo >&2 benv: php version \'$value\' not found\; choose one of:
-      benv-versions >&2 /opt/php
+    platformDir=$(benv-getPlatformDir "php" "$value")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "php" "php" "$value"
       return 1
     fi
 
-    local DIR="/opt/php/$value/bin"
+    export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
+    
+    local DIR="$platformDir/bin"
     updatePath "$DIR"
     export php="$DIR/php"
 
@@ -160,14 +209,13 @@ benv-resolve() {
 
   # Resolve dotnet versions
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
-    local runtimesDir="/opt/dotnet/runtimes"
-    if [ ! -d "$runtimesDir/$value" ]; then
-      echo >&2 benv: dotnet version \'$value\' not found\; choose one of:
-      benv-versions >&2 $runtimesDir
+    runtimeDir=$(benv-getPlatformDir "dotnet" "$value")
+    if [ "$runtimeDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "dotnet" "dotnet" "$value"
       return 1
     fi
 
-    local SDK_DIR=$(readlink $"$runtimesDir/$value/sdk")
+    local SDK_DIR=$(readlink $"$runtimeDir/sdk")
 
     toolsDir="$SDK_DIR/tools"
     if [ -d "$toolsDir" ]; then

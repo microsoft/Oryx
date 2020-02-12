@@ -7,6 +7,8 @@ package main
 
 import (
 	"common"
+	"common/consts"
+	"os"
 	"strings"
 )
 
@@ -23,18 +25,29 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("php.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for source at '%s'", gen.SourcePath)
+	logger.LogInformation("Generating script for source.")
+
+	var _phpOrigin = os.Getenv(consts.PhpOriginEnvVarName)
+	var portEnvVariable = "APACHE_PORT"
+
+	if _phpOrigin == "php-fpm" {
+		portEnvVariable = "NGINX_PORT"
+	}
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
-	scriptBuilder.WriteString("export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
-	common.SetEnvironmentVariableInScript(&scriptBuilder, "APACHE_PORT", gen.BindPort, DefaultBindPort)
+	common.SetEnvironmentVariableInScript(&scriptBuilder, portEnvVariable, gen.BindPort, DefaultBindPort)
+	scriptBuilder.WriteString("if [  -n \"$PHP_ORIGIN\" ] && [ \"$PHP_ORIGIN\" = \"php-fpm\" ]; then\n")
+	scriptBuilder.WriteString("   export NGINX_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
+	scriptBuilder.WriteString("   service nginx start\n")
+	scriptBuilder.WriteString("else\n")
+	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
+	scriptBuilder.WriteString("fi\n\n")
+
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
-	logger.LogProperties("Finalizing script", map[string]string{"root": gen.SourcePath, "cmd": gen.StartupCmd})
 	var runScript = scriptBuilder.String()
-	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }

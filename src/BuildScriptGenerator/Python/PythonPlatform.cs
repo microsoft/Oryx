@@ -67,6 +67,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var manifestFileProperties = new Dictionary<string, string>();
 
+            // Write the version to the manifest file
+            var key = $"{PythonConstants.PythonName}_version";
+            manifestFileProperties[key] = context.PythonVersion;
+
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
 

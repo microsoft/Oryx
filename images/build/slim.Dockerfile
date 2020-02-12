@@ -1,9 +1,15 @@
-# Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
+# Folders in the image which we use to build this image itself
+# These are deleted in the final stage of the build
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
+# Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
-ARG PYTHON_BASE_TAG
-ARG PHP_BUILD_BASE_TAG
+
 FROM buildpack-deps:stretch AS main
-# End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
+ARG BUILD_DIR
+ARG IMAGES_DIR
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -36,15 +42,23 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-# A temporary folder to hold all scripts temporarily used to build this image. 
+# A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
-RUN mkdir -p /tmp/scripts
+RUN mkdir -p ${IMAGES_DIR}
+RUN mkdir -p ${BUILD_DIR}
+ADD build ${BUILD_DIR}
+ADD images ${IMAGES_DIR}
+# chmod all script files
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 # This is the folder containing 'links' to benv and build script generator
 RUN mkdir -p /opt/oryx
 
 # Install .NET Core
 FROM main AS dotnet-install
+ARG BUILD_DIR
+ARG IMAGES_DIR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -65,16 +79,15 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
 	NUGET_PACKAGES=/var/nuget
 
 RUN mkdir /var/nuget
-COPY build/__dotNetCoreSdkVersions.sh /tmp/scripts
-COPY build/__dotNetCoreRunTimeVersions.sh /tmp/scripts
-COPY images/build/installDotNetCore.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/installDotNetCore.sh
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-RUN . /tmp/scripts/__dotNetCoreSdkVersions.sh && \
+RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
-    DOTNET_SDK_SHA=$DOT_NET_CORE_21_SDK_SHA512 \
-    /tmp/scripts/installDotNetCore.sh
+    ${IMAGES_DIR}/build/installDotNetCore.sh
+
+RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    ${IMAGES_DIR}/build/installDotNetCore.sh
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
@@ -84,7 +97,8 @@ RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
  && ln -s 2.1 2 \
- && ln -s 2 lts
+ && ln -s 3.1 3 \
+ && ln -s 3 lts
 
 RUN set -ex \
  && dotnetDir=/opt/dotnet \
@@ -92,41 +106,45 @@ RUN set -ex \
  && runtimesDir=$dotnetDir/runtimes \
  && mkdir -p $runtimesDir \
  && cd $runtimesDir \
- && . /tmp/scripts/__dotNetCoreSdkVersions.sh \
- && . /tmp/scripts/__dotNetCoreRunTimeVersions.sh \
+ && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
+ && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
  && mkdir $NET_CORE_APP_21 \
  && ln -s $NET_CORE_APP_21 2.1 \
  && ln -s 2.1 2 \
  && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
+ && mkdir $NET_CORE_APP_31 \
+ && ln -s $NET_CORE_APP_31 3.1 \
+ && ln -s 3.1 3 \
+ && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
  # LTS sdk <-- LTS runtime's sdk
- && ln -s 2.1 lts \
+ && ln -s 3 lts \
  && ltsSdk=$(readlink lts/sdk) \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
+ARG BUILD_DIR
+ARG IMAGES_DIR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
+ARG HUGO_VERSION=0.59.1
+RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" \
+ && mkdir -p /opt/hugo \
+ && tar -xzf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
+ && rm hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
 COPY build/__nodeVersions.sh /tmp/scripts
-RUN chmod a+x /tmp/scripts/__nodeVersions.sh \
- && . /tmp/scripts/__nodeVersions.sh \
- && curl -sL https://git.io/n-install | bash -s -- -ny - \
- && ~/n/bin/n -d $NODE8_VERSION \
- && ~/n/bin/n -d $NODE10_VERSION \
- && ~/n/bin/n -d $NODE12_VERSION \
- && mv /usr/local/n/versions/node /opt/nodejs \
- && rm -rf /usr/local/n ~/n
-COPY images/build/installNpm.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/installNpm.sh
-RUN /tmp/scripts/installNpm.sh
-COPY images/receivePgpKeys.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/receivePgpKeys.sh
+RUN cd ${IMAGES_DIR} \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
+ && ./installPlatform.sh nodejs $NODE8_VERSION \
+ && ./installPlatform.sh nodejs $NODE10_VERSION \
+ && ./installPlatform.sh nodejs $NODE12_VERSION
+RUN ${IMAGES_DIR}/build/installNpm.sh
 RUN set -ex \
- && . /tmp/scripts/__nodeVersions.sh \
- && /tmp/scripts/receivePgpKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
+ && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
@@ -136,20 +154,17 @@ RUN set -ex \
  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 RUN set -ex \
- && . /tmp/scripts/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/$NODE8_MAJOR_MINOR_VERSION \
- && ln -s $NODE8_MAJOR_MINOR_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/$NODE10_MAJOR_MINOR_VERSION \
- && ln -s $NODE10_MAJOR_MINOR_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/$NODE12_MAJOR_MINOR_VERSION \
- && ln -s $NODE12_MAJOR_MINOR_VERSION /opt/nodejs/12 \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
+ && ln -s $NODE8_VERSION /opt/nodejs/8 \
+ && ln -s $NODE10_VERSION /opt/nodejs/10 \
+ && ln -s $NODE12_VERSION /opt/nodejs/12 \
  && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \
  && ln -s 6.9 /opt/npm/6 \
  && ln -s 6 /opt/npm/latest
 RUN set -ex \
- && . /tmp/scripts/__nodeVersions.sh \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
@@ -159,17 +174,9 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-###
-# Python intermediate stages
-# Docker doesn't support variables in `COPY --from`, so we're using intermediate stages
-###
-FROM mcr.microsoft.com/oryx/python-build-base:3.7-${PYTHON_BASE_TAG} AS py37-build-base
-FROM mcr.microsoft.com/oryx/python-build-base:3.8-${PYTHON_BASE_TAG} AS py38-build-base
-###
-# End Python intermediate stages
-###
-
 FROM main AS python
+ARG BUILD_DIR
+ARG IMAGES_DIR
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -179,14 +186,15 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
-COPY build/__pythonVersions.sh /tmp/scripts
-COPY --from=py37-build-base /opt /opt
-COPY --from=py38-build-base /opt /opt
-RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
+RUN cd ${IMAGES_DIR} \
+    && . ${BUILD_DIR}/__pythonVersions.sh \
+    && ./installPlatform.sh python $PYTHON37_VERSION \
+    && ./installPlatform.sh python $PYTHON38_VERSION
+RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
-RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
+RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON37_VERSION /opt/python/3.7 \
  && ln -s $PYTHON38_VERSION /opt/python/3.8 \
  && ln -s $PYTHON38_VERSION /opt/python/latest \
@@ -195,6 +203,8 @@ RUN . /tmp/scripts/__pythonVersions.sh && set -ex \
 
 # This stage is used only when building locally
 FROM dotnet-install AS buildscriptbuilder
+ARG BUILD_DIR
+ARG IMAGES_DIR
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
 COPY src/Common /usr/oryx/src/Common
@@ -218,9 +228,13 @@ RUN if [ -z "$AGENTBUILD" ]; then \
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM python AS final
+ARG BUILD_DIR
+ARG IMAGES_DIR
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin"
+ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib
@@ -244,7 +258,7 @@ COPY --from=node-install /opt /opt
 COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
-RUN rm -rf /tmp/scripts
+RUN rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
@@ -256,5 +270,7 @@ ARG RELEASE_TAG_NAME=unspecified
 LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
 LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
 LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
+
+ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 
 ENTRYPOINT [ "benv" ]

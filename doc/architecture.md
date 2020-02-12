@@ -166,36 +166,36 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
 - [`xz-utils`](../images/runtime/commonbase/Dockerfile#L4)
 
-#### [.NET Core template](../images/runtime/dotnetcore/Dockerfile.template)
+#### [.NET Core template](../images/runtime/dotnetcore/template.Dockerfile)
 
 **Docker**
 
-- [`golang:1.11-stretch`](../images/runtime/dotnetcore/Dockerfile.template#L2)
-- [`mcr.microsoft.com/dotnet/core/runtime:{VERSION}](../images/runtime/dotnetcore/Dockerfile.template#L12)
+- [`golang:1.11-stretch`](../images/runtime/dotnetcore/template.Dockerfile#L2)
+- [`mcr.microsoft.com/dotnet/core/runtime:{VERSION}](../images/runtime/dotnetcore/template.Dockerfile#L12)
 
 **`apt-get`**
 
-- [`file`](../images/runtime/dotnetcore/Dockerfile.template#L16)
+- [`file`](../images/runtime/dotnetcore/template.Dockerfile#L16)
 
-#### [Node template](../images/runtime/node/Dockerfile.template)
-
-**Docker**
-
-- [`golang:1.11-stretch`](../images/runtime/node/Dockerfile.template#L2)
-- [`mcr.microsoft.com/oryx/node-base:{VERSION}`](../images/runtime/node/Dockerfile.template#L12)
-
-#### [PHP template](../images/runtime/php/Dockerfile.template)
+#### [Node template](../images/runtime/node/template.Dockerfile)
 
 **Docker**
 
-- [`golang:1.11-stretch`](../images/runtime/php/Dockerfile.template#L2)
-- [`mcr.microsoft.com/oryx/php-base:{VERSION}`](../images/runtime/php/Dockerfile.template#L12)
+- [`golang:1.11-stretch`](../images/runtime/node/template.Dockerfile#L2)
+- [`mcr.microsoft.com/oryx/node-base:{VERSION}`](../images/runtime/node/template.Dockerfile#L12)
 
-#### [Python template](../images/runtime/python/Dockerfile.template)
+#### [PHP template](../images/runtime/php/template.Dockerfile)
 
 **Docker**
 
-- [`golang:1.11-stretch`](../images/runtime/python/Dockerfile.template#L2)
+- [`golang:1.11-stretch`](../images/runtime/php/template.Dockerfile#L2)
+- [`mcr.microsoft.com/oryx/php-base:{VERSION}`](../images/runtime/php/template.Dockerfile#L12)
+
+#### [Python template](../images/runtime/python/template.Dockerfile)
+
+**Docker**
+
+- [`golang:1.11-stretch`](../images/runtime/python/template.Dockerfile#L2)
 
 </details>
 

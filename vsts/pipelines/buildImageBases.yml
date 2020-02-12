@@ -16,24 +16,17 @@ stages:
 
   - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
-      displayName: Build and push Python base images for build
-      scriptPath: ./build/buildBuildImageBases.sh
-      imageDir: python
-      artifactsFileName: python-buildimage-bases.txt
-
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
-      displayName: Build and push PHP build base images
-      scriptPath: ./build/buildBuildImageBases.sh
-      imageDir: php
-      artifactsFileName: php-buildimage-bases.txt
-
-  - template: templates/_buildimageBasesJobTemplate.yml
-    parameters:
       displayName: Build and push PHP runtime base images
       scriptPath: ./build/buildRunTimeImageBases.sh
       imageDir: php
       artifactsFileName: php-runtimeimage-bases.txt
+
+  - template: templates/_buildimageBasesJobTemplate.yml
+    parameters:
+      displayName: Build and push PHP-FPM runtime base images
+      scriptPath: ./build/buildRunTimeImageBases.sh
+      imageDir: php-fpm
+      artifactsFileName: php-fpm-runtimeimage-bases.txt
 
   - template: templates/_buildimageBasesJobTemplate.yml
     parameters:
@@ -62,9 +55,11 @@ trigger:
   paths:
     include:
     - images/runtime/node
+    - images/runtime/dotnetcore
+    - images/runtime/php
     - images/build/python
     - images/build/php
-    - images/runtime/php
+    - images/build/php-fpm
     - images/build/yarn-cache
     - build/
     - vsts/

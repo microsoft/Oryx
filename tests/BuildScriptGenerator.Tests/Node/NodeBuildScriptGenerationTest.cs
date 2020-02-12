@@ -72,22 +72,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           ""engines"" : { ""npm"" : ""5.4.2"" },
           ""dependencies"": { ""foo"" : ""1.0.0 - 2.9999.9999"", ""bar"" : "">=1.0.2 <2.1.2"" }
         }";
-
-        // See https://dev.azure.com/devdiv/DevDiv/_workitems/edit/894104
-        private const string PackageJsonWithUnsupportedNpmVersion = @"{
-          ""name"": ""mynodeapp"",
-          ""version"": ""1.0.0"",
-          ""description"": ""test app"",
-          ""main"": ""server.js"",
-          ""scripts"": {
-            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
-            ""start"": ""node server.js""
-          },
-          ""author"": ""Dev"",
-          ""license"": ""ISC"",
-          ""engines"" : { ""node"" : ""100.100.100"" }
-        }";
-
         private const string MalformedPackageJson = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
@@ -136,6 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain(".npmrc", snippet.BashBuildScriptSnippet); // No custom registry was specified
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
@@ -497,6 +482,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_WritesNpmRc_WithCustomRegistry()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.LanguageVersion = "8.2.1";
+            context.Properties[NodePlatform.RegistryUrlPropertyKey] = "https://example.com/registry/";
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains(
+                $"echo \"registry={context.Properties[NodePlatform.RegistryUrlPropertyKey]}\" > ~/.npmrc",
+                snippet.BashBuildScriptSnippet);
         }
 
         private static IProgrammingPlatform GetNodePlatformInstance(

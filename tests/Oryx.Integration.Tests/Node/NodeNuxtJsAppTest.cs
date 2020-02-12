@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
@@ -71,16 +71,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Fact]
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules()
         {
+            // Arrange
             var nodeVersion = "10";
             string compressFormat = "zip";
-            // NOTE:
-            // 1. Use intermediate directory(which here is local to container) to avoid errors like
-            //      "tar: node_modules/form-data: file changed as we read it"
-            //    related to zipping files on a folder which is volume mounted.
-            // 2. Use output directory within the container due to 'rsync'
-            //    having issues with volume mounted directories
-
-            // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
@@ -96,9 +89,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
-                .AddCommand($"cp -rf /tmp/out/. {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -111,7 +103,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]

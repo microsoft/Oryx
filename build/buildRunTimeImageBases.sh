@@ -13,7 +13,6 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir="$1"
 if [ ! -z "$runtimeSubDir" ]
@@ -37,12 +36,19 @@ docker build \
     -t "$RUNTIME_BASE_IMAGE_NAME" \
     $REPO_DIR
 
+if [ "$runtimeSubDir" == "node" ]; then
+    docker build \
+        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
+        -t "oryx-node-run-base" \
+        $REPO_DIR
+fi
+
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir"
 
-dockerFileName="Dockerfile.base"
+dockerFileName="base.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 if [ -z "$dockerFiles" ]
 then
@@ -52,6 +58,8 @@ fi
 
 # Write the list of images that were built to artifacts folder
 mkdir -p "$BASE_IMAGES_ARTIFACTS_FILE_PREFIX"
+
+# NOTE: We create a unique artifacts file per platform since they are going to be built in parallel on CI
 ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-bases.txt"
 
 initFile="$runtimeImagesSourceDir/buildRunTimeImageBases_Init.sh"
@@ -66,8 +74,12 @@ for dockerFile in $dockerFiles; do
     # Set $getTagName_result to the following format: {platformName}:{platformVersion}
     getTagName $dockerFileDir
 
-    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
-    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+    IFS=':' read -ra PARTS <<< "$getTagName_result"
+    platformName="${PARTS[0]}"
+    platformVersion="${PARTS[1]}"
+
+    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
+    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion"
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
@@ -82,19 +94,17 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE8_VERSION=$NODE8_VERSION \
         --build-arg NODE10_VERSION=$NODE10_VERSION \
         --build-arg NODE12_VERSION=$NODE12_VERSION \
-        $labels .
+        $labels \
+        .
 
     # Retag build image with build numbers as ACR tags
     if [ "$AGENT_BUILD" == "true" ]
     then
         # $tag will follow a similar format to 20191024.1
-        tag="$BUILD_NUMBER"
-
-        # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
-        acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
+        uniqueImageName="$localImageTagName-$BUILD_NUMBER"
 
         # Tag the image to follow a similar format to .../python:3.7-20191028.1
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$tag"
+        docker tag "$localImageTagName" "$uniqueImageName"
 
         if [ $clearedOutput == "false" ]
         then
@@ -106,7 +116,7 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating artifacts file with the built runtime image information..."
-        echo "$acrRuntimeImageTagNameRepo-$tag" >> $ARTIFACTS_FILE
+        echo "$uniqueImageName" >> $ARTIFACTS_FILE
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR

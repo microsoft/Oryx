@@ -42,9 +42,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
                 $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
-                .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -57,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

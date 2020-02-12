@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -179,13 +180,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Generate build script
             string scriptContent;
+            Exception exception;
             using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
             {
                 var checkerMessages = new List<ICheckerMessage>();
                 var scriptGenerator = new BuildScriptGenerator(
                     serviceProvider, console, checkerMessages, buildOperationId);
 
-                var generated = scriptGenerator.TryGenerateScript(out scriptContent);
+                var generated = scriptGenerator.TryGenerateScript(out scriptContent, out exception);
                 stopwatch.AddProperty("generateSucceeded", generated.ToString());
 
                 if (checkerMessages.Count > 0)
@@ -201,6 +203,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (!generated)
                 {
+                    if (exception != null)
+                    {
+                        return ProcessExitCodeHelper.GetExitCodeForException(exception);
+                    }
+
                     return ProcessConstants.ExitFailure;
                 }
             }

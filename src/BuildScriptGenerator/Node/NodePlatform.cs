@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    [BuildProperty(RegistryUrlPropertyKey, "Custom npm registry URL. Will be written to .npmrc during the build.")]
     [BuildProperty(
         CompressNodeModulesPropertyKey,
         "Indicates how and if 'node_modules' folder should be compressed into a single file in the output folder. " +
@@ -26,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class NodePlatform : IProgrammingPlatform
     {
+        internal const string RegistryUrlPropertyKey = "registry";
         internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
         internal const string ZipNodeModulesOption = "zip";
@@ -64,6 +66,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             var buildProperties = new Dictionary<string, string>();
 
+            // Write the version to the manifest file
+            buildProperties[$"{NodeConstants.NodeJsName}_version"] = ctx.NodeVersion;
+
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
@@ -78,6 +83,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
+            }
+            else if (StaticSiteGeneratorHelper.IsHugoApp(ctx.SourceRepo, _environment))
+            {
+                packageManagerCmd = NodeConstants.HugoCommand;
+                packageInstallCommand = NodeConstants.HugoCommand;
+                packageInstallerVersionCommand = NodeConstants.HugoVersionCommand;
             }
             else
             {
@@ -140,8 +151,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             GetAppOutputDirPath(packageJson, buildProperties);
 
+            string customRegistryUrl = null;
+            if (ctx.Properties != null)
+            {
+                ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out customRegistryUrl);
+                if (!string.IsNullOrWhiteSpace(customRegistryUrl))
+                {
+                    // Write the custom registry to the build manifest
+                    buildProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                }
+            }
+
             var scriptProps = new NodeBashBuildSnippetProperties
             {
+                PackageRegistryUrl = customRegistryUrl,
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,
@@ -209,6 +232,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             else if (buildCommand.Contains("vue-cli-service build", StringComparison.OrdinalIgnoreCase))
             {
                 outputDirPath = "dist";
+            }
+            else if (buildCommand.Contains("hexo generate", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "public";
             }
 
             if (!string.IsNullOrEmpty(outputDirPath))
@@ -283,7 +310,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // If the node modules folder is being packaged in a file, we don't copy it to the output
             if (GetNodeModulesPackOptions(ctx, out _, out string compressedFileName))
             {
-                dirs.Add(NodeConstants.NodeModulesDirName);
+                // we need to make sure we are not copying the root's node_modules folder
+                // if there are any other node_modules folder we will copy them to destination
+                dirs.Add(string.Concat("/", NodeConstants.NodeModulesDirName));
             }
             else if (!string.IsNullOrWhiteSpace(compressedFileName))
             {
@@ -299,7 +328,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 NodeConstants.AllNodeModulesDirName,
                 NodeConstants.ProdNodeModulesDirName,
-                NodeConstants.NodeModulesDirName,
+                // we need to make sure we are not copying the root's node_modules folder
+                // if there are any other node_modules folder we will copy them to destination
+                string.Concat("/", NodeConstants.NodeModulesDirName),
                 NodeConstants.NodeModulesToBeDeletedName,
                 NodeConstants.NodeModulesZippedFileName,
                 NodeConstants.NodeModulesTarGzFileName,

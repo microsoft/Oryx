@@ -29,7 +29,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogInformation("Generating script for published output at '%s'", gen.AppPath)
+	logger.LogInformation("Generating script for published output.")
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -114,7 +114,6 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	}
 
 	var runScript = scriptBuilder.String()
-	logger.LogInformation("Run script content:\n" + runScript)
 	return runScript
 }
 
@@ -138,9 +137,8 @@ func (gen *DotnetCoreStartupScriptGenerator) getRuntimeConfigJsonFiles() []strin
 			"An error occurred while trying to look for '%s' files under '%s'.\n",
 			RuntimeConfigJsonExtension,
 			appDir.Name())
-		logger.LogError("An error occurred while trying to look for '%s' files under '%s'. Exception: '%s'",
+		logger.LogError("An error occurred while trying to look for '%s' files. Exception: '%s'",
 			RuntimeConfigJsonExtension,
-			appDir.Name(),
 			err)
 		return fileList
 	}

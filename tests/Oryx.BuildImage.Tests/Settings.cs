@@ -10,9 +10,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     internal static class Settings
     {
         public const string BuildImageName = "oryxtests/build:latest";
-        public const string SlimBuildImageName = "oryxtests/build-slim:latest";
-        public const string ProdBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:latest";
-        public const string ProdSlimBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build-slim:latest";
+        public const string SlimBuildImageName = "oryxtests/build:slim";
 
         public const string OryxVersion = "0.2.";
 

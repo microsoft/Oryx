@@ -6,22 +6,15 @@
 
 set -ex
 
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source $CURRENT_DIR/../__common.sh
+
 echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
 echo
 
-# .NET Core 1.1 follows a different pattern for url, so we give a chance for the caller
-# to specify a different url
-DEFAULT_DOTNET_SDK_URL=https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VER/dotnet-sdk-$DOTNET_SDK_VER-linux-x64.tar.gz
-DOTNET_SDK_URL="${DOTNET_SDK_URL:-$DEFAULT_DOTNET_SDK_URL}"
-
-curl -SL $DOTNET_SDK_URL --output dotnet.tar.gz
-if [ "$DOTNET_SDK_SHA" != "" ]
-then
-    echo
-    echo "Verifying archive hash..."
-    echo "$DOTNET_SDK_SHA dotnet.tar.gz" | sha512sum -c -
-fi
+fileName="dotnet.tar.gz"
+downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 
@@ -32,8 +25,8 @@ DOTNET_SDK_VER=${DOTNET_SDK_VER%%-*}
 SDK_DIR=/opt/dotnet/sdks
 DOTNET_DIR=$SDK_DIR/$DOTNET_SDK_VER
 mkdir -p $DOTNET_DIR
-tar -xzf dotnet.tar.gz -C $DOTNET_DIR
-rm dotnet.tar.gz
+tar -xzf $fileName -C $DOTNET_DIR
+rm $fileName
 
 # Create a link : major.minor => major.minor.path
 IFS='.' read -ra SDK_VERSION_PARTS <<< "$DOTNET_SDK_VER"

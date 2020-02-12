@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.1")]
         [InlineData("2.2")]
         [InlineData("3.0")]
+        [InlineData("3.1")]
         public void DotNetCoreRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -41,7 +42,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetTestRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });
@@ -69,7 +70,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetTestRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--version" }
             });
@@ -89,13 +90,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp21)]
         [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
+        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetTestRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });

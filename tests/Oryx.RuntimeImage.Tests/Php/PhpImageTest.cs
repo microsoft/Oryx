@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                _imageHelper.GetRuntimeImage("php", imageTag),
+                _imageHelper.GetTestRuntimeImage("php", imageTag),
                 "php",
                 new[] { "--version" }
             );
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("php", imageTag),
+                imageName: _imageHelper.GetTestRuntimeImage("php", imageTag),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mcrypt);" }
             });
@@ -178,6 +178,32 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains("mcrypt", output);
                 },
+                result.GetDebugInfo());
+
+        }
+
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public void MongoDb_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep mongodb);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("mongodb", output);
+            },
                 result.GetDebugInfo());
 
         }
@@ -203,7 +229,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", version),
+                ImageId = _imageHelper.GetTestRuntimeImage("php", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { " " }
             });

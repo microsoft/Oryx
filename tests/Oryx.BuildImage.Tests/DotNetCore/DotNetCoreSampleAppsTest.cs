@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
@@ -37,10 +38,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act
@@ -60,6 +63,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{DotNetCoreConstants.LanguageName}_version=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -241,6 +247,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         string.Format(
                             SdkVersionMessageFormat,
                             DotNetCoreSdkVersions.DotNetCore30SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
+        {
+            // Arrange
+            var appName = "NetCoreApp31.MvcApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(
+                            SdkVersionMessageFormat,
+                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -643,6 +686,46 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
                         result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+        public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
+        {
+            // Arrange
+            var appDir = "/tmp/app1";
+            var flattenedDotNetInstallDir = "/opt/dotnet/all";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
+                .AddCommand($"mkdir -p {appDir} && cd {appDir}")
+                .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
+                .AddCommand("dotnet --version")
+                .AddCommand("which dotnet")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>(),
+                Volumes = Enumerable.Empty<DockerVolume>(),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(sdkversion, result.StdOut);
+                    Assert.Contains($"{flattenedDotNetInstallDir}/dotnet", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

@@ -10,7 +10,7 @@ wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
 
 # Try getting the keys 5 times at most
-/tmp/receivePgpKeys.sh $GPG_KEY
+/tmp/receiveGpgKeys.sh $GPG_KEY
     
 gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .

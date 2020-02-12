@@ -39,6 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logger = _serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
 
+                var envSettings = _serviceProvider?.GetRequiredService<CliEnvironmentSettings>();
+                if (envSettings != null && envSettings.GitHubActions)
+                {
+                    logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
+                }
+
                 if (!IsValidInput(_serviceProvider, console))
                 {
                     return ProcessConstants.ExitFailure;
