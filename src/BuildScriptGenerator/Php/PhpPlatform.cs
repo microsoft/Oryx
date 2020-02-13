@@ -65,11 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return _detector.Detect(context);
         }
 
-        /// <summary>
-        /// Generates a build Bash script based on the application in source directory.
-        /// </summary>
-        /// <param name="ctx">The context for BuildScriptGenerator.</param>
-        /// <returns>The build script snippet.</returns>
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             var buildProperties = new Dictionary<string, string>();
@@ -108,53 +104,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
 
-        /// <summary>
-        /// Checks if the programming platform should be included in a build script.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform should be included in a build script, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnablePhp;
         }
 
-        /// <summary>
-        /// Checks if the programming platform wants to participate in a multi-platform build.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform is enabled for multi-platform build, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
-        /// <summary>
-        /// Checks if the source repository seems to have artifacts from a previous build.
-        /// </summary>
-        /// <param name="repo">A source code repository.</param>
-        /// <returns>True if the source repository have artifacts already, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return true;
         }
 
-        /// <summary>
-        /// Generates a bash script that can install the required runtime bits for the application's platforms.
-        /// </summary>
-        /// <param name="options">The runtime installation script generator options.</param>
-        /// <exception cref="NotImplementedException">Thrown when it's not implemented.</exception>
-        /// <returns>Message from exception.</returns>
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Adds the required tools and their versions to a map.
-        /// </summary>
-        /// <param name="sourceRepo">The source repository.</param>
-        /// <param name="targetPlatformVersion">The version of target platform.</param>
-        /// <param name="toolsToVersion">A dictionary with tools as keys and versions as values.</param>
+        /// <inheritdoc/>
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
@@ -164,31 +138,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
         }
 
-        /// <summary>
-        /// Sets the version of PHP platform in BuildScriptGeneratorContext.
-        /// </summary>
-        /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <param name="version">The version of the PHP platform.</param>
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PhpVersion = version;
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the output directory.
-        /// </summary>
-        /// <param name="ctx">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the intermediate directory, if used.
-        /// </summary>
-        /// <param name="ctx">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();

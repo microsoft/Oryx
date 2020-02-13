@@ -60,31 +60,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _buildOptions = buildOptions.Value;
         }
 
-        /// <summary>
-        /// Gets the name of .NET platform which this generator will create builds for.
-        /// </summary>
+        /// <inheritdoc/>
         public string Name => DotNetCoreConstants.LanguageName;
 
-        /// <summary>
-        /// Gets the list of versions that the script generator supports.
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions => _versionProvider.SupportedDotNetCoreVersions;
 
-        /// <summary>
-        /// Detects the programming platform name and version required by the application in source directory.
-        /// </summary>
-        /// <param name="context">The repository context.</param>
-        /// <returns>The results of language detector operations.</returns>
+        /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
-        /// <summary>
-        /// Generates a build Bash script based on the application in source directory.
-        /// </summary>
-        /// <param name="context">The context for Build Script Generator.</param>
-        /// <returns>The build script snippet.</returns>
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
@@ -192,42 +180,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             };
         }
 
-        /// <summary>
-        /// Checks if the source repository seems to have artifacts from a previous build.
-        /// </summary>
-        /// <param name="repo">A source code repository.</param>
-        /// <returns>True if the source repository have artifacts already, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return true;
         }
 
-        /// <summary>
-        /// Generates a bash script that can install the required runtime bits for the application's platforms.
-        /// </summary>
-        /// <param name="options">The options for runtime installation script generator.</param>
-        /// <exception cref="NotImplementedException">Thrown when it's not implemented.</exception>
-        /// <returns>Message from exception.</returns>
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Checks if the programming platform should be included in a build script.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform should be included in a build script, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnableDotNetCore;
         }
 
-        /// <summary>
-        /// Checks if the programming platform wants to participate in a multi-platform build.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform is enabled for multi-platform build, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             // A user has the power to either enable or disable multi-platform builds entirely.
@@ -235,12 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return false;
         }
 
-        /// <summary>
-        /// Adds the required tools and their versions to a map.
-        /// </summary>
-        /// <param name="sourceRepo">The source repository.</param>
-        /// <param name="targetPlatformVersion">The version of .NET platform.</param>
-        /// <param name="toolsToVersion">A dictionary with tools as keys and versions as values.</param>
+        /// <inheritdoc/>
         public void SetRequiredTools(
             ISourceRepo sourceRepo,
             string targetPlatformVersion,
@@ -253,21 +219,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
         }
 
-        /// <summary>
-        /// Sets the version of the .NET platform in BuildScriptGeneratorContext.
-        /// </summary>
-        /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <param name="version">The version of the .NET platform.</param>
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.DotNetCoreVersion = version;
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the output directory.
-        /// </summary>
-        /// <param name="scriptGeneratorContext">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
@@ -277,11 +235,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return dirs;
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the intermediate directory, if used.
-        /// </summary>
-        /// <param name="scriptGeneratorContext">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
@@ -318,7 +272,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// name or assembly name property to 'bar' which causes 'bar.dll' to be published. If the output
         /// directory was NOT cleaned, then we would now be having both 'foo.runtimeconfig.json' and
         /// 'bar.runtimeconfig.json' which causes a problem for runtime container as it cannot figure out the
-        /// right startup dll. So, to help that scenario we always set the start-up file name in manifest file.
+        /// right startup DLL. So, to help that scenario we always set the start-up file name in manifest file.
         /// The runtime container will first look into manifest file to find the startup filename, if the
         /// file name is not present or if a manifest file is not present at all(ex: in case of VS Publish where
         /// the build does not happen with Oryx), then the runtime container's logic will fallback to looking at

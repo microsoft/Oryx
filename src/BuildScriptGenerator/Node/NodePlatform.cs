@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     /// <summary>
-    /// A Node.js Platform.
+    /// Node.js Platform.
     /// </summary>
     [BuildProperty(RegistryUrlPropertyKey, "Custom npm registry URL. Will be written to .npmrc during the build.")]
     [BuildProperty(
@@ -31,27 +31,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     internal class NodePlatform : IProgrammingPlatform
     {
         /// <summary>
-        /// Property key of registry url.
+        /// Property key of Registry URL.
         /// </summary>
         internal const string RegistryUrlPropertyKey = "registry";
 
         /// <summary>
-        /// Property key of compress node modules.
+        /// Property key of compress_node_modules.
         /// </summary>
         internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
 
         /// <summary>
-        /// Property key of prune development dependencies.
+        /// Property key of prune_dev_dependencies.
         /// </summary>
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
 
         /// <summary>
-        /// The zip node modules option.
+        /// The zip option for node modules.
         /// </summary>
         internal const string ZipNodeModulesOption = "zip";
 
         /// <summary>
-        /// The tar-gz node modules option.
+        /// The tar-gz option for node modules.
         /// </summary>
         internal const string TarGzNodeModulesOption = "tar-gz";
 
@@ -83,31 +83,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _environment = environment;
         }
 
-        /// <summary>
-        /// Gets the name of Node.js platform which this generator will create builds for.
-        /// </summary>
+        /// <inheritdoc/>
         public string Name => NodeConstants.NodeJsName;
 
-        /// <summary>
-        /// Gets the name of Node.js platform which this generator will create builds for.
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
 
-        /// <summary>
-        /// Detects the programming platform name and version required by the application in source directory.
-        /// </summary>
-        /// <param name="context">The repository context.</param>
-        /// <returns>The results of language detector operations.</returns>
+        /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
-        /// <summary>
-        /// Generates a build Bash script based on the application in source directory.
-        /// </summary>
-        /// <param name="ctx">The context for BuildScriptGenerator.</param>
-        /// <returns>The build script snippet.</returns>
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             var buildProperties = new Dictionary<string, string>();
@@ -239,42 +227,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
         }
 
-        /// <summary>
-        /// Checks if the source repository seems to have artifacts from a previous build.
-        /// </summary>
-        /// <param name="repo">A source code repository.</param>
-        /// <returns>True if the source repository have artifacts already, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return !repo.DirExists(NodeConstants.NodeModulesDirName);
         }
 
-        /// <summary>
-        /// Checks if the programming platform should be included in a build script.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform should be included in a build script, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnableNodeJs;
         }
 
-        /// <summary>
-        /// Checks if the programming platform wants to participate in a multi-platform build.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform is enabled for multi-platform build, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
-        /// <summary>
-        /// Adds the required tools and their versions to a map.
-        /// </summary>
-        /// <param name="sourceRepo">The source repository.</param>
-        /// <param name="targetPlatformVersion">The version of Node.js platform.</param>
-        /// <param name="toolsToVersion">A dictionary with tools as keys and versions as values.</param>
+        /// <inheritdoc/>
         public void SetRequiredTools(
             ISourceRepo sourceRepo,
             string targetPlatformVersion,
@@ -305,32 +276,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
         }
 
-        /// <summary>
-        /// Sets the version of the .NET platform in BuildScriptGeneratorContext.
-        /// </summary>
-        /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <param name="version">The version of the .NET platform.</param>
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.NodeVersion = version;
         }
 
-        /// <summary>
-        /// Generates a bash script that can install the required runtime bits for application's platforms.
-        /// </summary>
-        /// <param name="options">The options for runtime installation script generator.</param>
-        /// <exception cref="NotImplementedException">Thrown when it's not implemented.</exception>
-        /// <returns>Message from exception.</returns>
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the output directory.
-        /// </summary>
-        /// <param name="ctx">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             var dirs = new List<string>
@@ -354,11 +312,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return dirs;
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the intermediate directory, if used.
-        /// </summary>
-        /// <param name="ctx">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return new[]

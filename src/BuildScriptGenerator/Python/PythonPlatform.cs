@@ -83,31 +83,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _detector = detector;
         }
 
-        /// <summary>
-        /// Gets the name of Python platform which this generator will create builds for.
-        /// </summary>
+        /// <inheritdoc/>
         public string Name => PythonConstants.PythonName;
 
-        /// <summary>
-        /// Gets the list of versions that the script generator supports.
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPythonVersions;
 
-        /// <summary>
-        /// Detects the programming platform name and version required by the application in source directory.
-        /// </summary>
-        /// <param name="context">The repository context.</param>
-        /// <returns>The results of language detector operations.</returns>
+        /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
-        /// <summary>
-        /// Generates a build Bash script based on the application in source directory.
-        /// </summary>
-        /// <param name="context">The context for BuildScriptGenerator.</param>
-        /// <returns>The build script snippet.</returns>
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var manifestFileProperties = new Dictionary<string, string>();
@@ -193,54 +181,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
-        /// <summary>
-        /// Checks if the source repository seems to have artifacts from a previous build.
-        /// </summary>
-        /// <param name="repo">A source code repository.</param>
-        /// <returns>True if the source repository have artifacts already, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             // TODO: support venvs
             return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
-        /// <summary>
-        /// Generates a bash script that can install the required runtime bits for the application's platforms.
-        /// </summary>
-        /// <param name="options">The runtime installation script generator options.</param>
-        /// <exception cref="NotImplementedException">Thrown when it's not implemented.</exception>
-        /// <returns>Message from exception.</returns>
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Checks if the programming platform should be included in a build script.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform should be included in a build script, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnablePython;
         }
 
-        /// <summary>
-        /// Checks if the programming platform wants to participate in a multi-platform build.
-        /// </summary>
-        /// <param name="ctx">The repository context.</param>
-        /// <returns>True if the programming platform is enabled for multi-platform build, False otherwise.</returns>
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
-        /// <summary>
-        /// Adds the required tools and their versions to a map.
-        /// </summary>
-        /// <param name="sourceRepo">The source repository.</param>
-        /// <param name="targetPlatformVersion">The version of target platform.</param>
-        /// <param name="toolsToVersion">A dictionary with tools as keys and versions as values.</param>
+        /// <inheritdoc/>
         public void SetRequiredTools(
             ISourceRepo sourceRepo,
             string targetPlatformVersion,
@@ -253,21 +219,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
         }
 
-        /// <summary>
-        /// Sets the version of the Python platform in BuildScriptGeneratorContext.
-        /// </summary>
-        /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <param name="version">The version of the Python platform.</param>
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the output directory.
-        /// </summary>
-        /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext context)
         {
@@ -289,11 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return dirs;
         }
 
-        /// <summary>
-        /// Gets list of directories which need to be excluded from being copied to the intermediate directory, if used.
-        /// </summary>
-        /// <param name="context">The context of BuildScriptGenerator.</param>
-        /// <returns>A list of directories.</returns>
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext context)
         {
