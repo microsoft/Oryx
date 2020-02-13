@@ -23,8 +23,8 @@ RUN rm -rf /usr/bin/pydoc*
 
 # Install basic build tools
 RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
+#    && apt-get upgrade -y \
+    && apt-get install -f -y --no-install-recommends \
         git \
         make \
         unzip \
