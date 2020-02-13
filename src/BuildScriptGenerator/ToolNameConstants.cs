@@ -14,10 +14,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public const string PhpName = "php";
 
-        public const string DotnetName = "dotnet";
+        public const string DotNetName = "dotnet";
 
-        public const string NodeToolName = "node";
+        public const string NodeName = "node";
 
-        public const string NpmToolName = "npm";
+        public const string NpmName = "npm";
     }
 }
