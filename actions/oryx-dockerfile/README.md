@@ -27,7 +27,7 @@ RUN cd /app && oryx
 ENTRYPOINT ["/app/run.sh"]
 ```
 
-Once this Dockerfile is produced, it can be built and pushed to a registry, such as [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/), and ran at a later time to deploy the Azure Web App.
+Once this Dockerfile is produced, it can be built and pushed to a registry, such as [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/), and used at a later time to deploy the Azure Web App.
 
 If you are looking for a GitHub Action to build your Azure Web App, consider using [`azure/appservice-build`](https://github.com/Azure/appservice-build).
 
