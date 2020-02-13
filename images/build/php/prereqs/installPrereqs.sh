@@ -20,7 +20,6 @@ PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c"
 
 # persistent / runtime deps
 apt-get update \
-&& apt-get upgrade -y \
 && apt-get install -y \
         $PHPIZE_DEPS \
         ca-certificates \

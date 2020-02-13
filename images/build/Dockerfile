@@ -15,7 +15,7 @@ ENV LANG C.UTF-8
 
 # Install basic build tools
 RUN apt-get update \
-    && apt-get upgrade -y \
+#    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # Required for .NET Core 1.1
         libunwind8 \
@@ -35,7 +35,7 @@ FROM main AS dotnet-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
 RUN apt-get update \
-    && apt-get upgrade -y \
+#    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # For .NET Core 1.1
         libcurl3 \
@@ -103,7 +103,7 @@ FROM main AS node-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
 RUN apt-get update \
-    && apt-get upgrade -y \
+#    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
