@@ -15,12 +15,6 @@ ARG IMAGES_DIR
 # NOTE: Do NOT move it from here as it could have global implications
 ENV LANG C.UTF-8
 
-# Oryx's path is at the end of the PATH environment variable value and so earlier presence
-# of python in the path folders (in this case /usr/bin) will cause Oryx's platform sdk to be not
-# picked up.
-RUN rm -rf /usr/bin/python*
-RUN rm -rf /usr/bin/pydoc*
-
 # Install basic build tools
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -41,6 +35,12 @@ RUN apt-get update \
         rsync \
         zip \
     && rm -rf /var/lib/apt/lists/*
+
+# Oryx's path is at the end of the PATH environment variable value and so earlier presence
+# of python in the path folders (in this case /usr/bin) will cause Oryx's platform sdk to be not
+# picked up.
+RUN rm -rf /usr/bin/python*
+RUN rm -rf /usr/bin/pydoc*
 
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
