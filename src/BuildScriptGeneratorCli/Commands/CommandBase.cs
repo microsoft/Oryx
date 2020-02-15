@@ -4,8 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -26,6 +28,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option("--debug", Description = "Print stack traces for exceptions.")]
         public bool DebugMode { get; set; }
 
+        [Option("--github-build-start", Description = "The time when a Github Action started the build.")]
+        public string GitHubBuildStartTime { get; set; }
+
+        [Option("--github-build-end", Description = "The time when a Github Action completed the build.")]
+        public string GitHubBuildEndTime { get; set; }
+
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
             console.CancelKeyPress += Console_CancelKeyPress;
@@ -43,6 +51,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (envSettings != null && envSettings.GitHubActions)
                 {
                     logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
+                    var githubActionBuildStartTime = GitHubBuildStartTime;
+                    var githubActionBuildEndTime = GitHubBuildEndTime;
+                    var buildEventProps = new Dictionary<string, string>()
+                    {
+                        { "githubActionBuildStartTime", githubActionBuildStartTime},
+                        { "githubActionBuildEndTime", githubActionBuildEndTime},
+                    };
+                    logger.LogEvent("GithubActionTimeLog", buildEventProps);
                 }
 
                 if (!IsValidInput(_serviceProvider, console))
