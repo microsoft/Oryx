@@ -1,4 +1,4 @@
-FROM oryx-base-buster
+FROM oryx-run-base
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
@@ -30,18 +30,6 @@ RUN set -eux; \
 		ca-certificates \
 		curl \
 		xz-utils \
-# Start of some more php fpm dependencies
-		libargon2-dev \
-		libcurl4-openssl-dev \
-		libedit-dev \
-		libedit2 \
-		libonig-dev \
-		libsodium-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		libxml2-dev \
-		zlib1g-dev \
-# End of some more php fpm dependencies
 		libzip-dev \
 		libpng-dev \
 		libjpeg-dev \
@@ -58,26 +46,10 @@ RUN set -eux; \
 		unixodbc-dev \
 		openssh-server \
 		vim \
+		curl \
 		wget \
 		tcptraceroute \
 		mariadb-client \
 		openssl \
-		nginx \
 	; \
 	rm -rf /var/lib/apt/lists/*
-
-# do NOT merge this content with above line because the 
-# above line is shared across all php images
-# Install the Microsoft SQL Server PDO driver on supported versions only.
-#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
-#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-RUN set -eux \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		gnupg2 \
-		apt-transport-https \
-	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-	&& curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
-	

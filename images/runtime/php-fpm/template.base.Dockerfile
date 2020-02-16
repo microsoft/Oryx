@@ -8,13 +8,15 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Configure NGINX 
-#RUN apt-get update \
-#    && apt-get install nginx -y --no-install-recommends
+# Install NGINX 
+RUN apt-get update \
+    && apt-get install nano nginx -y
+RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
 RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
 RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
+RUN ls -l /etc/nginx
 # Edit the default port setting
 ENV NGINX_PORT 8080
 
@@ -23,16 +25,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
-    && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
-
-#RUN set -eux; \
-#    if [[ $PHP_VERSION == 7.4.* ]]; then \
-#        docker-php-ext-configure gd --with-png=/usr --with-jpeg=/usr ; \
-#    else \
-#        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr ; \
-#    fi
-
-RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+    && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
+    && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
@@ -64,15 +58,17 @@ RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
         wddx \
         xmlrpc \
         xsl \
-    && pecl install imagick && docker-php-ext-enable imagick \
-    && pecl install mongodb && docker-php-ext-enable mongodb
+    && pecl install imagick && docker-php-ext-enable imagick
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-RUN pecl install sqlsrv pdo_sqlsrv \
+RUN set -eux; \
+    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* ]]; then \
+        pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini;
+        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
+    fi
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \
