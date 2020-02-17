@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string YarnMajorVersion = "1";
         public const string Node6Version = "6.17.1";
         public const string Node8Version = "8.17.0";
-        public const string Node10Version = "10.18.1";
-        public const string Node12Version = "12.14.1";
+        public const string Node10Version = "10.19.0";
+        public const string Node12Version = "12.16.0";
     }
 }
