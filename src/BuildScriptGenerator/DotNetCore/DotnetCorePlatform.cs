@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -32,6 +32,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
         private readonly BuildScriptGeneratorOptions _buildOptions;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
+        /// </summary>
+        /// <param name="versionProvider">The .NET version provider.</param>
+        /// <param name="projectFileProvider">The project file provider.</param>
+        /// <param name="environmentSettingsProvider">The environment settings provider.</param>
+        /// <param name="logger">The logger of .NET platform.</param>
+        /// <param name="detector">The detector of .NET platform.</param>
+        /// <param name="buildOptions">The build options for BuildScriptGenerator.</param>
+        /// <param name="dotNetCorePlatformOptions">The options if .NET platform.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
@@ -50,15 +60,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _buildOptions = buildOptions.Value;
         }
 
+        /// <inheritdoc/>
         public string Name => DotNetCoreConstants.LanguageName;
 
+        /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions => _versionProvider.SupportedDotNetCoreVersions;
 
+        /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             var buildProperties = new Dictionary<string, string>();
@@ -166,6 +180,91 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             };
         }
 
+        /// <inheritdoc/>
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public bool IsEnabled(RepositoryContext ctx)
+        {
+            return ctx.EnableDotNetCore;
+        }
+
+        /// <inheritdoc/>
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
+        {
+            // A user has the power to either enable or disable multi-platform builds entirely.
+            // However if user enables it, ASP.NET Core platform still explicitly opts out of it.
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public void SetRequiredTools(
+            ISourceRepo sourceRepo,
+            string targetPlatformVersion,
+            IDictionary<string, string> toolsToVersion)
+        {
+            Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
+            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
+            {
+            toolsToVersion[ToolNameConstants.DotNetName] = targetPlatformVersion;
+            }
+        }
+
+        /// <inheritdoc/>
+        public void SetVersion(BuildScriptGeneratorContext context, string version)
+        {
+            context.DotNetCoreVersion = version;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            var dirs = new List<string>();
+            dirs.Add("obj");
+            dirs.Add("bin");
+            return dirs;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            var dirs = new List<string>();
+            dirs.Add(".git");
+            dirs.Add("obj");
+            dirs.Add("bin");
+            return dirs;
+        }
+
+        private string GetBuildConfiguration()
+        {
+            var configuration = _dotNetCorePlatformOptions.MSBuildConfiguration;
+            if (string.IsNullOrEmpty(configuration))
+            {
+                configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
+            }
+
+            return configuration;
+        }
+
+        private bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
+        {
+            return BuildPropertiesHelper.IsTrue(
+                Constants.ZipAllOutputBuildPropertyKey,
+                context,
+                valueIsRequired: false);
+        }
+
         /// <summary>
         /// Even though the runtime container has the logic of finding out the startup file based on
         /// 'runtimeconfig.json' prefix, we still set the name in the manifest file because of the following
@@ -173,7 +272,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// name or assembly name property to 'bar' which causes 'bar.dll' to be published. If the output
         /// directory was NOT cleaned, then we would now be having both 'foo.runtimeconfig.json' and
         /// 'bar.runtimeconfig.json' which causes a problem for runtime container as it cannot figure out the
-        /// right startup dll. So, to help that scenario we always set the start-up file name in manifest file.
+        /// right startup DLL. So, to help that scenario we always set the start-up file name in manifest file.
         /// The runtime container will first look into manifest file to find the startup filename, if the
         /// file name is not present or if a manifest file is not present at all(ex: in case of VS Publish where
         /// the build does not happen with Oryx), then the runtime container's logic will fallback to looking at
@@ -199,83 +298,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
-        }
-
-        public bool IsCleanRepo(ISourceRepo repo)
-        {
-            return true;
-        }
-
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsEnabled(RepositoryContext ctx)
-        {
-            return ctx.EnableDotNetCore;
-        }
-
-        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
-        {
-            // A user has the power to either enable or disable multi-platform builds entirely.
-            // However if user enables it, ASP.NET Core platform still explicitly opts out of it.
-            return false;
-        }
-
-        public void SetRequiredTools(
-            ISourceRepo sourceRepo,
-            string targetPlatformVersion,
-            IDictionary<string, string> toolsToVersion)
-        {
-            Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
-            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
-            {
-                toolsToVersion[ToolNameConstants.DotNetName] = targetPlatformVersion;
-            }
-        }
-
-        public void SetVersion(BuildScriptGeneratorContext context, string version)
-        {
-            context.DotNetCoreVersion = version;
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            var dirs = new List<string>();
-            dirs.Add("obj");
-            dirs.Add("bin");
-            return dirs;
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            var dirs = new List<string>();
-            dirs.Add(".git");
-            dirs.Add("obj");
-            dirs.Add("bin");
-            return dirs;
-        }
-
-        private string GetBuildConfiguration()
-        {
-            var configuration = _dotNetCorePlatformOptions.MSBuildConfiguration;
-            if (string.IsNullOrEmpty(configuration))
-            {
-                configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
-            }
-
-            return configuration;
-        }
-
-        bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
-        {
-            return BuildPropertiesHelper.IsTrue(
-                Constants.ZipAllOutputBuildPropertyKey,
-                context,
-                valueIsRequired: false);
         }
     }
 }

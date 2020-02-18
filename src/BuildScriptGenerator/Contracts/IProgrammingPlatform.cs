@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="context">The <see cref="RepositoryContext"/>.</param>
         /// <returns>An instance of <see cref="LanguageDetectorResult"/> if detection was
-        /// successful, <c>null</c> otherwise</returns>
+        /// successful, <c>null</c> otherwise.</returns>
         LanguageDetectorResult Detect(RepositoryContext context);
 
         /// <summary>
@@ -79,21 +79,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Checks if the source repository seems to have artifacts from a previous build.
         /// </summary>
-        /// <param name="repo">Source repo to check</param>
-        /// <returns>true if the repo doesn't seem to have artifacts from a previous build, false otherwise</returns>
+        /// <param name="repo">Source repo to check.</param>
+        /// <returns>true if the repo doesn't seem to have artifacts from a previous build, false otherwise.</returns>
         bool IsCleanRepo(ISourceRepo repo);
 
         /// <summary>
         /// Gets list of directories which need to be excluded from being copied to the output directory.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="scriptGeneratorContext">The context of BuildScriptGenerator.</param>
+        /// <returns>List of directories.</returns>
         IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext);
 
         /// <summary>
         /// Gets list of directories which need to be excluded from being copied to an intermediate directory, if used.
         /// </summary>
-        /// <returns>List of directories</returns>
+        /// <param name="scriptGeneratorContext">The context of BuildScriptGenerator.</param>
+        /// <returns>List of directories.</returns>
         IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext);
 
