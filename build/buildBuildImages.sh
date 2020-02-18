@@ -140,18 +140,29 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 echo
 echo "-------------Creating AzureFunctions JamStack image-------------------"
-builtImageTag="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_REPO"
-docker build -t $builtImageTag \
+builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+docker build -t $builtImageName \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-	--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-	--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
 	$ctxArgs \
 	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 	.
 echo
 echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
+# Retag build image with build number tags
+if [ "$AGENT_BUILD" == "true" ]
+then
+	uniqueImageName="$builtImageName-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+
+	echo
+	echo "Retagging image '$builtImageName' with ACR related tags..."
+	docker tag "$builtImageName" "$uniqueImageName"
+
+	# Write image list to artifacts file
+	echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+fi
 
 echo
 echo "-------------Creating slim build image-------------------"
@@ -182,8 +193,6 @@ docker build -t $builtImageTag \
 	.
 echo
 echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-
 
 # Retag build image with build number tags
 if [ "$AGENT_BUILD" == "true" ]
