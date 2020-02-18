@@ -149,7 +149,7 @@ docker build -t $builtImageName \
 	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 	.
 echo
-echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 # Retag build image with build number tags
 if [ "$AGENT_BUILD" == "true" ]
