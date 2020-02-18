@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[PhpConstants.PhpName] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.PhpName] = targetPlatformVersion;
             }
         }
 

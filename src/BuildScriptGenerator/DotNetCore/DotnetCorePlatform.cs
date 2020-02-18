@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion["dotnet"] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.DotNetName] = targetPlatformVersion;
             }
         }
 
