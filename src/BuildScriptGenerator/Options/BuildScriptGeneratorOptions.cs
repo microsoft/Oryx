@@ -28,5 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IDictionary<string, string> Properties { get; set; }
 
         public string ManifestDir { get; set; }
+
+        public bool EnableDynamicInstall { get; set; }
     }
 }

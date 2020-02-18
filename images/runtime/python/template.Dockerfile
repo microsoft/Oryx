@@ -12,11 +12,10 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryx-run-base AS main
-
+ARG IMAGES_DIR=/tmp/oryx/images
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 
-# Add python binaries from Oryx base image
-COPY --from=mcr.microsoft.com/oryx/base:python-build-%PYTHON_VERSION%-%IMAGE_TAG% /opt /opt
+RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
 RUN set -ex \
  && cd /opt/python/ \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
@@ -33,7 +32,11 @@ ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-COPY images/runtime/python/install-dependencies.sh /tmp/scripts/install-dependencies.sh
-RUN /tmp/scripts/install-dependencies.sh
-RUN rm -rf /tmp/scripts
+RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+RUN pip install --upgrade pip \
+    && pip install gunicorn \
+    && pip install ptvsd \
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
+
+RUN rm -rf /tmp/oryx
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

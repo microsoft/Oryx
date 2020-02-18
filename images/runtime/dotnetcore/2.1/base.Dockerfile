@@ -44,3 +44,5 @@ RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 RUN dotnet-sos install
+
+RUN rm -rf /tmp/oryx

@@ -24,7 +24,7 @@ if [ ! -z "$BUILD_NUMBER" ]; then
 	UNIQUE_TAG="-$BUILD_NUMBER"
 fi
 
-BUILD_IMAGES_DIR="$__REPO_DIR/images/build"
+BUILD_IMAGES_DIR="$REPO_DIR/images/build"
 # NOTE: We create a unique artifacts file per image directory here since they are going to be built in parallel on CI
 ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$IMAGE_DIR_TO_BUILD-buildimage-bases.txt"
 
@@ -39,7 +39,7 @@ function buildImages() {
 		versionDir=$(dirname "${dockerFile}")
 		versionDirName=$(basename $versionDir)
 		imageName="$BASE_IMAGES_REPO:$dirName-build-$versionDirName$UNIQUE_TAG"
-		docker build -f $dockerFile -t "$imageName" $__REPO_DIR
+		docker build -f $dockerFile -t "$imageName" $REPO_DIR
 		echo "$imageName" >> $ARTIFACTS_FILE
 	done
 }
@@ -49,14 +49,14 @@ case $IMAGE_DIR_TO_BUILD in
 		echo "Building Python base images"
 		echo
 
-		docker build -f $BUILD_IMAGES_DIR/python/prereqs/Dockerfile -t "python-build-prereqs" $__REPO_DIR
+		docker build -f $BUILD_IMAGES_DIR/python/prereqs/Dockerfile -t "python-build-prereqs" $REPO_DIR
 		buildImages "python"
 		;;
 	'php')
 		echo "Building PHP base images"
 		echo
 
-		docker build -f $BUILD_IMAGES_DIR/php/prereqs/Dockerfile -t "php-build-prereqs" $__REPO_DIR
+		docker build -f $BUILD_IMAGES_DIR/php/prereqs/Dockerfile -t "php-build-prereqs" $REPO_DIR
 		buildImages "php"
 		;;            
 	'yarn-cache')
@@ -64,7 +64,7 @@ case $IMAGE_DIR_TO_BUILD in
 		echo
 
 		imageName="$BASE_IMAGES_REPO:build-yarn-cache$UNIQUE_TAG"
-		docker build -f $BUILD_IMAGES_DIR/yarn-cache/Dockerfile -t $imageName $__REPO_DIR
+		docker build -f $BUILD_IMAGES_DIR/yarn-cache/Dockerfile -t $imageName $REPO_DIR
 		echo "$imageName" >> $ARTIFACTS_FILE
 		;;
 	*) echo "Unknown image directory";;

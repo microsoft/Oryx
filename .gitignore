@@ -268,3 +268,4 @@ src/startupscriptgenerator/**/vendor/
 # Go debugging related generated files
 src/startupscriptgenerator/src/**/__debug_bin
 src/startupscriptgenerator/src/**/run.sh
+!**/dynamic/Dockerfile

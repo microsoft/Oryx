@@ -1,4 +1,6 @@
 FROM buildpack-deps:stretch-curl
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
 
 RUN apt-get update \
 	&& apt-get upgrade -y \
@@ -6,5 +8,7 @@ RUN apt-get update \
 		xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY images/receiveGpgKeys.sh /tmp/scripts/receiveGpgKeys.sh
-RUN chmod +x /tmp/scripts/receiveGpgKeys.sh
+ADD images ${IMAGES_DIR}
+ADD build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;

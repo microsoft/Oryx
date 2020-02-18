@@ -58,7 +58,8 @@ RUN apt-get update \
         wddx \
         xmlrpc \
         xsl \
-    && pecl install imagick && docker-php-ext-enable imagick
+    && pecl install imagick && docker-php-ext-enable imagick \
+    && pecl install mongodb && docker-php-ext-enable mongodb
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
@@ -96,3 +97,5 @@ RUN set -x \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
+
+RUN rm -rf /tmp/oryx

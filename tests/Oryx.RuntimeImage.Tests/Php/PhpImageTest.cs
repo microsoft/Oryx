@@ -182,6 +182,32 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         }
 
+        [Theory]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        [InlineData("5.6")]
+        public void MongoDb_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep mongodb);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("mongodb", output);
+            },
+                result.GetDebugInfo());
+
+        }
+
         [SkippableTheory]
         [InlineData("7.3")]
         [InlineData("7.2")]

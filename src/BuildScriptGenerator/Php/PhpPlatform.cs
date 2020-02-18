@@ -16,6 +16,9 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
+    /// <summary>
+    /// PHP platform.
+    /// </summary>
     internal class PhpPlatform : IProgrammingPlatform
     {
         private readonly PhpScriptGeneratorOptions _phpScriptGeneratorOptions;
@@ -23,6 +26,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly ILogger<PhpPlatform> _logger;
         private readonly PhpLanguageDetector _detector;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PhpPlatform"/> class.
+        /// </summary>
+        /// <param name="phpScriptGeneratorOptions">The options of phpScriptGenerator.</param>
+        /// <param name="phpVersionProvider">The PHP version provider.</param>
+        /// <param name="logger">The logger of PHP platform.</param>
+        /// <param name="detector">The detector of PHP platform.</param>
         public PhpPlatform(
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
             IPhpVersionProvider phpVersionProvider,
@@ -35,15 +45,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             _detector = detector;
         }
 
+        /// <summary>
+        /// Gets the name of PHP platform which this generator will create builds for.
+        /// </summary>
         public string Name => PhpConstants.PhpName;
 
+        /// <summary>
+        /// Gets the list of versions that the script generator supports.
+        /// </summary>
         public IEnumerable<string> SupportedVersions => _phpVersionProvider.SupportedPhpVersions;
 
+        /// <summary>
+        /// Detects the programming platform name and version required by the application in source directory.
+        /// </summary>
+        /// <param name="context">The repository context.</param>
+        /// <returns>The results of language detector operations.</returns>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             var buildProperties = new Dictionary<string, string>();
@@ -79,48 +101,56 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
             string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties =  buildProperties};
+            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
 
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnablePhp;
         }
 
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public void SetRequiredTools(ISourceRepo sourceRepo, string targetPlatformVersion, IDictionary<string, string> toolsToVersion)
         {
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[PhpConstants.PhpName] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.PhpName] = targetPlatformVersion;
             }
         }
 
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PhpVersion = version;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return Array.Empty<string>();

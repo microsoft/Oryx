@@ -85,6 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 shouldPackage: false,
                 requiredOsPackages: null,
                 scriptOnly: false,
+                enableDynamicInstall: false,
                 properties: null);
         }
 

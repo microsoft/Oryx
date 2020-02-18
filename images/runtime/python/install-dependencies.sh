@@ -44,11 +44,5 @@ Threading=1
 UsageCount=1
 EOL
 
-pip install --upgrade pip
-pip install gunicorn # The default WSGI server
-pip install ptvsd
-
-ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
-
 # Clean up for apt. Keeping at the very end to make sure it runs after every apt-get install.
 rm -rf /var/lib/apt/lists/*

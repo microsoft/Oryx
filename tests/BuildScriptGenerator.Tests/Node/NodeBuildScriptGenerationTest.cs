@@ -72,22 +72,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           ""engines"" : { ""npm"" : ""5.4.2"" },
           ""dependencies"": { ""foo"" : ""1.0.0 - 2.9999.9999"", ""bar"" : "">=1.0.2 <2.1.2"" }
         }";
-
-        // See https://dev.azure.com/devdiv/DevDiv/_workitems/edit/894104
-        private const string PackageJsonWithUnsupportedNpmVersion = @"{
-          ""name"": ""mynodeapp"",
-          ""version"": ""1.0.0"",
-          ""description"": ""test app"",
-          ""main"": ""server.js"",
-          ""scripts"": {
-            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
-            ""start"": ""node server.js""
-          },
-          ""author"": ""Dev"",
-          ""license"": ""ISC"",
-          ""engines"" : { ""node"" : ""100.100.100"" }
-        }";
-
         private const string MalformedPackageJson = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",

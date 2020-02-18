@@ -1,14 +1,4 @@
 jobs:
-- job: Release_PhpBuildBaseImage
-  displayName: Push PHP Build Base Image to MCR
-  timeoutInMinutes: 250
-  pool:
-    name: OryxLinux
-  steps:
-  - template: _releaseBaseImagesStepTemplate.yml
-    parameters:
-      baseImageName: 'php-build'
-
 - job: Release_PhpRuntimeBaseImage
   displayName: Push PHP Runtime Base Image to MCR
   timeoutInMinutes: 250
@@ -37,16 +27,6 @@ jobs:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       baseImageName: 'dotnetcore'
-
-- job: Release_PythonBaseImage
-  displayName: Push Python Build Base Image to MCR
-  timeoutInMinutes: 250
-  pool:
-    name: OryxLinux
-  steps:
-  - template: _releaseBaseImagesStepTemplate.yml
-    parameters:
-      baseImageName: 'python-build'
 
 - job: Release_NodeBaseImage
   displayName: Push Node Base Image to MCR

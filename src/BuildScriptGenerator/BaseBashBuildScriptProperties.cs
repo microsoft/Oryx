@@ -66,5 +66,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or set the path to benv file.
         /// </summary>
         public string BenvPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of bash script snippets which install the platform binaries.
+        /// </summary>
+        public IEnumerable<string> PlatformInstallationScriptSnippets { get; set; }
     }
 }

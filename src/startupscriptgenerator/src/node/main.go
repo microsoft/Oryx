@@ -17,7 +17,11 @@ func main() {
 	common.PrintVersionInfo()
 
 	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
-	manifestDirPtr := common.ManifestDirFlag
+	manifestDirPtr := flag.String(
+		"manifestDir",
+		"",
+		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
+			"it is assumed to be under the directory specified by 'appPath'.")
 	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed to start the application up.")
 	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be executed if the entrypoint is not found. Ex: '/opt/startup/default-static-site.js'")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")

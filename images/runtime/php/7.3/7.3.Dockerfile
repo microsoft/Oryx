@@ -1,5 +1,6 @@
 # From https://github.com/docker-library/php.git
 FROM php-run-base
+ARG IMAGES_DIR=/tmp/oryx/images
 
 # do NOT merge this content with above line because the 
 # above line is shared across all php images
@@ -127,7 +128,7 @@ RUN set -eux; \
 	if [ -n "$PHP_ASC_URL" ]; then \
 		curl -fsSL -o php.tar.xz.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
-		/tmp/scripts/receiveGpgKeys.sh $GPG_KEYS; \
+		${IMAGES_DIR}/receiveGpgKeys.sh $GPG_KEYS; \
 		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
 		gpgconf --kill all; \
 		rm -rf "$GNUPGHOME"; \

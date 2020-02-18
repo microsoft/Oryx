@@ -31,5 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets a value indicating whether this snippet represents a full script.
         /// </summary>
         public bool IsFullScript { get; set; }
+
+        public string PlatformInstallationScriptSnippet { get; set; }
     }
 }

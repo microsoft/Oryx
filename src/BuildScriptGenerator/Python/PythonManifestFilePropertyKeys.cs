@@ -3,12 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal interface IPythonVersionProvider
+    internal static class PythonManifestFilePropertyKeys
     {
-        IEnumerable<string> SupportedPythonVersions { get; }
+        internal const string CompressedVirtualEnvFile = "compressedVirtualEnvFile";
+        internal const string VirtualEnvName = "virtualEnvName";
+        internal const string PackageDir = "packagedir";
     }
 }
