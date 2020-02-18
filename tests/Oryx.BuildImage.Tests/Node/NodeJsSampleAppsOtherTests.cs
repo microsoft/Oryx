@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             get
             {
                 var data = new TheoryData<string>();
-                //data.Add(Settings.BuildImageName);
-                //data.Add(Settings.SlimBuildImageName);
+                data.Add(Settings.BuildImageName);
+                data.Add(Settings.SlimBuildImageName);
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 return data;
