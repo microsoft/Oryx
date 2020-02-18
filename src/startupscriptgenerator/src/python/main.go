@@ -7,79 +7,119 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"flag"
+	"fmt"
+	"strings"
 )
 
 func main() {
-	common.PrintVersionInfo()
+	versionCommand := flag.NewFlagSet(consts.VersionCommandName, flag.ExitOnError)
 
-	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
+	setupEnvCommand := flag.NewFlagSet(consts.SetupEnvCommandName, flag.ExitOnError)
+	setupEnvAppPathPtr := setupEnvCommand.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
 
-	manifestDirPtr := common.ManifestDirFlag
-
-	userStartupCommandPtr := flag.String("userStartupCommand", "", "[Optional] Command that will be executed "+
+	scriptCommand := flag.NewFlagSet(consts.CreateScriptCommandName, flag.ExitOnError)
+	appPathPtr := scriptCommand.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
+	manifestDirPtr := scriptCommand.String(
+		"manifestDir",
+		"",
+		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
+			"it is assumed to be under the directory specified by 'appPath'.")
+	userStartupCommandPtr := scriptCommand.String("userStartupCommand", "", "[Optional] Command that will be executed "+
 		"to start the application up.")
-
-	defaultAppFilePathPtr := flag.String("defaultApp", "", "[Optional] Path to a default file that will be "+
+	defaultAppFilePathPtr := scriptCommand.String("defaultApp", "", "[Optional] Path to a default file that will be "+
 		"executed if the entrypoint is not found. Ex: '/opt/defaultsite'")
-
-	defaultAppModulePtr := flag.String("defaultAppModule", "application:app", "Module of the default application,"+
+	defaultAppModulePtr := scriptCommand.String("defaultAppModule", "application:app", "Module of the default application,"+
 		" e.g. 'application:app'.")
-
-	defaultAppDebugModulePtr := flag.String("defaultAppDebugModule", "application.py", "Module to run if "+
+	defaultAppDebugModulePtr := scriptCommand.String("defaultAppDebugModule", "application.py", "Module to run if "+
 		"running the app in debug mode, e.g. 'application.py start_dev_server'. Has no effect if -debugAdapter isn't used.")
-
-	debugAdapterPtr := flag.String("debugAdapter", "", "Python debugger adapter. Currently, only 'ptvsd' is "+
+	debugAdapterPtr := scriptCommand.String("debugAdapter", "", "Python debugger adapter. Currently, only 'ptvsd' is "+
 		"supported.")
-
-	debugPortPtr := flag.String("debugPort", "5678", "Port where the debugger will bind to. Has no effect if -debugAdapter isn't used.")
-
-	debugWaitPtr := flag.Bool("debugWait", false, "Whether the debugger adapter should pause and wait for a "+
+	debugPortPtr := scriptCommand.String("debugPort", "5678", "Port where the debugger will bind to. Has no effect if -debugAdapter isn't used.")
+	debugWaitPtr := scriptCommand.Bool("debugWait", false, "Whether the debugger adapter should pause and wait for a "+
 		"client connection before running the app.")
-
-	virtualEnvNamePtr := flag.String("virtualEnvName", "", "Name of the virtual environment for the app")
-
-	packagesFolderPtr := flag.String("packagedir", "", "Directory where the python packages were installed, if "+
+	virtualEnvNamePtr := scriptCommand.String("virtualEnvName", "", "Name of the virtual environment for the app")
+	packagesFolderPtr := scriptCommand.String("packagedir", "", "Directory where the python packages were installed, if "+
 		"no virtual environment was used.")
-
-	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
-
-	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
-
-	skipVirtualEnvExtraction := flag.Bool(
+	bindPortPtr := scriptCommand.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 80")
+	outputPathPtr := scriptCommand.String("output", "run.sh", "Path to the script to be generated.")
+	skipVirtualEnvExtraction := scriptCommand.Bool(
 		"skipVirtualEnvExtraction",
 		false,
 		"Disables the extraction of the compressed virtual environment file. If used, some external tool will "+
 			"have to extract it - otherwise the application might not work.")
 
-	flag.Parse()
-
 	logger := common.GetLogger("python.main")
 	defer logger.Shutdown()
 	logger.StartupScriptRequested()
 
-	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
-	defaultAppFullPath := common.GetValidatedFullPath(*defaultAppFilePathPtr)
+	common.ValidateCommands(versionCommand, scriptCommand, setupEnvCommand)
 
-	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
-	common.SetGlobalOperationID(buildManifest)
+	if scriptCommand.Parsed() {
+		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
+		defaultAppFullPath := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 
-	entrypointGenerator := PythonStartupScriptGenerator{
-		AppPath:                  fullAppPath,
-		UserStartupCommand:       *userStartupCommandPtr,
-		VirtualEnvName:           *virtualEnvNamePtr,
-		BindPort:                 *bindPortPtr,
-		DefaultAppPath:           defaultAppFullPath,
-		DefaultAppModule:         *defaultAppModulePtr,
-		DefaultAppDebugModule:    *defaultAppDebugModulePtr,
-		DebugAdapter:             *debugAdapterPtr,
-		DebugPort:                *debugPortPtr,
-		DebugWait:                *debugWaitPtr,
-		PackageDirectory:         *packagesFolderPtr,
-		SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
-		Manifest:                 buildManifest,
+		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+		common.SetGlobalOperationID(buildManifest)
+
+		entrypointGenerator := PythonStartupScriptGenerator{
+			AppPath:                  fullAppPath,
+			UserStartupCommand:       *userStartupCommandPtr,
+			VirtualEnvName:           *virtualEnvNamePtr,
+			BindPort:                 *bindPortPtr,
+			DefaultAppPath:           defaultAppFullPath,
+			DefaultAppModule:         *defaultAppModulePtr,
+			DefaultAppDebugModule:    *defaultAppDebugModulePtr,
+			DebugAdapter:             *debugAdapterPtr,
+			DebugPort:                *debugPortPtr,
+			DebugWait:                *debugWaitPtr,
+			PackageDirectory:         *packagesFolderPtr,
+			SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
+			Manifest:                 buildManifest,
+		}
+
+		command := entrypointGenerator.GenerateEntrypointScript()
+		common.WriteScript(*outputPathPtr, command)
 	}
 
-	command := entrypointGenerator.GenerateEntrypointScript()
-	common.WriteScript(*outputPathPtr, command)
+	if setupEnvCommand.Parsed() {
+		fullAppPath := common.GetValidatedFullPath(*setupEnvAppPathPtr)
+		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+		pythonInstallationRoot := fmt.Sprintf(
+			"%s/%s",
+			consts.PythonInstallationRootDir,
+			buildManifest.PythonVersion)
+		script := common.GetSetupScript(
+			"python",
+			buildManifest.PythonVersion,
+			pythonInstallationRoot)
+		scriptBuilder := strings.Builder{}
+		scriptBuilder.WriteString(script)
+		scriptBuilder.WriteString(
+			fmt.Sprintf("echo %s/lib > /etc/ld.so.conf.d/python.conf\n", pythonInstallationRoot))
+		scriptBuilder.WriteString("ldconfig\n")
+
+		if strings.HasPrefix(buildManifest.PythonVersion, "3.") {
+			scriptBuilder.WriteString(
+				fmt.Sprintf("cd %s/bin\n", pythonInstallationRoot))
+			scriptBuilder.WriteString("rm -f python\n")
+			scriptBuilder.WriteString("ln -s python3 python\n")
+			scriptBuilder.WriteString("ln -s idle3 idle\n")
+			scriptBuilder.WriteString("ln -s pydoc3 pydoc\n")
+			scriptBuilder.WriteString("ln -s python3-config python-config\n")
+		}
+		// To enable following pip commands to run, set the path env variable
+		scriptBuilder.WriteString(
+			fmt.Sprintf("export PATH=\"%s/bin:${PATH}\"\n", pythonInstallationRoot))
+		scriptBuilder.WriteString("pip install --upgrade pip\n")
+		scriptBuilder.WriteString("pip install gunicorn\n")
+		scriptBuilder.WriteString("pip install ptvsd\n")
+		// To enable future interactive or non-interactive shells, write to bashrc file
+		finalScript := scriptBuilder.String()
+		fmt.Println(fmt.Sprintf(
+			"Setting up the environment with 'python' version '%s'...\n",
+			buildManifest.PythonVersion))
+		common.SetupEnv(finalScript)
+	}
 }

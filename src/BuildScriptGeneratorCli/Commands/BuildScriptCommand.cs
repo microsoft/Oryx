@@ -93,6 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 shouldPackage: ShouldPackage,
                 requiredOsPackages: string.IsNullOrWhiteSpace(OsRequirements) ? null : OsRequirements.Split(','),
                 scriptOnly: true,
+                enableDynamicInstall: EnableDynamicInstall,
                 properties: Properties);
         }
     }

@@ -63,6 +63,12 @@ echo "Source directory     : $SOURCE_DIR"
 echo "Destination directory: $DESTINATION_DIR"
 echo
 
+{{ for Snippet in PlatformInstallationScriptSnippets }}
+{{~ Snippet }}
+{{ end }}
+
+cd "$SOURCE_DIR"
+
 {{ if BenvArgs | IsNotBlank }}
 if [ -f {{ BenvPath }} ]; then
 	source {{ BenvPath }} {{ BenvArgs }}

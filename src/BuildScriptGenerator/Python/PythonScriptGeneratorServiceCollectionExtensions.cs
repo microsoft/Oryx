@@ -22,6 +22,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
             services.AddScoped<PythonLanguageDetector>();
+            services.AddScoped<PythonPlatformInstaller>();
+            services.AddSingleton<PythonOnDiskVersionProvider>();
+            services.AddSingleton<PythonSdkStorageVersionProvider>();
             return services;
         }
     }

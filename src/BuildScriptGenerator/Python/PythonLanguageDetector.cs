@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -15,21 +14,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonLanguageDetector : ILanguageDetector
     {
-        private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonLanguageDetector> _logger;
-        private readonly IStandardOutputWriter _writer;
 
         public PythonLanguageDetector(
-            IOptions<PythonScriptGeneratorOptions> options,
             IPythonVersionProvider pythonVersionProvider,
             ILogger<PythonLanguageDetector> logger,
             IStandardOutputWriter writer)
         {
-            _pythonScriptGeneratorOptions = options.Value;
             _versionProvider = pythonVersionProvider;
             _logger = logger;
-            _writer = writer;
         }
 
         public LanguageDetectorResult Detect(RepositoryContext context)
@@ -68,22 +62,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private string VerifyAndResolveVersion(string version)
         {
+            // Get the versions either from disk or on the web
+            var versionInfo = _versionProvider.GetVersionInfo();
+
+            // Get the default version. This could be having just the major or major.minor version.
+            // So try getting the latest version of the default version.
             if (string.IsNullOrEmpty(version))
             {
-                return _pythonScriptGeneratorOptions.PythonDefaultVersion;
+                version = versionInfo.DefaultVersion;
             }
 
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                _versionProvider.SupportedPythonVersions);
+                versionInfo.SupportedVersions);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
                     PythonConstants.PythonName,
                     version,
-                    _versionProvider.SupportedPythonVersions);
-                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the Python platform.");
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exc,
+                    $"Exception caught, the version '{version}' is not supported for the Python platform.");
                 throw exc;
             }
 

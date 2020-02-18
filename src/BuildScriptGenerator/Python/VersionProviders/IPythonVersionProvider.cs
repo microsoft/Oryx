@@ -5,10 +5,8 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal static class ManifestFilePropertyKeys
+    internal interface IPythonVersionProvider
     {
-        internal const string CompressedVirtualEnvFile = "compressedVirtualEnvFile";
-        internal const string VirtualEnvName = "virtualEnvName";
-        internal const string PackageDir = "packagedir";
+        PlatformVersionInfo GetVersionInfo();
     }
 }
