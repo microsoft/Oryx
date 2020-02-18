@@ -257,7 +257,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 $"{nameof(sourceRepo)} must not be null since Node needs access to the repository");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[NodeConstants.NodeToolName] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.NodeName] = targetPlatformVersion;
             }
 
             var packageJson = GetPackageJsonObject(sourceRepo, _logger);
@@ -267,12 +267,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 _logger.LogDebug("GetNpmVersion returned {npmVersion}", npmVersion);
                 if (!string.IsNullOrEmpty(npmVersion))
                 {
-                    toolsToVersion[NodeConstants.NpmToolName] = npmVersion;
+                    toolsToVersion[ToolNameConstants.NpmName] = npmVersion;
                 }
             }
             else
             {
-                _logger.LogDebug($"{NodeConstants.PackageJsonFileName} is null; skipping setting {NodeConstants.NpmToolName} tool");
+                _logger.LogDebug($"{NodeConstants.PackageJsonFileName} is null; skipping setting {ToolNameConstants.NpmName} tool");
             }
         }
 

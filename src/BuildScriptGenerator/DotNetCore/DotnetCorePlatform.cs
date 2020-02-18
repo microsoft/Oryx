@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[DotNetCoreConstants.LanguageName] = targetPlatformVersion;
+            toolsToVersion[ToolNameConstants.DotNetName] = targetPlatformVersion;
             }
         }
 
