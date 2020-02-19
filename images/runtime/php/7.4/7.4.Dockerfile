@@ -193,6 +193,7 @@ COPY docker-php-source /usr/local/bin/
 
 RUN set -eux; \
 	\
+	sqlite3 --version ; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \

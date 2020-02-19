@@ -61,5 +61,7 @@ RUN set -eux; \
         libcurl4-openssl-dev \
         libldap2-dev \
         zlib1g-dev \
+		apache2-dev \
+		libsqlite3-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*

@@ -33,13 +33,7 @@ RUN set -eux; \
         apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends \
-           libfreetype-6-dev \
-           libjpeg62-turbo-dev \
-           libonig-dev \
-           libcurl4 \
-           libcurl4-openssl-dev \
-           libldap2-dev \
-           zlib1g-dev \
+           apache2-dev
         && docker-php-ext-configure gd --with-freetype --with-jpeg \
         && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
     else \
