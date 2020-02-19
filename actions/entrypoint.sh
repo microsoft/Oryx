@@ -45,16 +45,15 @@ echo "GITHUB_REPOSITORY is ${GITHUB_REPOSITORY}."
 
 url="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
 
-json=$(curl -X GET "${url}")
-
 #Gets the started time and completed time for building container within a Github Action.
+#Format: "2020-02-15T02:51:50.000Z"
 startTime=$(curl -X GET "${url}" | sed 's/,/\n/g' | grep "started_at" | awk '{print $2}' | sed -n '3p')
 endTime=$(curl -X GET "${url}" | sed 's/,/\n/g' | grep "completed_at" | awk '{print $2}' | sed -n '3p')
 
 echo "Started time is ${startTime}."
 echo "Completed time is ${endTime}."
 
-#pass time data as two parameters (or as environment variables?)
-#oryxCommand="${oryxCommand} --github-build-start ${startTime} --github-build-end ${endTime}"
+export GITHUB_BUILD_CONTAINER_START=$startTime
+export GITHUB_BUILD_CONTAINER_COMPLETE=$endTime
 
 eval $oryxCommand
