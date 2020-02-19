@@ -17,12 +17,7 @@ ENV LANG C.UTF-8
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        git \
-        unzip \
         rsync \
-        zip \
-        curl \
-        ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # A temporary folder to hold all content temporarily used to build this image.
@@ -53,6 +48,10 @@ RUN apt-get update \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
+        curl \
+        ca-certificates \
+        gnupg \
+        dirmngr \
     && rm -rf /var/lib/apt/lists/*
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
@@ -103,6 +102,10 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
+        curl \
+        ca-certificates \
+        gnupg \
+        dirmngr \
     && rm -rf /var/lib/apt/lists/*
 ARG HUGO_VERSION=0.59.1
 RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" \
@@ -173,19 +176,9 @@ ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/yarn/stable/bin:/opt/hugo"
+ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/yarn/stable/bin:/opt/hugo"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
-
-# Copy .NET Core related content
-ENV NUGET_XMLDOC_MODE=skip \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-COPY --from=dotnet-install /opt/dotnet /opt/dotnet
-COPY --from=dotnet-install /var/nuget /var/nuget
-# Grant read-write permissions to the nuget folder so that dotnet restore
-# can write into it.
-RUN chmod a+rw /var/nuget
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
