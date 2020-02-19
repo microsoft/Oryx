@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProductionOnlyDependencies = false,
+                HasProdDependencies = false,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProductionOnlyDependencies = false,
+                HasProdDependencies = false,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProductionOnlyDependencies = false,
+                HasProdDependencies = false,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProductionOnlyDependencies = false,
+                HasProdDependencies = false,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
@@ -247,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
                 NpmRunBuildCommand = "yarn run build",
                 NpmRunBuildAzureCommand = "yarn run build:azure",
-                HasProductionOnlyDependencies = true,
+                HasProdDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
@@ -284,7 +284,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProductionOnlyDependencies = false,
+                HasProdDependencies = false,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -319,7 +319,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProductionOnlyDependencies = true,
+                HasProdDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -355,7 +355,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProductionOnlyDependencies = true,
+                HasProdDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -392,7 +392,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProductionOnlyDependencies = true,
+                HasProdDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -429,7 +429,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProductionOnlyDependencies = true,
+                HasProdDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -465,7 +465,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
-                HasProductionOnlyDependencies = true,
+                HasProdDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
