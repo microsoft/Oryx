@@ -1,37 +1,37 @@
 # From https://github.com/docker-library/php.git
-FROM oryx-base-buster
+FROM php-run-base
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
-RUN set -eux; \
-	{ \
-		echo 'Package: php*'; \
-		echo 'Pin: release *'; \
-		echo 'Pin-Priority: -1'; \
-	} > /etc/apt/preferences.d/no-debian-php
+#RUN set -eux; \
+#	{ \
+#		echo 'Package: php*'; \
+#		echo 'Pin: release *'; \
+#		echo 'Pin-Priority: -1'; \
+#	} > /etc/apt/preferences.d/no-debian-php
 
 # dependencies required for running "phpize"
 # (see persistent deps below)
-ENV PHPIZE_DEPS \
-		autoconf \
-		dpkg-dev \
-		file \
-		g++ \
-		gcc \
-		libc-dev \
-		make \
-		pkg-config \
-		re2c
+#ENV PHPIZE_DEPS \
+#		autoconf \
+#		dpkg-dev \
+#		file \
+#		g++ \
+#		gcc \
+#		libc-dev \
+#		make \
+#		pkg-config \
+#		re2c
 
 # persistent / runtime deps
-RUN set -eux; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		$PHPIZE_DEPS \
-		ca-certificates \
-		curl \
-		xz-utils \
+#RUN set -eux; \
+#	apt-get update; \
+#	apt-get install -y --no-install-recommends \
+#		$PHPIZE_DEPS \
+#		ca-certificates \
+#		curl \
+#		xz-utils \
 #		libzip-dev \
 #		libpng-dev \
 #		libjpeg-dev \
@@ -52,8 +52,8 @@ RUN set -eux; \
 #		tcptraceroute \
 #		mariadb-client \
 #		openssl \
-	; \
-	rm -rf /var/lib/apt/lists/*
+#	; \
+#	rm -rf /var/lib/apt/lists/*
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
@@ -196,37 +196,37 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-dev \
-		libcurl4-openssl-dev \
-		libedit-dev \
-		libonig-dev \
-		libsodium-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		libxml2-dev \
-		zlib1g-dev \
-		${PHP_EXTRA_BUILD_DEPS:-} \
+#		libargon2-dev \
+#		libcurl4-openssl-dev \
+#		libedit-dev \
+#		libonig-dev \
+#		libsodium-dev \
+#		libsqlite3-dev \
+#		libssl-dev \
+#		libxml2-dev \
+#		zlib1g-dev \
+#		${PHP_EXTRA_BUILD_DEPS:-} \
 # Start of persistent / runtime deps
-		libzip-dev \
-		libpng-dev \
-		libjpeg-dev \
-		libpq-dev \
-		libldap2-dev \
-		libldb-dev \
-		libicu-dev \
-		libgmp-dev \
-		libmagickwand-dev \
-		libc-client-dev \
-		libtidy-dev \
-		libkrb5-dev \
-		libxslt-dev \
-		unixodbc-dev \
-		openssh-server \
-		vim \
-		wget \
-		tcptraceroute \
-		mariadb-client \
-		openssl \
+#		libzip-dev \
+#		libpng-dev \
+#		libjpeg-dev \
+#		libpq-dev \
+#		libldap2-dev \
+#		libldb-dev \
+#		libicu-dev \
+#		libgmp-dev \
+#		libmagickwand-dev \
+#		libc-client-dev \
+#		libtidy-dev \
+#		libkrb5-dev \
+#		libxslt-dev \
+#		unixodbc-dev \
+#		openssh-server \
+#		vim \
+#		wget \
+#		tcptraceroute \
+#		mariadb-client \
+#		openssl \
 # End of persistent / runtime deps
 	; \
 	rm -rf /var/lib/apt/lists/*; \

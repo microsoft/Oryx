@@ -25,7 +25,8 @@ ENV PHPIZE_DEPS \
 # persistent / runtime deps
 RUN set -eux; \
 	apt-get update; \
-	apt-get install -y --no-install-recommends \
+	apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
 		$PHPIZE_DEPS \
 		ca-certificates \
 		curl \
@@ -50,5 +51,15 @@ RUN set -eux; \
 		tcptraceroute \
 		mariadb-client \
 		openssl \
+		# extra libs for php 7.4
+		libargon2-0-dev \
+        libedit-dev \
+		libsodium-dev \
+		libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libonig-dev \
+        libcurl4-openssl-dev \
+        libldap2-dev \
+        zlib1g-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*

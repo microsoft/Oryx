@@ -30,11 +30,23 @@ RUN apt-get update \
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.4.* ]]; then \
 		echo "hellow: "$PHP_VERSION
-        docker-php-ext-configure gd --with-freetype --with-jpeg ; \
+        apt-get update \
+        && apt-get upgrade -y \
+        && apt-get install -y --no-install-recommends \
+           libfreetype-6-dev \
+           libjpeg62-turbo-dev \
+           libonig-dev \
+           libcurl4 \
+           libcurl4-openssl-dev \
+           libldap2-dev \
+           zlib1g-dev \
+        && docker-php-ext-configure gd --with-freetype --with-jpeg \
+        && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
     else \
 		echo "it's not php 7.4"
-		echo $PHP_VERSION
-        docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr ; \
+		&& echo $PHP_VERSION
+        && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+        && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
     fi
 
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
