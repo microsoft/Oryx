@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     DateTime date2 = new DateTime(int.Parse(dateEnd.Substring(0, 4)), int.Parse(dateEnd.Substring(5, 2)), int.Parse(dateEnd.Substring(8, 2)),
                                                   int.Parse(timeEnd.Substring(0, 2)), int.Parse(timeEnd.Substring(3, 2)), int.Parse(timeEnd.Substring(6, 2)));
                     TimeSpan interval = date2 - date1;
-                    var gitHubActionBuildContainerDurationSeconds = interval.ToString();
+                    var gitHubActionBuildContainerDurationSeconds = interval.Seconds.ToString();
                     var buildEventProps = new Dictionary<string, string>()
                     {
                         { "gitHubActionBuildContainerStartTime", gitHubActionBuildContainerStartTime },
