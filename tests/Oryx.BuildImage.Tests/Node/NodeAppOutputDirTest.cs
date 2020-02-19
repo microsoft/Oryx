@@ -47,7 +47,7 @@ namespace Oryx.BuildImage.Tests.Node
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.SlimBuildImageName,
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

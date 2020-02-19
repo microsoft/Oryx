@@ -18,6 +18,15 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         rsync \
+        libicu57 \
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libicu57 \
+        liblttng-ust0 \
+        libssl1.0.2 \
+        libstdc++6 \
+        zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
 # A temporary folder to hold all content temporarily used to build this image.
