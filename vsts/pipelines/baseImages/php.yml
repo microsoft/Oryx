@@ -1,0 +1,23 @@
+variables:
+    ascName: OryxMCR
+    acrName: oryxdevmcr.azurecr.io
+    skipComponentGovernanceDetection: true
+  
+jobs:
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php runtime base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php
+    artifactsFileName: php-runtimeimage-bases.txt
+
+- job: Release_PhpRuntimeBaseImage
+  dependsOn: Build_BaseImage
+  displayName: Push images to MCR
+  timeoutInMinutes: 250
+  pool:
+    name: OryxLinux
+  steps:
+    - template: ../templates/_releaseBaseImagesStepTemplate.yml
+      parameters:
+        baseImageName: 'php'

@@ -1,12 +1,11 @@
 parameters:
-  name: ''
   displayName: ''
   imageDir: ''
   scriptPath: ''
   artifactsFileName: ''
 
 jobs:
-- job: ${{ parameters.name }}
+- job: Build_BaseImage
   displayName: ${{ parameters.displayName }}
   timeoutInMinutes: 250
   steps:
