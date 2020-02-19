@@ -29,9 +29,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                data.Add(Settings.BuildImageName);
+                data.Add(Settings.SlimBuildImageName);
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                return data;
+            }
+        }
+
         [SkippableTheory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [MemberData(nameof(ImageNameData))]
         public void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
