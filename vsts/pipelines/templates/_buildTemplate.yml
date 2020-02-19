@@ -20,7 +20,7 @@ steps:
   displayName: 'Download Pipeline Artifact'
   inputs:
     pipelineId: 'Oryx-CI'
-    artifactName: 'drop-$(Build.BuildNumber)'
+    artifactName: 'signed_binaries'
     targetPath: '$(Build.SourcesDirectory)'
   condition: >
     and(succeeded(),
