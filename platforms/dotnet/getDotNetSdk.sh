@@ -19,10 +19,7 @@ getDotNetCoreSdk() {
 	local sha="$2"
 	local downloadUrl="$3"
 
-	if blobExists dotnet dotnet-$sdkVersion.tar.gz; then
-		echo ".NET Core version '$sdkVersion' already present in blob storage. Skipping it..."
-		echo
-	else
+	if shouldBuildSdk dotnet dotnet-$sdkVersion.tar.gz; then
 		echo "Downloading .NET Core SDK version '$sdkVersion'..."
 		echo
 
@@ -47,7 +44,8 @@ getDotNetCoreSdk() {
 		cp -f "$downloadedFile" "$targetDir"
 		rm -rf $tempDir
 
-		echo "runtime_version=$runtimeVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
+		echo "Runtime_version=$runtimeVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
+		echo "Version=$sdkVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
 	fi
 }
 

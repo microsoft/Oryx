@@ -284,7 +284,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
         {
             var stdError = $"Error: {Labels.UnableToDetectPlatformMessage}";
-            var enumerateMessage = string.Format(Labels.DotNetCoreEnumeratingFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension);
+            var enumerateMessage = string.Format(
+                Labels.DotNetCoreEnumeratingFilesInRepo,
+                DotNetCoreConstants.CSharpProjectFileExtension);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole();
             var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);

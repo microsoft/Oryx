@@ -57,8 +57,8 @@ jobs:
     skipComponentGovernanceDetection: true
 
   steps:
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download Artifacts for release'
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download Oryx binaries to publish to release'
     inputs:
       artifactName: 'signed_binaries'
 
@@ -71,4 +71,5 @@ jobs:
       repositoryName: Microsoft/Oryx
       tagSource: manual
       tag: '$(RELEASE_TAG_NAME)'
-      assets: $(Build.ArtifactStagingDirectory)/signed_binaries/*.tar.gz
+      assets: $(Pipeline.Workspace)/signed_binaries/oryx_linux_x64.tar.gz
+  

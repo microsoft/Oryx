@@ -37,7 +37,7 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	tarFile := fmt.Sprintf("%s.tar.gz", version)
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
-	scriptBuilder.WriteString("set -e\n")
+	scriptBuilder.WriteString("set -ex\n")
 	scriptBuilder.WriteString("echo\n")
 	scriptBuilder.WriteString(
 		fmt.Sprintf("echo Downloading and installing '%s' version '%s'...\n", platformName, version))
@@ -45,20 +45,19 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	scriptBuilder.WriteString(fmt.Sprintf("mkdir -p %s\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
 	scriptBuilder.WriteString(
-		fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz\" --output %s >/dev/null 2>&1\n",
+		fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz\" --output %s\n",
 			sdkStorageBaseUrl,
 			platformName,
 			platformName,
 			version,
 			tarFile))
-	scriptBuilder.WriteString("headerName=\"x-ms-meta-checksum\"\n")
+	scriptBuilder.WriteString("headerName=\"x-ms-meta-Checksum\"\n")
 	scriptBuilder.WriteString(fmt.Sprintf(
-		"checksumHeader=$(cat headers.txt | grep -i $headerName: | tr -d '%s')\n",
+		"checksumHeader=$(cat headers.txt | grep $headerName: | tr -d '%s')\n",
 		"\\r"))
-	scriptBuilder.WriteString("checksumHeader=${checksumHeader,,}\n")
 	scriptBuilder.WriteString("rm -f headers.txt\n")
 	scriptBuilder.WriteString("checksumValue=${checksumHeader#\"$headerName: \"}\n")
-	scriptBuilder.WriteString(fmt.Sprintf("echo \"$checksumValue %s.tar.gz\" | sha512sum -c - >/dev/null 2>&1\n", version))
+	scriptBuilder.WriteString(fmt.Sprintf("echo \"$checksumValue %s.tar.gz\" | sha512sum -c -\n", version))
 	scriptBuilder.WriteString(fmt.Sprintf("tar -xzf %s -C .\n", tarFile))
 	scriptBuilder.WriteString(fmt.Sprintf("rm -f %s\n", tarFile))
 	scriptBuilder.WriteString(fmt.Sprintf("echo Done. Installed at '%s'\n", installationDir))

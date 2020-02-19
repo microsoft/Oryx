@@ -3,99 +3,112 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
-using System.IO;
-using System.Linq;
+using System.Net.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {
-    public class NodeVersionProviderTest : IClassFixture<NodeVersionProviderTest.TestFixture>
+    public class NodeVersionProviderTest
     {
-        private readonly string _rootDirPath;
-
-        public NodeVersionProviderTest(TestFixture testFixture)
+        [Fact]
+        public void GetsVersions_FromStorage_WhenDynamicInstall_IsEnabled()
         {
-            _rootDirPath = testFixture.RootDirPath;
+            // Arrange
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+                enableDynamicInstall: true);
+
+            // Act
+            var versionInfo = versionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
         [Fact]
-        public void NodeVersions_ReturnsOnlyVersionsWithSemanticVersioning()
+        public void GetsVersions_DoesNotGetVersionsFromStorage_WhenDynamicInstall_IsFalse()
         {
             // Arrange
-            var provider = GetNodeVersionProvider();
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+                enableDynamicInstall: false);
 
             // Act
-            var nodeVersions = provider.SupportedNodeVersions;
+            var versionInfo = versionProvider.GetVersionInfo();
 
             // Assert
-            Assert.NotNull(nodeVersions);
-            Assert.Equal(2, nodeVersions.Count());
-            Assert.Contains("1.0.0", nodeVersions);
-            Assert.Contains("100.200.300", nodeVersions);
+            Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
         [Fact]
-        public void NpmVersions_ReturnsOnlyVersionsWithSemanticVersioning()
+        public void GetsVersions_DoesNotGetVersionsFromStorage_ByDefault()
         {
             // Arrange
-            var provider = GetNodeVersionProvider();
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+                enableDynamicInstall: false);
 
             // Act
-            var nodeVersions = provider.SupportedNpmVersions;
+            var versionInfo = versionProvider.GetVersionInfo();
 
             // Assert
-            Assert.NotNull(nodeVersions);
-            Assert.Equal(2, nodeVersions.Count());
-            Assert.Contains("1.0.0", nodeVersions);
-            Assert.Contains("100.200.300", nodeVersions);
+            Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
-        private NodeVersionProvider GetNodeVersionProvider()
+        private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
         {
-            var options = new NodeScriptGeneratorOptions
+            public TestNodeSdkStorageVersionProvider(
+                IEnvironment environment, IHttpClientFactory httpClientFactory)
+                : base(environment, httpClientFactory)
             {
-                InstalledNodeVersionsDir = _rootDirPath,
-                InstalledNpmVersionsDir = _rootDirPath,
-            };
-            return new NodeVersionProvider(Options.Create(options));
-        }
-
-        public class TestFixture : IDisposable
-        {
-            public TestFixture()
-            {
-                RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
-
-                Directory.CreateDirectory(RootDirPath);
-                Directory.CreateDirectory(Path.Combine(RootDirPath, "1.0.0"));
-                Directory.CreateDirectory(Path.Combine(RootDirPath, "100.200.300"));
-                Directory.CreateDirectory(Path.Combine(RootDirPath, "latest"));
-                Directory.CreateDirectory(Path.Combine(RootDirPath, "lts"));
-
-                // Only top directories are to be searched for versions, for example the directory '1.0.1' should be
-                // ignored here.
-                Directory.CreateDirectory(Path.Combine(RootDirPath, "1.0.0", "1.0.1"));
-
             }
 
-            public string RootDirPath { get; }
+            public bool GetVersionInfoCalled { get; private set; }
 
-            public void Dispose()
+            public override PlatformVersionInfo GetVersionInfo()
             {
-                if (Directory.Exists(RootDirPath))
-                {
-                    try
-                    {
-                        Directory.Delete(RootDirPath, recursive: true);
-                    }
-                    catch
-                    {
-                        // Do not throw in dispose
-                    }
-                }
+                GetVersionInfoCalled = true;
+
+                return null;
+            }
+        }
+
+        private (INodeVersionProvider, TestNodeOnDiskVersionProvider, TestNodeSdkStorageVersionProvider)
+            CreateVersionProvider(bool enableDynamicInstall)
+        {
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions()
+            {
+                EnableDynamicInstall = enableDynamicInstall
+            });
+            var nodeOptions = Options.Create(new NodeScriptGeneratorOptions());
+            var environment = new TestEnvironment();
+
+            var onDiskProvider = new TestNodeOnDiskVersionProvider(nodeOptions);
+            var storageProvider = new TestNodeSdkStorageVersionProvider(environment, new TestHttpClientFactory());
+            var versionProvider = new NodeVersionProvider(
+                commonOptions,
+                onDiskProvider,
+                storageProvider);
+            return (versionProvider, onDiskProvider, storageProvider);
+        }
+
+
+        private class TestNodeOnDiskVersionProvider : NodeOnDiskVersionProvider
+        {
+            public TestNodeOnDiskVersionProvider(IOptions<NodeScriptGeneratorOptions> options) : base(options)
+            {
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+
+                return null;
             }
         }
     }

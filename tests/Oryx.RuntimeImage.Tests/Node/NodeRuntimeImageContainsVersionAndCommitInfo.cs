@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetTestRuntimeImage("node", version),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { " " }
+                CommandArguments = new[] { "version" }
             });
 
             // Assert

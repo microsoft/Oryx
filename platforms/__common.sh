@@ -29,6 +29,19 @@ blobExists() {
 	fi
 }
 
+shouldBuildSdk() {
+	local containerName="$1"
+	local blobName="$2"
+
+	if [ "$OVERWRITE_EXISTING_SDKS" == "true" ]
+	then
+		return 0
+	else
+		# return whatever exit cdoe the following returns
+		blobExists $containerName $blobName
+	fi
+}
+
 getSdkFromImage() {
 	local imageName="$1"
 	local hostVolumeDir="$2"

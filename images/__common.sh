@@ -13,9 +13,8 @@ function downloadFileAndVerifyChecksum() {
         -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$platformName-$version.tar.gz" \
         --output $downloadedFileName
 
-    headerName="x-ms-meta-checksum"
-    checksumHeader=$(cat $headersFile | grep -i $headerName: | tr -d '\r')
-    checksumHeader=${checksumHeader,,}
+    headerName="x-ms-meta-Checksum"
+    checksumHeader=$(cat $headersFile | grep $headerName: | tr -d '\r')
     checksumValue=${checksumHeader#"$headerName: "}
     echo
     echo "Verifying checksum..."

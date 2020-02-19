@@ -27,6 +27,7 @@ type NodeStartupScriptGenerator struct {
 	RemoteDebuggingPort             string
 	UseLegacyDebugger               bool //used for node versions < 7.7
 	SkipNodeModulesExtraction       bool
+	EnableDynamicInstall            bool
 	Manifest                        common.BuildManifest
 }
 
@@ -105,6 +106,12 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
+
+	nodeBinary := fmt.Sprintf("%s/bin/node", consts.NodeInstallationDir)
+	if gen.EnableDynamicInstall && !common.PathExists(nodeBinary) {
+		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.SourcePath))
+	}
+
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
 	scriptBuilder.WriteString("export NODE_PATH=$(npm root --quiet -g):$NODE_PATH\n")
