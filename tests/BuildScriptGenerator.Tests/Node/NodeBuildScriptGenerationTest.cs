@@ -104,8 +104,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
-                HasProdDependencies = false,
-                HasDevDependencies = true,
+                HasProdDependencies = true,
+                HasDevDependencies = false,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
