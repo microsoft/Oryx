@@ -18,7 +18,6 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         rsync \
-        libicu57 \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
@@ -49,14 +48,6 @@ ARG IMAGES_DIR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        libc6 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        libicu57 \
-        liblttng-ust0 \
-        libssl1.0.2 \
-        libstdc++6 \
-        zlib1g \
         curl \
         ca-certificates \
         gnupg \
