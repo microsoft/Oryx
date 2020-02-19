@@ -43,6 +43,18 @@ steps:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
+    
+- task: ShellScript@2
+  displayName: 'Test build script generator'
+  inputs:
+    scriptPath: ./build/testBuildScriptGenerator.sh
+  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Test startup script generators'
+  inputs:
+    scriptPath: ./build/testStartupScriptGenerators.sh
+  condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build build images'
@@ -55,18 +67,6 @@ steps:
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Test build script generator'
-  inputs:
-    scriptPath: ./build/testBuildScriptGenerator.sh
-  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Test startup script generators'
-  inputs:
-    scriptPath: ./build/testStartupScriptGenerators.sh
-  condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test build images'
