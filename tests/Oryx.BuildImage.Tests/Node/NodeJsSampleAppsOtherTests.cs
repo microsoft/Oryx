@@ -669,13 +669,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var volume = DockerVolume.CreateMirror(
-                Path.Combine(_hostSamplesDir, "nodejs", "azure-pages-example"));
+                Path.Combine(_hostSamplesDir, "nodejs", "azure-pages-sample"));
 
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir}/api -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
+                $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .ToString();
 
