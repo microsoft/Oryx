@@ -80,6 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var globalNodeDir = "/usr/local/lib/node_modules";
             var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
@@ -91,7 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"export {aIEnabled}=true")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{globalNodeDir}/applicationinsights/out/Bootstrap/Oryx.js")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -130,6 +131,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var globalNodeDir = "/usr/local/lib/node_modules";
             var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
@@ -140,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileDoesNotExistCheck($"{appDir}/oryx-appinsightsloader.js")
+                .AddFileExistsCheck($"{globalNodeDir}/applicationinsights/out/Bootstrap/Oryx.js")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

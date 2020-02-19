@@ -4,10 +4,7 @@
   "description": "A sample Node.js app using Express 4 and application insights",
   "main": "server.js",
   "scripts": {
-    "start": "cross-env GLOBAL_PATH=/usr/local/lib/node_modules/ node server.js"
-  },
-  "devDependencies": {
-    "cross-env": "^5.2.1"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.13.3"

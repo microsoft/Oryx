@@ -48,7 +48,6 @@ func main() {
 
 	gen := NodeStartupScriptGenerator{
 		SourcePath:                      fullAppPath,
-		GlobalModulesPath                string(globalModulesPath)
 		UserStartupCommand:              *userStartupCommandPtr,
 		DefaultAppJsFilePath:            defaultAppFullPAth,
 		UsePm2:                          *usePm2Ptr,
@@ -59,6 +58,7 @@ func main() {
 		UseLegacyDebugger:               useLegacyDebugger,
 		SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 		Manifest:                        buildManifest,
+		GlobalModulesPath                string(globalModulesPath),
 	}
 	script := gen.GenerateEntrypointScript()
 	common.WriteScript(*outputPathPtr, script)

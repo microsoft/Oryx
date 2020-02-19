@@ -18,7 +18,6 @@ import (
 
 type NodeStartupScriptGenerator struct {
 	SourcePath                      string
-	GlobalModulesPath               string
 	UserStartupCommand              string
 	DefaultAppJsFilePath            string
 	BindPort                        string
@@ -29,6 +28,7 @@ type NodeStartupScriptGenerator struct {
 	UseLegacyDebugger               bool //used for node versions < 7.7
 	SkipNodeModulesExtraction       bool
 	Manifest                        common.BuildManifest
+	GlobalModulesPath               string
 }
 
 type packageJson struct {

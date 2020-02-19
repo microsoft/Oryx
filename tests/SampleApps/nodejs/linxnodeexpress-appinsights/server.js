@@ -7,18 +7,12 @@ var setupString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING || process.e
 console.log(setupString);
 console.log(process.env.ApplicationInsightsAgent_EXTENSION_VERSION)
 
-// This will setup and start the SDK; returns equivalent of require(applicationinsights)
-// If attach is not successful, returns null
-var appInsights = require(process.env.GLOBAL_PATH + 'applicationinsights/out/Bootstrap/Oryx');
-
-if (appInsights) {
-  responseString = "AppInsights is set to send telemetry!"
-  let client = appInsights.defaultClient;
-  client.trackTrace({message: "trace message"});
-  client.trackMetric({name: "custom metric", value: 3});
-}
 
 app.get('/', function (req, res) {
+  // Check for incoming request flag set by Node.js SDK to determine if the SDK is instrumented or not
+  if (req["_appInsightsAutoCollected"] === true) {
+    responseString = "AppInsights is set to send telemetry!";
+  }
   res.send(responseString);
 });
 
