@@ -5,7 +5,7 @@ ARG BUILD_DIR=/tmp/oryx/build
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-FROM buildpack-deps:stretch AS main
+FROM debian:stretch AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
@@ -21,6 +21,8 @@ RUN apt-get update \
         unzip \
         rsync \
         zip \
+        curl \
+        ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # A temporary folder to hold all content temporarily used to build this image.
