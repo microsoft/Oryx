@@ -105,6 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,
                 HasProdDependencies = false,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -248,6 +249,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = "yarn run build",
                 NpmRunBuildAzureCommand = "yarn run build:azure",
                 HasProdDependencies = true,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     YarnInstallCommand),
@@ -320,6 +322,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProdDependencies = true,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -356,6 +359,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProdDependencies = true,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -393,6 +397,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProdDependencies = true,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -430,6 +435,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProdDependencies = true,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
@@ -466,6 +472,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NpmRunBuildCommand = "npm run build",
                 NpmRunBuildAzureCommand = "npm run build:azure",
                 HasProdDependencies = true,
+                HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
                     NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
                     NpmInstallCommand),
