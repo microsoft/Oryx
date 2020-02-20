@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4", PhpVersions.Php73Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
         [InlineData("7.2", PhpVersions.Php72Version)]
         [InlineData("7.0", PhpVersions.Php70Version)]
@@ -64,6 +65,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -87,6 +89,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -183,6 +186,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -209,6 +213,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]

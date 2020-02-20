@@ -200,7 +200,6 @@ RUN set -eux; \
 	make; \
 	make test; \
 	make install PREFIX=/usr; 
-#	cp /usr/lib/libargon2.so.1 /lib64/
 
 RUN set -eux; \
 	\

@@ -51,7 +51,6 @@ RUN set -eux; \
 		tcptraceroute \
 		mariadb-client \
 		openssl \
-        libargon2-0-dev \
         libedit-dev \
         libsodium-dev \
         libfreetype6-dev \
