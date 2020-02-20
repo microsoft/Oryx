@@ -43,8 +43,7 @@ RUN set -eux; \
     fi
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install gd \
-        mysqli \
+    && docker-php-ext-install mysqli \
         opcache \
         pdo \
         pdo_mysql \
@@ -69,7 +68,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         sysvsem \
         sysvshm \
         pdo_odbc \
-        wddx \
+#        wddx \
         xmlrpc \
         xsl \
     && pecl install imagick && docker-php-ext-enable imagick \
