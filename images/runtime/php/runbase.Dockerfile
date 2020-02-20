@@ -52,7 +52,7 @@ RUN set -eux; \
 		mariadb-client \
 		openssl \
 		# extra libs for php 7.4
-		libargon2-0-dev \
+#		libargon2-0-dev \
         libedit-dev \
 		libsodium-dev \
 		libfreetype6-dev \

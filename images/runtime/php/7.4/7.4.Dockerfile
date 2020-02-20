@@ -192,43 +192,34 @@ RUN set -eux; \
 COPY docker-php-source /usr/local/bin/
 
 RUN set -eux; \
+    \
+	wget https://github.com/P-H-C/phc-winner-argon2/archive/20190702.tar.gz -O /tmp/argon2.tar.gz; \
+	tar -xf /tmp/argon2.tar.gz; \
+	ls -l; \
+	cd phc-winner-argon2-20190702; \
+	make; \
+	make test; \
+	make install PREFIX=/usr; 
+#	cp /usr/lib/libargon2.so.1 /lib64/
+
+RUN set -eux; \
 	\
-	sqlite3 --version ; \
+	wget http://ftp.us.debian.org/debian/pool/main/a/argon2/argon2_0~20171227-0.2_amd64.deb -O /tmp/argon2_0~20171227-0.2_amd64.deb \
+	&& dpkg -i /tmp/argon2_0~20171227-0.2_amd64.deb; \
+
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-#		libargon2-dev \
-#		libcurl4-openssl-dev \
-#		libedit-dev \
-#		libonig-dev \
-#		libsodium-dev \
-#		libsqlite3-dev \
-#		libssl-dev \
-#		libxml2-dev \
-#		zlib1g-dev \
-#		${PHP_EXTRA_BUILD_DEPS:-} \
-# Start of persistent / runtime deps
-#		libzip-dev \
-#		libpng-dev \
-#		libjpeg-dev \
-#		libpq-dev \
-#		libldap2-dev \
-#		libldb-dev \
-#		libicu-dev \
-#		libgmp-dev \
-#		libmagickwand-dev \
-#		libc-client-dev \
-#		libtidy-dev \
-#		libkrb5-dev \
-#		libxslt-dev \
-#		unixodbc-dev \
-#		openssh-server \
-#		vim \
-#		wget \
-#		tcptraceroute \
-#		mariadb-client \
-#		openssl \
-# End of persistent / runtime deps
+#		libargon2-0 \
+		libcurl4-openssl-dev \
+		libedit-dev \
+		libonig-dev \
+		libsodium-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		libxml2-dev \
+		zlib1g-dev \
+		${PHP_EXTRA_BUILD_DEPS:-} \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
