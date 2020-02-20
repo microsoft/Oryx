@@ -43,7 +43,7 @@ jobs:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download Artifacts for release'
     inputs:
-      artifactName: drop
+      artifactName: 'signed_binaries'
 
   - template: _setReleaseTag.yml
 
@@ -54,3 +54,4 @@ jobs:
       repositoryName: Microsoft/Oryx
       tagSource: manual
       tag: '$(RELEASE_TAG_NAME)'
+      assets: $(Build.ArtifactStagingDirectory)/signed_binaries/*.tar.gz
