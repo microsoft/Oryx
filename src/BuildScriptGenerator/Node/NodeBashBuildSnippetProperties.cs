@@ -18,7 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string NpmRunBuildAzureCommand { get; set; }
 
-        public bool HasProductionOnlyDependencies { get; set; }
+        public bool HasProdDependencies { get; set; }
+
+        public bool HasDevDependencies { get; set; }
 
         public string ProductionOnlyPackageInstallCommand { get; set; }
 

@@ -664,6 +664,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue_AndNoProdDependencies()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(
+                Path.Combine(_hostSamplesDir, "nodejs", "azure-pages-sample"));
+
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         [Theory]
         [InlineData("webfrontend")]
         [InlineData("webfrontend-yarnlock")]
