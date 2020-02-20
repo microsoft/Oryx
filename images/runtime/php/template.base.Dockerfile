@@ -29,22 +29,20 @@ RUN apt-get update \
 
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.4.* ]]; then \
-		echo "hellow: "$PHP_VERSION
-        apt-get update \
+		echo "hellow: "$PHP_VERSION \
+        && apt-get update \
         && apt-get upgrade -y \
-        && apt-get install -y --no-install-recommends \
-           apache2-dev
+        && apt-get install -y --no-install-recommends apache2-dev \
         && docker-php-ext-configure gd --with-freetype --with-jpeg \
         && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
     else \
-		echo "it's not php 7.4"
-		&& echo $PHP_VERSION
+		echo "it's not php 7.4" \
+		&& echo $PHP_VERSION \
         && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
         && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
     fi
 
-RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
         mysqli \
         opcache \
