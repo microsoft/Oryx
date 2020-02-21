@@ -40,7 +40,8 @@ RUN set -eux; \
     fi
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
-    && docker-php-ext-install mysqli \
+    && docker-php-ext-install gd \
+        mysqli \
         opcache \
         pdo \
         pdo_mysql \
