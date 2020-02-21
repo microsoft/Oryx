@@ -17,7 +17,7 @@
   constants:
     dot-net-core-11-sdk-version: 1.1.14
     dot-net-core-21-sdk-version: 2.1.804
-    dot-net-core-22-sdk-version: 2.2.402
+    dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
     dot-net-core-31-sdk-version: 3.1.102
   outputs:
@@ -113,7 +113,7 @@
     node6-version: 6.17.1
     node8-version: 8.17.0
     node10-version: 10.19.0
-    node12-version: 12.16.0
+    node12-version: 12.16.1
     node13-version: 13.9.0
   outputs:
     - type: shell

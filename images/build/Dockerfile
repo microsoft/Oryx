@@ -130,7 +130,8 @@ RUN cd ${IMAGES_DIR} \
  && ./installPlatform.sh nodejs 10.10.0 \
  && ./installPlatform.sh nodejs 10.14.2 \
  && ./installPlatform.sh nodejs 10.16.3 \
- && ./installPlatform.sh nodejs 12.9.1 \
+ && ./installPlatform.sh nodejs 12.16.1 \
+ && ./installPlatform.sh nodejs 13.9.0 \
  && ./installPlatform.sh nodejs $NODE6_VERSION
 RUN ${IMAGES_DIR}/build/installNpm.sh
 
@@ -158,7 +159,8 @@ RUN set -ex \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
  && ln -s 10.16.3 /opt/nodejs/10.16 \
- && ln -s 12.9.1 /opt/nodejs/12.9 \
+ && ln -s 12.9.1 /opt/nodejs/12.16 \
+ && ln -s 12.9.1 /opt/nodejs/13.9 \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
@@ -256,7 +258,7 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
  && cd /opt/php-composer \
- && ln -s 1.9 1 \
+ && ln -s 1.9 3 \
  && ln -s 1 stable
 RUN ln -s /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
 
