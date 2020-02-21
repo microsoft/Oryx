@@ -258,6 +258,7 @@ images/runtime/node/*/Dockerfile
 images/runtime/dotnetcore/*/Dockerfile
 images/runtime/python/*.*/
 images/runtime/php/*.*/Dockerfile
+images/runtime/php-fpm/*.*/Dockerfile
 
 # Go packages from GitHub
 src/startupscriptgenerator/bin/
