@@ -51,15 +51,15 @@ RUN set -eux; \
 		tcptraceroute \
 		mariadb-client \
 		openssl \
-        libedit-dev \
-        libsodium-dev \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libonig-dev \
-        libcurl4-openssl-dev \
-        libldap2-dev \
-        zlib1g-dev \
-        apache2-dev \
-        libsqlite3-dev \
+		libedit-dev \
+		libsodium-dev \
+		libfreetype6-dev \
+		libjpeg62-turbo-dev \
+		libonig-dev \
+		libcurl4-openssl-dev \
+		libldap2-dev \
+		zlib1g-dev \
+		apache2-dev \
+		libsqlite3-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*

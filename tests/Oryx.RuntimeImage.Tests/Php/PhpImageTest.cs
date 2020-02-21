@@ -85,8 +85,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             //Assert.Contains((((JValue)gdInfo.GetValue("GIF Read Support")).Value).ToString(), "true");
             Assert.True((bool)((JValue)gdInfo.GetValue("GIF Read Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
-            // temporarily commenting out this assert as the current base images didn't configure gd correctly
-            //Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }
 
