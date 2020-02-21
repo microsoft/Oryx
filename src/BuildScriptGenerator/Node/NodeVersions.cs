@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node6Version = "6.17.1";
         public const string Node8Version = "8.17.0";
         public const string Node10Version = "10.19.0";
-        public const string Node12Version = "12.16.0";
+        public const string Node12Version = "12.16.1";
         public const string Node13Version = "13.9.0";
     }
 }
