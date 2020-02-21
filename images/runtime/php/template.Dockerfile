@@ -20,3 +20,5 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
 RUN rm -rf /tmp/oryx
+
+RUN docker-php-ext-install gd

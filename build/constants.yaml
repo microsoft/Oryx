@@ -62,7 +62,7 @@
 - name: php-versions
   constants:
     php-build-base-tag: 20200217.4
-    php-runtime-base-tag: 20200217.4
+    php-runtime-base-tag: 20200220.8
     php-fpm-runtime-base-tag: 20200129.1
     composer-version: 1.9.2
     composer-sha384: c5b9b6d368201a9db6f74e2611495f369991b72d9c8cbd3ffbc63edff210eb73d46ffbfce88669ad33695ef77dc76976
