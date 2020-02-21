@@ -29,11 +29,28 @@ jobs:
       
   - template: _releaseStepTemplate.yml
 
-- job: Release_GitHub
-  displayName: Create GitHub release
+- job: Release_PlatformSDKs
+  displayName: Publish SDKs from dev to prod storage account
   dependsOn: 
     - Release_BuildImage
     - Release_RuntimeImages
+  pool:
+    name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
+  steps:
+  - task: ShellScript@2
+    displayName: 'Publish SDKs from dev to prod storage account'
+    env:
+      DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+      PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+    inputs:
+      scriptPath: ./vsts/scripts/mirrorSdksFromDevToProdStorageAccount.sh
+
+- job: Release_GitHub
+  displayName: Create GitHub release
+  dependsOn: 
+    - Release_PlatformSDKs
   pool:
     name: OryxLinux
   variables:
