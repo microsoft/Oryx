@@ -45,30 +45,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (envSettings != null && envSettings.GitHubActions)
                 {
                     logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
-
-                    // Format: "2020-02-15T02:51:50.000Z"
-                    var gitHubActionBuildContainerStartTime = envSettings.GitHubActionsBuildContainerStartTime;
-                    var gitHubActionBuildContainerEndTime = envSettings.GitHubActionsBuildContainerEndTime;
-
-                    var dateStart = gitHubActionBuildContainerStartTime.Split('T')[0];
-                    var timeStart = gitHubActionBuildContainerStartTime.Split('T')[1];
-
-                    var dateEnd = gitHubActionBuildContainerEndTime.Split('T')[0];
-                    var timeEnd = gitHubActionBuildContainerEndTime.Split('T')[1];
-
-                    DateTime date1 = new DateTime(int.Parse(dateStart.Substring(0, 4)), int.Parse(dateStart.Substring(5, 2)), int.Parse(dateStart.Substring(8, 2)),
-                                                  int.Parse(timeStart.Substring(0, 2)), int.Parse(timeStart.Substring(3, 2)), int.Parse(timeStart.Substring(6, 2)));
-                    DateTime date2 = new DateTime(int.Parse(dateEnd.Substring(0, 4)), int.Parse(dateEnd.Substring(5, 2)), int.Parse(dateEnd.Substring(8, 2)),
-                                                  int.Parse(timeEnd.Substring(0, 2)), int.Parse(timeEnd.Substring(3, 2)), int.Parse(timeEnd.Substring(6, 2)));
+                    DateTime date1 = DateTime.Parse(envSettings.GitHubActionsBuildStartTime);
+                    DateTime date2 = DateTime.Parse(envSettings.GitHubActionsBuildEndTime);
                     TimeSpan interval = date2 - date1;
-                    var gitHubActionBuildContainerDurationSeconds = interval.Seconds.ToString();
+                    var gitHubActionBuildDurationSeconds = interval.Seconds.ToString();
                     var buildEventProps = new Dictionary<string, string>()
                     {
-                        { "gitHubActionBuildContainerStartTime", gitHubActionBuildContainerStartTime },
-                        { "gitHubActionBuildContainerEndTime", gitHubActionBuildContainerEndTime },
-                        { "gitHubActionBuildContainerDurationSeconds", gitHubActionBuildContainerDurationSeconds },
+                        { "gitHubActionBuildDurationSeconds", gitHubActionBuildDurationSeconds },
                     };
-                    logger.LogEvent("GitHubActionsBuildContainerTimeLog", buildEventProps);
+                    logger.LogEvent("GitHubActionsBuildDurationLog", buildEventProps);
                 }
 
                 if (!IsValidInput(_serviceProvider, console))
