@@ -66,9 +66,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("2.7")]
+        [InlineData(PythonVersions.Python27Version)]
         [InlineData("3")]
-        [InlineData("3.7")]
+        [InlineData(PythonVersions.Python37Version)]
         public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage(string pythonVersion)
         {
             // Arrange
