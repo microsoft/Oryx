@@ -46,8 +46,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
                     DateTime startTime, endTime;
-                    if (DateTime.TryParse(envSettings.GitHubActionsBuildStartTime, out startTime) &&
-                        DateTime.TryParse(envSettings.GitHubActionsBuildEndTime, out endTime))
+                    if (envSettings.GitHubActionsBuildStartTime != null
+                        && envSettings.GitHubActionsBuildEndTime != null
+                        && DateTime.TryParse(envSettings.GitHubActionsBuildStartTime, out startTime)
+                        && DateTime.TryParse(envSettings.GitHubActionsBuildEndTime, out endTime))
                     {
                         TimeSpan interval = endTime - startTime;
                         var gitHubActionBuildDurationSeconds = interval.Seconds.ToString();
