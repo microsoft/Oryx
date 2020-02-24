@@ -159,8 +159,8 @@ RUN set -ex \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
  && ln -s 10.16.3 /opt/nodejs/10.16 \
- && ln -s 12.9.1 /opt/nodejs/12.16 \
- && ln -s 12.9.1 /opt/nodejs/13.9 \
+ && ln -s 12.16.1 /opt/nodejs/12.16 \
+ && ln -s 13.9.0 /opt/nodejs/13.9 \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
@@ -252,6 +252,7 @@ RUN cd ${IMAGES_DIR} \
     && ./installPlatform.sh php $PHP70_VERSION \
     && ./installPlatform.sh php $PHP72_VERSION \
     && ./installPlatform.sh php $PHP73_VERSION \
+    && ./installPlatform.sh php $PHP74_VERSION \
     && ./installPlatform.sh php-composer $COMPOSER_VERSION
 
 RUN ln -s /opt/php/5.6 /opt/php/5 \

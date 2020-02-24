@@ -159,8 +159,8 @@ RUN set -ex \
  && ln -s $NODE8_VERSION /opt/nodejs/8 \
  && ln -s $NODE10_VERSION /opt/nodejs/10 \
  && ln -s $NODE12_VERSION /opt/nodejs/12 \
- && ln -s $NODE13_VERSION /opt/nodejs/12 \
- && ln -s 13 /opt/nodejs/lts
+ && ln -s $NODE13_VERSION /opt/nodejs/13 \
+ && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \
  && ln -s 6.9 /opt/npm/6 \
