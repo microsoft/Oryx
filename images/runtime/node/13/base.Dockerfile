@@ -14,7 +14,8 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-ENV NODE_VERSION 13.9.0
+ARG NODE13_VERSION
+ENV NODE_VERSION ${NODE13_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
 ARG IMAGES_DIR=/tmp/oryx/images
