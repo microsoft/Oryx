@@ -88,7 +88,24 @@ if [ ! -d /usr/include/curl ]; then
 	ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl;
 fi;
 
+if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then 
+	wget https://github.com/P-H-C/phc-winner-argon2/archive/20190702.tar.gz -O /tmp/argon2.tar.gz 
+	tar -xf /tmp/argon2.tar.gz 
+	ls -l 
+	cd phc-winner-argon2-20190702 
+	make 
+	make test 
+	make install PREFIX=/usr 
+else 
+	apt-get update 
+	apt-get install -y --no-install-recommends libargon2-dev 
+fi
+
 versionConfigureArgs=''
+if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
+	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
+fi
+
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 fi
