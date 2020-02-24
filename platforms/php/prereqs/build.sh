@@ -89,7 +89,8 @@ if [ ! -d /usr/include/curl ]; then
 fi;
 
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then 
-	wget https://github.com/P-H-C/phc-winner-argon2/archive/20190702.tar.gz -O /tmp/argon2.tar.gz 
+	curl -o /tmp/argon2.tar.gz  https://github.com/P-H-C/phc-winner-argon2/archive/20190702.tar.gz
+	ls -l /tmp
 	tar -xf /tmp/argon2.tar.gz 
 	ls -l 
 	cd phc-winner-argon2-20190702 

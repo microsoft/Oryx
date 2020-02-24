@@ -27,6 +27,7 @@ apt-get update \
         curl \
         xz-utils \
         libonig-dev \
+        wget \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
 
 ##<argon2>##

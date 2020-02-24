@@ -26,6 +26,7 @@ apt-get update \
         ca-certificates \
         curl \
         xz-utils \
+        wget \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
 
 ##<argon2>##
