@@ -58,7 +58,7 @@ func main() {
 		UseLegacyDebugger:               useLegacyDebugger,
 		SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 		Manifest:                        buildManifest,
-		GlobalModulesPath                string(globalModulesPath),
+		GlobalModulesPath:               string(globalModulesPath),
 	}
 	script := gen.GenerateEntrypointScript()
 	common.WriteScript(*outputPathPtr, script)
