@@ -508,7 +508,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(snippet);
             Assert.Contains(
-                $"echo \"registry={context.Properties[NodePlatform.RegistryUrlPropertyKey]}\" > ~/.npmrc",
+                $"echo \"registry={context.Properties[NodePlatform.RegistryUrlPropertyKey]}\" >> ~/.npmrc",
                 snippet.BashBuildScriptSnippet);
         }
 
