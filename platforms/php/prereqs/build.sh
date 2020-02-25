@@ -61,6 +61,28 @@ if [ $PHP_MAJOR == '5' ]; then
 	versionDevReqs='libssl1.0-dev'
 fi
 
+if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then 
+	apt-get update
+	apt-get install -y --no-install-recommends libonig-dev autoconf automake make
+	# libargon2 needs to be compiled for php7.4
+	# https://stackoverflow.com/questions/55636673/installing-php-on-amazon-linux-2-with-argon2-enabled
+	curl -o argon2.tar.gz  https://codeload.github.com/P-H-C/phc-winner-argon2/tar.gz/20190702
+	tar -xf argon2.tar.gz 
+	cd phc-winner-argon2-20190702 
+	make 
+	make test 
+	make install PREFIX=/usr 
+	# Return to root
+	cd ..
+	tar -xf php.tar.xz 
+	cd php-7.4.3*
+	autoconf
+	cd ..
+else 
+	apt-get update 
+	apt-get install -y --no-install-recommends libargon2-dev 
+fi
+
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
 apt-get upgrade -y;
@@ -88,27 +110,12 @@ if [ ! -d /usr/include/curl ]; then
 	ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl;
 fi;
 
-if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then 
-	curl -o argon2.tar.gz  https://codeload.github.com/P-H-C/phc-winner-argon2/tar.gz/20190702
-	ls -l
-	tar -xf argon2.tar.gz 
-	ls -l 
-	cd phc-winner-argon2-20190702 
-	make 
-	make test 
-	make install PREFIX=/usr 
-else 
-	apt-get update 
-	apt-get install -y --no-install-recommends libargon2-dev 
-fi
-
 versionConfigureArgs=''
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
+	if [ $PHP_MINOR == '4' ]; then
+	versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
 fi
-
-if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
-	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 fi
 
 ./configure \
