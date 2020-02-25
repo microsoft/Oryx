@@ -7,7 +7,7 @@ echo
 {{ if PackageRegistryUrl | IsNotBlank }}
 echo
 echo "Adding package registry to .npmrc: {{ PackageRegistryUrl }}"
-echo "registry={{ PackageRegistryUrl }}" > ~/.npmrc
+echo "registry={{ PackageRegistryUrl }}" >> ~/.npmrc
 echo
 {{ end }}
 
