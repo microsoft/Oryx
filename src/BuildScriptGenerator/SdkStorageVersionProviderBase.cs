@@ -7,10 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -44,21 +42,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 supportedVersions.Add(runtimeVersionElement.Value);
             }
 
+            // get default version
             var defaultVersionContent = httpClient
                 .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/defaultVersion.txt")
                 .Result;
 
-            // Ignore any comments in the file
             string defaultVersion = null;
-            var strReader = new StringReader(defaultVersionContent);
-            while (true)
+            using (var stringReader = new StringReader(defaultVersionContent))
             {
-                var line = strReader.ReadLine();
-                if (line != null && (!line.StartsWith("#") || !line.StartsWith("//")))
+                string line;
+                while ((line = stringReader.ReadLine()) != null)
                 {
-                    defaultVersion = line.Trim();
-                    break;
+                    // Ignore any comments in the file
+                    if (!line.StartsWith("#") || !line.StartsWith("//"))
+                    {
+                        defaultVersion = line.Trim();
+                        break;
+                    }
                 }
+            }
+
+            if (string.IsNullOrEmpty(defaultVersion))
+            {
+                throw new InvalidOperationException("Default version cannot be empty.");
             }
 
             return PlatformVersionInfo.CreateAvailableOnWebVersionInfo(supportedVersions, defaultVersion);
