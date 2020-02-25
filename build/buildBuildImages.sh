@@ -138,6 +138,38 @@ mkdir -p "$ARTIFACTS_DIR/images"
 touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
+function createImageNameWithReleaseTag() {
+	local imageNameToBeTaggedUniquely="$1"
+	# Retag build image with build number tags
+	if [ "$AGENT_BUILD" == "true" ]
+	then
+		local uniqueImageName="$imageNameToBeTaggedUniquely-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+
+		echo
+		echo "Retagging image '$imageNameToBeTaggedUniquely' with ACR related tags..."
+		docker tag "$imageNameToBeTaggedUniquely" "$uniqueImageName"
+
+		# Write image list to artifacts file
+		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	fi
+}
+
+echo
+echo "-------------Creating build image for GitHub Actions-------------------"
+builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
+	--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
+	$ctxArgs \
+	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
 echo
 echo "-------------Creating AzureFunctions JamStack image-------------------"
 builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
@@ -150,19 +182,7 @@ docker build -t $builtImageName \
 	.
 echo
 echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-# Retag build image with build number tags
-if [ "$AGENT_BUILD" == "true" ]
-then
-	uniqueImageName="$builtImageName-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-
-	echo
-	echo "Retagging image '$builtImageName' with ACR related tags..."
-	docker tag "$builtImageName" "$uniqueImageName"
-
-	# Write image list to artifacts file
-	echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-fi
+createImageNameWithReleaseTag $builtImageName
 
 echo
 echo "-------------Creating slim build image-------------------"

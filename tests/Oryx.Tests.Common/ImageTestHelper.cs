@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
 
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
+        private const string _gitHubActions = "github-actions";
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
@@ -149,6 +150,11 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetAzureFunctionsJamStackBuildImage()
         {
             return $"{_image}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
+        }
+
+        public string GetGitHubActionsBuildImage()
+        {
+            return $"{_image}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
         }
 
         /// <summary>
