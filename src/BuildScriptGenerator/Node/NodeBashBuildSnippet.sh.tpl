@@ -39,7 +39,7 @@ then
 	echo "Copying modules from '$SOURCE_DIR/$allModulesDirName' to '$SOURCE_DIR/node_modules'..."
 	cd "$SOURCE_DIR"
 	mkdir -p node_modules
-	rsync -rtE --links "$allModulesDirName/" node_modules
+	rsync -rcE --links "$allModulesDirName/" node_modules
 fi
 
 if [ "$PruneDevDependencies" == "true" ] && [ "$HasProdDependencies" == "true" ]
@@ -76,7 +76,7 @@ then
 	echo
 	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
 	START_TIME=$SECONDS
-	rsync -rtE --links "node_modules/" "$SOURCE_DIR/node_modules"
+	rsync -rcE --links "node_modules/" "$SOURCE_DIR/node_modules"
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 fi
@@ -117,12 +117,12 @@ if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
 then
 	echo
 	echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
-	rsync -rtE --links "node_modules/" "$allModulesDirName" --delete
+	rsync -rcE --links "node_modules/" "$allModulesDirName" --delete
 
 	if [ "$HasProdDependencies" == "true" ]; then
 		echo
 		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
-		rsync -rtE --links "$prodModulesDirName/node_modules/" node_modules --delete
+		rsync -rcE --links "$prodModulesDirName/node_modules/" node_modules --delete
 	else
 		rm -rf "node_modules/"
 	fi
