@@ -16,7 +16,7 @@ uploadFiles() {
         return
     fi
 
-    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -name '*.txt')
+    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name '*.txt')
     for fileToUpload in $allFiles
     do
         fileName=$(basename $fileToUpload)
