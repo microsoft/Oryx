@@ -11,12 +11,12 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 
 nodePlatformDir="$REPO_DIR/platforms/nodejs"
+hostNodeArtifactsDir="$volumeHostDir/nodejs"
+mkdir -p "$hostNodeArtifactsDir"
 
 builtNodeImage=false
 getNode() {
 	local version="$1"
-	local hostNodeArtifactsDir="$volumeHostDir/nodejs"
-	mkdir -p "$hostNodeArtifactsDir"
 
 	if blobExists nodejs nodejs-$version.tar.gz; then
 		echo "Node version '$version' already present in blob storage. Skipping it..."
@@ -45,3 +45,7 @@ getNode() {
 echo "Getting Node Sdk..."
 echo
 buildPlatform "$nodePlatformDir/versionsToBuild.txt" getNode
+
+# Write the default version
+defaultVersion=$(getDefaultVersion "$nodePlatformDir/defaultVersion.txt")
+echo "$defaultVersion" > "$hostNodeArtifactsDir/defaultVersion.txt"

@@ -7,6 +7,7 @@
 # Since this file is expected to be 'sourced', we expect the REPO_DIR variable
 # to be supplied in the parent script sourcing this file.
 source "$REPO_DIR/build/__variables.sh"
+source "$REPO_DIR/build/__sdkStorageConstants.sh"
 
 volumeHostDir="$ARTIFACTS_DIR/platformSdks"
 volumeContainerDir="/tmp/sdk"
@@ -63,4 +64,17 @@ buildPlatform() {
 
 		$funcToCall "${versionArgs[@]}"
 	done < "$versionFile"
+}
+
+getDefaultVersion() {
+	local defaultVersionFile="$1"
+	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
+	do
+		# Ignore whitespace and comments
+		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
+			continue
+		fi
+		IFS= read -ra VERSION_INFO <<< "$VERSION_INFO"
+		echo "${VERSION_INFO[0]}"
+	done < "$defaultVersionFile"
 }

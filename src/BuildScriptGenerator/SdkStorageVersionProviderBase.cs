@@ -5,10 +5,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -42,9 +44,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 supportedVersions.Add(runtimeVersionElement.Value);
             }
 
-            var defaultVersion = httpClient
-                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/default_version.txt")
+            var defaultVersionContent = httpClient
+                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/defaultVersion.txt")
                 .Result;
+
+            // Ignore any comments in the file
+            string defaultVersion = null;
+            var strReader = new StringReader(defaultVersionContent);
+            while (true)
+            {
+                var line = strReader.ReadLine();
+                if (line != null && (!line.StartsWith("#") || !line.StartsWith("//")))
+                {
+                    defaultVersion = line.Trim();
+                    break;
+                }
+            }
 
             return PlatformVersionInfo.CreateAvailableOnWebVersionInfo(supportedVersions, defaultVersion);
         }

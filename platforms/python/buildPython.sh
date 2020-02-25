@@ -12,6 +12,8 @@ source $REPO_DIR/platforms/__common.sh
 source $REPO_DIR/build/__pythonVersions.sh
 
 pythonPlatformDir="$REPO_DIR/platforms/python"
+targetDir="$volumeHostDir/python"
+mkdir -p "$targetDir"
 
 builtPythonPrereqs=false
 buildPythonPrereqsImage() {
@@ -29,8 +31,6 @@ buildPython() {
 	local pipVersion="$3"
 	local dockerFile="$4"
 	local imageName="oryx/python"
-	local targetDir="$volumeHostDir/python"
-	mkdir -p "$targetDir"
 
 	if blobExists python python-$version.tar.gz; then
 		echo "Python version '$version' already present in blob storage. Skipping building it..."
@@ -72,3 +72,7 @@ buildPython() {
 echo "Building Python..."
 echo
 buildPlatform "$pythonPlatformDir/versionsToBuild.txt" buildPython
+
+# Write the default version
+defaultVersion=$(getDefaultVersion "$pythonPlatformDir/defaultVersion.txt")
+echo "$defaultVersion" > "$targetDir/defaultVersion.txt"
