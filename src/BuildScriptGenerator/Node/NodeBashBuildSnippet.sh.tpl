@@ -26,17 +26,9 @@ fi
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=__oryx_all_node_modules
 prodModulesDirName=__oryx_prod_node_modules
-copyOnlyProdModulesToOutput=false
-
 PruneDevDependencies={{ PruneDevDependencies }}
-# We want separate folders for prod modules only when the package.json has separate dependencies
-hasProductionOnlyDependencies="{{ HasProductionOnlyDependencies }}"
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ] && \
-   [ "$PruneDevDependencies" == "true" ] && \
-   [ "$hasProductionOnlyDependencies" == "true" ]
-then
-	copyOnlyProdModulesToOutput=true
-fi
+HasProdDependencies={{ HasProdDependencies }}
+HasDevDependencies={{ HasDevDependencies }}
 
 # if node modules exist separately for dev & prod (like from an earlier build),
 # rename the folders back appropriately for the current build
@@ -50,7 +42,7 @@ then
 	rsync -rtE --links "$allModulesDirName/" node_modules
 fi
 
-if [ "$copyOnlyProdModulesToOutput" == "true" ]
+if [ "$PruneDevDependencies" == "true" ] && [ "$HasProdDependencies" == "true" ]
 then
 	# Delete existing prod modules folder so that we do not publish
 	# any unused modules to final destination directory.
@@ -121,15 +113,19 @@ echo
 npm pack
 {{ end }}
 
-if [ "$copyOnlyProdModulesToOutput" == "true" ]
+if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
 then
 	echo
 	echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
 	rsync -rtE --links "node_modules/" "$allModulesDirName" --delete
 
-	echo
-	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
-	rsync -rtE --links "$prodModulesDirName/node_modules/" node_modules --delete
+	if [ "$HasProdDependencies" == "true" ]; then
+		echo
+		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
+		rsync -rtE --links "$prodModulesDirName/node_modules/" node_modules --delete
+	else
+		rm -rf "node_modules/"
+	fi
 fi
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}

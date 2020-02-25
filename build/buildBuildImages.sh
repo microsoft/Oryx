@@ -31,11 +31,11 @@ cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 declare BUILD_SIGNED=""
 
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
+# SIGNTYPE is set to 'real' on the Oryx-CI build definition itself (not in yaml file)
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
 then
-# "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
+	# "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
 	BUILD_SIGNED="true"
-	ls -l $BUILD_IMAGES_BUILD_CONTEXT_DIR
 else
 	# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
     mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
@@ -138,6 +138,52 @@ mkdir -p "$ARTIFACTS_DIR/images"
 touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
+function createImageNameWithReleaseTag() {
+	local imageNameToBeTaggedUniquely="$1"
+	# Retag build image with build number tags
+	if [ "$AGENT_BUILD" == "true" ]
+	then
+		local uniqueImageName="$imageNameToBeTaggedUniquely-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+
+		echo
+		echo "Retagging image '$imageNameToBeTaggedUniquely' with ACR related tags..."
+		docker tag "$imageNameToBeTaggedUniquely" "$uniqueImageName"
+
+		# Write image list to artifacts file
+		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	fi
+}
+
+echo
+echo "-------------Creating build image for GitHub Actions-------------------"
+builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
+	--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
+	$ctxArgs \
+	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
+echo
+echo "-------------Creating AzureFunctions JamStack image-------------------"
+builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$ctxArgs \
+	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
 echo
 echo "-------------Creating slim build image-------------------"
 buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
@@ -165,7 +211,6 @@ docker build -t $builtImageTag \
 	$ctxArgs \
 	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 	.
-
 echo
 echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 

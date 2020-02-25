@@ -53,8 +53,9 @@ func GetSetupScript(platformName string, version string, installationDir string)
 			tarFile))
 	scriptBuilder.WriteString("headerName=\"x-ms-meta-checksum\"\n")
 	scriptBuilder.WriteString(fmt.Sprintf(
-		"checksumHeader=$(cat headers.txt | grep $headerName: | tr -d '%s')\n",
+		"checksumHeader=$(cat headers.txt | grep -i $headerName: | tr -d '%s')\n",
 		"\\r"))
+	scriptBuilder.WriteString("checksumHeader=${checksumHeader,,}\n")
 	scriptBuilder.WriteString("rm -f headers.txt\n")
 	scriptBuilder.WriteString("checksumValue=${checksumHeader#\"$headerName: \"}\n")
 	scriptBuilder.WriteString(fmt.Sprintf("echo \"$checksumValue %s.tar.gz\" | sha512sum -c - >/dev/null 2>&1\n", version))

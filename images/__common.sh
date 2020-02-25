@@ -14,7 +14,8 @@ function downloadFileAndVerifyChecksum() {
         --output $downloadedFileName
 
     headerName="x-ms-meta-checksum"
-    checksumHeader=$(cat $headersFile | grep $headerName: | tr -d '\r')
+    checksumHeader=$(cat $headersFile | grep -i $headerName: | tr -d '\r')
+    checksumHeader=${checksumHeader,,}
     checksumValue=${checksumHeader#"$headerName: "}
     echo
     echo "Verifying checksum..."

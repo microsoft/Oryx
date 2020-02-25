@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4", PhpVersions.Php74Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
         [InlineData("7.2", PhpVersions.Php72Version)]
         [InlineData("7.0", PhpVersions.Php70Version)]
@@ -64,6 +65,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -80,6 +82,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Assert
             JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);
+            //Assert.Contains((((JValue)gdInfo.GetValue("GIF Read Support")).Value).ToString(), "true");
             Assert.True((bool)((JValue)gdInfo.GetValue("GIF Read Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
             Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
@@ -87,6 +90,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -183,6 +187,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -209,6 +214,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]

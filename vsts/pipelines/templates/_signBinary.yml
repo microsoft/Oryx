@@ -41,13 +41,25 @@ steps:
     dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
   displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
+  
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
   inputs:
     solution: 'src/BuildScriptGeneratorCli/Oryx_sign.signproj'
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
+    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
+- task: ArchiveFiles@2
+  displayName: 'Create compressed file of Oryx binaries'
+  inputs:
+    rootFolderOrFile: 'src\BuildScriptGeneratorCli\bin\$(BuildConfiguration)\linux-x64\publish'
+    includeRootFolder: false
+    archiveType: tar
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/oryx_linux_x64.tar.gz'
+    replaceExistingArchive: true
+    verbose: true
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: CopyFiles@2
@@ -62,6 +74,6 @@ steps:
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
   inputs:
-    artifactName: 'drop-$(Build.BuildNumber)'
+    artifactName: 'signed_binaries'
     targetPath: '$(Build.ArtifactStagingDirectory)'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))

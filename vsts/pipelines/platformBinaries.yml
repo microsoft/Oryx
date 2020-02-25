@@ -29,7 +29,7 @@ stages:
     steps:
     - template: templates/_platformBinariesTemplate.yml
       parameters:
-        platformName: 'node'
+        platformName: 'nodejs'
 
   - job: DotNetCore
     timeoutInMinutes: 250

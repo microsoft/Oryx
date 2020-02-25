@@ -133,11 +133,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
 
-            var hasProductionOnlyDependencies = false;
+            var hasProdDependencies = false;
+            if (packageJson?.dependencies != null)
+            {
+                hasProdDependencies = true;
+            }
+
+            var hasDevDependencies = false;
             if (packageJson?.devDependencies != null)
             {
                 // If development time dependencies are present we want to avoid copying them to improve performance
-                hasProductionOnlyDependencies = true;
+                hasDevDependencies = true;
             }
 
             var productionOnlyPackageInstallCommand = string.Format(
@@ -202,7 +208,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,
-                HasProductionOnlyDependencies = hasProductionOnlyDependencies,
+                HasProdDependencies = hasProdDependencies,
+                HasDevDependencies = hasDevDependencies,
                 ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand,
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
