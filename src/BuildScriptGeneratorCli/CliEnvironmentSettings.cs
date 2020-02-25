@@ -16,6 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private const string DisablePhpEnvVarName = "DISABLE_PHP_BUILD";
         private const string DisableNodeJsEnvVarName = "DISABLE_NODEJS_BUILD";
         private const string EnableMultiPlatformBuildEnvVarName = "ENABLE_MULTIPLATFORM_BUILD";
+
+        // Environment Variables from GitHub Actions.
         private const string GitHubActionsEnvVarName = "GITHUB_ACTIONS";
         private const string GitHubActionsBuildImagePullStartTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_START_TIME";
         private const string GitHubActionsBuildImagePullEndTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_END_TIME";

@@ -45,6 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (envSettings != null && envSettings.GitHubActions)
                 {
                     logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
+
                     DateTime startTime, endTime;
                     if (envSettings.GitHubActionsBuildImagePullStartTime != null
                         && envSettings.GitHubActionsBuildImagePullEndTime != null
@@ -57,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         {
                             { "gitHubActionBuildImagePullDurationSeconds", gitHubActionBuildImagePullDurationSeconds },
                         };
+
                         logger.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
                     }
                 }
