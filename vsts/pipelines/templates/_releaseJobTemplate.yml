@@ -45,7 +45,7 @@ jobs:
       DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
       PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
     inputs:
-      scriptPath: ./vsts/scripts/mirrorSdksFromDevToProdStorageAccount.sh
+      scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
 
 - job: Release_GitHub
   displayName: Create GitHub release
