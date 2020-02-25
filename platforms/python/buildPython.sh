@@ -74,5 +74,4 @@ echo
 buildPlatform "$pythonPlatformDir/versionsToBuild.txt" buildPython
 
 # Write the default version
-defaultVersion=$(getDefaultVersion "$pythonPlatformDir/defaultVersion.txt")
-echo "$defaultVersion" > "$targetDir/defaultVersion.txt"
+cp "$pythonPlatformDir/defaultVersion.txt" $targetDir

@@ -56,6 +56,4 @@ echo "Getting .NET Core Sdks..."
 echo
 buildPlatform "$dotNetPlatformDir/versionsToBuild.txt" getDotNetCoreSdk
 
-# Write the default version
-defaultVersion=$(getDefaultVersion "$dotNetPlatformDir/defaultVersion.txt")
-echo "$defaultVersion" > "$targetDir/defaultVersion.txt"
+cp "$dotNetPlatformDir/defaultVersion.txt" $targetDir

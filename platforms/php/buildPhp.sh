@@ -102,5 +102,5 @@ echo
 buildPlatform "$phpPlatformDir/composer/versionsToBuild.txt" buildPhpComposer
 
 # Write the default version
-defaultVersion=$(getDefaultVersion "$phpPlatformDir/defaultVersion.txt")
-echo "$defaultVersion" > "$targetDir/defaultVersion.txt"
+cp "$phpPlatformDir/defaultVersion.txt" $targetDir
+

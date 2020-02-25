@@ -47,5 +47,4 @@ echo
 buildPlatform "$nodePlatformDir/versionsToBuild.txt" getNode
 
 # Write the default version
-defaultVersion=$(getDefaultVersion "$nodePlatformDir/defaultVersion.txt")
-echo "$defaultVersion" > "$hostNodeArtifactsDir/defaultVersion.txt"
+cp "$nodePlatformDir/defaultVersion.txt" $hostNodeArtifactsDir
