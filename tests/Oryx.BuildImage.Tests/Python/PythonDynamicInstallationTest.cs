@@ -26,7 +26,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var imageTestHelper = new ImageTestHelper();
                 var data = new TheoryData<string>();
-                data.Add(imageTestHelper.GetTestBuildImage());
                 data.Add(imageTestHelper.GetTestSlimBuildImage());
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
