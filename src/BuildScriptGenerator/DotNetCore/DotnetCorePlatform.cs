@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -31,6 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreLanguageDetector _detector;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
         private readonly BuildScriptGeneratorOptions _cliOptions;
+        private readonly DotNetCorePlatformInstaller _platformInstaller;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -40,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="environmentSettingsProvider">The environment settings provider.</param>
         /// <param name="logger">The logger of .NET platform.</param>
         /// <param name="detector">The detector of .NET platform.</param>
-        /// <param name="buildOptions">The build options for BuildScriptGenerator.</param>
+        /// <param name="commonOptions">The build options for BuildScriptGenerator.</param>
         /// <param name="dotNetCorePlatformOptions">The options if .NET platform.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
@@ -48,8 +50,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
-            IOptions<BuildScriptGeneratorOptions> buildOptions,
-            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCorePlatformOptions)
+            IOptions<BuildScriptGeneratorOptions> cliOptions,
+            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCorePlatformOptions,
+            DotNetCorePlatformInstaller platformInstaller)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
@@ -57,7 +60,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
             _detector = detector;
             _dotNetCorePlatformOptions = dotNetCorePlatformOptions.Value;
-            _cliOptions = buildOptions.Value;
+            _cliOptions = cliOptions.Value;
+            _platformInstaller = platformInstaller;
         }
 
         /// <inheritdoc/>
@@ -68,8 +72,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             get
             {
-                var versionInfo = _versionProvider.GetVersionInfo();
-                return versionInfo.SupportedVersions;
+                var versionMap = _versionProvider.GetSupportedVersions();
+                // Map is from runtime version => sdk version
+                return versionMap.Keys;
             }
         }
 
@@ -82,13 +87,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            var buildProperties = new Dictionary<string, string>();
+            string installationScriptSnippet = null;
+            if (_cliOptions.EnableDynamicInstall
+                && !_platformInstaller.IsVersionAlreadyInstalled(context.DotNetCoreRuntimeVersion))
+            {
+                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                    context.DotNetCoreRuntimeVersion);
+            }
+
+            var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{DotNetCoreConstants.LanguageName}_version";
-            buildProperties[key] = context.DotNetCoreVersion;
-
-            buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+            var versionMap = _versionProvider.GetSupportedVersions();
+            manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreRuntimeVersion]
+                = context.DotNetCoreRuntimeVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
+                = versionMap[context.DotNetCoreRuntimeVersion];
+            manifestFileProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
@@ -139,6 +154,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendFormatWithLine("cd \"{0}\"", sourceDir)
                 .AppendLine();
 
+            if (!string.IsNullOrEmpty(installationScriptSnippet))
+            {
+                scriptBuilder.AppendLine(installationScriptSnippet);
+            }
+
+            scriptBuilder.AddScriptToCopyToIntermediateDirectory(
+                sourceDir: ref sourceDir,
+                intermediateDir: intermediateDir,
+                GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
+            .AppendFormatWithLine("cd \"{0}\"", sourceDir)
+            .AppendLine();
+
             scriptBuilder
                 .AddScriptToSetupSourceAndDestinationDirectories(
                     sourceDir: sourceDir,
@@ -146,7 +173,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     destinationDir: destinationDir,
                     hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir,
                     zipAllOutput: zipAllOutput)
-                .AppendBenvCommand($"dotnet={context.DotNetCoreVersion}")
+                .AppendBenvCommand($"dotnet={context.DotNetCoreRuntimeVersion}")
                 .AddScriptToRunPreBuildCommand(sourceDir: sourceDir, preBuildCommand: preBuildCommand)
                 .AppendLine("echo")
                 .AppendLine("dotnetCoreVersion=$(dotnet --version)")
@@ -165,7 +192,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         temporaryDestinationDir: temporaryDestinationDir,
                         finalDestinationDir: destinationDir,
                         postBuildCommand: postBuildCommand,
-                        buildProperties);
+                        manifestFileProperties);
                 }
                 else
                 {
@@ -188,11 +215,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         postBuildCommand: postBuildCommand);
             }
 
-            SetStartupFileNameInfoInManifestFile(context, projectFile, buildProperties);
+            SetStartupFileNameInfoInManifestFile(context, projectFile, manifestFileProperties);
 
             scriptBuilder
                 .AddScriptToCreateManifestFile(
-                    buildProperties,
+                    manifestFileProperties,
                     manifestDir: _cliOptions.ManifestDir,
                     finalDestinationDir: destinationDir)
                 .AppendLine("echo Done.");
@@ -246,7 +273,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
-            context.DotNetCoreVersion = version;
+            context.DotNetCoreRuntimeVersion = version;
         }
 
         /// <inheritdoc/>

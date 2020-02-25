@@ -19,6 +19,12 @@ import (
 func main() {
 	versionCommand := flag.NewFlagSet(consts.VersionCommandName, flag.ExitOnError)
 
+	setupEnvCommand := flag.NewFlagSet(consts.SetupEnvCommandName, flag.ExitOnError)
+	setupEnvAppPathPtr := setupEnvCommand.String(
+		"appPath",
+		".",
+		"The path to the application folder, e.g. '/home/site/wwwroot/'.")
+
 	scriptCommand := flag.NewFlagSet(consts.CreateScriptCommandName, flag.ExitOnError)
 	appPathPtr := scriptCommand.String(
 		"appPath",
@@ -45,13 +51,16 @@ func main() {
 		"",
 		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. "+
 			"Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
-	flag.Parse()
+	enableDynamicInstall := scriptCommand.Bool(
+		"enableDynamicInstall",
+		false,
+		"Enables installing SDK dynamically if not present in the container already. Default if false.")
 
 	logger := common.GetLogger("dotnetcore.main")
 	defer logger.Shutdown()
 	logger.StartupScriptRequested()
 
-	commands := []*flag.FlagSet{versionCommand, scriptCommand}
+	commands := []*flag.FlagSet{versionCommand, scriptCommand, setupEnvCommand}
 	common.ValidateCommands(commands)
 
 	if scriptCommand.Parsed() {
@@ -111,12 +120,13 @@ func main() {
 		}
 
 		entrypointGenerator := DotnetCoreStartupScriptGenerator{
-			AppPath:            fullAppPath,
-			RunFromPath:        fullRunFromPath,
-			BindPort:           *bindPortPtr,
-			UserStartupCommand: *userStartupCommandPtr,
-			DefaultAppFilePath: fullDefaultAppFilePath,
-			Manifest:           buildManifest,
+			AppPath:              fullAppPath,
+			RunFromPath:          fullRunFromPath,
+			BindPort:             *bindPortPtr,
+			UserStartupCommand:   *userStartupCommandPtr,
+			DefaultAppFilePath:   fullDefaultAppFilePath,
+			EnableDynamicInstall: *enableDynamicInstall,
+			Manifest:             buildManifest,
 		}
 
 		command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)
@@ -125,5 +135,23 @@ func main() {
 		}
 
 		common.WriteScript(fullOutputPath, command)
+	}
+
+	if setupEnvCommand.Parsed() {
+		fullAppPath := common.GetValidatedFullPath(*setupEnvAppPathPtr)
+		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+		dotNetCoreInstallationRoot := "/usr/share/dotnet"
+		script := common.GetSetupScript(
+			"dotnet",
+			buildManifest.DotNetCoreSdkVersion,
+			dotNetCoreInstallationRoot)
+		scriptBuilder := strings.Builder{}
+		scriptBuilder.WriteString(script)
+		scriptBuilder.WriteString("ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet\n")
+		finalScript := scriptBuilder.String()
+		fmt.Println(fmt.Sprintf(
+			"Setting up the environment with '.NET Core' version '%s'...\n",
+			buildManifest.DotNetCoreSdkVersion))
+		common.SetupEnv(finalScript)
 	}
 }

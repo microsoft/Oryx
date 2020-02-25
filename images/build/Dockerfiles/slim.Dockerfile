@@ -111,14 +111,14 @@ RUN set -ex \
  && mkdir $NET_CORE_APP_21 \
  && ln -s $NET_CORE_APP_21 2.1 \
  && ln -s 2.1 2 \
- && ln -s $sdksDir/$DOT_NET_CORE_21_SDK_VERSION $NET_CORE_APP_21/sdk \
+ && echo $DOT_NET_CORE_21_SDK_VERSION > $NET_CORE_APP_21/sdkVersion.txt \
  && mkdir $NET_CORE_APP_31 \
  && ln -s $NET_CORE_APP_31 3.1 \
  && ln -s 3.1 3 \
- && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
+ && echo $DOT_NET_CORE_31_SDK_VERSION > $NET_CORE_APP_31/sdkVersion.txt \
  # LTS sdk <-- LTS runtime's sdk
  && ln -s 3 lts \
- && ltsSdk=$(readlink lts/sdk) \
+ && ltsSdk=$(cat lts/sdkVersion.txt | tr -d '\r') \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn

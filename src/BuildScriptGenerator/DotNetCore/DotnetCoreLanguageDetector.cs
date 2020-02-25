@@ -67,9 +67,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetVersion(RepositoryContext context, string targetFramework)
         {
-            if (context.DotNetCoreVersion != null)
+            if (context.DotNetCoreRuntimeVersion != null)
             {
-                return context.DotNetCoreVersion;
+                return context.DotNetCoreRuntimeVersion;
             }
 
             if (_options.DotNetVersion != null)
@@ -88,8 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetDefaultVersionFromProvider()
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
+            return _versionProvider.GetDefaultRuntimeVersion();
         }
 
         internal string DetermineRuntimeVersion(string targetFramework)
@@ -109,23 +108,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetMaxSatisfyingVersionAndVerify(string version)
+        private string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
+            var versionMap = _versionProvider.GetSupportedVersions();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
+                runtimeVersion,
+                versionMap.Keys);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exc = new UnsupportedVersionException(
+                var exception = new UnsupportedVersionException(
                     DotNetCoreConstants.LanguageName,
-                    version,
-                    versionInfo.SupportedVersions);
+                    runtimeVersion,
+                    versionMap.Keys);
                 _logger.LogError(
-                    exc,
-                    $"Exception caught, the given version '{version}' is not supported for the .NET Core platform.");
-                throw exc;
+                    exception,
+                    $"Exception caught, the version '{runtimeVersion}' is not supported for the .NET Core platform.");
+                throw exception;
             }
 
             return maxSatisfyingVersion;

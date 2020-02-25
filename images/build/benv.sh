@@ -208,8 +208,8 @@ benv-resolve() {
       return 1
     fi
 
-    local SDK_DIR=$(readlink $"$runtimeDir/sdk")
-
+    local sdkVersion=$(cat "$runtimeDir/sdkVersion.txt" | tr -d '\r') 
+    local SDK_DIR=$(cd "$runtimeDir/../../sdks/$sdkVersion" && pwd)
     toolsDir="$SDK_DIR/tools"
     if [ -d "$toolsDir" ]; then
       updatePath "$SDK_DIR/tools"

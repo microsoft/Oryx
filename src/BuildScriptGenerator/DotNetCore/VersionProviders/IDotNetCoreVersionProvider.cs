@@ -7,11 +7,15 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    /// <summary>
-    /// Abstraction listing the supported .NET Core versions.
-    /// </summary>
     public interface IDotNetCoreVersionProvider
     {
-        PlatformVersionInfo GetVersionInfo();
+        /// <summary>
+        /// Gets a list of supported versions.
+        /// The keys represent 'runtime' version, whereas the values represent 'sdk version'.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> GetSupportedVersions();
+
+        string GetDefaultRuntimeVersion();
     }
 }

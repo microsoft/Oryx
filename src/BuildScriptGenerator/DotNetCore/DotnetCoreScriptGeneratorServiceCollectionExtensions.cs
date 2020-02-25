@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -21,7 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<DotNetCoreScriptGeneratorOptions>, DotNetCoreScriptGeneratorOptionsSetup>());
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
-            services.AddScoped<DotNetCoreLanguageDetector>();
+            services.AddSingleton<DotNetCoreLanguageDetector>();
+            services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
+            services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
+            services.AddSingleton<DotNetCorePlatformInstaller>();
 
             // Note that the order of these project file providers is important. For example, if a user explicitly
             // specifies a project file using either the 'PROJECT' environment or the 'project' build property, we want
