@@ -37,12 +37,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendLine()
                 .AppendFormatWithLine("cd \"{0}\"", sourceDir)
                 .AppendLine("echo")
-                /* The following preserves modification times on files/folders, which enables faster rsync copy.
-                    We use this here and not the '--checksum' because intermediate directory is local to
-                    a container and so preserving modification times does not cause the same errors that we
-                    see when copying to a directory which is for example, a volume mounted NFS directory.*/
+                /* We use checksum and not the '--times' because the destination directory could be from
+                   a different file system (ex: NFS) where setting modification times results in errors.
+                   Even though checksum is slower compared to the '--times' option, it is more reliable
+                   which is important for us.*/
                 .AppendFormatWithLine(
-                    "rsync --delete -rt {0} . \"{1}\"",
+                    "rsync -rEc --delete {0} . \"{1}\"",
                     excludeDirsSwitch,
                     intermediateDir)
                 .AppendLine();
