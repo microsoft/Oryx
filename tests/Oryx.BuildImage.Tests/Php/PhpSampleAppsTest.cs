@@ -23,10 +23,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
         [Theory]
-        [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
+        [InlineData(PhpVersions.Php74Version)]
+        [InlineData(PhpVersions.Php73Version)]
+        [InlineData(PhpVersions.Php72Version)]
+        [InlineData(PhpVersions.Php70Version)]
         public void GeneratesScript_AndBuilds_TwigExample(string phpVersion)
         {
             // Arrange
@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand($"source benv php={phpVersion}")
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {phpVersion}")
                 .ToString();
 
             // Act
@@ -60,10 +60,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
+        [InlineData(PhpVersions.Php74Version)]
+        [InlineData(PhpVersions.Php73Version)]
+        [InlineData(PhpVersions.Php72Version)]
+        [InlineData(PhpVersions.Php70Version)]
         public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange
@@ -93,10 +93,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.StdOut);
+                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"not running 'composer install'", result.StdOut);
                     Assert.Contains(
-                       $"{PhpConstants.PhpName}_version=\"{PhpVersions.Php73Version}\"",
+                       $"{PhpConstants.PhpName}_version=\"{phpVersion}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());

@@ -257,9 +257,9 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s /opt/php/7.3 /opt/php/7 \
  && ln -s /opt/php/7 /opt/php/lts \
  && cd /opt/php-composer \
- && ln -s 1.9 3 \
- && ln -s 1 stable
-RUN ln -s /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
+ && ln -sfn 1.9.3 stable
+#  && ln -sfn 1 stable
+RUN ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libargon2-0 \
