@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appDir = volume.ContainerDir;
             var imageName = _imageHelper.GetTestRuntimeImage("node", nodeVersion);
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var globalNodeDir = "/usr/local/lib/node_modules";
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
 
@@ -49,8 +50,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"oryx -appPath {appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/node_modules/applicationinsights")
+                .AddFileExistsCheck($"{globalNodeDir}/applicationinsights/out/Bootstrap/Oryx.js")
                 .AddCommand("./run.sh")
-                .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
