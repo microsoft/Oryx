@@ -35,7 +35,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand($"source benv php={phpVersion}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {phpVersion}")
                 .ToString();
 
@@ -74,7 +73,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddCommand($"source benv php={phpVersion}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {phpVersion}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();

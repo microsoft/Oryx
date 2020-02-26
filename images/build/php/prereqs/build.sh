@@ -78,9 +78,9 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then
 	cd php-7.4.3*
 	autoconf
 	cd ..
-else 
-    apt-get update 
-	apt-get install -y --no-install-recommends libargon2-dev 
+else
+	apt-get update
+	apt-get install -y --no-install-recommends libargon2-dev
 fi
 
 savedAptMark="$(apt-mark showmanual)";
@@ -115,8 +115,8 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 	# in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
 	# see also https://github.com/docker-library/php/issues/846#issuecomment-505638494
-	if [ $PHP_MINOR == '4' ]; then 
-		 versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
+	if [ $PHP_MINOR == '4' ]; then
+		versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
 	fi
 fi
 
@@ -136,7 +136,7 @@ fi
 		--with-libedit \
 		--with-openssl \
 		--with-zlib \
-		$(test "$gnuArch" = "s390x-linux-gnu" && echo '--without-pcre-jit') \
+		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch";
 
 make -j "$(nproc)";
