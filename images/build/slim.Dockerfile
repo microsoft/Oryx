@@ -140,8 +140,7 @@ RUN cd ${IMAGES_DIR} \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ./installPlatform.sh nodejs $NODE8_VERSION \
  && ./installPlatform.sh nodejs $NODE10_VERSION \
- && ./installPlatform.sh nodejs $NODE12_VERSION \
- && ./installPlatform.sh nodejs $NODE13_VERSION
+ && ./installPlatform.sh nodejs $NODE12_VERSION
 RUN ${IMAGES_DIR}/build/installNpm.sh
 RUN set -ex \
  && . ${BUILD_DIR}/__nodeVersions.sh \
@@ -159,7 +158,6 @@ RUN set -ex \
  && ln -s $NODE8_VERSION /opt/nodejs/8 \
  && ln -s $NODE10_VERSION /opt/nodejs/10 \
  && ln -s $NODE12_VERSION /opt/nodejs/12 \
- && ln -s $NODE13_VERSION /opt/nodejs/13 \
  && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && ln -s 6.9.0 /opt/npm/6.9 \

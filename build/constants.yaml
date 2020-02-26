@@ -114,7 +114,6 @@
     node8-version: 8.17.0
     node10-version: 10.19.0
     node12-version: 12.16.1
-    node13-version: 13.9.0
   outputs:
     - type: shell
       directory: build

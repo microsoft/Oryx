@@ -131,7 +131,6 @@ RUN cd ${IMAGES_DIR} \
  && ./installPlatform.sh nodejs 10.14.2 \
  && ./installPlatform.sh nodejs 10.16.3 \
  && ./installPlatform.sh nodejs 12.16.1 \
- && ./installPlatform.sh nodejs 13.9.0 \
  && ./installPlatform.sh nodejs $NODE6_VERSION
 RUN ${IMAGES_DIR}/build/installNpm.sh
 
@@ -159,8 +158,7 @@ RUN set -ex \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
  && ln -s 10.16.3 /opt/nodejs/10.16 \
- && ln -s 12.16.1 /opt/nodejs/12.16 \
- && ln -s 13.9.0 /opt/nodejs/13.9 \
+ && ln -sfn 12.16.1 /opt/nodejs/12.16 \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
@@ -262,6 +260,11 @@ RUN ln -s /opt/php/5.6 /opt/php/5 \
  && ln -s 1.9 3 \
  && ln -s 1 stable
 RUN ln -s /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libargon2-0 \
+        libonig-dev \
+    && rm -rf /var/lib/apt/lists/* 
 
 ENV PATH="$PATH:/opt/php/lts/bin"
 
