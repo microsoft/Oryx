@@ -45,7 +45,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("10.10", "10.10.0")]
         [InlineData("10.12", "10.12.0")]
         [InlineData("10.14", "10.14.2")]
-        [InlineData("10.16", "10.16.3")]
         [InlineData("12", NodeVersions.Node12Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
