@@ -11,13 +11,13 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 
 dotNetPlatformDir="$REPO_DIR/platforms/dotnet"
+targetDir="$volumeHostDir/dotnet"
+mkdir -p "$targetDir"
 
 getDotNetCoreSdk() {
 	local sdkVersion="$1"
 	local sha="$2"
 	local downloadUrl="$3"
-	local targetDir="$volumeHostDir/dotnet"
-	mkdir -p "$targetDir"
 
 	if blobExists dotnet dotnet-$sdkVersion.tar.gz; then
 		echo ".NET Core version '$sdkVersion' already present in blob storage. Skipping it..."
@@ -55,3 +55,5 @@ echo
 echo "Getting .NET Core Sdks..."
 echo
 buildPlatform "$dotNetPlatformDir/versionsToBuild.txt" getDotNetCoreSdk
+
+cp "$dotNetPlatformDir/defaultVersion.txt" $targetDir

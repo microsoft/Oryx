@@ -12,6 +12,8 @@ source $REPO_DIR/platforms/__common.sh
 source $REPO_DIR/build/__phpVersions.sh
 
 phpPlatformDir="$REPO_DIR/platforms/php"
+targetDir="$volumeHostDir/php"
+mkdir -p "$targetDir"
 
 builtPhpPrereqs=false
 buildPhpPrereqsImage() {
@@ -28,8 +30,6 @@ buildPhp() {
 	local sha="$2"
 	local gpgKeys="$3"
 	local imageName="oryx/php-sdk"
-	local targetDir="$volumeHostDir/php"
-	mkdir -p "$targetDir"
 
 	if blobExists php php-$version.tar.gz; then
 		echo "Php version '$version' already present in blob storage. Skipping building it..."
@@ -100,3 +100,7 @@ echo
 echo "Building Php composer..."
 echo
 buildPlatform "$phpPlatformDir/composer/versionsToBuild.txt" buildPhpComposer
+
+# Write the default version
+cp "$phpPlatformDir/defaultVersion.txt" $targetDir
+

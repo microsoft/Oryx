@@ -7,6 +7,7 @@
 # Since this file is expected to be 'sourced', we expect the REPO_DIR variable
 # to be supplied in the parent script sourcing this file.
 source "$REPO_DIR/build/__variables.sh"
+source "$REPO_DIR/build/__sdkStorageConstants.sh"
 
 volumeHostDir="$ARTIFACTS_DIR/platformSdks"
 volumeContainerDir="/tmp/sdk"

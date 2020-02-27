@@ -40,3 +40,5 @@
 8.17.0
 10.19.0
 12.16.0
+
+# NOTE: Make sure to set the default version in 'defaultVersion.txt' file

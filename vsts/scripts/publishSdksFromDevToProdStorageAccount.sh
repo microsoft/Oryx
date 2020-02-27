@@ -28,6 +28,14 @@ function blobExistsInProd() {
 	fi
 }
 
+function copyDefaultVersionFile() {
+    local defaultVersionFile="$1"
+    local platformName="$2"
+    "$azCopyDir/azcopy" copy \
+        "$defaultVersionFile" \
+        "$PROD_SDK_STORAGE_BASE_URL/$platformName/defaultVersion.txt?$PROD_STORAGE_SAS_TOKEN"
+}
+
 function copyBlob() {
     local platformName="$1"
     local blobName="$2"
@@ -47,6 +55,7 @@ function copyBlob() {
 function copyPlatformBlobsToProd() {
     local platformName="$1"
     local versionsFile="$REPO_DIR/platforms/$platformName/versionsToBuild.txt"
+    local defaultVersionFile="$REPO_DIR/platforms/$platformName/defaultVersion.txt"
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
     # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
@@ -63,7 +72,7 @@ function copyPlatformBlobsToProd() {
         copyBlob "$platformName" "$platformName-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlob "$platformName" "default_version.txt"
+    copyDefaultVersionFile $defaultVersionFile "$platformName"
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then
