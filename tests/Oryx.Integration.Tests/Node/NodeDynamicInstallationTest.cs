@@ -74,7 +74,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-
         [Theory]
         [InlineData(NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version)]
