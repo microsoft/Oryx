@@ -41,7 +41,6 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	scriptBuilder.WriteString("echo\n")
 	scriptBuilder.WriteString(
 		fmt.Sprintf("echo Downloading and installing '%s' version '%s'...\n", platformName, version))
-	scriptBuilder.WriteString(fmt.Sprintf("rm -rf %s\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("mkdir -p %s\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
 	scriptBuilder.WriteString(
