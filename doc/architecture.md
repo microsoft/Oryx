@@ -212,6 +212,6 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 The following are required to run and test this project locally.
 
 - Bash v4.4
-- [.NET Core 2.1](https://dotnet.microsoft.com/download/dotnet-core)
+- [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core)
 - [Go 1.11+](https://golang.org/dl/) (for startup script generator)
 - [Docker v18.06.1-ce](https://docs.docker.com/install/)
