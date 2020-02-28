@@ -48,7 +48,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var scriptBuilder = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}");
 
-            if (string.Equals("python", language, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals("python", language, StringComparison.OrdinalIgnoreCase) 
+                || string.Equals("nodejs", language, StringComparison.OrdinalIgnoreCase))
             {
                 scriptBuilder = scriptBuilder.AddCommand($"oryx create-script -appPath {appDir} {bindPortFlag}");
             }

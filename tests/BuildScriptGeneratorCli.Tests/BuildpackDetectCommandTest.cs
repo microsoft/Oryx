@@ -96,10 +96,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             env.SetEnvironmentVariable("NODE_SUPPORTED_VERSIONS", NodeConstants.NodeLtsVersion);
 
             var svcProvider = new ServiceProviderBuilder()
-                .ConfigureServices(svcs => svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env)))
+                .ConfigureServices(svcs =>
+                {
+                    svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env));
+                    svcs.AddSingleton<INodeVersionProvider, TestNodeVersionProvider>();
+                })
                 .ConfigureScriptGenerationOptions(opts => cmd.ConfigureBuildScriptGeneratorOptions(opts))
                 .Build();
             return svcProvider;
+        }
+
+        private class TestNodeVersionProvider : INodeVersionProvider
+        {
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    new[] { NodeConstants.NodeLtsVersion }, defaultVersion: NodeConstants.NodeLtsVersion);
+            }
         }
     }
 }

@@ -129,7 +129,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -enableDynamicInstall")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

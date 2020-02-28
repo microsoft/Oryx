@@ -31,15 +31,12 @@ buildPhp() {
 	local gpgKeys="$3"
 	local imageName="oryx/php-sdk"
 
-	if blobExists php php-$version.tar.gz; then
-		echo "Php version '$version' already present in blob storage. Skipping building it..."
-		echo
-	else
+	if shouldBuildSdk php php-$version.tar.gz; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
 
-		echo "Php version '$version' not present in blob storage. Building it in a docker image..."
+		echo "Building Php version '$version' in a docker image..."
 		echo
 
 		docker build \
@@ -63,7 +60,7 @@ buildPhpComposer() {
 	local targetDir="$volumeHostDir/php-composer"
 	mkdir -p "$targetDir"
 
-	if blobExists php-composer php-composer-$version.tar.gz; then
+	if shouldBuildSdk php-composer php-composer-$version.tar.gz; then
 		echo "Php composer version '$version' already present in blob storage. Skipping building it..."
 		echo
 	else
@@ -88,7 +85,7 @@ buildPhpComposer() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
+		echo "Version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
 	fi
 }
 

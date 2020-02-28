@@ -5,11 +5,11 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Python
+namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public class PythonPlatformInstaller : PlatformInstallerBase
+    public class NodePlatformInstaller : PlatformInstallerBase
     {
-        public PythonPlatformInstaller(
+        public NodePlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IEnvironment environment)
             : base(commonOptions, environment)
@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public override string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(PythonConstants.PythonName, version);
+            return GetInstallerScriptSnippet(NodeConstants.NodeJsName, version);
         }
 
         public override bool IsVersionAlreadyInstalled(string version)
@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 version,
                 installationDirs: new[]
                 {
-                    PythonConstants.InstalledPythonVersionsDir,
-                    $"{Constants.TemporaryInstallationDirectoryRoot}/python"
+                    NodeConstants.InstalledNodeVersionsDir,
+                    $"{Constants.TemporaryInstallationDirectoryRoot}/nodejs"
                 });
         }
     }

@@ -73,12 +73,14 @@ then
 	echo
 	{{ ProductionOnlyPackageInstallCommand }}
 
-	echo
-	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
-	START_TIME=$SECONDS
-	rsync -rcE --links "node_modules/" "$SOURCE_DIR/node_modules"
-	ELAPSED_TIME=$(($SECONDS - $START_TIME))
-	echo "Done in $ELAPSED_TIME sec(s)."
+	if [ -d "node_modules" ]; then
+		echo
+		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
+		START_TIME=$SECONDS
+		rsync -rcE --links "node_modules/" "$SOURCE_DIR/node_modules"
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
+	fi
 fi
 
 cd "$SOURCE_DIR"
@@ -115,11 +117,13 @@ npm pack
 
 if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
 then
-	echo
-	echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
-	rsync -rcE --links "node_modules/" "$allModulesDirName" --delete
+	if [ -d "node_modules" ]; then
+		echo
+		echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
+		rsync -rcE --links "node_modules/" "$allModulesDirName" --delete
+	fi
 
-	if [ "$HasProdDependencies" == "true" ]; then
+	if [ "$HasProdDependencies" == "true" ] && [ -d "$prodModulesDirName/node_modules/" ]; then
 		echo
 		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
 		rsync -rcE --links "$prodModulesDirName/node_modules/" node_modules --delete

@@ -41,10 +41,10 @@ uploadFiles() {
             --container-name $platform \
             --account-name $storageAccount \
             --metadata \
-                buildnumber="$BUILD_BUILDNUMBER" \
-                commit="$commit" \
-                branch="$BUILD_SOURCEBRANCHNAME" \
-                checksum="$checksum" \
+                Buildnumber="$BUILD_BUILDNUMBER" \
+                Commit="$commit" \
+                Branch="$BUILD_SOURCEBRANCHNAME" \
+                Checksum="$checksum" \
                 $fileMetadata
     done
 }

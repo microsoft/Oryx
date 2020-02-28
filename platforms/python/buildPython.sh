@@ -32,15 +32,12 @@ buildPython() {
 	local dockerFile="$4"
 	local imageName="oryx/python"
 
-	if blobExists python python-$version.tar.gz; then
-		echo "Python version '$version' already present in blob storage. Skipping building it..."
-		echo
-	else
+	if shouldBuildSdk python python-$version.tar.gz; then
 		if ! $builtPythonPrereqs; then
 			buildPythonPrereqsImage
 		fi
 		
-		echo "Python version '$version' not present in blob storage. Building it in a docker image..."
+		echo "Building Python version '$version' in a docker image..."
 		echo
 
 		if [ -z "$dockerFile" ]; then
@@ -65,7 +62,7 @@ buildPython() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "version=$version" >> "$targetDir/python-$version-metadata.txt"
+		echo "Version=$version" >> "$targetDir/python-$version-metadata.txt"
 	fi
 }
 

@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"export {aIEnabled}=true")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .ToString();
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"export {aIEnabled}=true")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/oryx-appinsightsloader.js")
                 .ToString();
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIKey}=asdas")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileDoesNotExistCheck($"{appDir}/oryx-appinsightsloader.js")
                 .ToString();

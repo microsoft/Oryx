@@ -18,11 +18,8 @@ builtNodeImage=false
 getNode() {
 	local version="$1"
 
-	if blobExists nodejs nodejs-$version.tar.gz; then
-		echo "Node version '$version' already present in blob storage. Skipping it..."
-		echo
-	else
-		echo "Node version '$version' not present in blob storage. Getting it..."
+	if shouldBuildSdk nodejs nodejs-$version.tar.gz; then
+		echo "Getting Node version '$version'..."
 		echo
 
 		if ! $builtNodeImage; then
@@ -38,7 +35,7 @@ getNode() {
 			$imageName \
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		
-		echo "version=$version" >> "$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
+		echo "Version=$version" >> "$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
 	fi
 }
 

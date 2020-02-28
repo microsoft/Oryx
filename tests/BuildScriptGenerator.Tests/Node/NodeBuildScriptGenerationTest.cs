@@ -529,20 +529,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 }
             }
 
-            var nodeVersionProvider = new TestVersionProvider(
+            var nodeVersionProvider = new TestNodeVersionProvider(
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
-                new[] { "5.4.2", "6.0.0" });
+                defaultVersion: NodeVersions.Node12Version);
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
             optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
 
             return new NodePlatform(
+                commonOptions,
                 nodeScriptGeneratorOptions,
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
-                environment);
+                environment,
+                new NodePlatformInstaller(commonOptions, environment));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
@@ -557,6 +560,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 SourceRepo = sourceRepo,
                 Properties = new Dictionary<string, string>()
             };
+        }
+
+        private class TestNodeVersionProvider : INodeVersionProvider
+        {
+            private readonly string[] _supportedNodeVersions;
+            private readonly string _defaultVersion;
+
+            public TestNodeVersionProvider(string[] supportedNodeVersions, string defaultVersion)
+            {
+                _supportedNodeVersions = supportedNodeVersions;
+                _defaultVersion = defaultVersion;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedNodeVersions, _defaultVersion);
+            }
         }
     }
 }

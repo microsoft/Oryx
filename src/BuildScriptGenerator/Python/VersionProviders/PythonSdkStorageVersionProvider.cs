@@ -18,8 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             return GetAvailableVersionsFromStorage(
-                platformName: "python",
-                versionMetadataElementName: "version");
+                platformName: ToolNameConstants.PythonName,
+                versionMetadataElementName: "Version");
         }
     }
 }

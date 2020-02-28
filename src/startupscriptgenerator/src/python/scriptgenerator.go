@@ -28,6 +28,7 @@ type PythonStartupScriptGenerator struct {
 	VirtualEnvName           string
 	PackageDirectory         string
 	SkipVirtualEnvExtraction bool
+	EnableDynamicInstall     bool
 	Manifest                 common.BuildManifest
 }
 
@@ -49,7 +50,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n\n")
-	if !common.PathExists(pythonInstallationRoot) {
+	if gen.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.AppPath))
 	}
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")

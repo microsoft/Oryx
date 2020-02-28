@@ -131,30 +131,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private string DetectNodeVersion(dynamic packageJson)
         {
             var nodeVersionRange = packageJson?.engines?.node?.Value as string;
-            if (nodeVersionRange == null)
+
+            // Get the default version. This could be having just the major or major.minor version.
+            // So try getting the maximum satisfying version of the default version.
+            var versionInfo = _versionProvider.GetVersionInfo();
+            if (string.IsNullOrEmpty(nodeVersionRange))
             {
-                nodeVersionRange = _nodeScriptGeneratorOptions.NodeJsDefaultVersion;
+                nodeVersionRange = versionInfo.DefaultVersion;
             }
 
-            string nodeVersion = null;
-            if (!string.IsNullOrWhiteSpace(nodeVersionRange))
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                nodeVersionRange,
+                versionInfo.SupportedVersions);
+
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                nodeVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                var exception = new UnsupportedVersionException(
+                    NodeConstants.NodeJsName,
                     nodeVersionRange,
-                    _versionProvider.SupportedNodeVersions);
-
-                if (string.IsNullOrWhiteSpace(nodeVersion))
-                {
-                    var exc = new UnsupportedVersionException(
-                        NodeConstants.NodeJsName,
-                        nodeVersionRange,
-                        _versionProvider.SupportedNodeVersions);
-                    _logger.LogError(exc, $"Exception caught, the version '{nodeVersionRange}' is not supported for the node platform.");
-                    throw exc;
-                }
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exception,
+                    $"Exception caught, the version '{nodeVersionRange}' is not supported for the Node platform.");
+                throw exception;
             }
 
-            return nodeVersion;
+            return maxSatisfyingVersion;
         }
     }
 }
