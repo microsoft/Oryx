@@ -61,5 +61,5 @@ if [ "$createLinks" != "false" ]; then
     MAJOR_MINOR="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}"
     echo
     echo "Created link from $MAJOR_MINOR to $VERSION"
-    ln -s "$VERSION" "$MAJOR_MINOR"
+    ln -sfn "$VERSION" "$MAJOR_MINOR"
 fi

@@ -34,11 +34,10 @@
 12.13.0
 12.14.0
 12.14.1
+12.16.0
 
 # LTS versions
 6.17.1
 8.17.0
 10.19.0
-12.16.0
-
-# NOTE: Make sure to set the default version in 'defaultVersion.txt' file
+12.16.1
