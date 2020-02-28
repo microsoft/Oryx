@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -155,7 +155,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Bug#1071724")]
         [InlineData("true")]
         [InlineData("false")]
         public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressed(string pruneDevDependency)
@@ -171,7 +171,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")

@@ -28,7 +28,11 @@ func main() {
 		"runFromPath",
 		"",
 		"The path to the directory where the output is copied and run from there.")
-	manifestDirPtr := common.ManifestDirFlag
+	manifestDirPtr := flag.String(
+		"manifestDir",
+		"",
+		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
+			"it is assumed to be under the directory specified by 'appPath'.")
 	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	userStartupCommandPtr := flag.String(
 		"userStartupCommand",

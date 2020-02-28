@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var runScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx -appPath {appOutputDir} -manifestDir {manifestDir} -bindPort {ContainerPort}")
+                $"oryx create-script -appPath {appOutputDir} -manifestDir {manifestDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"cd {appOutputDir}")
                 .AddCommand("mkdir -p node_modules")
                 .AddCommand("tar -xzf node_modules.tar.gz -C node_modules")
-                .AddCommand($"oryx -bindPort {ContainerPort} -skipNodeModulesExtraction")
+                .AddCommand($"oryx create-script -bindPort {ContainerPort} -skipNodeModulesExtraction")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryDoesNotExistCheck("/node_modules")
                 .ToString();
@@ -127,7 +127,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Bug#1071724")]
         [InlineData("true")]
         [InlineData("false")]
         public async Task CopiesNodeModulesInSubDirectory_ToDestinationAre_WithoutCompressedNodeModules(string pruneDevDependency)
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddDirectoryExistsCheck($"{appOutputDir}/another-directory/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -288,7 +288,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
-                .AddCommand($"oryx -appPath {appDir}")
+                .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -330,7 +330,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -372,7 +372,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
                 .AddCommand(startupFilePath)
                 .ToString();
 
@@ -404,7 +404,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -445,7 +445,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -486,7 +486,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -529,7 +529,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

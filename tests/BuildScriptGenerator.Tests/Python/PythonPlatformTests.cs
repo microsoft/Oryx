@@ -15,10 +15,98 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
     public class PythonPlatformTests
     {
         [Fact]
+        public void GeneratedSnippet_DoesNotHaveInstallScript_IfDynamicInstallIsDisabled()
+        {
+            // Arrange
+            var options = new BuildScriptGeneratorOptions() { EnableDynamicInstall = false };
+            var environment = new TestEnvironment();
+            var installerScriptSnippet = "##INSTALLER_SCRIPT##";
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                installerScript: installerScriptSnippet,
+                Options.Create(options),
+                environment);
+            var platform = CreatePlatform(environment, versionProvider, platformInstaller, options);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo, PythonVersion = "3.7.5" };
+
+            // Act
+            var snippet = platform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Null(snippet.PlatformInstallationScriptSnippet);
+            Assert.Contains(ManifestFilePropertyKeys.PythonVersion, snippet.BuildProperties.Keys);
+            Assert.Equal("3.7.5", snippet.BuildProperties[ManifestFilePropertyKeys.PythonVersion]);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_HasInstallationScript_IfDynamicInstallIsEnabled()
+        {
+            // Arrange
+            var options = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
+            var environment = new TestEnvironment();
+            var installerScriptSnippet = "##INSTALLER_SCRIPT##";
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                installerScript: installerScriptSnippet,
+                Options.Create(options),
+                environment);
+            var platform = CreatePlatform(environment, versionProvider, platformInstaller, options);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo, PythonVersion = "3.7.5" };
+
+            // Act
+            var snippet = platform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.NotNull(snippet.PlatformInstallationScriptSnippet);
+            Assert.Equal(installerScriptSnippet, snippet.PlatformInstallationScriptSnippet);
+            Assert.Contains(ManifestFilePropertyKeys.PythonVersion, snippet.BuildProperties.Keys);
+            Assert.Equal("3.7.5", snippet.BuildProperties[ManifestFilePropertyKeys.PythonVersion]);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_DoesNotHaveInstallScript_IfVersionIsAlreadyPresentOnDisk()
+        {
+            // Arrange
+            var options = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
+            var environment = new TestEnvironment();
+            var installerScriptSnippet = "##INSTALLER_SCRIPT##";
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: true,
+                installerScript: installerScriptSnippet,
+                Options.Create(options),
+                environment);
+            var platform = CreatePlatform(environment, versionProvider, platformInstaller, options);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", PythonConstants.RequirementsFileName);
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo, PythonVersion = "3.7.5" };
+
+            // Act
+            var snippet = platform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Null(snippet.PlatformInstallationScriptSnippet);
+            Assert.Contains(ManifestFilePropertyKeys.PythonVersion, snippet.BuildProperties.Keys);
+            Assert.Equal("3.7.5", snippet.BuildProperties[ManifestFilePropertyKeys.PythonVersion]);
+        }
+
+        [Fact]
         public void GeneratedScript_DoesNotUseVenv()
         {
             // Arrange
-            var scriptGenerator = CreatePlatformInstance();
+            var scriptGenerator = CreatePlatform();
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
@@ -42,7 +130,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             string compressedVirtualEnvFileName)
         {
             // Arrange
-            var scriptGenerator = CreatePlatformInstance();
+            var scriptGenerator = CreatePlatform();
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
             var venvName = "bla";
@@ -64,23 +152,82 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.DoesNotContain(compressedVirtualEnvFileName, excludedDirs);
         }
 
-        private PythonPlatform CreatePlatformInstance(string defaultVersion = null)
+        private PythonPlatform CreatePlatform(
+            IEnvironment environment,
+            IPythonVersionProvider pythonVersionProvider,
+            PythonPlatformInstaller platformInstaller,
+            BuildScriptGeneratorOptions options)
         {
-            var testEnv = new TestEnvironment();
-            testEnv.Variables[PythonConstants.PythonDefaultVersionEnvVarName] = defaultVersion;
-
-            var nodeVersionProvider = new TestVersionProvider(new[] { Common.PythonVersions.Python37Version });
-
-            var scriptGeneratorOptions = Options.Create(new PythonScriptGeneratorOptions());
-            var optionsSetup = new PythonScriptGeneratorOptionsSetup(testEnv);
-            optionsSetup.Configure(scriptGeneratorOptions.Value);
+            var commonOptions = Options.Create(options);
 
             return new PythonPlatform(
-                scriptGeneratorOptions,
-                nodeVersionProvider,
+                commonOptions,
+                pythonVersionProvider,
+                environment,
+                NullLogger<PythonPlatform>.Instance,
+                detector: null,
+                platformInstaller);
+        }
+
+        private PythonPlatform CreatePlatform(string defaultVersion = null)
+        {
+            var testEnv = new TestEnvironment();
+            var versionProvider = new TestPythonVersionProvider(
+                supportedVersions: new[] { Common.PythonVersions.Python37Version },
+                defaultVersion: defaultVersion);
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
+
+            return new PythonPlatform(
+                commonOptions,
+                versionProvider,
                 testEnv,
                 NullLogger<PythonPlatform>.Instance,
-                detector: null);
+                detector: null,
+                new PythonPlatformInstaller(commonOptions, testEnv));
+        }
+
+        private class TestPythonVersionProvider : IPythonVersionProvider
+        {
+            private readonly IEnumerable<string> _supportedVersions;
+            private readonly string _defaultVersion;
+
+            public TestPythonVersionProvider(IEnumerable<string> supportedVersions, string defaultVersion)
+            {
+                _supportedVersions = supportedVersions;
+                _defaultVersion = defaultVersion;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedVersions, _defaultVersion);
+            }
+        }
+
+        private class TestPythonPlatformInstaller : PythonPlatformInstaller
+        {
+            private readonly bool _isVersionAlreadyInstalled;
+            private readonly string _installerScript;
+
+            public TestPythonPlatformInstaller(
+                bool isVersionAlreadyInstalled,
+                string installerScript,
+                IOptions<BuildScriptGeneratorOptions> commonOptions,
+                IEnvironment environment)
+                : base(commonOptions, environment)
+            {
+                _isVersionAlreadyInstalled = isVersionAlreadyInstalled;
+                _installerScript = installerScript;
+            }
+
+            public override bool IsVersionAlreadyInstalled(string version)
+            {
+                return _isVersionAlreadyInstalled;
+            }
+
+            public override string GetInstallerScriptSnippet(string version)
+            {
+                return _installerScript;
+            }
         }
     }
 }

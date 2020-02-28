@@ -15,6 +15,9 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
+    /// <summary>
+    /// Python Platform.
+    /// </summary>
     [BuildProperty(
         VirtualEnvironmentNamePropertyKey,
         "Name of the virtual environment to be created. Defaults to 'pythonenv<Python version>'.")]
@@ -29,47 +32,93 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         "If provided, packages will be downloaded to the given directory instead of to a virtual environment.")]
     internal class PythonPlatform : IProgrammingPlatform
     {
+        /// <summary>
+        /// The name of virtual environment.
+        /// </summary>
         internal const string VirtualEnvironmentNamePropertyKey = "virtualenv_name";
+
+        /// <summary>
+        /// The target package directory.
+        /// </summary>
         internal const string TargetPackageDirectoryPropertyKey = "packagedir";
 
+        /// <summary>
+        /// The compress virtual environment.
+        /// </summary>
         internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
-        internal const string ZipOption = "zip";
-        internal const string TarGzOption = "tar-gz";
 
+        /// <summary>
+        /// The zip option.
+        /// </summary>
+        internal const string ZipOption = "zip";
+
+        /// <summary>
+        /// The tar-gz option.
+        /// </summary>
+        internal const string TarGzOption = "tar-gz";
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
         private readonly ILogger<PythonPlatform> _logger;
         private readonly PythonLanguageDetector _detector;
+        private readonly PythonPlatformInstaller _platformInstaller;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
+        /// </summary>
+        /// <param name="pythonScriptGeneratorOptions">The options of pythonScriptGenerator.</param>
+        /// <param name="pythonVersionProvider">The Python version provider.</param>
+        /// <param name="environment">The environment of Python platform.</param>
+        /// <param name="logger">The logger of Python platform.</param>
+        /// <param name="detector">The detector of Python platform.</param>
         public PythonPlatform(
-            IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
             ILogger<PythonPlatform> logger,
-            PythonLanguageDetector detector)
+            PythonLanguageDetector detector,
+            PythonPlatformInstaller platformInstaller)
         {
+            _commonOptions = commonOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
             _environment = environment;
             _logger = logger;
             _detector = detector;
+            _platformInstaller = platformInstaller;
         }
 
+        /// <inheritdoc/>
         public string Name => PythonConstants.PythonName;
 
-        public IEnumerable<string> SupportedVersions => _pythonVersionProvider.SupportedPythonVersions;
+        public IEnumerable<string> SupportedVersions
+        {
+            get
+            {
+                var versionInfo = _pythonVersionProvider.GetVersionInfo();
+                return versionInfo.SupportedVersions;
+            }
+        }
 
+        /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            string installationScriptSnippet = null;
+            if (_commonOptions.EnableDynamicInstall
+                && !_platformInstaller.IsVersionAlreadyInstalled(context.PythonVersion))
+            {
+                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.PythonVersion);
+            }
+
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PythonConstants.PythonName}_version";
-            manifestFileProperties[key] = context.PythonVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = context.PythonVersion;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -89,11 +138,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     virtualEnvName = GetDefaultVirtualEnvName(context);
                 }
 
-                manifestFileProperties[ManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
+                manifestFileProperties[PythonManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
             }
             else
             {
-                manifestFileProperties[ManifestFilePropertyKeys.PackageDir] = packageDir;
+                manifestFileProperties[PythonManifestFilePropertyKeys.PackageDir] = packageDir;
             }
 
             var virtualEnvModule = string.Empty;
@@ -122,7 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (!string.IsNullOrWhiteSpace(compressedVirtualEnvFileName))
             {
-                manifestFileProperties[ManifestFilePropertyKeys.CompressedVirtualEnvFile]
+                manifestFileProperties[PythonManifestFilePropertyKeys.CompressedVirtualEnvFile]
                     = compressedVirtualEnvFileName;
             }
 
@@ -145,30 +194,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                PlatformInstallationScriptSnippet = installationScriptSnippet,
             };
         }
 
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             // TODO: support venvs
             return !repo.DirExists(PythonConstants.DefaultTargetPackageDirectory);
         }
 
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnablePython;
         }
 
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public void SetRequiredTools(
             ISourceRepo sourceRepo,
             string targetPlatformVersion,
@@ -177,15 +232,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[PythonConstants.PythonName] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.PythonName] = targetPlatformVersion;
             }
         }
 
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.PythonVersion = version;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext context)
         {
@@ -207,6 +264,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return dirs;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext context)
         {

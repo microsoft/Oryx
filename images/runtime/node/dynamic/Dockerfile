@@ -12,6 +12,9 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM oryx-run-base
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
+ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 ARG IMAGES_DIR=/tmp/oryx/images
 RUN apt-get update \
   && apt-get install -y \
@@ -47,3 +50,7 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
 # Node wrapper is used to debug apps when node is executed indirectly, e.g. by npm.
 COPY src/startupscriptgenerator/src/node/wrapper/node /opt/node-wrapper/
 RUN chmod a+x /opt/node-wrapper/node
+
+RUN mkdir -p /opt/node
+COPY images/runtime/node/installDependencies.sh /opt/node
+RUN chmod +x /opt/node/installDependencies.sh

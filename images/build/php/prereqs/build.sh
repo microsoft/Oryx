@@ -61,6 +61,28 @@ if [ $PHP_MAJOR == '5' ]; then
 	versionDevReqs='libssl1.0-dev'
 fi
 
+if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then 
+	apt-get update
+	apt-get install -y --no-install-recommends libonig-dev autoconf automake make
+	# libargon2 needs to be compiled for php7.4
+	# https://stackoverflow.com/questions/55636673/installing-php-on-amazon-linux-2-with-argon2-enabled
+	curl -o argon2.tar.gz  https://codeload.github.com/P-H-C/phc-winner-argon2/tar.gz/20190702
+	tar -xf argon2.tar.gz 
+	cd phc-winner-argon2-20190702 
+	make 
+	make test 
+	make install PREFIX=/usr 
+	# Return to root
+	cd ..
+	tar -xf php.tar.xz 
+	cd php-7.4.3*
+	autoconf
+	cd ..
+else
+	apt-get update
+	apt-get install -y --no-install-recommends libargon2-dev
+fi
+
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
 apt-get upgrade -y;
@@ -91,6 +113,11 @@ fi;
 versionConfigureArgs=''
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
+	# in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
+	# see also https://github.com/docker-library/php/issues/846#issuecomment-505638494
+	if [ $PHP_MINOR == '4' ]; then
+		versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
+	fi
 fi
 
 ./configure \

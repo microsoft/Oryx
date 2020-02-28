@@ -16,7 +16,7 @@ uploadFiles() {
         return
     fi
 
-    allFiles=$(find $artifactsDir -type f -name '*.tar.gz')
+    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name '*.txt')
     for fileToUpload in $allFiles
     do
         fileName=$(basename $fileToUpload)
@@ -41,10 +41,10 @@ uploadFiles() {
             --container-name $platform \
             --account-name $storageAccount \
             --metadata \
-                buildnumber="$BUILD_BUILDNUMBER" \
-                commit="$commit" \
-                branch="$BUILD_SOURCEBRANCHNAME" \
-                checksum="$checksum" \
+                Buildnumber="$BUILD_BUILDNUMBER" \
+                Commit="$commit" \
+                Branch="$BUILD_SOURCEBRANCHNAME" \
+                Checksum="$checksum" \
                 $fileMetadata
     done
 }

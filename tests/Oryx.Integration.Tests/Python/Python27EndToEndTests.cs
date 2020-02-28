@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx build {appDir} --platform python --language-version 2.7")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
                 .AddCommand(startupFile)
                 .ToString();
 
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
-                .AddCommand($"oryx -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

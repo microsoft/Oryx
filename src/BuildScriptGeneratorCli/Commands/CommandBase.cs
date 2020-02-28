@@ -4,7 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -43,6 +45,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (envSettings != null && envSettings.GitHubActions)
                 {
                     logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
+
+                    DateTime startTime, endTime;
+                    if (envSettings.GitHubActionsBuildImagePullStartTime != null
+                        && envSettings.GitHubActionsBuildImagePullEndTime != null
+                        && DateTime.TryParse(envSettings.GitHubActionsBuildImagePullStartTime, out startTime)
+                        && DateTime.TryParse(envSettings.GitHubActionsBuildImagePullEndTime, out endTime))
+                    {
+                        TimeSpan interval = endTime - startTime;
+                        var gitHubActionBuildImagePullDurationSeconds = interval.TotalSeconds.ToString();
+                        var buildEventProps = new Dictionary<string, string>()
+                        {
+                            { "gitHubActionBuildImagePullDurationSeconds", gitHubActionBuildImagePullDurationSeconds },
+                        };
+
+                        logger.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
+                    }
                 }
 
                 if (!IsValidInput(_serviceProvider, console))

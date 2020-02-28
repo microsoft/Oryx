@@ -45,10 +45,20 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var entrypointScript = "./run.sh";
             var bindPortFlag = specifyBindPortFlag ? $"-bindPort {containerPort}" : string.Empty;
-            var script = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx -appPath {appDir} {bindPortFlag}")
-                .AddCommand(entrypointScript)
+            var scriptBuilder = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}");
+
+            if (string.Equals("python", language, StringComparison.OrdinalIgnoreCase) 
+                || string.Equals("nodejs", language, StringComparison.OrdinalIgnoreCase))
+            {
+                scriptBuilder = scriptBuilder.AddCommand($"oryx create-script -appPath {appDir} {bindPortFlag}");
+            }
+            else
+            {
+                scriptBuilder = scriptBuilder.AddCommand($"oryx -appPath {appDir} {bindPortFlag}");
+            }
+
+            var script = scriptBuilder.AddCommand(entrypointScript)
                 .ToString();
 
             var runtimeImageName = _imageHelper.GetTestRuntimeImage(language, languageVersion);

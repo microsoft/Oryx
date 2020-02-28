@@ -21,7 +21,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());
             services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
-            services.AddScoped<NodeLanguageDetector>();
+            services.AddSingleton<NodeLanguageDetector>();
+            services.AddSingleton<NodePlatformInstaller>();
+            services.AddSingleton<NodeOnDiskVersionProvider>();
+            services.AddSingleton<NodeSdkStorageVersionProvider>();
             return services;
         }
     }

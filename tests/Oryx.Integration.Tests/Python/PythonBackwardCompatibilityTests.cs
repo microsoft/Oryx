@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

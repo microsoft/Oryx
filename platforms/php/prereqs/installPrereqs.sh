@@ -41,5 +41,5 @@ sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/bust
 	echo 'Pin-Priority: 990';
 } > /etc/apt/preferences.d/argon2-buster;
 apt-get update;
-apt-get install -y --no-install-recommends libargon2-dev libsodium-dev;
+apt-get install -y --no-install-recommends libsodium-dev;
 ##</argon2>##

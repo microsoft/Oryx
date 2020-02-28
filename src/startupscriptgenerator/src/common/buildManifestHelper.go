@@ -24,6 +24,10 @@ type BuildManifest struct {
 	StartupDllFileName        string
 	InjectedAppInsights       string
 	CompressedNodeModulesFile string
+	DotNetCoreSdkVersion      string
+	DotNetCoreRuntimeVersion  string
+	NodeVersion               string
+	PythonVersion             string
 }
 
 var _buildManifest BuildManifest

@@ -16,7 +16,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private const string DisablePhpEnvVarName = "DISABLE_PHP_BUILD";
         private const string DisableNodeJsEnvVarName = "DISABLE_NODEJS_BUILD";
         private const string EnableMultiPlatformBuildEnvVarName = "ENABLE_MULTIPLATFORM_BUILD";
+
+        // Environment Variables from GitHub Actions.
         private const string GitHubActionsEnvVarName = "GITHUB_ACTIONS";
+        private const string GitHubActionsBuildImagePullStartTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_START_TIME";
+        private const string GitHubActionsBuildImagePullEndTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_END_TIME";
 
         private IEnvironment _environment;
 
@@ -38,6 +42,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         // From the GitHub Actions environment variable documentation:
         // GITHUB_ACTIONS: Always set to true when GitHub Actions is running the workflow.
         public bool GitHubActions => IsEnvVariableTrue(GitHubActionsEnvVarName);
+
+        /// <summary>
+        /// Gets the time when a GitHub action starts to download build images for the container.
+        /// </summary>
+        public string GitHubActionsBuildImagePullStartTime => _environment.GetEnvironmentVariable(GitHubActionsBuildImagePullStartTimeEnvVarName);
+
+        /// <summary>
+        /// Gets the time when a GitHub action finishes downloading build images and successfully built the container.
+        /// </summary>
+        public string GitHubActionsBuildImagePullEndTime => _environment.GetEnvironmentVariable(GitHubActionsBuildImagePullEndTimeEnvVarName);
 
         /// <summary>
         /// Gets a value indicating whether multi-platform builds must be disabled.

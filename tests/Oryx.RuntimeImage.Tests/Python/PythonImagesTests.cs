@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetTestRuntimeImage("python", version),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { " " }
+                CommandArguments = new[] { "version" }
             });
 
             // Assert
@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
-                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
+                .AddCommand("oryx create-script -userStartupCommand entry.sh -appPath " + appPath)
                 .AddCommand(". ./run.sh") // Source the default output path
                 .ToString();
 

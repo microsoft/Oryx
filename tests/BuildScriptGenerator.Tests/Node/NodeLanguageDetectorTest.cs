@@ -41,6 +41,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           ""engines"" : { ""node"" : ""6.11.0"" }
         }";
 
+        private const string PackageJsonTemplateWithNodeVersion = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""description"": ""test app"",
+          ""main"": ""server.js"",
+          ""scripts"": {
+            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
+            ""start"": ""node server.js""
+          },
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""engines"" : { ""node"" : ""#VERSION_RANGE#"" }
+        }";
+
         private const string PackageJsonWithOnlyNpmVersion = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
@@ -95,9 +109,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_IfSourceDirectory_DoesNotHaveAnyFiles()
         {
             // Arrange
+            var version = "8.11.2";
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             // No files in source directory
             var repo = new MemorySourceRepo();
             var context = CreateContext(repo);
@@ -115,7 +130,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
-                supportedNpmVersions: new[] { "5.4.2" });
+                defaultVersion: NodeConstants.NodeLtsVersion);
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "server.js");
             var context = CreateContext(repo);
@@ -133,9 +148,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_ForSourceRepoWithServerJs_NotInRootDirectory()
         {
             // Arrange
+            var version = "8.11.2";
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "server.js");
             var context = CreateContext(repo);
@@ -148,12 +164,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeLtsVersion_ForSourceRepoOnlyWithAppJs()
+        public void Detect_ReturnsResult_WithDefaultVersion_ForSourceRepoOnlyWithAppJs()
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
-                supportedNpmVersions: new[] { "5.4.2" });
+                defaultVersion: NodeConstants.NodeLtsVersion);
             var repo = new MemorySourceRepo();
             repo.AddFile("app.js content", "app.js");
             var context = CreateContext(repo);
@@ -171,9 +187,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_ForSourceRepoWithAppJs_NotInRootDirectory()
         {
             // Arrange
+            var version = "8.11.2";
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "app.js");
             var context = CreateContext(repo);
@@ -186,12 +203,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeLtsVersion_ForPackageJsonWithNoVersion()
+        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithNoVersion()
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
-                supportedNpmVersions: new[] { "5.4.2" });
+                defaultVersion: NodeConstants.NodeLtsVersion);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -209,9 +226,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_ForSourceRepoWithPackageJson_NotInRootDirectory()
         {
             // Arrange
+            var version = "8.11.2";
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -224,7 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeLtsVersion_ForPackageJsonWithOnlyNpmVersion()
+        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithOnlyNpmVersion()
         {
             // Node detector only looks for node version and not the NPM version. The individual script
             // generator looks for npm version.
@@ -232,7 +250,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
-                supportedNpmVersions: new[] { "5.4.2" });
+                defaultVersion: NodeConstants.NodeLtsVersion);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithOnlyNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -250,11 +268,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsResult_WithNodeVersionFromEnvironmentVariable_ForPackageJsonWithNoNodeVersion()
         {
             // Arrange
+            var version = "500.500.500";
             var environment = new TestEnvironment();
-            environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = "500.500.500";
+            environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = version;
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "500.500.500" },
-                supportedNpmVersions: new[] { "5.4.2" },
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version,
                 environment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
@@ -266,7 +285,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Language);
-            Assert.Equal("500.500.500", result.LanguageVersion);
+            Assert.Equal(version, result.LanguageVersion);
         }
 
         [Fact]
@@ -277,7 +296,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = "8.11.2";
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" },
+                defaultVersion: "8.11.2",
                 environment);
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, NodeConstants.PackageJsonFileName);
@@ -292,13 +311,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal("6.11.0", result.LanguageVersion);
         }
 
+        [Theory]
+        [InlineData(new[] { "8.11.2", "5.6.9", "8.11.13" }, "5.6.9", ">5", "8.11.13")]
+        [InlineData(new[] { "8.9.5", "8.11.2", "5.6.9", "8.11.13" }, "5.6.9", ">8.9", "8.11.13")]
+        [InlineData(new[] { "8.9.5", "8.11.2", "11.12.0", "13.12.12", "8.11.13" }, "5.6.9", ">8.9 <13", "11.12.0")]
+        public void Detect_ReturnsResult_WithVersionSatisfying_NodeVersionRangeInPackageJson(
+            string[] supportedVersions,
+            string defaultVersion,
+            string versionRangeInPackageJson,
+            string expectedVersion)
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            var detector = CreateNodeLanguageDetector(
+                supportedNodeVersions: supportedVersions,
+                defaultVersion: defaultVersion,
+                environment);
+            var repo = new MemorySourceRepo();
+            var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", versionRangeInPackageJson);
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Language);
+            Assert.Equal(expectedVersion, result.LanguageVersion);
+        }
+
         [Fact]
-        public void Detect_ReturnsResult_WithNodeLtsVersion_ForMalformedPackageJson()
+        public void Detect_ReturnsResult_WithDefaultVersion_ForMalformedPackageJson()
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
-                supportedNpmVersions: new[] { "5.4.2" });
+                defaultVersion: NodeConstants.NodeLtsVersion);
             var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -313,12 +362,59 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_Throws_WhenUnsupportedNodeVersion_IsDetected()
+        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithNoExplicitVersionsSpecified()
         {
             // Arrange
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "6.11.0" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { NodeConstants.NodeLtsVersion },
+                defaultVersion: NodeConstants.NodeLtsVersion);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Language);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+        }
+
+        [Theory]
+        [InlineData(new[] { "8.11.1", "8.11.13", "9.10.12" }, "8", "8.11.13")]
+        [InlineData(new[] { "8.11.1", "8.11.13", "9.10.12" }, "8.11", "8.11.13")]
+        [InlineData(new[] { "8.11.1", "8.11.13", "9.10.12" }, "8.11.1", "8.11.1")]
+        public void Detect_ReturnsResult_WithDefaultVersionHavingOnlyMajorAndMinorVersion(
+            string[] supportedVersions,
+            string defaultVersion,
+            string expectedVersion)
+        {
+            // Arrange
+            var detector = CreateNodeLanguageDetector(
+                supportedNodeVersions: supportedVersions,
+                defaultVersion: defaultVersion);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Language);
+            Assert.Equal(expectedVersion, result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_Throws_WhenUnsupportedNodeVersion_IsDetected()
+        {
+            // Arrange
+            var version = "6.11.0";
+            var detector = CreateNodeLanguageDetector(
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             var repo = new MemorySourceRepo();
             var context = CreateContext(repo);
             repo.AddFile(PakageJsonWithUnsupportedNodeVersion, NodeConstants.PackageJsonFileName);
@@ -326,7 +422,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
             Assert.Equal(
-                $"Platform '{NodeConstants.NodeJsName}' version '20.20.20' is unsupported. Supported versions: 6.11.0",
+                $"Platform '{NodeConstants.NodeJsName}' version '20.20.20' is unsupported. Supported versions: {version}",
                 exception.Message);
         }
 
@@ -342,11 +438,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_IfIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
+            var version = "8.11.2";
             var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", iisStartupFileName);
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             var context = CreateContext(sourceRepo);
 
             // Act
@@ -368,12 +465,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_ReturnsNull_IfServerJs_AndIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
+            var version = "8.11.2";
             var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", "server.js");
             sourceRepo.AddFile("", iisStartupFileName);
             var detector = CreateNodeLanguageDetector(
-                supportedNodeVersions: new[] { "8.11.2" },
-                supportedNpmVersions: new[] { "5.4.2" });
+                supportedNodeVersions: new[] { version },
+                defaultVersion: version);
             var context = CreateContext(sourceRepo);
 
             // Act
@@ -393,14 +491,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private NodeLanguageDetector CreateNodeLanguageDetector(
             string[] supportedNodeVersions,
-            string[] supportedNpmVersions)
+            string defaultVersion)
         {
-            return CreateNodeLanguageDetector(supportedNodeVersions, supportedNpmVersions, new TestEnvironment());
+            return CreateNodeLanguageDetector(supportedNodeVersions, defaultVersion, new TestEnvironment());
         }
 
         private NodeLanguageDetector CreateNodeLanguageDetector(
             string[] supportedNodeVersions,
-            string[] supportedNpmVersions,
+            string defaultVersion,
             IEnvironment environment)
         {
             var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
@@ -408,11 +506,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             optionsSetup.Configure(options);
 
             return new NodeLanguageDetector(
-                new TestVersionProvider(supportedNodeVersions, supportedNpmVersions),
+                new TestNodeVersionProvider(supportedNodeVersions, defaultVersion),
                 Options.Create(options),
                 NullLogger<NodeLanguageDetector>.Instance,
                 environment,
                 new DefaultStandardOutputWriter());
+        }
+
+        private class TestNodeVersionProvider : INodeVersionProvider
+        {
+            private readonly string[] _supportedNodeVersions;
+            private readonly string _defaultVersion;
+
+            public TestNodeVersionProvider(string[] supportedNodeVersions, string defaultVersion)
+            {
+                _supportedNodeVersions = supportedNodeVersions;
+                _defaultVersion = defaultVersion;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedNodeVersions, _defaultVersion);
+            }
         }
     }
 }

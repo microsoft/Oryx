@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -364,6 +363,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 shouldPackage: ShouldPackage,
                 requiredOsPackages: string.IsNullOrWhiteSpace(OsRequirements) ? null : OsRequirements.Split(','),
                 scriptOnly: false,
+                enableDynamicInstall: EnableDynamicInstall,
                 properties: Properties);
         }
 

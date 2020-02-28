@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common;
@@ -23,9 +24,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                data.Add(Settings.BuildImageName);
+                data.Add(Settings.SlimBuildImageName);
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                return data;
+            }
+        }
+
         [Theory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange
@@ -320,7 +333,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                       $"{NodeConstants.NodeJsName}_version=\"{version}\"",
+                       $"{ManifestFilePropertyKeys.NodeVersion}=\"{version}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -638,6 +651,74 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue_AndNoProdDependencies()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(
+                Path.Combine(_hostSamplesDir, "nodejs", "azure-pages-sample"));
+
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("empty-dependencies")]
+        [InlineData("no-dependeny-nodes")]
+        public void BuildsNodeApp_IfPruneDevDependenciesIsTrue_AndNoProd_OrDevDependencies(string appName)
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(
+                Path.Combine(_hostSamplesDir, "nodejs", "app-with-no-dependencies", appName));
+
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

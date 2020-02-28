@@ -1,0 +1,23 @@
+variables:
+    ascName: OryxMCR
+    acrName: oryxdevmcr.azurecr.io
+    skipComponentGovernanceDetection: true
+  
+jobs:
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build Node runtime base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: node
+    artifactsFileName: node-runtimeimage-bases.txt
+
+- job: Release_NodeRuntimeBaseImage
+  dependsOn: Build_BaseImage
+  displayName: Push images to MCR
+  timeoutInMinutes: 250
+  pool:
+    name: OryxLinux
+  steps:
+    - template: ../templates/_releaseBaseImagesStepTemplate.yml
+      parameters:
+        baseImageName: 'node'

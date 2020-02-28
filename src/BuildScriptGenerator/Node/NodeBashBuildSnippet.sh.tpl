@@ -7,7 +7,7 @@ echo
 {{ if PackageRegistryUrl | IsNotBlank }}
 echo
 echo "Adding package registry to .npmrc: {{ PackageRegistryUrl }}"
-echo "registry={{ PackageRegistryUrl }}" > ~/.npmrc
+echo "registry={{ PackageRegistryUrl }}" >> ~/.npmrc
 echo
 {{ end }}
 
@@ -26,17 +26,9 @@ fi
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=__oryx_all_node_modules
 prodModulesDirName=__oryx_prod_node_modules
-copyOnlyProdModulesToOutput=false
-
 PruneDevDependencies={{ PruneDevDependencies }}
-# We want separate folders for prod modules only when the package.json has separate dependencies
-hasProductionOnlyDependencies="{{ HasProductionOnlyDependencies }}"
-if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ] && \
-   [ "$PruneDevDependencies" == "true" ] && \
-   [ "$hasProductionOnlyDependencies" == "true" ]
-then
-	copyOnlyProdModulesToOutput=true
-fi
+HasProdDependencies={{ HasProdDependencies }}
+HasDevDependencies={{ HasDevDependencies }}
 
 # if node modules exist separately for dev & prod (like from an earlier build),
 # rename the folders back appropriately for the current build
@@ -47,10 +39,10 @@ then
 	echo "Copying modules from '$SOURCE_DIR/$allModulesDirName' to '$SOURCE_DIR/node_modules'..."
 	cd "$SOURCE_DIR"
 	mkdir -p node_modules
-	rsync -rtE --links "$allModulesDirName/" node_modules
+	rsync -rcE --links "$allModulesDirName/" node_modules
 fi
 
-if [ "$copyOnlyProdModulesToOutput" == "true" ]
+if [ "$PruneDevDependencies" == "true" ] && [ "$HasProdDependencies" == "true" ]
 then
 	# Delete existing prod modules folder so that we do not publish
 	# any unused modules to final destination directory.
@@ -81,12 +73,14 @@ then
 	echo
 	{{ ProductionOnlyPackageInstallCommand }}
 
-	echo
-	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
-	START_TIME=$SECONDS
-	rsync -rtE --links "node_modules/" "$SOURCE_DIR/node_modules"
-	ELAPSED_TIME=$(($SECONDS - $START_TIME))
-	echo "Done in $ELAPSED_TIME sec(s)."
+	if [ -d "node_modules" ]; then
+		echo
+		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName' to '$SOURCE_DIR/node_modules'..."
+		START_TIME=$SECONDS
+		rsync -rcE --links "node_modules/" "$SOURCE_DIR/node_modules"
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
+	fi
 fi
 
 cd "$SOURCE_DIR"
@@ -121,15 +115,21 @@ echo
 npm pack
 {{ end }}
 
-if [ "$copyOnlyProdModulesToOutput" == "true" ]
+if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
 then
-	echo
-	echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
-	rsync -rtE --links "node_modules/" "$allModulesDirName" --delete
+	if [ -d "node_modules" ]; then
+		echo
+		echo "Copy '$SOURCE_DIR/node_modules' with all dependencies to '$SOURCE_DIR/$allModulesDirName'..."
+		rsync -rcE --links "node_modules/" "$allModulesDirName" --delete
+	fi
 
-	echo
-	echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
-	rsync -rtE --links "$prodModulesDirName/node_modules/" node_modules --delete
+	if [ "$HasProdDependencies" == "true" ] && [ -d "$prodModulesDirName/node_modules/" ]; then
+		echo
+		echo "Copying production dependencies from '$SOURCE_DIR/$prodModulesDirName/node_modules' to '$SOURCE_DIR/node_modules'..."
+		rsync -rcE --links "$prodModulesDirName/node_modules/" node_modules --delete
+	else
+		rm -rf "node_modules/"
+	fi
 fi
 
 {{ if CompressNodeModulesCommand | IsNotBlank }}

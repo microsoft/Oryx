@@ -7,6 +7,7 @@
 # Since this file is expected to be 'sourced', we expect the REPO_DIR variable
 # to be supplied in the parent script sourcing this file.
 source "$REPO_DIR/build/__variables.sh"
+source "$REPO_DIR/build/__sdkStorageConstants.sh"
 
 volumeHostDir="$ARTIFACTS_DIR/platformSdks"
 volumeContainerDir="/tmp/sdk"
@@ -16,7 +17,7 @@ blobExists() {
 	local containerName="$1"
 	local blobName="$2"
 	local exitCode=1
-	curl -I https://oryxsdksdev.blob.core.windows.net/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
+	curl -I $DEV_SDK_STORAGE_BASE_URL/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
 	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt
@@ -25,6 +26,19 @@ blobExists() {
 		return 0
 	else
 		return 1
+	fi
+}
+
+shouldBuildSdk() {
+	local containerName="$1"
+	local blobName="$2"
+
+	if [ "$OVERWRITE_EXISTING_SDKS" == "true" ]
+	then
+		return 0
+	else
+		# return whatever exit cdoe the following returns
+		blobExists $containerName $blobName
 	fi
 }
 

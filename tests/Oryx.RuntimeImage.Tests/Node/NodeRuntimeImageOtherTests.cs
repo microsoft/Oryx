@@ -45,8 +45,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("10.10", "10.10.0")]
         [InlineData("10.12", "10.12.0")]
         [InlineData("10.14", "10.14.2")]
-        [InlineData("10.16", "10.16.3")]
-        [InlineData("12.9", "12.9.1")]
         [InlineData("12", NodeVersions.Node12Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
@@ -109,7 +107,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var script = new ShellScriptBuilder()
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
-                .AddCommand("oryx -userStartupCommand entry.sh -appPath " + appPath)
+                .AddCommand("oryx create-script -userStartupCommand entry.sh -appPath " + appPath)
                 .AddCommand(". ./run.sh") // Source the default output path
                 .ToString();
 
@@ -141,7 +139,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"cd {dir}/app")
                 .AddCommand("npm install")
                 .AddCommand("cd ..")
-                .AddCommand($"oryx -remoteDebug -debugPort={containerDebugPort}")
+                .AddCommand($"oryx create-script -remoteDebug -debugPort={containerDebugPort}")
                 .AddCommand("./run.sh")
                 .ToString();
 

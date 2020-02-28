@@ -15,6 +15,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
+    /// <summary>
+    /// Node.js Platform.
+    /// </summary>
     [BuildProperty(RegistryUrlPropertyKey, "Custom npm registry URL. Will be written to .npmrc during the build.")]
     [BuildProperty(
         CompressNodeModulesPropertyKey,
@@ -27,47 +30,97 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
     internal class NodePlatform : IProgrammingPlatform
     {
+        /// <summary>
+        /// Property key of Registry URL.
+        /// </summary>
         internal const string RegistryUrlPropertyKey = "registry";
-        internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
-        internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
-        internal const string ZipNodeModulesOption = "zip";
-        internal const string TarGzNodeModulesOption = "tar-gz";
 
+        /// <summary>
+        /// Property key of compress_node_modules.
+        /// </summary>
+        internal const string CompressNodeModulesPropertyKey = "compress_node_modules";
+
+        /// <summary>
+        /// Property key of prune_dev_dependencies.
+        /// </summary>
+        internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
+
+        /// <summary>
+        /// The zip option for node modules.
+        /// </summary>
+        internal const string ZipNodeModulesOption = "zip";
+
+        /// <summary>
+        /// The tar-gz option for node modules.
+        /// </summary>
+        internal const string TarGzNodeModulesOption = "tar-gz";
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
         private readonly NodeLanguageDetector _detector;
         private readonly IEnvironment _environment;
+        private readonly NodePlatformInstaller _platformInstaller;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NodePlatform"/> class.
+        /// </summary>
+        /// <param name="nodeScriptGeneratorOptions">The options for nodeScriptGenerator.</param>
+        /// <param name="nodeVersionProvider">The Node.js version provider.</param>
+        /// <param name="logger">The logger of Node.js platform.</param>
+        /// <param name="detector">The detector of Node.js platform.</param>
+        /// <param name="environment">The environment of Node.js platform.</param>
         public NodePlatform(
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatform> logger,
             NodeLanguageDetector detector,
-            IEnvironment environment)
+            IEnvironment environment,
+            NodePlatformInstaller nodePlatformInstaller)
         {
+            _commonOptions = commonOptions.Value;
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
             _logger = logger;
             _detector = detector;
             _environment = environment;
+            _platformInstaller = nodePlatformInstaller;
         }
 
+        /// <inheritdoc/>
         public string Name => NodeConstants.NodeJsName;
 
-        public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
+        /// <inheritdoc/>
+        public IEnumerable<string> SupportedVersions
+        {
+            get
+            {
+                var versionInfo = _nodeVersionProvider.GetVersionInfo();
+                return versionInfo.SupportedVersions;
+            }
+        }
 
+        /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
 
+        /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
-            var buildProperties = new Dictionary<string, string>();
+            string installationScriptSnippet = null;
+            if (_commonOptions.EnableDynamicInstall
+                && !_platformInstaller.IsVersionAlreadyInstalled(ctx.NodeVersion))
+            {
+                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.NodeVersion);
+            }
+
+            var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            buildProperties[$"{NodeConstants.NodeJsName}_version"] = ctx.NodeVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = ctx.NodeVersion;
 
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
@@ -99,11 +152,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
 
-            var hasProductionOnlyDependencies = false;
+            var hasProdDependencies = false;
+            if (packageJson?.dependencies != null)
+            {
+                hasProdDependencies = true;
+            }
+
+            var hasDevDependencies = false;
             if (packageJson?.devDependencies != null)
             {
                 // If development time dependencies are present we want to avoid copying them to improve performance
-                hasProductionOnlyDependencies = true;
+                hasDevDependencies = true;
             }
 
             var productionOnlyPackageInstallCommand = string.Format(
@@ -143,13 +202,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             if (!string.IsNullOrWhiteSpace(compressedNodeModulesFileName))
             {
-                buildProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
+                manifestFileProperties[NodeConstants.NodeModulesFileBuildProperty] = compressedNodeModulesFileName;
             }
 
             bool pruneDevDependencies = ShouldPruneDevDependencies(ctx);
             string appInsightsInjectCommand = string.Empty;
 
-            GetAppOutputDirPath(packageJson, buildProperties);
+            GetAppOutputDirPath(packageJson, manifestFileProperties);
 
             string customRegistryUrl = null;
             if (ctx.Properties != null)
@@ -158,7 +217,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 if (!string.IsNullOrWhiteSpace(customRegistryUrl))
                 {
                     // Write the custom registry to the build manifest
-                    buildProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                    manifestFileProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
                 }
             }
 
@@ -168,7 +227,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,
-                HasProductionOnlyDependencies = hasProductionOnlyDependencies,
+                HasProdDependencies = hasProdDependencies,
+                HasDevDependencies = hasDevDependencies,
                 ProductionOnlyPackageInstallCommand = productionOnlyPackageInstallCommand,
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
@@ -189,76 +249,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = buildProperties,
+                BuildProperties = manifestFileProperties,
+                PlatformInstallationScriptSnippet = installationScriptSnippet,
             };
         }
 
-        private void GetAppOutputDirPath(dynamic packageJson, Dictionary<string, string> buildProperties)
-        {
-            if (packageJson == null || packageJson.scripts == null || packageJson.scripts["build"] == null)
-            {
-                return;
-            }
-
-            var buildNode = packageJson.scripts["build"] as JValue;
-            var buildCommand = buildNode.Value as string;
-
-            if (string.IsNullOrEmpty(buildCommand))
-            {
-                return;
-            }
-
-            string outputDirPath = null;
-            if (buildCommand.Contains("ng build", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = "dist";
-            }
-            else if (buildCommand.Contains("gatsby build", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = "public";
-            }
-            else if (buildCommand.Contains("react-scripts build", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = "build";
-            }
-            else if (buildCommand.Contains("next build", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = ".next";
-            }
-            else if (buildCommand.Contains("nuxt build", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = ".nuxt";
-            }
-            else if (buildCommand.Contains("vue-cli-service build", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = "dist";
-            }
-            else if (buildCommand.Contains("hexo generate", StringComparison.OrdinalIgnoreCase))
-            {
-                outputDirPath = "public";
-            }
-
-            if (!string.IsNullOrEmpty(outputDirPath))
-            {
-                buildProperties[NodeManifestFilePropertyKeys.OutputDirPath] = outputDirPath;
-            }
-        }
-
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return !repo.DirExists(NodeConstants.NodeModulesDirName);
         }
 
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return ctx.EnableNodeJs;
         }
 
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public void SetRequiredTools(
             ISourceRepo sourceRepo,
             string targetPlatformVersion,
@@ -270,35 +284,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 $"{nameof(sourceRepo)} must not be null since Node needs access to the repository");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-                toolsToVersion[NodeConstants.NodeToolName] = targetPlatformVersion;
-            }
-
-            var packageJson = GetPackageJsonObject(sourceRepo, _logger);
-            if (packageJson != null)
-            {
-                string npmVersion = GetNpmVersion(packageJson);
-                _logger.LogDebug("GetNpmVersion returned {npmVersion}", npmVersion);
-                if (!string.IsNullOrEmpty(npmVersion))
-                {
-                    toolsToVersion[NodeConstants.NpmToolName] = npmVersion;
-                }
-            }
-            else
-            {
-                _logger.LogDebug($"{NodeConstants.PackageJsonFileName} is null; skipping setting {NodeConstants.NpmToolName} tool");
+                toolsToVersion[ToolNameConstants.NodeName] = targetPlatformVersion;
             }
         }
 
+        /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
             context.NodeVersion = version;
         }
 
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
         {
             var dirs = new List<string>
@@ -322,12 +324,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return dirs;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
         {
             return new[]
             {
                 NodeConstants.AllNodeModulesDirName,
                 NodeConstants.ProdNodeModulesDirName,
+
                 // we need to make sure we are not copying the root's node_modules folder
                 // if there are any other node_modules folder we will copy them to destination
                 string.Concat("/", NodeConstants.NodeModulesDirName),
@@ -337,6 +341,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
         }
 
+        /// <summary>
+        /// Gets the package json object.
+        /// </summary>
+        /// <param name="sourceRepo">The source repository.</param>
+        /// <param name="logger">The logger of Node.js platform.</param>
+        /// <returns>Package json Object.</returns>
         internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {
             dynamic packageJson = null;
@@ -406,29 +416,55 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return isNodeModulesPackaged;
         }
 
-        private string GetNpmVersion(dynamic packageJson)
+        private void GetAppOutputDirPath(dynamic packageJson, Dictionary<string, string> buildProperties)
         {
-            string npmVersionRange = packageJson?.engines?.npm?.Value;
-            if (npmVersionRange == null)
+            if (packageJson == null || packageJson.scripts == null || packageJson.scripts["build"] == null)
             {
-                npmVersionRange = _nodeScriptGeneratorOptions.NpmDefaultVersion;
+                return;
             }
 
-            string npmVersion = null;
-            if (!string.IsNullOrWhiteSpace(npmVersionRange))
+            var buildNode = packageJson.scripts["build"] as JValue;
+            var buildCommand = buildNode.Value as string;
+
+            if (string.IsNullOrEmpty(buildCommand))
             {
-                var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
-                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(npmVersionRange, supportedNpmVersions);
-                if (string.IsNullOrEmpty(npmVersion))
-                {
-                    _logger.LogWarning(
-                        "User requested npm version {npmVersion} but it wasn't resolved",
-                        npmVersionRange);
-                    return null;
-                }
+                return;
             }
 
-            return npmVersion;
+            string outputDirPath = null;
+            if (buildCommand.Contains("ng build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "dist";
+            }
+            else if (buildCommand.Contains("gatsby build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "public";
+            }
+            else if (buildCommand.Contains("react-scripts build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "build";
+            }
+            else if (buildCommand.Contains("next build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = ".next";
+            }
+            else if (buildCommand.Contains("nuxt build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = ".nuxt";
+            }
+            else if (buildCommand.Contains("vue-cli-service build", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "dist";
+            }
+            else if (buildCommand.Contains("hexo generate", StringComparison.OrdinalIgnoreCase))
+            {
+                outputDirPath = "public";
+            }
+
+            if (!string.IsNullOrEmpty(outputDirPath))
+            {
+                buildProperties[NodeManifestFilePropertyKeys.OutputDirPath] = outputDirPath;
+            }
         }
     }
 }
