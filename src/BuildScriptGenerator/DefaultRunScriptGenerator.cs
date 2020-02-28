@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 using NLog.Targets;
@@ -84,11 +86,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return RunStartupScriptGeneratorForPlatform(targetPlatform, ctx);
         }
 
-        private string RunStartupScriptGeneratorForPlatform(IProgrammingPlatform plat, RunScriptGeneratorContext ctx)
+        private string RunStartupScriptGeneratorForPlatform(
+            IProgrammingPlatform platform,
+            RunScriptGeneratorContext ctx)
         {
-            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + plat.Name;
+            var scriptGenPath = FilePaths.RunScriptGeneratorDir + "/" + platform.Name;
+            var scriptGenArgs = new List<string>();
 
-            var scriptGenArgs = new List<string> { "-appPath", ctx.SourceRepo.RootPath, "-output", _tempScriptPath };
+            // 'create-script' is only supported for these platform as of now
+            if (platform is NodePlatform || platform is PythonPlatform)
+            {
+                scriptGenArgs.Add("create-script");
+            }
+
+            scriptGenArgs.AddRange(new[] { "-appPath", ctx.SourceRepo.RootPath, "-output", _tempScriptPath });
+
             if (ctx.PassThruArguments != null)
             {
                 scriptGenArgs.AddRange(ctx.PassThruArguments);
