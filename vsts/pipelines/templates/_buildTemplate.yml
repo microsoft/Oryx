@@ -27,10 +27,10 @@ steps:
     or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
     or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
-- task: ShellScript@2
-  displayName: 'Build Oryx.sln'
-  inputs:
-    scriptPath: ./build/buildSln.sh
+# - task: ShellScript@2
+#   displayName: 'Build Oryx.sln'
+#   inputs:
+#     scriptPath: ./build/buildSln.sh
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
