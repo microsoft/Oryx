@@ -3,11 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Net.Http;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonSdkStorageVersionProvider : SdkStorageVersionProviderBase, IPythonVersionProvider
     {
-        public PythonSdkStorageVersionProvider(IEnvironment environment) : base(environment)
+        public PythonSdkStorageVersionProvider(IEnvironment environment, IHttpClientFactory httpClientFactory)
+            : base(environment, httpClientFactory)
         {
         }
 

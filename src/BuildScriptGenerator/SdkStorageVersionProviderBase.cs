@@ -6,9 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -16,49 +17,54 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class SdkStorageVersionProviderBase
     {
         private readonly IEnvironment _environment;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public SdkStorageVersionProviderBase(IEnvironment environment)
+        public SdkStorageVersionProviderBase(IEnvironment environment, IHttpClientFactory httpClientFactory)
         {
             _environment = environment;
+            _httpClientFactory = httpClientFactory;
         }
 
         protected PlatformVersionInfo GetAvailableVersionsFromStorage(
             string platformName,
             string versionMetadataElementName)
         {
-            var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
-            var blobServiceClient = new BlobServiceClient(serviceUri: new Uri(sdkStorageBaseUrl));
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(platformName);
+            var httpClient = _httpClientFactory.CreateClient("general");
 
-            // Example: nodejs-10.1.0.tar.gz is the format of a blob
-            var blobList = blobContainerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{platformName}-");
+            var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
+            var blobList = httpClient
+                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}?restype=container&comp=list&include=metadata")
+                .Result;
+            var xdoc = XDocument.Parse(blobList);
             var supportedVersions = new List<string>();
-            foreach (var blob in blobList)
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
-                // Metadata dictionary here is case-insensitive
-                if (blob.Metadata.TryGetValue(versionMetadataElementName, out var version))
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements.Where(e => string.Equals(
+                        versionMetadataElementName,
+                        e.Name.LocalName,
+                        StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+                if (versionElement != null)
                 {
-                    supportedVersions.Add(version);
+                    supportedVersions.Add(versionElement.Value);
                 }
             }
 
             // get default version
-            var blobClient = blobContainerClient.GetBlobClient(SdkStorageConstants.DefaultVersionFileName);
-            var blobStream = blobClient.Download().Value.Content;
-            string blobContent = null;
-            using (var streamReader = new StreamReader(blobStream))
-            {
-                blobContent = streamReader.ReadToEnd();
-            }
+            var defaultVersionContent = httpClient
+                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/defaultVersion.txt")
+                .Result;
 
             string defaultVersion = null;
-            using (var stringReader = new StringReader(blobContent))
+            using (var stringReader = new StringReader(defaultVersionContent))
             {
                 string line;
                 while ((line = stringReader.ReadLine()) != null)
                 {
                     // Ignore any comments in the file
-                    if (!line.StartsWith("#") && !line.StartsWith("//"))
+                    if (!line.StartsWith("#") || !line.StartsWith("//"))
                     {
                         defaultVersion = line.Trim();
                         break;

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Net.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
@@ -59,7 +60,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
         private class TestPythonSdkStorageVersionProvider : PythonSdkStorageVersionProvider
         {
-            public TestPythonSdkStorageVersionProvider(IEnvironment environment) : base(environment)
+            public TestPythonSdkStorageVersionProvider(
+                IEnvironment environment, IHttpClientFactory httpClientFactory)
+                : base(environment, httpClientFactory)
             {
             }
 
@@ -84,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var environment = new TestEnvironment();
 
             var onDiskProvider = new TestPythonOnDiskVersionProvider(pythonOptions);
-            var storageProvider = new TestPythonSdkStorageVersionProvider(environment);
+            var storageProvider = new TestPythonSdkStorageVersionProvider(environment, new TestHttpClientFactory());
             var versionProvider = new PythonVersionProvider(
                 commonOptions,
                 onDiskProvider,
