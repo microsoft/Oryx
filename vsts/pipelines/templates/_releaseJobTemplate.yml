@@ -46,6 +46,11 @@ jobs:
       PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
     inputs:
       scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
+  - task: ShellScript@2
+    displayName: 'Test Prod storage account'
+    inputs:
+      scriptPath: ./build/testIntegration.sh
+      args: StorageAccountTests=Prod
 
 - job: Release_GitHub
   displayName: Create GitHub release

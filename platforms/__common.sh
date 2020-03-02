@@ -39,6 +39,12 @@ shouldBuildSdk() {
 	else
 		# return whatever exit cdoe the following returns
 		blobExists $containerName $blobName
+		exitCode=$?
+		if [ "$exitCode" == 0 ]; then
+			return 1
+		else
+			return 0
+		fi
 	fi
 }
 

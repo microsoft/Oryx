@@ -61,9 +61,6 @@ buildPhpComposer() {
 	mkdir -p "$targetDir"
 
 	if shouldBuildSdk php-composer php-composer-$version.tar.gz; then
-		echo "Php composer version '$version' already present in blob storage. Skipping building it..."
-		echo
-	else
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
