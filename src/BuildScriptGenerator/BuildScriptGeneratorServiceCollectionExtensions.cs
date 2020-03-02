@@ -4,13 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Polly;
-using Polly.Extensions.Http;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -33,11 +28,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
             services.AddSingleton<IEnvironmentSettingsProvider, DefaultEnvironmentSettingsProvider>();
             services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
-            services.AddHttpClient("general", httpClient =>
-            {
-                // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
-                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("oryx", "1.0"));
-            }).AddPolicyHandler(GetRetryPolicy());
 
             // Add all checkers (platform-dependent + platform-independent)
             foreach (Type type in typeof(BuildScriptGeneratorServiceCollectionExtensions).Assembly.GetTypes())
@@ -49,16 +39,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return services;
-        }
-
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-        {
-            return HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(
-                    retryCount: 6,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }
 }

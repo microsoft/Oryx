@@ -126,6 +126,7 @@
     sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdks.blob.core.windows.net
+    default-version-file-name: defaultVersion.txt
   outputs:
     - type: shell
       directory: build

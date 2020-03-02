@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Net.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
@@ -60,9 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
         {
-            public TestNodeSdkStorageVersionProvider(
-                IEnvironment environment, IHttpClientFactory httpClientFactory)
-                : base(environment, httpClientFactory)
+            public TestNodeSdkStorageVersionProvider(IEnvironment environment) : base(environment)
             {
             }
 
@@ -87,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
 
             var onDiskProvider = new TestNodeOnDiskVersionProvider(nodeOptions);
-            var storageProvider = new TestNodeSdkStorageVersionProvider(environment, new TestHttpClientFactory());
+            var storageProvider = new TestNodeSdkStorageVersionProvider(environment);
             var versionProvider = new NodeVersionProvider(
                 commonOptions,
                 onDiskProvider,

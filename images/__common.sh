@@ -13,9 +13,14 @@ function downloadFileAndVerifyChecksum() {
         -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$platformName-$version.tar.gz" \
         --output $downloadedFileName
 
-    headerName="x-ms-meta-Checksum"
-    checksumHeader=$(cat $headersFile | grep $headerName: | tr -d '\r')
+    # Use all lowercase letters to find the header and it's value
+    headerName="x-ms-meta-checksum"
+    # Search the header ignoring case
+    checksumHeader=$(cat $headersFile | grep -i $headerName: | tr -d '\r')
+    # Change the found header and value to lowercase
+    checksumHeader=$(echo $checksumHeader | tr '[A-Z]' '[a-z]')
     checksumValue=${checksumHeader#"$headerName: "}
+    rm -f $headersFile
     echo
     echo "Verifying checksum..."
     echo "$checksumValue $downloadedFileName" | sha512sum -c -
