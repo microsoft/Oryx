@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -36,10 +37,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .Result;
             var xdoc = XDocument.Parse(blobList);
             var supportedVersions = new List<string>();
-            foreach (var runtimeVersionElement in xdoc.XPathSelectElements(
-                $"//Blobs/Blob/Metadata/{versionMetadataElementName}"))
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
-                supportedVersions.Add(runtimeVersionElement.Value);
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements.Where(e => string.Equals(
+                        versionMetadataElementName,
+                        e.Name.LocalName,
+                        StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+                if (versionElement != null)
+                {
+                    supportedVersions.Add(versionElement.Value);
+                }
             }
 
             // get default version

@@ -18,14 +18,14 @@ import (
 func SetupEnv(script string) {
 	WriteScript(consts.SetupScriptLocation, script)
 	cmd := exec.Command("/bin/sh", consts.SetupScriptLocation)
-	var outb, errb bytes.Buffer
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
+	var outBytes, errBytes bytes.Buffer
+	cmd.Stdout = &outBytes
+	cmd.Stderr = &errBytes
 	err := cmd.Run()
+	fmt.Println(outBytes.String(), errBytes.String())
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(outb.String(), errb.String())
 }
 
 func GetSetupScript(platformName string, version string, installationDir string) string {
@@ -37,10 +37,10 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	tarFile := fmt.Sprintf("%s.tar.gz", version)
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
-	scriptBuilder.WriteString("set -ex\n")
+	scriptBuilder.WriteString("set -e\n")
 	scriptBuilder.WriteString("echo\n")
 	scriptBuilder.WriteString(
-		fmt.Sprintf("echo Downloading and installing '%s' version '%s'...\n", platformName, version))
+		fmt.Sprintf("echo Downloading '%s' version '%s' to '%s'...\n", platformName, version, installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("mkdir -p %s\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
 	scriptBuilder.WriteString(
@@ -50,13 +50,18 @@ func GetSetupScript(platformName string, version string, installationDir string)
 			platformName,
 			version,
 			tarFile))
-	scriptBuilder.WriteString("headerName=\"x-ms-meta-Checksum\"\n")
+	// Search for header ignoring case
+	scriptBuilder.WriteString("headerName=\"x-ms-meta-checksum\"\n")
 	scriptBuilder.WriteString(fmt.Sprintf(
-		"checksumHeader=$(cat headers.txt | grep $headerName: | tr -d '%s')\n",
+		"checksumHeader=$(cat headers.txt | grep -i $headerName: | tr -d '%s')\n",
 		"\\r"))
-	scriptBuilder.WriteString("rm -f headers.txt\n")
+	// Change header and value to lowercase
+	scriptBuilder.WriteString("echo Verifying checksum...\n")
+	scriptBuilder.WriteString("checksumHeader=$(echo $checksumHeader | tr '[A-Z]' '[a-z]')\n")
 	scriptBuilder.WriteString("checksumValue=${checksumHeader#\"$headerName: \"}\n")
+	scriptBuilder.WriteString("rm -f headers.txt\n")
 	scriptBuilder.WriteString(fmt.Sprintf("echo \"$checksumValue %s.tar.gz\" | sha512sum -c -\n", version))
+	scriptBuilder.WriteString("echo Extracting contents...\n")
 	scriptBuilder.WriteString(fmt.Sprintf("tar -xzf %s -C .\n", tarFile))
 	scriptBuilder.WriteString(fmt.Sprintf("rm -f %s\n", tarFile))
 	scriptBuilder.WriteString(fmt.Sprintf("echo Done. Installed at '%s'\n", installationDir))
