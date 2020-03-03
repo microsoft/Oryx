@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - patch/*
+      - actions/*
 jobs:
   build:
     runs-on: ubuntu-latest
