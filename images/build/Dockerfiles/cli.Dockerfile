@@ -1,5 +1,3 @@
-FROM oryxdevmcr.azurecr.io/public/oryx/build:slim as build
-
 FROM debian:stretch-slim
 
 RUN apt-get update \
@@ -14,7 +12,7 @@ RUN apt-get update \
         libstdc++6 \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=build /opt/oryx /opt/oryx
-COPY --from=build /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 ENV PATH="$PATH:/opt/oryx"
