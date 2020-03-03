@@ -74,16 +74,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.WriteLine($"Dockerfile written to '{OutputPath}'.");
             }
 
-            return Execute(serviceProvider, console, stdOutHandler: null, stdErrHandler: null);
-        }
-
-        // To enable unit testing
-        internal int Execute(
-            IServiceProvider serviceProvider,
-            IConsole console,
-            DataReceivedEventHandler stdOutHandler,
-            DataReceivedEventHandler stdErrHandler)
-        {
             return ProcessConstants.ExitSuccess;
         }
 

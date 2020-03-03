@@ -111,16 +111,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            return Execute(serviceProvider, console, stdOutHandler: null, stdErrHandler: null);
-        }
-
-        // To enable unit testing
-        internal int Execute(
-            IServiceProvider serviceProvider,
-            IConsole console,
-            DataReceivedEventHandler stdOutHandler,
-            DataReceivedEventHandler stdErrHandler)
-        {
+            DataReceivedEventHandler stdOutHandler = null;
+            DataReceivedEventHandler stdErrHandler = null;
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
             var buildOperationId = logger.StartOperation(
                 BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
