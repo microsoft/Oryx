@@ -10,9 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Moving build to artifacts directory
+    - name: Test action
       run: |
         printenv
+        ls -l $GITHUB_WORKSPACE
 
     - name: Build Python flask app using Oryx
       uses: Azure/appservice-build@v2-beta
