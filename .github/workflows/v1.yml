@@ -1,26 +1,26 @@
 on:
-    push:
-      branches:
-        - master
-        - patch/**
-        - actions/**
-  jobs:
-    build:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v2
-      
-      - name: Build Python flask app using Oryx
-        uses: Azure/appservice-build@v1
-        with:
-          source-directory: tests/SampleApps/python/flask-app
-  
-      - name: Build NodeJS webfrontend app using Oryx
-        uses: Azure/appservice-build@v1
-        with:
-          source-directory: tests/SampleApps/nodejs/webfrontend
-  
-      - name: Build .NET Core app using Oryx
-        uses: Azure/appservice-build@v1
-        with:
-          source-directory: tests/SampleApps/DotNetCore/NetCoreApp31.MvcApp
+  push:
+    branches:
+      - master
+      - patch/**
+      - actions/**
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+        
+    - name: Build Python flask app using Oryx
+      uses: Azure/appservice-build@v1
+      with:
+        source-directory: tests/SampleApps/python/flask-app
+
+    - name: Build NodeJS webfrontend app using Oryx
+      uses: Azure/appservice-build@v1
+      with:
+        source-directory: tests/SampleApps/nodejs/webfrontend
+
+    - name: Build .NET Core app using Oryx
+      uses: Azure/appservice-build@v1
+      with:
+        source-directory: tests/SampleApps/DotNetCore/NetCoreApp31.MvcApp
