@@ -14,7 +14,7 @@ COPY src/BuildScriptGenerator src/BuildScriptGenerator
 COPY src/BuildScriptGeneratorCli src/BuildScriptGeneratorCli
 COPY src/Common src/Common
 COPY src/CommonFiles src/CommonFiles
-COPY build/FinalPublicKey.snk usr/oryx/build/
+COPY build/FinalPublicKey.snk build/
 
 # This statement copies signed oryx binaries from during agent build.
 # For local/dev contents of blank/empty directory named binaries are getting copied
