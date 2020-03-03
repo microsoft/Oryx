@@ -1,5 +1,3 @@
-name: Building sample apps with v2-beta action
-
 on:
   push:
     branches:
@@ -11,12 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Moving build to artifacts directory
+      run: |
+        printenv
 
     - name: Build Python flask app using Oryx
       uses: Azure/appservice-build@v2-beta
       with:
         source-directory: tests/SampleApps/python/flask-app
     
+    - name: Build Python flask app using Oryx and explicit version
+      uses: Azure/appservice-build@v2-beta
+      with:
+        source-directory: tests/SampleApps/python/flask-app
+        platform: python
+        platform-version: 3.7
+
     - name: Build NodeJS webfront app using Oryx
       uses: Azure/appservice-build@v2-beta
       with:
