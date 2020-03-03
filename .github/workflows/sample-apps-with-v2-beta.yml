@@ -1,4 +1,4 @@
-name: Python App With v2-beta action
+name: Building sample apps with v2-beta action
 
 on:
   push:
