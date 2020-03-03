@@ -114,6 +114,7 @@ RUN rm -rf /tmp/oryx
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
