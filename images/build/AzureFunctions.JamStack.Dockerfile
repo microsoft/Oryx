@@ -5,7 +5,7 @@ ARG BUILD_DIR=/tmp/oryx/build
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-FROM debian:stretch AS main
+FROM buildpack-deps:stretch@sha256:8bcd320ec29cf67052985f28891586fb853051f69ad0646fc7a49f47d6e3ee1a AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
@@ -40,59 +40,6 @@ RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 # This is the folder containing 'links' to benv and build script generator
 RUN mkdir -p /opt/oryx
-
-# Install .NET Core
-FROM main AS dotnet-install
-ARG BUILD_DIR
-ARG IMAGES_DIR
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        curl \
-        ca-certificates \
-        gnupg \
-        dirmngr \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV DOTNET_RUNNING_IN_CONTAINER=true \
-    DOTNET_USE_POLLING_FILE_WATCHER=true \
-	NUGET_XMLDOC_MODE=skip \
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-
-RUN mkdir /var/nuget
-
-RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
-    INSTALL_PACKAGES="false" \
-    ${IMAGES_DIR}/build/installDotNetCore.sh
-
-RUN set -ex \
-    rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
-
-RUN set -ex \
- && sdksDir=/opt/dotnet/sdks \
- && cd $sdksDir \
- && ln -s 3.1 3 \
- && ln -s 3 lts
-
-RUN set -ex \
- && dotnetDir=/opt/dotnet \
- && sdksDir=$dotnetDir/sdks \
- && runtimesDir=$dotnetDir/runtimes \
- && mkdir -p $runtimesDir \
- && cd $runtimesDir \
- && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
- && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
- && mkdir $NET_CORE_APP_31 \
- && ln -s $NET_CORE_APP_31 3.1 \
- && ln -s 3.1 3 \
- && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
- # LTS sdk <-- LTS runtime's sdk
- && ln -s 3 lts \
- && ltsSdk=$(readlink lts/sdk) \
- && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
@@ -143,32 +90,6 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-# This stage is used only when building locally
-FROM dotnet-install AS buildscriptbuilder
-ARG BUILD_DIR
-ARG IMAGES_DIR
-COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
-COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
-COPY src/Common /usr/oryx/src/Common
-COPY build/FinalPublicKey.snk usr/oryx/build/
-COPY src/CommonFiles /usr/oryx/src/CommonFiles
-# This statement copies signed oryx binaries from during agent build.
-# For local/dev contents of blank/empty directory named binaries are getting copied
-COPY binaries /opt/buildscriptgen/
-WORKDIR /usr/oryx/src
-ARG GIT_COMMIT=unspecified
-ARG AGENTBUILD=${AGENTBUILD}
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-ARG AGENTBUILD=${AGENTBUILD}
-RUN if [ -z "$AGENTBUILD" ]; then \
-        dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
-    fi
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-
 FROM main AS final
 ARG BUILD_DIR
 ARG IMAGES_DIR
@@ -185,7 +106,7 @@ COPY --from=node-install /opt /opt
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
-COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
 RUN rm -rf /tmp/oryx

@@ -155,6 +155,14 @@ function createImageNameWithReleaseTag() {
 }
 
 echo
+echo "-------------Creating build script generator image-------------------"
+docker build -t buildscriptgenerator \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$ctxArgs \
+	-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
+	.
+
+echo
 echo "-------------Creating build image for GitHub Actions-------------------"
 builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 docker build -t $builtImageName \
