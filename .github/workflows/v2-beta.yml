@@ -22,7 +22,7 @@ jobs:
         platform: python
         platform-version: 3.7
 
-    - name: Build NodeJS webfront app using Oryx
+    - name: Build NodeJS webfrontend app using Oryx
       uses: Azure/appservice-build@v2-beta
       with:
         source-directory: tests/SampleApps/nodejs/webfrontend
