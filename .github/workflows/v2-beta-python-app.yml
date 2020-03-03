@@ -1,6 +1,14 @@
 name: Python App With v2-beta action
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - patch/*
+  pull_request:
+    branches:
+      - master
+      - patch/*  
 
 jobs:
   build:
