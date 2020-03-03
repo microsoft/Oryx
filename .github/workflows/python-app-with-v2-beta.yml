@@ -1,0 +1,15 @@
+name: Python App With v2-beta action
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: App Service Web App Build Action
+      uses: Azure/appservice-build@v2-beta
+      with:
+        source-directory: tests/SampleApps/python/flask-app
+    
