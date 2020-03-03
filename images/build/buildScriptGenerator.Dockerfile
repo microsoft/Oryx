@@ -1,5 +1,3 @@
-ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
 ARG AGENTBUILD
 FROM mcr.microsoft.com/dotnet/core/sdk:2.1
 COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator

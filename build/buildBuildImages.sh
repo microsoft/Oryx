@@ -132,6 +132,7 @@ function buildDockerImage() {
 	fi
 }
 
+# Forcefully pull the latest image having security updates
 docker pull buildpack-deps:stretch
 
 # Create artifact dir & files
@@ -156,6 +157,7 @@ function createImageNameWithReleaseTag() {
 	fi
 }
 
+# Create the following image so that it's contents can be copied to the rest of the images below
 echo
 echo "-------------Creating build script generator image-------------------"
 docker build -t buildscriptgenerator \
