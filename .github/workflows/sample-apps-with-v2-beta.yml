@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-      - patch/*
-      - actions/*
+      - patch/**
+      - actions/**
 jobs:
   build:
     runs-on: ubuntu-latest
