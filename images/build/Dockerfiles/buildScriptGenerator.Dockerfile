@@ -4,6 +4,7 @@ ARG AGENTBUILD=${AGENTBUILD}
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
+
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
@@ -19,6 +20,10 @@ COPY build/FinalPublicKey.snk usr/oryx/build/
 COPY binaries /opt/buildscriptgen/
 WORKDIR /usr/oryx/src
 RUN if [ -z "$AGENTBUILD" ]; then \
-        dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
+        dotnet publish \
+            -r linux-x64 \
+            -o /opt/buildscriptgen/ \
+            -c Release \
+            BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
