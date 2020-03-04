@@ -9,15 +9,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Build Python flask app using Oryx
+    - name: Build Python Django app using Oryx
       uses: Azure/appservice-build@v2-beta
       with:
-        source-directory: tests/SampleApps/python/flask-app
+        source-directory: tests/SampleApps/python/django-app
     
-    - name: Build Python flask app using Oryx and explicit version
+    - name: Build Python Django app using Oryx and explicit version
       uses: Azure/appservice-build@v2-beta
       with:
-        source-directory: tests/SampleApps/python/flask-app
+        source-directory: tests/SampleApps/python/django-app
         platform: python
         platform-version: 3.7
 
