@@ -2,10 +2,14 @@
 # These are deleted in the final stage of the build
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-FROM debian:stretch AS main
+# Use the exact layer that is present on the GitHub agent machines
+# https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md
+FROM buildpack-deps:stretch@sha256:8bcd320ec29cf67052985f28891586fb853051f69ad0646fc7a49f47d6e3ee1a AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
@@ -17,7 +21,24 @@ ENV LANG C.UTF-8
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
+        git \
+        make \
+        unzip \
+        # The tools in this package are used when installing packages for Python
+        build-essential \
+        # Required for Microsoft SQL Server
+        unixodbc-dev \
+        # Required for PostgreSQL
+        libpq-dev \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
+        # Required for ts
+        moreutils \
         rsync \
+        zip \
+        tk-dev \
+        uuid-dev \
+        #.NET Core related pre-requisites
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
@@ -41,82 +62,15 @@ RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 # This is the folder containing 'links' to benv and build script generator
 RUN mkdir -p /opt/oryx
 
-# Install .NET Core
-FROM main AS dotnet-install
+# Install Yarn, HUGO
+FROM main AS nodetools-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        curl \
-        ca-certificates \
-        gnupg \
-        dirmngr \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV DOTNET_RUNNING_IN_CONTAINER=true \
-    DOTNET_USE_POLLING_FILE_WATCHER=true \
-	NUGET_XMLDOC_MODE=skip \
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-
-RUN mkdir /var/nuget
-
-RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
-    INSTALL_PACKAGES="false" \
-    ${IMAGES_DIR}/build/installDotNetCore.sh
-
-RUN set -ex \
-    rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
-
-RUN set -ex \
- && sdksDir=/opt/dotnet/sdks \
- && cd $sdksDir \
- && ln -s 3.1 3 \
- && ln -s 3 lts
-
-RUN set -ex \
- && dotnetDir=/opt/dotnet \
- && sdksDir=$dotnetDir/sdks \
- && runtimesDir=$dotnetDir/runtimes \
- && mkdir -p $runtimesDir \
- && cd $runtimesDir \
- && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
- && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
- && mkdir $NET_CORE_APP_31 \
- && ln -s $NET_CORE_APP_31 3.1 \
- && ln -s 3.1 3 \
- && ln -s $sdksDir/$DOT_NET_CORE_31_SDK_VERSION $NET_CORE_APP_31/sdk \
- # LTS sdk <-- LTS runtime's sdk
- && ln -s 3 lts \
- && ltsSdk=$(readlink lts/sdk) \
- && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
-
-# Install Node.js, NPM, Yarn
-FROM main AS node-install
-ARG BUILD_DIR
-ARG IMAGES_DIR
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        jq \
-        curl \
-        ca-certificates \
-        gnupg \
-        dirmngr \
-    && rm -rf /var/lib/apt/lists/*
 ARG HUGO_VERSION=0.59.1
 RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" \
  && mkdir -p /opt/hugo \
  && tar -xzf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
  && rm hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
-COPY build/__nodeVersions.sh /tmp/scripts
-RUN cd ${IMAGES_DIR} \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ./installPlatform.sh nodejs $NODE12_VERSION
-RUN ${IMAGES_DIR}/build/installNpm.sh
 RUN set -ex \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -127,11 +81,6 @@ RUN set -ex \
  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
  && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
-
-RUN set -ex \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $NODE12_VERSION /opt/nodejs/12 \
- && ln -s 12 /opt/nodejs/lts
 RUN set -ex \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
@@ -140,34 +89,7 @@ RUN set -ex \
  && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
 RUN set -ex \
  && mkdir -p /links \
- && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-
-# This stage is used only when building locally
-FROM dotnet-install AS buildscriptbuilder
-ARG BUILD_DIR
-ARG IMAGES_DIR
-COPY src/BuildScriptGenerator /usr/oryx/src/BuildScriptGenerator
-COPY src/BuildScriptGeneratorCli /usr/oryx/src/BuildScriptGeneratorCli
-COPY src/Common /usr/oryx/src/Common
-COPY build/FinalPublicKey.snk usr/oryx/build/
-COPY src/CommonFiles /usr/oryx/src/CommonFiles
-# This statement copies signed oryx binaries from during agent build.
-# For local/dev contents of blank/empty directory named binaries are getting copied
-COPY binaries /opt/buildscriptgen/
-WORKDIR /usr/oryx/src
-ARG GIT_COMMIT=unspecified
-ARG AGENTBUILD=${AGENTBUILD}
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-ARG AGENTBUILD=${AGENTBUILD}
-RUN if [ -z "$AGENTBUILD" ]; then \
-        dotnet publish -r linux-x64 -o /opt/buildscriptgen/ -c Release BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
-    fi
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 
 FROM main AS final
 ARG BUILD_DIR
@@ -176,16 +98,28 @@ ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/yarn/stable/bin:/opt/hugo"
+ENV PATH="$PATH:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
+RUN mkdir -p /usr/local/share/pip-cache/lib
+RUN chmod -R 777 /usr/local/share/pip-cache
 
-# Copy NodeJs, NPM and Yarn related content
-COPY --from=node-install /opt /opt
+# .NET Core related environment variables
+ENV NUGET_XMLDOC_MODE=skip \
+	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	NUGET_PACKAGES=/var/nuget
+
+# Grant read-write permissions to the nuget folder so that dotnet restore
+# can write into it.
+RUN mkdir -p /var/nuget
+RUN chmod a+rw /var/nuget
+
+# Copy Yarn and Hugo related content
+COPY --from=nodetools-install /opt /opt
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
-COPY --from=buildscriptbuilder /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
 RUN rm -rf /tmp/oryx
@@ -193,6 +127,7 @@ RUN rm -rf /tmp/oryx
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified

@@ -21,11 +21,6 @@ declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
                                 --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
                                 --build-arg YARN_CACHE_BASE_TAG=$YARN_CACHE_BASE_TAG" \
 
-echo
-echo Base tag args used:
-echo $BASE_TAG_BUILD_ARGS
-echo
-
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 declare BUILD_SIGNED=""
@@ -44,11 +39,14 @@ fi
 # Avoid causing cache invalidation with the following check
 if [ "$EMBED_BUILDCONTEXT_IN_IMAGES" == "true" ]
 then
-	ctxArgs="--build-arg GIT_COMMIT=$GIT_COMMIT"
-	ctxArgs="$ctxArgs --build-arg BUILD_NUMBER=$BUILD_NUMBER"
-	ctxArgs="$ctxArgs --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
-	echo "Build context args: $ctxArgs"
+	buildMetadataArgs="--build-arg GIT_COMMIT=$GIT_COMMIT"
+	buildMetadataArgs="$buildMetadataArgs --build-arg BUILD_NUMBER=$BUILD_NUMBER"
+	buildMetadataArgs="$buildMetadataArgs --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
+	echo "Build metadata args: $buildMetadataArgs"
 fi
+
+storageArgs="--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME"
+storageArgs="$storageArgs --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL"
 
 function BuildAndTagStage()
 {
@@ -58,7 +56,13 @@ function BuildAndTagStage()
 
 	echo
 	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build --target $stageName -t $stageTagName $ctxArgs $BASE_TAG_BUILD_ARGS -f "$dockerFile" .
+	docker build \
+		--target $stageName \
+		-t $stageTagName \
+		$buildMetadataArgs \
+		$BASE_TAG_BUILD_ARGS \
+		-f "$dockerFile" \
+		.
 }
 
 function buildDockerImage() {
@@ -78,7 +82,6 @@ function buildDockerImage() {
 	BuildAndTagStage "$dockerFileToBuild" node-install
 	BuildAndTagStage "$dockerFileToBuild" dotnet-install
 	BuildAndTagStage "$dockerFileToBuild" python
-	BuildAndTagStage "$dockerFileToBuild" buildscriptbuilder
 
 	# If no tag was provided, use a default tag of "latest"
 	if [ -z "$dockerImageBaseTag" ]
@@ -91,9 +94,8 @@ function buildDockerImage() {
 		--build-arg AGENTBUILD=$BUILD_SIGNED \
 		$BASE_TAG_BUILD_ARGS \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
-		$ctxArgs \
+		$storageArgs \
+		$buildMetadataArgs \
 		-f "$dockerFileToBuild" \
 		.
 
@@ -130,6 +132,7 @@ function buildDockerImage() {
 	fi
 }
 
+# Forcefully pull the latest image having security updates
 docker pull buildpack-deps:stretch
 
 # Create artifact dir & files
@@ -154,6 +157,15 @@ function createImageNameWithReleaseTag() {
 	fi
 }
 
+# Create the following image so that it's contents can be copied to the rest of the images below
+echo
+echo "-------------Creating build script generator image-------------------"
+docker build -t buildscriptgenerator \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
+	.
+
 echo
 echo "-------------Creating build image for GitHub Actions-------------------"
 builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
@@ -161,9 +173,8 @@ docker build -t $builtImageName \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-	--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-	--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL \
-	$ctxArgs \
+	$storageArgs \
+	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 	.
 echo
@@ -177,7 +188,8 @@ docker build -t $builtImageName \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-	$ctxArgs \
+	$buildMetadataArgs \
+	$storageArgs \
 	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 	.
 echo
@@ -208,7 +220,7 @@ docker build -t $builtImageTag \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-	$ctxArgs \
+	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 	.
 echo
