@@ -7,9 +7,9 @@ var setupString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING || process.e
 console.log(setupString);
 console.log(process.env.ApplicationInsightsAgent_EXTENSION_VERSION)
 
-
 app.get('/', function (req, res) {
-  // Check for incoming request flag set by Node.js SDK to determine if the SDK is instrumented or not
+// Check for incoming request flag set by Node.js SDK to determine if the SDK is instrumented or not
+//for version 1.7.2 onward
   if (req["_appInsightsAutoCollected"] === true) {
     responseString = "AppInsights is set to send telemetry!";
   }

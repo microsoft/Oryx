@@ -11,5 +11,6 @@ namespace Microsoft.Oryx.Common
         public const string PhpOriginEnvVarName = "PHP_ORIGIN";
         public const string UserAppInsightsKeyEnv = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string UserAppInsightsEnableEnv = "ApplicationInsightsAgent_EXTENSION_VERSION";
+        public const string UserAppInsightsConnectionStringEnv = "APPLICATIONINSIGHTS_CONNECTION_STRING";
     }
 }

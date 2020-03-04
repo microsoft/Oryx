@@ -11,7 +11,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -74,12 +73,6 @@ func main() {
 	common.ValidateCommands(versionCommand, scriptCommand, setupEnvCommand)
 
 	if scriptCommand.Parsed() {
-		cmd := exec.Command("npm", "root", "-g")
-		globalModulesPath, globalModulesErr := cmd.CombinedOutput()
-		if globalModulesErr != nil {
-			logger.LogError("npm root -g failed, %s\n", globalModulesErr.Error())
-			globalModulesPath = []byte("/usr/local/lib/node_modules") // default global path
-		}
 		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 		defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
 		useLegacyDebugger := isLegacyDebuggerNeeded()
@@ -100,7 +93,6 @@ func main() {
 			SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 			EnableDynamicInstall:            *enableDynamicInstall,
 			Manifest:                        buildManifest,
-			GlobalModulesPath:               string(globalModulesPath),
 		}
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
