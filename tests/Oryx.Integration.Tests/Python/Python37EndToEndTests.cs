@@ -64,7 +64,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -p virtualenv_name={virtualEnvName}")
+               .AddCommand(
+                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform python --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -114,7 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir}" +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform python --platform-version 3.7" +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
@@ -167,7 +168,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var manifestDir = manifestDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --manifest-dir {manifestDir} " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform python --platform-version 3.7" +
+                $" --manifest-dir {manifestDir} " +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv=tar-gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvName}.tar.gz")
@@ -211,7 +213,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir}")
+               .AddCommand($"oryx build {appDir} --platform python --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
