@@ -111,8 +111,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            DataReceivedEventHandler stdOutHandler = null;
-            DataReceivedEventHandler stdErrHandler = null;
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
             var buildOperationId = logger.StartOperation(
                 BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
@@ -276,8 +274,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         options.IntermediateDir ?? string.Empty,
                     },
                     workingDirectory: sourceRepo.RootPath,
-                    stdOutHandler == null ? stdOutBaseHandler : stdOutBaseHandler + stdOutHandler,
-                    stdErrHandler == null ? stdErrBaseHandler : stdErrBaseHandler + stdErrHandler);
+                    stdOutBaseHandler,
+                    stdErrBaseHandler);
 
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
