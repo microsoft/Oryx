@@ -3,35 +3,24 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Options;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpVersionProvider : IPhpVersionProvider
     {
-        private readonly PhpScriptGeneratorOptions _opts;
-        private IEnumerable<string> _supportedPhpVersions;
+        private PlatformVersionInfo _versionInfo;
 
-        public PhpVersionProvider(IOptions<PhpScriptGeneratorOptions> options)
+        public PlatformVersionInfo GetVersionInfo()
         {
-            _opts = options.Value;
-        }
-
-        public IEnumerable<string> SupportedPhpVersions
-        {
-            get
+            if (_versionInfo == null)
             {
-                if (_supportedPhpVersions == null)
-                {
-                    _supportedPhpVersions = VersionProviderHelper.GetSupportedVersions(
-                        _opts.SupportedPhpVersions,
-                        _opts.InstalledPhpVersionsDir);
-                }
-
-                return _supportedPhpVersions;
+                var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
+                            PhpConstants.InstalledPhpVersionsDir);
+                _versionInfo = PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    installedVersions,
+                    PhpConstants.DefaultPhpRuntimeVersion);
             }
+
+            return _versionInfo;
         }
     }
 }

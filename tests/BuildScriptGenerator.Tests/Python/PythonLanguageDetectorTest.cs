@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
@@ -249,6 +250,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             return new PythonLanguageDetector(
                 new TestPythonVersionProvider(supportedPythonVersions, defaultVersion),
+                Options.Create(options),
                 NullLogger<PythonLanguageDetector>.Instance,
                 new DefaultStandardOutputWriter());
         }

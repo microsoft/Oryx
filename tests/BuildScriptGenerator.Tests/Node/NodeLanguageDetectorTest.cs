@@ -270,7 +270,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var version = "500.500.500";
             var environment = new TestEnvironment();
-            environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = version;
+            environment.Variables[NodeConstants.NodeVersion] = version;
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { version },
                 defaultVersion: version,
@@ -289,17 +289,63 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeVersionSpecified_InPackageJson()
+        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundInPackageJson_OrEnvVariable()
         {
             // Arrange
             var environment = new TestEnvironment();
-            environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = "8.11.2";
+            var detector = CreateNodeLanguageDetector(
+                supportedNodeVersions: new[] { "6.11.0", "8.11.2", "10.14.0" },
+                defaultVersion: "8.11.2",
+                environment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("8.11.2", result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsVersionFromEnvironmentVariable_EvenIfPackageJsonHasVersion()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            environment.Variables[NodeConstants.NodeVersion] = "10.14.0";
+            var detector = CreateNodeLanguageDetector(
+                supportedNodeVersions: new[] { "6.11.0", "8.11.2", "10.14.0" },
+                defaultVersion: "8.11.2",
+                environment);
+            var repo = new MemorySourceRepo();
+            var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", "6.11.0");
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Language);
+            Assert.Equal("10.14.0", result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsVersionFromPackageJson_IfEnvironmentVariableValueIsNotPresent()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2" },
                 defaultVersion: "8.11.2",
                 environment);
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJsonWithNodeVersion, NodeConstants.PackageJsonFileName);
+            var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", "6.11.0");
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
 
             // Act

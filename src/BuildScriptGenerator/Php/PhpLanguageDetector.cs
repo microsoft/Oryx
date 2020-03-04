@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpLanguageDetector : ILanguageDetector
     {
-        private readonly PhpScriptGeneratorOptions _opts;
+        private readonly PhpScriptGeneratorOptions _options;
         private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpLanguageDetector> _logger;
         private readonly IStandardOutputWriter _writer;
@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             ILogger<PhpLanguageDetector> logger,
             IStandardOutputWriter writer)
         {
-            _opts = options.Value;
+            _options = options.Value;
             _versionProvider = versionProvider;
             _logger = logger;
             _writer = writer;
@@ -40,10 +40,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
+            var version = GetVersion(context);
+            version = GetMaxSatisfyingVersionAndVerify(version);
+
+            return new LanguageDetectorResult
+            {
+                Language = PhpConstants.PhpName,
+                LanguageVersion = version,
+            };
+        }
+
+        private string GetVersion(RepositoryContext context)
+        {
+            if (context.DotNetCoreVersion != null)
+            {
+                return context.DotNetCoreVersion;
+            }
+
+            if (_options.PhpVersion != null)
+            {
+                return _options.PhpVersion;
+            }
+
+            var version = GetVersionFromComposerFile(context);
+            if (version != null)
+            {
+                return version;
+            }
+
+            return GetDefaultVersionFromProvider();
+        }
+
+        private string GetVersionFromComposerFile(RepositoryContext context)
+        {
             dynamic composerFile = null;
             try
             {
-                composerFile = sourceRepo.ReadJsonObjectFromFile(PhpConstants.ComposerFileName);
+                composerFile = context.SourceRepo.ReadJsonObjectFromFile(PhpConstants.ComposerFileName);
             }
             catch (Exception ex)
             {
@@ -55,31 +88,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
             }
 
-            string runtimeVersion = VerifyAndResolveVersion(composerFile?.require?.php?.Value as string);
-            return new LanguageDetectorResult
-            {
-                Language = PhpConstants.PhpName,
-                LanguageVersion = runtimeVersion,
-            };
+            return composerFile?.require?.php?.Value as string;
         }
 
-        private string VerifyAndResolveVersion(string version)
+        private string GetDefaultVersionFromProvider()
         {
-            if (string.IsNullOrEmpty(version))
-            {
-                return _opts.PhpDefaultVersion;
-            }
+            var versionInfo = _versionProvider.GetVersionInfo();
+            return versionInfo.DefaultVersion;
+        }
 
+        private string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                _versionProvider.SupportedPhpVersions);
+                versionInfo.SupportedVersions);
+
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
                     PhpConstants.PhpName,
                     version,
-                    _versionProvider.SupportedPhpVersions);
-                _logger.LogError(exc, $"Exception caught, the version '{version}' is not supported for the PHP platform.");
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exc,
+                    $"Exception caught, the version '{version}' is not supported for the PHP platform.");
                 throw exc;
             }
 

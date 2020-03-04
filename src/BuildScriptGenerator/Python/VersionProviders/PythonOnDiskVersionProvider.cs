@@ -3,33 +3,19 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Options;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     public class PythonOnDiskVersionProvider : IPythonVersionProvider
     {
-        private readonly PythonScriptGeneratorOptions _options;
-        private PlatformVersionInfo _platformVersionInfo;
-
-        public PythonOnDiskVersionProvider(IOptions<PythonScriptGeneratorOptions> options)
-        {
-            _options = options.Value;
-        }
+        private const string DefaultOnDiskVersion = PythonConstants.PythonLtsVersion;
 
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            if (_platformVersionInfo == null)
-            {
-                var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
+            var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                             PythonConstants.InstalledPythonVersionsDir);
-                _platformVersionInfo = PlatformVersionInfo.CreateOnDiskVersionInfo(
-                    installedVersions,
-                    _options.PythonDefaultVersion);
-            }
 
-            return _platformVersionInfo;
+            return PlatformVersionInfo.CreateOnDiskVersionInfo(installedVersions, DefaultOnDiskVersion);
         }
     }
 }

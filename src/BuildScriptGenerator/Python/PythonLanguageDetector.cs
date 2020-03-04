@@ -7,6 +7,8 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -15,14 +17,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     internal class PythonLanguageDetector : ILanguageDetector
     {
         private readonly IPythonVersionProvider _versionProvider;
+        private readonly PythonScriptGeneratorOptions _options;
         private readonly ILogger<PythonLanguageDetector> _logger;
 
         public PythonLanguageDetector(
             IPythonVersionProvider pythonVersionProvider,
+            IOptions<PythonScriptGeneratorOptions> options,
             ILogger<PythonLanguageDetector> logger,
             IStandardOutputWriter writer)
         {
             _versionProvider = pythonVersionProvider;
+            _options = options.Value;
             _logger = logger;
         }
 
@@ -35,9 +40,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return null;
             }
 
-            string runtimeVersion = DetectPythonVersionFromRuntimeFile(sourceRepo);
-
-            if (string.IsNullOrEmpty(runtimeVersion))
+            // This detects if a runtime.txt file exists if that is a python file
+            var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
+            if (string.IsNullOrEmpty(versionFromRuntimeFile))
             {
                 var files = sourceRepo.EnumerateFiles(
                     PythonConstants.PythonFileNamePattern,
@@ -51,27 +56,57 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
             }
 
-            runtimeVersion = VerifyAndResolveVersion(runtimeVersion);
+            var version = GetVersion(context, versionFromRuntimeFile);
+            version = GetMaxSatisfyingVersionAndVerify(version);
 
             return new LanguageDetectorResult
             {
                 Language = PythonConstants.PythonName,
-                LanguageVersion = runtimeVersion,
+                LanguageVersion = version,
             };
         }
 
-        private string VerifyAndResolveVersion(string version)
+        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
         {
-            // Get the versions either from disk or on the web
-            var versionInfo = _versionProvider.GetVersionInfo();
-
-            // Get the default version. This could be having just the major or major.minor version.
-            // So try getting the latest version of the default version.
-            if (string.IsNullOrEmpty(version))
+            if (context.PythonVersion != null)
             {
-                version = versionInfo.DefaultVersion;
+                return context.PythonVersion;
             }
 
+            if (_options.PythonVersion != null)
+            {
+                return _options.PythonVersion;
+            }
+
+            if (versionFromRuntimeFile != null)
+            {
+                return versionFromRuntimeFile;
+            }
+
+            return GetDefaultVersionFromProvider();
+        }
+
+        private string GetVersionFromRuntimeFile(ISourceRepo sourceRepo)
+        {
+            string runtimeVersion = DetectPythonVersionFromRuntimeFile(sourceRepo);
+
+            if (string.IsNullOrEmpty(runtimeVersion))
+            {
+                
+            }
+
+            return runtimeVersion;
+        }
+
+        private string GetDefaultVersionFromProvider()
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
+            return versionInfo.DefaultVersion;
+        }
+
+        private string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
                 versionInfo.SupportedVersions);

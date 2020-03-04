@@ -83,10 +83,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             {
                 EnableDynamicInstall = enableDynamicInstall
             });
-            var pythonOptions = Options.Create(new PythonScriptGeneratorOptions());
             var environment = new TestEnvironment();
 
-            var onDiskProvider = new TestPythonOnDiskVersionProvider(pythonOptions);
+            var onDiskProvider = new TestPythonOnDiskVersionProvider();
             var storageProvider = new TestPythonSdkStorageVersionProvider(environment, new TestHttpClientFactory());
             var versionProvider = new PythonVersionProvider(
                 commonOptions,
@@ -95,13 +94,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             return (versionProvider, onDiskProvider, storageProvider);
         }
 
-
         private class TestPythonOnDiskVersionProvider : PythonOnDiskVersionProvider
         {
-            public TestPythonOnDiskVersionProvider(IOptions<PythonScriptGeneratorOptions> options) : base(options)
-            {
-            }
-
             public bool GetVersionInfoCalled { get; private set; }
 
             public override PlatformVersionInfo GetVersionInfo()

@@ -12,26 +12,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
     public class PythonScriptGeneratorOptionsSetupTest
     {
         [Fact]
-        public void Configure_SetsPythonVersion_ToLatestVersion_IfNoEnvironmentVariable_IsSet()
-        {
-            // Arrange
-            var environment = new TestEnvironment();
-            var optionsSetup = new PythonScriptGeneratorOptionsSetup(environment);
-            var options = new PythonScriptGeneratorOptions();
-
-            // Act
-            optionsSetup.Configure(options);
-
-            // Assert
-            Assert.Equal(Common.PythonVersions.Python37Version, options.PythonDefaultVersion);
-        }
-
-        [Fact]
         public void Configure_SetsPythonVersion_ToEnvironmentVariableValue()
         {
             // Arrange
             var environment = new TestEnvironment();
-            environment.Variables[PythonConstants.PythonDefaultVersionEnvVarName] = "10.10.10";
+            environment.Variables[PythonConstants.PythonVersionEnvVarName] = "10.10.10";
             var optionsSetup = new PythonScriptGeneratorOptionsSetup(environment);
             var options = new PythonScriptGeneratorOptions();
 
@@ -39,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             optionsSetup.Configure(options);
 
             // Assert
-            Assert.Equal("10.10.10", options.PythonDefaultVersion);
+            Assert.Equal("10.10.10", options.PythonVersion);
         }
     }
 }

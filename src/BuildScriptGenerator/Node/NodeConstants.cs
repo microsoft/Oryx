@@ -41,5 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string InjectedAppInsights = "injectedAppInsights";
         internal const string NodeLtsVersion = NodeVersions.Node12Version;
         internal const string InstalledNodeVersionsDir = "/opt/nodejs/";
+        internal const string NodeVersion = "NODE_VERSION";
+        internal const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
     }
 }

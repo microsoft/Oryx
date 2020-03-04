@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
@@ -237,7 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             optionsSetup.Configure(options);
 
             return new DotNetCoreLanguageDetector(
-                new TestVersionProvider(supportedVersions),
+                new TestDotNetCoreVersionProvider(supportedVersions),
                 Options.Create(options),
                 new TestProjectFileProvider(projectFile),
                 NullLogger<DotNetCoreLanguageDetector>.Instance,
@@ -270,6 +271,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             public override string GetRelativePathToProjectFile(RepositoryContext context)
             {
                 return _projectFilePath;
+            }
+        }
+
+        private class TestDotNetCoreVersionProvider : IDotNetCoreVersionProvider
+        {
+            private readonly IEnumerable<string> _supportedVesions;
+
+            public TestDotNetCoreVersionProvider(IEnumerable<string> supportedVesions)
+            {
+                _supportedVesions = supportedVesions;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    _supportedVesions,
+                    DotNetCoreConstants.RuntimeLtsVersion);
             }
         }
     }

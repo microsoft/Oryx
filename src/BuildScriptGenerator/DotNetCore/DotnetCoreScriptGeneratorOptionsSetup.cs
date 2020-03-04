@@ -9,9 +9,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreScriptGeneratorOptionsSetup : IConfigureOptions<DotNetCoreScriptGeneratorOptions>
     {
-        internal const string DefaultVersion = DotNetCoreRunTimeVersions.NetCoreApp21;
-        internal const string InstalledVersionsDir = "/opt/dotnet/runtimes";
-
         private readonly IEnvironment _environment;
 
         public DotNetCoreScriptGeneratorOptionsSetup(IEnvironment environment)
@@ -21,16 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public void Configure(DotNetCoreScriptGeneratorOptions options)
         {
-            var defaultVersion = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.DotNetCoreDefaultVersion);
-            if (string.IsNullOrEmpty(defaultVersion))
-            {
-                defaultVersion = DefaultVersion;
-            }
-
-            options.DefaultVersion = defaultVersion;
-            options.InstalledVersionsDir = InstalledVersionsDir;
-            options.SupportedVersions = _environment.GetEnvironmentVariableAsList(
-                EnvironmentSettingsKeys.DotNetCoreSupportedVersions);
+            options.DotNetVersion = _environment.GetEnvironmentVariable(
+                EnvironmentSettingsKeys.DotNetVersion);
             options.Project = _environment.GetEnvironmentVariable(EnvironmentSettingsKeys.Project);
             options.MSBuildConfiguration = _environment.GetEnvironmentVariable(
                 EnvironmentSettingsKeys.MSBuildConfiguration);

@@ -3,16 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.IO;
-using Xunit;
-using Microsoft.Oryx.Tests.Common;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
+using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -100,6 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 {
                     svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env));
                     svcs.AddSingleton<INodeVersionProvider, TestNodeVersionProvider>();
+                    svcs.AddSingleton<IPhpVersionProvider, TestPhpVersionProvider>();
                 })
                 .ConfigureScriptGenerationOptions(opts => cmd.ConfigureBuildScriptGeneratorOptions(opts))
                 .Build();
@@ -111,7 +112,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             public PlatformVersionInfo GetVersionInfo()
             {
                 return PlatformVersionInfo.CreateOnDiskVersionInfo(
-                    new[] { NodeConstants.NodeLtsVersion }, defaultVersion: NodeConstants.NodeLtsVersion);
+                    new[] { NodeConstants.NodeLtsVersion },
+                    defaultVersion: NodeConstants.NodeLtsVersion);
+            }
+        }
+
+        private class TestPhpVersionProvider : IPhpVersionProvider
+        {
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    new[] { PhpConstants.DefaultPhpRuntimeVersion },
+                    defaultVersion: PhpConstants.DefaultPhpRuntimeVersion);
             }
         }
     }

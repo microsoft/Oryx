@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         private IProgrammingPlatform GetScriptGenerator(string defaultVersion = null)
         {
             var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.DefaultPhpRuntimeVersionEnvVarName] = defaultVersion;
+            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = defaultVersion;
 
             var phpVersionProvider = new TestPhpVersionProvider(new[] { "7.2.15", Common.PhpVersions.Php73Version });
 
@@ -140,15 +140,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 SourceRepo = sourceRepo
             };
         }
-    }
 
-    class TestPhpVersionProvider : IPhpVersionProvider
-    {
-        public TestPhpVersionProvider(string[] supportedVersions)
+        private class TestPhpVersionProvider : IPhpVersionProvider
         {
-            SupportedPhpVersions = supportedVersions;
-        }
+            private readonly string[] _supportedPhpVersions;
 
-        public IEnumerable<string> SupportedPhpVersions { get; }
+            public TestPhpVersionProvider(string[] supportedPhpVersions)
+            {
+                _supportedPhpVersions = supportedPhpVersions;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedPhpVersions, PhpVersions.Php73Version);
+            }
+        }
     }
 }

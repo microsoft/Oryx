@@ -26,31 +26,16 @@ while read benvvar; do
 done < <(set | grep -i '^php=')
 while read benvvar; do
   set -- "$benvvar" "$@"
-done < <(set | grep -i '^php_version=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
 done < <(set | grep -i '^python=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep -i '^python_version=')
 while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep -i '^node=')
 while read benvvar; do
   set -- "$benvvar" "$@"
-done < <(set | grep -i '^node_version=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
 done < <(set | grep -i '^npm=')
 while read benvvar; do
   set -- "$benvvar" "$@"
-done < <(set | grep -i '^npm_version=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
 done < <(set | grep -i '^dotnet=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
-done < <(set | grep -i '^dotnet_version=')
 unset benvvar # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
@@ -83,8 +68,16 @@ benv-showSupportedVersionsErrorInfo() {
     dynamicInstallDir="$dynamicInstallDir/runtimes"
   fi
 
-  echo >&2 benv: "$userPlatformName" version \'$userSuppliedVersion\' not found\; choose one of:
-  benv-versions >&2 "$builtInInstallDir"
+  echo >&2 benv: "$userPlatformName" version \'$userSuppliedVersion\' not found.
+  if [ ! -d "$builtInInstallDir" ] && [ ! -d "$dynamicInstallDir" ]; then
+    echo >&2 benv: Could not find any versions on disk.
+  else
+    echo >&2 benv: List of available versions:
+  fi
+
+  if [ -d "$builtInInstallDir" ]; then
+    benv-versions >&2 "$builtInInstallDir"
+  fi
 
   if [ -d "$dynamicInstallDir" ]; then
     benv-versions >&2 "$dynamicInstallDir"
@@ -169,7 +162,7 @@ benv-resolve() {
   if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
     platformDir=$(benv-getPlatformDir "python" "$value")
     if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "node" "python" "$value"
+      benv-showSupportedVersionsErrorInfo "python" "python" "$value"
       return 1
     fi
 

@@ -3,34 +3,24 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreVersionProvider : IDotNetCoreVersionProvider
     {
-        private readonly DotNetCoreScriptGeneratorOptions _options;
-        private IEnumerable<string> _supportedVersions;
+        private PlatformVersionInfo _versionInfo;
 
-        public DotNetCoreVersionProvider(IOptions<DotNetCoreScriptGeneratorOptions> options)
+        public PlatformVersionInfo GetVersionInfo()
         {
-            _options = options.Value;
-        }
-
-        public IEnumerable<string> SupportedDotNetCoreVersions
-        {
-            get
+            if (_versionInfo == null)
             {
-                if (_supportedVersions == null)
-                {
-                    _supportedVersions = VersionProviderHelper.GetSupportedVersions(
-                        _options.SupportedVersions,
-                        _options.InstalledVersionsDir);
-                }
-
-                return _supportedVersions;
+                var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
+                            DotNetCoreConstants.InstalledRuntimeVersionsDir);
+                _versionInfo = PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    installedVersions,
+                    DotNetCoreConstants.RuntimeLtsVersion);
             }
+
+            return _versionInfo;
         }
     }
 }

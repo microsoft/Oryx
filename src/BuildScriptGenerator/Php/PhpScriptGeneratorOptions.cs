@@ -3,19 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     public class PhpScriptGeneratorOptions
     {
-        public string PhpDefaultVersion { get; set; }
-
-        public string InstalledPhpVersionsDir { get; set; }
-
         /// <summary>
-        /// Gets or sets the user-provided list of PHP versions.
+        /// Gets or sets user provided version.
         /// </summary>
-        public IList<string> SupportedPhpVersions { get; set; }
+        public string PhpVersion { get; set; }
     }
 }

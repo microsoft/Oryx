@@ -83,10 +83,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             {
                 EnableDynamicInstall = enableDynamicInstall
             });
-            var nodeOptions = Options.Create(new NodeScriptGeneratorOptions());
             var environment = new TestEnvironment();
 
-            var onDiskProvider = new TestNodeOnDiskVersionProvider(nodeOptions);
+            var onDiskProvider = new TestNodeOnDiskVersionProvider();
             var storageProvider = new TestNodeSdkStorageVersionProvider(environment, new TestHttpClientFactory());
             var versionProvider = new NodeVersionProvider(
                 commonOptions,
@@ -95,13 +94,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             return (versionProvider, onDiskProvider, storageProvider);
         }
 
-
         private class TestNodeOnDiskVersionProvider : NodeOnDiskVersionProvider
         {
-            public TestNodeOnDiskVersionProvider(IOptions<NodeScriptGeneratorOptions> options) : base(options)
-            {
-            }
-
             public bool GetVersionInfoCalled { get; private set; }
 
             public override PlatformVersionInfo GetVersionInfo()
