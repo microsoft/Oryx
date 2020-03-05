@@ -1,5 +1,0 @@
-# Build Python 2.7
-FROM python-build-prereqs
-WORKDIR /usr/src/python
-ENV GPG_KEY=C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
-RUN . /tmp/__pythonVersions.sh && PYTHON_VERSION=$PYTHON27_VERSION PIP_VERSION=$PIP_VERSION /tmp/build.sh

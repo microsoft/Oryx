@@ -48,11 +48,18 @@ if [ -z "$targetDir" ]; then
     targetDir="$platformDir/$VERSION"
 fi
 
+START_TIME=$SECONDS
 downloadFileAndVerifyChecksum $PLATFORM_NAME $VERSION $fileName
+ELAPSED_TIME=$(($SECONDS - $START_TIME))
+echo "Downloaded and verified checksum in $ELAPSED_TIME sec(s)."
 
+echo "Extracting..."
+START_TIME=$SECONDS
 mkdir -p "$targetDir"
 tar -xzf $fileName -C "$targetDir"
 rm -f "$fileName"
+ELAPSED_TIME=$(($SECONDS - $START_TIME))
+echo "Extracted contents in $ELAPSED_TIME sec(s)."
 
 if [ "$createLinks" != "false" ]; then
     # Create a link : major.minor => major.minor.patch

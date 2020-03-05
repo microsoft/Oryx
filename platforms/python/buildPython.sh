@@ -28,8 +28,7 @@ buildPythonPrereqsImage() {
 buildPython() {
 	local version="$1"
 	local gpgKey="$2"
-	local pipVersion="$3"
-	local dockerFile="$4"
+	local dockerFile="$3"
 	local imageName="oryx/python"
 
 	if shouldBuildSdk python python-$version.tar.gz; then
@@ -46,17 +45,12 @@ buildPython() {
 		else
 			dockerFile="$pythonPlatformDir/$dockerFile"
 		fi
-
-		if [ -z "$pipVersion" ]; then
-			# Use default pip version
-			pipVersion="$PIP_VERSION"
-		fi
 		
 		docker build \
 			-f "$dockerFile" \
 			--build-arg VERSION_TO_BUILD=$version \
 			--build-arg GPG_KEYS=$gpgKey \
-			--build-arg PIP_VERSION=$pipVersion \
+			--build-arg PIP_VERSION=$PIP_VERSION \
 			-t $imageName \
 			$REPO_DIR
 
