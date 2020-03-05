@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
@@ -22,11 +21,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("6")]
-        [InlineData("8")]
-        [InlineData("9")]
-        [InlineData("10")]
-        [InlineData("12")]
+        [MemberData(
+           nameof(TestValueGenerator.GetNodeVersions),
+           MemberType = typeof(TestValueGenerator))]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
         // instead  of "APPINSIGHTS_INSTRUMENTATIONKEY"
         public async Task CanBuildAndRun_NodeApp_WithAppInsights_Old_Env_Configured(string nodeVersion)
@@ -46,7 +43,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"export {aIEnabled}=true")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/applicationinsights/out/Bootstrap/Oryx.js")
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -77,8 +74,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
-        [InlineData("9")]
         [InlineData("10")]
         [InlineData("12")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -101,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand($"cat run.sh")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/applicationinsights/out/Bootstrap/Oryx.js")
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -132,8 +127,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
-        [InlineData("9")]
         [InlineData("10")]
         [InlineData("12")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -154,7 +147,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/applicationinsights/out/Bootstrap/Oryx.js")
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -185,8 +178,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
-        [InlineData("9")]
         [InlineData("10")]
         [InlineData("12")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -207,7 +198,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"export {connectionString}=asdas")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
-                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/applicationinsights/out/Bootstrap/Oryx.js")
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

@@ -63,7 +63,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("applicationinsights@", actualOutput);
                     Assert.Contains(expectedAppInsightsVersion, actualOutput);
                     Assert.Contains("/usr/local/lib", actualOutput);
                 },

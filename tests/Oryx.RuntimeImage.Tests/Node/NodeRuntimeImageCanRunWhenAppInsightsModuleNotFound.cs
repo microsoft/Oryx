@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/node_modules/applicationinsights")
-                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/applicationinsights/out/Bootstrap/Oryx.js")
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
                 .AddCommand("./run.sh")
                 .ToString();
 
