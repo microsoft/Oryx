@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetTestRuntimeImage("node", nodeVersion),
-                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "disabled") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -247,8 +247,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export {aiEnabled}=~2")
-                .AddCommand($"export {aiKey}=asdas")
+                .AddCommand($"export {aIEnabled}=~2")
+                .AddCommand($"export {aIKey}=asdas")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetTestRuntimeImage("node", nodeVersion),
-                new List<EnvironmentVariable> { new EnvironmentVariable(connectionString, "asdasda"), new EnvironmentVariable(aIEnabled, "") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
