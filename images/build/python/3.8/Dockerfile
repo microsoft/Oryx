@@ -1,5 +1,0 @@
-# Build Python 3.8
-FROM python-build-prereqs
-WORKDIR /usr/src/python
-ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
-RUN . /tmp/__pythonVersions.sh && PYTHON_VERSION=$PYTHON38_VERSION PIP_VERSION=$PIP_VERSION /tmp/build.sh
