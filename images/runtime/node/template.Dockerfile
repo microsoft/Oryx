@@ -23,9 +23,3 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
 # Node wrapper is used to debug apps when node is executed indirectly, e.g. by npm.
 COPY src/startupscriptgenerator/src/node/wrapper/node /opt/node-wrapper/
 RUN chmod a+x /opt/node-wrapper/node
-
-# Application-Insights is supported as an option for telemetry when running the app,
-# so we need to make sure it is available in our images.
-RUN set -eux; \
-    npm uninstall -f -g applicationinsights; \
-    npm install -f -g applicationinsights@1.7.3;
