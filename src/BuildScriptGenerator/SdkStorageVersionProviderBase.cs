@@ -32,9 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var httpClient = _httpClientFactory.CreateClient("general");
 
             var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
-            var blobList = httpClient
-                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}?restype=container&comp=list&include=metadata")
-                .Result;
+            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName);
+            var blobList = httpClient.GetStringAsync(url).Result;
             var xdoc = XDocument.Parse(blobList);
             var supportedVersions = new List<string>();
 
@@ -54,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             // get default version
             var defaultVersionContent = httpClient
-                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/defaultVersion.txt")
+                .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}")
                 .Result;
 
             string defaultVersion = null;

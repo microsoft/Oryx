@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Integration.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -116,11 +117,8 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            var blobList = _httpClient
-                .GetStringAsync(
-                $"{_storageUrl}/{platformName}" +
-                "?restype=container&comp=list&include=metadata")
-                .Result;
+            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName);
+            var blobList = _httpClient.GetStringAsync(url).Result;
             return XDocument.Parse(blobList);
         }
 
@@ -147,7 +145,7 @@ namespace Oryx.Integration.Tests
         private string GetDefaultVersionFromContainer(string platformName)
         {
             var defaultVersionContent = _httpClient
-                .GetStringAsync($"{_storageUrl}/{platformName}/defaultVersion.txt")
+                .GetStringAsync($"{_storageUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}")
                 .Result;
 
             string defaultVersion = null;
@@ -169,7 +167,11 @@ namespace Oryx.Integration.Tests
 
         private List<string> GetListOfVersionsToBuild(string platformName)
         {
-            var versionFile = Path.Combine(_repoRootDir, "platforms", platformName, "versionsToBuild.txt");
+            var versionFile = Path.Combine(
+                _repoRootDir,
+                "platforms",
+                platformName,
+                SdkStorageConstants.VersionsToBuildFileName);
             if (!File.Exists(versionFile))
             {
                 throw new InvalidOperationException($"Could not find file '{versionFile}'");
@@ -196,7 +198,11 @@ namespace Oryx.Integration.Tests
 
         private string GetDefaultVersion(string platformName)
         {
-            var file = Path.Combine(_repoRootDir, "platforms", platformName, "defaultVersion.txt");
+            var file = Path.Combine(
+                _repoRootDir,
+                "platforms",
+                platformName,
+                SdkStorageConstants.DefaultVersionFileName);
             if (!File.Exists(file))
             {
                 throw new InvalidOperationException($"Could not file default version file '{file}'.");

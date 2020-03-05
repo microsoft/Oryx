@@ -130,6 +130,8 @@
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdks.blob.core.windows.net
     default-version-file-name: defaultVersion.txt
+    versions-to-build-file-name: versionsToBuild.txt
+    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
   outputs:
     - type: shell
       directory: build

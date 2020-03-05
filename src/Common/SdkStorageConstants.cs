@@ -8,5 +8,7 @@ namespace Microsoft.Oryx.Common
         public const string DevSdkStorageBaseUrl = "https://oryxsdksdev.blob.core.windows.net";
         public const string ProdSdkStorageBaseUrl = "https://oryxsdks.blob.core.windows.net";
         public const string DefaultVersionFileName = "defaultVersion.txt";
+        public const string VersionsToBuildFileName = "versionsToBuild.txt";
+        public const string ContainerMetadataUrlFormat = "{0}/{1}?restype=container&comp=list&include=metadata";
     }
 }
