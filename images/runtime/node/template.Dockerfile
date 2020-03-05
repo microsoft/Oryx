@@ -28,4 +28,4 @@ RUN chmod a+x /opt/node-wrapper/node
 # so we need to make sure it is available in our images.
 RUN set -eux; \
     npm uninstall -f -g applicationinsights; \
-    npm install -f -g applicationinsights@1.7.2;
+    npm install -f -g applicationinsights@1.7.3;
