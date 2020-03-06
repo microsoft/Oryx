@@ -5,6 +5,7 @@ package consts
 const CompressedOutputFileName string = "oryx_output.tar.gz"
 const BuildManifestFileName string = "oryx-manifest.toml"
 const RunScriptGeneratorDir string = "/opt/startupcmdgen"
-const NodeAppInsightsLoaderFileName string = "oryx-appinsightsloader.js"
+const NodeAppInsightsLoaderFileName string = "applicationinsights/out/Bootstrap/Oryx.js"
+const NodeGlobalModulesPath string = "/usr/local/lib/node_modules"
 const Bash string = "/bin/bash"
 const Benv string = "/opt/oryx/benv"

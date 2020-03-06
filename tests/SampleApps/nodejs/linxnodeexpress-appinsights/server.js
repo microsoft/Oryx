@@ -1,29 +1,18 @@
 var express = require('express');
 var app = express();
-var appInsights = require('applicationinsights');
 
 var responseString = "AppInsights is not configured!";
+var setupString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING || process.env.APPINSIGHTS_INSTRUMENTATIONKEY;
 
-console.log(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
+console.log(setupString);
 console.log(process.env.ApplicationInsightsAgent_EXTENSION_VERSION)
 
-if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY && process.env.ApplicationInsightsAgent_EXTENSION_VERSION
-    && process.env.ApplicationInsightsAgent_EXTENSION_VERSION !== "disabled") {
-	console.log("hello world here")
-	appInsights
-		.setup(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
-		.setSendLiveMetrics(true)
-		.start();
-    responseString = "AppInsights is set to send telemetry!"
-
-    let client = appInsights.defaultClient;
-    client.trackTrace({message: "trace message"});
-    client.trackMetric({name: "custom metric", value: 3});
-    
-}
-
-
 app.get('/', function (req, res) {
+// Check for incoming request flag set by Node.js SDK to determine if the SDK is instrumented or not
+//for version 1.7.2 onward
+  if (req["_appInsightsAutoCollected"] === true) {
+    responseString = "AppInsights is set to send telemetry!";
+  }
   res.send(responseString);
 });
 

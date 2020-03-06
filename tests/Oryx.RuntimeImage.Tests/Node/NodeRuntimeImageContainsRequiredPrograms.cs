@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,6 +44,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void NodeImage_Contains_ApplicationInsights(string nodeTag)
         {
             // Arrange & Act
+            var expectedAppInsightsVersion = string.Concat("applicationinsights@", NodeVersions.NodeAppInsightsSdkVersion);
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetTestRuntimeImage("node", nodeTag),
@@ -60,7 +63,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("applicationinsights@1.4.1", actualOutput);
+                    Assert.Contains(expectedAppInsightsVersion, actualOutput);
                     Assert.Contains("/usr/local/lib", actualOutput);
                 },
                 result.GetDebugInfo());

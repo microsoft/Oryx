@@ -12,7 +12,7 @@ mkdir -p /node_modules
 chmod 777 /node_modules
 
 # Npm version 6.4 has issues installing native modules like grpc,
-# so upgrading it to a version which we know works fine. 
+# so upgrading it to a version which we know works fine.
 npm_ver=$(npm --version)
 IFS='.' read -ra SPLIT_VERSION <<< "$npm_ver"
 major="${SPLIT_VERSION[0]}"
@@ -29,4 +29,4 @@ npm install -g pm2@3.5.1
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
-npm install -g applicationinsights@1.4.1
+npm install -g applicationinsights@1.7.3
