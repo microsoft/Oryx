@@ -71,6 +71,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
+        public void Detect_ReturnsVersionFromCliSwitch_EvenIfEnvironmentVariable_AndComposerFileHasVersionSpecified()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
+            var detector = CreatePhpLanguageDetector(
+                supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0", "100.100.100" },
+                defaultVersion: "7.3.14",
+                environment);
+            var repo = new MemorySourceRepo();
+            var version = "5.6.0";
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            context.PhpVersion = "100.100.100";
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("100.100.100", result.LanguageVersion);
+        }
+
+        [Fact]
         public void Detect_ReturnsVersion_FromEnvironmentVariable_EvenIfComposerFileHasVersionSpecified()
         {
             // Arrange

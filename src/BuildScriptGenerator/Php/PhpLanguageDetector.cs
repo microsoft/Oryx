@@ -52,9 +52,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private string GetVersion(RepositoryContext context)
         {
-            if (context.DotNetCoreVersion != null)
+            if (context.PhpVersion != null)
             {
-                return context.DotNetCoreVersion;
+                return context.PhpVersion;
             }
 
             if (_options.PhpVersion != null)
