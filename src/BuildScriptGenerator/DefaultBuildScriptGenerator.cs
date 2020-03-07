@@ -4,12 +4,12 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common;
@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
+        private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly ICompatiblePlatformDetector _platformDetector;
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly IEnumerable<IChecker> _checkers;
@@ -29,12 +30,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IStandardOutputWriter _writer;
 
         public DefaultBuildScriptGenerator(
+            IOptions<BuildScriptGeneratorOptions> cliOptions,
             ICompatiblePlatformDetector platformDetector,
             IEnvironmentSettingsProvider environmentSettingsProvider,
             IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger,
             IStandardOutputWriter writer)
         {
+            _cliOptions = cliOptions.Value;
             _platformDetector = platformDetector;
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
@@ -248,6 +251,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 context.SourceRepo,
                 environmentSettings);
 
+            if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
+            {
+                var outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
+                    _cliOptions.DestinationDir,
+                    _cliOptions.SourceDir);
+            }
+
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 OsPackagesToInstall = context.RequiredOsPackages ?? new string[0],
@@ -262,6 +272,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 BuildProperties = buildProperties,
                 BenvPath = FilePaths.Benv,
                 PlatformInstallationScriptSnippets = snippets.Select(s => s.PlatformInstallationScriptSnippet),
+                OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

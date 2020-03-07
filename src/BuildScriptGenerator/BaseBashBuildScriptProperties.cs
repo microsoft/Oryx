@@ -3,8 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -71,5 +71,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the list of bash script snippets which install the platform binaries.
         /// </summary>
         public IEnumerable<string> PlatformInstallationScriptSnippets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value which indicates if the output directory is a nested directory of the source.
+        /// </summary>
+        public bool OutputDirectoryIsNested { get; internal set; }
     }
 }

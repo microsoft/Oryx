@@ -110,21 +110,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_CopiesOutput_ToNestedOutputDirectory()
+        public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
-            var nestedOutputDir = "/tmp/output/subdir1";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/node_modules")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appDir}/output")
+                .AddDirectoryExistsCheck($"{appDir}/output/node_modules")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = Settings.SlimBuildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

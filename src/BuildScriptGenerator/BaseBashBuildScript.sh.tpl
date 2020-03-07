@@ -26,6 +26,12 @@ then
     DESTINATION_DIR=$(pwd -P)
 fi
 
+{{ if OutputDirectoryIsNested }}
+# For 1st build this is not a problem, but for subsequent builds we want the source directory to be
+# in a clean state to avoid considering earlier build's state and potentially yielding incorrect results.
+rm -rf "$DESTINATION_DIR"
+{{ end }}
+
 if [ ! -z "$INTERMEDIATE_DIR" ]
 then
 	echo "Using intermediate directory '$INTERMEDIATE_DIR'."
@@ -108,7 +114,6 @@ echo "{{ PostBuildCommandEpilogue }}"
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	cd "$SOURCE_DIR"
-	mkdir -p "$DESTINATION_DIR"
 	echo
 	echo "Copying files to destination directory '$DESTINATION_DIR'..."
 	START_TIME=$SECONDS
