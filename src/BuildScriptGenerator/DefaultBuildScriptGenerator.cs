@@ -251,9 +251,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 context.SourceRepo,
                 environmentSettings);
 
+            var outputIsSubDirOfSourceDir = false;
             if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
             {
-                var outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
+                outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
                     _cliOptions.DestinationDir,
                     _cliOptions.SourceDir);
             }
