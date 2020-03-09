@@ -35,7 +35,6 @@ func main() {
 	startupCmdPtr := scriptCommand.String("startupCommand", startupCommand, "Command that will be executed to start the application server up.")
 	bindPortPtr := scriptCommand.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
 	outputPathPtr := scriptCommand.String("output", "run.sh", "Path to the script to be generated.")
-	scriptCommand.Parse()
 
 	logger := common.GetLogger("php.main")
 	defer logger.Shutdown()
