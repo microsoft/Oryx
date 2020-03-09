@@ -18,22 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 var data = new TheoryData<string, string>
                 {
                     {
-                        Path.Combine("c:", "foo"),
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar,
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo"),
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar
-                    },
-                    {
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar,
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar
-                    },
-                    {
                         Path.Combine("c:", "foo", "bar"),
                         Path.Combine("c:", "foo")
                     },
@@ -73,6 +57,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 // subdir, parentdir
                 var data = new TheoryData<string, string>
                 {
+                    // Same directory is not a sub-directory
+                    {
+                        Path.Combine("c:", "foo"),
+                        Path.Combine("c:", "foo")
+                    },
+                    {
+                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar,
+                        Path.Combine("c:", "foo")
+                    },
+                    {
+                        Path.Combine("c:", "foo"),
+                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar
+                    },
+                    {
+                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar,
+                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar
+                    },
+
+
                     {
                         // case-sensitive
                         Path.Combine("c:", "Foo"),

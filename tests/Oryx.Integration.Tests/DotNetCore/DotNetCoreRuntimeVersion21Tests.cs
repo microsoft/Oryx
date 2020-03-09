@@ -3,12 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
@@ -563,9 +562,10 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "MultiWebAppRepo";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appVolume = DockerVolume.CreateMirror(hostDir);
+            var appDir = appVolume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .SetEnvironmentVariable("PROJECT", "src/WebApp1/WebApp1.csproj")
                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
@@ -586,7 +586,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp21WebApp,
                 _output,
-                volume,
+                appVolume,
                 "/bin/sh",
                 new[]
                 {
@@ -613,9 +613,10 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "MultiWebAppRepo";
-            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appVolume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", appName));
+            var appDir = appVolume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var defaultAppVolume = CreateDefaultWebAppVolume();
             var defaultAppDir = defaultAppVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
@@ -641,7 +642,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp21WebApp,
                 _output,
-                new List<DockerVolume> { volume, defaultAppVolume },
+                new List<DockerVolume> { appVolume, defaultAppVolume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -717,9 +718,10 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenaming()
         {
             // Arrange
-            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appVolume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
+            var appDir = appVolume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var renamedAppName = $"{NetCoreApp21WebApp}-renamed";
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
@@ -740,7 +742,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp21WebApp,
                 _output,
-                volume,
+                new[] { appVolume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {

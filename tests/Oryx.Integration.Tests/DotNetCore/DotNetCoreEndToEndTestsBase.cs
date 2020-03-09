@@ -4,7 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.Tests.Common;
+using System;
 using System.IO;
+using System.Reflection.Metadata.Ecma335;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
@@ -30,6 +32,13 @@ namespace Microsoft.Oryx.Integration.Tests
         protected DockerVolume CreateDefaultWebAppVolume()
         {
             return DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", DefaultWebApp));
+        }
+
+        protected DockerVolume CreateAppOutputDirVolume()
+        {
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            return DockerVolume.CreateMirror(appOutputDirPath);
         }
     }
 }

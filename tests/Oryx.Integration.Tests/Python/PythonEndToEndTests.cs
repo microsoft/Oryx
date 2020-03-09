@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingNestedOutputDirectory()
+        public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
             var appName = "flask-app";
@@ -161,7 +161,9 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} -o {appDir}/output")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand(
+                $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort} " +
+                $"--platform --platform-version 3.8")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -175,7 +177,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "3.6"),
+                _imageHelper.GetTestRuntimeImage("python", "3.8"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -201,7 +203,9 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appDir}/output")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand(
+                $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort} " +
+                $"--platform python --platform-version 3.8")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -215,7 +219,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "3.6"),
+                _imageHelper.GetTestRuntimeImage("python", "3.8"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

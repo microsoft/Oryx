@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var parentDirSegments = parentDir.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
             var subDirSegments = subDir.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
 
-            if (subDirSegments.Length < parentDirSegments.Length)
+            if (subDirSegments.Length <= parentDirSegments.Length)
             {
                 return false;
             }
