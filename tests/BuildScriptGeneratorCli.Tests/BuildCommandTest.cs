@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.False(isValid);
             Assert.Contains(
-                $"Intermediate directory '{intermediateDir}' cannot be same " +
+                $"Intermediate directory '{sourceDir}' cannot be same " +
                 $"as the source directory '{sourceDir}'.",
                 testConsole.StdError);
         }
