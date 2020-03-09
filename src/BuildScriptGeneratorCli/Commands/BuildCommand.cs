@@ -335,6 +335,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!string.IsNullOrEmpty(options.IntermediateDir))
             {
+                if (DirectoryHelper.AreSameDirectories(options.IntermediateDir, options.SourceDir))
+                {
+                    logger.LogError(
+                        "Intermediate directory cannot be same as the source directory.");
+                    console.WriteErrorLine(
+                        $"Intermediate directory '{options.IntermediateDir}' cannot be " +
+                        $"same as the source directory '{options.SourceDir}'.");
+                    return false;
+                }
+
                 // Intermediate directory cannot be a sub-directory of the source directory
                 if (DirectoryHelper.IsSubDirectory(options.IntermediateDir, options.SourceDir))
                 {

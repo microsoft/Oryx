@@ -11,6 +11,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public static class DirectoryHelper
     {
         /// <summary>
+        /// Check if the two directory paths are the same. Is case-sensitive.
+        /// </summary>
+        /// <param name="dir1"></param>
+        /// <param name="dir2"></param>
+        /// <returns></returns>
+        public static bool AreSameDirectories(string dir1, string dir2)
+        {
+            var dir1Path = new DirectoryInfo(dir1).FullName.Trim(Path.DirectorySeparatorChar);
+            var dir2Path = new DirectoryInfo(dir2).FullName.Trim(Path.DirectorySeparatorChar);
+
+            // We want it to be case-sensitive
+            return dir1Path.Equals(dir2Path);
+        }
+
+        /// <summary>
         /// Checks if <paramref name="subDir"/> is a sub-directory of <paramref name="parentDir"/>.
         /// </summary>
         /// <param name="subDir"></param>
