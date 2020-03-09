@@ -220,8 +220,34 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Contains(stringToPrint, testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
         }
 
+        [Fact]
+        public void IsValid_IsFalse_IfIntermediateDir_IsSameAsSourceDir()
+        {
+            // Arrange
+            var sourceDir = _testDir.CreateChildDir();
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = sourceDir;
+                    o.IntermediateDir = sourceDir;
+                    o.DestinationDir = _testDir.CreateChildDir();
+                })
+                .Build();
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand();
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Contains(
+                $"Intermediate directory '{intermediateDir}' cannot be same " +
+                $"as the source directory '{sourceDir}'.",
+                testConsole.StdError);
+        }
+
         [Theory]
-        [InlineData("")]
         [InlineData("subdir1")]
         [InlineData("subdir1", "subdir2")]
         public void IsValid_IsFalse_IfIntermediateDir_IsSubDirectory_OfSourceDir(params string[] paths)
