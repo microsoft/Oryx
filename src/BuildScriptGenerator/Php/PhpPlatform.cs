@@ -6,12 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
@@ -53,7 +51,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <summary>
         /// Gets the list of versions that the script generator supports.
         /// </summary>
-        public IEnumerable<string> SupportedVersions => _phpVersionProvider.SupportedPhpVersions;
+        public IEnumerable<string> SupportedVersions
+        {
+            get
+            {
+                var versionInfo = _phpVersionProvider.GetVersionInfo();
+                return versionInfo.SupportedVersions;
+            }
+        }
 
         /// <summary>
         /// Detects the programming platform name and version required by the application in source directory.

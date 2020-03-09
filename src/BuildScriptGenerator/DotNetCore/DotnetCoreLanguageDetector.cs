@@ -10,15 +10,13 @@ using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.Common.Extensions;
-using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreLanguageDetector : ILanguageDetector
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly DotNetCoreScriptGeneratorOptions _scriptGeneratorOptions;
+        private readonly DotNetCoreScriptGeneratorOptions _options;
         DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
         private readonly IStandardOutputWriter _writer;
@@ -31,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IStandardOutputWriter writer)
         {
             _versionProvider = versionProvider;
-            _scriptGeneratorOptions = options.Value;
+            _options = options.Value;
             _projectFileProvider = projectFileProvider;
             _logger = logger;
             _writer = writer;
@@ -57,38 +55,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            // If a repo explicitly specifies an sdk version, then just use it as it is.
-            string languageVersion = null;
-            if (sourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
-            {
-                var globalJson = GetGlobalJsonObject(sourceRepo);
-                var sdkVersion = globalJson?.sdk?.version?.Value as string;
-                if (sdkVersion != null)
-                {
-                    languageVersion = sdkVersion;
-                }
-            }
-
-            if (string.IsNullOrEmpty(languageVersion))
-            {
-                languageVersion = DetermineRuntimeVersion(targetFramework);
-            }
-
-            if (languageVersion == null)
-            {
-                _logger.LogDebug(
-                    $"Could not find a {DotNetCoreConstants.LanguageName} core runtime version " +
-                    $"corresponding to 'TargetFramework' '{targetFramework}'.");
-                return null;
-            }
-
-            languageVersion = VerifyAndResolveVersion(languageVersion);
+            var version = GetVersion(context, targetFramework);
+            version = GetMaxSatisfyingVersionAndVerify(version);
 
             return new LanguageDetectorResult
             {
                 Language = DotNetCoreConstants.LanguageName,
-                LanguageVersion = languageVersion,
+                LanguageVersion = version,
             };
+        }
+
+        private string GetVersion(RepositoryContext context, string targetFramework)
+        {
+            if (context.DotNetCoreVersion != null)
+            {
+                return context.DotNetCoreVersion;
+            }
+
+            if (_options.DotNetVersion != null)
+            {
+                return _options.DotNetVersion;
+            }
+
+            var version = DetermineRuntimeVersion(targetFramework);
+            if (version != null)
+            {
+                return version;
+            }
+
+            return GetDefaultVersionFromProvider();
+        }
+
+        private string GetDefaultVersionFromProvider()
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
+            return versionInfo.DefaultVersion;
         }
 
         internal string DetermineRuntimeVersion(string targetFramework)
@@ -108,52 +109,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string VerifyAndResolveVersion(string version)
+        private string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            if (string.IsNullOrEmpty(version))
+            var versionInfo = _versionProvider.GetVersionInfo();
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                versionInfo.SupportedVersions);
+
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                return _scriptGeneratorOptions.DefaultVersion;
-            }
-            else
-            {
-                var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                var exc = new UnsupportedVersionException(
+                    DotNetCoreConstants.LanguageName,
                     version,
-                    _versionProvider.SupportedDotNetCoreVersions);
-
-                if (string.IsNullOrEmpty(maxSatisfyingVersion))
-                {
-                    var exc = new UnsupportedVersionException(
-                        DotNetCoreConstants.LanguageName,
-                        version,
-                        _versionProvider.SupportedDotNetCoreVersions);
-                    _logger.LogError(exc, $"Exception caught, the given version '{version}' is not supported for the .NET Core platform.");
-                    throw exc;
-                }
-
-                return maxSatisfyingVersion;
-            }
-        }
-
-        private dynamic GetGlobalJsonObject(ISourceRepo sourceRepo)
-        {
-            dynamic globalJson = null;
-            try
-            {
-                var jsonContent = sourceRepo.ReadFile(DotNetCoreConstants.GlobalJsonFileName);
-                globalJson = JsonConvert.DeserializeObject(jsonContent);
-            }
-            catch (Exception ex)
-            {
-                // We just ignore errors, so we leave malformed package.json
-                // files for node.js to handle, not us. This prevents us from
-                // erroring out when node itself might be able to tolerate some errors
-                // in the package.json file.
+                    versionInfo.SupportedVersions);
                 _logger.LogError(
-                    ex,
-                    $"An error occurred while trying to deserialize {DotNetCoreConstants.GlobalJsonFileName.Hash()}");
+                    exc,
+                    $"Exception caught, the given version '{version}' is not supported for the .NET Core platform.");
+                throw exc;
             }
 
-            return globalJson;
+            return maxSatisfyingVersion;
         }
     }
 }

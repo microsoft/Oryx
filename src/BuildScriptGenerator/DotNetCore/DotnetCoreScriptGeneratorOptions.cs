@@ -3,20 +3,23 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotNetCoreScriptGeneratorOptions
     {
-        public string DefaultVersion { get; set; }
+        /// <summary>
+        /// Gets or sets user provided version.
+        /// </summary>
+        public string DotNetVersion { get; set; }
 
-        public string InstalledVersionsDir { get; set; }
-
-        public IList<string> SupportedVersions { get; set; }
-
+        /// <summary>
+        /// Gets or sets the relative path to the project to be built.
+        /// </summary>
         public string Project { get; set; }
 
+        /// <summary>
+        /// Gets or sets the MSBuild configuration that needs to be used when doing 'dotnet build'.
+        /// </summary>
         public string MSBuildConfiguration { get; set; }
     }
 }

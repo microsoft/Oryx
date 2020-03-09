@@ -12,6 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// </summary>
     public interface IDotNetCoreVersionProvider
     {
-        IEnumerable<string> SupportedDotNetCoreVersions { get; }
+        PlatformVersionInfo GetVersionInfo();
     }
 }

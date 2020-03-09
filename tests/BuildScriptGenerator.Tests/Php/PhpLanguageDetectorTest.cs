@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -71,6 +70,96 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 exception.Message);
         }
 
+        [Fact]
+        public void Detect_ReturnsVersionFromCliSwitch_EvenIfEnvironmentVariable_AndComposerFileHasVersionSpecified()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
+            var detector = CreatePhpLanguageDetector(
+                supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0", "100.100.100" },
+                defaultVersion: "7.3.14",
+                environment);
+            var repo = new MemorySourceRepo();
+            var version = "5.6.0";
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            context.PhpVersion = "100.100.100";
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("100.100.100", result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsVersion_FromEnvironmentVariable_EvenIfComposerFileHasVersionSpecified()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
+            var detector = CreatePhpLanguageDetector(
+                supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
+                defaultVersion: "7.3.14",
+                environment);
+            var repo = new MemorySourceRepo();
+            var version = "5.6.0";
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("7.2.5", result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsVersion_FromComposerFile_IfEnvironmentVariableDoesNotHaveValue()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            var detector = CreatePhpLanguageDetector(
+                supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
+                defaultVersion: "7.3.14",
+                environment);
+            var repo = new MemorySourceRepo();
+            var version = "5.6.0";
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("5.6.0", result.LanguageVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsVersion_FromVersionProvider_IfNoVersionFoundInComposerFile_OrEnvVariable()
+        {
+            // Arrange
+            var environment = new TestEnvironment();
+            var detector = CreatePhpLanguageDetector(
+                supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
+                defaultVersion: "7.3.14",
+                environment);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("7.3.14", result.LanguageVersion);
+        }
+
         [Theory]
         [InlineData("invalid json")]
         [InlineData("{\"data\": \"valid but meaningless\"}")]
@@ -102,10 +191,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private PhpLanguageDetector CreatePhpLanguageDetector(string[] supportedPhpVersions)
         {
-            return CreatePhpLanguageDetector(supportedPhpVersions, new TestEnvironment());
+            return CreatePhpLanguageDetector(supportedPhpVersions, defaultVersion: null, new TestEnvironment());
         }
 
-        private PhpLanguageDetector CreatePhpLanguageDetector(string[] supportedPhpVersions, IEnvironment environment)
+        private PhpLanguageDetector CreatePhpLanguageDetector(
+            string[] supportedPhpVersions, 
+            string defaultVersion,
+            IEnvironment environment)
         {
             var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
             var options = new PhpScriptGeneratorOptions();
@@ -113,19 +205,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             return new PhpLanguageDetector(
                 Options.Create(options),
-                new TestPhpVersionProvider(supportedPhpVersions),
+                new TestPhpVersionProvider(supportedPhpVersions, defaultVersion),
                 NullLogger<PhpLanguageDetector>.Instance,
                 new DefaultStandardOutputWriter());
         }
 
         private class TestPhpVersionProvider : IPhpVersionProvider
         {
-            public TestPhpVersionProvider(string[] supportedPhpVersions)
+            private readonly string[] _supportedPhpVersions;
+            private readonly string _defaultVersion;
+
+            public TestPhpVersionProvider(string[] supportedPhpVersions, string defaultVersion)
             {
-                SupportedPhpVersions = supportedPhpVersions;
+                _supportedPhpVersions = supportedPhpVersions;
+                _defaultVersion = defaultVersion;
             }
 
-            public IEnumerable<string> SupportedPhpVersions { get; }
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                var version = _defaultVersion;
+                if (version == null)
+                {
+                    version = PhpVersions.Php73Version;
+                }
+
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedPhpVersions, version);
+            }
         }
     }
 }

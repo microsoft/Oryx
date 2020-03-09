@@ -12,6 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly BuildScriptGeneratorOptions _options;
         private readonly PythonOnDiskVersionProvider _onDiskVersionProvider;
         private readonly PythonSdkStorageVersionProvider _sdkStorageVersionProvider;
+        private PlatformVersionInfo _versionInfo;
 
         public PythonVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -25,12 +26,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (_options.EnableDynamicInstall)
+            if (_versionInfo == null)
             {
-                return _sdkStorageVersionProvider.GetVersionInfo();
+                if (_options.EnableDynamicInstall)
+                {
+                    return _sdkStorageVersionProvider.GetVersionInfo();
+                }
+
+                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
             }
 
-            return _onDiskVersionProvider.GetVersionInfo();
+            return _versionInfo;
         }
     }
 }

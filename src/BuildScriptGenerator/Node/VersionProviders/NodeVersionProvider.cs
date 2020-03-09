@@ -12,6 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly BuildScriptGeneratorOptions _options;
         private readonly NodeOnDiskVersionProvider _onDiskVersionProvider;
         private readonly NodeSdkStorageVersionProvider _sdkStorageVersionProvider;
+        private PlatformVersionInfo _versionInfo;
 
         public NodeVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -25,12 +26,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (_options.EnableDynamicInstall)
+            if (_versionInfo == null)
             {
-                return _sdkStorageVersionProvider.GetVersionInfo();
+                if (_options.EnableDynamicInstall)
+                {
+                    return _sdkStorageVersionProvider.GetVersionInfo();
+                }
+
+                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
             }
 
-            return _onDiskVersionProvider.GetVersionInfo();
+            return _versionInfo;
         }
     }
 }

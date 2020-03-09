@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         };
 
         private readonly INodeVersionProvider _versionProvider;
-        private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
+        private readonly NodeScriptGeneratorOptions _options;
         private readonly ILogger<NodeLanguageDetector> _logger;
         private readonly IEnvironment _environment;
         private readonly IStandardOutputWriter _writer;
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IStandardOutputWriter writer)
         {
             _versionProvider = nodeVersionProvider;
-            _nodeScriptGeneratorOptions = options.Value;
+            _options = options.Value;
             _logger = logger;
             _environment = environment;
             _writer = writer;
@@ -109,50 +109,71 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
-            if (isNodeApp)
+            if (!isNodeApp)
             {
-                var packageJson = NodePlatform.GetPackageJsonObject(sourceRepo, _logger);
-                var nodeVersion = DetectNodeVersion(packageJson);
-
-                return new LanguageDetectorResult
-                {
-                    Language = NodeConstants.NodeJsName,
-                    LanguageVersion = nodeVersion,
-                };
-            }
-            else
-            {
-                _logger.LogDebug("App in repo is not a Node.js app");
+                _logger.LogDebug("App in repo is not a NodeJS app");
+                return null;
             }
 
-            return null;
+            var version = GetVersion(context);
+            version = GetMaxSatisfyingVersionAndVerify(version);
+
+            return new LanguageDetectorResult
+            {
+                Language = NodeConstants.NodeJsName,
+                LanguageVersion = version,
+            };
         }
 
-        private string DetectNodeVersion(dynamic packageJson)
+        private string GetVersion(RepositoryContext context)
         {
-            var nodeVersionRange = packageJson?.engines?.node?.Value as string;
-
-            // Get the default version. This could be having just the major or major.minor version.
-            // So try getting the maximum satisfying version of the default version.
-            var versionInfo = _versionProvider.GetVersionInfo();
-            if (string.IsNullOrEmpty(nodeVersionRange))
+            if (context.NodeVersion != null)
             {
-                nodeVersionRange = versionInfo.DefaultVersion;
+                return context.NodeVersion;
             }
 
+            if (_options.NodeVersion != null)
+            {
+                return _options.NodeVersion;
+            }
+
+            var version = GetVersionFromPackageJson(context);
+            if (version != null)
+            {
+                return version;
+            }
+
+            return GetDefaultVersionFromProvider();
+        }
+
+        private string GetVersionFromPackageJson(RepositoryContext context)
+        {
+            var packageJson = NodePlatform.GetPackageJsonObject(context.SourceRepo, _logger);
+            return packageJson?.engines?.node?.Value as string;
+        }
+
+        private string GetDefaultVersionFromProvider()
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
+            return versionInfo.DefaultVersion;
+        }
+
+        private string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                nodeVersionRange,
+                version,
                 versionInfo.SupportedVersions);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exception = new UnsupportedVersionException(
                     NodeConstants.NodeJsName,
-                    nodeVersionRange,
+                    version,
                     versionInfo.SupportedVersions);
                 _logger.LogError(
                     exception,
-                    $"Exception caught, the version '{nodeVersionRange}' is not supported for the Node platform.");
+                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
                 throw exception;
             }
 

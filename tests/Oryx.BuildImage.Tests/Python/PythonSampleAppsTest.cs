@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -147,13 +147,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_CopiesOutput_ToNestedOutputDirectory()
         {
             // Arrange
+            var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var nestedOutputDir = "/tmp/app-output/subdir1";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/pythonenv3.7")
+                .AddDirectoryExistsCheck($"{nestedOutputDir}/{virtualEnvName}")
                 .ToString();
 
             // Act
@@ -182,9 +183,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/pythonenv3.7")
+                .AddDirectoryExistsCheck($"{appDir}/{virtualEnvName}")
                 .ToString();
 
             // Act
@@ -214,9 +216,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
+            var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvName}")
                 .ToString();
 
             // Act
@@ -246,6 +249,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
+            var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
                 // Pre-populate the output directory with content
                 .CreateDirectory(appOutputDir)
@@ -253,7 +257,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .CreateDirectory($"{appOutputDir}/blah")
                 .CreateFile($"{appOutputDir}/blah/hi.txt", "hi")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvName}")
                 .AddFileExistsCheck($"{appOutputDir}/hi.txt")
                 .AddFileExistsCheck($"{appOutputDir}/blah/hi.txt")
                 .ToString();
@@ -482,9 +486,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appIntermediateDir = "/tmp/app-intermediate";
             var appOutputDir = "/tmp/app-output";
+            var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvName}")
                 .ToString();
 
             // Act
@@ -510,7 +515,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_VirtualEnv_Unzipped_ByDefault()
         {
             // Arrange
-            var virtualEnvironmentName = "pythonenv3.7";
+            var virtualEnvironmentName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -537,7 +542,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -578,7 +583,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -617,7 +622,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1072,6 +1077,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());
+        }
+
+        private string GetDefaultVirtualEnvName(string version)
+        {
+            var ver = new SemVer.Version(version);
+            return $"pythonenv{ver.Major}.{ver.Minor}";
         }
     }
 

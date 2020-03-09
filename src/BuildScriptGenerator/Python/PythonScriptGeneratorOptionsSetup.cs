@@ -18,13 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public void Configure(PythonScriptGeneratorOptions options)
         {
-            var defaultVersion = _environment.GetEnvironmentVariable(PythonConstants.PythonDefaultVersionEnvVarName);
-            if (string.IsNullOrEmpty(defaultVersion))
-            {
-                defaultVersion = PythonConstants.PythonLtsVersion;
-            }
-
-            options.PythonDefaultVersion = defaultVersion;
+            options.PythonVersion = _environment.GetEnvironmentVariable(
+                PythonConstants.PythonVersionEnvVarName);
         }
     }
 }

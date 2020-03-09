@@ -518,8 +518,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Dictionary<string, string> otherEnvironment = null)
         {
             var environment = new TestEnvironment();
-            environment.Variables[NodeScriptGeneratorOptionsSetup.NodeJsDefaultVersion] = defaultNodeVersion;
-            environment.Variables[NodeScriptGeneratorOptionsSetup.NpmDefaultVersion] = defaultNpmVersion;
+            environment.Variables[NodeConstants.NodeVersion] = defaultNodeVersion;
 
             if (otherEnvironment != null)
             {

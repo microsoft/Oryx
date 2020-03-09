@@ -18,15 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public void Configure(PhpScriptGeneratorOptions options)
         {
-            var defaultVersion = _env.GetEnvironmentVariable(PhpConstants.DefaultPhpRuntimeVersionEnvVarName);
-            if (string.IsNullOrWhiteSpace(defaultVersion))
-            {
-                defaultVersion = PhpConstants.DefaultPhpRuntimeVersion;
-            }
-
-            options.PhpDefaultVersion = defaultVersion;
-            options.InstalledPhpVersionsDir = PhpConstants.InstalledPhpVersionsDir;
-            options.SupportedPhpVersions = _env.GetEnvironmentVariableAsList(PhpConstants.SupportedVersionsEnvVarName);
+            options.PhpVersion = _env.GetEnvironmentVariable(PhpConstants.PhpRuntimeVersionEnvVarName);
         }
     }
 }

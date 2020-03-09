@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { PythonConstants.PythonName, PythonVersions.Python37Version } });
+                new Dictionary<string, string> { { PythonConstants.PythonName, PythonVersions.Python38Version } });
 
             // Assert
             Assert.Empty(messages);

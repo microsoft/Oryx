@@ -75,13 +75,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var virtualEnvName = "antenv";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -p virtualenv_name={virtualEnvName}")
+                .AddCommand(
+                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform python --platform-version 3.7")
                 // App should run fine even with manifest file not present
                 .AddCommand($"rm -f {appDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
+                .AddCommand(
+                $"oryx create-script -appPath {appDir} -virtualEnvName {virtualEnvName} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
