@@ -70,7 +70,8 @@ func main() {
 	defer logger.Shutdown()
 	logger.StartupScriptRequested()
 
-	common.ValidateCommands(versionCommand, scriptCommand, setupEnvCommand)
+	commands := []*flag.FlagSet{versionCommand, scriptCommand, setupEnvCommand}
+	common.ValidateCommands(commands)
 
 	if scriptCommand.Parsed() {
 		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
