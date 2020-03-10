@@ -14,26 +14,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {
     public class NodePlatformTest
     {
-        private const string PackageJson = @"{
-          ""name"": ""mynodeapp"",
-          ""version"": ""1.0.0"",
-          ""description"": ""test app"",
-          ""main"": ""server.js"",
-          ""scripts"": {
-            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
-            ""start"": ""node server.js""
-          },
-          ""author"": ""Dev"",
-          ""license"": ""ISC""
-        }";
-
         [Fact]
         public void BuildScript_HasSdkInstallScript_IfDynamicInstallIsEnabled_AndSdkIsNotAlreadyInstalled()
         {
             // Arrange
             var nodePlatform = CreateNodePlatform(dynamicInstallIsEnabled: true, sdkAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJson, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.NodeVersion = "10.10";
 
@@ -54,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var nodePlatform = CreateNodePlatform(dynamicInstallIsEnabled: true, sdkAlreadyInstalled: true);
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJson, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.NodeVersion = "10.10";
 
@@ -72,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var nodePlatform = CreateNodePlatform(dynamicInstallIsEnabled: false, sdkAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJson, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.NodeVersion = "10.10";
 
