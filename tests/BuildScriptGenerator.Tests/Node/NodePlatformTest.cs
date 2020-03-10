@@ -97,17 +97,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 sdkAlreadyInstalled);
 
             var versionProvider = new TestNodeVersionProvider();
-            var nodeGeneratorOptions = new NodeScriptGeneratorOptions();
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             var detector = new TestNodeLanguageDetector(
                 versionProvider,
-                Options.Create(nodeGeneratorOptions),
+                Options.Create(nodeScriptGeneratorOptions),
                 NullLogger<NodeLanguageDetector>.Instance,
                 environment,
                 new TestStandardOutputWriter());
 
             return new TestNodePlatform(
                 Options.Create(cliOptions),
-                Options.Create(nodeGeneratorOptions),
+                Options.Create(nodeScriptGeneratorOptions),
                 versionProvider,
                 NullLogger<NodePlatform>.Instance,
                 detector,
@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private class TestNodePlatform : NodePlatform
         {
             public TestNodePlatform(
-                IOptions<BuildScriptGeneratorOptions> commonOptions,
+                IOptions<BuildScriptGeneratorOptions> cliOptions,
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
                 INodeVersionProvider nodeVersionProvider,
                 ILogger<NodePlatform> logger,
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller)
                 : base(
-                      commonOptions,
+                      cliOptions,
                       nodeScriptGeneratorOptions,
                       nodeVersionProvider,
                       logger,
@@ -151,10 +151,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public static string InstallerScript = "installer-script-snippet";
 
             public TestNodePlatformInstaller(
-                IOptions<BuildScriptGeneratorOptions> commonOptions,
+                IOptions<BuildScriptGeneratorOptions> cliOptions,
                 IEnvironment environment,
                 bool sdkIsAlreadyInstalled)
-                : base(commonOptions, environment)
+                : base(cliOptions, environment)
             {
                 _sdkIsAlreadyInstalled = sdkIsAlreadyInstalled;
             }
@@ -174,11 +174,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             public TestNodeLanguageDetector(
                 INodeVersionProvider nodeVersionProvider,
-                IOptions<NodeScriptGeneratorOptions> options,
+                IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
                 ILogger<NodeLanguageDetector> logger,
                 IEnvironment environment,
                 IStandardOutputWriter writer)
-                : base(nodeVersionProvider, options, logger, environment, writer)
+                : base(nodeVersionProvider, nodeScriptGeneratorOptions, logger, environment, writer)
             {
             }
         }
