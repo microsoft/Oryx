@@ -586,7 +586,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp21WebApp,
                 _output,
-                new[] { appVolume },
+                new[] { appVolume, appOutputDirVolume },
                 _imageHelper.GetTestSlimBuildImage(),
                 "/bin/sh",
                 new[]
