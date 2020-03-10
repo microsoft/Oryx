@@ -169,7 +169,7 @@ docker build -t buildscriptgenerator \
 echo
 echo "-------------Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------------------------"
 docker build -t githubactions-buildpackdeps-stretch \
-	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE"
+	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
 	.
 
 echo
