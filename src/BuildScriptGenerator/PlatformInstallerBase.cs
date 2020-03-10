@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")
                 .AppendLine(
-                $"echo Downloading and extracing {platformName} version '{version}' to {versionDirInTemp}...")
+                $"echo Downloading and extracting {platformName} version '{version}' to {versionDirInTemp}...")
                 .AppendLine($"rm -rf {versionDirInTemp}")
                 .AppendLine($"mkdir -p {versionDirInTemp}")
                 .AppendLine($"cd {versionDirInTemp}")
