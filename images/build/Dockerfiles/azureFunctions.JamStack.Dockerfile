@@ -5,6 +5,9 @@ ARG BUILD_DIR=/tmp/oryx/build
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
+# NOTE: This imge is NOT based on 'githubrunners-buildpackdeps-stretch' because AzFunctions
+# team wanted a consistent experience at their end and do not want to see latency that might
+# be caused due to when the GitHub runners' layers and Oryx image layers go out of sync.
 FROM debian:stretch AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
