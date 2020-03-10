@@ -7,9 +7,7 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-# Use the exact layer that is present on the GitHub agent machines
-# https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md
-FROM buildpack-deps:stretch@sha256:8bcd320ec29cf67052985f28891586fb853051f69ad0646fc7a49f47d6e3ee1a AS main
+FROM githubactions-buildpackdeps-stretch AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 

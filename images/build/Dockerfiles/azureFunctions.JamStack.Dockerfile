@@ -5,7 +5,7 @@ ARG BUILD_DIR=/tmp/oryx/build
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-FROM buildpack-deps:stretch@sha256:8bcd320ec29cf67052985f28891586fb853051f69ad0646fc7a49f47d6e3ee1a AS main
+FROM githubactions-buildpackdeps-stretch AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
