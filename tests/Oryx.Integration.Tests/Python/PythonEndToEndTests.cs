@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var runScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort} " +
-                $"--platform --platform-version 3.8")
+                $"--platform python --platform-version 3.8")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -200,12 +200,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appDir}/output")
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {appDir}/output " +
+               $"--platform python --platform-version 3.8")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort} " +
-                $"--platform python --platform-version 3.8")
+                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
