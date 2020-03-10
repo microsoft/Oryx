@@ -30,7 +30,7 @@ jobs:
 
 - job: Release_NodeBaseImage
   displayName: Push Node Base Image to MCR
-  timeoutInMinutes: 250
+  timeoutInMinutes: 300
   pool:
     name: OryxLinux
   steps:
