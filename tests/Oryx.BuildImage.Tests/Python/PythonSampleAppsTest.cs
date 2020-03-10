@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -152,7 +153,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddBuildCommand($"{appDir} -o {appDir}/output --platform python --platform-version 3.7")
                 .AddDirectoryExistsCheck($"{appDir}/output/pythonenv3.7")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
@@ -185,10 +186,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             // NOTE: we want to make sure that even after subsequent builds(like in case of AppService),
             // the output structure is like what we expect.
+            var buildCmd = $"oryx build {appDir} -o {appDir}/output --platform python --platform-version 3.7";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddCommand(buildCmd)
+                .AddCommand(buildCmd)
+                .AddCommand(buildCmd)
                 .AddDirectoryExistsCheck($"{appDir}/output/pythonenv3.7")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
