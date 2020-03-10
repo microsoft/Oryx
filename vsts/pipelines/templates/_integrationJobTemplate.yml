@@ -57,7 +57,7 @@ jobs:
     name: OryxLinux
   variables:
     skipComponentGovernanceDetection: true
-  timeoutInMinutes: 180
+  timeoutInMinutes: 300
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
