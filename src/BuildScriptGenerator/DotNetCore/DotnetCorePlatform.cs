@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
-        private readonly BuildScriptGeneratorOptions _buildOptions;
+        private readonly BuildScriptGeneratorOptions _cliOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
             _detector = detector;
             _dotNetCorePlatformOptions = dotNetCorePlatformOptions.Value;
-            _buildOptions = buildOptions.Value;
+            _cliOptions = buildOptions.Value;
         }
 
         /// <inheritdoc/>
@@ -102,20 +102,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 context.SourceRepo,
                 environmentSettings);
 
-            var sourceDir = _buildOptions.SourceDir;
+            var sourceDir = _cliOptions.SourceDir;
             var temporaryDestinationDir = "/tmp/puboutput";
-            var destinationDir = _buildOptions.DestinationDir;
-            var intermediateDir = _buildOptions.IntermediateDir;
-            var hasUserSuppliedDestinationDir = !string.IsNullOrEmpty(_buildOptions.DestinationDir);
+            var destinationDir = _cliOptions.DestinationDir;
+            var intermediateDir = _cliOptions.IntermediateDir;
+            var hasUserSuppliedDestinationDir = !string.IsNullOrEmpty(_cliOptions.DestinationDir);
             var zipAllOutput = ShouldZipAllOutput(context);
             var buildConfiguration = GetBuildConfiguration();
+
+            // Since destination directory is optional for .NET Core builds, check
+            var outputIsSubDirOfSourceDir = false;
+            if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
+            {
+                outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
+                    _cliOptions.DestinationDir,
+                    _cliOptions.SourceDir);
+            }
 
             var scriptBuilder = new StringBuilder();
             scriptBuilder
                 .AppendLine("#!/bin/bash")
                 .AppendLine("set -e")
-                .AppendLine()
-                .AddScriptToCopyToIntermediateDirectory(
+                .AppendLine();
+
+            // For 1st build this is not a problem, but for subsequent builds we want the source directory to be
+            // in a clean state to avoid considering earlier build's state and potentially yielding incorrect results.
+            if (outputIsSubDirOfSourceDir)
+            {
+                scriptBuilder.AppendLine($"rm -rf {_cliOptions.DestinationDir}");
+            }
+
+            scriptBuilder.AddScriptToCopyToIntermediateDirectory(
                     sourceDir: ref sourceDir,
                     intermediateDir: intermediateDir,
                     GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
@@ -176,7 +193,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             scriptBuilder
                 .AddScriptToCreateManifestFile(
                     buildProperties,
-                    manifestDir: _buildOptions.ManifestDir,
+                    manifestDir: _cliOptions.ManifestDir,
                     finalDestinationDir: destinationDir)
                 .AppendLine("echo Done.");
 
@@ -222,7 +239,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null.");
             if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
             {
-            toolsToVersion[ToolNameConstants.DotNetName] = targetPlatformVersion;
+                toolsToVersion[ToolNameConstants.DotNetName] = targetPlatformVersion;
             }
         }
 

@@ -729,5 +729,83 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void Builds_AndCopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
+        {
+            // Arrange
+            var appName = "NetCoreApp31.MvcApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddFileExistsCheck($"{appDir}/output/{appName}.dll")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.SlimBuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(
+                            SdkVersionMessageFormat,
+                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
+        {
+            // Arrange
+            var appName = "NetCoreApp31.MvcApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            // NOTE: we want to make sure that even after subsequent builds(like in case of AppService),
+            // the output structure is like what we expect.
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddFileExistsCheck($"{appDir}/output/{appName}.dll")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.SlimBuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(
+                            SdkVersionMessageFormat,
+                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }

@@ -325,8 +325,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!string.IsNullOrEmpty(options.IntermediateDir))
             {
+                if (DirectoryHelper.AreSameDirectories(options.IntermediateDir, options.SourceDir))
+                {
+                    logger.LogError(
+                        "Intermediate directory cannot be same as the source directory.");
+                    console.WriteErrorLine(
+                        $"Intermediate directory '{options.IntermediateDir}' cannot be " +
+                        $"same as the source directory '{options.SourceDir}'.");
+                    return false;
+                }
+
                 // Intermediate directory cannot be a sub-directory of the source directory
-                if (IsSubDirectory(options.IntermediateDir, options.SourceDir))
+                if (DirectoryHelper.IsSubDirectory(options.IntermediateDir, options.SourceDir))
                 {
                     logger.LogError(
                         "Intermediate directory cannot be a child of the source directory.");
@@ -355,36 +365,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 scriptOnly: false,
                 enableDynamicInstall: EnableDynamicInstall,
                 properties: Properties);
-        }
-
-        /// <summary>
-        /// Checks if <paramref name="dir1"/> is a sub-directory of <paramref name="dir2"/>.
-        /// </summary>
-        /// <param name="dir1">The directory to be checked as subdirectory.</param>
-        /// <param name="dir2">The directory to be tested as the parent.</param>
-        /// <returns>true if <c>dir1</c> is a sub-directory of <c>dir2</c>, false otherwise.</returns>
-        internal bool IsSubDirectory(string dir1, string dir2)
-        {
-            var dir1Segments = dir1.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-            var dir2Segments = dir2.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-
-            if (dir1Segments.Length < dir2Segments.Length)
-            {
-                return false;
-            }
-
-            // If dir1 is really a subset of dir2, then we should expect all
-            // segments of dir2 appearing in dir1 and in exact order.
-            for (var i = 0; i < dir2Segments.Length; i++)
-            {
-                // we want case-sensitive search
-                if (dir1Segments[i] != dir2Segments[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)

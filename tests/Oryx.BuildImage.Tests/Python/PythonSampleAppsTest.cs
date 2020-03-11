@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -144,23 +145,60 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_CopiesOutput_ToNestedOutputDirectory()
+        public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
             var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var nestedOutputDir = "/tmp/app-output/subdir1";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {nestedOutputDir}")
-                .AddDirectoryExistsCheck($"{nestedOutputDir}/{virtualEnvName}")
+                .AddBuildCommand($"{appDir} -o {appDir}/output --platform python --platform-version 3.7")
+                .AddDirectoryExistsCheck($"{appDir}/output/pythonenv3.7")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = Settings.SlimBuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            // NOTE: we want to make sure that even after subsequent builds(like in case of AppService),
+            // the output structure is like what we expect.
+            var buildCmd = $"oryx build {appDir} -o {appDir}/output --platform python --platform-version 3.7";
+            var script = new ShellScriptBuilder()
+                .AddCommand(buildCmd)
+                .AddCommand(buildCmd)
+                .AddCommand(buildCmd)
+                .AddDirectoryExistsCheck($"{appDir}/output/pythonenv3.7")
+                .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.SlimBuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

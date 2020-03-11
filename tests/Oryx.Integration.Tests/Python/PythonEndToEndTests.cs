@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -120,7 +120,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var runScript = new ShellScriptBuilder()
                 .AddDirectoryDoesNotExistCheck("__oryx_packages__")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand(
+                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -147,6 +148,87 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectory()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -o {appDir}/output --platform python --platform-version 3.8")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetTestRuntimeImage("python", "3.8"),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_UsingIntermediateDir_AndNestedOutputDirectory()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {appDir}/output --platform python --platform-version 3.8")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetTestRuntimeImage("python", "3.8"),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
                 });
         }
     }

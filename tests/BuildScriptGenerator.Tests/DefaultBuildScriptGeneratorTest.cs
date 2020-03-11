@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Tests.Common;
@@ -653,7 +654,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             IProgrammingPlatform[] platforms,
             IEnumerable<IChecker> checkers = null)
         {
+            var cliOptions = new BuildScriptGeneratorOptions();
+            cliOptions.SourceDir = "/app";
+            cliOptions.DestinationDir= "/output";
             return new DefaultBuildScriptGenerator(
+                Options.Create(cliOptions),
                 new DefaultCompatiblePlatformDetector(platforms, NullLogger<DefaultCompatiblePlatformDetector>.Instance),
                 new TestEnvironmentSettingsProvider(),
                 checkers,

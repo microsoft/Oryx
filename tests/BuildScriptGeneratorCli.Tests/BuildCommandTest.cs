@@ -125,111 +125,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Empty(testConsole.StdError);
         }
 
-        public static TheoryData<string, string> IsSubDirectoryTrueData
-        {
-            get
-            {
-                var data = new TheoryData<string, string>
-                {
-                    {
-                        Path.Combine("c:", "foo"),
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar,
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo"),
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar
-                    },
-                    {
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar,
-                        Path.Combine("c:", "foo") + Path.DirectorySeparatorChar
-                    },
-                    {
-                        Path.Combine("c:", "foo", "bar"),
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo", "bar", "dir1", "dir2"),
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine(Path.DirectorySeparatorChar.ToString(), "foo"),
-                        Path.DirectorySeparatorChar.ToString()
-                    },
-                    {
-                        Path.GetFullPath(Path.Combine("a", "b", "c", "d", "..")),
-                        Path.GetFullPath(Path.Combine("a", "b"))
-                    },
-                };
-
-                return data;
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(IsSubDirectoryTrueData))]
-        public void IsSubDirectory_IsTrue(string dir1, string dir2)
-        {
-            // Arrange
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isSubDirectory = buildCommand.IsSubDirectory(dir1, dir2);
-
-            // Assert
-            Assert.True(isSubDirectory);
-        }
-
-        public static TheoryData<string, string> IsSubDirectoryFalseData
-        {
-            get
-            {
-                var data = new TheoryData<string, string>
-                {
-                    {
-                        // case-sensitive
-                        Path.Combine("c:", "Foo"),
-                        Path.Combine("c:", "foo")
-                    },
-                    {
-                        Path.Combine("c:", "foo"),
-                        Path.Combine("c:", "foo", "bar")
-                    },
-                    {
-                        Path.Combine("a", "b", "c"),
-                        Path.Combine("a", "b", "cd")
-                    },
-                    {
-                        Path.DirectorySeparatorChar.ToString(),
-                        Path.Combine(Path.DirectorySeparatorChar.ToString(), "foo")
-                    },
-                    {
-                        Path.GetFullPath(Path.Combine("a", "b", "c", "..", "..")),
-                        Path.GetFullPath(Path.Combine("a", "b"))
-                    },
-                };
-
-                return data;
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(IsSubDirectoryFalseData))]
-        public void IsSubDirectory_IsFalse(string dir1, string dir2)
-        {
-            // Arrange
-            var buildCommand = new BuildCommand();
-
-            // Act
-            var isSubDirectory = buildCommand.IsSubDirectory(dir1, dir2);
-
-            // Assert
-            Assert.False(isSubDirectory);
-        }
-
         [Fact]
         public void IsValidInput_IsTrue_EvenIfDestinationDirIsNotEmpty()
         {
@@ -325,8 +220,34 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Contains(stringToPrint, testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
         }
 
+        [Fact]
+        public void IsValid_IsFalse_IfIntermediateDir_IsSameAsSourceDir()
+        {
+            // Arrange
+            var sourceDir = _testDir.CreateChildDir();
+            var serviceProvider = new ServiceProviderBuilder()
+                .ConfigureScriptGenerationOptions(o =>
+                {
+                    o.SourceDir = sourceDir;
+                    o.IntermediateDir = sourceDir;
+                    o.DestinationDir = _testDir.CreateChildDir();
+                })
+                .Build();
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand();
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Contains(
+                $"Intermediate directory '{sourceDir}' cannot be same " +
+                $"as the source directory '{sourceDir}'.",
+                testConsole.StdError);
+        }
+
         [Theory]
-        [InlineData("")]
         [InlineData("subdir1")]
         [InlineData("subdir1", "subdir2")]
         public void IsValid_IsFalse_IfIntermediateDir_IsSubDirectory_OfSourceDir(params string[] paths)
