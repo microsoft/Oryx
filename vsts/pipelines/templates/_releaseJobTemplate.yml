@@ -5,7 +5,7 @@ jobs:
     name: OryxLinux
   variables:
     skipComponentGovernanceDetection: true
-
+  timeoutInMinutes: 300
   steps:
   - script: |
       echo "##vso[task.setvariable variable=ReleaseBuildImages;]true"
@@ -20,7 +20,7 @@ jobs:
     name: OryxLinux
   variables:
     skipComponentGovernanceDetection: true
-
+  timeoutInMinutes: 400
   steps:
   - script: |
       echo "##vso[task.setvariable variable=ReleaseBuildImages;]false"
@@ -38,6 +38,7 @@ jobs:
     name: OryxLinux
   variables:
     skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
   steps:
   - task: ShellScript@2
     displayName: 'Publish SDKs from dev to prod storage account'
@@ -67,13 +68,6 @@ jobs:
     inputs:
       artifactName: 'signed_binaries'
       path: $(Build.SourcesDirectory)/artifacts
-  
-  - script: |
-      echo Artifacts directory:
-      ls -l $BUILD_SOURCESDIRECTORY
-      echo
-      ls -l $BUILD_SOURCESDIRECTORY/artifacts
-    displayName: 'Log artifacts structure'
 
   - template: _setReleaseTag.yml
 
