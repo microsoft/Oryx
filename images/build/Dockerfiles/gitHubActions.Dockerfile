@@ -9,7 +9,7 @@ ARG AGENTBUILD
 
 # Use the exact layer that is present on the GitHub agent machines
 # https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md
-FROM buildpack-deps:stretch@sha256:8bcd320ec29cf67052985f28891586fb853051f69ad0646fc7a49f47d6e3ee1a AS main
+FROM buildpack-deps:stretch@sha256:dc901bbf4b34e4ca8771c0d0773e557221452f97bcf0c732de7ecda3782bdf97 AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
