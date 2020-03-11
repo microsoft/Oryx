@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 

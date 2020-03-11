@@ -13,9 +13,11 @@ import (
 )
 
 func main() {
-	common.PrintVersionInfo()
-	appPathPtr := flag.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
-	manifestDirPtr := flag.String(
+	versionCommand := flag.NewFlagSet(consts.VersionCommandName, flag.ExitOnError)
+
+	scriptCommand := flag.NewFlagSet(consts.CreateScriptCommandName, flag.ExitOnError)
+	appPathPtr := scriptCommand.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
+	manifestDirPtr := scriptCommand.String(
 		"manifestDir",
 		"",
 		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
@@ -30,27 +32,31 @@ func main() {
 		startupCommand = "apache2-foreground"
 	}
 
-	startupCmdPtr := flag.String("startupCommand", startupCommand, "Command that will be executed to start the application server up.")
-	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
-	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
-	flag.Parse()
+	startupCmdPtr := scriptCommand.String("startupCommand", startupCommand, "Command that will be executed to start the application server up.")
+	bindPortPtr := scriptCommand.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
+	outputPathPtr := scriptCommand.String("output", "run.sh", "Path to the script to be generated.")
 
 	logger := common.GetLogger("php.main")
 	defer logger.Shutdown()
 	logger.StartupScriptRequested()
 
-	fullAppPath := common.GetValidatedFullPath(*appPathPtr)
+	commands := []*flag.FlagSet{versionCommand, scriptCommand}
+	common.ValidateCommands(commands)
 
-	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
-	common.SetGlobalOperationID(buildManifest)
+	if scriptCommand.Parsed() {
+		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 
-	entrypointGenerator := PhpStartupScriptGenerator{
-		SourcePath: fullAppPath,
-		StartupCmd: *startupCmdPtr,
-		BindPort:   *bindPortPtr,
-		Manifest:   buildManifest,
+		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+		common.SetGlobalOperationID(buildManifest)
+
+		entrypointGenerator := PhpStartupScriptGenerator{
+			SourcePath: fullAppPath,
+			StartupCmd: *startupCmdPtr,
+			BindPort:   *bindPortPtr,
+			Manifest:   buildManifest,
+		}
+
+		command := entrypointGenerator.GenerateEntrypointScript()
+		common.WriteScript(*outputPathPtr, command)
 	}
-
-	command := entrypointGenerator.GenerateEntrypointScript()
-	common.WriteScript(*outputPathPtr, command)
 }

@@ -17,29 +17,30 @@ import (
 )
 
 func main() {
-	common.PrintVersionInfo()
+	versionCommand := flag.NewFlagSet(consts.VersionCommandName, flag.ExitOnError)
 
-	appPathPtr := flag.String(
+	scriptCommand := flag.NewFlagSet(consts.CreateScriptCommandName, flag.ExitOnError)
+	appPathPtr := scriptCommand.String(
 		"appPath",
 		".",
 		"The path to the published output of the application that is going to be run, e.g. '/home/site/wwwroot/'. "+
 			"Default is current directory.")
-	runFromPathPtr := flag.String(
+	runFromPathPtr := scriptCommand.String(
 		"runFromPath",
 		"",
 		"The path to the directory where the output is copied and run from there.")
-	manifestDirPtr := flag.String(
+	manifestDirPtr := scriptCommand.String(
 		"manifestDir",
 		"",
 		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
 			"it is assumed to be under the directory specified by 'appPath'.")
-	bindPortPtr := flag.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
-	userStartupCommandPtr := flag.String(
+	bindPortPtr := scriptCommand.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
+	userStartupCommandPtr := scriptCommand.String(
 		"userStartupCommand",
 		"",
 		"[Optional] Command that will be executed to start the application up.")
-	outputPathPtr := flag.String("output", "run.sh", "Path to the script to be generated.")
-	defaultAppFilePathPtr := flag.String(
+	outputPathPtr := scriptCommand.String("output", "run.sh", "Path to the script to be generated.")
+	defaultAppFilePathPtr := scriptCommand.String(
 		"defaultAppFilePath",
 		"",
 		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. "+
@@ -50,74 +51,79 @@ func main() {
 	defer logger.Shutdown()
 	logger.StartupScriptRequested()
 
-	fullAppPath := ""
-	if *appPathPtr != "" {
-		providedPath := *appPathPtr
-		absPath, err := filepath.Abs(providedPath)
-		if err != nil || !common.PathExists(absPath) {
-			fmt.Printf("Provided app path '%s' is not valid or does not exist.\n", providedPath)
-			os.Exit(consts.FAILURE_EXIT_CODE)
+	commands := []*flag.FlagSet{versionCommand, scriptCommand}
+	common.ValidateCommands(commands)
+
+	if scriptCommand.Parsed() {
+		fullAppPath := ""
+		if *appPathPtr != "" {
+			providedPath := *appPathPtr
+			absPath, err := filepath.Abs(providedPath)
+			if err != nil || !common.PathExists(absPath) {
+				fmt.Printf("Provided app path '%s' is not valid or does not exist.\n", providedPath)
+				os.Exit(consts.FAILURE_EXIT_CODE)
+			}
+			fullAppPath = absPath
 		}
-		fullAppPath = absPath
-	}
 
-	buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
-	common.SetGlobalOperationID(buildManifest)
+		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
+		common.SetGlobalOperationID(buildManifest)
 
-	fullRunFromPath := ""
-	if *runFromPathPtr != "" {
-		// NOTE: This path might not exist, so do not try to validate it yet.
-		fullRunFromPath, _ = filepath.Abs(*runFromPathPtr)
-	}
-
-	fullOutputPath := ""
-	if *outputPathPtr != "" {
-		// NOTE: This path might not exist, so do not try to validate it yet.
-		fullOutputPath, _ = filepath.Abs(*outputPathPtr)
-	}
-
-	fullDefaultAppFilePath := ""
-	if *defaultAppFilePathPtr != "" {
-		providedPath := *defaultAppFilePathPtr
-		absPath, err := filepath.Abs(providedPath)
-		if err != nil || !common.FileExists(absPath) {
-			fmt.Printf("Provided default app file path '%s' is not valid or does not exist.\n", providedPath)
-			os.Exit(consts.FAILURE_EXIT_CODE)
+		fullRunFromPath := ""
+		if *runFromPathPtr != "" {
+			// NOTE: This path might not exist, so do not try to validate it yet.
+			fullRunFromPath, _ = filepath.Abs(*runFromPathPtr)
 		}
-		fullDefaultAppFilePath = absPath
+
+		fullOutputPath := ""
+		if *outputPathPtr != "" {
+			// NOTE: This path might not exist, so do not try to validate it yet.
+			fullOutputPath, _ = filepath.Abs(*outputPathPtr)
+		}
+
+		fullDefaultAppFilePath := ""
+		if *defaultAppFilePathPtr != "" {
+			providedPath := *defaultAppFilePathPtr
+			absPath, err := filepath.Abs(providedPath)
+			if err != nil || !common.FileExists(absPath) {
+				fmt.Printf("Provided default app file path '%s' is not valid or does not exist.\n", providedPath)
+				os.Exit(consts.FAILURE_EXIT_CODE)
+			}
+			fullDefaultAppFilePath = absPath
+		}
+
+		scriptBuilder := strings.Builder{}
+		scriptBuilder.WriteString("#!/bin/bash\n")
+		scriptBuilder.WriteString("set -e\n\n")
+
+		if fullRunFromPath != "" {
+			fmt.Println(
+				"Intermediate directory option was specified, so adding script to copy " +
+					"content to intermediate directory...")
+			common.AppendScriptToCopyToDir(&scriptBuilder, fullAppPath, fullRunFromPath)
+		}
+
+		if buildManifest.ZipAllOutput == "true" {
+			fmt.Println(
+				"Read build manifest file and found output has been zipped, so adding " +
+					"script to extract it...")
+			common.AppendScriptToExtractZippedOutput(&scriptBuilder, fullAppPath, fullRunFromPath)
+		}
+
+		entrypointGenerator := DotnetCoreStartupScriptGenerator{
+			AppPath:            fullAppPath,
+			RunFromPath:        fullRunFromPath,
+			BindPort:           *bindPortPtr,
+			UserStartupCommand: *userStartupCommandPtr,
+			DefaultAppFilePath: fullDefaultAppFilePath,
+			Manifest:           buildManifest,
+		}
+
+		command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)
+		if command == "" {
+			log.Fatal("Could not generate a startup script.")
+		}
+
+		common.WriteScript(fullOutputPath, command)
 	}
-
-	scriptBuilder := strings.Builder{}
-	scriptBuilder.WriteString("#!/bin/bash\n")
-	scriptBuilder.WriteString("set -e\n\n")
-
-	if fullRunFromPath != "" {
-		fmt.Println(
-			"Intermediate directory option was specified, so adding script to copy " +
-				"content to intermediate directory...")
-		common.AppendScriptToCopyToDir(&scriptBuilder, fullAppPath, fullRunFromPath)
-	}
-
-	if buildManifest.ZipAllOutput == "true" {
-		fmt.Println(
-			"Read build manifest file and found output has been zipped, so adding " +
-				"script to extract it...")
-		common.AppendScriptToExtractZippedOutput(&scriptBuilder, fullAppPath, fullRunFromPath)
-	}
-
-	entrypointGenerator := DotnetCoreStartupScriptGenerator{
-		AppPath:            fullAppPath,
-		RunFromPath:        fullRunFromPath,
-		BindPort:           *bindPortPtr,
-		UserStartupCommand: *userStartupCommandPtr,
-		DefaultAppFilePath: fullDefaultAppFilePath,
-		Manifest:           buildManifest,
-	}
-
-	command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)
-	if command == "" {
-		log.Fatal("Could not generate a startup script.")
-	}
-
-	common.WriteScript(fullOutputPath, command)
 }
