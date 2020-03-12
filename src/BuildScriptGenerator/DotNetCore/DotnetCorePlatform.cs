@@ -12,7 +12,6 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -42,8 +41,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="environmentSettingsProvider">The environment settings provider.</param>
         /// <param name="logger">The logger of .NET platform.</param>
         /// <param name="detector">The detector of .NET platform.</param>
-        /// <param name="commonOptions">The build options for BuildScriptGenerator.</param>
+        /// <param name="cliOptions">The build options for BuildScriptGenerator.</param>
         /// <param name="dotNetCoreScriptGeneratorOptions">The options if .NET platform.</param>
+        /// <param name="platformInstaller">The <see cref="DotNetCorePlatformInstaller"/>.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
