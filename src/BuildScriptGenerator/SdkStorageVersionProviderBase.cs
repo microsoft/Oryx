@@ -17,7 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class SdkStorageVersionProviderBase
     {
         private readonly IEnvironment _environment;
-        private readonly IHttpClientFactory _httpClientFactory;
+
+        protected readonly IHttpClientFactory _httpClientFactory;
 
         public SdkStorageVersionProviderBase(IEnvironment environment, IHttpClientFactory httpClientFactory)
         {
@@ -51,6 +52,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
+            var defaultVersion = GetDefaultVersion(platformName, sdkStorageBaseUrl);
+            return PlatformVersionInfo.CreateAvailableOnWebVersionInfo(supportedVersions, defaultVersion);
+        }
+
+        protected string GetDefaultVersion(string platformName, string sdkStorageBaseUrl)
+        {
+            var httpClient = _httpClientFactory.CreateClient("general");
+
             // get default version
             var defaultVersionContent = httpClient
                 .GetStringAsync($"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}")
@@ -76,10 +85,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new InvalidOperationException("Default version cannot be empty.");
             }
 
-            return PlatformVersionInfo.CreateAvailableOnWebVersionInfo(supportedVersions, defaultVersion);
+            return defaultVersion;
         }
 
-        private string GetPlatformBinariesStorageBaseUrl()
+        protected string GetPlatformBinariesStorageBaseUrl()
         {
             var platformBinariesStorageBaseUrl = _environment.GetEnvironmentVariable(
                 SdkStorageConstants.SdkStorageBaseUrlKeyName);

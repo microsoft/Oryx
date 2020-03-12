@@ -14,12 +14,13 @@ import (
 )
 
 type DotnetCoreStartupScriptGenerator struct {
-	AppPath            string
-	RunFromPath        string
-	UserStartupCommand string
-	DefaultAppFilePath string
-	BindPort           string
-	Manifest           common.BuildManifest
+	AppPath              string
+	RunFromPath          string
+	UserStartupCommand   string
+	DefaultAppFilePath   string
+	BindPort             string
+	EnableDynamicInstall bool
+	Manifest             common.BuildManifest
 }
 
 const DefaultBindPort = "8080"
@@ -38,6 +39,11 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	appPath := gen.AppPath
 	if gen.RunFromPath != "" {
 		appPath = gen.RunFromPath
+	}
+
+	dotnetBinary := "/usr/share/dotnet/dotnet"
+	if gen.EnableDynamicInstall && !common.PathExists(dotnetBinary) {
+		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
 	}
 
 	runDefaultApp := false

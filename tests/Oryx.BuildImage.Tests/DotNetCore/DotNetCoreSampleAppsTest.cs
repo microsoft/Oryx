@@ -65,7 +65,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
                         result.StdOut);
                     Assert.Contains(
-                        $"{DotNetCoreConstants.LanguageName}_version=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{DotNetCoreSdkVersions.DotNetCore11SdkVersion}\"",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
