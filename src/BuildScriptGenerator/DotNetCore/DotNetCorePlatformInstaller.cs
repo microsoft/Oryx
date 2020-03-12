@@ -7,17 +7,17 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Python
+namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotNetCorePlatformInstaller : PlatformInstallerBase
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
 
         public DotNetCorePlatformInstaller(
-            IOptions<BuildScriptGeneratorOptions> commonOptions,
+            IOptions<BuildScriptGeneratorOptions> cliOptions,
             IEnvironment environment,
             IDotNetCoreVersionProvider versionProvider)
-            : base(commonOptions, environment)
+            : base(cliOptions, environment)
         {
             _versionProvider = versionProvider;
         }

@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
-        private readonly DotNetCoreScriptGeneratorOptions _dotNetCorePlatformOptions;
+        private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
         private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly DotNetCorePlatformInstaller _platformInstaller;
 
@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="logger">The logger of .NET platform.</param>
         /// <param name="detector">The detector of .NET platform.</param>
         /// <param name="commonOptions">The build options for BuildScriptGenerator.</param>
-        /// <param name="dotNetCorePlatformOptions">The options if .NET platform.</param>
+        /// <param name="dotNetCoreScriptGeneratorOptions">The options if .NET platform.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
             IOptions<BuildScriptGeneratorOptions> cliOptions,
-            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCorePlatformOptions,
+            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             DotNetCorePlatformInstaller platformInstaller)
         {
             _versionProvider = versionProvider;
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
-            _dotNetCorePlatformOptions = dotNetCorePlatformOptions.Value;
+            _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
             _cliOptions = cliOptions.Value;
             _platformInstaller = platformInstaller;
         }
@@ -299,7 +299,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetBuildConfiguration()
         {
-            var configuration = _dotNetCorePlatformOptions.MSBuildConfiguration;
+            var configuration = _dotNetCoreScriptGeneratorOptions.MSBuildConfiguration;
             if (string.IsNullOrEmpty(configuration))
             {
                 configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;

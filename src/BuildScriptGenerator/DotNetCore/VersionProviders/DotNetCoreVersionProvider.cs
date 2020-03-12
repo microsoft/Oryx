@@ -10,18 +10,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreVersionProvider : IDotNetCoreVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _options;
+        private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly DotNetCoreOnDiskVersionProvider _onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider _sdkStorageVersionProvider;
         private string _defaultRuntimeVersion;
         private Dictionary<string, string> _supportedVersions;
 
         public DotNetCoreVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> options,
+            IOptions<BuildScriptGeneratorOptions> cliOptions,
             DotNetCoreOnDiskVersionProvider onDiskVersionProvider,
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider)
         {
-            _options = options.Value;
+            _cliOptions = cliOptions.Value;
             _onDiskVersionProvider = onDiskVersionProvider;
             _sdkStorageVersionProvider = sdkStorageVersionProvider;
         }
@@ -30,12 +30,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (string.IsNullOrEmpty(_defaultRuntimeVersion))
             {
-                if (_options.EnableDynamicInstall)
-                {
-                    return _sdkStorageVersionProvider.GetDefaultRuntimeVersion();
-                }
-
-                _defaultRuntimeVersion = _onDiskVersionProvider.GetDefaultRuntimeVersion();
+                _defaultRuntimeVersion = _cliOptions.EnableDynamicInstall ?
+                    _sdkStorageVersionProvider.GetDefaultRuntimeVersion() :
+                    _onDiskVersionProvider.GetDefaultRuntimeVersion();
             }
 
             return _defaultRuntimeVersion;
@@ -45,12 +42,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (_supportedVersions == null)
             {
-                if (_options.EnableDynamicInstall)
-                {
-                    return _sdkStorageVersionProvider.GetSupportedVersions();
-                }
-
-                _supportedVersions = _onDiskVersionProvider.GetSupportedVersions();
+                _supportedVersions = _cliOptions.EnableDynamicInstall ?
+                    _sdkStorageVersionProvider.GetSupportedVersions() :
+                    _onDiskVersionProvider.GetSupportedVersions();
             }
 
             return _supportedVersions;
