@@ -1,6 +1,6 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1.804 AS tools-install
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1.805 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 
 FROM oryx-run-base AS dotnetcore-original
@@ -33,10 +33,10 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install ASP.NET Core
-ENV ASPNETCORE_VERSION 2.1.16
+ENV ASPNETCORE_VERSION 2.1.17
 
 RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNETCORE_VERSION/aspnetcore-runtime-$ASPNETCORE_VERSION-linux-x64.tar.gz \
-    && aspnetcore_sha512='f01c74183f551456539dec9af1b3a56fab7394fed85afb03e116d1d055eb02503214b5044623db811d07b37985974ea51e5a5a748e28f1aca3b7b46f28fec615' \
+    && aspnetcore_sha512='92ac51b814357cf1e8050cdd3803a7efad2147b7f0a4a97ce2aee34fcd02ca0b1c97f9f47b57b3b798e047b1947ea522fdd698842a1c020dcc05f759093639f1' \
     && echo "$aspnetcore_sha512  aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet \

@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Runtime.InteropServices;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -284,6 +286,33 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(pythonPacakageExecutablePathPrefix, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("dotnet")]
+        [InlineData("node")]
+        [InlineData("python")]
+        public void SetsPlatformsPath_FromDynamicInstallationDir_IfPresent(string platformName)
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {Constants.TemporaryInstallationDirectoryRoot}/{platformName}")
+                .AddCommand($"mv /opt/{platformName}/* {Constants.TemporaryInstallationDirectoryRoot}/{platformName}")
+                .AddCommand($"which {platformName}")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetTestSlimBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"{Constants.TemporaryInstallationDirectoryRoot}/{platformName}/", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
