@@ -87,7 +87,7 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-#		libargon2-dev \
+		libargon2-0 \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libonig-dev \
@@ -105,6 +105,10 @@ RUN set -eux; \
 		CPPFLAGS="$PHP_CPPFLAGS" \
 		LDFLAGS="$PHP_LDFLAGS" \
 	; \
+	#which docker-php-source; \
+	ls -l /usr/local/bin/docker-php-source; \
+	chmod +x /usr/local/bin/docker-php-source; \
+	ls -l /usr/local/bin/docker-php-source; \
 	docker-php-source extract; \
 	cd /usr/src/php; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
