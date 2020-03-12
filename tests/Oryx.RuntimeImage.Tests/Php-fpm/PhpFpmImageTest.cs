@@ -41,8 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("7.3-fpm", PhpVersions.Php73Version)]
-        // Bug 1076346
-        //[InlineData("7.2-fpm", PhpVersions.Php72Version)]
+        [InlineData("7.2-fpm", PhpVersions.Php72Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
