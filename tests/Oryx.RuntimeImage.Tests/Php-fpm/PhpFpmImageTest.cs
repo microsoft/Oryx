@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4-fpm", PhpVersions.Php73Version)]
         [InlineData("7.3-fpm", PhpVersions.Php73Version)]
         [InlineData("7.2-fpm", PhpVersions.Php72Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
@@ -62,6 +63,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("7.4-fpm")]
         [InlineData("7.3-fpm")]
         [InlineData("7.2-fpm")]
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
@@ -82,7 +84,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }
 
+        
         [SkippableTheory]
+        [InlineData("7.4-fpm")]
         [InlineData("7.3-fpm")]
         [InlineData("7.2-fpm")]
         public void PhpFpmRuntimeImage_Contains_VersionAndCommit_Information(string version)
