@@ -83,11 +83,22 @@ RUN set -eux; \
 COPY docker-php-source /usr/local/bin/
 
 RUN set -eux; \
+    \
+	wget https://github.com/P-H-C/phc-winner-argon2/archive/20190702.tar.gz -O /tmp/argon2.tar.gz; \
+	tar -xf /tmp/argon2.tar.gz; \
+	ls -l; \
+	cd phc-winner-argon2-20190702; \
+	make; \
+	make test; \
+	make install PREFIX=/usr;
+
+RUN set -eux; \
 	\
+	
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-0 \
+		#libargon2-dev \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libonig-dev \
@@ -106,10 +117,11 @@ RUN set -eux; \
 		LDFLAGS="$PHP_LDFLAGS" \
 	; \
 	#which docker-php-source; \
-	ls -l /usr/local/bin/docker-php-source; \
-	chmod +x /usr/local/bin/docker-php-source; \
-	ls -l /usr/local/bin/docker-php-source; \
-	docker-php-source extract; \
+	awk '{ sub("\r$", ""); print }' /usr/local/bin/docker-php-source > /usr/local/bin/docker-php-source_new; \
+	cat /usr/local/bin/docker-php-source_new; \
+	chmod +x /usr/local/bin/docker-php-source_new ; \
+	docker-php-source_new extract; \
+	ls -l /usr/src/; \
 	cd /usr/src/php; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
 	debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -167,7 +179,7 @@ RUN set -eux; \
 	cp -v php.ini-* "$PHP_INI_DIR/"; \
 	\
 	cd /; \
-	docker-php-source delete; \
+	docker-php-source_new delete; \
 	\
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
