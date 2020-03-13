@@ -151,6 +151,49 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        [Theory]
+        [InlineData("3.6")]
+        [InlineData("3.7")]
+        [InlineData("3.8")]
+        public async Task BuildWithVirtualEnv_From_File_Setup_Py(string pythonVersion)
+        {
+            // Arrange
+            var appName = "flask-setup-py-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            const string virtualEnvName = "antenv";
+
+            // Simulate apps that were built using package directory, and then virtual env
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} --platform python --language-version {pythonVersion}")
+                .AddBuildCommand(
+                $"{appDir} -p virtualenv_name={virtualEnvName} " +
+                $"--platform python --language-version {pythonVersion}")
+                .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                _imageHelper.GetTestRuntimeImage("python", pythonVersion),
+                ContainerPort,
+                "/bin/bash",
+                new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
         [Fact]
         public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectory()
         {

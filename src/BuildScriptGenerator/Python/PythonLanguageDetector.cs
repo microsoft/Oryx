@@ -34,9 +34,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName))
+            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
+                && !sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
             {
-                _logger.LogDebug($"File '{PythonConstants.RequirementsFileName}' does not exist in source repo");
+                _logger.LogDebug($"'{PythonConstants.SetupDotPyFileName}' or '{PythonConstants.RequirementsFileName}' " +
+                    $"does not exist in source repo");
                 return null;
             }
 

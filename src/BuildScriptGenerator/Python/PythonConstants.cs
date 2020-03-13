@@ -18,5 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string ZipVirtualEnvFileNameFormat = "{0}.zip";
         internal const string TarGzVirtualEnvFileNameFormat = "{0}.tar.gz";
         internal const string DefaultTargetPackageDirectory = "__oryx_packages__";
+        internal const string SetupDotPyFileName = "setup.py";
     }
 }

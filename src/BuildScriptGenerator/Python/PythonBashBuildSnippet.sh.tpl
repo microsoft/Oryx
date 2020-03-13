@@ -1,5 +1,5 @@
 declare -r TS_FMT='[%T%z] '
-declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
+declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 
@@ -45,6 +45,18 @@ then
 	then
 		exit $pipInstallExitCode
 	fi
+elif [ -e "setup.py" ]
+then
+	echo
+	START_TIME=$SECONDS
+
+	echo "Running python setup.py install..."
+	python setup.py install | ts $TS_FMT
+	pythonBuildExitCode=${PIPESTATUS[0]}
+	if [[ $pythonBuildExitCode != 0 ]]
+	then
+		exit $pythonBuildExitCode
+	fi
 else
 	echo $REQS_NOT_FOUND_MSG
 fi
@@ -67,6 +79,18 @@ then
 	if [[ $pipInstallExitCode != 0 ]]
 	then
 		exit $pipInstallExitCode
+	fi
+elif [ -e "setup.py" ]
+then
+	echo
+	START_TIME=$SECONDS
+
+	echo "Running python setup.py install..."
+	python setup.py install | ts $TS_FMT
+	pythonBuildExitCode=${PIPESTATUS[0]}
+	if [[ $pythonBuildExitCode != 0 ]]
+	then
+		exit $pythonBuildExitCode
 	fi
 else
 	echo $REQS_NOT_FOUND_MSG
