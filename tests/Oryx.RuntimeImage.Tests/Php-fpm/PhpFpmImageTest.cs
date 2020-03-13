@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("7.4-fpm", PhpVersions.Php73Version)]
+        [InlineData("7.4-fpm", PhpVersions.Php74Version)]
         [InlineData("7.3-fpm", PhpVersions.Php73Version)]
         [InlineData("7.2-fpm", PhpVersions.Php72Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
