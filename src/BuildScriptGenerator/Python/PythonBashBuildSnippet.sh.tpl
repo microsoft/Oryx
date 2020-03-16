@@ -49,9 +49,15 @@ elif [ -e "setup.py" ]
 then
 	echo
 	START_TIME=$SECONDS
-
+	pip install --upgrade pip
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
+	
 	echo "Running python setup.py install..."
-	python setup.py install | ts $TS_FMT
+	$python setup.py install --user| ts $TS_FMT
+	cd *.egg-info
+	pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
+
 	pythonBuildExitCode=${PIPESTATUS[0]}
 	if [[ $pythonBuildExitCode != 0 ]]
 	then
@@ -84,9 +90,14 @@ elif [ -e "setup.py" ]
 then
 	echo
 	START_TIME=$SECONDS
+	pip install --upgrade pip
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
 
 	echo "Running python setup.py install..."
-	python setup.py install | ts $TS_FMT
+	$python setup.py install --user| ts $TS_FMT
+	cd *.egg-info
+	pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
 	pythonBuildExitCode=${PIPESTATUS[0]}
 	if [[ $pythonBuildExitCode != 0 ]]
 	then

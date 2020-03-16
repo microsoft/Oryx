@@ -161,19 +161,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-setup-py-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            const string virtualEnvName = "antenv";
-
-            // Simulate apps that were built using package directory, and then virtual env
+            
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform python --language-version {pythonVersion}")
-                .AddBuildCommand(
-                $"{appDir} -p virtualenv_name={virtualEnvName} " +
-                $"--platform python --language-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} --platform python --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
