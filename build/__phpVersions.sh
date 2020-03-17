@@ -1,6 +1,5 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-PHP_BUILD_BASE_TAG='20200217.4'
 PHP_RUNTIME_BASE_TAG='20200226.2'
 PHP_FPM_RUNTIME_BASE_TAG='20200226.3'
 COMPOSER_VERSION='1.9.3'

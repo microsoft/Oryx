@@ -62,7 +62,6 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-build-base-tag: 20200217.4
     php-runtime-base-tag: 20200226.2
     php-fpm-runtime-base-tag: 20200226.3
     composer-version: 1.9.3

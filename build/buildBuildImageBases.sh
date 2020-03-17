@@ -52,13 +52,6 @@ case $IMAGE_DIR_TO_BUILD in
 		docker build -f $BUILD_IMAGES_DIR/python/prereqs/Dockerfile -t "python-build-prereqs" $REPO_DIR
 		buildImages "python"
 		;;
-	'php')
-		echo "Building PHP base images"
-		echo
-
-		docker build -f $BUILD_IMAGES_DIR/php/prereqs/Dockerfile -t "php-build-prereqs" $REPO_DIR
-		buildImages "php"
-		;;            
 	'yarn-cache')
 		echo "Building Yarn package cache base image"
 		echo
