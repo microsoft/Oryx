@@ -25,10 +25,21 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
-    && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
-    && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+    && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
+
+RUN set -eux; \
+    if [[ $PHP_VERSION == 7.4.* ]]; then \
+		apt-get update \
+        && apt-get upgrade -y \
+        && apt-get install -y --no-install-recommends apache2-dev \
+        && docker-php-ext-configure gd --with-freetype --with-jpeg \
+        && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+    else \
+		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+        && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+    fi
+
+RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
         mysqli \
         opcache \
@@ -55,7 +66,6 @@ RUN apt-get update \
         sysvsem \
         sysvshm \
         pdo_odbc \
-        wddx \
         xmlrpc \
         xsl \
     && pecl install imagick && docker-php-ext-enable imagick
@@ -69,6 +79,32 @@ RUN set -eux; \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
     fi
+
+RUN { \
+                echo 'opcache.memory_consumption=128'; \
+                echo 'opcache.interned_strings_buffer=8'; \
+                echo 'opcache.max_accelerated_files=4000'; \
+                echo 'opcache.revalidate_freq=60'; \
+                echo 'opcache.fast_shutdown=1'; \
+                echo 'opcache.enable_cli=1'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+
+RUN { \
+                echo 'error_log=/var/log/apache2/php-error.log'; \
+                echo 'display_errors=Off'; \
+                echo 'log_errors=On'; \
+                echo 'display_startup_errors=Off'; \
+                echo 'date.timezone=UTC'; \
+                echo 'zend_extension=opcache'; \
+    } > /usr/local/etc/php/conf.d/php.ini
+
+# Install the Microsoft SQL Server PDO driver on supported versions only.
+#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
+#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+RUN set -eux; \
+        pecl install sqlsrv pdo_sqlsrv \
+        && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
+        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini;
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \
