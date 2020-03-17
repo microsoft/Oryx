@@ -448,7 +448,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_With_Both_Files_areProvided()
         {
             // Arrange
-            var appName = "flask-app";
+            var appName = "flask-setup-py-requirement-txt";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";

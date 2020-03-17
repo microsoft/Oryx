@@ -152,6 +152,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7")]
         [InlineData("3.8")]
@@ -159,6 +160,49 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "flask-setup-py-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} --platform python --platform-version {pythonVersion}")
+                .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/bash",
+                new[] { "-c", buildScript },
+                _imageHelper.GetTestRuntimeImage("python", pythonVersion),
+                ContainerPort,
+                "/bin/bash",
+                new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+                });
+        }
+
+        
+        [Theory]
+        [InlineData("2.7")]
+        [InlineData("3.6")]
+        [InlineData("3.7")]
+        [InlineData("3.8")]
+        public async Task BuildWithVirtualEnv_From_File_Requirement_Txt(string pythonVersion)
+        {
+             // This is to test if we can build and run an app when both the files requirement.txt 
+             // and setup.py are provided, we tend to prioritize the root level requirement.txt
+            
+            // Arrange
+            var appName = "flask-setup-py-requirement-txt";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             
