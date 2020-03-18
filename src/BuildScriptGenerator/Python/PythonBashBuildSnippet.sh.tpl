@@ -1,5 +1,5 @@
 declare -r TS_FMT='[%T%z] '
-declare -r REQS_NOT_FOUND_MSG='Could not find requirements.txt; Not running pip install'
+declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 
@@ -45,6 +45,24 @@ then
 	then
 		exit $pipInstallExitCode
 	fi
+elif [ -e "setup.py" ]
+then
+	echo
+	START_TIME=$SECONDS
+	pip install --upgrade pip
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
+	
+	echo "Running python setup.py install..."
+	$python setup.py install --user| ts $TS_FMT
+	cd *.egg-info
+	pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
+
+	pythonBuildExitCode=${PIPESTATUS[0]}
+	if [[ $pythonBuildExitCode != 0 ]]
+	then
+		exit $pythonBuildExitCode
+	fi
 else
 	echo $REQS_NOT_FOUND_MSG
 fi
@@ -67,6 +85,23 @@ then
 	if [[ $pipInstallExitCode != 0 ]]
 	then
 		exit $pipInstallExitCode
+	fi
+elif [ -e "setup.py" ]
+then
+	echo
+	START_TIME=$SECONDS
+	pip install --upgrade pip
+	ELAPSED_TIME=$(($SECONDS - $START_TIME))
+	echo "Done in $ELAPSED_TIME sec(s)."
+
+	echo "Running python setup.py install..."
+	$python setup.py install --user| ts $TS_FMT
+	cd *.egg-info
+	pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
+	pythonBuildExitCode=${PIPESTATUS[0]}
+	if [[ $pythonBuildExitCode != 0 ]]
+	then
+		exit $pythonBuildExitCode
 	fi
 else
 	echo $REQS_NOT_FOUND_MSG

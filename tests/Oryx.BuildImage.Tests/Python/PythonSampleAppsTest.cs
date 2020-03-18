@@ -400,6 +400,90 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        // This is to test if we can build an app when there is no requirement.txt
+        // but setup.py is provided at root level
+        [Fact]
+        public void GeneratesScript_AndBuilds_WhenSetupDotPy_File_isProvided()
+        {
+            // Arrange
+            var appName = "flask-setup-py-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python36Version}")
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
+                        result.StdOut);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
+                       result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        // This is to test if we can build an app when both the files requirement.txt
+        // and setup.py are provided, we tend to prioritize the root level requirement.txt
+        [Fact]
+        public void GeneratesScript_AndBuilds_With_Both_Files_areProvided()
+        {
+            // Arrange
+            var appName = "flask-setup-py-requirement-txt";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python36Version}")
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
+                        result.StdOut);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
+                       result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
@@ -702,6 +786,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void Build_InstallsVirtualEnvironment_AndPackagesInIt_From_File_Setup_Py()
+        {
+            // Arrange
+            var appName = "flask-setup-py-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python37Version}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7/lib/python3.7/site-packages/flask")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
 
         [Fact]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()

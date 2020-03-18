@@ -34,10 +34,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public LanguageDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName))
+            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
+                && !sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
             {
-                _logger.LogDebug($"File '{PythonConstants.RequirementsFileName}' does not exist in source repo");
+                _logger.LogDebug($"'{PythonConstants.SetupDotPyFileName}' or '{PythonConstants.RequirementsFileName}' " +
+                    $"does not exist in source repo");
                 return null;
+            }
+            else if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
+                && sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
+            {
+                _logger.LogInformation($"'{PythonConstants.RequirementsFileName} doesn't exist in source repo.' " +
+                    $"Oryx will try to build from '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
+            }
+            else
+            {
+                _logger.LogInformation($"'{PythonConstants.SetupDotPyFileName} doesn't exist in source repo.' " +
+                    $"Oryx will try to build from '{PythonConstants.RequirementsFileName}'that exists in source repo");
             }
 
             // This detects if a runtime.txt file exists if that is a python file
