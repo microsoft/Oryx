@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
+                .SetEnvironmentVariable("PORT","4200")
                 .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8")]
         [InlineData("9.4")]
-        public async Task CanBuildAndRun_Angular6NodeApp_Multiple_Restart_WithoutZippingNodeModules(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6NodeApp_With_Node_Module_Dir_Exists_InRoot__WithoutZipping(string nodeVersion)
         {
             // Arrange
             var appName = "angular6app";
@@ -81,7 +81,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
+                .SetEnvironmentVariable("PORT", "4200")
+                .AddCommand("mkdir -p node_modules")
                 .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -114,24 +115,91 @@ namespace Microsoft.Oryx.Integration.Tests
             // the app multiple times without deploying/pushing code changes
             // We are using same volume mount here and just creating a new container 
             // everytime to see if the symbolink link that gets created cause any issue
-
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                port: 4200,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", runScript },
-                assertAction: async (hostPort) =>
+                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    output: _output,
+                    volumes: new List<DockerVolume> { volume },
+                    environmentVariables: null,
+                    port: 4200,
+                    link: null,
+                    runCmd: "/bin/sh",
+                    runArgs: new[] { "-c", runScript },
+                    assertAction: async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Angular6app", data);
+                    },
+                    dockerCli: new DockerCli());
+            }
+        }
+
+        [Theory]
+        [InlineData("8")]
+        [InlineData("9.4")]
+        public async Task CanBuildAndRun_Angular6NodeApp_With_Node_Module_SymLink_Exists_InRoot__WithoutZipping(string nodeVersion)
+        {
+            // Arrange
+            var appName = "angular6app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable("PORT", "4200")
+                .AddCommand("mkdir -p /tmp/abcd")
+                .AddCommand("ln -sfn /tmp/abcd ./node_modules")
+                .AddCommand($"oryx create-script -appPath {appDir}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                4200,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Angular6app", data);
-                },
-                dockerCli: new DockerCli());
+                });
+
+            // This is to test a situation where an appservice user is restarting
+            // the app multiple times without deploying/pushing code changes
+            // We are using same volume mount here and just creating a new container 
+            // everytime to see if the symbolink link that gets created cause any issue
+            for (int i = 0; i < 3; i++)
+            {
+                await EndToEndTestHelper.RunAndAssertAppAsync(
+                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    output: _output,
+                    volumes: new List<DockerVolume> { volume },
+                    environmentVariables: null,
+                    port: 4200,
+                    link: null,
+                    runCmd: "/bin/sh",
+                    runArgs: new[] { "-c", runScript },
+                    assertAction: async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Angular6app", data);
+                    },
+                    dockerCli: new DockerCli());
             }
         }
 
@@ -152,7 +220,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
+                .SetEnvironmentVariable("PORT", "4200")
                 .AddCommand($"oryx create-script -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -226,7 +294,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
+                .SetEnvironmentVariable("PORT", "4200")
                 .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -259,7 +327,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10")]
         [InlineData("12")]
-        public async Task CanBuildAndRun_Angular8NodeApp_Multiple_Restart_WithoutZippingNodeModules(string nodeVersion)
+        public async Task CanBuildAndRun_Angular8NodeApp_Node_Modules_Dir_Exists_InRoot_WithoutZipping(string nodeVersion)
         {
             // Arrange
             var appName = "angular8app";
@@ -269,7 +337,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
+                .SetEnvironmentVariable("PORT", "4200")
+                .AddCommand("mkdir -p node_modules")
                 .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -303,23 +372,92 @@ namespace Microsoft.Oryx.Integration.Tests
             // We are using same volume mount here and just creating a new container 
             // everytime to see if the symbolink link that gets created cause any issue
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                port: 4200,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", runScript },
-                assertAction: async (hostPort) =>
+                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    output: _output,
+                    volumes: new List<DockerVolume> { volume },
+                    environmentVariables: null,
+                    port: 4200,
+                    link: null,
+                    runCmd: "/bin/sh",
+                    runArgs: new[] { "-c", runScript },
+                    assertAction: async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Angular8app", data);
+                    },
+                    dockerCli: new DockerCli());
+            }
+        }
+
+        [Theory]
+        [InlineData("10")]
+        [InlineData("12")]
+        public async Task CanBuildAndRun_Angular8NodeApp_Node_Modules_Link_Exists_InRoot_WithoutZipping(string nodeVersion)
+        {
+            // Arrange
+            var appName = "angular8app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable("PORT", "4200")
+                .AddCommand("mkdir -p /tmp/abcd")
+                .AddCommand("ln -sfn /tmp/abcd ./node_modules")
+                .AddCommand($"oryx create-script -appPath {appDir}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                4200,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Angular8app", data);
-                },
-                dockerCli: new DockerCli());
+                });
+
+            // This is to test a situation where an appservice user is restarting
+            // the app multiple times without deploying/pushing code changes
+            // We are using same volume mount here and just creating a new container 
+            // everytime to see if the symbolink link that gets created cause any issue
+
+            for (int i = 0; i < 3; i++)
+            {
+                await EndToEndTestHelper.RunAndAssertAppAsync(
+                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    output: _output,
+                    volumes: new List<DockerVolume> { volume },
+                    environmentVariables: null,
+                    port: 4200,
+                    link: null,
+                    runCmd: "/bin/sh",
+                    runArgs: new[] { "-c", runScript },
+                    assertAction: async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Angular8app", data);
+                    },
+                    dockerCli: new DockerCli());
             }
         }
 
@@ -338,7 +476,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .AddCommand($"export PORT=4200")
+                .SetEnvironmentVariable("PORT", "4200")
                 .AddCommand($"oryx create-script -appPath {appOutputDir}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
