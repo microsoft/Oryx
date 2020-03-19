@@ -533,8 +533,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 defaultVersion: NodeVersions.Node12Version);
 
             var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
-            var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
-            optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
             var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
 
             return new NodePlatform(

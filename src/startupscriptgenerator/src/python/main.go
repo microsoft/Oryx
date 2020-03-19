@@ -49,10 +49,6 @@ func main() {
 		false,
 		"Disables the extraction of the compressed virtual environment file. If used, some external tool will "+
 			"have to extract it - otherwise the application might not work.")
-	enableDynamicInstall := scriptCommand.Bool(
-		"enableDynamicInstall",
-		false,
-		"Enables installing SDK dynamically if not present in the container already. Default if false.")
 
 	logger := common.GetLogger("python.main")
 	defer logger.Shutdown()
@@ -81,7 +77,6 @@ func main() {
 			DebugWait:                *debugWaitPtr,
 			PackageDirectory:         *packagesFolderPtr,
 			SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
-			EnableDynamicInstall:     *enableDynamicInstall,
 			Manifest:                 buildManifest,
 		}
 

@@ -11,6 +11,7 @@ using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
@@ -33,18 +34,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
+        public void Options_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
         {
             // Arrange
-            var scriptCommand = new BuildCommand { SourceDir = string.Empty };
+            var buildCommand = new BuildCommand { SourceDir = string.Empty };
             var testConsole = new TestConsole();
 
             // Act
-            BuildScriptGeneratorOptions opts = new BuildScriptGeneratorOptions();
-            scriptCommand.ConfigureBuildScriptGeneratorOptions(opts);
+            var provider = buildCommand.GetServiceProvider(testConsole);
+            var options = provider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             // Assert
-            Assert.Equal(Directory.GetCurrentDirectory(), opts.SourceDir);
+            Assert.Equal(Directory.GetCurrentDirectory(), options.SourceDir);
         }
 
         [Fact]

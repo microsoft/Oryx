@@ -656,11 +656,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             var cliOptions = new BuildScriptGeneratorOptions();
             cliOptions.SourceDir = "/app";
-            cliOptions.DestinationDir= "/output";
+            cliOptions.DestinationDir = "/output";
             return new DefaultBuildScriptGenerator(
                 Options.Create(cliOptions),
                 new DefaultCompatiblePlatformDetector(platforms, NullLogger<DefaultCompatiblePlatformDetector>.Instance),
-                new TestEnvironmentSettingsProvider(),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
                 new DefaultStandardOutputWriter());
@@ -690,7 +689,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 Func<IEnumerable<ICheckerMessage>> repoMessageProvider = null,
                 Func<IEnumerable<ICheckerMessage>> toolMessageProvider = null)
             {
-                _sourceRepoMessageProvider  = repoMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
+                _sourceRepoMessageProvider = repoMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
                 _toolVersionMessageProvider = toolMessageProvider ?? (() => Enumerable.Empty<ICheckerMessage>());
             }
 

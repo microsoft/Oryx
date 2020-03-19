@@ -122,8 +122,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var phpVersionProvider = new TestPhpVersionProvider(new[] { "7.2.15", Common.PhpVersions.Php73Version });
 
             var scriptGeneratorOptions = Options.Create(new PhpScriptGeneratorOptions());
-            var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
-            optionsSetup.Configure(scriptGeneratorOptions.Value);
 
             return new PhpPlatform(scriptGeneratorOptions, phpVersionProvider, NullLogger<PhpPlatform>.Instance, null);
         }

@@ -71,15 +71,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromCliSwitch_EvenIfEnvironmentVariable_AndComposerFileHasVersionSpecified()
+        public void Detect_ReturnsVersionFromOptions_EvenIfComposerFileHasVersionSpecified()
         {
             // Arrange
-            var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
             var detector = CreatePhpLanguageDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0", "100.100.100" },
                 defaultVersion: "7.3.14",
-                environment);
+                new PhpScriptGeneratorOptions { PhpVersion = "7.2.5" });
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
@@ -95,37 +93,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersion_FromEnvironmentVariable_EvenIfComposerFileHasVersionSpecified()
+        public void Detect_ReturnsVersion_FromComposerFile_IfOptionsDoesNotHaveValue()
         {
             // Arrange
-            var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
             var detector = CreatePhpLanguageDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
-                environment);
-            var repo = new MemorySourceRepo();
-            var version = "5.6.0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("7.2.5", result.LanguageVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsVersion_FromComposerFile_IfEnvironmentVariableDoesNotHaveValue()
-        {
-            // Arrange
-            var environment = new TestEnvironment();
-            var detector = CreatePhpLanguageDetector(
-                supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
-                defaultVersion: "7.3.14",
-                environment);
+                options: new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
@@ -140,14 +114,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersion_FromVersionProvider_IfNoVersionFoundInComposerFile_OrEnvVariable()
+        public void Detect_ReturnsVersion_FromVersionProvider_IfNoVersionFoundInComposerFile_OrOptions()
         {
             // Arrange
-            var environment = new TestEnvironment();
             var detector = CreatePhpLanguageDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
-                environment);
+                options: new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -191,17 +164,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private PhpLanguageDetector CreatePhpLanguageDetector(string[] supportedPhpVersions)
         {
-            return CreatePhpLanguageDetector(supportedPhpVersions, defaultVersion: null, new TestEnvironment());
+            return CreatePhpLanguageDetector(
+                supportedPhpVersions,
+                defaultVersion: null,
+                options: null);
         }
 
         private PhpLanguageDetector CreatePhpLanguageDetector(
-            string[] supportedPhpVersions, 
+            string[] supportedPhpVersions,
             string defaultVersion,
-            IEnvironment environment)
+            PhpScriptGeneratorOptions options)
         {
-            var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
-            var options = new PhpScriptGeneratorOptions();
-            optionsSetup.Configure(options);
+            options = options ?? new PhpScriptGeneratorOptions();
 
             return new PhpLanguageDetector(
                 Options.Create(options),

@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -31,10 +32,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --enable-dynamic-install")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")

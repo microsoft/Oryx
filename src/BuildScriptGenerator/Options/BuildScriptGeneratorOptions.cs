@@ -30,5 +30,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string ManifestDir { get; set; }
 
         public bool EnableDynamicInstall { get; set; }
+
+        public bool DisableDotNetCoreBuild { get; set; }
+
+        public bool DisableNodeJSBuild { get; set; }
+
+        public bool DisablePythonBuild { get; set; }
+
+        public bool DisablePhpBuild { get; set; }
+
+        public bool EnableMultiPlatformBuild { get; set; }
+
+        public string OryxSdkStorageBaseUrl { get; set; }
+
+        public bool DisableTelemetry { get; set; }
+
+        public string PreBuildScriptPath { get; set; }
+
+        public string PreBuildCommand { get; set; }
+
+        public string PostBuildScriptPath { get; set; }
+
+        public string PostBuildCommand { get; set; }
     }
 }

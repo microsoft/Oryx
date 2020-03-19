@@ -226,13 +226,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundFromApp_OrEnvVariable()
+        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundFromApp_OrOptions()
         {
             // Arrange
             var expectedVersion = "1.2.3";
             var detector = CreatePythonLanguageDetector(
                 supportedPythonVersions: new[] { "100.100.100", "2.5.0", expectedVersion },
-                defaultVersion: expectedVersion);
+                defaultVersion: expectedVersion,
+                options: new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "", "app.py");
@@ -249,17 +250,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromEnvironmentVariable_EvenIfRuntimeTextFileHasVersion()
+        public void Detect_ReturnsVersionFromOptions_EvenIfRuntimeTextFileHasVersion()
         {
             // Arrange
             var expectedVersion = "1.2.3";
             var runtimeTextFileVersion = "2.5.0";
-            var environment = new TestEnvironment();
-            environment.Variables[PythonConstants.PythonVersionEnvVarName] = expectedVersion;
             var detector = CreatePythonLanguageDetector(
                 supportedPythonVersions: new[] { "100.100.100", runtimeTextFileVersion, expectedVersion },
                 defaultVersion: expectedVersion,
-                environment);
+                options: new PythonScriptGeneratorOptions { PythonVersion = expectedVersion });
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "", "app.py");
@@ -277,15 +276,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromRuntimeTextFile_IfEnvironmentVariableValueIsNotPresent()
+        public void Detect_ReturnsVersionFromRuntimeTextFile_IfNoValueProvidedThroughOptions()
         {
             // Arrange
             var expectedVersion = "2.5.0";
-            var environment = new TestEnvironment();
             var detector = CreatePythonLanguageDetector(
                 supportedPythonVersions: new[] { "100.100.100", expectedVersion, "1.2.3" },
                 defaultVersion: expectedVersion,
-                environment);
+                options: new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "", "app.py");
@@ -313,17 +311,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         private PythonLanguageDetector CreatePythonLanguageDetector(
             string[] supportedPythonVersions, string defaultVersion)
         {
-            return CreatePythonLanguageDetector(supportedPythonVersions, defaultVersion, new TestEnvironment());
+            return CreatePythonLanguageDetector(supportedPythonVersions, defaultVersion, options: null);
         }
 
         private PythonLanguageDetector CreatePythonLanguageDetector(
             string[] supportedPythonVersions,
             string defaultVersion,
-            IEnvironment environment)
+            PythonScriptGeneratorOptions options)
         {
-            var optionsSetup = new PythonScriptGeneratorOptionsSetup(environment);
-            var options = new PythonScriptGeneratorOptions();
-            optionsSetup.Configure(options);
+            options = options ?? new PythonScriptGeneratorOptions();
 
             return new PythonLanguageDetector(
                 new TestPythonVersionProvider(supportedPythonVersions, defaultVersion),

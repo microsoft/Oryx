@@ -11,9 +11,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static (string preBuildCommand, string postBuildCommand) GetPreAndPostBuildCommands(
             ISourceRepo sourceRepo,
-            EnvironmentSettings settings)
+            BuildScriptGeneratorOptions options)
         {
-            if (settings == null)
+            if (options == null)
             {
                 return (null, null);
             }
@@ -21,22 +21,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string preBuildCommand = null;
             string postBuildCommand = null;
 
-            if (!string.IsNullOrEmpty(settings.PreBuildScriptPath))
+            if (!string.IsNullOrEmpty(options.PreBuildScriptPath))
             {
-                preBuildCommand = $"\"{settings.PreBuildScriptPath}\"";
+                preBuildCommand = $"\"{options.PreBuildScriptPath}\"";
             }
-            else if (!string.IsNullOrEmpty(settings.PreBuildCommand))
+            else if (!string.IsNullOrEmpty(options.PreBuildCommand))
             {
-                preBuildCommand = GetCommandOrFilePath(sourceRepo, settings.PreBuildCommand);
+                preBuildCommand = GetCommandOrFilePath(sourceRepo, options.PreBuildCommand);
             }
 
-            if (!string.IsNullOrEmpty(settings.PostBuildScriptPath))
+            if (!string.IsNullOrEmpty(options.PostBuildScriptPath))
             {
-                postBuildCommand = $"\"{settings.PostBuildScriptPath}\"";
+                postBuildCommand = $"\"{options.PostBuildScriptPath}\"";
             }
-            else if (!string.IsNullOrEmpty(settings.PostBuildCommand))
+            else if (!string.IsNullOrEmpty(options.PostBuildCommand))
             {
-                postBuildCommand = GetCommandOrFilePath(sourceRepo, settings.PostBuildCommand);
+                postBuildCommand = GetCommandOrFilePath(sourceRepo, options.PostBuildCommand);
             }
 
             return (preBuildCommand: preBuildCommand, postBuildCommand: postBuildCommand);

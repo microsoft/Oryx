@@ -5,6 +5,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -33,13 +34,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .SetEnvironmentVariable(
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-               .AddCommand(
-                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion} --enable-dynamic-install")
-               .ToString();
+                .AddCommand(
+                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+                .ToString();
             var runScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
@@ -85,17 +88,19 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .SetEnvironmentVariable(
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-               .AddCommand(
-                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion} --enable-dynamic-install")
-               .ToString();
+                .AddCommand(
+                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -enableDynamicInstall")
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

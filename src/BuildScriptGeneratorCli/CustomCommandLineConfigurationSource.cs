@@ -3,16 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Oryx.Tests.Common
+namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    public class TestEnvironmentSettingsProvider : IEnvironmentSettingsProvider
+    public class CustomCommandLineConfigurationSource : ConfigurationProvider, IConfigurationSource
     {
-        public bool TryGetAndLoadSettings(out EnvironmentSettings environmentSettings)
+        public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            environmentSettings = null;
-            return true;
+            return this;
         }
     }
 }

@@ -265,16 +265,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeVersionFromEnvironmentVariable_ForPackageJsonWithNoNodeVersion()
+        public void Detect_ReturnsResult_WithNodeVersionFromOptions_ForPackageJsonWithNoNodeVersion()
         {
             // Arrange
             var version = "500.500.500";
-            var environment = new TestEnvironment();
-            environment.Variables[NodeConstants.NodeVersion] = version;
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { version },
                 defaultVersion: version,
-                environment);
+                new NodeScriptGeneratorOptions { NodeVersion = version });
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -289,14 +287,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundInPackageJson_OrEnvVariable()
+        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundInPackageJson_OrOptions()
         {
             // Arrange
-            var environment = new TestEnvironment();
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2", "10.14.0" },
                 defaultVersion: "8.11.2",
-                environment);
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -311,15 +308,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromEnvironmentVariable_EvenIfPackageJsonHasVersion()
+        public void Detect_ReturnsVersionFromOptions_EvenIfPackageJsonHasVersion()
         {
             // Arrange
-            var environment = new TestEnvironment();
-            environment.Variables[NodeConstants.NodeVersion] = "10.14.0";
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2", "10.14.0" },
                 defaultVersion: "8.11.2",
-                environment);
+                new NodeScriptGeneratorOptions { NodeVersion = "10.14.0" });
             var repo = new MemorySourceRepo();
             var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", "6.11.0");
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
@@ -335,14 +330,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromPackageJson_IfEnvironmentVariableValueIsNotPresent()
+        public void Detect_ReturnsVersionFromPackageJson_IfOptionsValueIsNotPresent()
         {
             // Arrange
-            var environment = new TestEnvironment();
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: new[] { "6.11.0", "8.11.2" },
                 defaultVersion: "8.11.2",
-                environment);
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", "6.11.0");
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
@@ -368,11 +362,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             string expectedVersion)
         {
             // Arrange
-            var environment = new TestEnvironment();
             var detector = CreateNodeLanguageDetector(
                 supportedNodeVersions: supportedVersions,
                 defaultVersion: defaultVersion,
-                environment);
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", versionRangeInPackageJson);
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
@@ -539,23 +532,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             string[] supportedNodeVersions,
             string defaultVersion)
         {
-            return CreateNodeLanguageDetector(supportedNodeVersions, defaultVersion, new TestEnvironment());
+            return CreateNodeLanguageDetector(supportedNodeVersions, defaultVersion, options: null);
         }
 
         private NodeLanguageDetector CreateNodeLanguageDetector(
             string[] supportedNodeVersions,
             string defaultVersion,
-            IEnvironment environment)
+            NodeScriptGeneratorOptions options)
         {
-            var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
-            var options = new NodeScriptGeneratorOptions();
-            optionsSetup.Configure(options);
+            options = options ?? new NodeScriptGeneratorOptions();
 
             return new NodeLanguageDetector(
                 new TestNodeVersionProvider(supportedNodeVersions, defaultVersion),
                 Options.Create(options),
                 NullLogger<NodeLanguageDetector>.Instance,
-                environment,
+                new TestEnvironment(),
                 new DefaultStandardOutputWriter());
         }
 

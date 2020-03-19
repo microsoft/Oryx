@@ -51,10 +51,6 @@ func main() {
 		"",
 		"[Optional] Path to a default dll that will be executed if the entrypoint is not found. "+
 			"Ex: '/opt/startup/aspnetcoredefaultapp.dll'")
-	enableDynamicInstall := scriptCommand.Bool(
-		"enableDynamicInstall",
-		false,
-		"Enables installing SDK dynamically if not present in the container already. Default if false.")
 
 	logger := common.GetLogger("dotnetcore.main")
 	defer logger.Shutdown()
@@ -120,13 +116,12 @@ func main() {
 		}
 
 		entrypointGenerator := DotnetCoreStartupScriptGenerator{
-			AppPath:              fullAppPath,
-			RunFromPath:          fullRunFromPath,
-			BindPort:             *bindPortPtr,
-			UserStartupCommand:   *userStartupCommandPtr,
-			DefaultAppFilePath:   fullDefaultAppFilePath,
-			EnableDynamicInstall: *enableDynamicInstall,
-			Manifest:             buildManifest,
+			AppPath:            fullAppPath,
+			RunFromPath:        fullRunFromPath,
+			BindPort:           *bindPortPtr,
+			UserStartupCommand: *userStartupCommandPtr,
+			DefaultAppFilePath: fullDefaultAppFilePath,
+			Manifest:           buildManifest,
 		}
 
 		command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)

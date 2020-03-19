@@ -274,9 +274,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             string projectFile,
             IEnvironment environment)
         {
-            var optionsSetup = new DotNetCoreScriptGeneratorOptionsSetup(environment);
             var options = new DotNetCoreScriptGeneratorOptions();
-            optionsSetup.Configure(options);
 
             return new DotNetCoreLanguageDetector(
                 new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),

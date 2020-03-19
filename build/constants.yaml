@@ -131,6 +131,7 @@
     default-version-file-name: defaultVersion.txt
     versions-to-build-file-name: versionsToBuild.txt
     container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
+    enable-dynamic-install-key: 'ENABLE_DYNAMIC_INSTALL'
   outputs:
     - type: shell
       directory: build

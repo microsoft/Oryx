@@ -24,7 +24,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             bool shouldPackage,
             string[] requiredOsPackages,
             bool scriptOnly,
-            bool enableDynamicInstall,
             string[] properties)
         {
             options.SourceDir = string.IsNullOrEmpty(sourceDir)
@@ -52,8 +51,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             options.RequiredOsPackages = requiredOsPackages;
 
             options.ScriptOnly = scriptOnly;
-
-            options.EnableDynamicInstall = enableDynamicInstall;
 
             // Process properties
             if (properties != null)

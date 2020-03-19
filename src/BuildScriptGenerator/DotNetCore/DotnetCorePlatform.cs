@@ -26,7 +26,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DefaultProjectFileProvider _projectFileProvider;
-        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
@@ -47,7 +46,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
-            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
             IOptions<BuildScriptGeneratorOptions> cliOptions,
@@ -56,7 +54,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
-            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
             _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
@@ -111,11 +108,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
-
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
-                environmentSettings);
+                _cliOptions);
 
             var sourceDir = _cliOptions.SourceDir;
             var temporaryDestinationDir = "/tmp/puboutput";
