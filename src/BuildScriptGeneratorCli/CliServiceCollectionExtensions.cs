@@ -6,6 +6,7 @@
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -13,6 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         public static IServiceCollection AddCliServices(this IServiceCollection services, IConsole console = null)
         {
+            services.AddOptionsServices();
             services.AddSingleton<IConsole, PhysicalConsole>();
             services.AddSingleton<CliEnvironmentSettings>();
             return console == null ?

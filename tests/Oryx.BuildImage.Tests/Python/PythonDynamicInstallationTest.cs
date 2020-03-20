@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -44,11 +45,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
            var appOutputDir = "/tmp/app-output";
            var script = new ShellScriptBuilder()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .SetEnvironmentVariable(
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                .SetEnvironmentVariable(
                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
                    SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddBuildCommand(
-               $"{appDir} --platform python --platform-version {version} -o {appOutputDir} --enable-dynamic-install")
+               $"{appDir} --platform python --platform-version {version} -o {appOutputDir}")
                .ToString();
 
            // Act
@@ -67,7 +69,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                {
                    Assert.True(result.IsSuccess);
                    Assert.Contains(
-                       $"Python Version: {Constants.TemporaryInstallationDirectoryRoot}/python/{version}/bin/python3",
+                       $"Python Version: {BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}/bin/python3",
                        result.StdOut);
                },
                result.GetDebugInfo());
