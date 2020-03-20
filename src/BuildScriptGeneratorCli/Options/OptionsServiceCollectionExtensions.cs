@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
@@ -16,6 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<BuildScriptGeneratorOptions>, BuildScriptGeneratorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());
             return services;
         }
     }

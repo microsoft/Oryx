@@ -15,6 +15,95 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
     public class NodePlatformTest
     {
         [Fact]
+        public void GeneratedBuildSnippet_HasCustomNpmRunBuildCommand_EvenIfPackageJsonHasBuildNodes()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""build"": ""build-node"",
+                ""build:azure"": ""azure-node"",
+              },
+            }";
+            var expectedText = "custom-npm-run-build";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomNpmRunBuildCommand = expectedText },
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains(expectedText, buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("npm run build", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("npm run build:azure", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_HasNpmRunBuildCommand()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""build"": ""build-node"",
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomNpmRunBuildCommand = null },
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.DoesNotContain("npm run build:azure", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("npm run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_HasNpmRunBuildAzureCommand()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""build:azure"": ""build-azure-node"",
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomNpmRunBuildCommand = null },
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("npm run build:azure", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void BuildScript_HasSdkInstallScript_IfDynamicInstallIsEnabled_AndSdkIsNotAlreadyInstalled()
         {
             // Arrange
@@ -69,6 +158,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(buildScriptSnippet);
             Assert.Null(buildScriptSnippet.PlatformInstallationScriptSnippet);
+        }
+
+        private TestNodePlatform CreateNodePlatform(
+            BuildScriptGeneratorOptions commonOptions,
+            NodeScriptGeneratorOptions nodeScriptGeneratorOptions,
+            NodePlatformInstaller platformInstaller)
+        {
+            var environment = new TestEnvironment();
+
+            var versionProvider = new TestNodeVersionProvider();
+            var detector = new TestNodeLanguageDetector(
+                versionProvider,
+                Options.Create(nodeScriptGeneratorOptions),
+                NullLogger<NodeLanguageDetector>.Instance,
+                environment,
+                new TestStandardOutputWriter());
+
+            return new TestNodePlatform(
+                Options.Create(commonOptions),
+                Options.Create(nodeScriptGeneratorOptions),
+                versionProvider,
+                NullLogger<NodePlatform>.Instance,
+                detector,
+                environment,
+                platformInstaller);
         }
 
         private TestNodePlatform CreateNodePlatform(
