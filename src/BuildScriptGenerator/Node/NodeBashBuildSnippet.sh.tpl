@@ -90,18 +90,24 @@ echo "Running '{{ PackageInstallCommand }}'..."
 echo
 {{ PackageInstallCommand }}
 
-{{ if NpmRunBuildCommand | IsNotBlank }}
-echo
-echo "Running '{{ NpmRunBuildCommand }}'..."
-echo
-{{ NpmRunBuildCommand }}
-{{ end }}
+{{ if CustomNpmRunBuildCommand | IsNotBlank }}
+	echo
+	{{ CustomNpmRunBuildCommand }}
+	echo
+{{ else }}
+	{{ if NpmRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ NpmRunBuildCommand }}'..."
+	echo
+	{{ NpmRunBuildCommand }}
+	{{ end }}
 
-{{ if NpmRunBuildAzureCommand | IsNotBlank }}
-echo
-echo "Running '{{ NpmRunBuildAzureCommand }}'..."
-echo
-{{ NpmRunBuildAzureCommand }}
+	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
+	echo
+	{{ NpmRunBuildAzureCommand }}
+	{{ end }}
 {{ end }}
 
 {{ if RunNpmPack }}

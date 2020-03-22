@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
@@ -811,6 +812,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApp_ByRunningNpmInstall_AndCustomBuildCommand()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var subDir = Guid.NewGuid();
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                SettingsKeys.CustomNpmRunBuildCommand,
+                $"echo > /tmp/foo.txt")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddFileExistsCheck($"/tmp/foo.txt")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.SlimBuildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

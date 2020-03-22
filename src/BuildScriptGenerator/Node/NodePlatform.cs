@@ -168,19 +168,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var productionOnlyPackageInstallCommand = string.Format(
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
-            var scriptsNode = packageJson?.scripts;
-            if (scriptsNode != null)
+            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomNpmRunBuildCommand))
             {
-                if (scriptsNode.build != null)
+                var scriptsNode = packageJson?.scripts;
+                if (scriptsNode != null)
                 {
-                    runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
-                }
+                    if (scriptsNode.build != null)
+                    {
+                        runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
+                    }
 
-                if (scriptsNode["build:azure"] != null && !ctx.IsPackage)
-                {
-                    runBuildAzureCommand = string.Format(
-                        NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
-                        packageManagerCmd);
+                    if (scriptsNode["build:azure"] != null && !ctx.IsPackage)
+                    {
+                        runBuildAzureCommand = string.Format(
+                            NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
+                            packageManagerCmd);
+                    }
                 }
             }
 
@@ -239,6 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
                 RunNpmPack = ctx.IsPackage,
+                CustomNpmRunBuildCommand = _nodeScriptGeneratorOptions.CustomNpmRunBuildCommand,
             };
 
             string script = TemplateHelper.Render(
