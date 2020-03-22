@@ -27,7 +27,6 @@ type NodeStartupScriptGenerator struct {
 	RemoteDebuggingPort             string
 	UseLegacyDebugger               bool //used for node versions < 7.7
 	SkipNodeModulesExtraction       bool
-	EnableDynamicInstall            bool
 	Manifest                        common.BuildManifest
 }
 
@@ -67,7 +66,8 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("#!/bin/sh\n")
 
 	nodeBinary := fmt.Sprintf("%s/bin/node", consts.NodeInstallationDir)
-	if gen.EnableDynamicInstall && !common.PathExists(nodeBinary) {
+	enableDynamicInstall := common.GetBooleanEnvironmentVariable(consts.EnableDynamicInstallKey)
+	if enableDynamicInstall && !common.PathExists(nodeBinary) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.SourcePath))
 	}
 

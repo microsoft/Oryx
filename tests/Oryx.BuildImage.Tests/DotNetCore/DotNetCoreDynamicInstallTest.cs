@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -40,8 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
-                $"{appDir} -i /tmp/int -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {runtimeVersion} --enable-dynamic-install")
+                $"{appDir} -i /tmp/int -o {appOutputDir} --platform dotnet --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 

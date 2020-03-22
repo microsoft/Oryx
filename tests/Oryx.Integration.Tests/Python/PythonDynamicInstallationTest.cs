@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -33,11 +34,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+               .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
-                $"oryx build {appDir} --platform python --platform-version {pythonVersion} --enable-dynamic-install")
+                $"oryx build {appDir} --platform python --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
@@ -81,7 +83,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
-                $"oryx build {appDir} --platform python --platform-version {pythonVersion} --enable-dynamic-install")
+                $"oryx build {appDir} --platform python --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
@@ -119,17 +121,19 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+               .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
-                $"oryx build {appDir} --platform python --language-version {pythonVersion} --enable-dynamic-install")
+                $"oryx build {appDir} --platform python --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -enableDynamicInstall")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

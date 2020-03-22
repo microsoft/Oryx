@@ -60,10 +60,6 @@ func main() {
 		false,
 		"Disables the extraction of node_modules file. If used, some external tool will have to extract it - "+
 			"otherwise the application might not work.")
-	enableDynamicInstall := scriptCommand.Bool(
-		"enableDynamicInstall",
-		false,
-		"Enables installing SDK dynamically if not present in the container already. Default if false.")
 	flag.Parse()
 
 	logger := common.GetLogger("node.main")
@@ -92,7 +88,6 @@ func main() {
 			RemoteDebuggingPort:             *remoteDebugPort,
 			UseLegacyDebugger:               useLegacyDebugger,
 			SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
-			EnableDynamicInstall:            *enableDynamicInstall,
 			Manifest:                        buildManifest,
 		}
 		script := gen.GenerateEntrypointScript()
