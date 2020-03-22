@@ -9,6 +9,9 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
+    /// <summary>
+    /// Gets hierarchical configuration from IConfiguration api and binds the properties on NodeScriptGeneratorOptions
+    /// </summary>
     public class NodeScriptGeneratorOptionsSetup : IConfigureOptions<NodeScriptGeneratorOptions>
     {
         private readonly IEnvironment _environment;
