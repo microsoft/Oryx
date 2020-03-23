@@ -161,12 +161,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             console.WriteLine(buildInfo.ToString());
 
-            var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
-            if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
-            {
-                return ProcessConstants.ExitFailure;
-            }
-
             // Generate build script
             string scriptContent;
             Exception exception;
@@ -256,10 +250,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.Error.WriteLine(line);
                 buildScriptOutput.AppendLine(line);
             };
-
-            // Try make the pre-build & post-build scripts executable
-            ProcessHelper.TrySetExecutableMode(environmentSettings.PreBuildScriptPath);
-            ProcessHelper.TrySetExecutableMode(environmentSettings.PostBuildScriptPath);
 
             // Run the generated script
             int exitCode;

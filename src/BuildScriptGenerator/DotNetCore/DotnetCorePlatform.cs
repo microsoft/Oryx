@@ -26,11 +26,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DefaultProjectFileProvider _projectFileProvider;
-        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly DotNetCoreLanguageDetector _detector;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
         private readonly BuildScriptGeneratorOptions _cliOptions;
+        private readonly IEnvironment _environment;
         private readonly DotNetCorePlatformInstaller _platformInstaller;
 
         /// <summary>
@@ -47,20 +47,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
-            IEnvironmentSettingsProvider environmentSettingsProvider,
             ILogger<DotNetCorePlatform> logger,
             DotNetCoreLanguageDetector detector,
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
+            IEnvironment environment,
             DotNetCorePlatformInstaller platformInstaller)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
-            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _detector = detector;
             _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
             _cliOptions = cliOptions.Value;
+            _environment = environment;
             _platformInstaller = platformInstaller;
         }
 
@@ -111,11 +111,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
-
-            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildScriptsOrCommands(
                 context.SourceRepo,
-                environmentSettings);
+                _environment);
 
             var sourceDir = _cliOptions.SourceDir;
             var temporaryDestinationDir = "/tmp/puboutput";
