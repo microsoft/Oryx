@@ -265,19 +265,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 supportedVersions,
                 defaultVersion,
                 projectFile,
-                new TestEnvironment());
+                new DotNetCoreScriptGeneratorOptions());
         }
 
         private DotNetCoreLanguageDetector CreateDotNetCoreLanguageDetector(
             Dictionary<string, string> supportedVersions,
             string defaultVersion,
             string projectFile,
-            IEnvironment environment)
+            DotNetCoreScriptGeneratorOptions options)
         {
-            var optionsSetup = new DotNetCoreScriptGeneratorOptionsSetup(environment);
-            var options = new DotNetCoreScriptGeneratorOptions();
-            optionsSetup.Configure(options);
-
+            options = options ?? new DotNetCoreScriptGeneratorOptions();
+            
             return new DotNetCoreLanguageDetector(
                 new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),
                 Options.Create(options),

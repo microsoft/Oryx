@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -116,14 +115,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private IProgrammingPlatform GetScriptGenerator(string defaultVersion = null)
         {
-            var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = defaultVersion;
-
             var phpVersionProvider = new TestPhpVersionProvider(new[] { "7.2.15", Common.PhpVersions.Php73Version });
 
-            var scriptGeneratorOptions = Options.Create(new PhpScriptGeneratorOptions());
-            var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
-            optionsSetup.Configure(scriptGeneratorOptions.Value);
+            var scriptGeneratorOptions = Options.Create(
+                new PhpScriptGeneratorOptions() { PhpVersion = defaultVersion });
 
             return new PhpPlatform(scriptGeneratorOptions, phpVersionProvider, NullLogger<PhpPlatform>.Instance, null);
         }
