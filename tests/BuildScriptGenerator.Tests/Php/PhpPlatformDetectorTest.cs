@@ -71,20 +71,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromCliSwitch_EvenIfEnvironmentVariable_AndComposerFileHasVersionSpecified()
+        public void Detect_ReturnsVersionFromOptions_EvenIfComposerFileHasVersionSpecified()
         {
             // Arrange
-            var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
             var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0", "100.100.100" },
                 defaultVersion: "7.3.14",
-                environment);
+                new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            context.PhpVersion = "100.100.100";
+            context.ResolvedPhpVersion = "100.100.100";
 
             // Act
             var result = detector.Detect(context);
@@ -95,19 +93,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersion_FromEnvironmentVariable_EvenIfComposerFileHasVersionSpecified()
+        public void Detect_ReturnsVersion_FromOptions_EvenIfComposerFileHasVersionSpecified()
         {
             // Arrange
-            var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
             var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
-                environment);
+                new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
+            context.ResolvedPhpVersion = "7.2.5";
 
             // Act
             var result = detector.Detect(context);
@@ -118,14 +115,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersion_FromComposerFile_IfEnvironmentVariableDoesNotHaveValue()
+        public void Detect_ReturnsVersion_FromComposerFile_IfOptionsDoesNotHaveValue()
         {
             // Arrange
-            var environment = new TestEnvironment();
             var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
-                environment);
+                new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
@@ -140,14 +136,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersion_FromVersionProvider_IfNoVersionFoundInComposerFile_OrEnvVariable()
+        public void Detect_ReturnsVersion_FromVersionProvider_IfNoVersionFoundInComposerFile_OrOptions()
         {
             // Arrange
-            var environment = new TestEnvironment();
             var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
-                environment);
+                new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -191,17 +186,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private PhpPlatformDetector CreatePhpPlatformDetector(string[] supportedPhpVersions)
         {
-            return CreatePhpPlatformDetector(supportedPhpVersions, defaultVersion: null, new TestEnvironment());
+            return CreatePhpLanguageDetector(
+                supportedPhpVersions,
+                defaultVersion: null,
+                new PhpScriptGeneratorOptions());
         }
 
         private PhpPlatformDetector CreatePhpPlatformDetector(
-            string[] supportedPhpVersions, 
+            string[] supportedPhpVersions,
             string defaultVersion,
-            IEnvironment environment)
+            PhpScriptGeneratorOptions options)
         {
-            var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
-            var options = new PhpScriptGeneratorOptions();
-            optionsSetup.Configure(options);
+            options = options ?? new PhpScriptGeneratorOptions();
 
             return new PhpPlatformDetector(
                 Options.Create(options),

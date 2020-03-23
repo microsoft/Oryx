@@ -12,9 +12,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public NodePlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IEnvironment environment,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, environment, loggerFactory)
+            : base(commonOptions, loggerFactory)
         {
         }
 

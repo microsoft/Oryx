@@ -81,14 +81,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
         {
-            if (context.PythonVersion != null)
+            if (context.ResolvedPythonVersion != null)
             {
-                return context.PythonVersion;
-            }
-
-            if (_options.PythonVersion != null)
-            {
-                return _options.PythonVersion;
+                return context.ResolvedPythonVersion;
             }
 
             if (versionFromRuntimeFile != null)

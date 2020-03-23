@@ -16,10 +16,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public DotNetCorePlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> cliOptions,
-            IEnvironment environment,
             IDotNetCoreVersionProvider versionProvider,
             ILoggerFactory loggerFactory)
-            : base(cliOptions, environment, loggerFactory)
+            : base(cliOptions, loggerFactory)
         {
             _versionProvider = versionProvider;
         }

@@ -63,8 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         private class TestPythonSdkStorageVersionProvider : PythonSdkStorageVersionProvider
         {
             public TestPythonSdkStorageVersionProvider(
-                IEnvironment environment, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
-                : base(environment, httpClientFactory, loggerFactory)
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+                : base(commonOptions, httpClientFactory, loggerFactory)
             {
             }
 
@@ -85,11 +85,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             {
                 EnableDynamicInstall = enableDynamicInstall
             });
-            var environment = new TestEnvironment();
 
             var onDiskProvider = new TestPythonOnDiskVersionProvider();
             var storageProvider = new TestPythonSdkStorageVersionProvider(
-                environment,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
             var versionProvider = new PythonVersionProvider(

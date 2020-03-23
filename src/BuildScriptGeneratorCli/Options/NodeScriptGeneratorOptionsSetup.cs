@@ -3,28 +3,27 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
     /// <summary>
-    /// Gets hierarchical configuration from IConfiguration api and binds the properties on NodeScriptGeneratorOptions
+    /// Gets hierarchical configuration from IConfiguration api and binds the properties on NodeScriptGeneratorOptions.
     /// </summary>
-    public class NodeScriptGeneratorOptionsSetup : IConfigureOptions<NodeScriptGeneratorOptions>
+    public class NodeScriptGeneratorOptionsSetup : OptionsSetupBase, IConfigureOptions<NodeScriptGeneratorOptions>
     {
-        private readonly IEnvironment _environment;
-
-        public NodeScriptGeneratorOptionsSetup(IEnvironment environment)
+        public NodeScriptGeneratorOptionsSetup(IConfiguration configuration)
+            : base(configuration)
         {
-            _environment = environment;
         }
 
         public void Configure(NodeScriptGeneratorOptions options)
         {
-            options.NodeVersion = _environment.GetEnvironmentVariable(SettingsKeys.NodeVersion);
-            options.CustomRunBuildCommand = _environment.GetEnvironmentVariable(SettingsKeys.CustomRunBuildCommand);
+            options.CustomRunBuildCommand = GetStringValue(SettingsKeys.CustomRunBuildCommand);
+            options.PruneDevDependencies = GetBooleanValue(SettingsKeys.PruneDevDependencies);
+            options.NpmRegistryUrl = GetStringValue(SettingsKeys.NpmRegistryUrl);
         }
     }
 }

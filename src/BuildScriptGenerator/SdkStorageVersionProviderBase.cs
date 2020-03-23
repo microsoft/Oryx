@@ -11,23 +11,24 @@ using System.Net.Http;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class SdkStorageVersionProviderBase
     {
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         protected readonly IHttpClientFactory _httpClientFactory;
         protected readonly ILogger _logger;
-
         private readonly IEnvironment _environment;
 
         public SdkStorageVersionProviderBase(
-            IEnvironment environment,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
         {
-            _environment = environment;
+            _commonOptions = commonOptions.Value;
             _httpClientFactory = httpClientFactory;
             _logger = loggerFactory.CreateLogger(GetType());
         }
@@ -105,8 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected string GetPlatformBinariesStorageBaseUrl()
         {
-            var platformBinariesStorageBaseUrl = _environment.GetEnvironmentVariable(
-                SdkStorageConstants.SdkStorageBaseUrlKeyName);
+            var platformBinariesStorageBaseUrl = _commonOptions.OryxSdkStorageBaseUrl;
 
             _logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
 

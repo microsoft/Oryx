@@ -81,14 +81,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetVersion(RepositoryContext context, string targetFramework)
         {
-            if (context.DotNetCoreRuntimeVersion != null)
+            if (context.ResolvedDotNetCoreRuntimeVersion != null)
             {
-                return context.DotNetCoreRuntimeVersion;
-            }
-
-            if (_options.DotNetVersion != null)
-            {
-                return _options.DotNetVersion;
+                return context.ResolvedDotNetCoreRuntimeVersion;
             }
 
             var version = DetermineRuntimeVersion(targetFramework);

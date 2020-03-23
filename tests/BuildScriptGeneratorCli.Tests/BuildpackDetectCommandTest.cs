@@ -5,6 +5,7 @@
 
 using System;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -92,13 +93,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         private static IServiceProvider GetServiceProvider(BuildpackDetectCommand cmd)
         {
-            var env = new TestEnvironment();
-            env.SetEnvironmentVariable("NODE_SUPPORTED_VERSIONS", NodeConstants.NodeLtsVersion);
-
             var svcProvider = new ServiceProviderBuilder()
                 .ConfigureServices(svcs =>
                 {
-                    svcs.Replace(ServiceDescriptor.Singleton(typeof(IEnvironment), env));
+                    var configuration = new ConfigurationBuilder().Build();
+                    svcs.AddSingleton<IConfiguration>(configuration);
                     svcs.AddSingleton<INodeVersionProvider, TestNodeVersionProvider>();
                     svcs.AddSingleton<IPhpVersionProvider, TestPhpVersionProvider>();
                 })

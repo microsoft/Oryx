@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -19,10 +20,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string _defaultRuntimeVersion;
 
         public DotNetCoreSdkStorageVersionProvider(
-            IEnvironment environment,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
-            : base(environment, httpClientFactory, loggerFactory)
+            : base(httpClientFactory, loggerFactory)
         {
         }
 

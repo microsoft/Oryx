@@ -5,7 +5,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -16,8 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, NodePlatform>());
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());
             services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
             services.AddSingleton<NodePlatformDetector>();
             services.AddSingleton<NodePlatformInstaller>();

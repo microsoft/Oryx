@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -485,121 +484,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var generatedScript = "/tmp/build.sh";
-            var appOutputDir = "/tmp/app-output";
-            var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new ShellScriptBuilder()
-                .AddScriptCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python36Version} > {generatedScript}")
-                .SetExecutePermissionOnFile(generatedScript)
-                .CreateDirectory(tempDir)
-                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.6/lib/python3.6/site-packages/flask/")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void ThrowsException_ForInvalidPythonVersion()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var generatedScript = "/tmp/build.sh";
-            var appOutputDir = "/tmp/app-output";
-            var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version 4.0.1 > {generatedScript}")
-                .SetExecutePermissionOnFile(generatedScript)
-                .CreateDirectory(tempDir)
-                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    string errorMessage = "Platform 'python' version '4.0.1' is unsupported. Supported versions: " +
-                        $"{PythonVersions.Python27Version}, {PythonVersions.Python36Version}, {PythonVersions.Python37Version}";
-                    Assert.False(result.IsSuccess);
-                    Assert.Contains(errorMessage, result.StdErr);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void CanBuild_Python2_WithScriptOnlyOption()
-        {
-            // Arrange
-            var langVersion = PythonVersions.Python27Version;
-            var appName = "python2-flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var generatedScript = "/tmp/build.sh";
-            var appOutputDir = "/tmp/app-output";
-            var tempDir = "/tmp/" + Guid.NewGuid();
-            var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {langVersion} > {generatedScript}")
-                .SetExecutePermissionOnFile(generatedScript)
-                .CreateDirectory(tempDir)
-                .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv2.7/lib/python2.7/site-packages/flask/")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -824,13 +708,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
@@ -1010,88 +895,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1086977")]
-        public void Build_UsesEnvironmentSettings_InOrderOfPrecedence()
-        {
-            // Order of precedence is: EnvironmentVariables -> build.env file settings
-
-            // Arrange
-            var appName = "flask-app";
-            var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
-            {
-                sw.NewLine = "\n";
-                sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
-                sw.WriteLine("POST_BUILD_SCRIPT_PATH=scripts/postbuild.sh");
-                sw.WriteLine("key1=value-from-buildenv-file");
-                sw.WriteLine("key2=value-from-buildenv-file");
-            }
-            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
-            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "prebuild.sh")))
-            {
-                sw.NewLine = "\n";
-                sw.WriteLine("#!/bin/bash");
-                sw.WriteLine("echo From pre-build script: \"$key1, $key2\"");
-            }
-            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
-            {
-                sw.NewLine = "\n";
-                sw.WriteLine("#!/bin/bash");
-                sw.WriteLine("echo From post-build script: \"$key1, $key2\"");
-            }
-            if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
-            {
-                ProcessHelper.RunProcess(
-                    "chmod",
-                    new[] { "-R", "777", scriptsDir.FullName },
-                    workingDirectory: null,
-                    waitTimeForExit: null);
-            }
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable>
-                {
-                    CreateAppNameEnvVar(appName),
-                    new EnvironmentVariable("PRE_BUILD_SCRIPT_PATH", "scripts/prebuild.sh"),
-                    new EnvironmentVariable("POST_BUILD_SCRIPT_PATH", "scripts/postbuild.sh"),
-                    new EnvironmentVariable("key2", "value-from-environmentvariable")
-                },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    var values = "value-from-buildenv-file, value-from-environmentvariable";
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"From pre-build script: {values}",
-                        result.StdOut);
-                    Assert.Contains(
-                        $"From post-build script: {values}",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_COMMAND=\"echo from pre-build command\"");
@@ -1163,7 +974,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory(Skip = "1086977")]
+        [Theory]
         [InlineData("3")]
         [InlineData("2")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
@@ -1171,7 +982,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");

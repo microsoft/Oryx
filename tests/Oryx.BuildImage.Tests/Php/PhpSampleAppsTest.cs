@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -94,7 +95,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"not running 'composer install'", result.StdOut);
                     Assert.Contains(
-                       $"{PhpConstants.PlatformName}_version=\"{phpVersion}\"",
+                       $"{ManifestFilePropertyKeys.PhpVersion}=\"{phpVersion}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());

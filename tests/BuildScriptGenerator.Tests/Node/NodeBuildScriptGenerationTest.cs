@@ -89,11 +89,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_HasNpmVersion_SpecifiedInPackageJson()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -126,11 +128,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_HasDefaultNpmVersion_IfPackageJsonDoesNotHaveOne()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -160,11 +164,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratesScript_WithDefaultNpmVersion_ForMalformedPackageJson()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "5.4.2");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -195,12 +201,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_UsesYarnInstall_IfYarnLockFileIsPresent()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -232,12 +240,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_UsesYarnInstallAndRunsNpmBuild_IfYarnLockIsPresent_AndHasBuildNodeUnderScripts()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -270,12 +280,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_UsesNpmInstall_IfPackageLockJsonFileIsPresent()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -306,11 +318,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_UsesNpmRunBuild_IfBuildNodeIsPresentUnderScripts()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -342,12 +356,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsTarGz()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.PlatformVersion = "8.2.1";
+            commonOptions.Properties = new Dictionary<string, string>();
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                commonOptions,
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
-            context.Properties["compress_node_modules"] = "tar-gz";
+            context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "tar-gz";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -380,12 +399,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsNull()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.PlatformVersion = "8.2.1";
+            commonOptions.Properties = new Dictionary<string, string>();
+            commonOptions.Properties[NodePlatform.CompressNodeModulesPropertyKey] = null;
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                commonOptions,
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
-            context.Properties["compress_node_modules"] = null;
+            context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = null;
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -418,12 +443,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_ZipsNodeModules_IfZipNodeProperty_IsZip()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.PlatformVersion = "8.2.1";
+            commonOptions.Properties = new Dictionary<string, string>();
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                commonOptions,
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
-            context.Properties["compress_node_modules"] = "zip";
+            context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "zip";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -456,11 +486,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_DoesNotZipNodeModules_IfZipNodeModulesEnvironmentVariable_False()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -492,11 +524,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GeneratedScript_WritesNpmRc_WithCustomRegistry()
         {
             // Arrange
-            var scriptGenerator = GetNodePlatformInstance(defaultNpmVersion: "6.0.0");
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            context.LanguageVersion = "8.2.1";
             context.Properties[NodePlatform.RegistryUrlPropertyKey] = "https://example.com/registry/";
 
             // Act
@@ -509,50 +543,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 snippet.BashBuildScriptSnippet);
         }
 
-        private static IProgrammingPlatform GetNodePlatformInstance(
-            string defaultNodeVersion = null,
-            string defaultNpmVersion = null,
-            Dictionary<string, string> otherEnvironment = null)
+        private static IProgrammingPlatform GetNodePlatform(
+            string defaultNodeVersion,
+            BuildScriptGeneratorOptions commonOptions,
+            NodeScriptGeneratorOptions nodeScriptGeneratorOptions)
         {
-            var environment = new TestEnvironment();
-            environment.Variables[NodeConstants.NodeVersion] = defaultNodeVersion;
-
-            if (otherEnvironment != null)
-            {
-                foreach (var environmentVariable in otherEnvironment.Keys)
-                {
-                    environment.Variables[environmentVariable] = otherEnvironment[environmentVariable];
-                }
-            }
-
             var nodeVersionProvider = new TestNodeVersionProvider(
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
-                defaultVersion: NodeVersions.Node12Version);
+                defaultVersion: defaultNodeVersion);
 
-            var nodeScriptGeneratorOptions = Options.Create(new NodeScriptGeneratorOptions());
-            var optionsSetup = new NodeScriptGeneratorOptionsSetup(environment);
-            optionsSetup.Configure(nodeScriptGeneratorOptions.Value);
-            var commonOptions = Options.Create(new BuildScriptGeneratorOptions());
+            nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
 
             return new NodePlatform(
-                commonOptions,
-                nodeScriptGeneratorOptions,
+                Options.Create(commonOptions),
+                Options.Create(nodeScriptGeneratorOptions),
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
-                environment,
+                new TestEnvironment(),
                 new NodePlatformInstaller(commonOptions, environment, NullLoggerFactory.Instance));
         }
 
-        private static BuildScriptGeneratorContext CreateScriptGeneratorContext(
-            ISourceRepo sourceRepo,
-            string languageName = null,
-            string languageVersion = null)
+        private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)
         {
             return new BuildScriptGeneratorContext
             {
-                Language = languageName,
-                LanguageVersion = languageVersion,
                 SourceRepo = sourceRepo,
                 Properties = new Dictionary<string, string>()
             };

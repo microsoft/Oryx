@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -18,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly ICompatiblePlatformDetector _platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> _logger;
-
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly IDictionary<string, IList<string>> _slimPlatformVersions =
             new Dictionary<string, IList<string>>()
             {
@@ -29,10 +30,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public DefaultDockerfileGenerator(
             ICompatiblePlatformDetector platformDetector,
-            ILogger<DefaultDockerfileGenerator> logger)
+            ILogger<DefaultDockerfileGenerator> logger,
+            IOptions<BuildScriptGeneratorOptions> commonOptions)
         {
             _platformDetector = platformDetector;
             _logger = logger;
+            _commonOptions = commonOptions.Value;
         }
 
         public string GenerateDockerfile(DockerfileContext ctx)
@@ -80,17 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(DockerfileContext ctx)
         {
-            return _platformDetector.GetCompatiblePlatforms(ctx, ctx.Platform, ctx.PlatformVersion);
-        }
-
-        private bool IsEnabledForMultiPlatformBuild(IProgrammingPlatform platform, DockerfileContext ctx)
-        {
-            if (ctx.DisableMultiPlatformBuild)
-            {
-                return false;
-            }
-
-            return platform.IsEnabledForMultiPlatformBuild(ctx);
+            return _platformDetector.GetCompatiblePlatforms(ctx);
         }
 
         /// <summary>

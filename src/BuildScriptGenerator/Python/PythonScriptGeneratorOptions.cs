@@ -7,9 +7,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     public class PythonScriptGeneratorOptions
     {
-        /// <summary>
-        /// Represents a user provided version.
-        /// </summary>
-        public string PythonVersion { get; set; }
+        public bool EnableCollectStatic { get; set; }
+
+        public string VirtualEnvironmentName { get; set; }
     }
 }

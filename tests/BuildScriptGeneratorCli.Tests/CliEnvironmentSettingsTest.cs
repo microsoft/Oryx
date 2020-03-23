@@ -16,11 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
     {
         public static IEnumerable<object[]> DisableVariableNamesAndGetters = new[]
         {
-            new object[] { "DISABLE_CHECKERS", (FlagGetter)(s => s.DisableCheckers) },
-            new object[] { "DISABLE_DOTNETCORE_BUILD", (FlagGetter)(s => s.DisableDotNetCore) },
-            new object[] { "DISABLE_PYTHON_BUILD", (FlagGetter)(s => s.DisablePython) },
-            new object[] { "DISABLE_NODEJS_BUILD", (FlagGetter)(s => s.DisableNodeJs) },
-            new object[] { "ENABLE_MULTIPLATFORM_BUILD", (FlagGetter)(s => !s.DisableMultiPlatformBuild) }
+            new object[] { CliEnvironmentSettings.GitHubActionsEnvVarName, (FlagGetter)(s => s.GitHubActions) },
         };
 
         [Theory]
@@ -55,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.False(value);
         }
 
-        #pragma warning disable
+#pragma warning disable
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]
         public void DisableFeature_DontDisable_IfNotSet(string envVariableName, FlagGetter valueGetter)
@@ -70,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.False(value);
         }
-        #pragma warning restore
+#pragma warning restore
 
         [Theory]
         [MemberData(nameof(DisableVariableNamesAndGetters))]

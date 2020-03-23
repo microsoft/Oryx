@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.SetProperties(toolsToVersion);
             }
 
-            if (_checkers != null && checkerMessageSink != null && context.EnableCheckers)
+            if (_checkers != null && checkerMessageSink != null && _cliOptions.EnableCheckers)
             {
                 try
                 {
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 _logger.LogInformation("Not running checkers - condition evaluates to " +
                                        "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
-                                       _checkers != null, checkerMessageSink != null, context.EnableCheckers);
+                                       _checkers != null, checkerMessageSink != null, _cliOptions.EnableCheckers);
             }
 
             if (snippets != null)
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx)
         {
-            return _platformDetector.GetCompatiblePlatforms(ctx, ctx.Language, ctx.LanguageVersion);
+            return _platformDetector.GetCompatiblePlatforms(ctx);
         }
 
         public IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx)
@@ -246,9 +246,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .ToDictionary(p => p.Key, p => p.Value);
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
-            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildScriptsOrCommands(
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
-                _environment);
+                _cliOptions);
 
             var outputIsSubDirOfSourceDir = false;
             if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
-                OsPackagesToInstall = context.RequiredOsPackages ?? new string[0],
+                OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? new string[0],
                 BuildScriptSnippets = snippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildCommand = preBuildCommand,
@@ -300,7 +300,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(platform.Name, targetVersionSpec, platform.SupportedVersions);
-                _logger.LogError(exc, $"Exception caught, the given version '{targetVersionSpec}' is not supported for platform '{platform.Name}'.");
+                _logger.LogError(
+                    exc, 
+                    $"Exception caught, the given version '{targetVersionSpec}' is not supported " +
+                    $"for platform '{platform.Name}'.");
                 throw exc;
             }
             else
@@ -309,16 +312,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return targetVersion;
-        }
-
-        private bool IsEnabledForMultiPlatformBuild(IProgrammingPlatform platform, BuildScriptGeneratorContext context)
-        {
-            if (context.DisableMultiPlatformBuild)
-            {
-                return false;
-            }
-
-            return platform.IsEnabledForMultiPlatformBuild(context);
         }
     }
 }

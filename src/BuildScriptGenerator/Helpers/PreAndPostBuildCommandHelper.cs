@@ -10,30 +10,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class PreAndPostBuildCommandHelper
     {
-        public static (string preBuildCommandOrScriptPath, string postBuildCommandOrScriptPath)
-            GetPreAndPostBuildScriptsOrCommands(ISourceRepo sourceRepo, IEnvironment environment)
+        public static (string preBuildCommand, string postBuildCommand) GetPreAndPostBuildCommands(
+            ISourceRepo sourceRepo,
+            BuildScriptGeneratorOptions options)
         {
-            var preBuildScriptPath = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildScriptPath);
-            var preBuildCmd = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildCommand);
-            var postBuildScriptPath = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildScriptPath);
-            var postBuildCmd = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand);
+            if (options == null)
+            {
+                return (null, null);
+            }
 
-            var preBuildCommandOrScriptPath = string.IsNullOrEmpty(preBuildScriptPath)
-                ? preBuildCmd : preBuildScriptPath;
+            var preBuildCommandOrScriptPath = string.IsNullOrEmpty(options.PreBuildScriptPath)
+                ? options.PreBuildCommand : options.PreBuildScriptPath;
             if (!string.IsNullOrEmpty(preBuildCommandOrScriptPath))
             {
                 preBuildCommandOrScriptPath = GetCommandOrFilePath(sourceRepo, preBuildCommandOrScriptPath);
             }
 
-            var postBuildCommandOrScriptPath = string.IsNullOrEmpty(postBuildScriptPath)
-                ? postBuildCmd : postBuildScriptPath;
+            var postBuildCommandOrScriptPath = string.IsNullOrEmpty(options.PostBuildScriptPath)
+                ? options.PostBuildCommand : options.PostBuildScriptPath;
             if (!string.IsNullOrEmpty(postBuildCommandOrScriptPath))
             {
                 postBuildCommandOrScriptPath = GetCommandOrFilePath(sourceRepo, postBuildCommandOrScriptPath);
             }
 
-            return (preBuildCommandOrScriptPath: preBuildCommandOrScriptPath,
-                postBuildCommandOrScriptPath: postBuildCommandOrScriptPath);
+            return (preBuildCommand: preBuildCommandOrScriptPath, postBuildCommand: postBuildCommandOrScriptPath);
         }
 
         private static string GetCommandOrFilePath(ISourceRepo sourceRepo, string commandOrScriptPath)

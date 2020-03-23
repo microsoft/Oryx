@@ -22,8 +22,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="platformVersion">The version of the platform to check compatibility for. If not provided,
         /// a compatible version will be checked for.</param>
         /// <returns>A dictionary mapping the valid platforms to the compatible version.</returns>
-        IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(RepositoryContext ctx,
-                                                                         string platformName = null,
-                                                                         string platformVersion = null);
+        IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(RepositoryContext ctx);
     }
 }
