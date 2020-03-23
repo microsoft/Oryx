@@ -824,7 +824,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
@@ -1010,7 +1010,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_UsesEnvironmentSettings_InOrderOfPrecedence()
         {
             // Order of precedence is: EnvironmentVariables -> build.env file settings
@@ -1085,7 +1085,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -1163,7 +1163,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory(Skip = "1086977")]
         [InlineData("3")]
         [InlineData("2")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
