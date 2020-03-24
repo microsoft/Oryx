@@ -48,7 +48,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 		scriptBuilder.WriteString("echo 'Running the user provided pre-run command within pre-run script... ")
 		preRunScriptFileDir := filepath.Dir(preRunScriptPath)
 		scriptBuilder.WriteString("cd \"" + preRunScriptFileDir + "\"\n")
-		preRunCommand := "cat \"" + preRunScriptPath + "\""
+		preRunCommand := "bash \"" + preRunScriptPath + "\""
 		scriptBuilder.WriteString(preRunCommand + "\n")
 	}
 
