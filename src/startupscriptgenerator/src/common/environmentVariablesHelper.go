@@ -23,3 +23,8 @@ func GetBooleanEnvironmentVariable(key string) bool {
 	}
 	return result
 }
+
+func GetPathEnvironmentVariable(key string) string {
+	value := os.Getenv(key)
+	return GetValidatedFullPath(value)
+}
