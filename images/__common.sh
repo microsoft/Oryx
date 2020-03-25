@@ -1,5 +1,5 @@
 __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source $__CURRENT_DIR/__commonConstants.sh
+source $__CURRENT_DIR/__sdkStorageConstants.sh
 
 function downloadFileAndVerifyChecksum() {
     local platformName="$1"
