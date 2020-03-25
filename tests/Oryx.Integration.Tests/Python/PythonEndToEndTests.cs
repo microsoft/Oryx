@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -67,8 +68,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform python --platform-version 3.7")
-               .ToString();
+                .SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand, "scripts/postbuild.sh")
+                .AddCommand($"oryx build {appDir} --platform python --platform-version 3.7")
+                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
