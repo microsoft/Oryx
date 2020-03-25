@@ -41,6 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public const string AzureFunctionsVersionElementXPathExpression =
             "/Project/PropertyGroup/AzureFunctionsVersion";
+
         public const string AzureFunctionsPackageReference = "Microsoft.NET.Sdk.Functions";
 
         public const string InstalledDotNetCoreRuntimeVersionsDir = "/opt/dotnet/runtimes";

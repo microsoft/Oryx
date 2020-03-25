@@ -16,14 +16,12 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _testDirPath;
-        private readonly ITestOutputHelper _output;
         private readonly TestTempDirTestFixture _testDir;
 
         public BuildCommandTest(TestTempDirTestFixture testFixture)

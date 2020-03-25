@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -15,8 +14,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static IServiceCollection AddDotNetCoreScriptGeneratorServices(this IServiceCollection services)
         {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<ILanguageDetector, DotNetCoreLanguageDetector>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, DotNetCorePlatform>());
             services.TryAddEnumerable(

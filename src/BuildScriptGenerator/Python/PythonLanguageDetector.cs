@@ -99,18 +99,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return GetDefaultVersionFromProvider();
         }
 
-        private string GetVersionFromRuntimeFile(ISourceRepo sourceRepo)
-        {
-            string runtimeVersion = DetectPythonVersionFromRuntimeFile(sourceRepo);
-
-            if (string.IsNullOrEmpty(runtimeVersion))
-            {
-                
-            }
-
-            return runtimeVersion;
-        }
-
         private string GetDefaultVersionFromProvider()
         {
             var versionInfo = _versionProvider.GetVersionInfo();

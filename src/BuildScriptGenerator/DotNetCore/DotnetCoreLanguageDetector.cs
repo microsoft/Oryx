@@ -17,22 +17,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _options;
-        DefaultProjectFileProvider _projectFileProvider;
+        private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreLanguageDetector> _logger;
-        private readonly IStandardOutputWriter _writer;
 
         public DotNetCoreLanguageDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
             DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCoreLanguageDetector> logger,
-            IStandardOutputWriter writer)
+            ILogger<DotNetCoreLanguageDetector> logger)
         {
             _versionProvider = versionProvider;
             _options = options.Value;
             _projectFileProvider = projectFileProvider;
             _logger = logger;
-            _writer = writer;
         }
 
         public LanguageDetectorResult Detect(RepositoryContext context)
@@ -65,6 +62,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             };
         }
 
+        internal string DetermineRuntimeVersion(string targetFramework)
+        {
+            // Ex: "netcoreapp2.2" => "2.2"
+            targetFramework = targetFramework.Replace(
+                "netcoreapp",
+                string.Empty,
+                StringComparison.OrdinalIgnoreCase);
+
+            // Ex: "2.2" => 2.2
+            if (decimal.TryParse(targetFramework, out var val))
+            {
+                return val.ToString();
+            }
+
+            return null;
+        }
+
         private string GetVersion(RepositoryContext context, string targetFramework)
         {
             if (context.DotNetCoreRuntimeVersion != null)
@@ -89,23 +103,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string GetDefaultVersionFromProvider()
         {
             return _versionProvider.GetDefaultRuntimeVersion();
-        }
-
-        internal string DetermineRuntimeVersion(string targetFramework)
-        {
-            // Ex: "netcoreapp2.2" => "2.2"
-            targetFramework = targetFramework.Replace(
-                "netcoreapp",
-                string.Empty,
-                StringComparison.OrdinalIgnoreCase);
-
-            // Ex: "2.2" => 2.2
-            if (decimal.TryParse(targetFramework, out var val))
-            {
-                return val.ToString();
-            }
-
-            return null;
         }
 
         private string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)

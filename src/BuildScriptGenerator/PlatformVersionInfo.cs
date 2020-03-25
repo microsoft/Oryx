@@ -4,13 +4,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class PlatformVersionInfo
     {
+        private PlatformVersionInfo()
+        {
+        }
+
         public IEnumerable<string> SupportedVersions { get; private set; }
 
         public string DefaultVersion { get; private set; }
 
         public PlatformVersionSourceType PlatformVersionSourceType { get; private set; }
-
-        private PlatformVersionInfo() { }
 
         public static PlatformVersionInfo CreateOnDiskVersionInfo(
             IEnumerable<string> supportedVersions,

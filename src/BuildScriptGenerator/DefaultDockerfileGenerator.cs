@@ -63,7 +63,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 runImage = ConvertToRuntimeName(platform.Name);
-
             }
 
             var properties = new DockerfileProperties()

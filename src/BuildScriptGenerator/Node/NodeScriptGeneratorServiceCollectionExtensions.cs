@@ -15,8 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddNodeScriptGeneratorServices(this IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<ILanguageDetector, NodeLanguageDetector>());
-            services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, NodePlatform>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<NodeScriptGeneratorOptions>, NodeScriptGeneratorOptionsSetup>());

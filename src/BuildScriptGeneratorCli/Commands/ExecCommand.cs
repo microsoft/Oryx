@@ -78,8 +78,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     shellPath,
                     new[] { tempScriptPath },
                     opts.SourceDir,
-                    (sender, args) => { if (args.Data != null) console.WriteLine(args.Data); },
-                    (sender, args) => { if (args.Data != null) console.Error.WriteLine(args.Data); },
+                    (sender, args) =>
+                    {
+                        if (args.Data != null)
+                        {
+                            console.WriteLine(args.Data);
+                        }
+                    },
+                    (sender, args) =>
+                    {
+                        if (args.Data != null)
+                        {
+                            console.Error.WriteLine(args.Data);
+                        }
+                    },
                     waitTimeForExit: null);
                 timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
