@@ -282,8 +282,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),
                 Options.Create(options),
                 new TestProjectFileProvider(projectFile),
-                NullLogger<DotNetCoreLanguageDetector>.Instance,
-                new DefaultStandardOutputWriter());
+                NullLogger<DotNetCoreLanguageDetector>.Instance);
         }
 
         private class TestProjectFileProvider : DefaultProjectFileProvider
