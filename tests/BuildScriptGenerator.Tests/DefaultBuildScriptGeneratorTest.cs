@@ -660,9 +660,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return new DefaultBuildScriptGenerator(
                 Options.Create(cliOptions),
                 new DefaultCompatiblePlatformDetector(platforms, NullLogger<DefaultCompatiblePlatformDetector>.Instance),
-                new TestEnvironmentSettingsProvider(),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
+                new TestEnvironment(),
                 new DefaultStandardOutputWriter());
         }
 
