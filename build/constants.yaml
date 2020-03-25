@@ -3,7 +3,6 @@
     environment-type: ORYX_ENV_TYPE # Currently exported only in the Visual Studio Online build image
     application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
-    app-service-pre-run-script-file-path-env-var-name: APPSETTING_PRE_RUN_SCRIPT_FILE_PATH
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin-env-var-name: PHP_ORIGIN
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
@@ -99,6 +98,7 @@
     node-global-modules-path: /usr/local/lib/node_modules
     bash: /bin/bash
     benv: /opt/oryx/benv
+    pre-run-command-or-script-env-var-name: PRE_RUN_COMMAND_OR_SCRIPT
   outputs:
     - type: csharp
       directory: src/Common

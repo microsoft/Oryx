@@ -5,7 +5,6 @@ package consts
 const EnvironmentType string = "ORYX_ENV_TYPE"
 const ApplicationInsightsInstrumentationKeyEnvVarName string = "ORYX_AI_INSTRUMENTATION_KEY"
 const AppServiceAppNameEnvVarName string = "APPSETTING_WEBSITE_SITE_NAME"
-const AppServicePreRunScriptFilePathEnvVarName = "APPSETTING_PRE_RUN_SCRIPT_FILE_PATH"
 const ScmCommitIdEnvVarName string = "SCM_COMMIT_ID"
 const PhpOriginEnvVarName string = "PHP_ORIGIN"
 const UserAppInsightsKeyEnv string = "APPINSIGHTS_INSTRUMENTATIONKEY"
