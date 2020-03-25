@@ -43,14 +43,6 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	dotnetBinary := "/usr/share/dotnet/dotnet"
 
-	preRunScriptPath := common.GetPathEnvironmentVariable(consts.AppServicePreRunScriptFilePathEnvVarName)
-	if preRunScriptPath != "" && !common.PathExists(dotnetBinary) {
-		scriptBuilder.WriteString("echo 'Running the user provided pre-run command within pre-run script... ")
-		preRunScriptFileDir := filepath.Dir(preRunScriptPath)
-		scriptBuilder.WriteString("cd \"" + preRunScriptFileDir + "\"\n")
-		preRunCommand := "bash \"" + preRunScriptPath + "\""
-		scriptBuilder.WriteString(preRunCommand + "\n")
-	}
 	enableDynamicInstall := common.GetBooleanEnvironmentVariable(consts.EnableDynamicInstallKey)
 	if enableDynamicInstall && !common.PathExists(dotnetBinary) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
