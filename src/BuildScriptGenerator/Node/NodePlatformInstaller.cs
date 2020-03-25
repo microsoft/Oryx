@@ -25,11 +25,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             return IsVersionInstalled(
                 version,
-                installationDirs: new[]
-                {
-                    NodeConstants.InstalledNodeVersionsDir,
-                    $"{Constants.TemporaryInstallationDirectoryRoot}/nodejs"
-                });
+                builtInDir: NodeConstants.InstalledNodeVersionsDir,
+                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/nodejs");
         }
     }
 }

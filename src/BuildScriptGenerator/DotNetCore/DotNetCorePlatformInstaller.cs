@@ -47,11 +47,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             return IsVersionInstalled(
                 version,
-                installationDirs: new[]
-                {
-                    DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir,
-                    $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/runtimes"
-                });
+                builtInDir: DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir,
+                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/runtimes");
         }
     }
 }
