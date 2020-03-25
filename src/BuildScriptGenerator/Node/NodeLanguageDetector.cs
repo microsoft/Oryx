@@ -10,7 +10,7 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal class NodeLanguageDetector : ILanguageDetector
+    internal class NodeLanguageDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             bool isNodeApp = false;
 
@@ -118,10 +118,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var version = GetVersion(context);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = NodeConstants.NodeJsName,
-                LanguageVersion = version,
+                Platform = NodeConstants.NodeJsName,
+                PlatformVersion = version,
             };
         }
 

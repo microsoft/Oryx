@@ -140,8 +140,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -179,8 +179,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -218,8 +218,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -260,8 +260,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -284,8 +284,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(version, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(version, result.PlatformVersion);
         }
 
         [Fact]
@@ -306,8 +306,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal("8.11.2", result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal("8.11.2", result.PlatformVersion);
         }
 
         [Fact]
@@ -330,8 +330,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal("10.14.0", result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal("10.14.0", result.PlatformVersion);
         }
 
         [Fact]
@@ -353,8 +353,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal("6.11.0", result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal("6.11.0", result.PlatformVersion);
         }
 
         [Theory]
@@ -383,8 +383,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -403,8 +403,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -423,8 +423,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
         }
 
         [Theory]
@@ -449,8 +449,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]

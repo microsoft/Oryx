@@ -202,9 +202,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script,
-                    new TestLanguageDetectorUsingLangName(
-                        detectedLanguageName: "test",
-                        detectedLanguageVersion: "1.0.0")),
+                    new TestPlatformDetectorUsingLangName(
+                        detectedPlatformName: "test",
+                        detectedPlatformVersion: "1.0.0")),
                 scriptOnly: false);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -333,12 +333,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     // Add 'test' script generator here as we can control what the script output is rather
                     // than depending on in-built script generators whose script could change overtime causing
                     // this test to be difficult to manage.
-                    services.RemoveAll<ILanguageDetector>();
+                    services.RemoveAll<IPlatformDetector>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageDetector>(
-                            new TestLanguageDetectorUsingLangName(
-                                detectedLanguageName: "test",
-                                detectedLanguageVersion: "1.0.0")));
+                        ServiceDescriptor.Singleton<IPlatformDetector>(
+                            new TestPlatformDetectorUsingLangName(
+                                detectedPlatformName: "test",
+                                detectedPlatformVersion: "1.0.0")));
                     services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));

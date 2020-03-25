@@ -58,9 +58,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent,
-                    new TestLanguageDetectorUsingLangName(
-                        detectedLanguageName: "test",
-                        detectedLanguageVersion: "1.0.0")),
+                    new TestPlatformDetectorUsingLangName(
+                        detectedPlatformName: "test",
+                        detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -81,9 +81,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent,
-                    new TestLanguageDetectorUsingLangName(
-                        detectedLanguageName: "test",
-                        detectedLanguageVersion: "1.0.0")),
+                    new TestPlatformDetectorUsingLangName(
+                        detectedPlatformName: "test",
+                        detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -111,9 +111,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF,
-                    new TestLanguageDetectorUsingLangName(
-                        detectedLanguageName: "test",
-                        detectedLanguageVersion: "1.0.0")),
+                    new TestPlatformDetectorUsingLangName(
+                        detectedPlatformName: "test",
+                        detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
@@ -134,9 +134,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF,
-                    new TestLanguageDetectorUsingLangName(
-                        detectedLanguageName: "test",
-                        detectedLanguageVersion: "1.0.0")),
+                    new TestPlatformDetectorUsingLangName(
+                        detectedPlatformName: "test",
+                        detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
             var scriptCommand = new BuildScriptCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);

@@ -14,7 +14,7 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal class PythonLanguageDetector : ILanguageDetector
+    internal class PythonLanguageDetector : IPlatformDetector
     {
         private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _logger = logger;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
@@ -72,10 +72,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var version = GetVersion(context, versionFromRuntimeFile);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = PythonConstants.PythonName,
-                LanguageVersion = version,
+                Platform = PythonConstants.PythonName,
+                PlatformVersion = version,
             };
         }
 

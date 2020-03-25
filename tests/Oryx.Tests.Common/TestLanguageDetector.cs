@@ -7,36 +7,36 @@ using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class TestLanguageDetectorUsingLangName : ILanguageDetector
+    public class TestPlatformDetectorUsingLangName : IPlatformDetector
     {
         private readonly string _languageName;
         private readonly string _languageVersion;
 
-        public TestLanguageDetectorUsingLangName(string detectedLanguageName, string detectedLanguageVersion)
+        public TestPlatformDetectorUsingLangName(string detectedPlatformName, string detectedPlatformVersion)
         {
-            _languageName = detectedLanguageName;
-            _languageVersion = detectedLanguageVersion;
+            _languageName = detectedPlatformName;
+            _languageVersion = detectedPlatformVersion;
         }
 
         public bool DetectInvoked { get; private set; }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             DetectInvoked = true;
 
             if (!string.IsNullOrEmpty(_languageName))
             {
-                return new LanguageDetectorResult
+                return new PlatformDetectorResult
                 {
-                    Language = _languageName,
-                    LanguageVersion = _languageVersion,
+                    Platform = _languageName,
+                    PlatformVersion = _languageVersion,
                 };
             }
             return null;
         }
     }
 
-    public class TestLanguageDetectorSimpleMatch : ILanguageDetector
+    public class TestLanguageDetectorSimpleMatch : IPlatformDetector
     {
         private readonly string _languageVersion;
         private bool _shouldMatch;
@@ -54,16 +54,16 @@ namespace Microsoft.Oryx.Tests.Common
 
         public bool DetectInvoked { get; private set; }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             DetectInvoked = true;
 
             if (_shouldMatch)
             {
-                return new LanguageDetectorResult
+                return new PlatformDetectorResult
                 {
-                    Language = _language,
-                    LanguageVersion = _languageVersion
+                    Platform = _language,
+                    PlatformVersion = _languageVersion
                 };
             }
             else

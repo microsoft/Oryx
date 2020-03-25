@@ -66,10 +66,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var detectionResult = platform.Detect(ctx);
                     if (detectionResult != null)
                     {
-                        _logger.LogDebug($"Detected platform '{detectionResult.Language}' with version '{detectionResult.LanguageVersion}'.");
-                        if (string.IsNullOrEmpty(detectionResult.LanguageVersion))
+                        _logger.LogDebug($"Detected platform '{detectionResult.Platform}' with version '{detectionResult.PlatformVersion}'.");
+                        if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
                         {
-                            throw new UnsupportedVersionException($"Couldn't detect a version for platform '{detectionResult.Language}' in the repo.");
+                            throw new UnsupportedVersionException($"Couldn't detect a version for platform '{detectionResult.Platform}' in the repo.");
                         }
 
                         targetPlatform = platform;

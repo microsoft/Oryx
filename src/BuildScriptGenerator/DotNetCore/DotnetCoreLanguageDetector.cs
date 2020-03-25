@@ -13,7 +13,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotNetCoreLanguageDetector : ILanguageDetector
+    internal class DotNetCoreLanguageDetector : IPlatformDetector
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _options;
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _logger = logger;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
@@ -55,10 +55,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var version = GetVersion(context, targetFramework);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = DotNetCoreConstants.LanguageName,
-                LanguageVersion = version,
+                Platform = DotNetCoreConstants.LanguageName,
+                PlatformVersion = version,
             };
         }
 

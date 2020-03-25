@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <inheritdoc/>
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }

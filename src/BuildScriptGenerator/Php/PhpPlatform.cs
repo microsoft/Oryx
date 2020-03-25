@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// </summary>
         /// <param name="context">The repository context.</param>
         /// <returns>The results of language detector operations.</returns>
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }

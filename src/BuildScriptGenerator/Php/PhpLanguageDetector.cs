@@ -12,7 +12,7 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    internal class PhpLanguageDetector : ILanguageDetector
+    internal class PhpLanguageDetector : IPlatformDetector
     {
         private readonly PhpScriptGeneratorOptions _options;
         private readonly IPhpVersionProvider _versionProvider;
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
@@ -43,10 +43,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var version = GetVersion(context);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = PhpConstants.PhpName,
-                LanguageVersion = version,
+                Platform = PhpConstants.PhpName,
+                PlatformVersion = version,
             };
         }
 

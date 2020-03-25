@@ -103,8 +103,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -174,8 +174,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -198,8 +198,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -221,8 +221,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -244,8 +244,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -272,8 +272,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -298,8 +298,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)

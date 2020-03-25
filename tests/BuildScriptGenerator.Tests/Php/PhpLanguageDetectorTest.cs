@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("100.100.100", result.LanguageVersion);
+            Assert.Equal("100.100.100", result.PlatformVersion);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("7.2.5", result.LanguageVersion);
+            Assert.Equal("7.2.5", result.PlatformVersion);
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("5.6.0", result.LanguageVersion);
+            Assert.Equal("5.6.0", result.PlatformVersion);
         }
 
         [Fact]
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("7.3.14", result.LanguageVersion);
+            Assert.Equal("7.3.14", result.PlatformVersion);
         }
 
         [Theory]
@@ -177,8 +177,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(PhpConstants.PhpName, result.Language);
-            Assert.Equal(PhpVersions.Php73Version, result.LanguageVersion);
+            Assert.Equal(PhpConstants.PhpName, result.Platform);
+            Assert.Equal(PhpVersions.Php73Version, result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
