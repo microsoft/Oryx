@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
@@ -20,15 +20,13 @@ namespace Microsoft.Oryx.Integration.Tests
             : base(output, testTempDirTestFixture)
         {
         }
-        [Theory]
-        [InlineData("2.1", NetCoreApp21WebApp, "Hello World!")]
-        [InlineData("3.1", NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
-        public async Task CanBuildAndRun_NetCore31WebApp_UsingPreRunCommand_WithDynamicInstalls(
-            string runtimeVersion,
-            string appName,
-            string expectedResponseContent)
+
+        [Fact]
+        public async Task CanBuildAndRun_NetCore21WebApp_UsingPreRunCommand_WithDynamicInstall()
         {
             // Arrange
+            var runtimeVersion = "2.1";
+            var appName = "NetCoreApp21WebApp";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -45,14 +43,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandOrScriptEnvVarName, "echo \"Here has a pre run command.\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"touch \"{appOutputDir}/test_pre_run.txt\"")
                 .AddCommand(
                 $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp30WebApp,
+                NetCoreApp21WebApp,
                 _output,
                 new[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),
@@ -62,7 +60,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", "prerun"),
+                _imageHelper.GetTestRuntimeImage("dotnetcore", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -73,19 +71,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains(expectedResponseContent, data);
+                    Assert.Contains("Hello World!", data);
                 });
+                Assert.IsTrue(File.Exists($"{appOutputDir}/test_pre_run.txt"));
         }
 
-        [Theory]
-        [InlineData("2.1", NetCoreApp21WebApp, "Hello World!")]
-        [InlineData("3.1", NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
-        public async Task CanBuildAndRun_NetCore31WebApp_UsingPreRunScript_WithDynamicInstalls(
-            string runtimeVersion,
-            string appName,
-            string expectedResponseContent)
+        [Fact]
+        public async Task CanBuildAndRun_NetCore31WebApp_UsingPreRunScript_WithDynamicInstall()
         {
             // Arrange
+            var runtimeVersion = "3.1";
+            var appName = "NetCoreApp31MvcApp";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -102,14 +98,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandOrScriptEnvVarName, "./prerunscript.sh")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh && apt-get install foo")
+                .AddCommand($"touch {appOutputDir}/prerunscript.sh")
+                .AddCommand($"echo \"export PRE_RUN_TEST_SUCCESS=true\" > {appOutputDir}/prerunscript.sh")
+                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
                 .AddCommand(
                 $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp30WebApp,
+                NetCoreApp31WebApp,
                 _output,
                 new[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),
@@ -119,7 +118,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", "prerun"),
+                _imageHelper.GetTestRuntimeImage("dotnetcore", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -130,8 +129,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains(expectedResponseContent, data);
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
                 });
+                Assert.IsTrue(File.Exists($"{appOutputDir}/prerunscript.sh"));
+                Assert.Equals(Environment.GetEnvironmentVariable("PRE_RUN_TEST_SUCCESS"), "true");
         }
     }
 }

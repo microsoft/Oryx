@@ -98,7 +98,7 @@
     node-global-modules-path: /usr/local/lib/node_modules
     bash: /bin/bash
     benv: /opt/oryx/benv
-    pre-run-command-or-script-env-var-name: PRE_RUN_COMMAND_OR_SCRIPT
+    pre-run-command-env-var-name: PRE_RUN_COMMAND
   outputs:
     - type: csharp
       directory: src/Common

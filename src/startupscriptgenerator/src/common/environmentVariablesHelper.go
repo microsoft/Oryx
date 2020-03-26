@@ -26,8 +26,5 @@ func GetBooleanEnvironmentVariable(key string) bool {
 
 func GetEnvironmentVariable(key string) string {
 	value, ok := os.LookupEnv(key)
-	if !ok {
-		panic(fmt.Sprintf("'%s' not set\n", key))
-	}
 	return value
 }

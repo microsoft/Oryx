@@ -46,6 +46,8 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("fi\n\n")
 
+	common.SetupPreRunScript(&scriptBuilder)
+
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
 	var runScript = scriptBuilder.String()

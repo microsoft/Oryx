@@ -33,7 +33,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	logger.LogInformation("Generating script for published output.")
 
 	// Expose the port so that a custom command can use it if needed
-	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
 
 	appPath := gen.AppPath
@@ -48,18 +48,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
 	}
 
-	preRunCommandOrScript := common.GetEnvironmentVariable(consts.PreRunCommandOrScriptEnvVarName)
-	if preRunCommandOrScript != "" && !common.PathExists(dotnetBinary) {
-		if common.FileExists(preRunCommandOrScript) {
-			scriptBuilder.WriteString("echo 'Running the user provided pre-run script... ")
-			preRunScriptDir := filepath.Dir(preRunCommandOrScript)
-			scriptBuilder.WriteString("cd \"" + preRunScriptDir + "\"\n")
-			preRunCommand := "bash \"" + preRunCommandOrScript + "\""
-			scriptBuilder.WriteString(preRunCommand + "\n")
-		} else {
-			scriptBuilder.WriteString(preRunCommandOrScript + "\n")
-		}
-	}
+	common.SetupPreRunScript(&scriptBuilder)
 
 	runDefaultApp := false
 	if gen.UserStartupCommand != "" {
