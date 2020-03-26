@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var runtimeVersion = "2.1";
-            var appName = "NetCoreApp21WebApp";
+            var appName = "NetCoreApp30WebApp";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -72,8 +72,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
+                    Assert.IsTrue(File.Exists($"{appOutputDir}/test_pre_run.txt"));
                 });
-                Assert.IsTrue(File.Exists($"{appOutputDir}/test_pre_run.txt"));
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var runtimeVersion = "3.1";
-            var appName = "NetCoreApp31MvcApp";
+            var appName = "NetCoreApp30MvcApp";
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -130,9 +130,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+                    Assert.IsTrue(File.Exists($"{appOutputDir}/prerunscript.sh"));
+                    Assert.Equals(Environment.GetEnvironmentVariable("PRE_RUN_TEST_SUCCESS"), "true");
                 });
-                Assert.IsTrue(File.Exists($"{appOutputDir}/prerunscript.sh"));
-                Assert.Equals(Environment.GetEnvironmentVariable("PRE_RUN_TEST_SUCCESS"), "true");
         }
     }
 }
