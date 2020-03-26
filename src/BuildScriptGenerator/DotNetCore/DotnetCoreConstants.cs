@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreConstants
     {
-        public const string LanguageName = "dotnet";
+        public const string PlatformName = "dotnet";
         public const string CSharpProjectFileExtension = "csproj";
         public const string FSharpProjectFileExtension = "fsproj";
         public const string GlobalJsonFileName = "global.json";

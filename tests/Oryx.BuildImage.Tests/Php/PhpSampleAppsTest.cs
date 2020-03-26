@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"not running 'composer install'", result.StdOut);
                     Assert.Contains(
-                       $"{PhpConstants.PhpName}_version=\"{phpVersion}\"",
+                       $"{PhpConstants.PlatformName}_version=\"{phpVersion}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());

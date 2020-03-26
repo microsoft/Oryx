@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             return new PlatformDetectorResult
             {
-                Platform = NodeConstants.NodeJsName,
+                Platform = NodeConstants.PlatformName,
                 PlatformVersion = version,
             };
         }
@@ -168,7 +168,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exception = new UnsupportedVersionException(
-                    NodeConstants.NodeJsName,
+                    NodeConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
                 _logger.LogError(

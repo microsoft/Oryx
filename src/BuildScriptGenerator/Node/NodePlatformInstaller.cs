@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public override string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(NodeConstants.NodeJsName, version);
+            return GetInstallerScriptSnippet(NodeConstants.PlatformName, version);
         }
 
         public override bool IsVersionAlreadyInstalled(string version)

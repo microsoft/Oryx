@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <summary>
         /// Gets the name of PHP platform which this generator will create builds for.
         /// </summary>
-        public string Name => PhpConstants.PhpName;
+        public string Name => PhpConstants.PlatformName;
 
         /// <summary>
         /// Gets the list of versions that the script generator supports.
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var buildProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PhpConstants.PhpName}_version";
+            var key = $"{PhpConstants.PlatformName}_version";
             buildProperties[key] = ctx.PhpVersion;
 
             _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);

@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             return new PlatformDetectorResult
             {
-                Platform = PhpConstants.PhpName,
+                Platform = PhpConstants.PlatformName,
                 PlatformVersion = version,
             };
         }
@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
-                    PhpConstants.PhpName,
+                    PhpConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
                 _logger.LogError(

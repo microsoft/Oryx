@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(DotNetCoreConstants.LanguageName, result.Platform);
+            Assert.Equal(DotNetCoreConstants.PlatformName, result.Platform);
             Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(DotNetCoreConstants.LanguageName, result.Platform);
+            Assert.Equal(DotNetCoreConstants.PlatformName, result.Platform);
             Assert.Equal("2.1.14", result.PlatformVersion);
         }
 

@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <inheritdoc/>
-        public string Name => PythonConstants.PythonName;
+        public string Name => PythonConstants.PlatformName;
 
         public IEnumerable<string> SupportedVersions
         {
@@ -393,7 +393,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                _logger.LogDependencies(PythonConstants.PythonName, pythonVersion, deps);
+                _logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
             }
             catch (Exception exc)
             {

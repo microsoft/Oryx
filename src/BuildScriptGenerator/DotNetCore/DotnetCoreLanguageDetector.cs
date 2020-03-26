@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             return new PlatformDetectorResult
             {
-                Platform = DotNetCoreConstants.LanguageName,
+                Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = version,
             };
         }
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exception = new UnsupportedVersionException(
-                    DotNetCoreConstants.LanguageName,
+                    DotNetCoreConstants.PlatformName,
                     runtimeVersion,
                     versionMap.Keys);
                 _logger.LogError(

@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             return new PlatformDetectorResult
             {
-                Platform = PythonConstants.PythonName,
+                Platform = PythonConstants.PlatformName,
                 PlatformVersion = version,
             };
         }
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
-                    PythonConstants.PythonName,
+                    PythonConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
                 _logger.LogError(

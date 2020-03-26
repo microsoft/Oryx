@@ -468,7 +468,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
             Assert.Equal(
-                $"Platform '{NodeConstants.NodeJsName}' version '20.20.20' is unsupported. Supported versions: {version}",
+                $"Platform '{NodeConstants.PlatformName}' version '20.20.20' is unsupported. Supported versions: {version}",
                 exception.Message);
         }
 

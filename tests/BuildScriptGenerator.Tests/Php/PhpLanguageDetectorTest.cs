@@ -177,7 +177,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(PhpConstants.PhpName, result.Platform);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
             Assert.Equal(PhpVersions.Php73Version, result.PlatformVersion);
         }
 

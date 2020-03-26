@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         }
 
         /// <inheritdoc/>
-        public string Name => DotNetCoreConstants.LanguageName;
+        public string Name => DotNetCoreConstants.PlatformName;
 
         /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions

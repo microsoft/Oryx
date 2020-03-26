@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         /// <inheritdoc/>
-        public string Name => NodeConstants.NodeJsName;
+        public string Name => NodeConstants.PlatformName;
 
         /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions
@@ -220,7 +220,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 if (!string.IsNullOrWhiteSpace(customRegistryUrl))
                 {
                     // Write the custom registry to the build manifest
-                    manifestFileProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                    manifestFileProperties[$"{NodeConstants.PlatformName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
                 }
             }
 
