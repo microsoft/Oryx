@@ -12,17 +12,17 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    internal class PhpLanguageDetector : IPlatformDetector
+    internal class PhpPlatformDetector : IPlatformDetector
     {
         private readonly PhpScriptGeneratorOptions _options;
         private readonly IPhpVersionProvider _versionProvider;
-        private readonly ILogger<PhpLanguageDetector> _logger;
+        private readonly ILogger<PhpPlatformDetector> _logger;
         private readonly IStandardOutputWriter _writer;
 
-        public PhpLanguageDetector(
+        public PhpPlatformDetector(
             IOptions<PhpScriptGeneratorOptions> options,
             IPhpVersionProvider versionProvider,
-            ILogger<PhpLanguageDetector> logger,
+            ILogger<PhpPlatformDetector> logger,
             IStandardOutputWriter writer)
         {
             _options = options.Value;

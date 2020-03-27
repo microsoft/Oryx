@@ -13,18 +13,18 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotNetCoreLanguageDetector : IPlatformDetector
+    internal class DotNetCorePlatformDetector : IPlatformDetector
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _options;
         private readonly DefaultProjectFileProvider _projectFileProvider;
-        private readonly ILogger<DotNetCoreLanguageDetector> _logger;
+        private readonly ILogger<DotNetCorePlatformDetector> _logger;
 
-        public DotNetCoreLanguageDetector(
+        public DotNetCorePlatformDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
             DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCoreLanguageDetector> logger)
+            ILogger<DotNetCorePlatformDetector> logger)
         {
             _versionProvider = versionProvider;
             _options = options.Value;

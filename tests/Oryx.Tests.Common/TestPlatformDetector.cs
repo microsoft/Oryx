@@ -7,15 +7,15 @@ using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class TestPlatformDetectorUsingLangName : IPlatformDetector
+    public class TestPlatformDetectorUsingPlatformName : IPlatformDetector
     {
-        private readonly string _languageName;
-        private readonly string _languageVersion;
+        private readonly string _platformName;
+        private readonly string _platformVersion;
 
-        public TestPlatformDetectorUsingLangName(string detectedPlatformName, string detectedPlatformVersion)
+        public TestPlatformDetectorUsingPlatformName(string detectedPlatformName, string detectedPlatformVersion)
         {
-            _languageName = detectedPlatformName;
-            _languageVersion = detectedPlatformVersion;
+            _platformName = detectedPlatformName;
+            _platformVersion = detectedPlatformVersion;
         }
 
         public bool DetectInvoked { get; private set; }
@@ -24,32 +24,32 @@ namespace Microsoft.Oryx.Tests.Common
         {
             DetectInvoked = true;
 
-            if (!string.IsNullOrEmpty(_languageName))
+            if (!string.IsNullOrEmpty(_platformName))
             {
                 return new PlatformDetectorResult
                 {
-                    Platform = _languageName,
-                    PlatformVersion = _languageVersion,
+                    Platform = _platformName,
+                    PlatformVersion = _platformVersion,
                 };
             }
             return null;
         }
     }
 
-    public class TestLanguageDetectorSimpleMatch : IPlatformDetector
+    public class TestPlatformDetectorSimpleMatch : IPlatformDetector
     {
-        private readonly string _languageVersion;
+        private readonly string _platformVersion;
         private bool _shouldMatch;
-        private readonly string _language;
+        private readonly string _platformName;
 
-        public TestLanguageDetectorSimpleMatch(
+        public TestPlatformDetectorSimpleMatch(
             bool shouldMatch,
-            string language = "universe",
-            string languageVersion = "42")
+            string platformName = "universe",
+            string platformVersion = "42")
         {
             _shouldMatch = shouldMatch;
-            _language = language;
-            _languageVersion = languageVersion;
+            _platformName = platformName;
+            _platformVersion = platformVersion;
         }
 
         public bool DetectInvoked { get; private set; }
@@ -62,8 +62,8 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return new PlatformDetectorResult
                 {
-                    Platform = _language,
-                    PlatformVersion = _languageVersion
+                    Platform = _platformName,
+                    PlatformVersion = _platformVersion
                 };
             }
             else

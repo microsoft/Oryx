@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
-            services.AddSingleton<PhpLanguageDetector>();
+            services.AddSingleton<PhpPlatformDetector>();
             return services;
         }
     }

@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     services.RemoveAll<IPlatformDetector>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IPlatformDetector>(
-                            new TestPlatformDetectorUsingLangName(
+                            new TestPlatformDetectorUsingPlatformName(
                                 detectedPlatformName: "test",
                                 detectedPlatformVersion: "1.0.0")));
 

@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
-            services.AddSingleton<PythonLanguageDetector>();
+            services.AddSingleton<PythonPlatformDetector>();
             services.AddSingleton<PythonPlatformInstaller>();
             services.AddSingleton<PythonOnDiskVersionProvider>();
             services.AddSingleton<PythonSdkStorageVersionProvider>();

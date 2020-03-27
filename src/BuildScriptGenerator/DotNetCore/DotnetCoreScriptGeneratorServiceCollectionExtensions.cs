@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IConfigureOptions<DotNetCoreScriptGeneratorOptions>, DotNetCoreScriptGeneratorOptionsSetup>());
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
-            services.AddSingleton<DotNetCoreLanguageDetector>();
+            services.AddSingleton<DotNetCorePlatformDetector>();
             services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
             services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
             services.AddSingleton<DotNetCorePlatformInstaller>();

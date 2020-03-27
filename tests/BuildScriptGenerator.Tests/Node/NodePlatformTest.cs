@@ -171,7 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = new TestNodeLanguageDetector(
                 versionProvider,
                 Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodeLanguageDetector>.Instance,
+                NullLogger<NodePlatformDetector>.Instance,
                 environment,
                 new TestStandardOutputWriter());
 
@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = new TestNodeLanguageDetector(
                 versionProvider,
                 Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodeLanguageDetector>.Instance,
+                NullLogger<NodePlatformDetector>.Instance,
                 environment,
                 new TestStandardOutputWriter());
 
@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
                 INodeVersionProvider nodeVersionProvider,
                 ILogger<NodePlatform> logger,
-                NodeLanguageDetector detector,
+                NodePlatformDetector detector,
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller)
                 : base(
@@ -271,12 +271,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             }
         }
 
-        private class TestNodeLanguageDetector : NodeLanguageDetector
+        private class TestNodeLanguageDetector : NodePlatformDetector
         {
             public TestNodeLanguageDetector(
                 INodeVersionProvider nodeVersionProvider,
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
-                ILogger<NodeLanguageDetector> logger,
+                ILogger<NodePlatformDetector> logger,
                 IEnvironment environment,
                 IStandardOutputWriter writer)
                 : base(nodeVersionProvider, nodeScriptGeneratorOptions, logger, environment, writer)

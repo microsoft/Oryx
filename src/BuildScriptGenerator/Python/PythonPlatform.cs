@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
         private readonly ILogger<PythonPlatform> _logger;
-        private readonly PythonLanguageDetector _detector;
+        private readonly PythonPlatformDetector _detector;
         private readonly PythonPlatformInstaller _platformInstaller;
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
             ILogger<PythonPlatform> logger,
-            PythonLanguageDetector detector,
+            PythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;

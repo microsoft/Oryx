@@ -10,7 +10,7 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal class NodeLanguageDetector : IPlatformDetector
+    internal class NodePlatformDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -32,14 +32,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private readonly INodeVersionProvider _versionProvider;
         private readonly NodeScriptGeneratorOptions _options;
-        private readonly ILogger<NodeLanguageDetector> _logger;
+        private readonly ILogger<NodePlatformDetector> _logger;
         private readonly IEnvironment _environment;
         private readonly IStandardOutputWriter _writer;
 
-        public NodeLanguageDetector(
+        public NodePlatformDetector(
             INodeVersionProvider nodeVersionProvider,
             IOptions<NodeScriptGeneratorOptions> options,
-            ILogger<NodeLanguageDetector> logger,
+            ILogger<NodePlatformDetector> logger,
             IEnvironment environment,
             IStandardOutputWriter writer)
         {

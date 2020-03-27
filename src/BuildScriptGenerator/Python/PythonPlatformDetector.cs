@@ -14,16 +14,16 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal class PythonLanguageDetector : IPlatformDetector
+    internal class PythonPlatformDetector : IPlatformDetector
     {
         private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
-        private readonly ILogger<PythonLanguageDetector> _logger;
+        private readonly ILogger<PythonPlatformDetector> _logger;
 
-        public PythonLanguageDetector(
+        public PythonPlatformDetector(
             IPythonVersionProvider pythonVersionProvider,
             IOptions<PythonScriptGeneratorOptions> options,
-            ILogger<PythonLanguageDetector> logger,
+            ILogger<PythonPlatformDetector> logger,
             IStandardOutputWriter writer)
         {
             _versionProvider = pythonVersionProvider;

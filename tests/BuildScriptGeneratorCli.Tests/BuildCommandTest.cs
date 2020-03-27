@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script,
-                    new TestPlatformDetectorUsingLangName(
+                    new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
                 scriptOnly: false);
@@ -336,7 +336,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     services.RemoveAll<IPlatformDetector>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IPlatformDetector>(
-                            new TestPlatformDetectorUsingLangName(
+                            new TestPlatformDetectorUsingPlatformName(
                                 detectedPlatformName: "test",
                                 detectedPlatformVersion: "1.0.0")));
                     services.RemoveAll<IProgrammingPlatform>();

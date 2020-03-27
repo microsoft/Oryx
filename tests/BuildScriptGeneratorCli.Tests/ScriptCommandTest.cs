@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent,
-                    new TestPlatformDetectorUsingLangName(
+                    new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContent = "script content only";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContent,
-                    new TestPlatformDetectorUsingLangName(
+                    new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF,
-                    new TestPlatformDetectorUsingLangName(
+                    new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             const string scriptContentWithCRLF = "#!/bin/bash\r\necho Hello\r\necho World\r\n";
             var serviceProvider = CreateServiceProvider(
                 new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, scriptContentWithCRLF,
-                    new TestPlatformDetectorUsingLangName(
+                    new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
                 scriptOnly: true);

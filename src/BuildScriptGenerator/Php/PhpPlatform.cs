@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpScriptGeneratorOptions _phpScriptGeneratorOptions;
         private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
-        private readonly PhpLanguageDetector _detector;
+        private readonly PhpPlatformDetector _detector;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhpPlatform"/> class.
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
             IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
-            PhpLanguageDetector detector)
+            PhpPlatformDetector detector)
         {
             _phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
             _phpVersionProvider = phpVersionProvider;

@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
-    public class DotNetCoreLanguageDetectorTest
+    public class DotNetCorePlatformDetectorTest
     {
         private const string ProjectFileWithNoTargetFramework = @"
         <Project Sdk=""Microsoft.NET.Sdk.Web"">
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Arrange
             var sourceRepo = new Mock<ISourceRepo>();
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCoreLanguageDetector(
+            var detector = CreateDotNetCorePlatformDetector(
                 supportedVersions: new Dictionary<string, string>
                 {
                     {"2.1.14", "2.1.100" },
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithNoTargetFramework);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCoreLanguageDetector(
+            var detector = CreateDotNetCorePlatformDetector(
                 supportedVersions: new Dictionary<string, string>
                 {
                     {"2.1.14", "2.1.100" },
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("netcoreapp2.2", "2.2.8")]
         [InlineData("netcoreapp3.0", "3.0.2")]
         [InlineData("netcoreapp3.1", "3.1.2")]
-        public void Detect_ReturnsExpectedMaximumSatisfyingLanguageVersion_ForTargetFrameworkVersions(
+        public void Detect_ReturnsExpectedMaximumSatisfyingPlatformVersion_ForTargetFrameworkVersions(
             string netCoreAppVersion,
             string expectedSdkVersion)
         {
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCoreLanguageDetector(
+            var detector = CreateDotNetCorePlatformDetector(
                 supportedVersions: new Dictionary<string, string>
                 {
                     {"1.0.14", "1.1.100" },
@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Detect_ReturnsExpectedLanguageVersion_WhenProjectFileHasMultiplePropertyGroups()
+        public void Detect_ReturnsExpectedPlatformVersion_WhenProjectFileHasMultiplePropertyGroups()
         {
             // Arrange
             var projectFile = "test.csproj";
@@ -168,7 +168,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithMultipleProperties);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCoreLanguageDetector(
+            var detector = CreateDotNetCorePlatformDetector(
                 supportedVersions: new Dictionary<string, string>
                 {
                     {"2.1.14", "2.1.100" },
@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCoreLanguageDetector(
+            var detector = CreateDotNetCorePlatformDetector(
                 supportedVersions: new Dictionary<string, string>
                 {
                     {"2.2.7", "2.2.100" },
@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(ProjectFileWithTargetFrameworkPlaceHolder.Replace("#TargetFramework#", "netcoreapp2.1"));
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCoreLanguageDetector(
+            var detector = CreateDotNetCorePlatformDetector(
                 supportedVersions: new Dictionary<string, string>
                 {
                     {"2.2.7", "2.2.100" },
@@ -256,19 +256,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             };
         }
 
-        private DotNetCoreLanguageDetector CreateDotNetCoreLanguageDetector(
+        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(
             Dictionary<string, string> supportedVersions,
             string defaultVersion,
             string projectFile)
         {
-            return CreateDotNetCoreLanguageDetector(
+            return CreateDotNetCorePlatformDetector(
                 supportedVersions,
                 defaultVersion,
                 projectFile,
                 new TestEnvironment());
         }
 
-        private DotNetCoreLanguageDetector CreateDotNetCoreLanguageDetector(
+        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(
             Dictionary<string, string> supportedVersions,
             string defaultVersion,
             string projectFile,
@@ -278,11 +278,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var options = new DotNetCoreScriptGeneratorOptions();
             optionsSetup.Configure(options);
 
-            return new DotNetCoreLanguageDetector(
+            return new DotNetCorePlatformDetector(
                 new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),
                 Options.Create(options),
                 new TestProjectFileProvider(projectFile),
-                NullLogger<DotNetCoreLanguageDetector>.Instance);
+                NullLogger<DotNetCorePlatformDetector>.Instance);
         }
 
         private class TestProjectFileProvider : DefaultProjectFileProvider

@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestPlatformDetectorUsingLangName(
+            var detector = new TestPlatformDetectorUsingPlatformName(
                 detectedPlatformName: platformName,
                 detectedPlatformVersion: platformVersion);
             var platform = new TestProgrammingPlatform(
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestPlatformDetectorUsingLangName(
+            var detector = new TestPlatformDetectorUsingPlatformName(
                 detectedPlatformName: platformName,
                 detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestPlatformDetectorUsingLangName(
+            var detector = new TestPlatformDetectorUsingPlatformName(
                 detectedPlatformName: detectedPlatformName,
                 detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestPlatformDetectorUsingLangName(
+            var detector = new TestPlatformDetectorUsingPlatformName(
                 detectedPlatformName: platformName,
                 detectedPlatformVersion: platformVersion);
             var platform = new TestProgrammingPlatform(
@@ -192,7 +192,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new[] { platformVersion },
                 detector: detector);
 
-            var runtimeDetector = new TestPlatformDetectorUsingLangName(
+            var runtimeDetector = new TestPlatformDetectorUsingPlatformName(
                 detectedPlatformName: runtimePlatformName,
                 detectedPlatformVersion: runtimePlatformVersion);
             var runtimePlatform = new TestProgrammingPlatform(
@@ -241,9 +241,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 NullLogger<DefaultDockerfileGenerator>.Instance);
         }
 
-        private TestPlatformDetectorUsingLangName CreateTestLanguageDetector(string name, string version)
+        private TestPlatformDetectorUsingPlatformName CreateTestLanguageDetector(string name, string version)
         {
-            return new TestPlatformDetectorUsingLangName(name, version);
+            return new TestPlatformDetectorUsingPlatformName(name, version);
         }
 
         private string ConvertToRuntimeName(string platformName)
