@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {NodeConstants.NodeJsName} --platform-version {version}";
+                $"--platform {NodeConstants.PlatformName} --platform-version {version}";
             var script = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .SetEnvironmentVariable(

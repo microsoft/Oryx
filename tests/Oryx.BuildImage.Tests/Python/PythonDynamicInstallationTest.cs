@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -38,21 +37,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string imageName)
         {
-           // Arrange
-           var version = "3.8.1";
-           var appName = "flask-app";
-           var volume = CreateSampleAppVolume(appName);
-           var appDir = volume.ContainerDir;
-           var appOutputDir = "/tmp/app-output";
-           var script = new ShellScriptBuilder()
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                   SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                   SdkStorageConstants.DevSdkStorageBaseUrl)
-               .AddBuildCommand(
-               $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
-               .ToString();
+            // Arrange
+            var version = "3.8.1";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                 .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
+                .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var buildCmd = $"{appDir} --platform {PythonConstants.PythonName} --platform-version {version} -o {appOutputDir}";
+            var buildCmd = $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}";
             var script = new ShellScriptBuilder()
                  .AddCommand(GetSnippetToCleanUpExistingInstallation())
                  .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())

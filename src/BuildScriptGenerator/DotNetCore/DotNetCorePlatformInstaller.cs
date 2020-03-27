@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var dirToInstall =
                 $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/sdks/{sdkVersion}";
             var sentinelFileDir =
-                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.LanguageName}/runtimes/{runtimeVersion}";
+                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/runtimes/{runtimeVersion}";
             var sdkInstallerScript = GetInstallerScriptSnippet(
                 DotNetCoreConstants.PlatformName,
                 sdkVersion,

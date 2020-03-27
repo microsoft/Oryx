@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {DotNetCoreConstants.LanguageName} --platform-version {runtimeVersion}";
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
