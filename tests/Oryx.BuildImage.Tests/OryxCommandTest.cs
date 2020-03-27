@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var script = new ShellScriptBuilder()
                .AddCommand("mkdir /tmp/app")
-               .AddCommand("oryx build /tmp/app -o /tmp/out --platform {DotNetCoreConstants.PlatformName} --platform-version 0.0")
+               .AddCommand($"oryx build /tmp/app -o /tmp/out --platform {DotNetCoreConstants.PlatformName} --platform-version 0.0")
                .ToString();
 
             // Act
