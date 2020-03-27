@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", dotNetCoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotNetCoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

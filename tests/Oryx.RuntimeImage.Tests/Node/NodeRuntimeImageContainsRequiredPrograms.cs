@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var expectedAppInsightsVersion = string.Concat("applicationinsights@", NodeVersions.NodeAppInsightsSdkVersion);
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {

@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "TRUE") },
                 ContainerPort,
                 "/bin/sh",
@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(connectionString, "asdasda"), new EnvironmentVariable(aIEnabled, "true") },
                 ContainerPort,
                 "/bin/sh",
@@ -162,7 +162,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "disabled") },
                 ContainerPort,
                 "/bin/sh",
@@ -213,7 +213,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(connectionString, "asdasda"), new EnvironmentVariable(aIEnabled, "") },
                 ContainerPort,
                 "/bin/sh",
@@ -265,7 +265,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",

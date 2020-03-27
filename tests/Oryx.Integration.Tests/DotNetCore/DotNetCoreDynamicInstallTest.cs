@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", "dynamic"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -302,7 +302,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -344,7 +344,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -381,7 +381,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 volume,
                  "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -418,7 +418,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -459,7 +459,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -500,7 +500,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -543,7 +543,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -581,7 +581,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestBuildImage(),
+                runtimeImageName: _imageHelper.GetBuildImage(),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -625,7 +625,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestBuildImage(),
+                runtimeImageName: _imageHelper.GetBuildImage(),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -667,7 +667,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestBuildImage(),
+                runtimeImageName: _imageHelper.GetBuildImage(),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -707,7 +707,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "12"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -747,7 +747,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "12"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

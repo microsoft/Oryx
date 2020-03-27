@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", "2.1"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "2.1"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", "1.1"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "1.1"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -224,7 +224,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                _imageHelper.GetTestRuntimeImage("dotnetcore", "3.0"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "3.0"),
                 _output,
                 new List<DockerVolume>() { volume },
                 environmentVariables: null,
@@ -273,7 +273,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -317,7 +317,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetTestRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

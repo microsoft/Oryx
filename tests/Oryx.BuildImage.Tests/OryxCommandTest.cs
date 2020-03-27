@@ -254,7 +254,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(_imageHelper.GetTestCliImage(), "/bin/bash", "-c", script);
+            var result = _dockerCli.Run(_imageHelper.GetCliImage(), "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(

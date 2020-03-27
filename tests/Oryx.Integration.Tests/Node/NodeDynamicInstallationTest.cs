@@ -55,14 +55,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetSlimBuildImage(),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -108,14 +108,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetSlimBuildImage(),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
