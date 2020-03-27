@@ -5,7 +5,7 @@
 
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -41,8 +41,54 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
-                $"{appDir} -i /tmp/int -o {appOutputDir} --platform dotnet --platform-version {runtimeVersion}")
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {DotNetCoreConstants.LanguageName} --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, runtimeVersion), result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
+        {
+            // Arrange
+            var appName = "NetCoreApp31.MvcApp";
+            var runtimeVersion = "3.1.2"; //NOTE: use the full version so that we know the install directory path
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/dotnet/runtimes/{runtimeVersion}";
+            var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {DotNetCoreConstants.LanguageName} --platform-version {runtimeVersion}";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand(buildCmd)
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck(sentinelFile)
+                .AddCommand($"rm -f {sentinelFile}")
+                .AddBuildCommand(buildCmd)
+                .AddFileExistsCheck(sentinelFile)
                 .ToString();
 
             // Act

@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -70,23 +72,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"rm -f {tarFile}")
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
-                .AppendLine("echo");
+                .AppendLine("echo")
+                // Write out a sentinel file to indicate downlaod and extraction was successful
+                .AppendLine($"echo > {versionDirInTemp}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return snippet.ToString();
         }
 
-        protected bool IsVersionInstalled(string lookupVersion, string[] installationDirs)
+        protected bool IsVersionInstalled(string lookupVersion, string builtInDir, string dynamicInstallDir)
         {
-            foreach (var installationDir in installationDirs)
+            var versionsFromDisk = VersionProviderHelper.GetVersionsFromDirectory(builtInDir);
+            if (HasVersion(versionsFromDisk))
             {
-                var versionsFromDisk = VersionProviderHelper.GetVersionsFromDirectory(installationDir);
-                if (versionsFromDisk.Any(onDiskVersion
-                    => string.Equals(lookupVersion, onDiskVersion, StringComparison.OrdinalIgnoreCase)))
+                return true;
+            }
+
+            versionsFromDisk = VersionProviderHelper.GetVersionsFromDirectory(dynamicInstallDir);
+            if (HasVersion(versionsFromDisk))
+            {
+                // Only if there is a sentinel file we want to indicate that a version exists.
+                // This is because a user could kill a build midway which might leave the download of an SDK
+                // in a corrupt state.
+                var sentinelFile = Path.Combine(
+                    dynamicInstallDir,
+                    lookupVersion,
+                    SdkStorageConstants.SdkDownloadSentinelFileName);
+
+                if (File.Exists(sentinelFile))
                 {
                     return true;
                 }
             }
 
             return false;
+
+            bool HasVersion(IEnumerable<string> versionsOnDisk)
+            {
+                return versionsOnDisk.Any(onDiskVersion
+                    => string.Equals(lookupVersion, onDiskVersion, StringComparison.OrdinalIgnoreCase));
+            }
         }
 
         private string GetPlatformBinariesStorageBaseUrl()

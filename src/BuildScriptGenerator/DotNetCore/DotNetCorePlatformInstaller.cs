@@ -5,7 +5,7 @@
 
 using System.Text;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -28,6 +28,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var sdkVersion = versionMap[runtimeVersion];
             var dirToInstall =
                 $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.LanguageName}/sdks/{sdkVersion}";
+            var sentinelFileDir =
+                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.LanguageName}/runtimes/{runtimeVersion}";
             var sdkInstallerScript = GetInstallerScriptSnippet(
                 DotNetCoreConstants.LanguageName,
                 sdkVersion,
@@ -39,7 +41,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             scriptBuilder
             .AppendLine(sdkInstallerScript)
             .AppendLine($"mkdir -p {dotnetDir}/runtimes/{runtimeVersion}")
-            .AppendLine($"echo '{sdkVersion}' > {dotnetDir}/runtimes/{runtimeVersion}/sdkVersion.txt");
+            .AppendLine($"echo '{sdkVersion}' > {dotnetDir}/runtimes/{runtimeVersion}/sdkVersion.txt")
+            // Write out a sentinel file to indicate downlaod and extraction was successful
+            .AppendLine($"echo > {sentinelFileDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return scriptBuilder.ToString();
         }
 
@@ -47,11 +51,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             return IsVersionInstalled(
                 version,
-                installationDirs: new[]
-                {
-                    DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir,
-                    $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/runtimes"
-                });
+                builtInDir: DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir,
+                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/runtimes");
         }
     }
 }

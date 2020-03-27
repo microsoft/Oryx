@@ -11,5 +11,6 @@ namespace Microsoft.Oryx.Common
         public const string DefaultVersionFileName = "defaultVersion.txt";
         public const string VersionsToBuildFileName = "versionsToBuild.txt";
         public const string ContainerMetadataUrlFormat = "{0}/{1}?restype=container&comp=list&include=metadata";
+        public const string SdkDownloadSentinelFileName = ".oryx-sdkdownload-sentinel";
     }
 }
