@@ -5,7 +5,6 @@
 
 using System.Text;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
