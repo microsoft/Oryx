@@ -23,8 +23,3 @@ func GetBooleanEnvironmentVariable(key string) bool {
 	}
 	return result
 }
-
-func GetEnvironmentVariable(key string) string {
-	value, ok := os.LookupEnv(key)
-	return value
-}

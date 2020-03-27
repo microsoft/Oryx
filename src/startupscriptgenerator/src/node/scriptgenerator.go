@@ -76,7 +76,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("export NODE_PATH=$(npm root --quiet -g):$NODE_PATH\n")
 
 	common.SetupPreRunScript(&scriptBuilder)
-	
+
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 

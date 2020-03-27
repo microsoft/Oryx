@@ -57,7 +57,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
 
 	common.SetupPreRunScript(&scriptBuilder)
-	
+
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
