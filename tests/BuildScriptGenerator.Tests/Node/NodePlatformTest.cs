@@ -168,7 +168,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
 
             var versionProvider = new TestNodeVersionProvider();
-            var detector = new TestNodeLanguageDetector(
+            var detector = new TestNodePlatformDetector(
                 versionProvider,
                 Options.Create(nodeScriptGeneratorOptions),
                 NullLogger<NodePlatformDetector>.Instance,
@@ -199,7 +199,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
-            var detector = new TestNodeLanguageDetector(
+            var detector = new TestNodePlatformDetector(
                 versionProvider,
                 Options.Create(nodeScriptGeneratorOptions),
                 NullLogger<NodePlatformDetector>.Instance,
@@ -271,9 +271,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             }
         }
 
-        private class TestNodeLanguageDetector : NodePlatformDetector
+        private class TestNodePlatformDetector : NodePlatformDetector
         {
-            public TestNodeLanguageDetector(
+            public TestNodePlatformDetector(
                 INodeVersionProvider nodeVersionProvider,
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
                 ILogger<NodePlatformDetector> logger,
