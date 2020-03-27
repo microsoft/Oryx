@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} " +
+                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
                 $"-p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
                .ToString();
             var runScript = new ShellScriptBuilder()
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var buildCommand = $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} " +
+            var buildCommand = $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
                 $"-p {NodePlatform.PruneDevDependenciesPropertyKey}=true";
             var buildScript = new ShellScriptBuilder()
                .AddCommand(buildCommand)

@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -32,7 +33,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
                 .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -81,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var manifestDir = $"{appDir}/myoutputdir/manifestDir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -o {appOutputDir} --platform dotnet --language-version {dotnetcoreVersion} " +
+                $"oryx build {appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} " +
                 $"--manifest-dir {manifestDir}")
                 .AddFileExistsCheck($"{manifestDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
@@ -126,7 +127,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform dotnet --language-version {dotnetcoreVersion}")
+                .AddCommand($"oryx build {appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 // NOTE: Delete the manifest file explicitly
                 .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -174,7 +175,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 // NOTE: Make sure the current directory is the output directory
@@ -219,7 +220,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -281,7 +282,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var tempAppDir = "/tmp/app";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {tempAppDir}")
@@ -329,7 +330,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var tempAppDir = "/tmp/app";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {tempAppDir}")
@@ -469,7 +470,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}" +
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}" +
                 $" -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
@@ -514,7 +515,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} --platform dotnet --language-version {dotnetcoreVersion} -o {appOutputDir}" +
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}" +
                 $" -p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()

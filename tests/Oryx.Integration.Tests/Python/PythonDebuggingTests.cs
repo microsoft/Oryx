@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol;
 using Microsoft.Oryx.Tests.Common;
@@ -34,7 +35,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var scriptGenDebugPortArg = debugPort.HasValue ? $"-debugPort {debugPort.Value}" : string.Empty;
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appVolume.ContainerDir} --platform python --platform-version {pythonVersion} --debug")
+               .AddCommand($"oryx build {appVolume.ContainerDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion} --debug")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appVolume.ContainerDir} -bindPort {ContainerPort}" +

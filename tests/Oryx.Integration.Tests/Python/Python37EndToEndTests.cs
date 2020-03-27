@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System;
@@ -32,7 +33,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform python --language-version {pythonVersion}")
+               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -65,7 +66,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform python --platform-version 3.7")
+                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -107,7 +108,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform python --platform-version 3.7")
+                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -157,7 +158,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform python --platform-version 3.7" +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version 3.7" +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
@@ -210,7 +211,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var manifestDir = manifestDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform python --platform-version 3.7" +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version 3.7" +
                 $" --manifest-dir {manifestDir} " +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv=tar-gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
@@ -255,7 +256,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform python --platform-version 3.7")
+               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
@@ -312,7 +313,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform python --language-version 3.7 " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --language-version 3.7 " +
                 $"-p virtualenv_name={virtualEnvName}")
                 .ToString();
 

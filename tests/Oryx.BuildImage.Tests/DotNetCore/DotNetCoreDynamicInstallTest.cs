@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -42,7 +43,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {DotNetCoreConstants.LanguageName} --platform-version {runtimeVersion}")
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
