@@ -3,12 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,10 +36,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT",ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -53,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -77,7 +78,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -96,7 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -117,7 +118,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
@@ -143,7 +144,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -162,7 +163,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -183,7 +184,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
@@ -209,7 +210,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -229,7 +230,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -250,7 +251,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
@@ -276,7 +277,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -296,7 +297,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -317,7 +318,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
@@ -355,7 +356,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -369,7 +370,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -396,7 +397,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: new List<EnvironmentVariable>(),
@@ -439,7 +440,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -453,7 +454,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -480,7 +481,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: new List<EnvironmentVariable>(),
@@ -522,7 +523,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -536,7 +537,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -562,7 +563,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -580,7 +581,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -604,7 +605,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -623,7 +624,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -653,7 +654,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
@@ -679,7 +680,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", ContainerPort.ToString())
@@ -699,7 +700,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -721,7 +722,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
@@ -759,7 +760,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -773,7 +774,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -803,7 +804,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
@@ -841,7 +842,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -855,7 +856,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -884,7 +885,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
@@ -923,7 +924,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -937,7 +938,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -967,7 +968,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
@@ -1007,7 +1008,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -1021,7 +1022,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -1051,7 +1052,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
@@ -1089,7 +1090,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
@@ -1103,7 +1104,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -13,29 +13,26 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotNetCoreLanguageDetector : ILanguageDetector
+    internal class DotNetCorePlatformDetector : IPlatformDetector
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _options;
-        DefaultProjectFileProvider _projectFileProvider;
-        private readonly ILogger<DotNetCoreLanguageDetector> _logger;
-        private readonly IStandardOutputWriter _writer;
+        private readonly DefaultProjectFileProvider _projectFileProvider;
+        private readonly ILogger<DotNetCorePlatformDetector> _logger;
 
-        public DotNetCoreLanguageDetector(
+        public DotNetCorePlatformDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
             DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCoreLanguageDetector> logger,
-            IStandardOutputWriter writer)
+            ILogger<DotNetCorePlatformDetector> logger)
         {
             _versionProvider = versionProvider;
             _options = options.Value;
             _projectFileProvider = projectFileProvider;
             _logger = logger;
-            _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
@@ -58,11 +55,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var version = GetVersion(context, targetFramework);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = DotNetCoreConstants.LanguageName,
-                LanguageVersion = version,
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = version,
             };
+        }
+
+        internal string DetermineRuntimeVersion(string targetFramework)
+        {
+            // Ex: "netcoreapp2.2" => "2.2"
+            targetFramework = targetFramework.Replace(
+                "netcoreapp",
+                string.Empty,
+                StringComparison.OrdinalIgnoreCase);
+
+            // Ex: "2.2" => 2.2
+            if (decimal.TryParse(targetFramework, out var val))
+            {
+                return val.ToString();
+            }
+
+            return null;
         }
 
         private string GetVersion(RepositoryContext context, string targetFramework)
@@ -91,23 +105,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return _versionProvider.GetDefaultRuntimeVersion();
         }
 
-        internal string DetermineRuntimeVersion(string targetFramework)
-        {
-            // Ex: "netcoreapp2.2" => "2.2"
-            targetFramework = targetFramework.Replace(
-                "netcoreapp",
-                string.Empty,
-                StringComparison.OrdinalIgnoreCase);
-
-            // Ex: "2.2" => 2.2
-            if (decimal.TryParse(targetFramework, out var val))
-            {
-                return val.ToString();
-            }
-
-            return null;
-        }
-
         private string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
         {
             var versionMap = _versionProvider.GetSupportedVersions();
@@ -118,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exception = new UnsupportedVersionException(
-                    DotNetCoreConstants.LanguageName,
+                    DotNetCoreConstants.PlatformName,
                     runtimeVersion,
                     versionMap.Keys);
                 _logger.LogError(

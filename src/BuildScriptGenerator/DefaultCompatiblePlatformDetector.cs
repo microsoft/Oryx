@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");
                     return false;
                 }
-                else if (string.IsNullOrEmpty(detectionResult.LanguageVersion))
+                else if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
                 {
                     _logger.LogError($"Platform '{platformName}' was detected in the given repository, but " +
                                      $"no compatible version was found.");
@@ -133,8 +133,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 _logger.LogDebug($"No platform version found, " +
-                                 $"setting to the detected version '{detectionResult.LanguageVersion}'.");
-                platformVersion = detectionResult.LanguageVersion;
+                                 $"setting to the detected version '{detectionResult.PlatformVersion}'.");
+                platformVersion = detectionResult.PlatformVersion;
             }
 
             _logger.LogDebug($"Detected platform '{platformName}' with version '{platformVersion}'.");

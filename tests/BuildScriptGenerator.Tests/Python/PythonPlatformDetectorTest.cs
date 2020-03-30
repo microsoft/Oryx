@@ -12,11 +12,11 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 {
-    public class PythonLanguageDetectorTest : IClassFixture<TestTempDirTestFixture>
+    public class PythonPlatformDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public PythonLanguageDetectorTest(TestTempDirTestFixture testFixture)
+        public PythonPlatformDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
         }
@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var version = "100.100.100";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { version },
                 defaultVersion: version);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var version = "100.100.100";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { version },
                 defaultVersion: version);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var version = "100.100.100";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { version },
                 defaultVersion: version);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var expectedVersion = "1000.1000.1000";
             var defaultVersion = "1000.1000.1001";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { defaultVersion, expectedVersion },
                 defaultVersion: defaultVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -103,8 +103,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var unsupportedVersion = "100.100.100";
             var supportedVersion = "1.2.3";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { supportedVersion },
                 defaultVersion: supportedVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var supportedVersion = "1.2.3";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { supportedVersion },
                 defaultVersion: supportedVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var runtimeTxtVersion = "1";
             var expectedVersion = "1.2.3";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { "100.100.100", "1.2.1", expectedVersion },
                 defaultVersion: expectedVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -174,8 +174,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var runtimeTxtVersion = "1.2";
             var expectedVersion = "1.2.3";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { "100.100.100", "1.2.1r", expectedVersion },
                 defaultVersion: expectedVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -198,8 +198,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -207,7 +207,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var expectedVersion = "1.2.3";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { "100.100.100", expectedVersion },
                 defaultVersion: expectedVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -221,8 +221,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var expectedVersion = "1.2.3";
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { "100.100.100", "2.5.0", expectedVersion },
                 defaultVersion: expectedVersion);
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
@@ -244,8 +244,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -256,7 +256,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var runtimeTextFileVersion = "2.5.0";
             var environment = new TestEnvironment();
             environment.Variables[PythonConstants.PythonVersionEnvVarName] = expectedVersion;
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { "100.100.100", runtimeTextFileVersion, expectedVersion },
                 defaultVersion: expectedVersion,
                 environment);
@@ -272,8 +272,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Fact]
@@ -282,7 +282,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Arrange
             var expectedVersion = "2.5.0";
             var environment = new TestEnvironment();
-            var detector = CreatePythonLanguageDetector(
+            var detector = CreatePythonPlatformDetector(
                 supportedPythonVersions: new[] { "100.100.100", expectedVersion, "1.2.3" },
                 defaultVersion: expectedVersion,
                 environment);
@@ -298,8 +298,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Language);
-            Assert.Equal(expectedVersion, result.LanguageVersion);
+            Assert.Equal("python", result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
@@ -310,13 +310,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             };
         }
 
-        private PythonLanguageDetector CreatePythonLanguageDetector(
+        private PythonPlatformDetector CreatePythonPlatformDetector(
             string[] supportedPythonVersions, string defaultVersion)
         {
-            return CreatePythonLanguageDetector(supportedPythonVersions, defaultVersion, new TestEnvironment());
+            return CreatePythonPlatformDetector(supportedPythonVersions, defaultVersion, new TestEnvironment());
         }
 
-        private PythonLanguageDetector CreatePythonLanguageDetector(
+        private PythonPlatformDetector CreatePythonPlatformDetector(
             string[] supportedPythonVersions,
             string defaultVersion,
             IEnvironment environment)
@@ -325,10 +325,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var options = new PythonScriptGeneratorOptions();
             optionsSetup.Configure(options);
 
-            return new PythonLanguageDetector(
+            return new PythonPlatformDetector(
                 new TestPythonVersionProvider(supportedPythonVersions, defaultVersion),
                 Options.Create(options),
-                NullLogger<PythonLanguageDetector>.Instance,
+                NullLogger<PythonPlatformDetector>.Instance,
                 new DefaultStandardOutputWriter());
         }
 

@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { PythonConstants.PythonName, PythonVersions.Python27Version } });
+                new Dictionary<string, string> { { PythonConstants.PlatformName, PythonVersions.Python27Version } });
 
             // Assert
             Assert.Single(messages);
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Act
             var ltsVer = PythonConstants.PythonLtsVersion;
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { PythonConstants.PythonName, ltsVer } });
+                new Dictionary<string, string> { { PythonConstants.PlatformName, ltsVer } });
 
             // Assert
             Assert.Empty(messages);
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Act
             var messages = checker.CheckToolVersions(
-                new Dictionary<string, string> { { PythonConstants.PythonName, PythonVersions.Python38Version } });
+                new Dictionary<string, string> { { PythonConstants.PlatformName, PythonVersions.Python38Version } });
 
             // Assert
             Assert.Empty(messages);

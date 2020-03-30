@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var imageTestHelper = new ImageTestHelper();
                 var data = new TheoryData<string>();
-                data.Add(imageTestHelper.GetTestSlimBuildImage());
+                data.Add(imageTestHelper.GetSlimBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
             }
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PythonName} --platform-version {version} -o {appOutputDir}")
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
 
             // Act
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var buildCmd = $"{appDir} --platform {PythonConstants.PythonName} --platform-version {version} -o {appOutputDir}";
+            var buildCmd = $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}";
             var script = new ShellScriptBuilder()
                  .AddCommand(GetSnippetToCleanUpExistingInstallation())
                  .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())

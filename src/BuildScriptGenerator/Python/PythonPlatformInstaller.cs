@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public override string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(PythonConstants.PythonName, version);
+            return GetInstallerScriptSnippet(PythonConstants.PlatformName, version);
         }
 
         public override bool IsVersionAlreadyInstalled(string version)

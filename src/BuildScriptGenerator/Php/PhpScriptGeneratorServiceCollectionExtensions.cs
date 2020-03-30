@@ -14,11 +14,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static IServiceCollection AddPhpScriptGeneratorServices(this IServiceCollection services)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILanguageDetector, PhpLanguageDetector>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
-            services.AddScoped<PhpLanguageDetector>();
+            services.AddSingleton<PhpPlatformDetector>();
             return services;
         }
     }

@@ -6,12 +6,12 @@
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Represents the result of a <see cref="ILanguageDetector.Detect(ISourceRepo)"/> operation.
+    /// Represents the result of a <see cref="IPlatformDetector.Detect(ISourceRepo)"/> operation.
     /// </summary>
-    public class LanguageDetectorResult
+    public class PlatformDetectorResult
     {
-        public string Language { get; set; }
+        public string Platform { get; set; }
 
-        public string LanguageVersion { get; set; }
+        public string PlatformVersion { get; set; }
     }
 }

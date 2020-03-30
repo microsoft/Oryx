@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
-        private readonly NodeLanguageDetector _detector;
+        private readonly NodePlatformDetector _detector;
         private readonly IEnvironment _environment;
         private readonly NodePlatformInstaller _platformInstaller;
 
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatform> logger,
-            NodeLanguageDetector detector,
+            NodePlatformDetector detector,
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller)
         {
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         /// <inheritdoc/>
-        public string Name => NodeConstants.NodeJsName;
+        public string Name => NodeConstants.PlatformName;
 
         /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         /// <inheritdoc/>
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -220,7 +220,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 if (!string.IsNullOrWhiteSpace(customRegistryUrl))
                 {
                     // Write the custom registry to the build manifest
-                    manifestFileProperties[$"{NodeConstants.NodeJsName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
+                    manifestFileProperties[$"{NodeConstants.PlatformName}_{RegistryUrlPropertyKey}"] = customRegistryUrl;
                 }
             }
 

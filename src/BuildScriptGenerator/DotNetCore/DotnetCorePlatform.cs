@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
-        private readonly DotNetCoreLanguageDetector _detector;
+        private readonly DotNetCorePlatformDetector _detector;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
         private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly IEnvironment _environment;
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCorePlatform> logger,
-            DotNetCoreLanguageDetector detector,
+            DotNetCorePlatformDetector detector,
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             IEnvironment environment,
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         }
 
         /// <inheritdoc/>
-        public string Name => DotNetCoreConstants.LanguageName;
+        public string Name => DotNetCoreConstants.PlatformName;
 
         /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions
@@ -73,13 +73,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             get
             {
                 var versionMap = _versionProvider.GetSupportedVersions();
+
                 // Map is from runtime version => sdk version
                 return versionMap.Keys;
             }
         }
 
         /// <inheritdoc/>
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }

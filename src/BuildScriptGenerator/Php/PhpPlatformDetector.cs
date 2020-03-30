@@ -12,17 +12,17 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    internal class PhpLanguageDetector : ILanguageDetector
+    internal class PhpPlatformDetector : IPlatformDetector
     {
         private readonly PhpScriptGeneratorOptions _options;
         private readonly IPhpVersionProvider _versionProvider;
-        private readonly ILogger<PhpLanguageDetector> _logger;
+        private readonly ILogger<PhpPlatformDetector> _logger;
         private readonly IStandardOutputWriter _writer;
 
-        public PhpLanguageDetector(
+        public PhpPlatformDetector(
             IOptions<PhpScriptGeneratorOptions> options,
             IPhpVersionProvider versionProvider,
-            ILogger<PhpLanguageDetector> logger,
+            ILogger<PhpPlatformDetector> logger,
             IStandardOutputWriter writer)
         {
             _options = options.Value;
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             _writer = writer;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
@@ -43,10 +43,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var version = GetVersion(context);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = PhpConstants.PhpName,
-                LanguageVersion = version,
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = version,
             };
         }
 
@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
-                    PhpConstants.PhpName,
+                    PhpConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
                 _logger.LogError(

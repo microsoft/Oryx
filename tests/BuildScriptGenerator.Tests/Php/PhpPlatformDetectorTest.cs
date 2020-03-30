@@ -13,11 +13,11 @@ using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 {
-    public class PhpLanguageDetectorTest : IClassFixture<TestTempDirTestFixture>
+    public class PhpPlatformDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public PhpLanguageDetectorTest(TestTempDirTestFixture testFixture)
+        public PhpPlatformDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
         }
@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
+            var detector = CreatePhpPlatformDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo(); // No files in source repo
             var context = CreateContext(repo);
 
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_ReutrnsNull_WhenComposerFileDoesNotExist()
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
+            var detector = CreatePhpPlatformDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
             repo.AddFile("foo.php content", "foo.php");
             var context = CreateContext(repo);
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_Throws_WhenUnsupportedPhpVersion_FoundInComposerFile()
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
+            var detector = CreatePhpPlatformDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
             var version = "0";
             repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Arrange
             var environment = new TestEnvironment();
             environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
-            var detector = CreatePhpLanguageDetector(
+            var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0", "100.100.100" },
                 defaultVersion: "7.3.14",
                 environment);
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("100.100.100", result.LanguageVersion);
+            Assert.Equal("100.100.100", result.PlatformVersion);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Arrange
             var environment = new TestEnvironment();
             environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = "7.2.5";
-            var detector = CreatePhpLanguageDetector(
+            var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
                 environment);
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("7.2.5", result.LanguageVersion);
+            Assert.Equal("7.2.5", result.PlatformVersion);
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var environment = new TestEnvironment();
-            var detector = CreatePhpLanguageDetector(
+            var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
                 environment);
@@ -136,7 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("5.6.0", result.LanguageVersion);
+            Assert.Equal("5.6.0", result.PlatformVersion);
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var environment = new TestEnvironment();
-            var detector = CreatePhpLanguageDetector(
+            var detector = CreatePhpPlatformDetector(
                 supportedPhpVersions: new[] { "7.3.14", "7.2.5", "5.6.0" },
                 defaultVersion: "7.3.14",
                 environment);
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("7.3.14", result.LanguageVersion);
+            Assert.Equal("7.3.14", result.PlatformVersion);
         }
 
         [Theory]
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WithComposerFile(string composerFileContent)
         {
             // Arrange
-            var detector = CreatePhpLanguageDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
+            var detector = CreatePhpPlatformDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
             repo.AddFile(composerFileContent, PhpConstants.ComposerFileName);
             repo.AddFile("<?php echo true; ?>", "foo.php");
@@ -177,8 +177,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(PhpConstants.PhpName, result.Language);
-            Assert.Equal(PhpVersions.Php73Version, result.LanguageVersion);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(PhpVersions.Php73Version, result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
@@ -189,12 +189,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             };
         }
 
-        private PhpLanguageDetector CreatePhpLanguageDetector(string[] supportedPhpVersions)
+        private PhpPlatformDetector CreatePhpPlatformDetector(string[] supportedPhpVersions)
         {
-            return CreatePhpLanguageDetector(supportedPhpVersions, defaultVersion: null, new TestEnvironment());
+            return CreatePhpPlatformDetector(supportedPhpVersions, defaultVersion: null, new TestEnvironment());
         }
 
-        private PhpLanguageDetector CreatePhpLanguageDetector(
+        private PhpPlatformDetector CreatePhpPlatformDetector(
             string[] supportedPhpVersions, 
             string defaultVersion,
             IEnvironment environment)
@@ -203,10 +203,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var options = new PhpScriptGeneratorOptions();
             optionsSetup.Configure(options);
 
-            return new PhpLanguageDetector(
+            return new PhpPlatformDetector(
                 Options.Create(options),
                 new TestPhpVersionProvider(supportedPhpVersions, defaultVersion),
-                NullLogger<PhpLanguageDetector>.Instance,
+                NullLogger<PhpPlatformDetector>.Instance,
                 new DefaultStandardOutputWriter());
         }
 

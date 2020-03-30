@@ -34,8 +34,8 @@ namespace Microsoft.Oryx.Integration.Tests
         protected string HostSamplesDir { get; }
 
         protected async Task RunTestAsync(
-            string language,
-            string languageVersion,
+            string platformName,
+            string platformVersion,
             string samplePath,
             int containerPort = 8000,
             bool specifyBindPortFlag = true,
@@ -52,10 +52,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var script = scriptBuilder.AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = _imageHelper.GetTestRuntimeImage(language, languageVersion);
-            if (string.Equals(language, "nodejs", StringComparison.OrdinalIgnoreCase))
+            var runtimeImageName = _imageHelper.GetRuntimeImage(platformName, platformVersion);
+            if (string.Equals(platformName, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = _imageHelper.GetTestRuntimeImage("node", languageVersion);
+                runtimeImageName = _imageHelper.GetRuntimeImage("node", platformVersion);
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new List<DockerVolume> { volume },
                 buildImageName,
-                "oryx", new[] { "build", appDir, "-l", language, "--language-version", languageVersion },
+                "oryx", new[] { "build", appDir, "-l", platformName, "--language-version", platformVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),
                 containerPort,

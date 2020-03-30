@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform python --language-version 2.7")
+                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --language-version 2.7")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
@@ -45,7 +46,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "2.7"),
+                _imageHelper.GetRuntimeImage("python", "2.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -69,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform python --language-version 2.7 -p virtualenv_name={virtualEnvName}")
+                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --language-version 2.7 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
@@ -89,7 +90,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "2.7"),
+                _imageHelper.GetRuntimeImage("python", "2.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

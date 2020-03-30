@@ -6,7 +6,7 @@
 namespace Microsoft.Oryx.BuildScriptGenerator.Exceptions
 {
     /// <summary>
-    /// Supplied language is not supported
+    /// Supplied platform is not supported.
     /// </summary>
     public class UnsupportedPlatformException : InvalidUsageException
     {

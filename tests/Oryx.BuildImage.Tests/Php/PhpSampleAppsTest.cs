@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {phpVersion}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
 
             // Act
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {phpVersion}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"not running 'composer install'", result.StdOut);
                     Assert.Contains(
-                       $"{PhpConstants.PhpName}_version=\"{phpVersion}\"",
+                       $"{PhpConstants.PlatformName}_version=\"{phpVersion}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());

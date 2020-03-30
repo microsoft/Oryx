@@ -63,7 +63,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 runImage = ConvertToRuntimeName(platform.Name);
-
             }
 
             var properties = new DockerfileProperties()
@@ -113,12 +112,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private string ConvertToRuntimeName(string platformName)
         {
-            if (string.Equals(platformName, DotNetCoreConstants.LanguageName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(platformName, DotNetCoreConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
                 platformName = "dotnetcore";
             }
 
-            if (string.Equals(platformName, NodeConstants.NodeJsName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(platformName, NodeConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
                 platformName = "node";
             }

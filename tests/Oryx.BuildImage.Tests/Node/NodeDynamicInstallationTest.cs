@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestSlimBuildImage(),
+                ImageId = _imageHelper.GetSlimBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {NodeConstants.NodeJsName} --platform-version {version}";
+                $"--platform {NodeConstants.PlatformName} --platform-version {version}";
             var script = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .SetEnvironmentVariable(

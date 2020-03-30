@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
@@ -57,7 +58,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "TRUE") },
                 ContainerPort,
                 "/bin/sh",
@@ -84,7 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var connectionString = ExtVarNames.UserAppInsightsConnectionStringEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
@@ -110,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(connectionString, "asdasda"), new EnvironmentVariable(aIEnabled, "true") },
                 ContainerPort,
                 "/bin/sh",
@@ -137,7 +138,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
@@ -162,7 +163,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdasda"), new EnvironmentVariable(aIEnabled, "disabled") },
                 ContainerPort,
                 "/bin/sh",
@@ -189,7 +190,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var connectionString = ExtVarNames.UserAppInsightsConnectionStringEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
@@ -213,7 +214,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(connectionString, "asdasda"), new EnvironmentVariable(aIEnabled, "") },
                 ContainerPort,
                 "/bin/sh",
@@ -240,7 +241,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var spcifyNodeVersionCommand = "--platform nodejs --platform-version=" + nodeVersion;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var buildScript = new ShellScriptBuilder()
@@ -265,7 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",

@@ -90,7 +90,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
             // Act
             // Not using Settings.BuildImageName on purpose - so that apt-get can run as root
-            var image = _imageHelper.GetTestBuildImage();
+            var image = _imageHelper.GetBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
 
             // Assert contained file names

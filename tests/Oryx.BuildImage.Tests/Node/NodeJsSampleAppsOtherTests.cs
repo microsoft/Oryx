@@ -314,7 +314,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform nodejs --platform-version {version}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
@@ -385,7 +385,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform nodejs --platform-version 8.2.1 > {generatedScript}")
+                .AddScriptCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8.2.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -537,7 +537,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform nodejs --platform-version 6")
+                .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 6")
                 .ToString();
 
             // Act

@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                _imageHelper.GetTestRuntimeImage("php", imageTag),
+                _imageHelper.GetRuntimeImage("php", imageTag),
                 "php",
                 new[] { "--version" }
             );
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("php", imageTag),
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestRuntimeImage("php", version),
+                ImageId = _imageHelper.GetRuntimeImage("php", version),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });

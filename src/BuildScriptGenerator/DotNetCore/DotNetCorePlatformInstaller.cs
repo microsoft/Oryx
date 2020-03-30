@@ -27,14 +27,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var versionMap = _versionProvider.GetSupportedVersions();
             var sdkVersion = versionMap[runtimeVersion];
             var dirToInstall =
-                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.LanguageName}/sdks/{sdkVersion}";
+                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/sdks/{sdkVersion}";
             var sentinelFileDir =
-                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.LanguageName}/runtimes/{runtimeVersion}";
+                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/runtimes/{runtimeVersion}";
             var sdkInstallerScript = GetInstallerScriptSnippet(
-                DotNetCoreConstants.LanguageName,
+                DotNetCoreConstants.PlatformName,
                 sdkVersion,
                 dirToInstall);
-            var dotnetDir = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.LanguageName}";
+            var dotnetDir = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}";
 
             // Create the following structure so that 'benv' tool can understand it as it already does.
             var scriptBuilder = new StringBuilder();

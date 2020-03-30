@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
 
                 _versionMap = supportedVersions;
-                _defaultRuntimeVersion = GetDefaultVersion(DotNetCoreConstants.LanguageName, sdkStorageBaseUrl);
+                _defaultRuntimeVersion = GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBaseUrl);
             }
         }
     }

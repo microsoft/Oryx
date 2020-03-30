@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var virtualEnvName = "antenv";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform python --platform-version 3.7")
+                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version 3.7")
                 // App should run fine even with manifest file not present
                 .AddCommand($"rm -f {appDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileDoesNotExistCheck($"{appDir}/{FilePaths.BuildManifestFileName}")
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

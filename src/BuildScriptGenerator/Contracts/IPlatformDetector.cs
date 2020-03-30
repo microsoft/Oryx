@@ -8,14 +8,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <summary>
     /// Detects language name and version of the application in source directory.
     /// </summary>
-    public interface ILanguageDetector
+    public interface IPlatformDetector
     {
         /// <summary>
         /// Detects language name and version of the application in source directory.
         /// </summary>
         /// <param name="context">The <see cref="RepositoryContext"/>.</param>
-        /// <returns>An instance of <see cref="LanguageDetectorResult"/> if detection was
+        /// <returns>An instance of <see cref="PlatformDetectorResult"/> if detection was
         /// successful, <c>null</c> otherwise</returns>
-        LanguageDetectorResult Detect(RepositoryContext context);
+        PlatformDetectorResult Detect(RepositoryContext context);
     }
 }

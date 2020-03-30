@@ -168,10 +168,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
 
             var versionProvider = new TestNodeVersionProvider();
-            var detector = new TestNodeLanguageDetector(
+            var detector = new TestNodePlatformDetector(
                 versionProvider,
                 Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodeLanguageDetector>.Instance,
+                NullLogger<NodePlatformDetector>.Instance,
                 environment,
                 new TestStandardOutputWriter());
 
@@ -199,10 +199,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
-            var detector = new TestNodeLanguageDetector(
+            var detector = new TestNodePlatformDetector(
                 versionProvider,
                 Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodeLanguageDetector>.Instance,
+                NullLogger<NodePlatformDetector>.Instance,
                 environment,
                 new TestStandardOutputWriter());
 
@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
                 INodeVersionProvider nodeVersionProvider,
                 ILogger<NodePlatform> logger,
-                NodeLanguageDetector detector,
+                NodePlatformDetector detector,
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller)
                 : base(
@@ -271,12 +271,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             }
         }
 
-        private class TestNodeLanguageDetector : NodeLanguageDetector
+        private class TestNodePlatformDetector : NodePlatformDetector
         {
-            public TestNodeLanguageDetector(
+            public TestNodePlatformDetector(
                 INodeVersionProvider nodeVersionProvider,
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
-                ILogger<NodeLanguageDetector> logger,
+                ILogger<NodePlatformDetector> logger,
                 IEnvironment environment,
                 IStandardOutputWriter writer)
                 : base(nodeVersionProvider, nodeScriptGeneratorOptions, logger, environment, writer)
