@@ -18,10 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class SdkStorageVersionProviderBase
     {
-        private readonly BuildScriptGeneratorOptions _commonOptions;
         protected readonly IHttpClientFactory _httpClientFactory;
-        protected readonly ILogger _logger;
-        private readonly IEnvironment _environment;
+
+        private readonly BuildScriptGeneratorOptions _commonOptions;
 
         public SdkStorageVersionProviderBase(
             IOptions<BuildScriptGeneratorOptions> commonOptions,

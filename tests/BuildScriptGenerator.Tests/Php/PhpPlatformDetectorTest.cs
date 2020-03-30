@@ -186,7 +186,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private PhpPlatformDetector CreatePhpPlatformDetector(string[] supportedPhpVersions)
         {
-            return CreatePhpLanguageDetector(
+            return CreatePhpPlatformDetector(
                 supportedPhpVersions,
                 defaultVersion: null,
                 new PhpScriptGeneratorOptions());

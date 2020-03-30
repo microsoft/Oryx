@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 _logger.LogDebug($"No platform version found, " +
                                  $"setting to the detected version '{detectionResult.PlatformVersion}'.");
-                detectedPlatformVersion = detectionResult.LanguageVersion;
+                detectedPlatformVersion = detectionResult.PlatformVersion;
 
                 platformResult = Tuple.Create(selectedPlatform, detectedPlatformVersion);
                 _logger.LogDebug($"Detected platform '{platformName}' with version '{detectedPlatformVersion}'.");

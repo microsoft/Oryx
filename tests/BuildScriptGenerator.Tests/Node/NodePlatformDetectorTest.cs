@@ -549,7 +549,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             string defaultVersion,
             NodeScriptGeneratorOptions nodeScriptGeneratorOptions)
         {
-            return CreateNodeLanguageDetector(
+            return CreateNodePlatformDetector(
                 supportedNodeVersions,
                 defaultVersion,
                 new TestEnvironment(),
