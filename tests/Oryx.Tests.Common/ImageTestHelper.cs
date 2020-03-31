@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
         private const string _gitHubActions = "github-actions";
+        private const string _vso = "vso";
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
@@ -126,6 +127,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetLtsVersionsBuildImage();
             }
+            else if (string.Equals(tag, _vso))
+            {
+                return GetVsoBuildImage();
+            }
 
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
@@ -155,6 +160,11 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetGitHubActionsBuildImage()
         {
             return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+        }
+
+        public string GetVsoBuildImage()
+        {
+            return $"{_repoPrefix}/{_buildRepository}:{_vso}{_tagSuffix}";
         }
 
         /// <summary>

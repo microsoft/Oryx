@@ -220,6 +220,20 @@ buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
 				"$DEVBOX_BUILD_IMAGES_REPO"
 
 echo
+echo "-------------Creating VSO build image-------------------"
+builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$storageArgs \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
+echo
 echo "-------------Creating CLI image-------------------"
 builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
 docker build -t $builtImageTag \

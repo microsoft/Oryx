@@ -44,11 +44,16 @@ unset benvvar # Remove all traces of this part of the script
 # Example: (note that all Oryx related patlform paths come after the typical debian paths)
 # /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/oryx:/opt/nodejs/6/bin:/opt/dotnet/sdks/2.2.401
 updatePath() {
-  local replacingText=":/opt/oryx:$1:"
-  local lookUpText=":\/opt\/oryx:"
-  local currentPath="$PATH"
-  local newPath=$(echo $currentPath | sed "0,/$lookUpText/ s##$replacingText#")
-  export PATH="$newPath"
+  if [ "$ORYX_PREFER_USER_INSTALLED_SDKS" == "true" ]
+  then
+    local replacingText=":/opt/oryx:$1:"
+    local lookUpText=":\/opt\/oryx:"
+    local currentPath="$PATH"
+    local newPath=$(echo $currentPath | sed "0,/$lookUpText/ s##$replacingText#")
+    export PATH="$newPath"
+  else
+    export PATH="$1:$PATH"
+  fi
 }
 
 # NOTE: We handle .NET Core specially because there are 2 version types:
