@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(string buildImageName)
         {
             // Arrange
@@ -749,7 +749,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.SlimBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -790,7 +790,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.SlimBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string>();
                 data.Add(Settings.BuildImageName);
-                data.Add(Settings.SlimBuildImageName);
+                data.Add(Settings.LtsVersionsBuildImageName);
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 return data;
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.SlimBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -846,7 +846,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.SlimBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

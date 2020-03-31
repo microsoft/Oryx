@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public async Task NodeApp_MySqlDB(string buildImageName)
         {
             await RunTestAsync(
@@ -37,13 +37,13 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("mysql-pymysql-sample")]
         [InlineData("mysql-mysqlconnector-sample")]
         [InlineData("mysql-mysqlclient-sample")]
-        public async Task Python37App_MySqlDB_UsingPyMySql_UsingSlimBuildImage(string sampleAppName)
+        public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImage(string sampleAppName)
         {
             await RunTestAsync(
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", sampleAppName),
-                buildImageName: Settings.SlimBuildImageName);
+                buildImageName: Settings.LtsVersionsBuildImageName);
         }
 
         [Theory]

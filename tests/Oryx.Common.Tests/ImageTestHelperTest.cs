@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Common.Tests
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _latestTag = "latest";
-        private const string _slimTag = "slim";
+        private const string _ltsVersionsTag = "lts-versions";
 
         private readonly ITestOutputHelper _output;
 
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestSlimBuildImage_Validate_ImageBaseSet()
+        public void GetLtsVersionsBuildImage_Validate_ImageBaseSet()
         {
             // Arrange
             var imageBaseValue = "oryxtest";
@@ -143,15 +143,15 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetSlimBuildImage();
+            var buildImage = imageHelper.GetLtsVersionsBuildImage();
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_slimTag}";
+            var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_ltsVersionsTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
         [Fact]
-        public void GetTestSlimBuildImage_Validate_TagSuffixSet()
+        public void GetLtsVersionsBuildImage_Validate_TagSuffixSet()
         {
             // Arrange
             var imageBaseValue = string.Empty;
@@ -159,10 +159,10 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetSlimBuildImage();
+            var buildImage = imageHelper.GetLtsVersionsBuildImage();
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}{tagSuffixValue}";
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_ltsVersionsTag}{tagSuffixValue}";
             Assert.Equal(expectedImage, buildImage);
         }
 
@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.Common.Tests
         }
 
         [Fact]
-        public void GetTestBuildImage_Validate_SlimTag()
+        public void GetTestBuildImage_Validate_LatestVersionsTag()
         {
             // Arrange
             var imageBaseValue = string.Empty;
@@ -224,10 +224,10 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetBuildImage(_slimTag);
+            var buildImage = imageHelper.GetBuildImage(_ltsVersionsTag);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}";
+            var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_ltsVersionsTag}";
             Assert.Equal(expectedImage, buildImage);
         }
 
