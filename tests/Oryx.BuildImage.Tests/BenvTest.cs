@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("wheel", "/opt/python/")]
         [InlineData("pydoc3", "/opt/python/")]
         [InlineData("python3-config", "/opt/python/")]
-        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InSlimBuildImage(
+        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InLtsVersionsBuildImage(
             string executableName,
             string expectedPathPrefix)
         {
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetSlimBuildImage();
+            var image = _imageHelper.GetLtsVersionsBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -146,7 +146,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("yarn")]
         [InlineData("python")]
         [InlineData("php")]
-        public void UserInstalledExecutable_IsChosenOverOryxExecutable_InSlimBuildImage(string executableName)
+        public void UserInstalledExecutable_IsChosenOverOryxExecutable_InLtsVersionsBuildImage(string executableName)
         {
             // Arrange
             var userInstalledExecutable = $"/usr/local/bin/{executableName}";
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetSlimBuildImage();
+            var image = _imageHelper.GetLtsVersionsBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("latest")]
-        [InlineData("slim")]
+        [InlineData("lts-versions")]
         public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string tag)
         {
             // Arrange
@@ -205,7 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("latest")]
-        [InlineData("slim")]
+        [InlineData("lts-versions")]
         public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string tag)
         {
             // Arrange
@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("latest")]
-        [InlineData("slim")]
+        [InlineData("lts-versions")]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -264,7 +264,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("latest")]
-        [InlineData("slim")]
+        [InlineData("lts-versions")]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange

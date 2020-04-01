@@ -203,13 +203,13 @@ echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 createImageNameWithReleaseTag $builtImageName
 
 echo
-echo "-------------Creating slim build image-------------------"
-buildDockerImage "$BUILD_IMAGES_SLIM_DOCKERFILE" \
+echo "-------------Creating lts versions build image-------------------"
+buildDockerImage "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
 				"$ACR_BUILD_IMAGES_REPO" \
-				"$ORYXTESTS_SLIM_BUILDIMAGE_DOCKERFILE" \
+				"$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_REPO" \
 				"$DEVBOX_BUILD_IMAGES_REPO" \
-				"slim"
+				"lts-versions"
 
 echo
 echo "-------------Creating full build image-------------------"

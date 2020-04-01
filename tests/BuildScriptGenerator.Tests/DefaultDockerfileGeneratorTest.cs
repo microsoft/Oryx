@@ -39,17 +39,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         [Theory]
         [InlineData("dotnet", "2.0", "latest")]
-        [InlineData("dotnet", "2.1", "slim")]
+        [InlineData("dotnet", "2.1", "lts-versions")]
         [InlineData("dotnet", "3.0", "latest")]
         [InlineData("nodejs", "6", "latest")]
-        [InlineData("nodejs", "8", "slim")]
-        [InlineData("nodejs", "10", "slim")]
-        [InlineData("nodejs", "12", "slim")]
+        [InlineData("nodejs", "8", "lts-versions")]
+        [InlineData("nodejs", "10", "lts-versions")]
+        [InlineData("nodejs", "12", "lts-versions")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
-        [InlineData("python", "3.7", "slim")]
-        [InlineData("python", "3.8", "slim")]
+        [InlineData("python", "3.7", "lts-versions")]
+        [InlineData("python", "3.8", "lts-versions")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion(
             string platformName,
             string platformVersion,
@@ -82,17 +82,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         [Theory]
         [InlineData("dotnet", "2.0", "latest")]
-        [InlineData("dotnet", "2.1", "slim")]
+        [InlineData("dotnet", "2.1", "lts-versions")]
         [InlineData("dotnet", "3.0", "latest")]
         [InlineData("nodejs", "6", "latest")]
-        [InlineData("nodejs", "8", "slim")]
-        [InlineData("nodejs", "10", "slim")]
-        [InlineData("nodejs", "12", "slim")]
+        [InlineData("nodejs", "8", "lts-versions")]
+        [InlineData("nodejs", "10", "lts-versions")]
+        [InlineData("nodejs", "12", "lts-versions")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
-        [InlineData("python", "3.7", "slim")]
-        [InlineData("python", "3.8", "slim")]
+        [InlineData("python", "3.7", "lts-versions")]
+        [InlineData("python", "3.8", "lts-versions")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,
@@ -125,17 +125,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         [Theory]
         [InlineData("dotnet", "2.0", "latest")]
-        [InlineData("dotnet", "2.1", "slim")]
+        [InlineData("dotnet", "2.1", "lts-versions")]
         [InlineData("dotnet", "3.0", "latest")]
         [InlineData("nodejs", "6", "latest")]
-        [InlineData("nodejs", "8", "slim")]
-        [InlineData("nodejs", "10", "slim")]
-        [InlineData("nodejs", "12", "slim")]
+        [InlineData("nodejs", "8", "lts-versions")]
+        [InlineData("nodejs", "10", "lts-versions")]
+        [InlineData("nodejs", "12", "lts-versions")]
         [InlineData("php", "5.6", "latest")]
         [InlineData("php", "7.3", "latest")]
         [InlineData("python", "2.7", "latest")]
-        [InlineData("python", "3.7", "slim")]
-        [InlineData("python", "3.8", "slim")]
+        [InlineData("python", "3.7", "lts-versions")]
+        [InlineData("python", "3.8", "lts-versions")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
             string detectedPlatformName,
             string detectedPlatformVersion,
@@ -167,13 +167,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Theory]
-        [InlineData("nodejs", "8", "dotnet", "2.1", "slim")]
+        [InlineData("nodejs", "8", "dotnet", "2.1", "lts-versions")]
         [InlineData("nodejs", "8", "dotnet", "3.0", "latest")]
-        [InlineData("nodejs", "12", "dotnet", "2.1", "slim")]
+        [InlineData("nodejs", "12", "dotnet", "2.1", "lts-versions")]
         [InlineData("nodejs", "12", "dotnet", "3.0", "latest")]
-        [InlineData("nodejs", "8", "python", "3.7", "slim")]
+        [InlineData("nodejs", "8", "python", "3.7", "lts-versions")]
         [InlineData("nodejs", "8", "python", "2.7", "latest")]
-        [InlineData("python", "3.7", "dotnet", "2.1", "slim")]
+        [InlineData("python", "3.7", "dotnet", "2.1", "lts-versions")]
         [InlineData("python", "3.7", "dotnet", "3.0", "latest")]
         [InlineData("dotnet", "2.1", "php", "5.6", "latest")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForMultiPlatformBuild(

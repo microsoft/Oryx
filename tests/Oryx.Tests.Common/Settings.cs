@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.Tests.Common
     public class Settings
     {
         public const string BuildImageName = "oryxtests/build:latest";
-        public const string SlimBuildImageName = "oryxtests/build:slim";
+        public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions";
 
         public const string RemoveTestContainersEnvironmentVariableName = "ORYX_REMOVE_TEST_CONTAINERS";
 

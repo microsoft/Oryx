@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string>();
                 data.Add(Settings.BuildImageName);
-                data.Add(Settings.SlimBuildImageName);
+                data.Add(Settings.LtsVersionsBuildImageName);
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         
         [Theory]
         [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.SlimBuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
             string buildImageName)
         {

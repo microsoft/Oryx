@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetSlimBuildImage(),
+                _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetSlimBuildImage(),
+                _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
