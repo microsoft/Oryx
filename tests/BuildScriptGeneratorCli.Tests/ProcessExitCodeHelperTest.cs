@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var expected = 4;
 
             // Act
-            var actual = ProcessExitCodeHelper.GetExitCodeForException(new BuildStepNotProvidedException("test"));
+            var actual = ProcessExitCodeHelper.GetExitCodeForException(new NoBuildStepException("test"));
 
             // Assert
             Assert.Equal(expected, actual);

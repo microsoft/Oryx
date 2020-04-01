@@ -201,7 +201,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 && string.IsNullOrEmpty(runBuildCommand)
                 && string.IsNullOrEmpty(runBuildAzureCommand))
             {
-                throw new BuildStepNotProvidedException(
+                throw new NoBuildStepException(
                     "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
                     "Could not find value for custom run build command using the environment variable " +
                     "key 'RUN_BUILD_COMMAND'.");

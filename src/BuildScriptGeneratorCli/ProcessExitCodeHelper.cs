@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.UnsupportedPlatformVersion;
             }
 
-            if (exception is BuildStepNotProvidedException)
+            if (exception is NoBuildStepException)
             {
                 return ProcessConstants.BuildStepNotProvidedException;
             }

@@ -268,7 +268,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
 
             // Act & Assert
-            var exception = Assert.Throws<BuildStepNotProvidedException>(
+            var exception = Assert.Throws<NoBuildStepException>(
                 () => nodePlatform.GenerateBashBuildScriptSnippet(context));
             Assert.Equal(
                 "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
