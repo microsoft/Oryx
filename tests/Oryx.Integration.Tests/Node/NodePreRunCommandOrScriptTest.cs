@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {

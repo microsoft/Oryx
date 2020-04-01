@@ -12,11 +12,11 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    public class PythonPreRunScriptTest : PythonEndToEndTestsBase
+    public class PythonPreRunCommandOrScriptTest : PythonEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/opt/python";
 
-        public PythonPreRunScriptTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+        public PythonPreRunCommandOrScriptTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetTestRuntimeImage("python", "dynamic"),
                 ContainerPort,
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetTestRuntimeImage("python", "dynamic"),
                 ContainerPort,

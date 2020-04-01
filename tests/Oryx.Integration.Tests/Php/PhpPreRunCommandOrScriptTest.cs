@@ -91,5 +91,46 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("<h1>Hello World!</h1>", data);
                 });
         }
+
+        [Fact]
+        public async Task TwigExampleCanBuildAndRun_UsingPreRunScriptToInstallExtension()
+        {
+            // Arrange
+            var phpVersion = "7.4";
+            var appName = "twig-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir"; 
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
+                .AddCommand($"touch {appOutputDir}/prerunscript.sh")
+                .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
+                .AddCommand($"echo \"apt-get install php-json\" > {appOutputDir}/prerunscript.sh")
+                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh") 
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
+                .Append(
+                $"if ! php -m | grep 'json'; then " +
+                $"echo 'php-json' not found 1>&2; " +
+                "exit 1; fi")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName, _output, volume,
+                "/bin/sh", new[] { "-c", buildScript },
+                _imageHelper.GetTestRuntimeImage("php", phpVersion),
+                ContainerPort,
+                "/bin/sh", new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<h1>Hello World!</h1>", data);
+                });
+        }
     }
 }

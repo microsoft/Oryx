@@ -16,7 +16,7 @@ import (
 func SetupPreRunScript(scriptBuilder *strings.Builder)  {
 	preRunCommandOrScript := os.Getenv(consts.PreRunCommandEnvVarName)
 	if preRunCommandOrScript != "" {
-		scriptBuilder.WriteString("echo 'Running the provided pre-run command...'")
+		scriptBuilder.WriteString("echo 'Running the provided pre-run command...'\n")
 		scriptBuilder.WriteString(preRunCommandOrScript + "\n")
 	}
 }
