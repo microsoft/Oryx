@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "touch test_pre_run.txt")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "\"touch test_pre_run.txt\"")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddFileExistsCheck($"test_pre_run.txt")
                 .AddCommand($"rm test_pre_run.txt")

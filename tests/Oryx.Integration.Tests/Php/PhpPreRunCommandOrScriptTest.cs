@@ -34,10 +34,10 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "touch test_pre_run.txt")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch {appOutputDir}/test_pre_run.txt\"")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddFileExistsCheck($"test_pre_run.txt")
-                .AddCommand($"rm test_pre_run.txt")
+                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddCommand($"rm {appOutputDir}/test_pre_run.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -69,14 +69,15 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"{appOutputDir}/prerunscript.sh")
                 .AddCommand($"touch {appOutputDir}/prerunscript.sh")
                 .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"echo \"touch test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
-                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh") 
+                .AddCommand($"echo \"touch {appOutputDir}/test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
+                .AddStringExistsInFileCheck($"touch {appOutputDir}/test_pre_run.txt", $"{appOutputDir}/prerunscript.sh")
+                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddFileExistsCheck($"test_pre_run.txt")
-                .AddCommand($"rm test_pre_run.txt")
+                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddCommand($"rm {appOutputDir}/test_pre_run.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -108,15 +109,17 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"{appOutputDir}/prerunscript.sh")
                 .AddCommand($"touch {appOutputDir}/prerunscript.sh")
                 .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
                 .AddCommand($"echo \"apt-get install php-json\" > {appOutputDir}/prerunscript.sh")
-                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh") 
+                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
+                .AddCommand($"php -m | grep 'json' > {appOutputDir}/_temp.txt")
+                .AddStringDoesNotExistInFileCheck("json", $"{appOutputDir}/_temp.txt")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddCommand($"php -m | grep 'json' > _temp.txt")
-                .AddStringExistsInFileCheck("json", "_temp.txt")
-                .AddCommand($"rm _temp.txt")
+                .AddCommand($"php -m | grep 'json' > {appOutputDir}/_temp.txt")
+                .AddStringExistsInFileCheck("json", $"{appOutputDir}/_temp.txt")
+                .AddCommand($"rm {appOutputDir}/_temp.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 

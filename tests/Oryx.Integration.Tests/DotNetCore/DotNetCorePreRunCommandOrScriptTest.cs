@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "touch test_pre_run.txt")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "\"touch test_pre_run.txt\"")
                 .AddCommand(
                 $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddFileExistsCheck($"test_pre_run.txt")
@@ -102,12 +102,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
                 .AddCommand($"touch {appOutputDir}/prerunscript.sh")
                 .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"echo \"touch test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
+                .AddCommand($"echo \"touch {appOutputDir}/test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
                 .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
                 .AddCommand(
                 $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddFileExistsCheck($"test_pre_run.txt")
-                .AddCommand($"rm test_pre_run.txt")
+                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddCommand($"rm {appOutputDir}/test_pre_run.txt")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
