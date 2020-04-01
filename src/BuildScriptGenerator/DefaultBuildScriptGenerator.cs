@@ -23,8 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
         private readonly BuildScriptGeneratorOptions _cliOptions;
+        private readonly IEnvironment _environment;
         private readonly ICompatiblePlatformDetector _platformDetector;
-        private readonly IEnvironmentSettingsProvider _environmentSettingsProvider;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IStandardOutputWriter _writer;
@@ -32,14 +32,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public DefaultBuildScriptGenerator(
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             ICompatiblePlatformDetector platformDetector,
-            IEnvironmentSettingsProvider environmentSettingsProvider,
             IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger,
+            IEnvironment environment,
             IStandardOutputWriter writer)
         {
             _cliOptions = cliOptions.Value;
+            _environment = environment;
             _platformDetector = platformDetector;
-            _environmentSettingsProvider = environmentSettingsProvider;
             _logger = logger;
             _checkers = checkers;
             _writer = writer;
@@ -239,7 +239,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             string script;
             string benvArgs = StringExtensions.JoinKeyValuePairs(toolsToVersion);
-            _environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings);
 
             Dictionary<string, string> buildProperties = snippets
                 .Where(s => s.BuildProperties != null)
@@ -247,9 +246,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .ToDictionary(p => p.Key, p => p.Value);
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
-            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
+            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildScriptsOrCommands(
                 context.SourceRepo,
-                environmentSettings);
+                _environment);
 
             var outputIsSubDirOfSourceDir = false;
             if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))

@@ -39,12 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     // than depending on in-built script generators whose script could change overtime causing
                     // this test to be difficult to manage.
 
-                    services.RemoveAll<ILanguageDetector>();
+                    services.RemoveAll<IPlatformDetector>();
                     services.TryAddEnumerable(
-                        ServiceDescriptor.Singleton<ILanguageDetector>(
-                            new TestLanguageDetectorUsingLangName(
-                                detectedLanguageName: "test",
-                                detectedLanguageVersion: "1.0.0")));
+                        ServiceDescriptor.Singleton<IPlatformDetector>(
+                            new TestPlatformDetectorUsingPlatformName(
+                                detectedPlatformName: "test",
+                                detectedPlatformVersion: "1.0.0")));
 
                     services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(

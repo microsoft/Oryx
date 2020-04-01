@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    [Checker(PythonConstants.PythonName)]
+    [Checker(PythonConstants.PlatformName)]
     public class PythonVersionChecker : IChecker
     {
         private readonly ILogger<PythonVersionChecker> _logger;
@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         [NotNull]
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
-            var used = tools[PythonConstants.PythonName];
+            var used = tools[PythonConstants.PlatformName];
             var comparison = SemanticVersionResolver.CompareVersions(used, PythonConstants.PythonLtsVersion);
             _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return new[]
                 {
                     new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
-                        PythonConstants.PythonName,
+                        PythonConstants.PlatformName,
                         used,
                         Constants.OryxGitHubUrl)),
                 };

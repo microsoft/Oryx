@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--language-version {nodeVersion} --manifest-dir {manifestDir} " +
                 "-p compress_node_modules=tar-gz")
                 .ToString();
@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .ToString();
 
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o /tmp/out --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion}" +
                 $" -p {NodePlatform.PruneDevDependenciesPropertyKey}={pruneDevDependency}")
                 .AddCommand($"cp -rf /tmp/out/* {appOutputDir}")
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -193,10 +193,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--language-version {nodeVersion}")
                 .ToString();
 
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -244,9 +244,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform nodejs --language-version {nodeVersion}")
+                $"--platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .ToString();
 
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -284,7 +284,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
@@ -302,7 +302,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -326,7 +326,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
@@ -344,7 +344,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -369,7 +369,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
@@ -381,7 +381,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 volume,
                  "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -401,7 +401,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -418,7 +418,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -442,7 +442,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -459,7 +459,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -483,7 +483,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -500,7 +500,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -526,7 +526,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -543,7 +543,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -558,7 +558,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip ="get rid of single image, #1088920")]
         public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
@@ -567,10 +567,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                .AddCommand($"oryx run-script {appDir} --debug --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
                             $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -581,7 +581,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestBuildImage(),
+                runtimeImageName: _imageHelper.GetBuildImage(),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -596,7 +596,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "get rid of single image, #1088920")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
         {
             // Arrange
@@ -611,10 +611,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 "#!/bin/bash\n" +
                 $"PORT={ContainerPort} node server.js\n");
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                .AddCommand($"oryx run-script {appDir} --debug --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
                             $"--output {customRunScriptName} -- -userStartupCommand {customRunScriptName}")
                 .AddCommand($"./{customRunScriptName}")
                 .ToString();
@@ -625,7 +625,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestBuildImage(),
+                runtimeImageName: _imageHelper.GetBuildImage(),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -640,7 +640,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "get rid of single image, #1088920")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
         {
             // Arrange
@@ -652,10 +652,10 @@ namespace Microsoft.Oryx.Integration.Tests
             // Create a custom startup command
             const string customRunCommand = "'npm start'";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx run-script {appDir} --debug --platform nodejs --platform-version {nodeVersion} " +
+                .AddCommand($"oryx run-script {appDir} --debug --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
                             $"--output {DefaultStartupFilePath} -- -bindPort {ContainerPort} " +
                             $"-userStartupCommand {customRunCommand}")
                 .AddCommand(DefaultStartupFilePath)
@@ -667,7 +667,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume: volume,
                 buildCmd: "/bin/sh",
                 buildArgs: new[] { "-c", buildScript },
-                runtimeImageName: _imageHelper.GetTestBuildImage(),
+                runtimeImageName: _imageHelper.GetBuildImage(),
                 ContainerPort,
                 runCmd: "/bin/sh",
                 runArgs: new[]
@@ -707,7 +707,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "12"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -747,7 +747,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "12"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

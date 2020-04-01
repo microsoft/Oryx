@@ -114,13 +114,13 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("export PATH=" + targetNodeModulesDir + "/.bin:$PATH\n")
 		// To avoid having older versions of packages available, we rename existing node_modules folder.
 		// We move the directory/link first to prevent node from start using it
-		scriptBuilder.WriteString("if [ -d node_modules ] || [ -L node_modules ]; then\n")
+		scriptBuilder.WriteString("if [ -d node_modules ]; then\n")
 		scriptBuilder.WriteString("    mv -f node_modules _del_node_modules || true\n")
 		scriptBuilder.WriteString("fi\n\n")
 		// Create a symlink to extracted nodemodules directory so that binaries mentioned in package.json(ex: 'ng serve')
 		// can still find the nodemodules.
 		scriptBuilder.WriteString("if [ -d " + targetNodeModulesDir + " ]; then\n")
-		scriptBuilder.WriteString("    ln -s " + targetNodeModulesDir + " ./node_modules \n")
+		scriptBuilder.WriteString("    ln -sfn " + targetNodeModulesDir + " ./node_modules \n")
 		scriptBuilder.WriteString("fi\n\n")
 		scriptBuilder.WriteString("echo \"Done.\"\n")
 	}

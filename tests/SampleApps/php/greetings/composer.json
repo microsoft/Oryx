@@ -1,0 +1,26 @@
+{
+    "name": "frob/greetings",
+    "description": "This is a simple hello world example.",
+    "authors": [
+        {
+            "name": "Frank Anderson",
+            "email": "frob@249517.no-reply.drupal.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0",
+        "phpunit/php-timer": "^1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "HelloWorld": "src//"
+        },
+        "classname": {
+          "PHP_Timer": "src//"
+        }
+    },
+    "scripts": {
+      "test": ["php tests/test.php", "echo Hello"]
+    }
+}

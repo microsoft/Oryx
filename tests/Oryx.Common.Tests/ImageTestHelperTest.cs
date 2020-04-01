@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
             var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}";
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
             var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}{tagSuffixValue}";
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
             var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}";
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetTestRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
 
             // Assert
             var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}{tagSuffixValue}";
@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage();
+            var buildImage = imageHelper.GetBuildImage();
 
             // Assert
             var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_latestTag}";
@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage();
+            var buildImage = imageHelper.GetBuildImage();
 
             // Assert
             var expectedTag = tagSuffixValue.TrimStart('-');
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestSlimBuildImage();
+            var buildImage = imageHelper.GetSlimBuildImage();
 
             // Assert
             var expectedImage = $"{imageBaseValue}/{_buildRepository}:{_slimTag}";
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestSlimBuildImage();
+            var buildImage = imageHelper.GetSlimBuildImage();
 
             // Assert
             var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}{tagSuffixValue}";
@@ -175,7 +175,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var packImage = imageHelper.GetTestPackImage();
+            var packImage = imageHelper.GetPackImage();
 
             // Assert
             var expectedImage = $"{imageBaseValue}/{_packRepository}:{_latestTag}";
@@ -191,7 +191,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var packImage = imageHelper.GetTestPackImage();
+            var packImage = imageHelper.GetPackImage();
 
             // Assert
             var expectedTag = tagSuffixValue.TrimStart('-');
@@ -208,7 +208,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage(_latestTag);
+            var buildImage = imageHelper.GetBuildImage(_latestTag);
 
             // Assert
             var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_latestTag}";
@@ -224,7 +224,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var buildImage = imageHelper.GetTestBuildImage(_slimTag);
+            var buildImage = imageHelper.GetBuildImage(_slimTag);
 
             // Assert
             var expectedImage = $"{_defaultImageBase}/{_buildRepository}:{_slimTag}";
@@ -240,7 +240,7 @@ namespace Microsoft.Oryx.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Assert
-            Assert.Throws<NotSupportedException>(() => { imageHelper.GetTestBuildImage("invalidTag"); });
+            Assert.Throws<NotSupportedException>(() => { imageHelper.GetBuildImage("invalidTag"); });
         }
     }
 }

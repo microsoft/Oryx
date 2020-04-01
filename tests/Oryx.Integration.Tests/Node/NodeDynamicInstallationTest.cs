@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
-                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
@@ -55,14 +55,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetSlimBuildImage(),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
-                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion}")
+                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
@@ -108,14 +108,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetSlimBuildImage(),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

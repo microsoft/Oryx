@@ -3,16 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator;
-
-namespace Microsoft.Oryx.Tests.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Exceptions
 {
-    public class TestEnvironmentSettingsProvider : IEnvironmentSettingsProvider
+    /// <summary>
+    /// Supplied platform is not supported.
+    /// </summary>
+    public class UnsupportedPlatformException : InvalidUsageException
     {
-        public bool TryGetAndLoadSettings(out EnvironmentSettings environmentSettings)
+        public UnsupportedPlatformException(string message)
+            : base(message)
         {
-            environmentSettings = null;
-            return true;
         }
     }
 }

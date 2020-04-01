@@ -5,8 +5,13 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public interface IEnvironmentSettingsProvider
+    /// <summary>
+    /// Represents the result of a <see cref="IPlatformDetector.Detect(ISourceRepo)"/> operation.
+    /// </summary>
+    public class PlatformDetectorResult
     {
-        bool TryGetAndLoadSettings(out EnvironmentSettings environmentSettings);
+        public string Platform { get; set; }
+
+        public string PlatformVersion { get; set; }
     }
 }

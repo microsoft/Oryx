@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -39,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
-                $"oryx build {appDir} --platform python --platform-version {pythonVersion}")
+                $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
@@ -54,9 +55,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetSlimBuildImage(),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -83,7 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
-                $"oryx build {appDir} --platform python --platform-version {pythonVersion}")
+                $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
@@ -100,7 +101,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -126,7 +127,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
-                $"oryx build {appDir} --platform python --language-version {pythonVersion}")
+                $"oryx build {appDir} --platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
@@ -141,9 +142,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume },
-                _imageHelper.GetTestSlimBuildImage(),
+                _imageHelper.GetSlimBuildImage(),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },

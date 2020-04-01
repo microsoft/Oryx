@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreConstants
     {
-        public const string LanguageName = "dotnet";
+        public const string PlatformName = "dotnet";
         public const string CSharpProjectFileExtension = "csproj";
         public const string FSharpProjectFileExtension = "fsproj";
         public const string GlobalJsonFileName = "global.json";
@@ -41,6 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public const string AzureFunctionsVersionElementXPathExpression =
             "/Project/PropertyGroup/AzureFunctionsVersion";
+
         public const string AzureFunctionsPackageReference = "Microsoft.NET.Sdk.Functions";
 
         public const string InstalledDotNetCoreRuntimeVersionsDir = "/opt/dotnet/runtimes";

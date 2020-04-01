@@ -292,7 +292,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
@@ -328,7 +328,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform dotnet --platform-version 2.1")
+                .AddBuildCommand($"{appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
                 .ToString();
 
             // Act
@@ -353,7 +353,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_CopiesContentCreatedByPreAndPostBuildScript_ToExplicitOutputDirectory()
         {
             // Arrange
@@ -391,7 +391,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform dotnet --platform-version 2.1")
+                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
                 .AddFileExistsCheck($"{tempOutputDir}/pre-{fileName}")
                 .AddFileExistsCheck($"{tempOutputDir}/post-{fileName}")
                 .ToString();
@@ -415,7 +415,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -431,7 +431,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform dotnet --platform-version 2.1")
+                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
                 .ToString();
 
             // Act
@@ -455,7 +455,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "1086977")]
         public void Build_CopiesContentCreatedByPostBuildScript_ToExplicitOutputDirectory_AndOutpuIsZipped()
         {
             // Arrange
@@ -487,7 +487,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {tempOutputDir} --platform dotnet --platform-version 2.1 " +
+                $"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1 " +
                 $"-p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
                 .AddFileDoesNotExistCheck($"{tempOutputDir}/post-{fileName}")
                 .AddCommand($"cd {tempOutputDir} && tar -xvf {FilePaths.CompressedOutputFileName}")
@@ -524,7 +524,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.2")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.2")
                 .ToString();
 
             // Act

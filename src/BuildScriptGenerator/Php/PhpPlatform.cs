@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly PhpScriptGeneratorOptions _phpScriptGeneratorOptions;
         private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
-        private readonly PhpLanguageDetector _detector;
+        private readonly PhpPlatformDetector _detector;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhpPlatform"/> class.
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
             IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
-            PhpLanguageDetector detector)
+            PhpPlatformDetector detector)
         {
             _phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
             _phpVersionProvider = phpVersionProvider;
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <summary>
         /// Gets the name of PHP platform which this generator will create builds for.
         /// </summary>
-        public string Name => PhpConstants.PhpName;
+        public string Name => PhpConstants.PlatformName;
 
         /// <summary>
         /// Gets the list of versions that the script generator supports.
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// </summary>
         /// <param name="context">The repository context.</param>
         /// <returns>The results of language detector operations.</returns>
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var buildProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PhpConstants.PhpName}_version";
+            var key = $"{PhpConstants.PlatformName}_version";
             buildProperties[key] = ctx.PhpVersion;
 
             _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);

@@ -37,13 +37,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue),
         };
 
+        private bool _languageVersionWasSet;
+        private bool _languageWasSet;
+
         [Option(
             "-i|--intermediate-dir <dir>",
             CommandOptionType.SingleValue,
             Description = "The path to a temporary directory to be used by this tool.")]
         public string IntermediateDir { get; set; }
-
-        private bool _languageWasSet;
 
         [Option(
             OptionTemplates.Language,
@@ -59,8 +60,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 _languageWasSet = true;
             }
         }
-
-        private bool _languageVersionWasSet;
 
         [Option(
             OptionTemplates.LanguageVersion,
@@ -161,12 +160,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             console.WriteLine(buildInfo.ToString());
 
-            var environmentSettingsProvider = serviceProvider.GetRequiredService<IEnvironmentSettingsProvider>();
-            if (!environmentSettingsProvider.TryGetAndLoadSettings(out var environmentSettings))
-            {
-                return ProcessConstants.ExitFailure;
-            }
-
             // Generate build script
             string scriptContent;
             Exception exception;
@@ -256,10 +249,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.Error.WriteLine(line);
                 buildScriptOutput.AppendLine(line);
             };
-
-            // Try make the pre-build & post-build scripts executable
-            ProcessHelper.TrySetExecutableMode(environmentSettings.PreBuildScriptPath);
-            ProcessHelper.TrySetExecutableMode(environmentSettings.PostBuildScriptPath);
 
             // Run the generated script
             int exitCode;
@@ -366,6 +355,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 properties: Properties);
         }
 
+        internal override IServiceProvider GetServiceProvider(IConsole console)
+        {
+            // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
+            // ServiceProviderBuilder and allow for writing to the console if needed during this command.
+            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+                .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
+            return serviceProviderBuilder.Build();
+        }
+
         private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
         {
             string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
@@ -393,15 +391,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string[] envVarNames = new string[envVarKeyCollection.Count];
             envVarKeyCollection.CopyTo(envVarNames, 0);
             return envVarNames;
-        }
-
-        internal override IServiceProvider GetServiceProvider(IConsole console)
-        {
-            // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
-            // ServiceProviderBuilder and allow for writing to the console if needed during this command.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
-                .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
-            return serviceProviderBuilder.Build();
         }
     }
 }

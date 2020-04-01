@@ -14,16 +14,16 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal class PythonLanguageDetector : ILanguageDetector
+    internal class PythonPlatformDetector : IPlatformDetector
     {
         private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
-        private readonly ILogger<PythonLanguageDetector> _logger;
+        private readonly ILogger<PythonPlatformDetector> _logger;
 
-        public PythonLanguageDetector(
+        public PythonPlatformDetector(
             IPythonVersionProvider pythonVersionProvider,
             IOptions<PythonScriptGeneratorOptions> options,
-            ILogger<PythonLanguageDetector> logger,
+            ILogger<PythonPlatformDetector> logger,
             IStandardOutputWriter writer)
         {
             _versionProvider = pythonVersionProvider;
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _logger = logger;
         }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
@@ -72,10 +72,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var version = GetVersion(context, versionFromRuntimeFile);
             version = GetMaxSatisfyingVersionAndVerify(version);
 
-            return new LanguageDetectorResult
+            return new PlatformDetectorResult
             {
-                Language = PythonConstants.PythonName,
-                LanguageVersion = version,
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = version,
             };
         }
 
@@ -99,18 +99,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return GetDefaultVersionFromProvider();
         }
 
-        private string GetVersionFromRuntimeFile(ISourceRepo sourceRepo)
-        {
-            string runtimeVersion = DetectPythonVersionFromRuntimeFile(sourceRepo);
-
-            if (string.IsNullOrEmpty(runtimeVersion))
-            {
-                
-            }
-
-            return runtimeVersion;
-        }
-
         private string GetDefaultVersionFromProvider()
         {
             var versionInfo = _versionProvider.GetVersionInfo();
@@ -127,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
-                    PythonConstants.PythonName,
+                    PythonConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
                 _logger.LogError(

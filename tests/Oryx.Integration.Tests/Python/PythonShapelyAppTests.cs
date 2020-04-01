@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System.Threading.Tasks;
@@ -28,13 +29,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform python --language-version {pythonVersion}")
+               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = _imageHelper.GetTestRuntimeImage("python", pythonVersion);
+            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -72,13 +73,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform python --platform-version {pythonVersion} -p packagedir={packageDir}")
+                $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion} -p packagedir={packageDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = _imageHelper.GetTestRuntimeImage("python", pythonVersion);
+            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,

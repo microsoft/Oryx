@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetTestRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetTestRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             int containerDebugPort = 8080;
 
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetTestRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
             int containerDebugPort = 8080;
@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

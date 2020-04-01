@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
@@ -45,7 +46,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetTestSlimBuildImage(),
+                ImageId = _imageHelper.GetSlimBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -60,6 +61,51 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
+        {
+            // Arrange
+            var version = "12.16.1"; //NOTE: use the full version so that we know the install directory path
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/nodejs/{version}";
+            var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {NodeConstants.PlatformName} --platform-version {version}";
+            var script = new ShellScriptBuilder()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand(buildCmd)
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddFileExistsCheck(sentinelFile)
+                .AddCommand($"rm -f {sentinelFile}")
+                .AddBuildCommand(buildCmd)
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddFileExistsCheck(sentinelFile)
+                .AddBuildCommand(buildCmd)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+
+        }
         private string GetSnippetToCleanUpExistingInstallation()
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";

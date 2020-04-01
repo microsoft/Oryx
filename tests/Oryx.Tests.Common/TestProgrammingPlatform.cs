@@ -14,21 +14,21 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private readonly bool? _canGenerateScript;
         private readonly string _scriptContent;
-        private readonly ILanguageDetector _detector;
+        private readonly IPlatformDetector _detector;
         private bool _enabled;
         private bool _platformIsEnabledForMultiPlatformBuild;
 
         public TestProgrammingPlatform(
-            string languageName,
-            string[] languageVersions,
+            string platformName,
+            string[] platformVersions,
             bool? canGenerateScript = null,
             string scriptContent = null,
-            ILanguageDetector detector = null,
+            IPlatformDetector detector = null,
             bool enabled = true,
             bool platformIsEnabledForMultiPlatformBuild = true)
         {
-            Name = languageName;
-            SupportedVersions = languageVersions;
+            Name = platformName;
+            SupportedVersions = platformVersions;
             _canGenerateScript = canGenerateScript;
             _scriptContent = scriptContent;
             _detector = detector;
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public IEnumerable<string> SupportedVersions { get; }
 
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector?.Detect(context);
         }

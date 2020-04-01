@@ -4,42 +4,36 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class PreAndPostBuildCommandHelper
     {
-        public static (string preBuildCommand, string postBuildCommand) GetPreAndPostBuildCommands(
-            ISourceRepo sourceRepo,
-            EnvironmentSettings settings)
+        public static (string preBuildCommandOrScriptPath, string postBuildCommandOrScriptPath)
+            GetPreAndPostBuildScriptsOrCommands(ISourceRepo sourceRepo, IEnvironment environment)
         {
-            if (settings == null)
+            var preBuildScriptPath = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildScriptPath);
+            var preBuildCmd = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PreBuildCommand);
+            var postBuildScriptPath = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildScriptPath);
+            var postBuildCmd = environment.GetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand);
+
+            var preBuildCommandOrScriptPath = string.IsNullOrEmpty(preBuildScriptPath)
+                ? preBuildCmd : preBuildScriptPath;
+            if (!string.IsNullOrEmpty(preBuildCommandOrScriptPath))
             {
-                return (null, null);
+                preBuildCommandOrScriptPath = GetCommandOrFilePath(sourceRepo, preBuildCommandOrScriptPath);
             }
 
-            string preBuildCommand = null;
-            string postBuildCommand = null;
-
-            if (!string.IsNullOrEmpty(settings.PreBuildScriptPath))
+            var postBuildCommandOrScriptPath = string.IsNullOrEmpty(postBuildScriptPath)
+                ? postBuildCmd : postBuildScriptPath;
+            if (!string.IsNullOrEmpty(postBuildCommandOrScriptPath))
             {
-                preBuildCommand = $"\"{settings.PreBuildScriptPath}\"";
-            }
-            else if (!string.IsNullOrEmpty(settings.PreBuildCommand))
-            {
-                preBuildCommand = GetCommandOrFilePath(sourceRepo, settings.PreBuildCommand);
+                postBuildCommandOrScriptPath = GetCommandOrFilePath(sourceRepo, postBuildCommandOrScriptPath);
             }
 
-            if (!string.IsNullOrEmpty(settings.PostBuildScriptPath))
-            {
-                postBuildCommand = $"\"{settings.PostBuildScriptPath}\"";
-            }
-            else if (!string.IsNullOrEmpty(settings.PostBuildCommand))
-            {
-                postBuildCommand = GetCommandOrFilePath(sourceRepo, settings.PostBuildCommand);
-            }
-
-            return (preBuildCommand: preBuildCommand, postBuildCommand: postBuildCommand);
+            return (preBuildCommandOrScriptPath: preBuildCommandOrScriptPath,
+                postBuildCommandOrScriptPath: postBuildCommandOrScriptPath);
         }
 
         private static string GetCommandOrFilePath(ISourceRepo sourceRepo, string commandOrScriptPath)
@@ -64,6 +58,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var fullPath = Path.GetFullPath(fullyQualifiedPath);
                 if (File.Exists(Path.GetFullPath(fullPath)))
                 {
+                    ProcessHelper.TrySetExecutableMode(fullPath);
+
                     return $"\"{fullPath}\"";
                 }
             }

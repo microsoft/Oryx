@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestBuildImage();
+            var image = _imageHelper.GetBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestSlimBuildImage();
+            var image = _imageHelper.GetSlimBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestBuildImage();
+            var image = _imageHelper.GetBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestSlimBuildImage();
+            var image = _imageHelper.GetSlimBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestBuildImage(tag);
+            var image = _imageHelper.GetBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -222,7 +222,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestBuildImage(tag);
+            var image = _imageHelper.GetBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -249,7 +249,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestBuildImage(tag);
+            var image = _imageHelper.GetBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetTestBuildImage(tag);
+            var image = _imageHelper.GetBuildImage(tag);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert

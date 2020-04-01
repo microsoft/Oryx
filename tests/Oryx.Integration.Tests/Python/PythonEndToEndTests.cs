@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -27,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform python --language-version 3.6")
+               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --language-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -44,7 +46,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "3.6"),
+                _imageHelper.GetRuntimeImage("python", "3.6"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -67,8 +69,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform python --platform-version 3.7")
-               .ToString();
+                .SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand, "scripts/postbuild.sh")
+                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.7")
+                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -84,7 +87,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", "3.7"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -112,10 +115,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Simulate apps that were built using package directory, and then virtual env
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform python --language-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
                 .AddBuildCommand(
                 $"{appDir} -p virtualenv_name={virtualEnvName} " +
-                $"--platform python --language-version {pythonVersion}")
+                $"--platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -131,7 +134,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -164,7 +167,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform python --platform-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -179,7 +182,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -207,7 +210,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform python --platform-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
@@ -222,7 +225,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 volume,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -241,7 +244,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -o {appDir}/output --platform python --platform-version 3.8")
+               .AddCommand($"oryx build {appDir} -o {appDir}/output --platform {PythonConstants.PlatformName} --platform-version 3.8")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
@@ -258,7 +261,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "3.8"),
+                _imageHelper.GetRuntimeImage("python", "3.8"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -282,7 +285,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appDir}/output --platform python --platform-version 3.8")
+                $"oryx build {appDir} -i /tmp/int -o {appDir}/output --platform {PythonConstants.PlatformName} --platform-version 3.8")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
@@ -299,7 +302,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("python", "3.8"),
+                _imageHelper.GetRuntimeImage("python", "3.8"),
                 ContainerPort,
                 "/bin/bash",
                 new[]

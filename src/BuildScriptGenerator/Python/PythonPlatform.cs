@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPythonVersionProvider _pythonVersionProvider;
         private readonly IEnvironment _environment;
         private readonly ILogger<PythonPlatform> _logger;
-        private readonly PythonLanguageDetector _detector;
+        private readonly PythonPlatformDetector _detector;
         private readonly PythonPlatformInstaller _platformInstaller;
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonVersionProvider pythonVersionProvider,
             IEnvironment environment,
             ILogger<PythonPlatform> logger,
-            PythonLanguageDetector detector,
+            PythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <inheritdoc/>
-        public string Name => PythonConstants.PythonName;
+        public string Name => PythonConstants.PlatformName;
 
         public IEnumerable<string> SupportedVersions
         {
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <inheritdoc/>
-        public LanguageDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(RepositoryContext context)
         {
             return _detector.Detect(context);
         }
@@ -393,7 +393,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                _logger.LogDependencies(PythonConstants.PythonName, pythonVersion, deps);
+                _logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
             }
             catch (Exception exc)
             {

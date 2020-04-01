@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"{NodeConstants.NodeJsName}=\"{NodeConstants.NodeLtsVersion}\"",
+                $"{NodeConstants.PlatformName}=\"{NodeConstants.NodeLtsVersion}\"",
                 console.StdOutput);
         }
 
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"{PhpConstants.PhpName}=\"{PhpConstants.DefaultPhpRuntimeVersion}\"",
+                $"{PhpConstants.PlatformName}=\"{PhpConstants.DefaultPhpRuntimeVersion}\"",
                 console.StdOutput);
         }
 

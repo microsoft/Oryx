@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var script = new ShellScriptBuilder()
                .AddCommand("mkdir /tmp/app")
-               .AddCommand("oryx build /tmp/app -o /tmp/out --platform dotnet --platform-version 0.0")
+               .AddCommand($"oryx build /tmp/app -o /tmp/out --platform {DotNetCoreConstants.PlatformName} --platform-version 0.0")
                .ToString();
 
             // Act
@@ -254,7 +254,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var result = _dockerCli.Run(_imageHelper.GetTestCliImage(), "/bin/bash", "-c", script);
+            var result = _dockerCli.Run(_imageHelper.GetCliImage(), "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
@@ -269,12 +269,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private string ConvertToRuntimeName(string platformName)
         {
-            if (string.Equals(platformName, DotNetCoreConstants.LanguageName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(platformName, DotNetCoreConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
                 platformName = "dotnetcore";
             }
 
-            if (string.Equals(platformName, NodeConstants.NodeJsName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(platformName, NodeConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
                 platformName = "node";
             }

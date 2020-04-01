@@ -56,9 +56,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestLanguageDetectorUsingLangName(
-                detectedLanguageName: platformName,
-                detectedLanguageVersion: platformVersion);
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: platformVersion);
             var platform = new TestProgrammingPlatform(
                 platformName,
                 new[] { platformVersion },
@@ -99,9 +99,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestLanguageDetectorUsingLangName(
-                detectedLanguageName: platformName,
-                detectedLanguageVersion: detectedPlatformVersion);
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
                 platformName,
                 new[] { detectedPlatformVersion },
@@ -142,9 +142,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestLanguageDetectorUsingLangName(
-                detectedLanguageName: detectedPlatformName,
-                detectedLanguageVersion: detectedPlatformVersion);
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: detectedPlatformName,
+                detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
                 detectedPlatformName,
                 new[] { detectedPlatformVersion },
@@ -184,17 +184,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             string expectedBuildTag)
         {
             // Arrange
-            var detector = new TestLanguageDetectorUsingLangName(
-                detectedLanguageName: platformName,
-                detectedLanguageVersion: platformVersion);
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: platformVersion);
             var platform = new TestProgrammingPlatform(
                 platformName,
                 new[] { platformVersion },
                 detector: detector);
 
-            var runtimeDetector = new TestLanguageDetectorUsingLangName(
-                detectedLanguageName: runtimePlatformName,
-                detectedLanguageVersion: runtimePlatformVersion);
+            var runtimeDetector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: runtimePlatformName,
+                detectedPlatformVersion: runtimePlatformVersion);
             var runtimePlatform = new TestProgrammingPlatform(
                 runtimePlatformName,
                 new[] { runtimePlatformVersion },
@@ -241,19 +241,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 NullLogger<DefaultDockerfileGenerator>.Instance);
         }
 
-        private TestLanguageDetectorUsingLangName CreateTestLanguageDetector(string name, string version)
+        private TestPlatformDetectorUsingPlatformName CreateTestLanguageDetector(string name, string version)
         {
-            return new TestLanguageDetectorUsingLangName(name, version);
+            return new TestPlatformDetectorUsingPlatformName(name, version);
         }
 
         private string ConvertToRuntimeName(string platformName)
         {
-            if (string.Equals(platformName, DotNetCoreConstants.LanguageName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(platformName, DotNetCoreConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
                 platformName = "dotnetcore";
             }
 
-            if (string.Equals(platformName, NodeConstants.NodeJsName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(platformName, NodeConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
                 platformName = "node";
             }

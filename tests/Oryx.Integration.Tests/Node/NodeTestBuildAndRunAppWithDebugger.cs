@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using System;
@@ -42,7 +43,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform nodejs " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .ToString();
 
@@ -56,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]
