@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -112,10 +112,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"echo \"apt-get install php-json\" > {appOutputDir}/prerunscript.sh")
                 .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh") 
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .Append(
-                $"if ! php -m | grep 'json'; then " +
-                $"echo 'php-json' not found 1>&2; " +
-                "exit 1; fi")
+                .AddCommand($"php -m | grep 'json' > _temp.txt")
+                .AddStringExistsInFileCheck("json", "_temp.txt")
+                .AddCommand($"rm _temp.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -123,7 +122,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, volume,
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetTestRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

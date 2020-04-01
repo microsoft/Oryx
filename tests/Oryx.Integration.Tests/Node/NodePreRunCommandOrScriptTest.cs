@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetTestRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
