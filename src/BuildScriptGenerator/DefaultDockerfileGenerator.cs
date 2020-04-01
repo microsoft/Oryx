@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var buildImageTag = "slim";
+            var buildImageTag = "lts-versions";
             var runImage = string.Empty;
             var runImageTag = string.Empty;
             var compatiblePlatforms = GetCompatiblePlatforms(ctx);

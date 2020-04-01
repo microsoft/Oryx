@@ -4,7 +4,7 @@ ARG BUILD_DIR=/tmp/oryx/build
 ARG AGENTBUILD
 ARG YARN_CACHE_BASE_TAG
 
-FROM oryxdevmcr.azurecr.io/public/oryx/build:slim AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
 ARG IMAGES_DIR
 ARG BUILD_DIR
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)

@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
+                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.LtsVersionsBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.SlimBuildImageName,
+                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.LtsVersionsBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),

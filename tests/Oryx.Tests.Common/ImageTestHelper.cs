@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
         private const string _latestTag = "latest";
-        private const string _slimTag = "slim";
+        private const string _ltsVersionsTag = "lts-versions";
 
         private readonly ITestOutputHelper _output;
         private string _repoPrefix;
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         /// <summary>
-        /// Constructs a 'build' or 'build:slim' image based on the provided tag.
+        /// Constructs a 'build' or 'build:lts-versions' image based on the provided tag.
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
@@ -122,23 +122,23 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetBuildImage();
             }
-            else if (string.Equals(tag, _slimTag))
+            else if (string.Equals(tag, _ltsVersionsTag))
             {
-                return GetSlimBuildImage();
+                return GetLtsVersionsBuildImage();
             }
 
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 
         /// <summary>
-        /// Constructs a 'build:slim' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// Constructs a 'build:lts-versions' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
         /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
-        public string GetSlimBuildImage()
+        public string GetLtsVersionsBuildImage()
         {
-            return $"{_repoPrefix}/{_buildRepository}:{_slimTag}{_tagSuffix}";
+            return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsTag}{_tagSuffix}";
         }
 
         /// <summary>

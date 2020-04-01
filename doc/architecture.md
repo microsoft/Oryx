@@ -55,40 +55,40 @@ mcr.microsoft.com/oryx/build:latest`.
 <details>
 <summary>For a list of packages installed as a part of this build image, click here.</summary>
 
-#### [Slim Build Image](../images/build/slim.Dockerfile)
+#### [Lts Versions Build Image](../images/build/ltsVersions.Dockerfile)
 
 **Docker**
 
-- [`buildpack-deps:stretch`](../images/build/slim.Dockerfile#L5)
-- [`mcr.microsoft.com/oryx/python-build-base:3.7-{BUILD}`](../images/build/slim.Dockerfile#L160)
+- [`buildpack-deps:stretch`](../images/build/ltsVersions.Dockerfile#L5)
+- [`mcr.microsoft.com/oryx/python-build-base:3.7-{BUILD}`](../images/build/ltsVersions.Dockerfile#L160)
 
 **`apt-get`**
 
 - Basic build tools
-    - [`build-essential`](../images/build/slim.Dockerfile#L25)
-    - [`default-libmysqlclient-dev`](../images/build/slim.Dockerfile#L31)
-    - [`git`](../images/build/slim.Dockerfile#L21)
-    - [`libpq-dev`](../images/build/slim.Dockerfile#L29)
-    - [`make`](../images/build/slim.Dockerfile#L22)
-    - [`moreutils`](../images/build/slim.Dockerfile#L33)
-    - [`rsync`](../images/build/slim.Dockerfile#L34)
-    - [`unixodbc-dev`](../images/build/slim.Dockerfile#L27)
-    - [`unzip`](../images/build/slim.Dockerfile#L23)
-    - [`zip`](../images/build/slim.Dockerfile#L35)
+    - [`build-essential`](../images/build/ltsVersions.Dockerfile#L25)
+    - [`default-libmysqlclient-dev`](../images/build/ltsVersions.Dockerfile#L31)
+    - [`git`](../images/build/ltsVersions.Dockerfile#L21)
+    - [`libpq-dev`](../images/build/ltsVersions.Dockerfile#L29)
+    - [`make`](../images/build/ltsVersions.Dockerfile#L22)
+    - [`moreutils`](../images/build/ltsVersions.Dockerfile#L33)
+    - [`rsync`](../images/build/ltsVersions.Dockerfile#L34)
+    - [`unixodbc-dev`](../images/build/ltsVersions.Dockerfile#L27)
+    - [`unzip`](../images/build/ltsVersions.Dockerfile#L23)
+    - [`zip`](../images/build/ltsVersions.Dockerfile#L35)
 - .NET Core
-    - [`libc6`](../images/build/slim.Dockerfile#L50)
-    - [`libgcc1`](../images/build/slim.Dockerfile#L51)
-    - [`libgssapi-krb5-2`](../images/build/slim.Dockerfile#L52)
-    - [`libicu57`](../images/build/slim.Dockerfile#L53)
-    - [`liblttng-ust0`](../images/build/slim.Dockerfile#L54)
-    - [`libssl1.0.2`](../images/build/slim.Dockerfile#L55)
-    - [`libstdc++6`](../images/build/slim.Dockerfile#L56)
-    - [`zlib1g`](../images/build/slim.Dockerfile#L57)
+    - [`libc6`](../images/build/ltsVersions.Dockerfile#L50)
+    - [`libgcc1`](../images/build/ltsVersions.Dockerfile#L51)
+    - [`libgssapi-krb5-2`](../images/build/ltsVersions.Dockerfile#L52)
+    - [`libicu57`](../images/build/ltsVersions.Dockerfile#L53)
+    - [`liblttng-ust0`](../images/build/ltsVersions.Dockerfile#L54)
+    - [`libssl1.0.2`](../images/build/ltsVersions.Dockerfile#L55)
+    - [`libstdc++6`](../images/build/ltsVersions.Dockerfile#L56)
+    - [`zlib1g`](../images/build/ltsVersions.Dockerfile#L57)
 - Node
-    - [`jq`](../images/build/slim.Dockerfile#L108)
+    - [`jq`](../images/build/ltsVersions.Dockerfile#L108)
 - Python
-    - [`tk-dev`](../images/build/slim.Dockerfile#L169)
-    - [`uuid-dev`](../images/build/slim.Dockerfile#L170)
+    - [`tk-dev`](../images/build/ltsVersions.Dockerfile#L169)
+    - [`uuid-dev`](../images/build/ltsVersions.Dockerfile#L170)
 
 #### [Full build image](../images/build/Dockerfile)
 
