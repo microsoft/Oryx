@@ -3,12 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGeneratorCli
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+
+namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public static class SettingsKeys
+    public class BuildStepNotProvidedException : InvalidUsageException
     {
-        public const string EnableDynamicInstall = "ENABLE_DYNAMIC_INSTALL";
-        public const string NodeVersion = "NODE_VERSION";
-        public const string CustomRunBuildCommand = "RUN_BUILD_COMMAND";
+        public BuildStepNotProvidedException(string message)
+            : base(message)
+        {
+        }
     }
 }

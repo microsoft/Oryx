@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Xunit;
 
@@ -32,6 +33,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act
             var actual = ProcessExitCodeHelper.GetExitCodeForException(new UnsupportedVersionException("test"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetExitCodeForException_ReturnsExitCode_4_ForBuildStepNotProvidedException()
+        {
+            // Arrange
+            var expected = 4;
+
+            // Act
+            var actual = ProcessExitCodeHelper.GetExitCodeForException(new BuildStepNotProvidedException("test"));
 
             // Assert
             Assert.Equal(expected, actual);

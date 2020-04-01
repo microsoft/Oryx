@@ -836,7 +836,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
-                SettingsKeys.CustomNpmRunBuildCommand,
+                SettingsKeys.CustomRunBuildCommand,
                 $"echo > /tmp/foo.txt")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")

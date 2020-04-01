@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -29,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomNpmRunBuildCommand = expectedText },
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = expectedText },
                 new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
@@ -59,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomNpmRunBuildCommand = null },
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
                 new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
@@ -88,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomNpmRunBuildCommand = null },
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
                 new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
@@ -160,6 +161,122 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Null(buildScriptSnippet.PlatformInstallationScriptSnippet);
         }
 
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotThrowException_IfPackageJsonHasBuildNode_AndRequireBuildPropertyIsSet()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""build"": ""build-node"",
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+            context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("npm run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotThrowException_IfPackageJsonHasBuildAzureNode_AndRequireBuildPropertyIsSet()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""build:azure"": ""azure-node"",
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+            context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("npm run build:azure", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotThrowException_IfCustomRunCommandIsProvided_AndRequireBuildPropertyIsSet()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+            context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_ThrowsException_IfRequireBuildPropertyIsSet_AndNoBuildStepIsProvided()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions(),
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+            context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
+
+            // Act & Assert
+            var exception = Assert.Throws<BuildStepNotProvidedException>(
+                () => nodePlatform.GenerateBashBuildScriptSnippet(context));
+            Assert.Equal(
+                "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
+                "Could not find value for custom run build command using the environment variable " +
+                "key 'RUN_BUILD_COMMAND'.",
+                exception.Message);
+        }
+
         private TestNodePlatform CreateNodePlatform(
             BuildScriptGeneratorOptions commonOptions,
             NodeScriptGeneratorOptions nodeScriptGeneratorOptions,
@@ -221,6 +338,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             return new BuildScriptGeneratorContext
             {
                 SourceRepo = sourceRepo,
+                Properties = new Dictionary<string, string>(),
             };
         }
 

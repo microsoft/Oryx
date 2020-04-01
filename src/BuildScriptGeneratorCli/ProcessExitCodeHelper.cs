@@ -5,6 +5,7 @@
 
 using System;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -29,6 +30,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (exception is UnsupportedVersionException)
             {
                 return ProcessConstants.UnsupportedPlatformVersion;
+            }
+
+            if (exception is BuildStepNotProvidedException)
+            {
+                return ProcessConstants.BuildStepNotProvidedException;
             }
 
             return ProcessConstants.ExitFailure;
