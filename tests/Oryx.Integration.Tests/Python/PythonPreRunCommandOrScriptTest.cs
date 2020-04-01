@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Trait("category", "python")]
     public class PythonPreRunCommandOrScriptTest : PythonEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/opt/python";
@@ -43,9 +44,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"touch \"{appOutputDir}/test_pre_run.txt\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "touch test_pre_run.txt")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddFileExistsCheck($"test_pre_run.txt")
+                .AddCommand($"rm test_pre_run.txt")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -94,7 +96,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"echo \"touch test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
                 .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddFileExistsCheck($"test_pre_run.txt")
+                .AddCommand($"rm test_pre_run.txt")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 

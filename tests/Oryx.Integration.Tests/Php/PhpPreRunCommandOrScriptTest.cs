@@ -34,9 +34,10 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"touch \"{appOutputDir}/test_pre_run.txt\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "touch test_pre_run.txt")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddFileExistsCheck($"test_pre_run.txt")
+                .AddCommand($"rm test_pre_run.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -74,7 +75,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"echo \"touch test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
                 .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh") 
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
+                .AddFileExistsCheck($"test_pre_run.txt")
+                .AddCommand($"rm test_pre_run.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
