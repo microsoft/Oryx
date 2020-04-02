@@ -161,8 +161,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Null(buildScriptSnippet.PlatformInstallationScriptSnippet);
         }
 
-        [Fact]
-        public void GeneratedBuildSnippet_DoesNotThrowException_IfPackageJsonHasBuildNode_AndRequireBuildPropertyIsSet()
+        [Theory]
+        [InlineData("true")]
+        [InlineData("")]
+        public void GeneratedBuildSnippet_DoesNotThrowException_IfPackageJsonHasBuildNode_AndRequireBuildPropertyIsSet(
+            string requireBuild)
         {
             // Arrange
             const string packageJson = @"{
@@ -180,7 +183,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.NodeVersion = "10.10";
-            context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
+            context.Properties[NodePlatform.RequireBuildPropertyKey] = requireBuild;
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -275,6 +278,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 "Could not find value for custom run build command using the environment variable " +
                 "key 'RUN_BUILD_COMMAND'.",
                 exception.Message);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_DoesNotThrowException_IfNoBuildStepIsProvided_AndRequireBuildPropertyIsSet_ToFalse()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
+                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            context.NodeVersion = "10.10";
+            context.Properties[NodePlatform.RequireBuildPropertyKey] = "false";
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
         private TestNodePlatform CreateNodePlatform(
