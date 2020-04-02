@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
@@ -61,8 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         private class TestPythonSdkStorageVersionProvider : PythonSdkStorageVersionProvider
         {
             public TestPythonSdkStorageVersionProvider(
-                IEnvironment environment, IHttpClientFactory httpClientFactory)
-                : base(environment, httpClientFactory)
+                IEnvironment environment, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+                : base(environment, httpClientFactory, loggerFactory)
             {
             }
 
@@ -86,16 +88,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var environment = new TestEnvironment();
 
             var onDiskProvider = new TestPythonOnDiskVersionProvider();
-            var storageProvider = new TestPythonSdkStorageVersionProvider(environment, new TestHttpClientFactory());
+            var storageProvider = new TestPythonSdkStorageVersionProvider(
+                environment,
+                new TestHttpClientFactory(),
+                NullLoggerFactory.Instance);
             var versionProvider = new PythonVersionProvider(
                 commonOptions,
                 onDiskProvider,
-                storageProvider);
+                storageProvider,
+                NullLogger<PythonVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider);
         }
 
         private class TestPythonOnDiskVersionProvider : PythonOnDiskVersionProvider
         {
+            public TestPythonOnDiskVersionProvider()
+                : base(NullLogger<PythonOnDiskVersionProvider>.Instance)
+            {
+            }
+
             public bool GetVersionInfoCalled { get; private set; }
 
             public override PlatformVersionInfo GetVersionInfo()

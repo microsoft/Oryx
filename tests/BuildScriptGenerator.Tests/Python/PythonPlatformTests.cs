@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
@@ -26,7 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
                 Options.Create(options),
-                environment);
+                environment,
+                NullLoggerFactory.Instance);
             var platform = CreatePlatform(environment, versionProvider, platformInstaller, options);
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
@@ -55,7 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
                 Options.Create(options),
-                environment);
+                environment,
+                NullLoggerFactory.Instance);
             var platform = CreatePlatform(environment, versionProvider, platformInstaller, options);
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
@@ -85,7 +88,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 isVersionAlreadyInstalled: true,
                 installerScript: installerScriptSnippet,
                 Options.Create(options),
-                environment);
+                environment,
+                NullLoggerFactory.Instance);
             var platform = CreatePlatform(environment, versionProvider, platformInstaller, options);
             var repo = new MemorySourceRepo();
             repo.AddFile("", PythonConstants.RequirementsFileName);
@@ -183,7 +187,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 testEnv,
                 NullLogger<PythonPlatform>.Instance,
                 detector: null,
-                new PythonPlatformInstaller(commonOptions, testEnv));
+                new PythonPlatformInstaller(commonOptions, testEnv, NullLoggerFactory.Instance));
         }
 
         private class TestPythonVersionProvider : IPythonVersionProvider
@@ -212,8 +216,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 bool isVersionAlreadyInstalled,
                 string installerScript,
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
-                IEnvironment environment)
-                : base(commonOptions, environment)
+                IEnvironment environment,
+                ILoggerFactory loggerFactory)
+                : base(commonOptions, environment, loggerFactory)
             {
                 _isVersionAlreadyInstalled = isVersionAlreadyInstalled;
                 _installerScript = installerScript;

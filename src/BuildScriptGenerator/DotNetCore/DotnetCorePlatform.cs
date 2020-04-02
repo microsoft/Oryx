@@ -89,11 +89,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             string installationScriptSnippet = null;
-            if (_cliOptions.EnableDynamicInstall
-                && !_platformInstaller.IsVersionAlreadyInstalled(context.DotNetCoreRuntimeVersion))
+            if (_cliOptions.EnableDynamicInstall)
             {
-                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                    context.DotNetCoreRuntimeVersion);
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(context.DotNetCoreRuntimeVersion))
+                {
+                    _logger.LogDebug(
+                        "DotNetCore runtime version {runtimeVersion} is already installed. " +
+                        "So skipping installing it again.",
+                        context.DotNetCoreRuntimeVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "DotNetCore runtime version {runtimeVersion} is not installed. " +
+                        "So generating an installation script snippet for it.",
+                        context.DotNetCoreRuntimeVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                        context.DotNetCoreRuntimeVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install is not enabled.");
             }
 
             var manifestFileProperties = new Dictionary<string, string>();

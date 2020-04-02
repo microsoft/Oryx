@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
@@ -12,16 +13,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly BuildScriptGeneratorOptions _options;
         private readonly PythonOnDiskVersionProvider _onDiskVersionProvider;
         private readonly PythonSdkStorageVersionProvider _sdkStorageVersionProvider;
+        private readonly ILogger<PythonVersionProvider> _logger;
         private PlatformVersionInfo _versionInfo;
 
         public PythonVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
             PythonOnDiskVersionProvider onDiskVersionProvider,
-            PythonSdkStorageVersionProvider sdkStorageVersionProvider)
+            PythonSdkStorageVersionProvider sdkStorageVersionProvider,
+            ILogger<PythonVersionProvider> logger)
         {
             _options = options.Value;
             _onDiskVersionProvider = onDiskVersionProvider;
             _sdkStorageVersionProvider = sdkStorageVersionProvider;
+            _logger = logger;
         }
 
         public PlatformVersionInfo GetVersionInfo()
