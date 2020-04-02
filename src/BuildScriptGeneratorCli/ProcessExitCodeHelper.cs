@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (exception is NoBuildStepException)
             {
-                return ProcessConstants.BuildStepNotProvidedException;
+                return ProcessConstants.NoBuildStepException;
             }
 
             return ProcessConstants.ExitFailure;

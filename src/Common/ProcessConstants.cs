@@ -15,6 +15,6 @@ namespace Microsoft.Oryx.Common
 
         public const int UnsupportedPlatformVersion = 3;
 
-        public const int BuildStepNotProvidedException = 4;
+        public const int NoBuildStepException = 4;
     }
 }

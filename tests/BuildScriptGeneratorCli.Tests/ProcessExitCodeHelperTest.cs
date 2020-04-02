@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void GetExitCodeForException_ReturnsExitCode_4_ForBuildStepNotProvidedException()
+        public void GetExitCodeForException_ReturnsExitCode_4_ForNoBuildStepException()
         {
             // Arrange
             var expected = 4;
