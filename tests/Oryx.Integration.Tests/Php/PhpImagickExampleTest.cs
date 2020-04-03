@@ -55,5 +55,42 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Equal("64x64", imagickOutput);
                 });
         }
+
+        [Theory]
+        [InlineData("7.4")]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        public async Task PhpFpmImagickExample(string phpVersion)
+        {
+            // Arrange
+            var appName = "imagick-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand("mkdir -p /home/site/wwwroot")
+                .AddCommand($"cp -rf {appDir}/* /home/site/wwwroot")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName, _output, volume,
+                "/bin/sh", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                ContainerPort,
+                "/bin/sh", new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    string imagickOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("64x64", imagickOutput);
+                });
+        }
     }
 }
