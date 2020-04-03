@@ -16,6 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// Gets or sets the custom 'npm run build' command that is run after 'npm install' is run in the generated
         /// build script.
         /// </summary>
-        public string CustomNpmRunBuildCommand { get; set; }
+        public string CustomRunBuildCommand { get; set; }
     }
 }

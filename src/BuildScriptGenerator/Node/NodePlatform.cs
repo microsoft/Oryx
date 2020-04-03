@@ -28,6 +28,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         PruneDevDependenciesPropertyKey,
         "When using different intermediate and output folders, only the prod dependencies are copied to the output. " +
         "Options are 'true', blank (same meaning as 'true'), and 'false'. Default is false.")]
+    [BuildProperty(
+        RequireBuildPropertyKey,
+        "Requires either 'npm run build' or 'yarn run build' or custom run build command  to be run. Default is false. " +
+        "If value is not provided, it is assumed to be 'true'.")]
     internal class NodePlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -44,6 +48,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// Property key of prune_dev_dependencies.
         /// </summary>
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
+
+        /// <summary>
+        /// Property key of require_build.
+        /// </summary>
+        internal const string RequireBuildPropertyKey = "require_build";
 
         /// <summary>
         /// The zip option for node modules.
@@ -168,7 +177,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var productionOnlyPackageInstallCommand = string.Format(
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
-            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomNpmRunBuildCommand))
+            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand))
             {
                 var scriptsNode = packageJson?.scripts;
                 if (scriptsNode != null)
@@ -185,6 +194,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                             packageManagerCmd);
                     }
                 }
+            }
+
+            if (IsBuildRequired(ctx)
+                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand)
+                && string.IsNullOrEmpty(runBuildCommand)
+                && string.IsNullOrEmpty(runBuildAzureCommand))
+            {
+                throw new NoBuildStepException(
+                    "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
+                    "Could not find value for custom run build command using the environment variable " +
+                    "key 'RUN_BUILD_COMMAND'.");
             }
 
             if (packageJson?.dependencies != null)
@@ -242,7 +262,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
                 RunNpmPack = ctx.IsPackage,
-                CustomNpmRunBuildCommand = _nodeScriptGeneratorOptions.CustomNpmRunBuildCommand,
+                CustomNpmRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
             };
 
             string script = TemplateHelper.Render(
@@ -373,6 +393,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private static bool ShouldPruneDevDependencies(BuildScriptGeneratorContext context)
         {
             return BuildPropertiesHelper.IsTrue(PruneDevDependenciesPropertyKey, context, valueIsRequired: false);
+        }
+
+        private static bool IsBuildRequired(BuildScriptGeneratorContext context)
+        {
+            return BuildPropertiesHelper.IsTrue(RequireBuildPropertyKey, context, valueIsRequired: false);
         }
 
         private static bool DoesPackageDependencyExist(dynamic packageJson, string packageName)
