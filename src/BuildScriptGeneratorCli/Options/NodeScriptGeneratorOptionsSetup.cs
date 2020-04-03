@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         public void Configure(NodeScriptGeneratorOptions options)
         {
             options.NodeVersion = _environment.GetEnvironmentVariable(SettingsKeys.NodeVersion);
-            options.CustomNpmRunBuildCommand = _environment.GetEnvironmentVariable(SettingsKeys.CustomNpmRunBuildCommand);
+            options.CustomRunBuildCommand = _environment.GetEnvironmentVariable(SettingsKeys.CustomRunBuildCommand);
         }
     }
 }
