@@ -187,7 +187,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions(),
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -216,7 +219,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions(),
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -244,7 +250,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -272,7 +281,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions(),
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -302,7 +314,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
