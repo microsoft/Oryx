@@ -71,7 +71,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.SourcePath))
 	}
 	
-	common.SetupPreRunScript(&scriptBuilder)
+	common.SetupPreRunScript(&scriptBuilder, gen.SourcePath)
 
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")

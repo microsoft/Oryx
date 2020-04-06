@@ -57,22 +57,15 @@ namespace Microsoft.Oryx.Integration.Tests
                 
                 .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
                 .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
-                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"chmod +x {RunScriptPreRunPath}")
                 .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
                 .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
                 .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
                 .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
                 .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
-                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"chmod +x {RunScriptPath}")
                 .AddCommand($"unset LINENUMBER")
                 .AddCommand($"unset LINENUMBERPLUSONE")
-                
-                // .AddCommand($"echo '------'")
-                // .AddCommand($"cat {RunScriptPreRunPath}")
-                // .AddCommand($"echo '------'")
-                // .AddCommand($"cat {RunScriptPath}")
-                // .AddCommand($"echo '------'")
-
                 .AddCommand(RunScriptPreRunPath)
                 .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
                 .AddFileExistsCheck($"{appOutputDir}/_test_file_2.txt")
@@ -80,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp21WebApp,
+                NetCoreApp31MvcApp,
                 _output,
                 new[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),
@@ -132,28 +125,29 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
 
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, preRunScriptPath)
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)
                 .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")
                 .AddStringExistsInFileCheck($"touch {appOutputDir}/_test_file.txt", $"{preRunScriptPath}")
-                .AddCommand($"chmod 755 {preRunScriptPath}")
+                .AddCommand($"chmod +x {preRunScriptPath}")
 
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
                 
                 .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
                 .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
-                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"chmod +x {RunScriptPreRunPath}")
                 .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
                 .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
                 .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
                 .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
                 .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
-                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"chmod +x {RunScriptPath}")
                 .AddCommand($"unset LINENUMBER")
                 .AddCommand($"unset LINENUMBERPLUSONE")
                 .AddCommand(RunScriptPreRunPath)
                 .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
+                .AddFileExistsCheck($"{appOutputDir}/_test_file_2.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 

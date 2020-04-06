@@ -37,7 +37,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 
-	common.SetupPreRunScript(&scriptBuilder)
+	common.SetupPreRunScript(&scriptBuilder, gen.SourcePath)
 
 	scriptBuilder.WriteString("# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")

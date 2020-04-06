@@ -90,7 +90,7 @@ namespace Microsoft.Oryx.Integration.Tests
             
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, preRunScriptPath)
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)
                 .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")
@@ -110,6 +110,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"unset LINENUMBERPLUSONE")
                 .AddCommand(RunScriptPreRunPath)
                 .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
+                .AddFileExistsCheck($"{appOutputDir}/_test_file_2.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
