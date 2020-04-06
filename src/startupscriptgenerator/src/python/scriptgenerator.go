@@ -53,10 +53,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	if enableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.AppPath))
 	}
-	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
 
 	common.SetupPreRunScript(&scriptBuilder)
+
+	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
+	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
 
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)

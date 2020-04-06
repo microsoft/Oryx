@@ -18,5 +18,6 @@ func SetupPreRunScript(scriptBuilder *strings.Builder)  {
 	if preRunCommandOrScript != "" {
 		scriptBuilder.WriteString("echo 'Running the provided pre-run command...'\n")
 		scriptBuilder.WriteString(preRunCommandOrScript + "\n")
+		scriptBuilder.WriteString("# End of pre-run command.\n")
 	}
 }

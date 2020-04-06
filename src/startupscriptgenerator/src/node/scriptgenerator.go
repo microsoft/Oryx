@@ -70,12 +70,12 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	if enableDynamicInstall && !common.PathExists(nodeBinary) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.SourcePath))
 	}
+	
+	common.SetupPreRunScript(&scriptBuilder)
 
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd \"" + gen.SourcePath + "\"\n\n")
 	scriptBuilder.WriteString("export NODE_PATH=$(npm root --quiet -g):$NODE_PATH\n")
-
-	common.SetupPreRunScript(&scriptBuilder)
 
 	// Expose the port so that a custom command can use it if needed.
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)

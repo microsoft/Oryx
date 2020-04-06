@@ -15,6 +15,9 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "php")]
     public class PhpPreRunCommandOrScriptTest : PhpEndToEndTestsBase
     {
+        private readonly string RunScriptTempPath = "/tmp/startup_temp.sh";
+        private readonly string RunScriptPreRunPath = "/tmp/startup_prerun.sh";
+
         public PhpPreRunCommandOrScriptTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
@@ -33,11 +36,26 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
+            
+            // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch {appOutputDir}/test_pre_run.txt\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
+                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
-                .AddCommand($"rm {appOutputDir}/test_pre_run.txt")
+                .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
+                .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
+                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
+                .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"unset LINENUMBER")
+                .AddCommand($"unset LINENUMBERPLUSONE")
+                .AddCommand(RunScriptPreRunPath)
+                .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
+                .AddFileExistsCheck($"{appOutputDir}/_test_file_2.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -65,19 +83,33 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir"; 
+            var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
+            
+            // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"touch {appOutputDir}/prerunscript.sh")
-                .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"echo \"touch {appOutputDir}/test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
-                .AddStringExistsInFileCheck($"touch {appOutputDir}/test_pre_run.txt", $"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, preRunScriptPath)
+                .AddCommand($"touch {preRunScriptPath}")
+                .AddFileExistsCheck(preRunScriptPath)
+                .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")
+                .AddStringExistsInFileCheck($"touch {appOutputDir}/_test_file.txt", $"{preRunScriptPath}")
+                .AddCommand($"chmod 755 {preRunScriptPath}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
-                .AddCommand($"rm {appOutputDir}/test_pre_run.txt")
+                .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
+                .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
+                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
+                .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"unset LINENUMBER")
+                .AddCommand($"unset LINENUMBERPLUSONE")
+                .AddCommand(RunScriptPreRunPath)
+                .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -104,22 +136,38 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir"; 
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
+
+            // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"touch {appOutputDir}/prerunscript.sh")
-                .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"echo \"apt-get install php-json\" > {appOutputDir}/prerunscript.sh")
-                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
-                .AddCommand($"php -m | grep 'json' > {appOutputDir}/_temp.txt")
-                .AddStringDoesNotExistInFileCheck("json", $"{appOutputDir}/_temp.txt")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, preRunScriptPath)
+                .AddCommand($"touch {preRunScriptPath}")
+                .AddFileExistsCheck(preRunScriptPath)
+                .AddCommand($"echo \"apt-get install --assume-yes htop\" > {preRunScriptPath}")
+                .AddCommand($"chmod 755 {preRunScriptPath}")
+                .AddCommand($"apt-get remove --assume-yes htop")
+                .AddCommand($"apt-get remove --assume-yes htop | grep '0 to remove' > {appOutputDir}/_cli_output.txt")
+                .AddStringExistsInFileCheck("0 to remove", $"{appOutputDir}/_cli_output.txt")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
-                .AddCommand($"php -m | grep 'json' > {appOutputDir}/_temp.txt")
-                .AddStringExistsInFileCheck("json", $"{appOutputDir}/_temp.txt")
-                .AddCommand($"rm {appOutputDir}/_temp.txt")
+                .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
+                .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
+                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
+                .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"unset LINENUMBER")
+                .AddCommand($"unset LINENUMBERPLUSONE")
+                .AddCommand(RunScriptPreRunPath)
+                .AddCommand($"apt-get install --assume-yes htop | grep '0 newly installed' > {appOutputDir}/_cli_output.txt")
+                .AddStringExistsInFileCheck("0 newly installed", $"{appOutputDir}/_cli_output.txt")
+                .AddCommand($"rm {appOutputDir}/_cli_output.txt")
                 .AddCommand(RunScriptPath)
                 .ToString();
 

@@ -16,6 +16,10 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "dotnetcore")]
     public class DotNetCorePreRunCommandOrScriptTest : DotNetCoreEndToEndTestsBase
     {
+        private readonly string RunScriptPath = DefaultStartupFilePath;
+        private readonly string RunScriptTempPath = "/tmp/startup_temp.sh";
+        private readonly string RunScriptPreRunPath = "/tmp/startup_prerun.sh";
+
         public DotNetCorePreRunCommandOrScriptTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
@@ -38,21 +42,45 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand(
                 $"oryx build {appDir} --platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
+
+            // split run script to test pre-run command before running the app.
             var runtimeImageScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "\"touch test_pre_run.txt\"")
-                .AddCommand(
-                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddFileExistsCheck($"test_pre_run.txt")
-                .AddCommand($"rm test_pre_run.txt")
-                .AddCommand(DefaultStartupFilePath)
+
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
+                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
+                
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
+                
+                .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
+                .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
+                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
+                .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"unset LINENUMBER")
+                .AddCommand($"unset LINENUMBERPLUSONE")
+                
+                // .AddCommand($"echo '------'")
+                // .AddCommand($"cat {RunScriptPreRunPath}")
+                // .AddCommand($"echo '------'")
+                // .AddCommand($"cat {RunScriptPath}")
+                // .AddCommand($"echo '------'")
+
+                .AddCommand(RunScriptPreRunPath)
+                .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
+                .AddFileExistsCheck($"{appOutputDir}/_test_file_2.txt")
+                .AddCommand(RunScriptPath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp31MvcApp,
+                NetCoreApp21WebApp,
                 _output,
                 new[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),
@@ -87,6 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
+            var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildImageScript = new ShellScriptBuilder()
                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
@@ -94,21 +123,38 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand(
                 $"oryx build {appDir} --platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
+
+
+            // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
-                .AddCommand($"touch {appOutputDir}/prerunscript.sh")
-                .AddFileExistsCheck($"{appOutputDir}/prerunscript.sh")
-                .AddCommand($"echo \"touch {appOutputDir}/test_pre_run.txt\" > {appOutputDir}/prerunscript.sh")
-                .AddCommand($"chmod 755 {appOutputDir}/prerunscript.sh")
-                .AddCommand(
-                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddFileExistsCheck($"{appOutputDir}/test_pre_run.txt")
-                .AddCommand($"rm {appOutputDir}/test_pre_run.txt")
-                .AddCommand(DefaultStartupFilePath)
+
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, preRunScriptPath)
+                .AddCommand($"touch {preRunScriptPath}")
+                .AddFileExistsCheck(preRunScriptPath)
+                .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")
+                .AddStringExistsInFileCheck($"touch {appOutputDir}/_test_file.txt", $"{preRunScriptPath}")
+                .AddCommand($"chmod 755 {preRunScriptPath}")
+
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
+                
+                .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
+                .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
+                .AddCommand($"chmod 755 {RunScriptPreRunPath}")
+                .AddCommand($"LINENUMBERPLUSONE=\"$(expr ${{LINENUMBER}} + 1)\"")
+                .AddCommand($"eval \"tail -n +${{LINENUMBERPLUSONE}} {RunScriptPath} > {RunScriptTempPath}\"")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"head -n +1 {RunScriptPreRunPath} | cat - {RunScriptPath} > {RunScriptTempPath}")
+                .AddCommand($"mv {RunScriptTempPath} {RunScriptPath}")
+                .AddCommand($"chmod 755 {RunScriptPath}")
+                .AddCommand($"unset LINENUMBER")
+                .AddCommand($"unset LINENUMBERPLUSONE")
+                .AddCommand(RunScriptPreRunPath)
+                .AddFileExistsCheck($"{appOutputDir}/_test_file.txt")
+                .AddCommand(RunScriptPath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

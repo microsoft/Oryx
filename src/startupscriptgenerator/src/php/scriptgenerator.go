@@ -36,6 +36,9 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
+
+	common.SetupPreRunScript(&scriptBuilder)
+
 	scriptBuilder.WriteString("# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 	common.SetEnvironmentVariableInScript(&scriptBuilder, portEnvVariable, gen.BindPort, DefaultBindPort)
@@ -45,8 +48,6 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("else\n")
 	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("fi\n\n")
-
-	common.SetupPreRunScript(&scriptBuilder)
 
 	scriptBuilder.WriteString(gen.StartupCmd + "\n")
 
