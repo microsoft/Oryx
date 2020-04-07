@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string NpmRunBuildCommand { get; set; }
 
-        public string CustomNpmRunBuildCommand { get; set; }
+        public string CustomRunBuildCommand { get; set; }
 
         public string NpmRunBuildAzureCommand { get; set; }
 

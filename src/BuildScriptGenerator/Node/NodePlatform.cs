@@ -286,7 +286,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
                 RunNpmPack = _commonOptions.ShouldPackage,
-                CustomNpmRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
+                CustomRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
             };
 
             string script = TemplateHelper.Render(
