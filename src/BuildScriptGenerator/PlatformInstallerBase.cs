@@ -128,6 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             _logger.LogDebug(
                 "Version {version} was not found to be installed at {builtInDir} or {dynamicInstallDir}",
+                lookupVersion,
                 builtInDir,
                 dynamicInstallDir);
 
