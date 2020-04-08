@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
                 Options.Create(commonOptions),
-				NullLoggerFactory.Instance));
+                NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
                 platformInstaller,
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
                 Options.Create(commonOptions),
-                NullLoggerFactory.Instance));
+                NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
                 platformInstaller,
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 isVersionAlreadyInstalled: true,
                 installerScript: installerScriptSnippet,
                 Options.Create(commonOptions),
-                NullLoggerFactory.Instance));
+                NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
                 platformInstaller,

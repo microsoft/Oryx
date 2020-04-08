@@ -64,9 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             public TestNodeSdkStorageVersionProvider(
                 IOptions<BuildScriptGeneratorOptions> commonOptions, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
-                : base(commonOptions, httpClientFactory)
-                IEnvironment environment, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
-                : base(environment, httpClientFactory, loggerFactory)
+                : base(commonOptions, httpClientFactory, loggerFactory)
             {
             }
 

@@ -4,8 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Net.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
-            : base(environment, httpClientFactory, loggerFactory)
+            : base(commonOptions, httpClientFactory, loggerFactory)
         {
         }
 

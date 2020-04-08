@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public PythonPlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             ILoggerFactory loggerFactory)
-            : base(environment, loggerFactory)
+            : base(commonOptions, loggerFactory)
         {
         }
 

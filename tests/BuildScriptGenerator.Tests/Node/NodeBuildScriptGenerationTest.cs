@@ -562,7 +562,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 new TestEnvironment(),
-                new NodePlatformInstaller(commonOptions, environment, NullLoggerFactory.Instance));
+                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)

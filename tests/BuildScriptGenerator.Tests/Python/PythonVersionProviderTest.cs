@@ -88,6 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             var onDiskProvider = new TestPythonOnDiskVersionProvider();
             var storageProvider = new TestPythonSdkStorageVersionProvider(
+                commonOptions,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
             var versionProvider = new PythonVersionProvider(

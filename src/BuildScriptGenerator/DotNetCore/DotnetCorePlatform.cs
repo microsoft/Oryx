@@ -98,17 +98,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     _logger.LogDebug(
                         "DotNetCore runtime version {runtimeVersion} is already installed. " +
                         "So skipping installing it again.",
-                        context.DotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreRuntimeVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "DotNetCore runtime version {runtimeVersion} is not installed. " +
                         "So generating an installation script snippet for it.",
-                        context.DotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreRuntimeVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        context.DotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreRuntimeVersion);
                 }
             }
             else

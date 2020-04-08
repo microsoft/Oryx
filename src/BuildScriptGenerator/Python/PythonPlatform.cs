@@ -116,15 +116,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 {
                     _logger.LogDebug(
                        "Python version {version} is already installed. So skipping installing it again.",
-                       context.PythonVersion);
+                       context.ResolvedPythonVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "Python version {version} is not installed. So generating an installation script snippet for it.",
-                        context.PythonVersion);
+                        context.ResolvedPythonVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.PythonVersion);
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.ResolvedPythonVersion);
                 }
             }
             else

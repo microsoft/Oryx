@@ -9,8 +9,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
-            : base(httpClientFactory, loggerFactory)
+            : base(commonOptions, httpClientFactory, loggerFactory)
         {
         }
 

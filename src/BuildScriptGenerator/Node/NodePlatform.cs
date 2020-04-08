@@ -128,15 +128,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     _logger.LogDebug(
                         "Node version {version} is already installed. So skipping installing it again.",
-                        ctx.NodeVersion);
+                        ctx.ResolvedNodeVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "Node version {version} is not installed. So generating an installation script snippet for it.",
-                        ctx.NodeVersion);
+                        ctx.ResolvedNodeVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.NodeVersion);
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.ResolvedNodeVersion);
                 }
             }
             else
