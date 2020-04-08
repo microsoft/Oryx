@@ -6,6 +6,7 @@
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -29,29 +30,30 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("7.2")]
         [InlineData("7.0")]
         [InlineData("5.6")]
-        public async Task WordPress51(string phpVersion)
+        public async Task PhpWithApacheWordPress51(string phpVersion)
         {
             // Arrange
-            string hostDir = Path.Combine(_tempRootDir, "wordpress");
+            string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
             if (!Directory.Exists(hostDir))
             {
+                Directory.CreateDirectory(hostDir);
                 using (var webClient = new WebClient())
                 {
-                    var wpZipPath = Path.Combine(_tempRootDir, "wp.zip");
+                    var wpZipPath = Path.Combine(hostDir, "wp.zip");
                     webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
                     // The ZIP already contains a `wordpress` folder
-                    ZipFile.ExtractToDirectory(wpZipPath, _tempRootDir);
+                    ZipFile.ExtractToDirectory(wpZipPath, hostDir);
                 }
             }
 
             var appName = "wordpress";
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.CreateMirror(Path.Combine(hostDir,"wordpress"));
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -73,32 +75,33 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
-        public async Task PhpFpmWordPress51(string phpVersion)
+        public async Task PhpFpmWithNginxWordPress51(string phpVersion)
         {
             // Arrange
-            string hostDir = Path.Combine(_tempRootDir, "wordpress");
+            string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
             if (!Directory.Exists(hostDir))
             {
+                Directory.CreateDirectory(hostDir);
                 using (var webClient = new WebClient())
                 {
-                    var wpZipPath = Path.Combine(_tempRootDir, "wp.zip");
+                    var wpZipPath = Path.Combine(hostDir, "wp.zip");
                     webClient.DownloadFile("https://wordpress.org/wordpress-5.1.zip", wpZipPath);
                     // The ZIP already contains a `wordpress` folder
-                    ZipFile.ExtractToDirectory(wpZipPath, _tempRootDir);
+                    ZipFile.ExtractToDirectory(wpZipPath, hostDir);
                 }
             }
 
             var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
             var appName = "wordpress";
-            var volume = DockerVolume.CreateMirror(hostDir);
+            var volume = DockerVolume.CreateMirror(Path.Combine(hostDir, "wordpress"));
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
                 .AddCommand("mkdir -p /home/site/wwwroot")
-                .AddCommand($"cp -rf {appDir}/* /home/site/wwwroot")
+                .AddCommand($"cp -rf {appDir}/. /home/site/wwwroot")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
