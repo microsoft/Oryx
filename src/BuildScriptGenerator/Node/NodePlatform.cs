@@ -120,10 +120,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
             string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall
-                && !_platformInstaller.IsVersionAlreadyInstalled(ctx.NodeVersion))
+            if (_commonOptions.EnableDynamicInstall)
             {
-                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.NodeVersion);
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(ctx.NodeVersion))
+                {
+                    _logger.LogDebug(
+                        "Node version {version} is already installed. So skipping installing it again.",
+                        ctx.NodeVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Node version {version} is not installed. So generating an installation script snippet for it.",
+                        ctx.NodeVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.NodeVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install not enabled.");
             }
 
             var manifestFileProperties = new Dictionary<string, string>();

@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common;
 
@@ -16,8 +17,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public DotNetCorePlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             IEnvironment environment,
-            IDotNetCoreVersionProvider versionProvider)
-            : base(cliOptions, environment)
+            IDotNetCoreVersionProvider versionProvider,
+            ILoggerFactory loggerFactory)
+            : base(cliOptions, environment, loggerFactory)
         {
             _versionProvider = versionProvider;
         }

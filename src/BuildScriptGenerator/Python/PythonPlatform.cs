@@ -109,10 +109,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
             string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall
-                && !_platformInstaller.IsVersionAlreadyInstalled(context.PythonVersion))
+            if (_commonOptions.EnableDynamicInstall)
             {
-                installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.PythonVersion);
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(context.PythonVersion))
+                {
+                    _logger.LogDebug(
+                       "Python version {version} is already installed. So skipping installing it again.",
+                       context.PythonVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Python version {version} is not installed. So generating an installation script snippet for it.",
+                        context.PythonVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.PythonVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install not enabled.");
             }
 
             var manifestFileProperties = new Dictionary<string, string>();

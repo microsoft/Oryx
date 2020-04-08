@@ -31,7 +31,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = expectedText },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -61,7 +64,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -90,7 +96,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -178,7 +187,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions(),
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -207,7 +219,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions(),
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -235,7 +250,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -263,7 +281,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions(),
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -293,7 +314,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
-                new NodePlatformInstaller(Options.Create(commonOptions), new TestEnvironment()));
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    new TestEnvironment(),
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
@@ -343,7 +367,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var installer = new TestNodePlatformInstaller(
                 Options.Create(cliOptions),
                 environment,
-                sdkAlreadyInstalled);
+                sdkAlreadyInstalled,
+                NullLoggerFactory.Instance);
 
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
@@ -403,8 +428,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public TestNodePlatformInstaller(
                 IOptions<BuildScriptGeneratorOptions> cliOptions,
                 IEnvironment environment,
-                bool sdkIsAlreadyInstalled)
-                : base(cliOptions, environment)
+                bool sdkIsAlreadyInstalled,
+                ILoggerFactory loggerFactory)
+                : base(cliOptions, environment, loggerFactory)
             {
                 _sdkIsAlreadyInstalled = sdkIsAlreadyInstalled;
             }

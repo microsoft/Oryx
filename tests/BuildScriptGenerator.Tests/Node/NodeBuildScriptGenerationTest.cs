@@ -3,13 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -544,7 +541,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 environment,
-                new NodePlatformInstaller(commonOptions, environment));
+                new NodePlatformInstaller(commonOptions, environment, NullLoggerFactory.Instance));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(

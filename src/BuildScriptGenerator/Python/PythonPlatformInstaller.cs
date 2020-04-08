@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
@@ -11,8 +12,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     {
         public PythonPlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IEnvironment environment)
-            : base(commonOptions, environment)
+            IEnvironment environment,
+            ILoggerFactory loggerFactory)
+            : base(commonOptions, environment, loggerFactory)
         {
         }
 
