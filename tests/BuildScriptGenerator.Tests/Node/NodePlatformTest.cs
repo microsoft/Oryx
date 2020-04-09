@@ -33,12 +33,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = expectedText },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -66,12 +65,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -98,12 +96,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -121,7 +118,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -142,7 +138,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -160,7 +155,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
 
             // Act
             var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
@@ -189,12 +183,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions(),
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
             context.Properties[NodePlatform.RequireBuildPropertyKey] = requireBuild;
 
             // Act
@@ -221,12 +214,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions(),
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
 
             // Act
@@ -252,12 +244,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
 
             // Act
@@ -283,12 +274,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions(),
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
-                NullLoggerFactory.Instance));
+                    NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
 
             // Act & Assert
@@ -316,12 +306,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
-                    new TestEnvironment(),
                     NullLoggerFactory.Instance));
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            context.NodeVersion = "10.10";
+            context.ResolvedNodeVersion = "10.10";
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "false";
 
             // Act
@@ -366,7 +355,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
             var installer = new TestNodePlatformInstaller(
                 Options.Create(cliOptions),
-                environment,
                 sdkAlreadyInstalled,
                 NullLoggerFactory.Instance);
 
@@ -427,10 +415,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             public TestNodePlatformInstaller(
                 IOptions<BuildScriptGeneratorOptions> cliOptions,
-                IEnvironment environment,
                 bool sdkIsAlreadyInstalled,
                 ILoggerFactory loggerFactory)
-                : base(cliOptions, environment, loggerFactory)
+                : base(cliOptions, loggerFactory)
             {
                 _sdkIsAlreadyInstalled = sdkIsAlreadyInstalled;
             }

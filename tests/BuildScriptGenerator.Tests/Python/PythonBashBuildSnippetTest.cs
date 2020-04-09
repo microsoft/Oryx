@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 virtualEnvironmentModule: null,
                 virtualEnvironmentParameters: null,
                 packagesDirectory: "packages_dir",
-                disableCollectStatic: false,
+                enableCollectStatic: true,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null);
 
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 virtualEnvironmentModule: null,
                 virtualEnvironmentParameters: null,
                 packagesDirectory: "packages_dir",
-                disableCollectStatic: true,
+                enableCollectStatic: false,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null);
 

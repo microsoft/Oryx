@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var shellPath = env.GetEnvironmentVariable("BASH") ?? FilePaths.Bash;
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
-            ctx.DisableMultiPlatformBuild = false;
+            opts.EnableMultiPlatformBuild = true;
             var tools = generator.GetRequiredToolVersions(ctx);
 
             int exitCode;

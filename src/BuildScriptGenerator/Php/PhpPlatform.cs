@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     internal class PhpPlatform : IProgrammingPlatform
     {
         private readonly PhpScriptGeneratorOptions _phpScriptGeneratorOptions;
+        private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
         private readonly PhpPlatformDetector _detector;
@@ -33,11 +34,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <param name="detector">The detector of PHP platform.</param>
         public PhpPlatform(
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
             PhpPlatformDetector detector)
         {
             _phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
+            _commonOptions = commonOptions.Value;
             _phpVersionProvider = phpVersionProvider;
             _logger = logger;
             _detector = detector;
@@ -76,10 +79,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var buildProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            var key = $"{PhpConstants.PlatformName}_version";
-            buildProperties[key] = ctx.PhpVersion;
+            buildProperties[ManifestFilePropertyKeys.PhpVersion] = ctx.ResolvedPhpVersion;
 
-            _logger.LogDebug("Selected PHP version: {phpVer}", ctx.PhpVersion);
+            _logger.LogDebug("Selected PHP version: {phpVer}", ctx.ResolvedPhpVersion);
             bool composerFileExists = false;
 
             if (ctx.SourceRepo.FileExists(PhpConstants.ComposerFileName))
@@ -93,7 +95,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     {
                         Newtonsoft.Json.Linq.JObject deps = composerFile?.require;
                         var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                        _logger.LogDependencies(this.Name, ctx.PhpVersion, depSpecs.Select(kv => kv.Key + kv.Value));
+                        _logger.LogDependencies(
+                            this.Name,
+                            ctx.ResolvedPhpVersion,
+                            depSpecs.Select(kv => kv.Key + kv.Value));
                     }
                 }
                 catch (Exception exc)
@@ -112,7 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return ctx.EnablePhp;
+            return _commonOptions.EnablePhpBuild;
         }
 
         /// <inheritdoc/>
@@ -146,7 +151,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
-            context.PhpVersion = version;
+            context.ResolvedPhpVersion = version;
         }
 
         /// <inheritdoc/>

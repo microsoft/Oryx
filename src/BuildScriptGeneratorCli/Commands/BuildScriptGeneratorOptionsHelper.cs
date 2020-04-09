@@ -52,17 +52,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             options.ScriptOnly = scriptOnly;
 
-            // Process properties
-            if (properties != null)
-            {
-                options.Properties = ProcessProperties(properties);
-            }
+            options.Properties = ProcessProperties(properties);
         }
 
         // To enable testing
         internal static IDictionary<string, string> ProcessProperties(string[] properties)
         {
             var propertyList = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            if (properties == null)
+            {
+                return propertyList;
+            }
+
             foreach (var property in properties)
             {
                 if (NameAndValuePairParser.TryParse(property, out var key, out var value))

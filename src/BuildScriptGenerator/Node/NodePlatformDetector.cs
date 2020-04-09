@@ -127,14 +127,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetVersion(RepositoryContext context)
         {
-            if (context.NodeVersion != null)
+            if (context.ResolvedNodeVersion != null)
             {
-                return context.NodeVersion;
-            }
-
-            if (_options.NodeVersion != null)
-            {
-                return _options.NodeVersion;
+                return context.ResolvedNodeVersion;
             }
 
             var version = GetVersionFromPackageJson(context);

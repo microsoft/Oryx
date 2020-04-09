@@ -17,16 +17,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public abstract class PlatformInstallerBase
     {
         protected readonly BuildScriptGeneratorOptions _commonOptions;
-        protected readonly IEnvironment _environment;
         protected readonly ILogger _logger;
 
         public PlatformInstallerBase(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IEnvironment environment,
             ILoggerFactory loggerFactory)
         {
             _commonOptions = commonOptions.Value;
-            _environment = environment;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
@@ -143,8 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private string GetPlatformBinariesStorageBaseUrl()
         {
-            var platformBinariesStorageBaseUrl = _environment.GetEnvironmentVariable(
-                SdkStorageConstants.SdkStorageBaseUrlKeyName);
+            var platformBinariesStorageBaseUrl = _commonOptions.OryxSdkStorageBaseUrl;
             if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
             {
                 throw new InvalidOperationException(

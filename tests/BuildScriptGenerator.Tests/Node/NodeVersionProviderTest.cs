@@ -63,8 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
         {
             public TestNodeSdkStorageVersionProvider(
-                IEnvironment environment, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
-                : base(environment, httpClientFactory, loggerFactory)
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+                : base(commonOptions, httpClientFactory, loggerFactory)
             {
             }
 
@@ -85,11 +85,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             {
                 EnableDynamicInstall = enableDynamicInstall
             });
-            var environment = new TestEnvironment();
 
             var onDiskProvider = new TestNodeOnDiskVersionProvider();
             var storageProvider = new TestNodeSdkStorageVersionProvider(
-                environment,
+                commonOptions,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
             var versionProvider = new NodeVersionProvider(

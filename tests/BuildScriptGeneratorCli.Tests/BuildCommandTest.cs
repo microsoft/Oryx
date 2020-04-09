@@ -9,11 +9,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Microsoft.Extensions.Configuration.Ini;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -31,33 +39,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void Configure_UsesCurrentDirectory_WhenSourceDirectoryNotSupplied()
+        public void Options_HasCurrentDirectory_WhenSourceDirectoryNotSupplied()
         {
             // Arrange
-            var scriptCommand = new BuildCommand { SourceDir = string.Empty };
+            var buildCommand = new BuildCommand { SourceDir = string.Empty };
             var testConsole = new TestConsole();
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
-            BuildScriptGeneratorOptions opts = new BuildScriptGeneratorOptions();
-            scriptCommand.ConfigureBuildScriptGeneratorOptions(opts);
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             // Assert
-            Assert.Equal(Directory.GetCurrentDirectory(), opts.SourceDir);
+            Assert.Equal(Directory.GetCurrentDirectory(), options.SourceDir);
         }
 
         [Fact]
         public void IsValidInput_IsTrue_EvenIfDestinationDirDoesNotExist()
         {
             // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = _testDir.CreateChildDir();
-                    o.DestinationDir = _testDir.GenerateRandomChildDirPath();
-                })
-                .Build();
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath()
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -72,22 +78,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void IsValidInput_ShowsWarning_WhenDeprecatedOptionUsed()
         {
             // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = _testDir.CreateChildDir();
-                    o.DestinationDir = _testDir.GenerateRandomChildDirPath();
-                })
-                .Build();
             var testConsole = new TestConsole();
-
             var expectedPlatformName = "test";
             var expectedPlatformVersion = "1.0.0";
             var buildCommand = new BuildCommand
             {
                 LanguageName = expectedPlatformName,
                 LanguageVersion = expectedPlatformVersion,
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
             };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -104,15 +105,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void IsValidInput_IsTrue_EvenIfDestinationDirExists_AndIsEmpty()
         {
             // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = _testDir.CreateChildDir();
-                    o.DestinationDir = _testDir.CreateChildDir();
-                })
-                .Build();
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.CreateChildDir(),
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -129,16 +128,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var dstDir = _testDir.CreateChildDir();
             File.WriteAllText(Path.Combine(dstDir, "bla.txt"), "bla");
-
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = _testDir.CreateChildDir();
-                    o.DestinationDir = dstDir;
-                })
-                .Build();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = dstDir,
+            };
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -223,16 +219,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = _testDir.CreateChildDir();
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = sourceDir;
-                    o.IntermediateDir = sourceDir;
-                    o.DestinationDir = _testDir.CreateChildDir();
-                })
-                .Build();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = sourceDir,
+                IntermediateDir = sourceDir,
+                DestinationDir = _testDir.CreateChildDir()
+            };
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -254,16 +248,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var sourceDir = _testDir.CreateChildDir();
             var subPaths = Path.Combine(paths);
             var intermediateDir = Path.Combine(sourceDir, subPaths);
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = sourceDir;
-                    o.IntermediateDir = intermediateDir;
-                    o.DestinationDir = _testDir.CreateChildDir();
-                })
-                .Build();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = sourceDir,
+                IntermediateDir = intermediateDir,
+                DestinationDir = _testDir.CreateChildDir()
+            };
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -280,17 +272,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void IsValid_IsFalse_IfLanguageVersionSpecified_WithoutLanguageName()
         {
             // Arrange
-            var serviceProvider = new ServiceProviderBuilder()
-                .ConfigureScriptGenerationOptions(o =>
-                {
-                    o.SourceDir = _testDir.CreateChildDir();
-                    o.DestinationDir = _testDir.CreateChildDir();
-                    o.PlatformName = null;
-                    o.PlatformVersion = "1.0.0";
-                })
-                .Build();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.CreateChildDir(),
+                PlatformName = null,
+                PlatformVersion = "1.0.0"
+            };
             var testConsole = new TestConsole();
-            var buildCommand = new BuildCommand();
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -321,6 +311,302 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(opNamePrefix + ":" + appName, BuildCommand.BuildOperationName(env));
         }
 
+        [Fact]
+        public void OptionsHasValueFromCommandLine_OverValueFromBuildEnvFile()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "python",
+                PlatformVersion = "4.0"
+            };
+            File.WriteAllText(
+                Path.Combine(buildCommand.SourceDir, Constants.BuildEnvironmentFileName), "PYTHON_VERSION=3.7");
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("4.0", configuration.GetValue<string>("python_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void ConfigurationProvidersAreInExpectedOrder()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            var configurationRoot = Assert.IsAssignableFrom<IConfigurationRoot>(configuration);
+            Assert.NotNull(configurationRoot.Providers);
+            var providers = configurationRoot.Providers.ToArray();
+            Assert.Equal(3, providers.Length);
+            Assert.IsType<IniConfigurationProvider>(providers[0]);
+            Assert.IsType<EnvironmentVariablesConfigurationProvider>(providers[1]);
+            Assert.IsType<CustomConfigurationSource>(providers[2]);
+        }
+
+        [Fact]
+        public void OptionsHasValueFromBuildEnvFile_IfNoValueFoundFromOtherSources()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+            };
+            File.WriteAllText(
+                Path.Combine(buildCommand.SourceDir, Constants.BuildEnvironmentFileName), "PYTHON_VERSION=100.100");
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("100.100", configuration.GetValue<string>("python_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void PythonScriptGeneratorOptions_HasPythonVersionValue_FromPlatformVersionSwitch()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "python",
+                PlatformVersion = "4.0"
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var options = serviceProvider.GetRequiredService<IOptions<PythonScriptGeneratorOptions>>().Value;
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("4.0", configuration.GetValue<string>("python_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void NodeScriptGeneratorOptions_HasNodeVersionValue_FromPlatformVersionSwitch()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "nodejs",
+                PlatformVersion = "4.0"
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("4.0", configuration.GetValue<string>("node_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void PhpScriptGeneratorOptions_HasPhpVersionValue_FromPlatformVersionSwitch()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "php",
+                PlatformVersion = "4.0"
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("4.0", configuration.GetValue<string>("php_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void DotNetCoreScriptGeneratorOptions_HasDotNetCoreVersionValue_FromPlatformVersionSwitch()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "dotnet",
+                PlatformVersion = "4.0"
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("4.0", configuration.GetValue<string>("dotnet_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void BuildProperties_AreSet_ToPropertiesOnNodeScriptGeneratorOptions()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "nodejs",
+                PlatformVersion = "4.0",
+                Properties = new[]
+                {
+                    $"{NodePlatform.PruneDevDependenciesPropertyKey}={true}",
+                    $"{NodePlatform.RegistryUrlPropertyKey}=http://foobar.com/",
+                }
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var options = serviceProvider.GetRequiredService<IOptions<NodeScriptGeneratorOptions>>().Value;
+
+            // Assert
+            Assert.True(options.PruneDevDependencies);
+            Assert.Equal("http://foobar.com/", options.NpmRegistryUrl);
+            Assert.Equal("4.0", configuration.GetValue<string>("node_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void BuildProperties_AreSet_ToPropertiesOnPythonScriptGeneratorOptions()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "python",
+                PlatformVersion = "4.0",
+                Properties = new[]
+                {
+                    $"{PythonPlatform.VirtualEnvironmentNamePropertyKey}=fooenv",
+                    $"{NodePlatform.RegistryUrlPropertyKey}=http://foobar.com/",
+                }
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var options = serviceProvider.GetRequiredService<IOptions<PythonScriptGeneratorOptions>>().Value;
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("fooenv", options.VirtualEnvironmentName);
+            Assert.Equal("4.0", configuration.GetValue<string>("python_version"));
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void BuildProperties_AreSet_ToPropertiesOnDotNetCoreScriptGeneratorOptions()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+                PlatformName = "dotnet",
+                PlatformVersion = "4.0",
+                Properties = new[]
+                {
+                    $"{DotNetCoreConstants.ProjectBuildPropertyKey}=src/foobar.csproj",
+                }
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var options = serviceProvider.GetRequiredService<IOptions<DotNetCoreScriptGeneratorOptions>>().Value;
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            // Assert
+            Assert.Equal("4.0", configuration.GetValue<string>("dotnet_version"));
+            Assert.Equal("src/foobar.csproj", options.Project);
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void BuildScriptGeneratorOptions_HasExpectedDefaultValues()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+            };
+            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+
+            // Act
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+
+            // Assert
+            Assert.False(options.EnableMultiPlatformBuild);
+            Assert.False(options.EnableDynamicInstall);
+            Assert.False(options.ScriptOnly);
+            Assert.False(options.ShouldPackage);
+
+            Assert.True(options.EnableCheckers);
+            Assert.True(options.EnableDotNetCoreBuild);
+            Assert.True(options.EnableNodeJSBuild);
+            Assert.True(options.EnablePhpBuild);
+            Assert.True(options.EnablePythonBuild);
+            Assert.True(options.EnableTelemetry);
+
+            Assert.Null(options.PreBuildCommand);
+            Assert.Null(options.PreBuildScriptPath);
+            Assert.Null(options.PostBuildCommand);
+            Assert.Null(options.PostBuildScriptPath);
+
+            Assert.NotNull(options.Properties);
+            Assert.Empty(options.Properties);
+
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
         private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
@@ -344,6 +630,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                         ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
                     services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
+                    var configuration = new ConfigurationBuilder().Build();
+                    services.AddSingleton<IConfiguration>(configuration);
                 })
                 .ConfigureScriptGenerationOptions(o =>
                 {
