@@ -14,6 +14,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
     public class GlobalJsonSdkResolverTest
     {
+        [Fact]
+        public void NewGlobalJsonModel_SetsAllowPrereleaseProperty_ToTrueByDefault()
+        {
+            // Arrange & Act
+            var model = new GlobalJsonModel();
+            model.Sdk = new SdkModel();
+
+            // Assert
+            Assert.True(model.Sdk.AllowPreRelease);
+        }
+
+        [Fact]
+        public void NewSdk_SetsRollForwardPolicy_ToLatestPatchByDefault()
+        {
+            // Arrange & Act
+            var model = new GlobalJsonModel();
+            model.Sdk = new SdkModel();
+
+            // Assert
+            Assert.Equal(RollForwardPolicy.LatestPatch, model.Sdk.RollForward);
+        }
+
         [Theory]
         [InlineData("3.1")]
         [InlineData("3.1.*")]
@@ -212,10 +234,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101", "3.1.102-preview1-03444" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Disable,
+                RollForward = RollForwardPolicy.Disable,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -226,20 +248,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedVersion, actual);
         }
 
-        [Theory]
-        [InlineData("true")]
-        [InlineData(null)]
-        public void Disable_ReturnsSamePrereleaseVersion_IfSameVersionIsFound(string allowPrerelease)
+        [Fact]
+        public void Disable_ReturnsSamePrereleaseVersion_IfSameVersionIsFound()
         {
             // Arrange
             var expectedVersion = "3.1.102-preview1-03444";
             var availableVersions = new[] { "3.1.100", "3.1.101", "3.1.102-preview1-03444", "3.1.102-preview2-03444" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.102-preview1-03444",
-                RollForward = GlobalJsonSdkResolver.Disable,
-                AllowPreRelease = allowPrerelease,
+                RollForward = RollForwardPolicy.Disable,
+                AllowPreRelease = true,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -256,10 +276,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Arrange
             var availableVersions = new[] { "2.1.100", "3.1.101" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Disable,
+                RollForward = RollForwardPolicy.Disable,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -277,10 +297,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Patch,
+                RollForward = RollForwardPolicy.Patch,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -298,10 +318,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.102";
             var availableVersions = new[] { "2.1.100", "3.1.101", "3.1.102", "3.2.103" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Patch,
+                RollForward = RollForwardPolicy.Patch,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -318,10 +338,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Arrange
             var availableVersions = new[] { "2.1.100", "3.1.101", "3.1.102", "3.2.103" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.103",
-                RollForward = GlobalJsonSdkResolver.Patch,
+                RollForward = RollForwardPolicy.Patch,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -346,10 +366,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.2.101",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Feature,
+                RollForward = RollForwardPolicy.Feature,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -374,10 +394,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Feature,
+                RollForward = RollForwardPolicy.Feature,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -401,10 +421,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.0.102",
-                RollForward = GlobalJsonSdkResolver.Feature,
+                RollForward = RollForwardPolicy.Feature,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -422,10 +442,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.101";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Minor,
+                RollForward = RollForwardPolicy.Minor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -448,10 +468,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.201"
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Minor,
+                RollForward = RollForwardPolicy.Minor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -478,10 +498,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.2.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Minor,
+                RollForward = RollForwardPolicy.Minor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -507,10 +527,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.2.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.2.202",
-                RollForward = GlobalJsonSdkResolver.Minor,
+                RollForward = RollForwardPolicy.Minor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -528,10 +548,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.101";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Major,
+                RollForward = RollForwardPolicy.Major,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -554,10 +574,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.201"
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Major,
+                RollForward = RollForwardPolicy.Major,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -584,10 +604,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.2.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Major,
+                RollForward = RollForwardPolicy.Major,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -612,10 +632,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "4.2.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.Major,
+                RollForward = RollForwardPolicy.Major,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -639,10 +659,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "4.2.201",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "4.3.100",
-                RollForward = GlobalJsonSdkResolver.Major,
+                RollForward = RollForwardPolicy.Major,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -660,10 +680,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestPatch,
+                RollForward = RollForwardPolicy.LatestPatch,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -681,10 +701,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.200", "3.1.201" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestPatch,
+                RollForward = RollForwardPolicy.LatestPatch,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -702,10 +722,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.103";
             var availableVersions = new[] { "2.1.100", "3.1.101", "3.1.102", "3.1.103", "3.2.104" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestPatch,
+                RollForward = RollForwardPolicy.LatestPatch,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -716,10 +736,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedVersion, actual);
         }
 
-        [Theory]
-        [InlineData("true")]
-        [InlineData(null)]
-        public void LatestPatch_ReturnsLatestPreviewVersion_IfAllowPrereleaseIsTrue(string allowPrerelease)
+        [Fact]
+        public void LatestPatch_ReturnsLatestPreviewVersion_IfAllowPrereleaseIsTrue()
         {
             // Arrange
             var expectedVersion = "3.1.100-preview3-01445";
@@ -731,11 +749,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.100-preview3-01445",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100-preview1-01445",
-                RollForward = GlobalJsonSdkResolver.LatestPatch,
-                AllowPreRelease = allowPrerelease,
+                RollForward = RollForwardPolicy.LatestPatch,
+                AllowPreRelease = true,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -760,11 +778,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.100"
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100-preview1-01445",
-                RollForward = GlobalJsonSdkResolver.LatestPatch,
-                AllowPreRelease = "true",
+                RollForward = RollForwardPolicy.LatestPatch,
+                AllowPreRelease = true,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -782,7 +800,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.101";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
             };
@@ -802,10 +820,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestFeature,
+                RollForward = RollForwardPolicy.LatestFeature,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -823,10 +841,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.102";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101", "3.1.102" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestFeature,
+                RollForward = RollForwardPolicy.LatestFeature,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -852,10 +870,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.202"
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestFeature,
+                RollForward = RollForwardPolicy.LatestFeature,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -883,11 +901,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.202",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestFeature,
-                AllowPreRelease = "true",
+                RollForward = RollForwardPolicy.LatestFeature,
+                AllowPreRelease = true,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -914,11 +932,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.1.202-preview2-01554",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestFeature,
-                AllowPreRelease = "true",
+                RollForward = RollForwardPolicy.LatestFeature,
+                AllowPreRelease = true,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -936,10 +954,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMinor,
+                RollForward = RollForwardPolicy.LatestMinor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -957,10 +975,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.202";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101", "3.1.102", "3.1.200", "3.1.202" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMinor,
+                RollForward = RollForwardPolicy.LatestMinor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -987,10 +1005,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.2.201"
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMinor,
+                RollForward = RollForwardPolicy.LatestMinor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -1008,10 +1026,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedVersion = "3.1.100";
             var availableVersions = new[] { "2.1.100", "3.1.100" };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMajor,
+                RollForward = RollForwardPolicy.LatestMajor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -1040,10 +1058,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "3.3.101",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMajor,
+                RollForward = RollForwardPolicy.LatestMajor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -1074,10 +1092,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "4.3.102",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMajor,
+                RollForward = RollForwardPolicy.LatestMajor,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -1088,10 +1106,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedVersion, actual);
         }
 
-        [Theory]
-        [InlineData("true")]
-        [InlineData(null)]
-        public void LatestMajor_ReturnsLatestPreview_IfAvailable(string allowPrerelease)
+        [Fact]
+        public void LatestMajor_ReturnsLatestPreview_IfAvailable()
         {
             // Arrange
             var expectedVersion = "4.2.100-preview3-01322";
@@ -1105,11 +1121,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "4.2.100-preview3-01322",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMajor,
-                AllowPreRelease = allowPrerelease,
+                RollForward = RollForwardPolicy.LatestMajor,
+                AllowPreRelease = true,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 
@@ -1136,11 +1152,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 "5.0.100-preview3-01322",
             };
             var globalJson = new GlobalJsonModel();
-            globalJson.Sdk = new Sdk
+            globalJson.Sdk = new SdkModel
             {
                 Version = "3.1.100",
-                RollForward = GlobalJsonSdkResolver.LatestMajor,
-                AllowPreRelease = "false",
+                RollForward = RollForwardPolicy.LatestMajor,
+                AllowPreRelease = false,
             };
             var globalJsonHelper = GetGlobalJsonHelper();
 

@@ -7,22 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class GlobalJsonSdkResolver
     {
-        public const string LatestPatch = "latestPatch";
-        public const string Patch = "patch";
-        public const string LatestFeature = "latestFeature";
-        public const string Feature = "feature";
-        public const string LatestMinor = "latestMinor";
-        public const string Minor = "minor";
-        public const string LatestMajor = "latestMajor";
-        public const string Major = "major";
-        public const string Disable = "disable";
-
         private readonly ILogger<GlobalJsonSdkResolver> _logger;
 
         public GlobalJsonSdkResolver(ILogger<GlobalJsonSdkResolver> logger)
@@ -41,10 +30,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (globalJson?.Sdk == null)
             {
                 globalJson = new GlobalJsonModel();
-                globalJson.Sdk = new Sdk
+                globalJson.Sdk = new SdkModel
                 {
                     Version = "0.0.000",
-                    RollForward = LatestMajor,
+                    RollForward = RollForwardPolicy.LatestMajor,
                 };
 
                 _logger.LogDebug(
@@ -54,17 +43,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var sdkNodeInGlobalJson = globalJson.Sdk;
 
-            // From spec: If no rollFoward value is set, it uses latestPatch as the default rollForward policy
-            var rollForward = sdkNodeInGlobalJson.RollForward;
-            if (string.IsNullOrEmpty(rollForward))
-            {
-                rollForward = LatestPatch;
-
-                _logger.LogDebug(
-                    $"No 'rollFoward' policy found in global.json. Choosing a version using the " +
-                    $"default 'rollForward' policy: {rollForward}");
-            }
-
             if (!SdkVersionInfo.TryParse(sdkNodeInGlobalJson.Version, out var sdkVersionInGlobalJson))
             {
                 throw new InvalidUsageException($"Invalid version format '{sdkNodeInGlobalJson}' in global.json");
@@ -72,61 +50,45 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var availableSdkVersions = availableSdks.Select(sdk => SdkVersionInfo.Parse(sdk));
 
-            // From spec:
-            // If you don't set this value explicitly, the default value depends on whether you're running from
-            // Visual Studio:
-            // If you're not in Visual Studio, the default value is true.
-            if (!string.IsNullOrEmpty(sdkNodeInGlobalJson.AllowPreRelease))
+            if (!sdkNodeInGlobalJson.AllowPreRelease)
             {
-                if (bool.TryParse(sdkNodeInGlobalJson.AllowPreRelease, out var allowPrerelease))
-                {
-                    if (!allowPrerelease)
-                    {
-                        availableSdkVersions = availableSdkVersions.Where(sdk => !sdk.IsPrerelease);
-                    }
-                }
-                else
-                {
-                    throw new InvalidUsageException(
-                        $"Invalid value {sdkNodeInGlobalJson.AllowPreRelease} for " +
-                        $"'allowPrelease' in global.json. Allowed values are either 'true' or 'false'.");
-                }
+                availableSdkVersions = availableSdkVersions.Where(sdk => !sdk.IsPrerelease);
             }
 
             string resolvedVersion = null;
-            switch (rollForward.ToLower())
+            switch (sdkNodeInGlobalJson.RollForward)
             {
-                case var policy when policy.EqualsIgnoreCase(Disable):
+                case RollForwardPolicy.Disable:
                     resolvedVersion = GetDisable(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(Patch):
+                case RollForwardPolicy.Patch:
                     resolvedVersion = GetPatch(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(Feature):
+                case RollForwardPolicy.Feature:
                     resolvedVersion = GetFeature(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(Minor):
+                case RollForwardPolicy.Minor:
                     resolvedVersion = GetMinor(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(Major):
+                case RollForwardPolicy.Major:
                     resolvedVersion = GetMajor(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(LatestPatch):
+                case RollForwardPolicy.LatestPatch:
                     resolvedVersion = GetLatestPatch(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(LatestFeature):
+                case RollForwardPolicy.LatestFeature:
                     resolvedVersion = GetLatestFeature(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(LatestMinor):
+                case RollForwardPolicy.LatestMinor:
                     resolvedVersion = GetLatestMinor(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
-                case var policy when policy.EqualsIgnoreCase(LatestMajor):
+                case RollForwardPolicy.LatestMajor:
                     resolvedVersion = GetLatestMajor(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
                 default:
                     _logger.LogDebug(
                         "Value {invalidRollForwardPolicy} is invalid for 'rollFoward' policy.",
-                        rollForward);
+                        sdkNodeInGlobalJson.RollForward.ToString());
                     return null;
             }
 
@@ -135,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 _logger.LogDebug(
                     "Could not resolve a version using roll forward policy {rollForwardPolicy} and available sdk " +
                     "versions {availableSdkVersions}",
-                    rollForward,
+                    sdkNodeInGlobalJson.RollForward.ToString(),
                     string.Join(", ", availableSdkVersions));
             }
 

@@ -5,17 +5,16 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public class GlobalJsonModel
+    public enum RollForwardPolicy
     {
-        public Sdk Sdk { get; set; }
-    }
-
-    public class Sdk
-    {
-        public string Version { get; set; }
-
-        public string AllowPreRelease { get; set; }
-
-        public string RollForward { get; set; }
+        Disable,
+        Patch,
+        Feature,
+        Minor,
+        Major,
+        LatestPatch,
+        LatestFeature,
+        LatestMinor,
+        LatestMajor
     }
 }
