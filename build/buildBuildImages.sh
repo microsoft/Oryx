@@ -16,6 +16,7 @@ source $REPO_DIR/build/__phpVersions.sh    # For PHP_BUILD_BASE_TAG
 source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
 source $REPO_DIR/build/__nodeVersions.sh   # For YARN_CACHE_BASE_TAG
 source $REPO_DIR/build/__sdkStorageConstants.sh
+source $REPO_DIR/build/__buildBuildImageFunctions.sh
 
 declare -r BASE_TAG_BUILD_ARGS="--build-arg PYTHON_BASE_TAG=$PYTHON_BASE_TAG \
                                 --build-arg PHP_BUILD_BASE_TAG=$PHP_BUILD_BASE_TAG \
@@ -48,90 +49,6 @@ fi
 storageArgs="--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME"
 storageArgs="$storageArgs --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL"
 
-function BuildAndTagStage()
-{
-	local dockerFile="$1"
-	local stageName="$2"
-	local stageTagName="$ACR_PUBLIC_PREFIX/$2"
-
-	echo
-	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build \
-		--target $stageName \
-		-t $stageTagName \
-		$buildMetadataArgs \
-		$BASE_TAG_BUILD_ARGS \
-		-f "$dockerFile" \
-		.
-}
-
-function buildDockerImage() {
-	local dockerFileToBuild="$1"
-	local dockerImageRepoName="$2"
-	local dockerFileForTestsToBuild="$3"
-	local dockerImageForTestsRepoName="$4"
-	local dockerImageForDevelopmentRepoName="$5"
-	local dockerImageBaseTag="$6"
-
-	# Tag stages to avoid creating dangling images.
-	# NOTE:
-	# These images are not written to artifacts file because they are not expected
-	# to be pushed. This is just a workaround to prevent having dangling images so that
-	# when a cleanup operation is being done on a build agent, a valuable dangling image
-	# is not removed.
-	BuildAndTagStage "$dockerFileToBuild" node-install
-	BuildAndTagStage "$dockerFileToBuild" dotnet-install
-	BuildAndTagStage "$dockerFileToBuild" python
-
-	# If no tag was provided, use a default tag of "latest"
-	if [ -z "$dockerImageBaseTag" ]
-	then
-		dockerImageBaseTag="latest"
-	fi
-
-	builtImageTag="$dockerImageRepoName:$dockerImageBaseTag"
-	docker build -t $builtImageTag \
-		--build-arg AGENTBUILD=$BUILD_SIGNED \
-		$BASE_TAG_BUILD_ARGS \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		$storageArgs \
-		$buildMetadataArgs \
-		-f "$dockerFileToBuild" \
-		.
-
-	echo
-	echo Building a base image for tests...
-	# Do not write this image tag to the artifacts file as we do not intend to push it
-	testImageTag="$dockerImageForTestsRepoName:$dockerImageBaseTag"
-	docker build -t $testImageTag -f "$dockerFileForTestsToBuild" .
-
-	echo "$dockerImageRepoName:$dockerImageBaseTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-	# Retag build image with build number tags
-	if [ "$AGENT_BUILD" == "true" ]
-	then
-		uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-		if [ "$dockerImageBaseTag" != "latest" ]
-		then
-			uniqueTag="$dockerImageBaseTag-$uniqueTag"
-		fi
-
-		echo
-		echo "Retagging image '$builtImageTag' with ACR related tags..."
-		docker tag "$builtImageTag" "$dockerImageRepoName:$dockerImageBaseTag"
-		docker tag "$builtImageTag" "$dockerImageRepoName:$uniqueTag"
-
-		# Write the list of images that were built to artifacts folder
-		echo
-		echo "Writing the list of build images built to artifacts folder..."
-
-		# Write image list to artifacts file
-		echo "$dockerImageRepoName:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	else
-		docker tag "$builtImageTag" "$dockerImageForDevelopmentRepoName:$dockerImageBaseTag"
-	fi
-}
-
 # Forcefully pull the latest image having security updates
 docker pull buildpack-deps:stretch
 
@@ -140,22 +57,6 @@ mkdir -p "$ARTIFACTS_DIR/images"
 
 touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 > $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-function createImageNameWithReleaseTag() {
-	local imageNameToBeTaggedUniquely="$1"
-	# Retag build image with build number tags
-	if [ "$AGENT_BUILD" == "true" ]
-	then
-		local uniqueImageName="$imageNameToBeTaggedUniquely-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-
-		echo
-		echo "Retagging image '$imageNameToBeTaggedUniquely' with ACR related tags..."
-		docker tag "$imageNameToBeTaggedUniquely" "$uniqueImageName"
-
-		# Write image list to artifacts file
-		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	fi
-}
 
 # Create the following image so that it's contents can be copied to the rest of the images below
 echo

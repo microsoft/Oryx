@@ -197,30 +197,6 @@ FROM dotnet-install AS buildscriptbuilder
 
 FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
 
-###
-# Build run script generators (to be used by the `oryx run-script` command)
-###
-FROM golang:1.11-stretch as startupScriptGens
-
-# GOPATH is set to "/go" in the base image
-WORKDIR /go/src
-COPY src/startupscriptgenerator/src .
-
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-
-RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
-RUN ./build.sh node       /opt/startupcmdgen/nodejs
-RUN ./build.sh php        /opt/startupcmdgen/php
-RUN ./build.sh python     /opt/startupcmdgen/python
-###
-# End build run script generators
-###
-
 FROM python AS final
 ARG BUILD_DIR
 ARG IMAGES_DIR
@@ -235,12 +211,6 @@ RUN cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 
-# Install PHP pre-reqs
-RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
-
-# Oryx depends on the run script generators for most of its
-# `IProgrammingPlatform.GenerateBashRunScript()` implementations
-COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 
 # Copy PHP versions
