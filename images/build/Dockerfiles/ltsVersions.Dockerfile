@@ -36,12 +36,6 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-# Oryx's path is at the end of the PATH environment variable value and so earlier presence
-# of python in the path folders (in this case /usr/bin) will cause Oryx's platform sdk to be not
-# picked up.
-RUN rm -rf /usr/bin/python*
-RUN rm -rf /usr/bin/pydoc*
-
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
 RUN mkdir -p ${IMAGES_DIR}
@@ -208,7 +202,8 @@ ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
+ENV ORIGINAL_PATH="$PATH"
+ENV PATH="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo:$PATH"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib

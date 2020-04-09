@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("python3-config", "/opt/python/")]
         // Php
         [InlineData("php", "/opt/php/")]
-        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen(
+        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InFullBuildImage(
             string executableName,
             string expectedPathPrefix)
         {
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("yarn")]
         [InlineData("python")]
         [InlineData("php")]
-        public void UserInstalledExecutable_IsChosenOverOryxExecutable(string executableName)
+        public void UserInstalledExecutable_IsChosenOverOryxExecutable_InVsoBuildImage(string executableName)
         {
             // Arrange
             var userInstalledExecutable = $"/usr/local/bin/{executableName}";
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetBuildImage();
+            var image = _imageHelper.GetVsoBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -138,44 +138,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData("dotnet")]
-        [InlineData("node")]
-        [InlineData("npm")]
-        [InlineData("npx")]
-        [InlineData("yarn")]
-        [InlineData("python")]
-        [InlineData("php")]
-        public void UserInstalledExecutable_IsChosenOverOryxExecutable_InLtsVersionsBuildImage(string executableName)
-        {
-            // Arrange
-            var userInstalledExecutable = $"/usr/local/bin/{executableName}";
-            var script = new ShellScriptBuilder()
-                .AddLinkDoesNotExistCheck(userInstalledExecutable)
-                .AddFileDoesNotExistCheck(userInstalledExecutable)
-                .AddCommand($"echo > {userInstalledExecutable}")
-                .AddCommand($"chmod +x {userInstalledExecutable}")
-                .AddCommand($"which {executableName}")
-                .ToString();
-
-            // Act
-            var image = _imageHelper.GetLtsVersionsBuildImage();
-            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(userInstalledExecutable, result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [InlineData("latest")]
-        [InlineData("lts-versions")]
-        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths(string tag)
+        [Fact]
+        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths_InVsoImage()
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -189,7 +153,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetBuildImage(tag);
+            var image = _imageHelper.GetVsoBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -203,10 +167,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData("latest")]
-        [InlineData("lts-versions")]
-        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv(string tag)
+        [Fact]
+        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv_InVsoBuildImage()
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -222,7 +184,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetBuildImage(tag);
+            var image = _imageHelper.GetVsoBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert

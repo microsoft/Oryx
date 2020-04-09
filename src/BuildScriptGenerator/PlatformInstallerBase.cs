@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common;
 
@@ -17,11 +18,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         protected readonly BuildScriptGeneratorOptions _commonOptions;
         protected readonly IEnvironment _environment;
+        protected readonly ILogger _logger;
 
-        public PlatformInstallerBase(IOptions<BuildScriptGeneratorOptions> commonOptions, IEnvironment environment)
+        public PlatformInstallerBase(
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
+            IEnvironment environment,
+            ILoggerFactory loggerFactory)
         {
             _commonOptions = commonOptions.Value;
             _environment = environment;
+            _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public abstract string GetInstallerScriptSnippet(string version);
@@ -83,6 +89,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var versionsFromDisk = VersionProviderHelper.GetVersionsFromDirectory(builtInDir);
             if (HasVersion(versionsFromDisk))
             {
+                _logger.LogDebug(
+                    "Version {version} is already installed at directory {installationDir}",
+                    lookupVersion,
+                    builtInDir);
+
                 return true;
             }
 
@@ -99,9 +110,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (File.Exists(sentinelFile))
                 {
+                    _logger.LogDebug(
+                        "Version {version} is already installed at directory {installationDir}",
+                        lookupVersion,
+                        dynamicInstallDir);
+
                     return true;
                 }
+
+                _logger.LogDebug(
+                    "Directory for version {version} was already found at directory {installationDir}, " +
+                    "but sentinel file {sentinelFile} was not found.",
+                    lookupVersion,
+                    dynamicInstallDir,
+                    SdkStorageConstants.SdkDownloadSentinelFileName);
             }
+
+            _logger.LogDebug(
+                "Version {version} was not found to be installed at {builtInDir} or {dynamicInstallDir}",
+                lookupVersion,
+                builtInDir,
+                dynamicInstallDir);
 
             return false;
 

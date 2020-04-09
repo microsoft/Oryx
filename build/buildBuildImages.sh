@@ -46,7 +46,7 @@ then
 fi
 
 storageArgs="--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME"
-storageArgs="$storageArgs --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_STORAGE_BASE_URL"
+storageArgs="$storageArgs --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL"
 
 function BuildAndTagStage()
 {
@@ -218,6 +218,20 @@ buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 				"$ORYXTESTS_BUILDIMAGE_REPO" \
 				"$DEVBOX_BUILD_IMAGES_REPO"
+
+echo
+echo "-------------Creating VSO build image-------------------"
+builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$storageArgs \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
 
 echo
 echo "-------------Creating CLI image-------------------"

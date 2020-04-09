@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
@@ -81,6 +81,9 @@ if [ ! -f "$azCopyDir/azcopy" ]; then
     rm -rf /tmp/azcopy_download.tar.gz
     mkdir -p $azCopyDir
     cp /tmp/azcopy_linux_amd64_*/azcopy $azCopyDir
+
+    echo "Version of azcopy tool being used:"
+    $azCopyDir/azcopy --version
 fi
 
 copyPlatformBlobsToProd "dotnet"

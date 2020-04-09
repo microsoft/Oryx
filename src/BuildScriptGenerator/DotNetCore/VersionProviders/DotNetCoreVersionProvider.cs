@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -13,17 +14,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly DotNetCoreOnDiskVersionProvider _onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider _sdkStorageVersionProvider;
+        private readonly ILogger<DotNetCoreVersionProvider> _logger;
         private string _defaultRuntimeVersion;
         private Dictionary<string, string> _supportedVersions;
 
         public DotNetCoreVersionProvider(
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             DotNetCoreOnDiskVersionProvider onDiskVersionProvider,
-            DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider)
+            DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
+            ILogger<DotNetCoreVersionProvider> logger)
         {
             _cliOptions = cliOptions.Value;
             _onDiskVersionProvider = onDiskVersionProvider;
             _sdkStorageVersionProvider = sdkStorageVersionProvider;
+            _logger = logger;
         }
 
         public string GetDefaultRuntimeVersion()
@@ -34,6 +38,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     _sdkStorageVersionProvider.GetDefaultRuntimeVersion() :
                     _onDiskVersionProvider.GetDefaultRuntimeVersion();
             }
+
+            _logger.LogDebug("Default runtime version is {defaultRuntimeVersion}", _defaultRuntimeVersion);
 
             return _defaultRuntimeVersion;
         }
@@ -46,6 +52,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     _sdkStorageVersionProvider.GetSupportedVersions() :
                     _onDiskVersionProvider.GetSupportedVersions();
             }
+
+            _logger.LogDebug("Got list of supported versions");
 
             return _supportedVersions;
         }

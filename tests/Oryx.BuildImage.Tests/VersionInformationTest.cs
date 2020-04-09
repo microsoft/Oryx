@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(imageTestHelper.GetVsoBuildImage());
                 return data;
             }
         }

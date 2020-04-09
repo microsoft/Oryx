@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
@@ -61,8 +63,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
         {
             public TestNodeSdkStorageVersionProvider(
-                IEnvironment environment, IHttpClientFactory httpClientFactory)
-                : base(environment, httpClientFactory)
+                IEnvironment environment, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+                : base(environment, httpClientFactory, loggerFactory)
             {
             }
 
@@ -86,16 +88,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
 
             var onDiskProvider = new TestNodeOnDiskVersionProvider();
-            var storageProvider = new TestNodeSdkStorageVersionProvider(environment, new TestHttpClientFactory());
+            var storageProvider = new TestNodeSdkStorageVersionProvider(
+                environment,
+                new TestHttpClientFactory(),
+                NullLoggerFactory.Instance);
             var versionProvider = new NodeVersionProvider(
                 commonOptions,
                 onDiskProvider,
-                storageProvider);
+                storageProvider,
+                NullLogger<NodeVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider);
         }
 
         private class TestNodeOnDiskVersionProvider : NodeOnDiskVersionProvider
         {
+            public TestNodeOnDiskVersionProvider()
+                : base(NullLogger<NodeOnDiskVersionProvider>.Instance)
+            {
+            }
+
             public bool GetVersionInfoCalled { get; private set; }
 
             public override PlatformVersionInfo GetVersionInfo()
