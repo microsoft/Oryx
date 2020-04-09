@@ -87,6 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             string nonPreviewVersion)
         {
             // Arrange
+            var expected = -1;
             var previewVersionInfo = SdkVersionInfo.Parse(previewVersion);
             var nonPreviewVersionInfo = SdkVersionInfo.Parse(nonPreviewVersion);
 
@@ -94,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var actual = previewVersionInfo.CompareTo(nonPreviewVersionInfo);
 
             // Assert
-            Assert.Equal(-1, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -205,7 +206,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Disable_ReturnsExactVersion_IfFound()
+        public void Disable_ReturnsSameVersion_IfSameVersionIsFound()
         {
             // Arrange
             var expectedVersion = "3.1.100";
@@ -228,7 +229,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [Theory]
         [InlineData("true")]
         [InlineData(null)]
-        public void Disable_ReturnsExactPrereleaseVersion_IfFound(string allowPrerelease)
+        public void Disable_ReturnsSamePrereleaseVersion_IfSameVersionIsFound(string allowPrerelease)
         {
             // Arrange
             var expectedVersion = "3.1.102-preview1-03444";
@@ -250,7 +251,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Disable_ReturnsNull_IfExactVersionIsNotFound()
+        public void Disable_ReturnsNull_IfSameVersionIsNotFound()
         {
             // Arrange
             var availableVersions = new[] { "2.1.100", "3.1.101" };
@@ -270,7 +271,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Patch_ReturnsSameVersion_IfPresent_AndDoesNotGetLatestPatchVersion()
+        public void Patch_ReturnsSameVersion_IfLatestPatchVersionsArePresent()
         {
             // Arrange
             var expectedVersion = "3.1.100";
@@ -291,7 +292,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Patch_ReturnsLatestPatchVersion_IfSpecifiedPatchDoesNotExist()
+        public void Patch_ReturnsLatestPatchVersion_IfSpecifiedPatchVersionDoesNotExist()
         {
             // Arrange
             var expectedVersion = "3.1.102";
@@ -312,7 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Patch_ReturnsNull_IfSpecifiedPatchOrLatestPatchVersion_DoesNotExist()
+        public void Patch_ReturnsNull_IfSpecifiedPatchOrLatestPatchVersionDoesNotExist()
         {
             // Arrange
             var availableVersions = new[] { "2.1.100", "3.1.101", "3.1.102", "3.2.103" };
@@ -332,7 +333,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Feature_ReturnsLatestPatchLevel_ForSameFeatureIfPresent()
+        public void Feature_ReturnsLatestPatchLevel_IfSameFeatureIsPresent()
         {
             // Arrange
             var expectedVersion = "3.1.101";
@@ -388,7 +389,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Feature_ReturnsNull_WhenNextHigherFeatureAndLatestPatchLevel_IsNotPresent()
+        public void Feature_ReturnsNull_IfNextHigherFeatureAndLatestPatchLevelIsNotPresent()
         {
             // Arrange
             var availableVersions = new[]
@@ -415,7 +416,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Minor_ReturnsLatestPatchLevel_IfSpecifiedMinorAndFeature_ArePresent()
+        public void Minor_ReturnsLatestPatchLevel_IfSpecifiedMinorAndFeatureArePresent()
         {
             // Arrange
             var expectedVersion = "3.1.101";
@@ -436,7 +437,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Minor_ReturnsNextHigherFeatureAndLatestPatchLevel_IfSpecifiedMinorIsPresentButNotFeature()
+        public void Minor_ReturnsNextHigherFeatureAndLatestPatchLevel_IfSpecifiedMinorIsPresentAndNotFeature()
         {
             // Arrange
             var expectedVersion = "3.1.201";
@@ -492,7 +493,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Minor_ReturnsNull_IfNextMinorAndNextHigherFeatureAndLatestPatchLevel_IsNotPresent()
+        public void Minor_ReturnsNull_IfNextMinorAndNextHigherFeatureAndLatestPatchLevelIsNotPresent()
         {
             // Arrange
             var availableVersions = new[]
@@ -521,7 +522,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Major_ReturnsLatestPatchVersion_ifSpecifiedMajorMinorAndFeature_ArePresent()
+        public void Major_ReturnsLatestPatchVersion_ifSpecifiedMajorMinorAndFeatureArePresent()
         {
             // Arrange
             var expectedVersion = "3.1.101";
@@ -542,7 +543,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Major_ReturnsNextHigherFeatureAndNextHigherPatchVersion_ifSpecifiedMajorMinorArePresent_ButNotFeature()
+        public void Major_ReturnsNextHigherFeatureAndNextHigherPatchVersion_ifSpecifiedMajorMinorArePresentButNotFeature()
         {
             // Arrange
             var expectedVersion = "3.1.201";
@@ -568,7 +569,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Major_ReturnsNextMinorAndNextHigherFeatureAndLatestPatchLevel_IfSpecifiedMajorIsPresent_ButNotMinorAndFeature()
+        public void Major_ReturnsNextMinorAndNextHigherFeatureAndLatestPatchLevel_IfSpecifiedMajorIsPresentButNotMinorAndFeature()
         {
             // Arrange
             var expectedVersion = "3.2.101";
@@ -626,7 +627,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void Major_ReturnsNull_IfNextMajorAndNextMinorAndNextHigherFeatureAndLatestPatchLevel_IsNotPresent()
+        public void Major_ReturnsNull_IfNextMajorAndNextMinorAndNextHigherFeatureAndLatestPatchLevelAreNotPresent()
         {
             // Arrange
             var availableVersions = new[]
@@ -674,7 +675,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void LatestPatch_OnlyConsidersPatchWithinSameFeature()
+        public void LatestPatch_ReturnsSamePatchVersion_IfLatestPatchVersionsWithinSameFeatureAreNotAvailable()
         {
             // Arrange
             var expectedVersion = "3.1.100";
@@ -695,7 +696,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void LatestPatch_ReturnsLatestPatchVersion_IfMultiplePatchVersionsAreAvailable()
+        public void LatestPatch_ReturnsLatestPatchVersion_IfLatestPatchVersionsWithinSameFeatureAreAvailable()
         {
             // Arrange
             var expectedVersion = "3.1.103";
@@ -746,7 +747,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void LatestPatch_ReturnsReleasedVersion_OverPreviewVersion_IfReleasedVersionIsAvailable_AndAllowPrereleaseIsTrue()
+        public void LatestPatch_ReturnsReleasedVersionOverPreviewVersion_IfReleasedVersionIsAvailableAndAllowPrereleaseIsTrue()
         {
             // Arrange
             var expectedVersion = "3.1.100";
@@ -775,7 +776,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void NoRollFoward_UseLatestPatchAsDefault()
+        public void RollForward_ReturnsLatestPatchAsDefault_IfRollForwardIsNotPresent()
         {
             // Arrange
             var expectedVersion = "3.1.101";
@@ -816,7 +817,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void LatestFeature_ReturnsSameFeatureAndLatestPatchVersion_IfAvailable()
+        public void LatestFeature_ReturnsSameFeatureAndLatestPatchVersionIfAvailable()
         {
             // Arrange
             var expectedVersion = "3.1.102";
@@ -866,7 +867,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void LatestFeature_ReturnsReleasedVersion_OverPreviewVersion_IfReleasedVersionIsAvailable_AndAllowPrereleaseIsTrue()
+        public void LatestFeature_ReturnsReleasedVersionOverPreviewVersion_IfReleasedVersionIsAvailableAndAllowPrereleaseIsTrue()
         {
             // Arrange
             var expectedVersion = "3.1.202";
@@ -898,7 +899,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void LatestFeature_ReturnsLatestFeatureAndLatestPatchVersion_OfPreviewRelease_IfAllowPrereleaseIsSetToTrue()
+        public void LatestFeature_ReturnsLatestFeatureAndLatestPatchVersionOfPreviewRelease_IfAllowPrereleaseIsSetToTrue()
         {
             // Arrange
             var expectedVersion = "3.1.202-preview2-01554";
