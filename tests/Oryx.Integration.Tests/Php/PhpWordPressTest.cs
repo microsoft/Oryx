@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(Path.Combine(hostDir,"wordpress"));
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
@@ -88,10 +88,8 @@ namespace Microsoft.Oryx.Integration.Tests
             // build-script to download wordpress cli and build
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar")
-                .AddCommand("chmod +x wp-cli.phar")
                 .AddCommand("./wp-cli.phar core download")
-                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .AddDirectoryExistsCheck("wp-admin")
                 .AddFileDoesNotExistCheck("wp-config.php")
                 .ToString();
@@ -148,10 +146,8 @@ namespace Microsoft.Oryx.Integration.Tests
             // build-script to download wordpress cli and build
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand("curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar")
-                .AddCommand("chmod +x wp-cli.phar")
                 .AddCommand("./wp-cli.phar core download")
-                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .AddDirectoryExistsCheck("wp-admin")
                 .AddFileDoesNotExistCheck("wp-config.php")
                 .ToString();
@@ -219,7 +215,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(Path.Combine(hostDir, "wordpress"));
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
