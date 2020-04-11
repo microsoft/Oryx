@@ -11,10 +11,12 @@ using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -110,15 +112,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
+            var environment = serviceProvider.GetRequiredService<IEnvironment>();
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var buildOperationId = logger.StartOperation(
-                BuildOperationName(serviceProvider.GetRequiredService<IEnvironment>()));
+            var buildOperationId = logger.StartOperation(BuildOperationName(environment));
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var sourceRepoCommitId = GetSourceRepoCommitId(
-                serviceProvider.GetRequiredService<IEnvironment>(),
-                sourceRepo,
-                logger);
+            var sourceRepoCommitId = GetSourceRepoCommitId(environment, sourceRepo, logger);
 
             var oryxVersion = Program.GetVersion();
             var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
@@ -130,9 +129,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 { "oryxReleaseTagName", oryxReleaseTagName },
                 {
                     "oryxCommandLine",
-                    string.Join(
-                        ' ',
-                        serviceProvider.GetRequiredService<IEnvironment>().GetCommandLineArgs())
+                    string.Join(' ', environment.GetCommandLineArgs())
                 },
                 { "sourceRepoCommitId", sourceRepoCommitId },
             };
@@ -210,7 +207,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             buildEventProps = new Dictionary<string, string>(buildEventProps)
             {
                 { "scriptPath", buildScriptPath },
-                { "envVars", string.Join(",", GetEnvVarNames(serviceProvider.GetRequiredService<IEnvironment>())) },
+                { "envVars", string.Join(",", GetEnvVarNames(environment)) },
             };
 
             var buildScriptOutput = new StringBuilder();
@@ -339,29 +336,97 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
-        {
-            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options,
-                sourceDir: SourceDir,
-                destinationDir: DestinationDir,
-                intermediateDir: IntermediateDir,
-                manifestDir: ManifestDir,
-                platform: PlatformName,
-                platformVersion: PlatformVersion,
-                shouldPackage: ShouldPackage,
-                requiredOsPackages: string.IsNullOrWhiteSpace(OsRequirements) ? null : OsRequirements.Split(','),
-                scriptOnly: false,
-                properties: Properties);
-        }
-
         internal override IServiceProvider GetServiceProvider(IConsole console)
         {
+            // Gather all the values supplied by the user in command line
+            SourceDir = string.IsNullOrEmpty(SourceDir) ?
+                Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
+            ManifestDir = string.IsNullOrEmpty(ManifestDir) ? null : Path.GetFullPath(ManifestDir);
+            IntermediateDir = string.IsNullOrEmpty(IntermediateDir) ? null : Path.GetFullPath(IntermediateDir);
+            DestinationDir = string.IsNullOrEmpty(DestinationDir) ? null : Path.GetFullPath(DestinationDir);
+            var buildProperties = ProcessProperties(Properties);
+
+            // NOTE: Order of the following is important. So a command line provided value has higher precedence
+            // than the value provided in a configuration file of the repo.
+            var config = new ConfigurationBuilder()
+                .AddIniFile(Path.Combine(SourceDir, Constants.BuildEnvironmentFileName), optional: true)
+                .AddEnvironmentVariables()
+                .Add(GetCommandLineConfigSource(buildProperties))
+                .Build();
+
             // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
             // ServiceProviderBuilder and allow for writing to the console if needed during this command.
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
-                .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
+                .ConfigureServices(services =>
+                {
+                    // Configure Options related services
+                    // We first add IConfiguration to DI so that option services like
+                    // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
+                    // and set the options.
+                    services
+                        .AddSingleton<IConfiguration>(config)
+                        .AddOptionsServices()
+                        .Configure<BuildScriptGeneratorOptions>(options =>
+                        {
+                            // These values are not retrieve through the 'config' api since we do not expect
+                            // them to be provided by an end user.
+                            options.SourceDir = SourceDir;
+                            options.IntermediateDir = IntermediateDir;
+                            options.DestinationDir = DestinationDir;
+                            options.ManifestDir = ManifestDir;
+                            options.Properties = buildProperties;
+                            options.ScriptOnly = false;
+                        });
+                });
+
             return serviceProviderBuilder.Build();
+        }
+
+        private CustomConfigurationSource GetCommandLineConfigSource(
+            IDictionary<string, string> buildProperties)
+        {
+            var commandLineConfigSource = new CustomConfigurationSource();
+            commandLineConfigSource.Set(SettingsKeys.PlatformName, PlatformName);
+            commandLineConfigSource.Set(SettingsKeys.PlatformVersion, PlatformVersion);
+
+            // Set the platform key and version in the format that they are represented in other sources
+            // (like environment variables and build.env file).
+            // This is so that this enables Configuration api to apply the hierarchical config.
+            // Example: "--platform python --platform-version 3.6" will win over "PYTHON_VERSION=3.7"
+            // in environment variable
+            SetPlatformVersion(PlatformName, PlatformVersion);
+
+            commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
+            commandLineConfigSource.Set(SettingsKeys.RequiredOsPackages, OsRequirements);
+            if (buildProperties != null)
+            {
+                SetPropertyValueInConfigurationSource(SettingsKeys.Project);
+                SetPropertyValueInConfigurationSource(SettingsKeys.PruneDevDependencies);
+                SetPropertyValueInConfigurationSource(SettingsKeys.NpmRegistryUrl);
+                SetPropertyValueInConfigurationSource(SettingsKeys.PythonVirtualEnvironmentName);
+            }
+
+            return commandLineConfigSource;
+
+            void SetPropertyValueInConfigurationSource(string key)
+            {
+                if (buildProperties.TryGetValue(key, out var value))
+                {
+                    commandLineConfigSource.Set(key, value);
+                }
+            }
+
+            void SetPlatformVersion(string platformName, string platformVersion)
+            {
+                platformName = platformName == "nodejs" ? "node" : platformName;
+                var platformVersionKey = $"{platformName}_version".ToUpper();
+                commandLineConfigSource.Set(platformVersionKey, platformVersion);
+            }
+        }
+
+        internal static IDictionary<string, string> ProcessProperties(string[] properties)
+        {
+            return BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
         }
 
         private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)

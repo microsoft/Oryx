@@ -90,9 +90,9 @@ echo "Running '{{ PackageInstallCommand }}'..."
 echo
 {{ PackageInstallCommand }}
 
-{{ if CustomNpmRunBuildCommand | IsNotBlank }}
+{{ if CustomRunBuildCommand | IsNotBlank }}
 	echo
-	{{ CustomNpmRunBuildCommand }}
+	{{ CustomRunBuildCommand }}
 	echo
 {{ else }}
 	{{ if NpmRunBuildCommand | IsNotBlank }}

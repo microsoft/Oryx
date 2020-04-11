@@ -7,10 +7,12 @@ using System;
 using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -119,6 +121,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Don't use the IConsole instance in this method -- override this method in the command
             // and pass IConsole through to ServiceProviderBuilder to write to the output.
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
+                .ConfigureServices(services =>
+                {
+                    // Add an empty and default configuration to prevent some commans from breaking since options
+                    // setup expect this from DI.
+                    var configuration = new ConfigurationBuilder().Build();
+                    services.AddSingleton<IConfiguration>(configuration);
+                })
                 .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();
         }

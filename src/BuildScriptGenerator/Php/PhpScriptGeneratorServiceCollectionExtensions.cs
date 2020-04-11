@@ -5,7 +5,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -15,8 +14,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddPhpScriptGeneratorServices(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
             services.AddSingleton<PhpPlatformDetector>();
             return services;

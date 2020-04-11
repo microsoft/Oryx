@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -53,11 +52,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void GeneratedScript_UsesComposerInstall()
         {
             // Arrange
-            var scriptGenerator = GetScriptGenerator(Common.PhpVersions.Php73Version);
+            var scriptGenerator = GetScriptGenerator(
+                defaultVersion: "7.3",
+                new BuildScriptGeneratorOptions(),
+                new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(ComposerFileWithBuildScript, PhpConstants.ComposerFileName);
             var context = CreateBuildScriptGeneratorContext(repo);
-            context.LanguageVersion = Common.PhpVersions.Php73Version;
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
@@ -114,29 +115,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         //        TemplateHelpers.TemplateResource.NodeSnippet, expected), snippet.BashBuildScriptSnippet);
         //}
 
-        private IProgrammingPlatform GetScriptGenerator(string defaultVersion = null)
+        private IProgrammingPlatform GetScriptGenerator(
+            string defaultVersion,
+            BuildScriptGeneratorOptions commonOptions,
+            PhpScriptGeneratorOptions phpScriptGeneratorOptions)
         {
-            var environment = new TestEnvironment();
-            environment.Variables[PhpConstants.PhpRuntimeVersionEnvVarName] = defaultVersion;
+            var phpVersionProvider = new TestPhpVersionProvider(
+                supportedPhpVersions: new[] { "7.2.15", Common.PhpVersions.Php73Version });
 
-            var phpVersionProvider = new TestPhpVersionProvider(new[] { "7.2.15", Common.PhpVersions.Php73Version });
+            phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
 
-            var scriptGeneratorOptions = Options.Create(new PhpScriptGeneratorOptions());
-            var optionsSetup = new PhpScriptGeneratorOptionsSetup(environment);
-            optionsSetup.Configure(scriptGeneratorOptions.Value);
-
-            return new PhpPlatform(scriptGeneratorOptions, phpVersionProvider, NullLogger<PhpPlatform>.Instance, null);
+            return new PhpPlatform(
+                Options.Create(phpScriptGeneratorOptions),
+                Options.Create(commonOptions),
+                phpVersionProvider,
+                NullLogger<PhpPlatform>.Instance,
+                detector: null);
         }
 
-        private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(
-            ISourceRepo sourceRepo,
-            string languageName = null,
-            string languageVersion = null)
+        private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(ISourceRepo sourceRepo)
         {
             return new BuildScriptGeneratorContext
             {
-                Language = languageName,
-                LanguageVersion = languageVersion,
                 SourceRepo = sourceRepo
             };
         }

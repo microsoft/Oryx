@@ -5,16 +5,17 @@
 
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonSdkStorageVersionProvider : SdkStorageVersionProviderBase, IPythonVersionProvider
     {
         public PythonSdkStorageVersionProvider(
-            IEnvironment environment, 
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
-            : base(environment, httpClientFactory, loggerFactory)
+            : base(commonOptions, httpClientFactory, loggerFactory)
         {
         }
 

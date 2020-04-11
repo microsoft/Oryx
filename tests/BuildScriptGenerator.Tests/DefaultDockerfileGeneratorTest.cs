@@ -4,7 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -29,8 +31,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void GenerateDockerfile_Throws_IfNoPlatformIsCompatible()
         {
             // Arrange
-            var generator = CreateDefaultDockerfileGenerator(platforms: new IProgrammingPlatform[] { });
-            var ctx = CreateDockerfileContext(null, null);
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var generator = CreateDefaultDockerfileGenerator(platforms: new IProgrammingPlatform[] { }, commonOptions);
+            var ctx = CreateDockerfileContext();
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedPlatformException>(
@@ -63,8 +66,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 platformName,
                 new[] { platformVersion },
                 detector: detector);
-            var generator = CreateDefaultDockerfileGenerator(platform);
-            var ctx = CreateDockerfileContext(platformName, platformVersion);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                PlatformName = platformName,
+                PlatformVersion = platformVersion
+            };
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
 
             // Act
             var dockerfile = generator.GenerateDockerfile(ctx);
@@ -106,8 +114,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 platformName,
                 new[] { detectedPlatformVersion },
                 detector: detector);
-            var generator = CreateDefaultDockerfileGenerator(platform);
-            var ctx = CreateDockerfileContext(platformName, null);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                PlatformName = platformName,
+            };
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
 
             // Act
             var dockerfile = generator.GenerateDockerfile(ctx);
@@ -149,8 +161,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 detectedPlatformName,
                 new[] { detectedPlatformVersion },
                 detector: detector);
-            var generator = CreateDefaultDockerfileGenerator(platform);
-            var ctx = CreateDockerfileContext(null, null);
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
 
             // Act
             var dockerfile = generator.GenerateDockerfile(ctx);
@@ -199,9 +212,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 runtimePlatformName,
                 new[] { runtimePlatformVersion },
                 detector: runtimeDetector);
-
-            var generator = CreateDefaultDockerfileGenerator(new[] { platform, runtimePlatform });
-            var ctx = CreateDockerfileContext(null, null, true);
+            var commonOptions = new BuildScriptGeneratorOptions { EnableMultiPlatformBuild = true };
+            var generator = CreateDefaultDockerfileGenerator(new[] { platform, runtimePlatform }, commonOptions);
+            var ctx = CreateDockerfileContext();
 
             // Act
             var dockerfile = generator.GenerateDockerfile(ctx);
@@ -216,34 +229,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 dockerfile);
         }
 
-        private DockerfileContext CreateDockerfileContext(
-            string platformName,
-            string platformVersion,
-            bool enableMultiePlatformBuild = false)
+        private DockerfileContext CreateDockerfileContext()
         {
-            return new DockerfileContext()
-            {
-                Platform = platformName,
-                PlatformVersion = platformVersion,
-                DisableMultiPlatformBuild = !enableMultiePlatformBuild,
-            };
+            return new DockerfileContext();
         }
 
-        private DefaultDockerfileGenerator CreateDefaultDockerfileGenerator(IProgrammingPlatform platform)
+        private DefaultDockerfileGenerator CreateDefaultDockerfileGenerator(
+            IProgrammingPlatform platform,
+            BuildScriptGeneratorOptions commonOptions)
         {
-            return CreateDefaultDockerfileGenerator(new[] { platform });
+            return CreateDefaultDockerfileGenerator(new[] { platform }, commonOptions);
         }
 
-        private DefaultDockerfileGenerator CreateDefaultDockerfileGenerator(IProgrammingPlatform[] platforms)
+        private DefaultDockerfileGenerator CreateDefaultDockerfileGenerator(
+            IProgrammingPlatform[] platforms,
+            BuildScriptGeneratorOptions commonOptions)
         {
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            var configuration = new TestConfiguration();
+            var platformName = commonOptions.PlatformName == "nodejs" ? "node" : commonOptions.PlatformName;
+            configuration[$"{platformName}_version"] = commonOptions.PlatformVersion;
             return new DefaultDockerfileGenerator(
-                new DefaultCompatiblePlatformDetector(platforms, NullLogger<DefaultCompatiblePlatformDetector>.Instance),
-                NullLogger<DefaultDockerfileGenerator>.Instance);
-        }
-
-        private TestPlatformDetectorUsingPlatformName CreateTestLanguageDetector(string name, string version)
-        {
-            return new TestPlatformDetectorUsingPlatformName(name, version);
+                new DefaultCompatiblePlatformDetector(
+                    platforms,
+                    NullLogger<DefaultCompatiblePlatformDetector>.Instance,
+                    Options.Create(commonOptions),
+                    configuration),
+                NullLogger<DefaultDockerfileGenerator>.Instance,
+                Options.Create(commonOptions));
         }
 
         private string ConvertToRuntimeName(string platformName)

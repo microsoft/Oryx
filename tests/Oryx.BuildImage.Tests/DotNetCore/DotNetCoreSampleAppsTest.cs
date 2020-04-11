@@ -292,13 +292,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
@@ -353,13 +354,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_CopiesContentCreatedByPreAndPostBuildScript_ToExplicitOutputDirectory()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");
@@ -415,13 +417,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_COMMAND=\"echo from pre-build command\"");
@@ -455,13 +458,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_CopiesContentCreatedByPostBuildScript_ToExplicitOutputDirectory_AndOutpuIsZipped()
         {
             // Arrange
             var appName = "NetCoreApp21WebApp";
             var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("POST_BUILD_SCRIPT_PATH=scripts/postbuild.sh");

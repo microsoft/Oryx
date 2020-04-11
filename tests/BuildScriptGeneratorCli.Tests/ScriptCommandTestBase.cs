@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -52,6 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
                     services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
+
+                    var configuration = new ConfigurationBuilder().Build();
+                    services.AddSingleton<IConfiguration>(configuration);
                 })
                 .ConfigureScriptGenerationOptions(o =>
                 {

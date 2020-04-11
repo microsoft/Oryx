@@ -500,12 +500,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1086977")]
+        [Fact]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
-            using (var sw = File.AppendText(Path.Combine(volume.MountedHostDir, "build.env")))
+            using (var sw = File.AppendText(
+                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
             {
                 sw.NewLine = "\n";
                 sw.WriteLine("PRE_BUILD_SCRIPT_PATH=scripts/prebuild.sh");

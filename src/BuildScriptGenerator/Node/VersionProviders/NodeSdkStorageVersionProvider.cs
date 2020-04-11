@@ -5,6 +5,7 @@
 
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -13,10 +14,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private PlatformVersionInfo _platformVersionInfo;
 
         public NodeSdkStorageVersionProvider(
-            IEnvironment environment,
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
-            : base(environment, httpClientFactory, loggerFactory)
+            : base(commonOptions, httpClientFactory, loggerFactory)
         {
         }
 

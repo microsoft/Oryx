@@ -5,7 +5,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -16,8 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, PythonPlatform>());
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
             services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
             services.AddSingleton<PythonPlatformDetector>();
             services.AddSingleton<PythonPlatformInstaller>();

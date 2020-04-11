@@ -57,8 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         internal const string TarGzOption = "tar-gz";
         private readonly BuildScriptGeneratorOptions _commonOptions;
+        private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _pythonVersionProvider;
-        private readonly IEnvironment _environment;
         private readonly ILogger<PythonPlatform> _logger;
         private readonly PythonPlatformDetector _detector;
         private readonly PythonPlatformInstaller _platformInstaller;
@@ -68,20 +68,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         /// <param name="pythonScriptGeneratorOptions">The options of pythonScriptGenerator.</param>
         /// <param name="pythonVersionProvider">The Python version provider.</param>
-        /// <param name="environment">The environment of Python platform.</param>
         /// <param name="logger">The logger of Python platform.</param>
         /// <param name="detector">The detector of Python platform.</param>
         public PythonPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
+            IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider pythonVersionProvider,
-            IEnvironment environment,
             ILogger<PythonPlatform> logger,
             PythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;
+            _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _pythonVersionProvider = pythonVersionProvider;
-            _environment = environment;
             _logger = logger;
             _detector = detector;
             _platformInstaller = platformInstaller;
@@ -113,19 +112,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(context.PythonVersion))
+                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedPythonVersion))
                 {
                     _logger.LogDebug(
                        "Python version {version} is already installed. So skipping installing it again.",
-                       context.PythonVersion);
+                       context.ResolvedPythonVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "Python version {version} is not installed. So generating an installation script snippet for it.",
-                        context.PythonVersion);
+                        context.ResolvedPythonVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.PythonVersion);
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.ResolvedPythonVersion);
                 }
             }
             else
@@ -136,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = context.PythonVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = context.ResolvedPythonVersion;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -166,7 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvModule = string.Empty;
             var virtualEnvCopyParam = string.Empty;
 
-            var pythonVersion = context.PythonVersion;
+            var pythonVersion = context.ResolvedPythonVersion;
             _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
@@ -178,8 +177,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     virtualEnvName,
                     virtualEnvModule);
             }
-
-            bool enableCollectStatic = IsCollectStaticEnabled();
 
             GetVirtualEnvPackOptions(
                 context,
@@ -200,7 +197,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvCopyParam,
                 packagesDirectory: packageDir,
-                disableCollectStatic: !enableCollectStatic,
+                enableCollectStatic: _pythonScriptGeneratorOptions.EnableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName);
             string script = TemplateHelper.Render(
@@ -232,7 +229,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return ctx.EnablePython;
+            return _commonOptions.EnablePythonBuild;
         }
 
         /// <inheritdoc/>
@@ -257,7 +254,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string version)
         {
-            context.PythonVersion = version;
+            context.ResolvedPythonVersion = version;
         }
 
         /// <inheritdoc/>
@@ -301,9 +298,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return excludeDirs;
         }
 
-        private static string GetDefaultVirtualEnvName(BuildScriptGeneratorContext context)
+        private string GetDefaultVirtualEnvName(BuildScriptGeneratorContext context)
         {
-            string pythonVersion = context.PythonVersion;
+            string pythonVersion = context.ResolvedPythonVersion;
             if (!string.IsNullOrWhiteSpace(pythonVersion))
             {
                 var versionSplit = pythonVersion.Split('.');
@@ -360,20 +357,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return isVirtualEnvPackaged;
-        }
-
-        private bool IsCollectStaticEnabled()
-        {
-            // Collect static is enabled by default, but users can opt-out of it
-            var enableCollectStatic = true;
-            var disableCollectStaticEnvValue = _environment.GetEnvironmentVariable(
-                EnvironmentSettingsKeys.DisableCollectStatic);
-            if (disableCollectStaticEnvValue.EqualsIgnoreCase(Constants.True))
-            {
-                enableCollectStatic = false;
-            }
-
-            return enableCollectStatic;
         }
 
         private (string virtualEnvModule, string virtualEnvCopyParam) GetVirtualEnvModules(string pythonVersion)
