@@ -88,7 +88,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // build-script to download wordpress cli and build
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"ls -l {appDir}")
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"./wp-cli.phar core download")
                 .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
                 .ToString();
 
@@ -100,7 +101,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
                 .AddCommand("mkdir -p /home/site/wwwroot")
                 .AddCommand($"cp -a {appDir}/. /home/site/wwwroot")
-                .AddCommand("ls -l /home/site/wwwroot")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
