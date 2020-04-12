@@ -56,5 +56,43 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Equal("1,1", gdInfoOutput);
                 });
         }
+
+        [Theory]
+        [InlineData("7.4")]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        public async Task PhpFpmGdExample(string phpVersion)
+        {
+            // Arrange
+            var appName = "gd-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand("mkdir -p /home/site/wwwroot")
+                .AddCommand($"cp -rf {appDir}/* /home/site/wwwroot")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName, _output, volume,
+                "/bin/sh", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                ContainerPort,
+                "/bin/sh", new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    string gdInfoOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    // The test app: `echo $info['JPEG Support'] . ',' . $info['PNG Support']`
+                    Assert.Equal("1,1", gdInfoOutput);
+                });
+        }
     }
 }
