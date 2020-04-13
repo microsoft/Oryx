@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "#1101128, investigate why  this tests are only failing in agent machines")]
         [InlineData("7.4")]
         [InlineData("7.3-fpm")]
         [InlineData("7.2-fpm")]
