@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -17,6 +18,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public GlobalJsonSdkResolver(ILogger<GlobalJsonSdkResolver> logger)
         {
             _logger = logger;
+        }
+
+        public string GetSatisfyingSdkVersion(string globalJsonContent, IEnumerable<string> availableSdks)
+        {
+            var globalJsonModel = JsonConvert.DeserializeObject<GlobalJsonModel>(globalJsonContent);
+            return GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
         }
 
         public string GetSatisfyingSdkVersion(GlobalJsonModel globalJson, IEnumerable<string> availableSdks)
@@ -48,7 +55,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 throw new InvalidUsageException($"Invalid version format '{sdkNodeInGlobalJson}' in global.json");
             }
 
-            var availableSdkVersions = availableSdks.Select(sdk => SdkVersionInfo.Parse(sdk));
+            var parsedSdkVersions = new List<SdkVersionInfo>();
+            var unparsedSdkVersions = new List<string>();
+            foreach (var sdkVersion in availableSdks)
+            {
+                if (SdkVersionInfo.TryParse(sdkVersion, out var parsedSdkVersion))
+                {
+                    parsedSdkVersions.Add(parsedSdkVersion);
+                }
+                else
+                {
+                    unparsedSdkVersions.Add(sdkVersion);
+                }
+            }
+
+            if (unparsedSdkVersions.Count > 0)
+            {
+                _logger.LogDebug(
+                    "Unable to parse sdk version: {unparsedSdkVersions}",
+                    string.Join(", ", unparsedSdkVersions));
+            }
+
+            var availableSdkVersions = parsedSdkVersions.AsEnumerable();
 
             if (!sdkNodeInGlobalJson.AllowPreRelease)
             {
@@ -98,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     "Could not resolve a version using roll forward policy {rollForwardPolicy} and available sdk " +
                     "versions {availableSdkVersions}",
                     sdkNodeInGlobalJson.RollForward.ToString(),
-                    string.Join(", ", availableSdkVersions));
+                    string.Join(", ", availableSdks));
             }
 
             return resolvedVersion;

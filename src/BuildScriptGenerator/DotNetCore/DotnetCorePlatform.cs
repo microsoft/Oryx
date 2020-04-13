@@ -31,6 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly IEnvironment _environment;
         private readonly DotNetCorePlatformInstaller _platformInstaller;
+        private readonly GlobalJsonSdkResolver _globalJsonSdkResolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -51,7 +52,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             IEnvironment environment,
-            DotNetCorePlatformInstaller platformInstaller)
+            DotNetCorePlatformInstaller platformInstaller,
+            GlobalJsonSdkResolver globalJsonSdkResolver)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
@@ -61,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _cliOptions = cliOptions.Value;
             _environment = environment;
             _platformInstaller = platformInstaller;
+            _globalJsonSdkResolver = globalJsonSdkResolver;
         }
 
         /// <inheritdoc/>
@@ -92,7 +95,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedDotNetCoreRuntimeVersion))
+                var globalJsonSdkVersion = GetSdkVersionFromGlobalJson(context.SourceRepo);
+                if (_platformInstaller.IsVersionAlreadyInstalled(
+                    context.ResolvedDotNetCoreRuntimeVersion,
+                    globalJsonSdkVersion))
                 {
                     _logger.LogDebug(
                         "DotNetCore runtime version {runtimeVersion} is already installed. " +
@@ -107,7 +113,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         context.ResolvedDotNetCoreRuntimeVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        context.ResolvedDotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreRuntimeVersion,
+                        globalJsonSdkVersion);
                 }
             }
             else
@@ -343,6 +350,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
+        }
+
+        private string GetSdkVersionFromGlobalJson(ISourceRepo sourceRepo)
+        {
+            string sdkVersion = null;
+
+            if (sourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
+            {
+                var globalJsonContent = sourceRepo.ReadFile(
+                    Path.Combine(sourceRepo.RootPath, DotNetCoreConstants.GlobalJsonFileName));
+
+                _logger.LogDebug(
+                    "Detected presence of global.json file with content {globalJsonContent}",
+                    globalJsonContent);
+
+                var availableSdks = _versionProvider.GetSupportedVersions().Values;
+
+                sdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                    globalJsonContent,
+                    availableSdks);
+
+                _logger.LogDebug(
+                    "Resolved sdk version to {resolvedSdkVersion} based on global.json file and available sdk versions",
+                    sdkVersion);
+            }
+
+            return sdkVersion;
         }
     }
 }
