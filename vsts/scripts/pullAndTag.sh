@@ -47,8 +47,17 @@ while read sourceImage; do
 
 		# Trim the build number tag and append the version to end of it
 		image="${sourceImage%:*}"
+		echo
+		echo "image $image"
 		tagName="${sourceImage#$image:*}"
+		echo "tagName $tagName"
 		version="${tagName%%-*}"
+
+		if [[ "$tagName" == *-fpm* ]]; then
+			version="$version"-fpm
+		fi
+
+		echo "version $version"
 		newtag="$image:$version"
 
 		echo
