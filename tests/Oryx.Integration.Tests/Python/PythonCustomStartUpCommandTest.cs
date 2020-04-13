@@ -25,28 +25,24 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("2.7")]
-        [InlineData("3.6")]
-        [InlineData("3.7")]
+        [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScript(string pythonVersion)
         {
             // Arrange
             var appName = "http-server-py";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var startupFile = "/tmp/startup.sh";
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
-            // Create a custom startup script
+            // Using the custom startup script within sample app
             const string customStartUpScript = "customStartup.sh";
-            File.WriteAllText(Path.Join(volume.MountedHostDir, customStartUpScript),
-                "#!/bin/bash\n" +
-                "pip install gunicorn\n" + 
-                $"gunicorn -w 4 myapp:app\n");
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -userStartupCommand {customStartUpScript} -output {customStartUpScript}")
-                .AddCommand($"./{customStartUpScript}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -userStartupCommand {appDir}/{customStartUpScript} -output {startupFile}")
+                .AddCommand(startupFile)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -76,8 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("2.7")]
-        [InlineData("3.6")]
-        [InlineData("3.7")]
+        [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommand(string pythonVersion)
         {
             // Arrange
