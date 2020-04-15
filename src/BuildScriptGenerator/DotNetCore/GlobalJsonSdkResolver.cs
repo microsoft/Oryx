@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (unparsedSdkVersions.Count > 0)
             {
                 _logger.LogDebug(
-                    "Unable to parse sdk version: {unparsedSdkVersions}",
+                    "Unable to parse sdk versions: {unparsedSdkVersions}",
                     string.Join(", ", unparsedSdkVersions));
             }
 

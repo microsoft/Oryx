@@ -203,6 +203,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var actualSortedVersions = actual.Select(sdk => sdk.RawString);
             Assert.Equal(expectedSortedVersions, actualSortedVersions, StringComparer.OrdinalIgnoreCase);
         }
-
     }
 }
