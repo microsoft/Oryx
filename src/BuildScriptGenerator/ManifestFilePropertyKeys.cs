@@ -7,8 +7,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public static class ManifestFilePropertyKeys
     {
-        public const string ZipAllOutput = nameof(ZipAllOutput);
-
         public const string OperationId = nameof(OperationId);
 
         public const string PhpVersion = nameof(PhpVersion);

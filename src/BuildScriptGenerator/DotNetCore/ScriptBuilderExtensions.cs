@@ -91,8 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string sourceDir,
             string temporaryDestinationDir,
             string destinationDir,
-            bool hasUserSuppliedDestinationDir,
-            bool zipAllOutput)
+            bool hasUserSuppliedDestinationDir)
         {
             scriptBuilder
                 .AppendFormatWithLine("SOURCE_DIR=\"{0}\"", sourceDir)
@@ -108,11 +107,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     .AppendLine("echo")
                     .AppendFormatWithLine("mkdir -p \"{0}\"", destinationDir);
 
-                if (zipAllOutput)
-                {
-                    destinationDir = temporaryDestinationDir;
-                }
-
                 scriptBuilder
                     .AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", destinationDir)
                     .AppendLine("export DESTINATION_DIR");
@@ -125,43 +119,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     .AppendLine("echo");
             }
 
-            return scriptBuilder;
-        }
-
-        public static StringBuilder AddScriptToZipAllOutput(
-            this StringBuilder scriptBuilder,
-            string projectFile,
-            string buildConfiguration,
-            string sourceDir,
-            string temporaryDestinationDir,
-            string finalDestinationDir,
-            string postBuildCommand,
-            IDictionary<string, string> buildProperties)
-        {
-            var zipFileName = FilePaths.CompressedOutputFileName;
-
-            scriptBuilder
-                .AppendLine()
-                .AppendLine("echo")
-                .AppendFormatWithLine("echo \"Publishing output to '{0}'\"", temporaryDestinationDir)
-                .AppendFormatWithLine(
-                    "dotnet publish \"{0}\" -c {1} -o \"{2}\"",
-                    projectFile,
-                    buildConfiguration,
-                    temporaryDestinationDir)
-                .AddScriptToRunPostBuildCommand(sourceDir, postBuildCommand)
-                .AppendLine()
-                .AppendLine("echo Compressing the contents of the output directory...")
-                .AppendFormatWithLine("cd \"{0}\"", temporaryDestinationDir)
-                .AppendFormatWithLine("tar -zcf ../{0} .", zipFileName)
-                .AppendLine("cd ..")
-                .AppendFormatWithLine(
-                    "cp -f \"{0}\" \"{1}/{2}\"",
-                    zipFileName,
-                    finalDestinationDir,
-                    zipFileName);
-
-            buildProperties[ManifestFilePropertyKeys.ZipAllOutput] = "true";
             return scriptBuilder;
         }
 

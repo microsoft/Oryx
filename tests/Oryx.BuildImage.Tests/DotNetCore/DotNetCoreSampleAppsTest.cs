@@ -459,65 +459,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Build_CopiesContentCreatedByPostBuildScript_ToExplicitOutputDirectory_AndOutpuIsZipped()
-        {
-            // Arrange
-            var appName = "NetCoreApp21WebApp";
-            var volume = CreateSampleAppVolume(appName);
-            using (var sw = File.AppendText(
-                Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
-            {
-                sw.NewLine = "\n";
-                sw.WriteLine("POST_BUILD_SCRIPT_PATH=scripts/postbuild.sh");
-            }
-            var scriptsDir = Directory.CreateDirectory(Path.Combine(volume.MountedHostDir, "scripts"));
-            var fileName = $"{Guid.NewGuid().ToString("N")}.txt";
-            using (var sw = File.AppendText(Path.Combine(scriptsDir.FullName, "postbuild.sh")))
-            {
-                sw.NewLine = "\n";
-                sw.WriteLine("#!/bin/bash");
-                sw.WriteLine($"echo > $DESTINATION_DIR/post-{fileName}");
-            }
-            if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
-            {
-                ProcessHelper.RunProcess(
-                    "chmod",
-                    new[] { "-R", "777", scriptsDir.FullName },
-                    workingDirectory: null,
-                    waitTimeForExit: null);
-            }
-
-            var appDir = volume.ContainerDir;
-            var tempOutputDir = "/tmp/output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand(
-                $"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1 " +
-                $"-p {ScriptGenerator.Constants.ZipAllOutputBuildPropertyKey}=true")
-                .AddFileDoesNotExistCheck($"{tempOutputDir}/post-{fileName}")
-                .AddCommand($"cd {tempOutputDir} && tar -xvf {FilePaths.CompressedOutputFileName}")
-                .AddFileExistsCheck($"{tempOutputDir}/post-{fileName}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void MultiPlatformBuild_IsDisabled()
         {
             // Arrange

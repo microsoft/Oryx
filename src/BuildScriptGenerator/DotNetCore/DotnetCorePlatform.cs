@@ -21,7 +21,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     [BuildProperty(
         DotNetCoreConstants.ProjectBuildPropertyKey,
         DotNetCoreConstants.ProjectBuildPropertyKeyDocumentation)]
-    [BuildProperty(Constants.ZipAllOutputBuildPropertyKey, Constants.ZipAllOutputBuildPropertyKeyDocumentation)]
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
@@ -141,7 +140,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var destinationDir = _cliOptions.DestinationDir;
             var intermediateDir = _cliOptions.IntermediateDir;
             var hasUserSuppliedDestinationDir = !string.IsNullOrEmpty(_cliOptions.DestinationDir);
-            var zipAllOutput = ShouldZipAllOutput(context);
             var buildConfiguration = GetBuildConfiguration();
 
             // Since destination directory is optional for .NET Core builds, check
@@ -190,8 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     sourceDir: sourceDir,
                     temporaryDestinationDir: temporaryDestinationDir,
                     destinationDir: destinationDir,
-                    hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir,
-                    zipAllOutput: zipAllOutput)
+                    hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir)
                 .AppendBenvCommand($"dotnet={context.ResolvedDotNetCoreRuntimeVersion}")
                 .AddScriptToRunPreBuildCommand(sourceDir: sourceDir, preBuildCommand: preBuildCommand)
                 .AppendLine("echo")
@@ -202,28 +199,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (hasUserSuppliedDestinationDir)
             {
-                if (zipAllOutput)
-                {
-                    scriptBuilder.AddScriptToZipAllOutput(
+                scriptBuilder
+                    .AddScriptToPublishOutput(
                         projectFile: projectFile,
                         buildConfiguration: buildConfiguration,
+                        finalDestinationDir: destinationDir)
+                    .AddScriptToRunPostBuildCommand(
                         sourceDir: sourceDir,
-                        temporaryDestinationDir: temporaryDestinationDir,
-                        finalDestinationDir: destinationDir,
-                        postBuildCommand: postBuildCommand,
-                        manifestFileProperties);
-                }
-                else
-                {
-                    scriptBuilder
-                        .AddScriptToPublishOutput(
-                            projectFile: projectFile,
-                            buildConfiguration: buildConfiguration,
-                            finalDestinationDir: destinationDir)
-                        .AddScriptToRunPostBuildCommand(
-                            sourceDir: sourceDir,
-                            postBuildCommand: postBuildCommand);
-                }
+                        postBuildCommand: postBuildCommand);
             }
             else
             {
@@ -325,14 +308,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return configuration;
-        }
-
-        private bool ShouldZipAllOutput(BuildScriptGeneratorContext context)
-        {
-            return BuildPropertiesHelper.IsTrue(
-                Constants.ZipAllOutputBuildPropertyKey,
-                context,
-                valueIsRequired: false);
         }
 
         /// <summary>
