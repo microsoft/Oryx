@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 ""sdk"": {
                     ""version"": ""#version#"",
-                    ""rollForward"": ""Disable"",
+                    ""rollForward"": ""Disable""
                 }
             }";
             var globalJsonSdkVersion = "3.1.201";
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 ""sdk"": {
                     ""version"": ""#version#"",
-                    ""rollForward"": ""Disable"",
+                    ""rollForward"": ""Disable""
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -204,7 +204,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 ""sdk"": {
                     ""version"": ""#version#"",
-                    ""rollForward"": ""Disable"",
+                    ""rollForward"": ""Disable""
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
