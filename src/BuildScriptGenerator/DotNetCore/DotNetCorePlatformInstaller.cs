@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _versionProvider = versionProvider;
         }
 
-        public string GetInstallerScriptSnippet(string runtimeVersion, string globalJsonSdkVersion)
+        public virtual string GetInstallerScriptSnippet(string runtimeVersion, string globalJsonSdkVersion)
         {
             string sdkVersion = null;
             if (string.IsNullOrEmpty(globalJsonSdkVersion))
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return scriptBuilder.ToString();
         }
 
-        public bool IsVersionAlreadyInstalled(string runtimeVersion, string globalJsonSdkVersion)
+        public virtual bool IsVersionAlreadyInstalled(string runtimeVersion, string globalJsonSdkVersion)
         {
             if (string.IsNullOrEmpty(globalJsonSdkVersion))
             {
