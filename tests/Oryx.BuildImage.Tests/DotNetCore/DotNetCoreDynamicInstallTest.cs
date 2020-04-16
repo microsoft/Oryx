@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck(sentinelFile)
                 .ToString();
-  
+
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
@@ -166,8 +166,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
-            var majorPart = runtimeVersion.Split('.')[0];
-            var expectedSdkVersionPrefix = $"{majorPart}.";
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -189,7 +187,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{runtimeVersion}",
                         result.StdOut);
                     Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersion}",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -228,8 +226,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
-            var majorPart = runtimeVersion.Split('.')[0];
-            var expectedSdkVersionPrefix = $"{majorPart}.";
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -251,7 +247,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{runtimeVersion}",
                         result.StdOut);
                     Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersion}",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
