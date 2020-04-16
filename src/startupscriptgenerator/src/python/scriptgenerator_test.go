@@ -9,11 +9,15 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"runtime"
+	"strconv"
 )
+
+const workers = strconv.Itoa((2 * runtime.NumCPU()) + 1)
 
 func Test_ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_onlyModule(t *testing.T) {
 	// Arrange
-	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
+	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" + workers +
 		"\" gunicorn module.py"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "",
@@ -28,7 +32,7 @@ func Test_ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_only
 
 func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAndPath(t *testing.T) {
 	// Arrange
-	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
+	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers="  + workers +
 		" --chdir=/a/b/c\" gunicorn module.py"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "",
@@ -43,7 +47,7 @@ func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAnd
 
 func ExamplePythonStartupScriptGenerator_buildGunicornCommandForModule_moduleAndPathAndHost(t *testing.T) {
 	// Arrange
-	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-'" +
+	expected := "GUNICORN_CMD_ARGS=\"--timeout 600 --access-logfile '-' --error-logfile '-' --workers=" + workers +
 		" --bind=0.0.0.0:12345 --chdir=/a/b/c\" gunicorn module.py"
 	gen := PythonStartupScriptGenerator{
 		BindPort: "12345",
