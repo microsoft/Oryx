@@ -57,13 +57,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("3.1.200-preview1-014995", 3, 1, 2, 0, "preview1-014995")]
         [InlineData("5.0.100-preview.1.20155.7", 5, 0, 1, 0, "preview.1.20155.7")]
         [InlineData("5.0.100-rc1.20155.7", 5, 0, 1, 0, "rc1.20155.7")]
-        public void SdkVersionInfo_ParsesPreviewVersionAsExpected(
+        public void SdkVersionInfo_ParsesPrereleaseVersionAsExpected(
             string rawString,
             int expectedMajor,
             int expectedMinor,
             int expectedFeature,
             int expectedPatch,
-            string expectedPreview)
+            string expectedPrerelease)
         {
             // Arrange & Act
             var actual = SdkVersionInfo.Parse(rawString);
@@ -75,23 +75,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedPatch, actual.Patch);
             Assert.Equal(rawString, actual.RawString);
             Assert.True(actual.IsPrerelease);
-            Assert.Equal(expectedPreview, actual.PrereleaseVersion);
+            Assert.Equal(expectedPrerelease, actual.PrereleaseVersion);
         }
 
         [Theory]
         [InlineData("3.1.200-preview1-014995", "3.1.200")]
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100")]
-        public void ComparingVersions_PreviewVersionsAreLesserThanNonPreviewOnes(
-            string previewVersion,
-            string nonPreviewVersion)
+        [InlineData("5.0.100-rc.1.20155.7", "5.0.100")]
+        public void ComparingVersions_PrereleaseVersionsAreLesserThanNonPrereleaseOnes(
+            string prereleaseVersion,
+            string nonPrereleaseVersion)
         {
             // Arrange
             var expected = -1;
-            var previewVersionInfo = SdkVersionInfo.Parse(previewVersion);
-            var nonPreviewVersionInfo = SdkVersionInfo.Parse(nonPreviewVersion);
+            var prereleaseVersionInfo = SdkVersionInfo.Parse(prereleaseVersion);
+            var nonPrereleaseVersionInfo = SdkVersionInfo.Parse(nonPrereleaseVersion);
 
             // Act
-            var actual = previewVersionInfo.CompareTo(nonPreviewVersionInfo);
+            var actual = prereleaseVersionInfo.CompareTo(nonPrereleaseVersionInfo);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -104,17 +105,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100-preview.1.20155.7", 0)]
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100-preview.2.20155.7", -1)]
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100-preview.1.20155.8", -1)]
-        public void PreviewVersions_AreCompared_UsingStringComparisionRules(
-            string previewVersion,
-            string nonPreviewVersion,
+        [InlineData("5.0.100-preview.1.20155.7", "5.0.100-rc.1.20155.8", -1)]
+        [InlineData("5.0.100-rc.1.20155.7", "5.0.100-rc.2.20155.8", -1)]
+        public void PrereleaseVersions_AreCompared_UsingStringComparisionRules(
+            string prereleaseVersion,
+            string nonPrereleaseVersion,
             int expected)
         {
             // Arrange
-            var previewVersionInfo = SdkVersionInfo.Parse(previewVersion);
-            var nonPreviewVersionInfo = SdkVersionInfo.Parse(nonPreviewVersion);
+            var prereleaseVersionInfo = SdkVersionInfo.Parse(prereleaseVersion);
+            var nonPrereleaseVersionInfo = SdkVersionInfo.Parse(nonPrereleaseVersion);
 
             // Act
-            var actual = previewVersionInfo.CompareTo(nonPreviewVersionInfo);
+            var actual = prereleaseVersionInfo.CompareTo(nonPrereleaseVersionInfo);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -127,17 +130,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100-PreView.1.20155.7", 0)]
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100-PreView.2.20155.7", -1)]
         [InlineData("5.0.100-preview.1.20155.7", "5.0.100-PreView.1.20155.8", -1)]
-        public void PreviewVersions_AreCompared_CaseInsensitively(
-            string previewVersion,
-            string nonPreviewVersion,
+        public void PrereleaseVersions_AreCompared_CaseInsensitively(
+            string prereleaseVersion,
+            string nonPrereleaseVersion,
             int expected)
         {
             // Arrange
-            var previewVersionInfo = SdkVersionInfo.Parse(previewVersion);
-            var nonPreviewVersionInfo = SdkVersionInfo.Parse(nonPreviewVersion);
+            var prereleaseVersionInfo = SdkVersionInfo.Parse(prereleaseVersion);
+            var nonPrereleaseVersionInfo = SdkVersionInfo.Parse(nonPrereleaseVersion);
 
             // Act
-            var actual = previewVersionInfo.CompareTo(nonPreviewVersionInfo);
+            var actual = prereleaseVersionInfo.CompareTo(nonPrereleaseVersionInfo);
 
             // Assert
             Assert.Equal(expected, actual);

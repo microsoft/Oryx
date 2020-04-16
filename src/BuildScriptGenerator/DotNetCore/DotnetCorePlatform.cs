@@ -95,7 +95,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                var globalJsonSdkVersion = GetSdkVersionFromGlobalJson(context.SourceRepo);
+                var availableSdks = _versionProvider.GetSupportedVersions().Values;
+                var globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                    context.SourceRepo,
+                    context.ResolvedDotNetCoreRuntimeVersion,
+                    availableSdks);
+
                 if (_platformInstaller.IsVersionAlreadyInstalled(
                     context.ResolvedDotNetCoreRuntimeVersion,
                     globalJsonSdkVersion))
@@ -350,33 +355,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
-        }
-
-        private string GetSdkVersionFromGlobalJson(ISourceRepo sourceRepo)
-        {
-            string sdkVersion = null;
-
-            if (sourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
-            {
-                var globalJsonContent = sourceRepo.ReadFile(
-                    Path.Combine(sourceRepo.RootPath, DotNetCoreConstants.GlobalJsonFileName));
-
-                _logger.LogDebug(
-                    "Detected presence of global.json file with content {globalJsonContent}",
-                    globalJsonContent);
-
-                var availableSdks = _versionProvider.GetSupportedVersions().Values;
-
-                sdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
-                    globalJsonContent,
-                    availableSdks);
-
-                _logger.LogDebug(
-                    "Resolved sdk version to {resolvedSdkVersion} based on global.json file and available sdk versions",
-                    sdkVersion);
-            }
-
-            return sdkVersion;
         }
     }
 }

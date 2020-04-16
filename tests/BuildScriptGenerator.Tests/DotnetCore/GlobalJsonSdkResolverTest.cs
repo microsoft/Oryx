@@ -25,11 +25,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             }";
             var expectedVersion = "3.1.101";
             var availableVersions = new[] { "2.1.100", "3.1.100", "3.1.101" };
+            var runtimeVersion = "2.1.12";
             var globalJson = globalJsonTemplate.Replace("#version-key#", versionKey);
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile(globalJson, DotNetCoreConstants.GlobalJsonFileName);
             var globalJsonHelper = GetGlobalJsonHelper();
 
             // Act
-            var actual = globalJsonHelper.GetSatisfyingSdkVersion(globalJson, availableVersions);
+            var actual = globalJsonHelper.GetSatisfyingSdkVersion(sourceRepo, runtimeVersion, availableVersions);
 
             // Assert
             Assert.Equal(expectedVersion, actual);
@@ -52,13 +55,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             }";
             var expectedVersion = "3.1.202";
             var availableVersions = new[] { "2.1.100", "3.1.200", "3.1.202", "3.1.300" };
+            var runtimeVersion = "2.1.12";
             var globalJson = globalJsonTemplate
                 .Replace("#rollForward-key#", rollForwardKey)
                 .Replace("#rollforward-value#", rollForwardValue);
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile(globalJson, DotNetCoreConstants.GlobalJsonFileName);
             var globalJsonHelper = GetGlobalJsonHelper();
 
             // Act
-            var actual = globalJsonHelper.GetSatisfyingSdkVersion(globalJson, availableVersions);
+            var actual = globalJsonHelper.GetSatisfyingSdkVersion(sourceRepo, runtimeVersion, availableVersions);
 
             // Assert
             Assert.Equal(expectedVersion, actual);
@@ -80,15 +86,54 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             }";
             var globalJson = globalJsonTemplate
                 .Replace("#allowPrerelease-key#", allowPrereleaseKey);
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile(globalJson, DotNetCoreConstants.GlobalJsonFileName);
             var expectedVersion = "3.1.102-preview2-03444";
             var availableVersions = new[] { "3.1.100", "3.1.101", "3.1.102-preview1-03444", "3.1.102-preview2-03444" };
+            var runtimeVersion = "2.1.12";
             var globalJsonHelper = GetGlobalJsonHelper();
 
             // Act
-            var actual = globalJsonHelper.GetSatisfyingSdkVersion(globalJson, availableVersions);
+            var actual = globalJsonHelper.GetSatisfyingSdkVersion(sourceRepo, runtimeVersion, availableVersions);
 
             // Assert
             Assert.Equal(expectedVersion, actual);
+        }
+
+        [Theory]
+        [InlineData("3.0.3", "3.2.201")]
+        [InlineData("2.1.16", "2.3.202")]
+        [InlineData("5.0.0", "5.2.100-rc1-01445")]
+        public void GetSatisfyingSdkVersion_MustReturnLatestMinorOfRuntimeVersion_IfGlobalJsonFileIsNotFoundInTheRepo(
+            string runtimeVersion,
+            string expectedSdkVersion)
+        {
+            // Arrange
+            var availableVersions = new[]
+            {
+                "2.1.100",
+                "2.3.200",
+                "2.3.202",
+                "3.1.100",
+                "3.1.101",
+                "3.2.100",
+                "3.2.102",
+                "3.2.200",
+                "3.2.201",
+                "5.1.100-preview1-01445",
+                "5.1.100-preview2-01445",
+                "5.1.100-preview3-01445",
+                "5.2.100-preview3-01445",
+                "5.2.100-rc1-01445",
+            };
+            var sourceRepo = new MemorySourceRepo();
+            var globalJsonHelper = GetGlobalJsonHelper();
+
+            // Act
+            var actual = globalJsonHelper.GetSatisfyingSdkVersion(sourceRepo, runtimeVersion, availableVersions);
+
+            // Assert
+            Assert.Equal(expectedSdkVersion, actual);
         }
 
         [Fact]
