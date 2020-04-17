@@ -31,6 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly IEnvironment _environment;
         private readonly DotNetCorePlatformInstaller _platformInstaller;
+        private readonly GlobalJsonSdkResolver _globalJsonSdkResolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -51,7 +52,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             IEnvironment environment,
-            DotNetCorePlatformInstaller platformInstaller)
+            DotNetCorePlatformInstaller platformInstaller,
+            GlobalJsonSdkResolver globalJsonSdkResolver)
         {
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
@@ -61,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _cliOptions = cliOptions.Value;
             _environment = environment;
             _platformInstaller = platformInstaller;
+            _globalJsonSdkResolver = globalJsonSdkResolver;
         }
 
         /// <inheritdoc/>
@@ -87,12 +90,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            var versionMap = _versionProvider.GetSupportedVersions();
+
             string installationScriptSnippet = null;
+            string globalJsonSdkVersion = null;
             if (_cliOptions.EnableDynamicInstall)
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedDotNetCoreRuntimeVersion))
+                var availableSdks = versionMap.Values;
+                globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                    context.SourceRepo,
+                    context.ResolvedDotNetCoreRuntimeVersion,
+                    availableSdks);
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(
+                    context.ResolvedDotNetCoreRuntimeVersion,
+                    globalJsonSdkVersion))
                 {
                     _logger.LogDebug(
                         "DotNetCore runtime version {runtimeVersion} is already installed. " +
@@ -107,7 +121,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         context.ResolvedDotNetCoreRuntimeVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        context.ResolvedDotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreRuntimeVersion,
+                        globalJsonSdkVersion);
                 }
             }
             else
@@ -116,14 +131,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             var manifestFileProperties = new Dictionary<string, string>();
-
-            // Write the version to the manifest file
-            var versionMap = _versionProvider.GetSupportedVersions();
+            manifestFileProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
             manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreRuntimeVersion]
                 = context.ResolvedDotNetCoreRuntimeVersion;
-            manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
-                = versionMap[context.ResolvedDotNetCoreRuntimeVersion];
-            manifestFileProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+
+            if (string.IsNullOrEmpty(globalJsonSdkVersion))
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
+                    = versionMap[context.ResolvedDotNetCoreRuntimeVersion];
+            }
+            else
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] = globalJsonSdkVersion;
+            }
+
 
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))

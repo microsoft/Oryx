@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -17,6 +19,61 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public GlobalJsonSdkResolver(ILogger<GlobalJsonSdkResolver> logger)
         {
             _logger = logger;
+        }
+
+        public string GetSatisfyingSdkVersion(
+            ISourceRepo sourceRepo,
+            string runtimeVersion,
+            IEnumerable<string> availableSdks)
+        {
+            string sdkVersion;
+            if (sourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
+            {
+                var globalJsonContent = sourceRepo.ReadFile(
+                    Path.Combine(sourceRepo.RootPath, DotNetCoreConstants.GlobalJsonFileName));
+
+                _logger.LogDebug(
+                    "Detected presence of global.json file with content {globalJsonContent}",
+                    globalJsonContent);
+
+                var globalJsonModel = JsonConvert.DeserializeObject<GlobalJsonModel>(globalJsonContent);
+                sdkVersion = GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
+
+                _logger.LogDebug(
+                    "Resolved sdk version to {resolvedSdkVersion} based on global.json file and available sdk versions",
+                    sdkVersion);
+            }
+            else
+            {
+                // As per global.json spec, if a global.json file is not present, then roll forward policy is
+                // considered as 'latestMajor'. This can cause end users apps to fail since in this case even prelreease
+                // versions are considered. So here we minimize the impact by relying on the runtime version instead.
+                // We choose only the 'major' part of the runtime version to decide the major and latest minor of the
+                // sdk version. For example, 2.1.14 of runtime will result in a latest minor sdk in '2', for example
+                // 2.1.202 or 2.4.100
+                var version = new SemVer.Version(runtimeVersion);
+                var globalJsonModel = new GlobalJsonModel
+                {
+                    Sdk = new SdkModel
+                    {
+                        Version = $"{version.Major}.0.100",
+                        RollForward = RollForwardPolicy.LatestMinor,
+                        AllowPreRelease = true,
+                    },
+                };
+
+                _logger.LogDebug(
+                    "global.json file was not find in the repo, so choosing an sdk version which satisfies the " +
+                    "version {defaultSdkVersion}, roll forward policy of {defaultRollForwardPolicy} and " +
+                    "allowPrerelease value of {defaultAllowPrerelease}.",
+                    globalJsonModel.Sdk.Version,
+                    globalJsonModel.Sdk.RollForward,
+                    globalJsonModel.Sdk.AllowPreRelease);
+
+                sdkVersion = GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
+            }
+
+            return sdkVersion;
         }
 
         public string GetSatisfyingSdkVersion(GlobalJsonModel globalJson, IEnumerable<string> availableSdks)
@@ -48,7 +105,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 throw new InvalidUsageException($"Invalid version format '{sdkNodeInGlobalJson}' in global.json");
             }
 
-            var availableSdkVersions = availableSdks.Select(sdk => SdkVersionInfo.Parse(sdk));
+            var parsedSdkVersions = new List<SdkVersionInfo>();
+            var unparsedSdkVersions = new List<string>();
+            foreach (var sdkVersion in availableSdks)
+            {
+                if (SdkVersionInfo.TryParse(sdkVersion, out var parsedSdkVersion))
+                {
+                    parsedSdkVersions.Add(parsedSdkVersion);
+                }
+                else
+                {
+                    unparsedSdkVersions.Add(sdkVersion);
+                }
+            }
+
+            if (unparsedSdkVersions.Count > 0)
+            {
+                _logger.LogDebug(
+                    "Unable to parse sdk versions: {unparsedSdkVersions}",
+                    string.Join(", ", unparsedSdkVersions));
+            }
+
+            var availableSdkVersions = parsedSdkVersions.AsEnumerable();
 
             if (!sdkNodeInGlobalJson.AllowPreRelease)
             {
@@ -98,7 +176,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     "Could not resolve a version using roll forward policy {rollForwardPolicy} and available sdk " +
                     "versions {availableSdkVersions}",
                     sdkNodeInGlobalJson.RollForward.ToString(),
-                    string.Join(", ", availableSdkVersions));
+                    string.Join(", ", availableSdks));
             }
 
             return resolvedVersion;

@@ -6,32 +6,8 @@
 package common
 
 import (
-	"common/consts"
-	"fmt"
-	"path/filepath"
 	"strings"
 )
-
-func AppendScriptToExtractZippedOutput(scriptBuilder *strings.Builder, appDir string, intermediateDir string) {
-	// Since 'appDir' is the main directory containing the output try checking to see if the exists
-	// under that folder first
-	fullZipFilePath := filepath.Join(appDir, consts.CompressedOutputFileName)
-
-	// if intermediate directory is present, we want to extract content while in it
-	if intermediateDir == "" {
-		intermediateDir = appDir
-	}
-
-	if FileExists(fullZipFilePath) {
-		scriptBuilder.WriteString("\n")
-		scriptBuilder.WriteString("echo Extracting '" + consts.CompressedOutputFileName + "' contents...\n")
-		scriptBuilder.WriteString("cd \"" + intermediateDir + "\"\n")
-		scriptBuilder.WriteString("tar -xzf \"" + consts.CompressedOutputFileName + "\"\n")
-		scriptBuilder.WriteString("echo Done.\n")
-	} else {
-		fmt.Printf("Could not find the compressed file '%s'\n", fullZipFilePath)
-	}
-}
 
 func AppendScriptToCopyToDir(scriptBuilder *strings.Builder, srcDir string, destDir string) {
 	scriptBuilder.WriteString("\n")

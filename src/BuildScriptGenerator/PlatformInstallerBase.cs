@@ -27,10 +27,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public abstract string GetInstallerScriptSnippet(string version);
-
-        public abstract bool IsVersionAlreadyInstalled(string version);
-
         protected string GetInstallerScriptSnippet(
             string platformName,
             string version,

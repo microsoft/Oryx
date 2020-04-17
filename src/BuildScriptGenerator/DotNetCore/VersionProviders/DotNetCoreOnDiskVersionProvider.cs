@@ -34,14 +34,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             _logger.LogDebug(
                 "Getting list of supported runtime and their sdk versions from {installationDir}",
-                DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir);
+                DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir);
 
             var installedRuntimeVersions = VersionProviderHelper.GetVersionsFromDirectory(
-                        DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir);
+                        DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir);
             foreach (var runtimeVersion in installedRuntimeVersions)
             {
                 var runtimeDir = Path.Combine(
-                    DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir,
+                    DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir,
                     runtimeVersion);
                 var sdkVersionFile = Path.Combine(runtimeDir, "sdkVersion.txt");
                 if (!File.Exists(sdkVersionFile))

@@ -16,7 +16,6 @@ import (
 
 type BuildManifest struct {
 	StartupFileName           string
-	ZipAllOutput              string
 	OperationID               string
 	VirtualEnvName            string
 	PackageDir                string

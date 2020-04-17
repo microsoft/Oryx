@@ -43,3 +43,4 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-Oryx-CI.$RELEASE_TAG_NAME" "lts-versions" "lts-versions-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-Oryx-CI.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-Oryx-CI.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-Oryx-CI.$RELEASE_TAG_NAME" "vso" "vso-$RELEASE_TAG_NAME"
