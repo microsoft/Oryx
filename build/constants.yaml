@@ -130,7 +130,7 @@
     sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
-    prod-sdk-cdn-storage-base-url: https://oryx-cdn.azureedge.net
+    prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
     default-version-file-name: defaultVersion.txt
     versions-to-build-file-name: versionsToBuild.txt
     container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
