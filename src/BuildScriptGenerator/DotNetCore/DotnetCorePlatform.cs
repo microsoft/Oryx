@@ -90,13 +90,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            var versionMap = _versionProvider.GetSupportedVersions();
+
             string installationScriptSnippet = null;
+            string globalJsonSdkVersion = null;
             if (_cliOptions.EnableDynamicInstall)
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                var availableSdks = _versionProvider.GetSupportedVersions().Values;
-                var globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                var availableSdks = versionMap.Values;
+                globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
                     context.SourceRepo,
                     context.ResolvedDotNetCoreRuntimeVersion,
                     availableSdks);
@@ -128,14 +131,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             var manifestFileProperties = new Dictionary<string, string>();
-
-            // Write the version to the manifest file
-            var versionMap = _versionProvider.GetSupportedVersions();
+            manifestFileProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
             manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreRuntimeVersion]
                 = context.ResolvedDotNetCoreRuntimeVersion;
-            manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
-                = versionMap[context.ResolvedDotNetCoreRuntimeVersion];
-            manifestFileProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+
+            if (string.IsNullOrEmpty(globalJsonSdkVersion))
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
+                    = versionMap[context.ResolvedDotNetCoreRuntimeVersion];
+            }
+            else
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] = globalJsonSdkVersion;
+            }
+
 
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
