@@ -1,5 +1,7 @@
 # Startup script generator
 FROM golang:1.11-stretch as startupCmdGen
+# Install dep
+RUN go get -u github.com/golang/dep/cmd/dep
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .

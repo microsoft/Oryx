@@ -10,7 +10,6 @@ import (
 	"common/consts"
 	"flag"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -72,10 +71,17 @@ func main() {
 	if scriptCommand.Parsed() {
 		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 		defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
-		useLegacyDebugger := isLegacyDebuggerNeeded()
 
 		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
 		common.SetGlobalOperationID(buildManifest)
+
+		var configuration Configuration
+		viperConfig := common.GetViperConfiguration(fullAppPath)
+		configuration.NodeVersion = viperConfig.GetString("NODE_VERSION")
+		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
+		configuration.AppInsightsAgentExtensionVersion = viperConfig.GetString(consts.UserAppInsightsEnableEnv)
+
+		useLegacyDebugger := isLegacyDebuggerNeeded(configuration.NodeVersion)
 
 		gen := NodeStartupScriptGenerator{
 			SourcePath:                      fullAppPath,
@@ -89,6 +95,7 @@ func main() {
 			UseLegacyDebugger:               useLegacyDebugger,
 			SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 			Manifest:                        buildManifest,
+			Configuration:                   configuration,
 		}
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
@@ -116,9 +123,8 @@ func main() {
 }
 
 // Checks if the legacy debugger should be used for the current node image
-func isLegacyDebuggerNeeded() bool {
-	nodeVersionEnv := os.Getenv("NODE_VERSION")
-	result := checkLegacyDebugger(nodeVersionEnv)
+func isLegacyDebuggerNeeded(nodeVersion string) bool {
+	result := checkLegacyDebugger(nodeVersion)
 	return result
 }
 

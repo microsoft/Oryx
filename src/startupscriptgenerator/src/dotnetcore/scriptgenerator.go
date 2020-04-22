@@ -7,7 +7,6 @@ package main
 
 import (
 	"common"
-	"common/consts"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -21,6 +20,7 @@ type DotnetCoreStartupScriptGenerator struct {
 	DefaultAppFilePath string
 	BindPort           string
 	Manifest           common.BuildManifest
+	Configuration      Configuration
 }
 
 const DefaultBindPort = "8080"
@@ -32,7 +32,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	logger.LogInformation("Generating script for published output.")
 
-	common.SetupPreRunScript(scriptBuilder, gen.AppPath)
+	common.SetupPreRunScript(scriptBuilder, gen.AppPath, gen.Configuration.PreRunCommand)
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -45,8 +45,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	dotnetBinary := "/usr/share/dotnet/dotnet"
 
-	enableDynamicInstall := common.GetBooleanEnvironmentVariable(consts.EnableDynamicInstallKey)
-	if enableDynamicInstall && !common.PathExists(dotnetBinary) {
+	if gen.Configuration.EnableDynamicInstall && !common.PathExists(dotnetBinary) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
 	}
 

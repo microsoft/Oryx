@@ -97,6 +97,10 @@ func main() {
 			fullDefaultAppFilePath = absPath
 		}
 
+		var configuration Configuration
+		viperConfig := common.GetViperConfiguration(fullAppPath)
+		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
+
 		scriptBuilder := strings.Builder{}
 		scriptBuilder.WriteString("#!/bin/bash\n")
 		scriptBuilder.WriteString("set -e\n\n")
@@ -115,6 +119,7 @@ func main() {
 			UserStartupCommand: *userStartupCommandPtr,
 			DefaultAppFilePath: fullDefaultAppFilePath,
 			Manifest:           buildManifest,
+			Configuration:      configuration,
 		}
 
 		command := entrypointGenerator.GenerateEntrypointScript(&scriptBuilder)
