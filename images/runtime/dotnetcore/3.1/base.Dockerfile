@@ -56,3 +56,8 @@ RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/
     && rm aspnetcore.tar.gz
 
 RUN dotnet-sos install
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libgdiplus \
+    && rm -rf /var/lib/apt/lists/*

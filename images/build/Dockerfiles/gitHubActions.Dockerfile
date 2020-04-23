@@ -45,6 +45,7 @@ RUN apt-get update \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
+        libgdiplus \
     && rm -rf /var/lib/apt/lists/*
 
 # A temporary folder to hold all content temporarily used to build this image.
