@@ -3,17 +3,17 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common;
-
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Microsoft.Oryx.Common;
+
     public abstract class PlatformInstallerBase
     {
         protected readonly BuildScriptGeneratorOptions _commonOptions;
