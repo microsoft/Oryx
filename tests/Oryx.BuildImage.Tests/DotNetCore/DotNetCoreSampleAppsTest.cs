@@ -755,5 +755,34 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Theory]
+        [InlineData("github-actions")]
+        [InlineData("lts-versions")]
+        [InlineData("vso")]
+        [InlineData("latest")]
+        public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
+        {
+            // Arrange
+            var expectedLibrary = "libgdiplus";
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(tagName),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", $"ldconfig -p | grep {expectedLibrary}" },
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedLibrary, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
     }
 }

@@ -1,0 +1,49 @@
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using Microsoft.Oryx.Tests.Common;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace Microsoft.Oryx.RuntimeImage.Tests
+{
+    public class LibraryVerificationTest : TestBase
+    {
+        public LibraryVerificationTest(ITestOutputHelper output) : base(output)
+        {
+        }
+
+        [Theory]
+        [InlineData("1.0")]
+        [InlineData("1.1")]
+        [InlineData("2.0")]
+        [InlineData("2.1")]
+        [InlineData("2.2")]
+        [InlineData("3.1")]
+        public void GDIPlusLibrary_IsPresentInTheImage(string version)
+        {
+            // Arrange
+            var expectedLibrary = "libgdiplus";
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", $"ldconfig -p | grep {expectedLibrary}" },
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedLibrary, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+    }
+}
