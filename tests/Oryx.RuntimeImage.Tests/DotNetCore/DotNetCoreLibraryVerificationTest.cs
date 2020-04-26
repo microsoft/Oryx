@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
     [Trait("category", "dotnetcore")]
     public class DotNetCoreLibraryVerificationTest : TestBase
     {
-        public LibraryVerificationTest(ITestOutputHelper output) : base(output)
+        public DotNetCoreLibraryVerificationTest(ITestOutputHelper output) : base(output)
         {
         }
 
