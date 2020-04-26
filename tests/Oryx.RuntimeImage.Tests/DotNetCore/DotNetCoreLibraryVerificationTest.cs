@@ -9,7 +9,8 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class LibraryVerificationTest : TestBase
+    [Trait("category", "dotnetcore")]
+    public class DotNetCoreLibraryVerificationTest : TestBase
     {
         public LibraryVerificationTest(ITestOutputHelper output) : base(output)
         {
