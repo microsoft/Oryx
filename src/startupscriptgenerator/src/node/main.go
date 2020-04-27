@@ -80,6 +80,7 @@ func main() {
 		configuration.NodeVersion = viperConfig.GetString("NODE_VERSION")
 		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
 		configuration.AppInsightsAgentExtensionVersion = viperConfig.GetString(consts.UserAppInsightsEnableEnv)
+		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
 		useLegacyDebugger := isLegacyDebuggerNeeded(configuration.NodeVersion)
 

@@ -166,15 +166,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6")
+                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6")
+                // Create a 'build.env' file
+                .AddCommand(
+                $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
+                $"{appDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
                .ToString();
-
-            // Create a 'build.env' file
-            var fileName = Guid.NewGuid().ToString("N");
-            File.WriteAllText(
-                $"{FilePaths.PreRunCommandEnvVarName}=\"echo > {fileName}\"",
-                Path.Combine(appDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName));
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -183,7 +182,8 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new DockerVolume[] { volume },
+                _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/bash",
                 new[]
                 {
@@ -200,12 +200,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    // Verify that the file created using the pre-run command is 
-                    // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(appDir, fileName)));
-
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
+
+                    // Verify that the file created using the pre-run command is 
+                    // in fact present in the output directory.
+                    Assert.True(File.Exists(Path.Combine(appDir, expectedFileInOutputDir)));
                 });
         }
     }

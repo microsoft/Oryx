@@ -100,6 +100,7 @@ func main() {
 		var configuration Configuration
 		viperConfig := common.GetViperConfiguration(fullAppPath)
 		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
+		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
 		scriptBuilder := strings.Builder{}
 		scriptBuilder.WriteString("#!/bin/bash\n")

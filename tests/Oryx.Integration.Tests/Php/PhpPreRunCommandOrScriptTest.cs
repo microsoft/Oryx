@@ -197,15 +197,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+                // Create a 'build.env' file
+                .AddCommand(
+                $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
+                $"{appDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
                .ToString();
-
-            // Create a 'build.env' file
-            var fileName = Guid.NewGuid().ToString("N");
-            File.WriteAllText(
-                $"{FilePaths.PreRunCommandEnvVarName}=\"echo > {fileName}\"",
-                Path.Combine(appDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName));
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
@@ -220,11 +219,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
                 {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(appDir, fileName)));
-
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.True(File.Exists(Path.Combine(appDir, expectedFileInOutputDir)));
                     Assert.Contains("<h1>Hello World!</h1>", data);
                 });
         }

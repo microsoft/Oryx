@@ -32,12 +32,16 @@ func GetViperConfiguration(appPath string) *viper.Viper {
 
 	configFileFullPath := path.Join(appPath, configFileName)
 	if FileExists(configFileFullPath) {
-		viperConfig.SetConfigFile(configFileName)
+		viperConfig.SetConfigFile(configFileFullPath)
 		viperConfig.AddConfigPath(appPath)
 
 		err := viperConfig.ReadInConfig()
 		if err != nil {
-			panic(fmt.Sprintf("Error reading configuration file '%s' at '%s'.", configFileName, appPath))
+			panic(fmt.Sprintf(
+				"Error reading configuration file '%s' at '%s'. \nError: %s",
+				configFileName,
+				appPath,
+				err))
 		}
 	}
 

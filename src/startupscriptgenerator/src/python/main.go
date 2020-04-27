@@ -67,6 +67,7 @@ func main() {
 		var configuration Configuration
 		viperConfig := common.GetViperConfiguration(fullAppPath)
 		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
+		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
 		entrypointGenerator := PythonStartupScriptGenerator{
 			AppPath:                  fullAppPath,

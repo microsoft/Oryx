@@ -42,6 +42,7 @@ func main() {
 		var configuration Configuration
 		viperConfig := common.GetViperConfiguration(fullAppPath)
 		configuration.PhpOrigin = viperConfig.GetString(consts.PhpOrigin)
+		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
 		entrypointGenerator := PhpStartupScriptGenerator{
 			SourcePath:    fullAppPath,
