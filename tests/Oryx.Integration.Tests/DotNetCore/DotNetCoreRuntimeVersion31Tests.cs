@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
-using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
             : base(output, testTempDirTestFixture)
         {
         }
-        
+
         [Fact]
         public async Task CanBuildAndRun_NetCore31WebApp()
         {
@@ -105,6 +105,51 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunAppWhichUsesGDILibrary()
+        {
+            // Arrange
+            var appName = "ImageResizingWebApp";
+            var version = "3.1";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {version} " +
+                $"-o {appDir}/output")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Resizing image succeeded", data);
                 });
         }
     }

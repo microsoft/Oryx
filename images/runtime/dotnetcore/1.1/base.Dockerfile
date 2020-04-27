@@ -12,4 +12,5 @@ RUN apt-get update \
      curl \
      file \
      openssl \
+     libgdiplus \
   && rm -rf /var/lib/apt/lists/*

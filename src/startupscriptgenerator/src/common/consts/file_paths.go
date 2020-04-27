@@ -9,4 +9,4 @@ const NodeAppInsightsLoaderFileName string = "applicationinsights/out/Bootstrap/
 const NodeGlobalModulesPath string = "/usr/local/lib/node_modules"
 const Bash string = "/bin/bash"
 const Benv string = "/opt/oryx/benv"
-const PreRunCommandEnvVarName = "PRE_RUN_COMMAND"
+const PreRunCommandEnvVarName string = "PRE_RUN_COMMAND"
