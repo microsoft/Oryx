@@ -163,12 +163,13 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
         {
             // Arrange
+            var version = "3.8";
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6")
+                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {version}")
                 // Create a 'build.env' file
                 .AddCommand(
                 $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
@@ -190,7 +191,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.6"),
+                _imageHelper.GetRuntimeImage("python", version),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -205,7 +206,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(appDir, expectedFileInOutputDir)));
+                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

@@ -183,7 +183,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp31MvcApp,
                 _output,
-                new DockerVolume[] { volume },
+                new DockerVolume[] { volume, appOutputDirVolume },
                 _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]

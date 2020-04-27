@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
         {
             // Arrange
-            var nodeVersion = NodeVersions.Node12Version;
+            var nodeVersion = "12";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -222,7 +222,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(appDir, expectedFileInOutputDir)));
+                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

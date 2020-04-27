@@ -212,7 +212,9 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName,
+                _output,
+                volume,
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
@@ -220,11 +222,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<h1>Hello World!</h1>", data);
 
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(appDir, expectedFileInOutputDir)));
-                    Assert.Contains("<h1>Hello World!</h1>", data);
+                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }
