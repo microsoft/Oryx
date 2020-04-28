@@ -130,13 +130,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
+                .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
                 .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --language-version 3.7")
                 .ToString();
 
             var runAppScript = new ShellScriptBuilder()
                 // User would do this through app settings
-                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
                 .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
