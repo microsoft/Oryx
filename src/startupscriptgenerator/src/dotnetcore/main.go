@@ -108,13 +108,6 @@ func main() {
 			common.AppendScriptToCopyToDir(&scriptBuilder, fullAppPath, fullRunFromPath)
 		}
 
-		if buildManifest.ZipAllOutput == "true" {
-			fmt.Println(
-				"Read build manifest file and found output has been zipped, so adding " +
-					"script to extract it...")
-			common.AppendScriptToExtractZippedOutput(&scriptBuilder, fullAppPath, fullRunFromPath)
-		}
-
 		entrypointGenerator := DotnetCoreStartupScriptGenerator{
 			AppPath:            fullAppPath,
 			RunFromPath:        fullRunFromPath,

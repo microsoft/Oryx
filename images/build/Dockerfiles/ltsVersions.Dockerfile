@@ -34,6 +34,7 @@ RUN apt-get update \
         moreutils \
         rsync \
         zip \
+        libgdiplus \
     && rm -rf /var/lib/apt/lists/*
 
 # A temporary folder to hold all content temporarily used to build this image.

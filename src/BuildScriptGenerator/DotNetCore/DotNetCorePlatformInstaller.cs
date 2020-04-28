@@ -23,37 +23,64 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _versionProvider = versionProvider;
         }
 
-        public override string GetInstallerScriptSnippet(string runtimeVersion)
+        public virtual string GetInstallerScriptSnippet(string runtimeVersion, string globalJsonSdkVersion)
         {
-            var versionMap = _versionProvider.GetSupportedVersions();
-            var sdkVersion = versionMap[runtimeVersion];
+            string sdkVersion = null;
+            if (string.IsNullOrEmpty(globalJsonSdkVersion))
+            {
+                var versionMap = _versionProvider.GetSupportedVersions();
+                sdkVersion = versionMap[runtimeVersion];
+                _logger.LogDebug(
+                    "Generating installation script for sdk version {sdkVersion} based on " +
+                    "runtime version {runtimeVersion}",
+                    sdkVersion,
+                    runtimeVersion);
+            }
+            else
+            {
+                sdkVersion = globalJsonSdkVersion;
+                _logger.LogDebug(
+                    "Generating installation script for sdk version {sdkVersion} based on global.json file.",
+                    sdkVersion);
+            }
+
             var dirToInstall =
-                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/sdks/{sdkVersion}";
+                $"{DotNetCoreConstants.DynamicDotNetCoreSdkVersionsInstallDir}/{sdkVersion}";
             var sentinelFileDir =
-                $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/runtimes/{runtimeVersion}";
+                $"{DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}";
+
             var sdkInstallerScript = GetInstallerScriptSnippet(
                 DotNetCoreConstants.PlatformName,
                 sdkVersion,
                 dirToInstall);
-            var dotnetDir = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}";
 
             // Create the following structure so that 'benv' tool can understand it as it already does.
             var scriptBuilder = new StringBuilder();
             scriptBuilder
             .AppendLine(sdkInstallerScript)
-            .AppendLine($"mkdir -p {dotnetDir}/runtimes/{runtimeVersion}")
-            .AppendLine($"echo '{sdkVersion}' > {dotnetDir}/runtimes/{runtimeVersion}/sdkVersion.txt")
+            .AppendLine($"mkdir -p {DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}")
+            .AppendLine($"echo '{sdkVersion}' > {DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}/sdkVersion.txt")
             // Write out a sentinel file to indicate downlaod and extraction was successful
             .AppendLine($"echo > {sentinelFileDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return scriptBuilder.ToString();
         }
 
-        public override bool IsVersionAlreadyInstalled(string version)
+        public virtual bool IsVersionAlreadyInstalled(string runtimeVersion, string globalJsonSdkVersion)
         {
-            return IsVersionInstalled(
-                version,
-                builtInDir: DotNetCoreConstants.InstalledDotNetCoreRuntimeVersionsDir,
-                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/runtimes");
+            if (string.IsNullOrEmpty(globalJsonSdkVersion))
+            {
+                return IsVersionInstalled(
+                    runtimeVersion,
+                    builtInDir: DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir,
+                    dynamicInstallDir: DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir);
+            }
+            else
+            {
+                return IsVersionInstalled(
+                    globalJsonSdkVersion,
+                    builtInDir: DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir,
+                    dynamicInstallDir: DotNetCoreConstants.DynamicDotNetCoreSdkVersionsInstallDir);
+            }
         }
     }
 }

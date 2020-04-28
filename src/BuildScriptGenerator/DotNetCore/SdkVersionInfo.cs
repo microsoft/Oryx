@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public bool IsPrerelease { get; set; }
 
-        public string PreviewVersion { get; set; }
+        public string PrereleaseVersion { get; set; }
 
         public static SdkVersionInfo Parse(string sdkVersion)
         {
@@ -37,14 +37,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var originalString = sdkVersion;
 
-            // Example: 3.1.100-preview1
+            // Example: 3.1.100-preview1-01344 or 3.1.100-rc1-01344
             var isPrerelease = false;
-            string previewVersion = null;
-            var index = sdkVersion.IndexOf("-preview", StringComparison.OrdinalIgnoreCase);
+            string prereleaseVersion = null;
+            var index = sdkVersion.IndexOf("-", StringComparison.OrdinalIgnoreCase);
             if (index >= 0)
             {
                 isPrerelease = true;
-                previewVersion = sdkVersion.Substring(index + 1, sdkVersion.Length - (index + 1));
+                prereleaseVersion = sdkVersion.Substring(index + 1, sdkVersion.Length - (index + 1));
                 sdkVersion = sdkVersion.Substring(0, index);
             }
 
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     Patch = patch,
                     RawString = originalString,
                     IsPrerelease = isPrerelease,
-                    PreviewVersion = previewVersion,
+                    PrereleaseVersion = prereleaseVersion,
                 };
 
                 return true;
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // We are not parsing the preview part here and are only using string comparison
                 // One more thing to complicate thing is that the preview part format has changed between
                 // 3.* and 5.*, so this comparison is just fine.
-                return string.Compare(PreviewVersion, other.PreviewVersion, ignoreCase: true);
+                return string.Compare(PrereleaseVersion, other.PrereleaseVersion, ignoreCase: true);
             }
 
             return 0;

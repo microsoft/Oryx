@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
             services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
             services.AddSingleton<DotNetCorePlatformInstaller>();
+            services.AddSingleton<GlobalJsonSdkResolver>();
 
             // Note that the order of these project file providers is important. For example, if a user explicitly
             // specifies a project file using either the 'PROJECT' environment or the 'project' build property, we want

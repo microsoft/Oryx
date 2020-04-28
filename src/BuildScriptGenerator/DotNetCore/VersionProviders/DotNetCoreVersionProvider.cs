@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     _onDiskVersionProvider.GetSupportedVersions();
             }
 
-            _logger.LogDebug("Got list of supported versions");
+            _logger.LogDebug("Got the list of supported versions");
 
             return _supportedVersions;
         }

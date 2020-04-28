@@ -131,6 +131,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage();
             }
+            else if (string.Equals(tag, _gitHubActions))
+            {
+                return GetGitHubActionsBuildImage();
+            }
 
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
