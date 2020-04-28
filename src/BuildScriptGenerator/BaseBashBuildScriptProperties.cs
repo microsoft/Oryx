@@ -76,5 +76,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the value which indicates if the output directory is a nested directory of the source.
         /// </summary>
         public bool OutputDirectoryIsNested { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the value which indicates if the source directory's content must be copied to the destination
+        /// directory. <see cref="IProgrammingPlatform"/> set this flag when generating build script.
+        /// <see cref="DotNetCore.DotNetCorePlatform"/> sets this as <c>false</c> since we do not want to copy source
+        /// files like '.cs' files to destination directory where as in other platforms this is fine to do.
+        /// </summary>
+        public bool CopySourceDirectoryContentToDestinationDirectory { get; set; }
     }
 }

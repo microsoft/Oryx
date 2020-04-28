@@ -145,112 +145,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] = globalJsonSdkVersion;
             }
 
-
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
             }
 
-            (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
-                context.SourceRepo,
-                _cliOptions);
-
-            var sourceDir = _cliOptions.SourceDir;
-            var temporaryDestinationDir = "/tmp/puboutput";
-            var destinationDir = _cliOptions.DestinationDir;
-            var intermediateDir = _cliOptions.IntermediateDir;
-            var hasUserSuppliedDestinationDir = !string.IsNullOrEmpty(_cliOptions.DestinationDir);
-            var buildConfiguration = GetBuildConfiguration();
-
-            // Since destination directory is optional for .NET Core builds, check
-            var outputIsSubDirOfSourceDir = false;
-            if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
+            var templateProperties = new DotNetCoreBashBuildSnippetProperties
             {
-                outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
-                    _cliOptions.DestinationDir,
-                    _cliOptions.SourceDir);
-            }
+                ProjectFile = projectFile,
+                Configuration = GetBuildConfiguration(),
+            };
 
-            var scriptBuilder = new StringBuilder();
-            scriptBuilder
-                .AppendLine("#!/bin/bash")
-                .AppendLine("set -e")
-                .AppendLine();
-
-            // For 1st build this is not a problem, but for subsequent builds we want the source directory to be
-            // in a clean state to avoid considering earlier build's state and potentially yielding incorrect results.
-            if (outputIsSubDirOfSourceDir)
-            {
-                scriptBuilder.AppendLine($"rm -rf {_cliOptions.DestinationDir}");
-            }
-
-            scriptBuilder.AddScriptToCopyToIntermediateDirectory(
-                    sourceDir: ref sourceDir,
-                    intermediateDir: intermediateDir,
-                    GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
-                .AppendFormatWithLine("cd \"{0}\"", sourceDir)
-                .AppendLine();
-
-            if (!string.IsNullOrEmpty(installationScriptSnippet))
-            {
-                scriptBuilder.AppendLine(installationScriptSnippet);
-            }
-
-            scriptBuilder.AddScriptToCopyToIntermediateDirectory(
-                sourceDir: ref sourceDir,
-                intermediateDir: intermediateDir,
-                GetDirectoriesToExcludeFromCopyToIntermediateDir(context))
-            .AppendFormatWithLine("cd \"{0}\"", sourceDir)
-            .AppendLine();
-
-            scriptBuilder
-                .AddScriptToSetupSourceAndDestinationDirectories(
-                    sourceDir: sourceDir,
-                    temporaryDestinationDir: temporaryDestinationDir,
-                    destinationDir: destinationDir,
-                    hasUserSuppliedDestinationDir: hasUserSuppliedDestinationDir)
-                .AppendBenvCommand($"dotnet={context.ResolvedDotNetCoreRuntimeVersion}")
-                .AddScriptToRunPreBuildCommand(sourceDir: sourceDir, preBuildCommand: preBuildCommand)
-                .AppendLine("echo")
-                .AppendLine("dotnetCoreVersion=$(dotnet --version)")
-                .AppendLine("echo \"Using .NET Core SDK Version: $dotnetCoreVersion\"")
-                .AppendLine()
-                .AddScriptToRestorePackages(projectFile);
-
-            if (hasUserSuppliedDestinationDir)
-            {
-                scriptBuilder
-                    .AddScriptToPublishOutput(
-                        projectFile: projectFile,
-                        buildConfiguration: buildConfiguration,
-                        finalDestinationDir: destinationDir)
-                    .AddScriptToRunPostBuildCommand(
-                        sourceDir: sourceDir,
-                        postBuildCommand: postBuildCommand);
-            }
-            else
-            {
-                scriptBuilder
-                    .AddScriptToBuildProject(projectFile)
-                    .AddScriptToRunPostBuildCommand(
-                        sourceDir: sourceDir,
-                        postBuildCommand: postBuildCommand);
-            }
-
-            SetStartupFileNameInfoInManifestFile(context, projectFile, manifestFileProperties);
-
-            scriptBuilder
-                .AddScriptToCreateManifestFile(
-                    manifestFileProperties,
-                    manifestDir: _cliOptions.ManifestDir,
-                    finalDestinationDir: destinationDir)
-                .AppendLine("echo Done.");
+            var script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.DotNetCoreSnippet,
+                templateProperties,
+                _logger);
 
             return new BuildScriptSnippet
             {
-                BashBuildScriptSnippet = scriptBuilder.ToString(),
-                IsFullScript = true,
+                BashBuildScriptSnippet = script,
+                BuildProperties = manifestFileProperties,
+                PlatformInstallationScriptSnippet = installationScriptSnippet,
+
+                // Setting this to false to avoid copying files like '.cs' to the destination
+                CopySourceDirectoryContentToDestinationDirectory = false,
             };
         }
 
@@ -275,9 +194,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
-            // A user has the power to either enable or disable multi-platform builds entirely.
-            // However if user enables it, ASP.NET Core platform still explicitly opts out of it.
-            return false;
+            return true;
         }
 
         /// <inheritdoc/>

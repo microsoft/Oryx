@@ -106,11 +106,13 @@ cd "$SOURCE_DIR"
 {{ if PostBuildCommand | IsNotBlank }}
 # Make sure to cd to the source directory so that the post-build script runs from there
 cd $SOURCE_DIR
+echo
 echo "{{ PostBuildCommandPrologue }}"
 {{ PostBuildCommand }}
 echo "{{ PostBuildCommandEpilogue }}"
 {{ end }}
 
+{{ if CopySourceDirectoryContentToDestinationDirectory }}
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	cd "$SOURCE_DIR"
@@ -131,6 +133,7 @@ then
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."
 fi
+{{ end }}
 
 {{ if ManifestFileName | IsNotBlank }}
 MANIFEST_FILE={{ ManifestFileName }}

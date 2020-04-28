@@ -79,8 +79,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" />
     <EmbeddedResource Include="Dockerfile.oryx.tpl" />
+    <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
