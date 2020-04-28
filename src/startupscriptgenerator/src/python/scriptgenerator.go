@@ -226,8 +226,8 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	// Default to App Service's timeout value (in seconds)
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
-	pythonEnableGunicornDynamicWorker := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornDynamicWorkerEnvVarName)
-	if pythonEnableGunicornDynamicWorker {
+	pythonEnableGunicornMultiWorkers := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornMultiWorkersEnvVarName)
+	if pythonEnableGunicornMultiWorkers {
 		// 2N+1 number of workers is recommended by Gunicorn docs.
 		// Where N is the number of CPU threads.
 		// One worker will be reading or writing from the socket while the other worker is processing a request.
