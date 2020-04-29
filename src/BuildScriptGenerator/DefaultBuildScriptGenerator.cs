@@ -292,26 +292,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>The maximum version that satisfies the requested version spec.</returns>
         private string GetMatchingTargetVersion(IProgrammingPlatform platform, string targetVersionSpec)
         {
-            string targetVersion;
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-               targetVersionSpec,
-               platform.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exc = new UnsupportedVersionException(platform.Name, targetVersionSpec, platform.SupportedVersions);
-                _logger.LogError(
-                    exc, 
-                    $"Exception caught, the given version '{targetVersionSpec}' is not supported " +
-                    $"for platform '{platform.Name}'.");
-                throw exc;
-            }
-            else
-            {
-                targetVersion = maxSatisfyingVersion;
-            }
-
-            return targetVersion;
+            return platform.GetMaxSatisfyingVersionAndVerify(targetVersionSpec);
         }
     }
 }

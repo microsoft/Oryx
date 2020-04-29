@@ -50,6 +50,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             };
         }
 
+        public string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                versionInfo.SupportedVersions);
+
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            {
+                var exc = new UnsupportedVersionException(
+                    PhpConstants.PlatformName,
+                    version,
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exc,
+                    $"Exception caught, the version '{version}' is not supported for the PHP platform.");
+                throw exc;
+            }
+
+            return maxSatisfyingVersion;
+        }
+
         private string GetVersion(RepositoryContext context)
         {
             if (context.ResolvedPhpVersion != null)
@@ -90,28 +112,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exc = new UnsupportedVersionException(
-                    PhpConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exc,
-                    $"Exception caught, the version '{version}' is not supported for the PHP platform.");
-                throw exc;
-            }
-
-            return maxSatisfyingVersion;
         }
     }
 }

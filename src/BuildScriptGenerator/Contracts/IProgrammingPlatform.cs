@@ -105,5 +105,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="ctx">The repository context.</param>
         /// <returns>true, if the platform wants to participate, false otherwise.</returns>
         bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx);
+
+        /// <summary>
+        /// Gets the maximum satisfying version for the given version and
+        /// throws an exception if a version is not found.
+        /// The version supplied here could just be major, major.minor or major.minor.patch
+        /// </summary>
+        /// <param name="version">Version for which the maximum satisfying version needs to be found.</param>
+        /// <returns>Full version (i.e major.minor.patch)</returns>
+        string GetMaxSatisfyingVersionAndVerify(string version);
     }
 }

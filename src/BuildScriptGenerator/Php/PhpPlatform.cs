@@ -165,5 +165,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             return Array.Empty<string>();
         }
+
+        public string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            return _detector.GetMaxSatisfyingVersionAndVerify(version);
+        }
     }
 }

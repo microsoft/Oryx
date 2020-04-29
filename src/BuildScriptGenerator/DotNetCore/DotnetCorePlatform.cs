@@ -320,6 +320,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return dirs;
         }
 
+        public string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
+        {
+            return _detector.GetMaxSatisfyingVersionAndVerify(runtimeVersion);
+        }
+
         private string GetBuildConfiguration()
         {
             var configuration = _dotNetCoreScriptGeneratorOptions.MSBuildConfiguration;

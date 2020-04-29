@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("NetCoreApp21WebApp", "2.1")]
         [InlineData("NetCoreApp31.MvcApp", "3.1")]
-        public void BuildsApplication_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed(
+        public void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion)
         {
@@ -210,6 +210,64 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
             var appName = "NetCoreApp21WebApp";
             var runtimeVersion = "2.1";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+
+            // Create a global.json in host's app directory so that it can be present in container directory
+            File.WriteAllText(
+                Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
+                globalJsonContent);
+
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, expectedSdkVersion), result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{runtimeVersion}",
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersion}",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsDotNetCore50App_UsingSdkFromGlobalJson()
+        {
+            // Arrange
+            var expectedSdkVersion = "5.0.100-preview.3.20216.6";
+            var globalJsonTemplate = @"
+            {
+                ""sdk"": {
+                    ""version"": ""#version#"",
+                    ""rollForward"": ""Disable""
+                }
+            }";
+            var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
+            var appName = "NetCoreApp50MvcApp";
+            var runtimeVersion = "5.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";

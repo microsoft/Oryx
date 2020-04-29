@@ -519,5 +519,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 buildProperties[NodeManifestFilePropertyKeys.OutputDirPath] = outputDirPath;
             }
         }
+
+        public string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
+        {
+            return _detector.GetMaxSatisfyingVersionAndVerify(runtimeVersion);
+        }
     }
 }
