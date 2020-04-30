@@ -5,7 +5,7 @@ var responseString = "AppInsights is not configured!";
 var setupString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING || process.env.APPINSIGHTS_INSTRUMENTATIONKEY;
 
 console.log(setupString);
-console.log(process.env.APPLICATIONINSIGHTSAGENT_EXTENSION_VERSION)
+console.log(process.env.ApplicationInsightsAgent_EXTENSION_VERSION)
 
 app.get('/', function (req, res) {
 // Check for incoming request flag set by Node.js SDK to determine if the SDK is instrumented or not
