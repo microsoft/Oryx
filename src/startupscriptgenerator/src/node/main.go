@@ -10,6 +10,7 @@ import (
 	"common/consts"
 	"flag"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -143,4 +144,14 @@ func checkLegacyDebugger(nodeVersion string) bool {
 		}
 	}
 	return false
+}
+
+func getAppInsightsAgentVersion(configuration *Configuration) string {
+	valueFromViper := configuration.AppInsightsAgentExtensionVersion
+	valueFromEnvVariable := os.Getenv(consts.UserAppInsightsEnableEnv)
+	if valueFromEnvVariable == "" {
+		return valueFromViper
+	} else {
+		return valueFromEnvVariable
+	}
 }
