@@ -80,7 +80,7 @@ func main() {
 		viperConfig := common.GetViperConfiguration(fullAppPath)
 		configuration.NodeVersion = viperConfig.GetString("NODE_VERSION")
 		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
-		configuration.AppInsightsAgentExtensionVersion = viperConfig.GetString(consts.UserAppInsightsEnableEnv)
+		configuration.AppInsightsAgentExtensionVersion = getAppInsightsAgentVersion(configuration)
 		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
 		useLegacyDebugger := isLegacyDebuggerNeeded(configuration.NodeVersion)
@@ -146,10 +146,17 @@ func checkLegacyDebugger(nodeVersion string) bool {
 	return false
 }
 
-func getAppInsightsAgentVersion(configuration *Configuration) string {
+func getAppInsightsAgentVersion(configuration Configuration) string {
+	// viper currently cannot read lower-case based environment variables which is a problem for us
+	// due to the environment variable 'ApplicationInsightsAgent_EXTENSION_VERSION'
+	// https://github.com/spf13/viper/issues/302
+	// As a workaround, for this particular environment variable, we will depend on viper to read from
+	// the config file but use regular 'os.Getenv' api to be able to read the lower case environment
+	// variable
 	valueFromViper := configuration.AppInsightsAgentExtensionVersion
 	valueFromEnvVariable := os.Getenv(consts.UserAppInsightsEnableEnv)
 	if valueFromEnvVariable == "" {
+		// following represents value from config
 		return valueFromViper
 	} else {
 		return valueFromEnvVariable
