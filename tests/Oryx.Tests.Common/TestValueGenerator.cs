@@ -17,7 +17,8 @@ namespace Microsoft.Oryx.Tests.Common
             "8","8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
             "9.4",
             "10","10.1", "10.10", "10.14",
-            "12"
+            "12",
+            "14"
         };
 
         private readonly static List<string> PythonVersions = new List<string>
@@ -48,7 +49,8 @@ namespace Microsoft.Oryx.Tests.Common
                 "8","8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
                 "9.4",
                 "10","10.1", "10.10", "10.14",
-                "12"
+                "12",
+                "14"
             };
 
             return versions.Select(v => new object[] { v });

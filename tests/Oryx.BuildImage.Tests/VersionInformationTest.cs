@@ -226,10 +226,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("8", "v" + NodeVersions.Node8Version)]
         [InlineData("10", "v" + NodeVersions.Node10Version)]
         [InlineData("12", "v" + NodeVersions.Node12Version)]
+        [InlineData("14", "v" + NodeVersions.Node14Version)]
         [InlineData(NodeVersions.Node6Version, "v" + NodeVersions.Node6Version)]
         [InlineData(NodeVersions.Node8Version, "v" + NodeVersions.Node8Version)]
         [InlineData(NodeVersions.Node10Version, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
+        [InlineData(NodeVersions.Node14Version, "v" + NodeVersions.Node14Version)]
         [InlineData("lts", "v" + NodeConstants.NodeLtsVersion)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {

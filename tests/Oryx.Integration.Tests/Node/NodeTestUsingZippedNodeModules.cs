@@ -76,6 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("8")]
         [InlineData("10")]
         [InlineData("12")]
+        [InlineData("14")]
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange
