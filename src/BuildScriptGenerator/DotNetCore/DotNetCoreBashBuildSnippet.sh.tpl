@@ -1,6 +1,6 @@
 ﻿echo
 dotnetCoreVersion=$(dotnet --version)
-echo ".NET Core Version: $dotnetCoreVersion"
+echo "Using .NET Core SDK Version: $dotnetCoreVersion"
 
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
