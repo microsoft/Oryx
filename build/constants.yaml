@@ -107,7 +107,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200305.3
+    node-runtime-base-tag: 20200501.1
     yarn-cache-base-tag: 20200217.4
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
@@ -115,7 +115,8 @@
     node6-version: 6.17.1
     node8-version: 8.17.0
     node10-version: 10.19.0
-    node12-version: 12.16.1
+    node12-version: 12.16.3
+    node14-version: 14.0.0
     node-app-insights-sdk-version: 1.7.3
   outputs:
     - type: shell
