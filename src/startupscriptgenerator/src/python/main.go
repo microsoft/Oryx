@@ -64,6 +64,11 @@ func main() {
 		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
 		common.SetGlobalOperationID(buildManifest)
 
+		var configuration Configuration
+		viperConfig := common.GetViperConfiguration(fullAppPath)
+		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
+		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
+
 		entrypointGenerator := PythonStartupScriptGenerator{
 			AppPath:                  fullAppPath,
 			UserStartupCommand:       *userStartupCommandPtr,
@@ -78,6 +83,7 @@ func main() {
 			PackageDirectory:         *packagesFolderPtr,
 			SkipVirtualEnvExtraction: *skipVirtualEnvExtraction,
 			Manifest:                 buildManifest,
+			Configuration:            configuration,
 		}
 
 		command := entrypointGenerator.GenerateEntrypointScript()

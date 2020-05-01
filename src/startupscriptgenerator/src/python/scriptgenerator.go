@@ -29,6 +29,7 @@ type PythonStartupScriptGenerator struct {
 	PackageDirectory         string
 	SkipVirtualEnvExtraction bool
 	Manifest                 common.BuildManifest
+	Configuration            Configuration
 }
 
 const SupportedDebugAdapter = "ptvsd" // Not using an array since there's only one at the moment
@@ -49,12 +50,11 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n\n")
-	enableDynamicInstall := common.GetBooleanEnvironmentVariable(consts.EnableDynamicInstallKey)
-	if enableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
+	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.AppPath))
 	}
 
-	common.SetupPreRunScript(&scriptBuilder, gen.AppPath)
+	common.SetupPreRunScript(&scriptBuilder, gen.AppPath, gen.Configuration.PreRunCommand)
 
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")

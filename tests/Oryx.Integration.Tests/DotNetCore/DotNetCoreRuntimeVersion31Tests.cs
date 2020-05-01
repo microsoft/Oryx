@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
@@ -150,6 +151,62 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Resizing image succeeded", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        {
+            // Arrange
+            var dotnetcoreVersion = "3.1";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
+                // Create a 'build.env' file
+                .AddCommand(
+                $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
+                $"{appOutputDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp31MvcApp,
+                _output,
+                new DockerVolume[] { volume, appOutputDirVolume },
+                _imageHelper.GetLtsVersionsBuildImage(),
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+
+                    // Verify that the file created using the pre-run command is 
+                    // in fact present in the output directory.
+                    Assert.True(File.Exists(Path.Combine(appOutputDirVolume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

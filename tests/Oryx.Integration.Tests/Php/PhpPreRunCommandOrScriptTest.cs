@@ -3,10 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Tests.Common;
+using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,11 +34,11 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir"; 
+            var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
-            
+
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
@@ -82,12 +84,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir"; 
+            var appOutputDir = $"{appDir}/myoutputdir";
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
                .ToString();
-            
+
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
@@ -183,6 +185,48 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("<h1>Hello World!</h1>", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        {
+            // Arrange
+            var phpVersion = "7.3";
+            var appName = "twig-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+                // Create a 'build.env' file
+                .AddCommand(
+                $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
+                $"{appDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("php", phpVersion),
+                ContainerPort,
+                "/bin/sh", new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<h1>Hello World!</h1>", data);
+
+                    // Verify that the file created using the pre-run command is 
+                    // in fact present in the output directory.
+                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

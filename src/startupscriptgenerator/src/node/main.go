@@ -72,10 +72,18 @@ func main() {
 	if scriptCommand.Parsed() {
 		fullAppPath := common.GetValidatedFullPath(*appPathPtr)
 		defaultAppFullPAth := common.GetValidatedFullPath(*defaultAppFilePathPtr)
-		useLegacyDebugger := isLegacyDebuggerNeeded()
 
 		buildManifest := common.GetBuildManifest(manifestDirPtr, fullAppPath)
 		common.SetGlobalOperationID(buildManifest)
+
+		var configuration Configuration
+		viperConfig := common.GetViperConfiguration(fullAppPath)
+		configuration.NodeVersion = viperConfig.GetString("NODE_VERSION")
+		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
+		configuration.AppInsightsAgentExtensionVersion = getAppInsightsAgentVersion(configuration)
+		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
+
+		useLegacyDebugger := isLegacyDebuggerNeeded(configuration.NodeVersion)
 
 		gen := NodeStartupScriptGenerator{
 			SourcePath:                      fullAppPath,
@@ -89,6 +97,7 @@ func main() {
 			UseLegacyDebugger:               useLegacyDebugger,
 			SkipNodeModulesExtraction:       *skipNodeModulesExtraction,
 			Manifest:                        buildManifest,
+			Configuration:                   configuration,
 		}
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
@@ -116,9 +125,8 @@ func main() {
 }
 
 // Checks if the legacy debugger should be used for the current node image
-func isLegacyDebuggerNeeded() bool {
-	nodeVersionEnv := os.Getenv("NODE_VERSION")
-	result := checkLegacyDebugger(nodeVersionEnv)
+func isLegacyDebuggerNeeded(nodeVersion string) bool {
+	result := checkLegacyDebugger(nodeVersion)
 	return result
 }
 
@@ -136,4 +144,21 @@ func checkLegacyDebugger(nodeVersion string) bool {
 		}
 	}
 	return false
+}
+
+func getAppInsightsAgentVersion(configuration Configuration) string {
+	// viper currently cannot read lower-case based environment variables which is a problem for us
+	// due to the environment variable 'ApplicationInsightsAgent_EXTENSION_VERSION'
+	// https://github.com/spf13/viper/issues/302
+	// As a workaround, for this particular environment variable, we will depend on viper to read from
+	// the config file but use regular 'os.Getenv' api to be able to read the lower case environment
+	// variable
+	valueFromViper := configuration.AppInsightsAgentExtensionVersion
+	valueFromEnvVariable := os.Getenv(consts.UserAppInsightsEnableEnv)
+	if valueFromEnvVariable == "" {
+		// following represents value from config
+		return valueFromViper
+	} else {
+		return valueFromEnvVariable
+	}
 }
