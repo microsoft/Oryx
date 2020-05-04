@@ -47,6 +47,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
@@ -55,6 +56,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
             var majorPart = runtimeVersion.Split('.')[0];
             var expectedSdkVersionPrefix = $"{majorPart}.";
@@ -166,7 +169,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             File.WriteAllText(
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
-
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
@@ -175,6 +178,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act
@@ -228,13 +233,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             File.WriteAllText(
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
-
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act

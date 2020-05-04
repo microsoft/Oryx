@@ -162,6 +162,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 templateProperties,
                 _logger);
 
+            SetStartupFileNameInfoInManifestFile(context, projectFile, manifestFileProperties);
+
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,

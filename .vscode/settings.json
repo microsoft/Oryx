@@ -7,5 +7,9 @@
         "**/startupscriptgenerator/src/gotest.tools": true,
         "**/startupscriptgenerator/src/golang.org": true
     },
-    "go.toolsGopath": "${env:HOME}/go"
+    "go.toolsGopath": "${env:HOME}/go",
+    "editor.rulers": [0, 120],
+    "workbench.colorCustomizations": {
+        "editorRuler.foreground": "#ff333388"
+    },
 }

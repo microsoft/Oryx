@@ -11,7 +11,7 @@ if [ ! -d "$SOURCE_DIR" ]; then
     exit 1
 fi
 
-# Get full file paths to source and destination directories
+{{ # Get full file paths to source and destination directories }}
 cd $SOURCE_DIR
 SOURCE_DIR=$(pwd -P)
 
@@ -27,8 +27,8 @@ then
 fi
 
 {{ if OutputDirectoryIsNested }}
-# For 1st build this is not a problem, but for subsequent builds we want the source directory to be
-# in a clean state to avoid considering earlier build's state and potentially yielding incorrect results.
+{{ ## For 1st build this is not a problem, but for subsequent builds we want the source directory to be
+ in a clean state to avoid considering earlier build's state and potentially yielding incorrect results. ## }}
 rm -rf "$DESTINATION_DIR"
 {{ end }}
 
@@ -53,10 +53,10 @@ then
 	excludedDirectories+=" --exclude {{ excludedDir }}"
 	{{ end }}
 
-	# We use checksum and not the '--times' because the destination directory could be from
-	# a different file system (ex: NFS) where setting modification times results in errors.
-	# Even though checksum is slower compared to the '--times' option, it is more reliable
-	# which is important for us.
+	{{ ## We use checksum and not the '--times' because the destination directory could be from
+	 a different file system (ex: NFS) where setting modification times results in errors.
+	 Even though checksum is slower compared to the '--times' option, it is more reliable
+	 which is important for us. ## }}
 	rsync -rcE --delete $excludedDirectories . "$INTERMEDIATE_DIR"
 
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -85,12 +85,16 @@ fi
 apt-get update && apt-get install --yes --no-install-recommends {{ for PackageName in OsPackagesToInstall }}{{ PackageName }} {{ end }}
 {{ end }}
 
-# Export these variables so that they are available for the pre and post build scripts.
+{{ # Export these variables so that they are available for the pre and post build scripts. }}
 export SOURCE_DIR
 export DESTINATION_DIR
 
+{{ ## Make sure to create the destination directory before pre and post build commands are run so that users can
+access the destination directory ## }}
+mkdir -p "$DESTINATION_DIR"
+
 {{ if PreBuildCommand | IsNotBlank }}
-# Make sure to cd to the source directory so that the pre-build script runs from there
+{{ # Make sure to cd to the source directory so that the pre-build script runs from there }}
 cd "$SOURCE_DIR"
 echo "{{ PreBuildCommandPrologue }}"
 {{ PreBuildCommand }}
@@ -98,13 +102,13 @@ echo "{{ PreBuildCommandEpilogue }}"
 {{ end }}
 
 {{ for Snippet in BuildScriptSnippets }}
-# Makes sure every snippet starts in the context of the source directory.
+{{ # Makes sure every snippet starts in the context of the source directory. }}
 cd "$SOURCE_DIR"
 {{~ Snippet }}
 {{ end }}
 
 {{ if PostBuildCommand | IsNotBlank }}
-# Make sure to cd to the source directory so that the post-build script runs from there
+{{ # Make sure to cd to the source directory so that the post-build script runs from there }}
 cd $SOURCE_DIR
 echo
 echo "{{ PostBuildCommandPrologue }}"
@@ -124,11 +128,30 @@ then
 	excludedDirectories+=" --exclude {{ excludedDir }}"
 	{{ end }}
 
-	# We use checksum and not the '--times' because the destination directory could be from
-	# a different file system (ex: NFS) where setting modification times results in errors.
-	# Even though checksum is slower compared to the '--times' option, it is more reliable
-	# which is important for us.
+	{{ if OutputDirectoryIsNested }}
+	{{ ## We create destination directory upfront for scenarios where pre or post build commands need access
+	to it. This espceially hanldes the scenario where output directory is a sub-directory of a source directory ## }}
+	tmpDestinationDir="/tmp/__oryxDestinationDir"
+	if [ -d "$DESTINATION_DIR" ]; then
+		mkdir -p "$tmpDestinationDir"
+		rsync -rcE --links "$DESTINATION_DIR/" "$tmpDestinationDir"
+		rm -rf "$DESTINATION_DIR"
+	fi
+	{{ end }}
+
+	{{ ## We use checksum and not the '--times' because the destination directory could be from
+	 a different file system (ex: NFS) where setting modification times results in errors.
+	 Even though checksum is slower compared to the '--times' option, it is more reliable
+	 which is important for us. ## }}
 	rsync -rcE --links $excludedDirectories . "$DESTINATION_DIR"
+
+	{{ if OutputDirectoryIsNested }}
+	if [ -d "$tmpDestinationDir" ]; then
+		{{ # Do not overwrite files in destination directory }}
+		rsync -rcE --links "$tmpDestinationDir/" "$DESTINATION_DIR"
+		rm -rf "$tmpDestinationDir"
+	fi
+	{{ end }}
 
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
 	echo "Done in $ELAPSED_TIME sec(s)."

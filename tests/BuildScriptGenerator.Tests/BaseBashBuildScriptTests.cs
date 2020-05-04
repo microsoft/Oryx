@@ -25,11 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var script = TemplateHelper.Render(TemplateHelper.TemplateResource.BaseBashScript, scriptProps);
 
             // Assert
-            Assert.Contains(
-                script1 +
-                "\n\n# Makes sure every snippet starts in the context of the source directory.\ncd \"$SOURCE_DIR\"\n" +
-                script2,
-                script); // The template engine uses UNIX-style line endings
+            var indexOfScript1 = script.IndexOf(script1);
+            var indexOfScript2 = script.IndexOf(script2);
+            Assert.True(indexOfScript1 < indexOfScript2);
             Assert.DoesNotContain("Executing pre-build script", script);
             Assert.DoesNotContain("Executing post-build script", script);
         }
