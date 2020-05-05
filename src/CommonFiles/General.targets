@@ -1,0 +1,20 @@
+<Project>
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+      <ItemGroup>
+          <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+      </ItemGroup>
+  </Target>
+
+  <Target Name="CopyNuGetPackage" AfterTargets="GenerateNuspec">
+    <PropertyGroup>
+      <ArtifactsPackagesDir>..\..\artifacts\packages</ArtifactsPackagesDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <NuGetPackages Include="$(OutDir)*.nupkg" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(ArtifactsPackagesDir)" ContinueOnError="true" />
+    <Copy SourceFiles="@(NuGetPackages)" DestinationFolder="$(ArtifactsPackagesDir)" OverwriteReadOnlyFiles="true" />
+  </Target>
+</Project>
