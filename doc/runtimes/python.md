@@ -10,7 +10,7 @@ details on components and configuration of build and run images too.
 - [Build](#build)
   - [Package manager](#package-manager)
 - [Run](#run)
-    - [Gunicorn multiple workers suport](#gunicorn-multiple-workers-suport)
+    - [Gunicorn multiple workers support](#gunicorn-multiple-workers-support)
 - [Version support](#version-support)
 
 # Base image
@@ -66,7 +66,7 @@ The following process is applied to determine how to start an app.
         * `index.py`
         * `server.py`
 
-### Gunicorn multiple workers suport
+### Gunicorn multiple workers support
 
 To enable running gunicorn with multiple [workers strategy][] and fully utilize the cores to improve performance
 and prevent potential timeout/blocks from sync workers, add and set the environment variable `PYTHON_ENABLE_GUNICORN_MULTIWORKERS=true` into the app settings.
