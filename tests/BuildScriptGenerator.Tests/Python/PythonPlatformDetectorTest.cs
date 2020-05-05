@@ -203,7 +203,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Act
             var result = detector.Detect(context);
-
+            
             // Assert
             Assert.NotNull(result);
             Assert.Equal("python", result.Platform);

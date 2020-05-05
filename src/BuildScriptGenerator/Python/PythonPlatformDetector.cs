@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -100,6 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             return maxSatisfyingVersion;
         }
+
         private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
         {
             if (context.ResolvedPythonVersion != null)

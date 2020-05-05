@@ -26,8 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "5.0";
-            var appName = "NetCoreApp50MvcApp";
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp50MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
@@ -46,7 +45,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
+                NetCoreApp50MvcApp,
                 _output,
                 new DockerVolume[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),

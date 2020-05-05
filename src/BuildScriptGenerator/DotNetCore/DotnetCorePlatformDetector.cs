@@ -63,7 +63,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             };
         }
 
-
         public string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
         {
             var versionMap = _versionProvider.GetSupportedVersions();
@@ -108,6 +107,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             return maxSatisfyingVersion;
         }
+
         internal string DetermineRuntimeVersion(string targetFramework)
         {
             // Ex: "netcoreapp2.2" => "2.2"
