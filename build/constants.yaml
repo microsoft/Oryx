@@ -33,7 +33,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20191205.1
+    dot-net-core-runtime-base-tag: 20200505.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -66,7 +66,7 @@
 - name: php-versions
   constants:
     php-build-base-tag: 20191219.3
-    php-runtime-base-tag: 20191219.3
+    php-runtime-base-tag: 20200505.1
     composer-version: 1.9.1
     composer-sha384: baf1608c33254d00611ac1705c1d9958c817a1a33bce370c0595974b342601bd80b92a3f46067da89e3b06bff421f182
     # hashes are for .tar.xz
