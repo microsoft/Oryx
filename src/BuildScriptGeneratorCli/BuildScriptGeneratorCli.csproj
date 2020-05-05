@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <!-- The following is to enable copying the .dlls of referenced projects (ex: Microsoft.Oryx.Common here) as part
+    of the generated nuget package's "lib" foler -->
+    <TargetsForTfmSpecificBuildOutput>
+      $(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage
+    </TargetsForTfmSpecificBuildOutput>
     <RuntimeFrameworkVersion>2.1</RuntimeFrameworkVersion>
     <AssemblyName>GenerateBuildScript</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGeneratorCli</RootNamespace>
@@ -19,6 +24,7 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
@@ -31,18 +37,25 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="0.4.1" />
     <PackageReference Include="NLog" Version="4.6.5" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.5.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+
   </ItemGroup>
 
   <ItemGroup>
+    <!-- When nuget package for this CLI project is generated, the following referenced project gets
+    referenced automatically as a nuget package which is good. -->
     <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
-    <ProjectReference Include="..\Common\Common.csproj" />
+
+    <ProjectReference Include="..\Common\Common.csproj">
+      <!-- Following line is to avoid making the generated nuget package from depending on "Common" package.
+           This is because we are NOT going to ship the "Common" package as it is just internal code. -->
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
