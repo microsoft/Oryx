@@ -68,3 +68,5 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello Gunicorn!", data);
                 });
         }
+    }
+}
