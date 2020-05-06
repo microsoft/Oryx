@@ -294,12 +294,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
 
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
                 .ToString();
 
             // Act
