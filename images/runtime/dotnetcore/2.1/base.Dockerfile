@@ -1,6 +1,6 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1.805 AS tools-install
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 
 FROM oryx-run-base AS dotnetcore-original

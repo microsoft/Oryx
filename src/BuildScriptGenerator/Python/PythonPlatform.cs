@@ -298,6 +298,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return excludeDirs;
         }
 
+        public string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            return _detector.GetMaxSatisfyingVersionAndVerify(version);
+        }
+
         private string GetDefaultVirtualEnvName(BuildScriptGeneratorContext context)
         {
             string pythonVersion = context.ResolvedPythonVersion;

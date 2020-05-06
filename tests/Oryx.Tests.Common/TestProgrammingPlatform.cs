@@ -96,5 +96,10 @@ namespace Microsoft.Oryx.Tests.Common
         {
             return _platformIsEnabledForMultiPlatformBuild;
         }
+
+        public string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            return version;
+        }
     }
 }

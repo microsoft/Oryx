@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -79,28 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
-        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
-        {
-            if (context.ResolvedPythonVersion != null)
-            {
-                return context.ResolvedPythonVersion;
-            }
-
-            if (versionFromRuntimeFile != null)
-            {
-                return versionFromRuntimeFile;
-            }
-
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
-        }
-
-        private string GetMaxSatisfyingVersionAndVerify(string version)
+        public string GetMaxSatisfyingVersionAndVerify(string version)
         {
             var versionInfo = _versionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
@@ -120,6 +98,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return maxSatisfyingVersion;
+        }
+
+        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
+        {
+            if (context.ResolvedPythonVersion != null)
+            {
+                return context.ResolvedPythonVersion;
+            }
+
+            if (versionFromRuntimeFile != null)
+            {
+                return versionFromRuntimeFile;
+            }
+
+            return GetDefaultVersionFromProvider();
+        }
+
+        private string GetDefaultVersionFromProvider()
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
+            return versionInfo.DefaultVersion;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

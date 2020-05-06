@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.Tests.Common;
 using Moq;
 using Xunit;
 
@@ -111,6 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         [InlineData("netcoreapp2.2", "2.2.8")]
         [InlineData("netcoreapp3.0", "3.0.2")]
         [InlineData("netcoreapp3.1", "3.1.2")]
+        [InlineData("netcoreapp5.0", "5.0.0-rc.1.14955.1")]
         public void Detect_ReturnsExpectedMaximumSatisfyingPlatformVersion_ForTargetFrameworkVersions(
             string netCoreAppVersion,
             string expectedSdkVersion)
@@ -141,7 +141,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                     {"3.0.1", "3.0.100" },
                     {"3.0.2", "3.0.101" },
                     {"3.1.1", "3.1.100" },
-                    {"3.1.2", "3.1.101" },
+                    {"3.1.2-preview.1.14955.1", "3.1.200-preview.1.4500.1" },
+                    {"3.1.2", "3.1.201" },
+                    {"5.0.0-preview.1.14955.1", "5.0.100-preview.1.4500.1" },
+                    {"5.0.0-preview.2.14955.1", "5.0.100-preview.2.4500.1" },
+                    {"5.0.0-rc.1.14955.1", "5.0.100-rc.1.4500.1" },
                 },
                 defaultVersion: "3.1",
                 projectFile);
@@ -275,7 +279,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             DotNetCoreScriptGeneratorOptions options)
         {
             options = options ?? new DotNetCoreScriptGeneratorOptions();
-            
+
             return new DotNetCorePlatformDetector(
                 new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),
                 Options.Create(options),

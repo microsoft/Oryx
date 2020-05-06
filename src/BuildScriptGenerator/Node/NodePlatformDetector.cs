@@ -125,6 +125,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
         }
 
+        public string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            var versionInfo = _versionProvider.GetVersionInfo();
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                versionInfo.SupportedVersions);
+
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            {
+                var exception = new UnsupportedVersionException(
+                    NodeConstants.PlatformName,
+                    version,
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exception,
+                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
+                throw exception;
+            }
+
+            return maxSatisfyingVersion;
+        }
+
         private string GetVersion(RepositoryContext context)
         {
             if (context.ResolvedNodeVersion != null)
@@ -151,28 +173,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exception = new UnsupportedVersionException(
-                    NodeConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exception,
-                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
-                throw exception;
-            }
-
-            return maxSatisfyingVersion;
         }
     }
 }

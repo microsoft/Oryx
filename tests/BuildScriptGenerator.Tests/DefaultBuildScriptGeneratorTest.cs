@@ -202,32 +202,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_Throws_IfCanDetectLanguageVersion_AndLanguageVersionIsUnsupported()
-        {
-            // Arrange
-            var detector = new TestPlatformDetectorUsingPlatformName(
-                detectedPlatformName: "test",
-                detectedPlatformVersion: "2.0.0"); // Unsupported version
-            var platform = new TestProgrammingPlatform(
-                "test",
-                new[] { "1.0.0" },
-                canGenerateScript: true,
-                scriptContent: "script-content",
-                detector);
-            var commonOptions = new BuildScriptGeneratorOptions();
-            var generator = CreateDefaultScriptGenerator(platform, commonOptions);
-            var context = CreateScriptGeneratorContext();
-
-            // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(
-                () => generator.GenerateBashScript(context, out var generatedScript));
-            Assert.Equal(
-                "Platform 'test' version '2.0.0' is unsupported. Supported versions: 1.0.0",
-                exception.Message);
-            Assert.True(detector.DetectInvoked);
-        }
-
-        [Fact]
         public void TryGenerateScript_Throws_IfSuppliedLanguageIsUnsupported()
         {
             // Arrange
@@ -253,36 +227,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 () => generator.GenerateBashScript(context, out var generatedScript));
             Assert.Equal(
                 "'unsupported' platform is not supported. Supported platforms are: test",
-                exception.Message);
-            Assert.False(detector.DetectInvoked);
-        }
-
-        [Fact]
-        public void TryGenerateScript_Throws_IfSuppliedLanguageVersionIsUnsupported()
-        {
-            // Arrange
-            var detector = new TestPlatformDetectorUsingPlatformName(
-                detectedPlatformName: "test",
-                detectedPlatformVersion: "1.0.0");
-            var platform = new TestProgrammingPlatform(
-                "test",
-                new[] { "1.0.0" },
-                canGenerateScript: true,
-                scriptContent: "script-content",
-                detector);
-            var commonOptions = new BuildScriptGeneratorOptions
-            {
-                PlatformName = "test",
-                PlatformVersion = "2.0.0", //unsupported version
-            };
-            var generator = CreateDefaultScriptGenerator(platform, commonOptions);
-            var context = CreateScriptGeneratorContext();
-
-            // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(
-                () => generator.GenerateBashScript(context, out var generatedScript));
-            Assert.Equal(
-                "Platform 'test' version '2.0.0' is unsupported. Supported versions: 1.0.0",
                 exception.Message);
             Assert.False(detector.DetectInvoked);
         }
