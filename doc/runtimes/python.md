@@ -3,13 +3,15 @@ details on components and configuration of build and run images too.
 
 # Contents
 
-1. [Base Image](#base-image)
-    * [System packages](#system-packages)
-1. [Detect](#detect)
-1. [Build](#build)
-    * [Package manager](#package-manager)
-1. [Run](#run)
-1. [Version support](#version-support)
+- [Contents](#contents)
+- [Base image](#base-image)
+  - [System packages](#system-packages)
+- [Detect](#detect)
+- [Build](#build)
+  - [Package manager](#package-manager)
+- [Run](#run)
+    - [Gunicorn multiple workers support](#gunicorn-multiple-workers-support)
+- [Version support](#version-support)
 
 # Base image
 
@@ -64,6 +66,11 @@ The following process is applied to determine how to start an app.
         * `index.py`
         * `server.py`
 
+### Gunicorn multiple workers support
+
+To enable running gunicorn with multiple [workers strategy][] and fully utilize the cores to improve performance
+and prevent potential timeout/blocks from sync workers, add and set the environment variable `PYTHON_ENABLE_GUNICORN_MULTIWORKERS=true` into the app settings.
+
 In Azure Web Apps the version of the Python runtime which runs your app is
 determined by the value of `LinuxFxVersion` in your [site config][]. See
 [../base\_images.md](../base_images.md#azure-web-apps-runtimes-and-versions)
@@ -71,6 +78,7 @@ for how to modify this.
 
 [gunicorn]: https://gunicorn.org/
 [site config]: https://docs.microsoft.com/en-us/rest/api/appservice/webapps/get#siteconfig
+[workers strategy]: https://docs.gunicorn.org/en/stable/design.html#how-many-workers
 
 # Version support
 
