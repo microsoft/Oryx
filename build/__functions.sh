@@ -52,10 +52,11 @@ function dockerCleanupIfRequested()
 function execAllGenerateDockerfiles()
 {
 	runtimeImagesSourceDir="$1"
-	generateDockerfiles=$(find $runtimeImagesSourceDir -type f -name "generateDockerfiles.sh")
+	runtimeGenerateDockerFileScriptName="$2"
+	generateDockerfiles=$(find $runtimeImagesSourceDir -type f -name $runtimeGenerateDockerFileScriptName)
 	if [ -z "$generateDockerfiles" ]
 	then
-		echo "Couldn't find any 'generateDockerfiles.sh' under '$runtimeImagesSourceDir' and its sub-directories."
+		echo "Couldn't find any '$runtimeGenerateDockerFileScriptName' under '$runtimeImagesSourceDir' and its sub-directories."
 	fi
 
 	for generateDockerFile in $generateDockerfiles; do

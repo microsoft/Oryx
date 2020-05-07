@@ -256,10 +256,14 @@ paket-files/
 
 # Node and .NET Core runtime Dockerfiles, that are auto generated
 images/runtime/node/*/Dockerfile
+images/runtime/node/*/buster.Dockerfile
 images/runtime/dotnetcore/*/Dockerfile
+images/runtime/dotnetcore/*/buster.Dockerfile
 images/runtime/python/*.*/
 images/runtime/php/*.*/Dockerfile
+images/runtime/php/*.*/buster.Dockerfile
 images/runtime/php-fpm/*.*/Dockerfile
+images/runtime/php-fpm/*.*/buster.Dockerfile
 
 # Go packages from GitHub
 src/startupscriptgenerator/bin/
@@ -271,3 +275,4 @@ src/startupscriptgenerator/**/vendor/
 src/startupscriptgenerator/src/**/__debug_bin
 src/startupscriptgenerator/src/**/run.sh
 !**/dynamic/Dockerfile
+!**/dynamic/buster.Dockerfile

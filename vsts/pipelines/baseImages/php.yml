@@ -6,13 +6,24 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build php runtime base images
+    displayName: Build php runtime stretch base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php
     artifactsFileName: php-runtimeimage-bases.txt
+    jobName: Build_Stretch_BaseImages
+
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php runtime buster base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php
+    artifactsFileName: php-runtimeimage-buster-bases.txt
+    jobName: Build_Buster_BaseImages
 
 - job: Release_PhpRuntimeBaseImage
-  dependsOn: Build_BaseImage
+  dependsOn: 
+    - Build_Stretch_BaseImages
+    - Build_Buster_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:
