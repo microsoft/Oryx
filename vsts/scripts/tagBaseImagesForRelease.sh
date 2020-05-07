@@ -13,6 +13,7 @@ declare -r buildNumber=$BUILD_BUILDNUMBER
  
 function retagImageWithStagingRepository()
 {
+    echo "Number of arguments passed: $@"
     echo "Pulling and retagging bases images for '$1'..."
     
     if [[ -n "$3" ]]; then
@@ -62,8 +63,8 @@ then
 elif [ "$imageName" == "node" ]
 then
   echo ""
+  retagImageWithStagingRepository node-runtimebusterimage-bases.txt $imageName buster
   retagImageWithStagingRepository node-runtimeimage-bases.txt $imageName
-  retagImageWithStagingRepository node-runtimebusterimage-bases.txt $imageName
 elif [ "$imageName" == "python-build" ]
 then
   echo ""
@@ -75,11 +76,13 @@ then
 elif [ "$imageName" == "php" ]
 then
   echo ""
+  retagImageWithStagingRepository php-runtimebusterimage-bases.txt $imageName buster
   retagImageWithStagingRepository php-runtimeimage-bases.txt $imageName
 elif [ "$imageName" == "php-fpm" ]
 then
   echo ""
   echo $imageName
+  retagImageWithStagingRepository php-fpm-runtimebusterimage-bases.txt $imageName buster
   retagImageWithStagingRepository php-fpm-runtimeimage-bases.txt $imageName
 elif [ "$imageName" == "dotnetcore" ]
 then

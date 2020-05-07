@@ -10,9 +10,10 @@ jobs:
     scriptPath: ./build/buildBuildImageBases.sh
     imageDir: yarn-cache
     artifactsFileName: yarn-cache-buildimage-bases.txt
+    jobName: Build_YarnCache_BaseImage
 
 - job: Release_YarnCacheBaseImage
-  dependsOn: Build_BaseImage
+  dependsOn: Build_YarnCache_BaseImage
   displayName: Push image to MCR
   timeoutInMinutes: 250
   pool:
