@@ -10,11 +10,16 @@ declare -r artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images"
 declare -r outFileName="base-images-mcr.txt" 
 declare -r acrProdRepo="oryxmcr.azurecr.io/public/oryx"
 declare -r buildNumber=$BUILD_BUILDNUMBER
-
+ 
 function retagImageWithStagingRepository()
 {
     echo "Pulling and retagging bases images for '$1'..."
     
+    if [[ -n "$3" ]]; then
+      echo "buster images to be released..."
+      outFileName="base-images-mcr-buster.txt" 
+    fi
+
     local artifactsFile="$artifactsDir/$1"
     local outFile="$artifactsDir/$2/$outFileName"
 
@@ -58,6 +63,7 @@ elif [ "$imageName" == "node" ]
 then
   echo ""
   retagImageWithStagingRepository node-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository node-runtimebusterimage-bases.txt $imageName
 elif [ "$imageName" == "python-build" ]
 then
   echo ""

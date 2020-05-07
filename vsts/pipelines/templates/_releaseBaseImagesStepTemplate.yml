@@ -27,20 +27,38 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Pull and create release tags'
+  displayName: 'Pull and create release tags for stretch images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
     args: ${{ parameters.baseImageName }}
 
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for buster images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
+    args: ${{ parameters.baseImageName }} buster 
+
 - task: Docker@1
-  displayName: 'Push image(s) to staging registry'
+  displayName: 'Push stretch image(s) to staging registry'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrProdName }}
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/base-images-mcr.txt'
+    includeLatestTag: false
+    enforceDockerNamingConvention: true
+
+- task: Docker@1
+  displayName: 'Push buster image(s) to staging registry'
+  inputs:
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}
+    command: 'Push an image'
+    pushMultipleImages: true
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/base-images-buster-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
 

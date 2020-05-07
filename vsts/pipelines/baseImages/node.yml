@@ -6,13 +6,24 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build Node runtime base images
+    displayName: Build Node runtime stretch based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
     artifactsFileName: node-runtimeimage-bases.txt
+    jobName: Build_Stretch_BaseImages
+
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build Node runtime buster based images
+    scriptPath: ./build/buildRunTimeImageBusterBases.sh
+    imageDir: node
+    artifactsFileName: node-runtimebusterimage-bases.txt
+    jobName: Build_Buster_BaseImages
 
 - job: Release_NodeRuntimeBaseImage
-  dependsOn: Build_BaseImage
+  dependsOn: 
+    - Build_Stretch_BaseImages
+    - Build_Buster_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

@@ -25,21 +25,24 @@ then
 fi
 
 echo
-echo "Building the common base image '$RUNTIME_BASE_IMAGE_NAME'..."
+echo "Building the buster based common base image '$RUNTIME_BUSTER_BASE_IMAGE_NAME'..."
 echo
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
 # the latest version of its own base image.
 docker build \
     --pull \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME" \
+    -f "$RUNTIME_BUSTER_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BUSTER_BASE_IMAGE_NAME" \
     $REPO_DIR
 
+
 if [ "$runtimeSubDir" == "node" ]; then
+
+    echo "Generating buster based common base image for node runtime ..."
     docker build \
-        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryx-node-run-base" \
+        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Buster.Dockerfile" \
+        -t "oryx-node-run-buster-base" \
         $REPO_DIR
 fi
 
@@ -47,8 +50,9 @@ labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateBusterDockerfiles.sh"
+echo "runtime image source dir: "$runtimeImagesSourceDir
 
-dockerFileName="base.Dockerfile"
+dockerFileName="base.buster.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 if [ -z "$dockerFiles" ]
 then
@@ -60,9 +64,9 @@ fi
 mkdir -p "$BASE_IMAGES_ARTIFACTS_FILE_PREFIX"
 
 # NOTE: We create a unique artifacts file per platform since they are going to be built in parallel on CI
-ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-bases.txt"
+ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimebusterimage-bases.txt"
 
-initFile="$runtimeImagesSourceDir/buildRunTimeImageBases_Init.sh"
+initFile="$runtimeImagesSourceDir/buildRunTimeImageBusterBases_Init.sh"
 if [ -f "$initFile" ]; then
     $initFile
 fi
@@ -78,8 +82,9 @@ for dockerFile in $dockerFiles; do
     platformName="${PARTS[0]}"
     platformVersion="${PARTS[1]}"
 
-    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion"
+    echo "platform origin: "$platformOrigin
+    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}-buster
+    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion-buster"
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
@@ -90,8 +95,6 @@ for dockerFile in $dockerFiles; do
     docker build -f $dockerFile \
         -t $localImageTagName \
         --build-arg CACHEBUST=$(date +%s) \
-        --build-arg NODE6_VERSION=$NODE6_VERSION \
-        --build-arg NODE8_VERSION=$NODE8_VERSION \
         --build-arg NODE10_VERSION=$NODE10_VERSION \
         --build-arg NODE12_VERSION=$NODE12_VERSION \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
@@ -104,7 +107,7 @@ for dockerFile in $dockerFiles; do
         # $tag will follow a similar format to 20191024.1
         uniqueImageName="$localImageTagName-$BUILD_NUMBER"
 
-        # Tag the image to follow a similar format to .../python:3.7-20191028.1
+        # Tag the image to follow a similar format to .../python:3.7-buster-20191028.1
         docker tag "$localImageTagName" "$uniqueImageName"
 
         if [ $clearedOutput == "false" ]
