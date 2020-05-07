@@ -258,6 +258,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _cliOptions.SourceDir);
             }
 
+            // Copy the source content to destination only if all the platforms involved in generating the build script
+            // say yes.
+            var copySourceDirectoryContentToDestinationDirectory = snippets.All(
+                snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
+
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? new string[0],
@@ -273,6 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 BenvPath = FilePaths.Benv,
                 PlatformInstallationScriptSnippets = snippets.Select(s => s.PlatformInstallationScriptSnippet),
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
+                CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

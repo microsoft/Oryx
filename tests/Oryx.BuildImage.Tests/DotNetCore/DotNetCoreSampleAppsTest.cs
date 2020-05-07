@@ -357,6 +357,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact]
         public void Build_CopiesContentCreatedByPreAndPostBuildScript_ToExplicitOutputDirectory()
         {
+            // NOTE: Here we are trying to verify that the pre and post build scripts are able to access the
+            // source and destination directory environment variables.
+
             // Arrange
             var appName = "NetCoreApp21WebApp";
             var volume = CreateSampleAppVolume(appName);
@@ -401,7 +404,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -459,7 +462,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void MultiPlatformBuild_IsDisabled()
+        public void CanUseDotNetCoreAsPartOfMultiPlatformBuild()
         {
             // Arrange
             var appName = "dotnetreact";
@@ -468,7 +471,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ENABLE_MULTIPLATFORM_BUILD=true")
+                .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.2")
                 .ToString();
 
@@ -487,7 +490,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.DoesNotContain(@"npm install", result.StdOut);
+                    Assert.Contains(@"npm install", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

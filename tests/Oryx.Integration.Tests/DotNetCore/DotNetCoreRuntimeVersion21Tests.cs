@@ -655,6 +655,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 NetCoreApp21WebApp,
                 _output,
                 new[] { appVolume, appOutputDirVolume },
+                _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
