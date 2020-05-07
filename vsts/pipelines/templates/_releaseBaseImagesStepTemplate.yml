@@ -38,7 +38,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
-    args: ${{ parameters.baseImageName }} buster 
+    args: ${{ parameters.baseImageName }}
 
 - task: Docker@1
   displayName: 'Push stretch image(s) to staging registry'

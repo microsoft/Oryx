@@ -10,9 +10,10 @@ jobs:
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: dotnetcore
     artifactsFileName: dotnetcore-runtimeimage-bases.txt
+    jobName: Build_DotNetCore_BaseImage
 
 - job: Release_DotNetCoreRuntimeBaseImage
-  dependsOn: Build_BaseImage
+  dependsOn: Build_DotNetCore_BaseImage
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

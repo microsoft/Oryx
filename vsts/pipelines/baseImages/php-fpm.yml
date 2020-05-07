@@ -10,9 +10,20 @@ jobs:
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php-fpm
     artifactsFileName: php-fpm-runtimeimage-bases.txt
+    jobName: Build_Php_Fpm_Base
+
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php runtime base images
+    scriptPath: ./build/buildRunTimeImageBusterBases.sh
+    imageDir: php-fpm
+    artifactsFileName: php-fpm-runtimeimage-bases.txt
+    jobName: Build_PHP_FPM_Buster_Base
 
 - job: Release_PhpRuntimeBaseImage
-  dependsOn: Build_BaseImage
+  dependsOn: 
+    - Build_Php_Fpm_Base
+    - Build_Php_Fpm_Buster_Base
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:
