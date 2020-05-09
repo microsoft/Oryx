@@ -19,7 +19,7 @@ getDotNetCoreSdk() {
 	local sha="$2"
 	local downloadUrl="$3"
 
-	if shouldBuildSdk dotnet dotnet-$sdkVersion.tar.gz; then
+	if shouldBuildSdk dotnet dotnet-$sdkVersion.tar.gz || shouldOverwriteSdk || shouldOverwriteDotNetCoreSdk; then
 		echo "Downloading .NET Core SDK version '$sdkVersion'..."
 		echo
 
@@ -46,6 +46,14 @@ getDotNetCoreSdk() {
 
 		echo "Runtime_version=$runtimeVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
 		echo "Version=$sdkVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
+	fi
+}
+
+shouldOverwriteDotNetCoreSdk() {
+	if [ "$OVERWRITE_EXISTING_SDKS_DOTNETCORE" == "true" ]; then
+		return 0
+	else
+		return 1
 	fi
 }
 

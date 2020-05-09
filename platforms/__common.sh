@@ -33,18 +33,21 @@ shouldBuildSdk() {
 	local containerName="$1"
 	local blobName="$2"
 
-	if [ "$OVERWRITE_EXISTING_SDKS" == "true" ]
-	then
+	# return whatever exit code the following returns
+	blobExists $containerName $blobName
+	exitCode=$?
+	if [ "$exitCode" == 0 ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+shouldOverwriteSdk() {
+	if [ "$OVERWRITE_EXISTING_SDKS" == "true" ]; then
 		return 0
 	else
-		# return whatever exit cdoe the following returns
-		blobExists $containerName $blobName
-		exitCode=$?
-		if [ "$exitCode" == 0 ]; then
-			return 1
-		else
-			return 0
-		fi
+		return 1
 	fi
 }
 
