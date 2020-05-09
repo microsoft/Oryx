@@ -1,0 +1,53 @@
+variables:
+  - group: Oryx
+
+stages:
+- stage: Build Python Platform Binaries
+  jobs:
+  - job: Python
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'python'
+
+- stage: Release
+  dependsOn: Build
+  jobs:
+  - job: Publish_Platform_Binaries
+    timeoutInMinutes: 250
+    displayName: Publish to Azure Blob Storage
+    pool:
+      name: OryxLinux
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Artifacts'
+      inputs:
+        artifactName: drop
+
+    - task: AzureCLI@1
+      displayName: Upload files to Azure Storage
+      inputs:
+        azureSubscription: oryxSP
+        scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
+        arguments: oryxsdksdev
+
+    - task: ShellScript@2
+      displayName: 'Test Dev storage account'
+      inputs:
+        scriptPath: ./build/testIntegration.sh
+        args: StorageAccountTests=Dev
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - images/build/python
+    - platforms/python
+    - build/
+    - vsts/
