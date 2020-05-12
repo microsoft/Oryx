@@ -61,10 +61,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 isNodeApp = true;
             }
-            else if (StaticSiteGeneratorHelper.IsStaticSite(sourceRepo, _environment))
-            {
-                isNodeApp = true;
-            }
             else
             {
                 _logger.LogDebug(

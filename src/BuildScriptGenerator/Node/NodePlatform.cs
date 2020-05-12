@@ -164,12 +164,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
             }
-            else if (StaticSiteGeneratorHelper.IsHugoApp(ctx.SourceRepo, _environment))
-            {
-                packageManagerCmd = NodeConstants.HugoCommand;
-                packageInstallCommand = NodeConstants.HugoCommand;
-                packageInstallerVersionCommand = NodeConstants.HugoVersionCommand;
-            }
             else
             {
                 packageManagerCmd = NodeConstants.NpmCommand;

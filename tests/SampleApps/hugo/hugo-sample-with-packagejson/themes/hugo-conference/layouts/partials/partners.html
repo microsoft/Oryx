@@ -1,0 +1,11 @@
+<h2 class="section-title">{{ .titles.partners }}</h2>
+
+<ul class="partners-list">
+{{ range $partner := .partners }}
+  <li class="partner-item" itemscope itemtype="http://schema.org/Organization">
+    <a href="{{ .url }}" class="partner-logo partner-link" itemprop="url" target="_blank">
+      <img src="{{ .logo }}" alt="{{ .name }}" class="photo" itemprop="image">
+    </a>
+  </li>
+{{ end }}
+</ul>

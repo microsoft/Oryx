@@ -1,0 +1,53 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/Event">
+<head>
+  <title itemprop="name">{{ .Site.Params.Name }}</title>
+
+  <meta charset="utf-8">
+  <meta name="author" content="{{ .Site.Params.Name }}" />
+  <meta name="description" content="{{ .Site.Params.Description }}">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  {{ .Hugo.Generator }}
+  {{ template "_internal/opengraph.html" . }}
+  {{ template "_internal/twitter_cards.html" . }}
+
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+
+  <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+</head>
+<body>
+  <div class="global">
+
+    {{ partial "nav.html" . }}
+    {{ partial "header.html" .Site.Params }}
+
+    <div class="content" id="content">
+      <div class="wrapper">
+        {{ range $section := .Site.Params.Sections }}
+          <section class="{{ $section }}" id="{{ $section }}">
+            {{ partial $section $.Site.Params }}
+          </section>
+        {{ end }}
+
+        <footer class="footer">
+          <p>Made with ♥ by <a href="https://github.com/braziljs/conf-boilerplate" target="_blank">Conf Boilerplate</a> :)</p>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+  {{ if isset .Site.Params "address" }}
+  {{ with .Site.Params.GoogleMapsKey }}
+  <script src="https://maps.google.com/maps/api/js?key={{ . }}"></script>
+  <script src="/js/main.js"></script>
+  {{ end }}
+  {{ end }}
+  {{ template "_internal/google_analytics_async.html" . }}
+</body>
+</html>

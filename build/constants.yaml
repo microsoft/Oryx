@@ -8,6 +8,7 @@
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-enable-env: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
+    python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
   outputs:
     - type: csharp
       directory: src/Common
@@ -158,3 +159,14 @@
   outputs:
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
+- name: hugo-constants
+  constants:
+    version: 0.59.1
+    name: Hugo
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/Hugo
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Hugo
+    - type: shell
+      directory: build
+      file-name-prefix: __

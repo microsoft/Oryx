@@ -88,10 +88,8 @@
     <Content Remove="Node\NodeBashBuildSnippet.sh.tpl" />
     <Content Remove="Php\PhpBashBuildSnippet.sh.tpl" />
     <Content Remove="Python\PythonBashBuildSnippet.sh.tpl" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <Content Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <Content Remove="Hugo\HugoBashBuildSnippet.sh.tpl" />
   </ItemGroup>
 
   <ItemGroup>
@@ -99,6 +97,7 @@
     <EmbeddedResource Include="Dockerfile.oryx.tpl" />
     <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
+    <EmbeddedResource Include="Hugo\HugoBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
   </ItemGroup>

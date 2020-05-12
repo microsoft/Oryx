@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class StaticSiteGeneratorHelperTest
     {
-        protected readonly string _nodeSampleDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps", "nodejs");
+        protected readonly string _nodeSampleDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps", "hugo");
 
         [Theory]
         [InlineData("hugo-sample")]
