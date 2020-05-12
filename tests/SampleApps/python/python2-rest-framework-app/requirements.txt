@@ -106,7 +106,7 @@ isodate==0.6.0
 itypes==1.1.0
 Jinja2==2.10
 Markdown==2.6.10
-MarkupSafe==1.0
+MarkupSafe==1.1
 mccabe==0.6.1
 msrest==0.6.2
 msrestazure==0.5.1
