@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7515BF2B-C485-43A0-AB2F-DC761B6AB151}"
 EndProject
@@ -78,7 +78,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles", "{7475604B-12AC-4765-9259-505BF742FDEF}"
 	ProjectSection(SolutionItems) = preProject
 		src\CommonFiles\AssemblyVersion.proj = src\CommonFiles\AssemblyVersion.proj
-		src\CommonFiles\General.targets = src\CommonFiles\General.targets
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"

@@ -10,7 +10,7 @@ steps:
   displayName: 'Set sign binary variable'
   condition: >
    and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
-   or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/kichalla/' )))
+   or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
 
 - script: |
     echo $(setSignTypeVariable.SignType)
@@ -33,86 +33,6 @@ steps:
   inputs:
     restoreSolution: Oryx.sln
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-####################################################
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '2.1.805'
-
-- powershell: |
-    $env:GIT_COMMIT=$(git rev-parse HEAD)
-    $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
-    dotnet build -c $(BuildConfiguration) src\BuildScriptGenerator\BuildScriptGenerator.csproj
-  displayName: 'Build Oryx BuildScriptGenerator'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- powershell: |
-    dotnet restore src/BuildScriptGenerator/sign.proj
-  displayName: 'Restore BuildScriptGenerator/sign.proj'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- task: VSBuild@1
-  displayName: 'Sign Oryx BuildScriptGenerator Binaries'
-  inputs:
-    solution: 'src/BuildScriptGenerator/sign.proj'
-    msbuildArgs: '/t:SignFiles /p:MicroBuild_SigningEnabled=true'
-    configuration: '$(BuildConfiguration)'
-    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- powershell: |
-    $packagesDir="$(Build.ArtifactStagingDirectory)\packages"
-    mkdir -Force "$packagesDir"
-    dotnet new globaljson --sdk-version 2.1.805
-    dotnet pack src\BuildScriptGenerator\BuildScriptGenerator.csproj `
-      --verbosity normal `
-      -c $(BuildConfiguration) `
-      --no-build `
-      --include-symbols `
-      --include-source `
-      -p:IsBeingPacked=true
-    Copy-Item `
-      -Path src\BuildScriptGenerator\bin\$(BuildConfiguration)\*.nupkg `
-      -Destination "$packagesDir"
-    del global.json
-  displayName: 'Create BuildScriptGenerator nuget package'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- powershell: |
-    $env:GIT_COMMIT=$(git rev-parse HEAD)
-    $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
-    dotnet build -c $(BuildConfiguration) src\BuildScriptGeneratorCli\BuildScriptGeneratorCli.csproj
-  displayName: 'Build Oryx BuildScriptGenerator CLI'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- powershell: |
-    dotnet restore src/BuildScriptGeneratorCli/sign.proj
-  displayName: 'Restore BuildScriptGeneratorCli/sign.proj'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- task: VSBuild@1
-  displayName: 'Sign Oryx BuildScriptGenerator CLI Binaries'
-  inputs:
-    solution: 'src/BuildScriptGeneratorCli/sign.proj'
-    msbuildArgs: '/t:SignFiles /p:MicroBuild_SigningEnabled=true'
-    configuration: '$(BuildConfiguration)'
-    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- powershell: |
-    dotnet new globaljson --sdk-version 2.1.805
-    dotnet pack src\BuildScriptGeneratorCli\BuildScriptGeneratorCli.csproj `
-      -c $(BuildConfiguration) `
-      --no-build `
-      --include-symbols `
-      --include-source `
-      -p:IsBeingPacked=true
-    Copy-Item `
-      -Path src\BuildScriptGeneratorCli\bin\$(BuildConfiguration)\*.nupkg `
-      -Destination $(Build.ArtifactStagingDirectory)\packages
-    del global.json
-  displayName: 'Create BuildScriptGenerator CLI nuget package'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-####################################################  
 
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
