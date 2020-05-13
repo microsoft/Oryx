@@ -65,11 +65,7 @@ RUN mkdir -p /opt/oryx
 FROM main AS nodetools-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
-RUN . ${BUILD_DIR}/__hugoConstants.sh \
- && curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${VERSION}/hugo_${VERSION}_Linux-64bit.tar.gz" \
- && mkdir -p /opt/hugo \
- && tar -xzf hugo_${VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
- && rm hugo_${VERSION}_Linux-64bit.tar.gz
+RUN ${IMAGES_DIR}/build/installHugo.sh
 RUN set -ex \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \

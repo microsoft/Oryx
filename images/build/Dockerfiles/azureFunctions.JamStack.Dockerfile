@@ -57,11 +57,7 @@ RUN apt-get update \
         gnupg \
         dirmngr \
     && rm -rf /var/lib/apt/lists/*
-RUN . ${BUILD_DIR}/__hugoConstants.sh \
- && curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${VERSION}/hugo_${VERSION}_Linux-64bit.tar.gz" \
- && mkdir -p /opt/hugo \
- && tar -xzf hugo_${VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
- && rm hugo_${VERSION}_Linux-64bit.tar.gz
+RUN ${IMAGES_DIR}/build/installHugo.sh
 COPY build/__nodeVersions.sh /tmp/scripts
 RUN cd ${IMAGES_DIR} \
  && . ${BUILD_DIR}/__nodeVersions.sh \
