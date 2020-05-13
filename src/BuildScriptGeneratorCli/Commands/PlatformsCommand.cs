@@ -32,19 +32,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             using (logger.LogTimedEvent("ListPlatforms"))
             {
                 var availableIPlatforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>()
-                    .Where(p => !string.IsNullOrWhiteSpace(p.Name))
-                    .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase);
+                    .Where(programmingPlatform => !string.IsNullOrWhiteSpace(programmingPlatform.Name))
+                    .OrderBy(programmingPlatform => programmingPlatform.Name, StringComparer.OrdinalIgnoreCase);
 
-                foreach (var iPlatform in availableIPlatforms)
+                foreach (var programmingPlatform in availableIPlatforms)
                 {
-                    var platform = new PlatformResult { Name = iPlatform.Name };
+                    var platform = new PlatformResult { Name = programmingPlatform.Name };
 
-                    if (iPlatform.SupportedVersions != null && iPlatform.SupportedVersions.Any())
+                    if (programmingPlatform.SupportedVersions != null && programmingPlatform.SupportedVersions.Any())
                     {
-                        platform.Versions = SortVersions(iPlatform.SupportedVersions);
+                        platform.Versions = SortVersions(programmingPlatform.SupportedVersions);
                     }
 
-                    var props = iPlatform.GetType().GetCustomAttributes(
+                    var props = programmingPlatform.GetType().GetCustomAttributes(
                         typeof(BuildPropertyAttribute),
                         inherit: true).OfType<BuildPropertyAttribute>();
                     if (props.Any())

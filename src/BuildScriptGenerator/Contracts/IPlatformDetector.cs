@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
@@ -10,6 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public interface IPlatformDetector
     {
+
         /// <summary>
         /// Detects language name and version of the application in source directory.
         /// </summary>
