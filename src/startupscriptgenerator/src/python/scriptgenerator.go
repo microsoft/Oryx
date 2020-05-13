@@ -12,8 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"runtime"
-	"strconv"
 )
 
 type PythonStartupScriptGenerator struct {
@@ -226,15 +224,6 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	// Default to App Service's timeout value (in seconds)
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
-	pythonEnableGunicornMultiWorkers := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornMultiWorkersEnvVarName)
-	if pythonEnableGunicornMultiWorkers {
-		// 2N+1 number of workers is recommended by Gunicorn docs.
-		// Where N is the number of CPU threads.
-		// One worker will be reading or writing from the socket while the other worker is processing a request.
-		workers := strconv.Itoa((2 * runtime.NumCPU()) + 1)
-		args = appendArgs(args, "--workers="+workers)
-	}
-	
 	if gen.BindPort != "" {
 		args = appendArgs(args, "--bind="+DefaultHost+":"+gen.BindPort)
 	}
