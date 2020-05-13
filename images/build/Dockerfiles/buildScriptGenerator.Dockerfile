@@ -20,6 +20,10 @@ COPY build/FinalPublicKey.snk build/
 # For local/dev contents of blank/empty directory named binaries are getting copied
 COPY binaries /opt/buildscriptgen/
 RUN if [ -z "$AGENTBUILD" ]; then \
+        dotnet build \
+            -r linux-x64 \
+            -c Release \
+            src/BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
         dotnet publish \
             -r linux-x64 \
             -o /opt/buildscriptgen/ \

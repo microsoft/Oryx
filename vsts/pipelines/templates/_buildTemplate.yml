@@ -51,6 +51,12 @@ steps:
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
+  displayName: 'Test NuGet packages'
+  inputs:
+    scriptPath: ./build/testNuGetPackages.sh
+  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
+
+- task: ShellScript@2
   displayName: 'Test startup script generators'
   inputs:
     scriptPath: ./build/testStartupScriptGenerators.sh
