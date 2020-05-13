@@ -114,6 +114,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     "Microsoft.Oryx.BuildScriptGenerator.DotNetCore.DotNetCoreBashBuildSnippet.sh.tpl");
             }
 
+            public static TemplateResource HugoSnippet
+            {
+                get => new TemplateResource(
+                    "Microsoft.Oryx.BuildScriptGenerator.Hugo.HugoBashBuildSnippet.sh.tpl");
+            }
+
             public string Name { get; private set; }
         }
     }

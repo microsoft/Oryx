@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services
                 .AddNodeScriptGeneratorServices()
+                .AddHugoScriptGeneratorServices()
                 .AddPythonScriptGeneratorServices()
                 .AddDotNetCoreScriptGeneratorServices()
                 .AddPhpScriptGeneratorServices();

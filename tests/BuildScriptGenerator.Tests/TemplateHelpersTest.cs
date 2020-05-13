@@ -21,7 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 "BaseBashBuildScript.sh.tpl",
                 "DotNetCoreBashBuildSnippet.sh.tpl",
                 "NodeBashBuildSnippet.sh.tpl",
-                "PythonBashBuildSnippet.sh.tpl"
+                "PythonBashBuildSnippet.sh.tpl",
+                "HugoBashBuildSnippet.sh.tpl",
             };
 
             foreach (string name in requiredTemplates)

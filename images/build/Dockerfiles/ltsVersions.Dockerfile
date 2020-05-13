@@ -125,11 +125,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/*
-ARG HUGO_VERSION=0.59.1
-RUN curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" \
- && mkdir -p /opt/hugo \
- && tar -xzf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz -C /opt/hugo \
- && rm hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
+RUN ${IMAGES_DIR}/build/installHugo.sh
 COPY build/__nodeVersions.sh /tmp/scripts
 RUN cd ${IMAGES_DIR} \
  && . ${BUILD_DIR}/__nodeVersions.sh \
