@@ -35,7 +35,13 @@ RUN apt-get update \
         rsync \
         zip \
         libgdiplus \
+        # By default pip is not available in the buildpacks image
+        python-pip \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install pip --upgrade
+RUN pip3 install pip --upgrade
 
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
