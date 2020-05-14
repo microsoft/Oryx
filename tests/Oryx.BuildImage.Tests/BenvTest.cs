@@ -138,6 +138,32 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory]
+        [InlineData("python")]
+        [InlineData("python3")]
+        [InlineData("pip")]
+        [InlineData("pip3")]
+        public void DefaultVersionsOfPythonExecutableAreUsedInVSOImage(string executableName)
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"which {executableName}")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetVsoBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("/usr/local/bin/", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths_InVsoImage()
         {
