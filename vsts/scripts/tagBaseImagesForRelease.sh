@@ -16,13 +16,12 @@ function retagImageWithStagingRepository()
     echo "Number of arguments passed: $@"
     echo "Pulling and retagging bases images for '$1'..."
     
-    if [[ -n "$3" ]]; then
-      echo "buster images to be released..."
-      outFileName="base-images-mcr-buster.txt" 
-    fi
+    baseImageType="$3"
+
+    echo "base image type: '$3'"
 
     local artifactsFile="$artifactsDir/$1"
-    local outFile="$artifactsDir/$2/$outFileName"
+    local outFile="$artifactsDir/$2/$3-$outFileName"
 
     echo "output tags to be written to: '$outFile'"
 
@@ -63,8 +62,8 @@ then
 elif [ "$imageName" == "node" ]
 then
   echo ""
-  retagImageWithStagingRepository node-runtimebusterimage-bases.txt $imageName buster
-  retagImageWithStagingRepository node-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository node-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "python-build" ]
 then
   echo ""

@@ -47,7 +47,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrProdName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/base-images-mcr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/stretch-base-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
 
@@ -58,7 +58,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrProdName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/base-images-buster-mcr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/buster-base-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
 

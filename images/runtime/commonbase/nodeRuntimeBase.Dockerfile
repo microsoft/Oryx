@@ -1,4 +1,5 @@
-FROM oryx-run-base
+ARG RUNIMAGE_BASE
+FROM oryx-run-base-${RUNIMAGE_BASE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 RUN apt-get update \

@@ -9,15 +9,17 @@ jobs:
     displayName: Build Node runtime stretch based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
-    artifactsFileName: node-runtimeimage-bases.txt
+    imageType: stretch
+    artifactsFileName: node-runtimeimage-bases-stretch.txt
     jobName: Build_Stretch_BaseImages
 
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
     displayName: Build Node runtime buster based images
-    scriptPath: ./build/buildRunTimeImageBusterBases.sh
+    scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
-    artifactsFileName: node-runtimebusterimage-bases.txt
+    imageType: buster
+    artifactsFileName: node-runtimeimage-bases-buster.txt
     jobName: Build_Buster_BaseImages
 
 - job: Release_NodeRuntimeBaseImage

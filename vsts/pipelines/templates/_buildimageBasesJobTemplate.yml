@@ -1,6 +1,7 @@
 parameters:
   displayName: ''
   imageDir: ''
+  imageType: ''
   scriptPath: ''
   artifactsFileName: ''
   jobName: ''
@@ -16,7 +17,7 @@ jobs:
     displayName: Build images
     inputs:
       scriptPath: ${{ parameters.scriptPath }}
-      args: ${{ parameters.imageDir }}
+      args: ${{ parameters.imageDir }} ${{ parameters.imageType }}
 
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory

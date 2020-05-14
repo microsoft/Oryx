@@ -1,4 +1,5 @@
-FROM oryx-node-run-base
+ARG NODE_RUNIMAGE_BASE
+FROM oryx-node-run-base-${NODE_RUNIMAGE_BASE}
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node

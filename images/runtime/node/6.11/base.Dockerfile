@@ -1,7 +1,7 @@
 # The official Node 6.11 image has vulnerabilities, so we build our own version
 # to fetch the latest stretch release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID a0ff41e483d1b4db355f0cc1636aaa9573483a96.
-FROM oryx-node-run-base
+FROM oryx-node-run-base-stretch
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
