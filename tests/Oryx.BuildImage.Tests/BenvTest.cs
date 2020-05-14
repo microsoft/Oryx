@@ -139,11 +139,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("python")]
-        [InlineData("python3")]
-        [InlineData("pip")]
-        [InlineData("pip3")]
-        public void DefaultVersionsOfPythonExecutableAreUsedInVSOImage(string executableName)
+        [InlineData("python", "/usr/bin/")]
+        [InlineData("python3", "/usr/bin/")]
+        [InlineData("pip", "/usr/local/bin/")]
+        [InlineData("pip3", "/usr/local/bin/")]
+        public void DefaultVersionsOfPythonExecutablesAreUsedInVSOImage(string executableName, string expectedPath)
         {
             // Arrange
             var script = new ShellScriptBuilder()
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("/usr/local/bin/", result.StdOut);
+                    Assert.Contains(expectedPath, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
