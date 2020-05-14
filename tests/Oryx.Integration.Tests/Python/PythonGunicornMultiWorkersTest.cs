@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "work item #1122020")]
         public async Task CanBuildAndRunPythonApp_UsingGunicornMultipleWorkers()
         {
             // Arrange
