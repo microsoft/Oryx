@@ -1,5 +1,6 @@
+ARG RUNIMAGE_BASE
 # From https://github.com/docker-library/php.git
-FROM php-fpm-run-base
+FROM php-fpm-run-base-${RUNIMAGE_BASE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # do NOT merge this content with above line because the 

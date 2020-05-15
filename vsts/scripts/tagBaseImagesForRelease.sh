@@ -58,7 +58,8 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "node" ]
 then
   echo ""
@@ -75,14 +76,14 @@ then
 elif [ "$imageName" == "php" ]
 then
   echo ""
-  retagImageWithStagingRepository php-runtimebusterimage-bases.txt $imageName buster
-  retagImageWithStagingRepository php-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository php-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository php-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "php-fpm" ]
 then
   echo ""
   echo $imageName
-  retagImageWithStagingRepository php-fpm-runtimebusterimage-bases.txt $imageName buster
-  retagImageWithStagingRepository php-fpm-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""

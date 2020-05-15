@@ -17,6 +17,8 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 # Load all variables
 source $REPO_DIR/build/__variables.sh
 
+imageBaseType="$2"
+
 # Example: dontetcore, python
 IMAGE_DIR_TO_BUILD="$1"
 UNIQUE_TAG=""
@@ -26,7 +28,7 @@ fi
 
 BUILD_IMAGES_DIR="$REPO_DIR/images/build"
 # NOTE: We create a unique artifacts file per image directory here since they are going to be built in parallel on CI
-ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$IMAGE_DIR_TO_BUILD-buildimage-bases.txt"
+ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$IMAGE_DIR_TO_BUILD-buildimage-bases-$imageBaseType.txt"
 
 # Clean artifacts
 mkdir -p `dirname $ARTIFACTS_FILE`
@@ -56,8 +58,12 @@ case $IMAGE_DIR_TO_BUILD in
 		echo "Building Yarn package cache base image"
 		echo
 
-		imageName="$BASE_IMAGES_REPO:build-yarn-cache$UNIQUE_TAG"
-		docker build -f $BUILD_IMAGES_DIR/yarn-cache/Dockerfile -t $imageName $REPO_DIR
+		imageName="$BASE_IMAGES_REPO:build-yarn-cache$UNIQUE_TAG-$imageBaseType"
+		docker build \
+			-f $BUILD_IMAGES_DIR/yarn-cache/Dockerfile \
+			-t $imageName \
+			--build-arg IMAGEBASE_TYPE=$imageBaseType \
+			$REPO_DIR
 		echo "$imageName" >> $ARTIFACTS_FILE
 		;;
 	*) echo "Unknown image directory";;

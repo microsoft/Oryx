@@ -9,7 +9,8 @@ jobs:
     displayName: Build php runtime stretch base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php
-    artifactsFileName: php-runtimeimage-bases.txt
+    imageType: stretch
+    artifactsFileName: php-runtimeimage-bases-stretch.txt
     jobName: Build_Stretch_BaseImages
 
 - template: ../templates/_buildimageBasesJobTemplate.yml
@@ -17,7 +18,8 @@ jobs:
     displayName: Build php runtime buster base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php
-    artifactsFileName: php-runtimeimage-buster-bases.txt
+    imageType: buster
+    artifactsFileName: php-runtimeimage-bases-buster.txt
     jobName: Build_Buster_BaseImages
 
 - job: Release_PhpRuntimeBaseImage

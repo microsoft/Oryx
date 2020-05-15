@@ -1,5 +1,6 @@
+ARG RUNIMAGE_BASE
 # From https://github.com/docker-library/php.git
-FROM php-fpm-run-base
+FROM php-fpm-run-base-${RUNIMAGE_BASE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # do NOT merge this content with above line because the 
@@ -205,7 +206,6 @@ RUN chmod +x /usr/local/bin/docker-php-ext-*
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
 # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
-RUN ls -l /usr/local/bin
 RUN docker-php-ext-enable sodium
 
 ENTRYPOINT ["docker-php-entrypoint"]

@@ -1,5 +1,6 @@
+ARG PYTHON_RUNIMAGE_BASE
 # Startup script generator
-FROM golang:1.11-stretch as startupCmdGen
+FROM golang:1.14-${PYTHON_RUNIMAGE_BASE} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -11,7 +12,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM oryx-run-base
+FROM oryx-run-base-${PYTHON_RUNIMAGE_BASE}
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}

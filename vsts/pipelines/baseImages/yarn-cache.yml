@@ -6,14 +6,26 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build Yarn cache image
+    displayName: Build Yarn cache image for stretch
     scriptPath: ./build/buildBuildImageBases.sh
     imageDir: yarn-cache
-    artifactsFileName: yarn-cache-buildimage-bases.txt
-    jobName: Build_YarnCache_BaseImage
+    imageType: stretch
+    artifactsFileName: yarn-cache-buildimage-bases-stretch.txt
+    jobName: Build_YarnCache_BaseImage_Stretch
+
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build Yarn cache image for buster
+    scriptPath: ./build/buildBuildImageBases.sh
+    imageDir: yarn-cache
+    imageType: buster
+    artifactsFileName: yarn-cache-buildimage-bases-buster.txt
+    jobName: Build_YarnCache_BaseImage_Buster
 
 - job: Release_YarnCacheBaseImage
-  dependsOn: Build_YarnCache_BaseImage
+  dependsOn: 
+    - Build_YarnCache_BaseImage_Stretch
+    - Build_YarnCache_BaseImage_Buster
   displayName: Push image to MCR
   timeoutInMinutes: 250
   pool:
