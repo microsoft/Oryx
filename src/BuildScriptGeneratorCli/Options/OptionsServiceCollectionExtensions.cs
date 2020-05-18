@@ -28,6 +28,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 ServiceDescriptor.Transient<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<NodeDetectorOptions>, NodeDetectorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<DotNetCoreDetectorOptions>, DotNetCoreDetectorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<PhpDetectorOptions>, PhpDetectorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<PythonDetectorOptions>, PythonDetectorOptionsSetup>());
             return services;
         }
     }

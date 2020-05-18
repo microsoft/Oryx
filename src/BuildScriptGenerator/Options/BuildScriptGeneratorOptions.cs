@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class BuildScriptGeneratorOptions
+    public class BuildScriptGeneratorOptions : CommonOptions
     {
         public string SourceDir { get; set; }
 
@@ -28,8 +28,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IDictionary<string, string> Properties { get; set; }
 
         public string ManifestDir { get; set; }
-
-        public bool EnableDynamicInstall { get; set; }
 
         public bool EnableCheckers { get; set; }
 
