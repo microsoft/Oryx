@@ -21,6 +21,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7")]
+        [InlineData("3.8")]
+        [InlineData("3.9")]
         public void PythonRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -58,6 +60,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("3.6", "Python " + Common.PythonVersions.Python36Version)]
         [InlineData("3.7", "Python " + Common.PythonVersions.Python37Version)]
+        [InlineData("3.8", "Python " + Common.PythonVersions.Python38Version)]
+        [InlineData("3.9", "Python " + Common.PythonVersions.Python39Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {

@@ -184,15 +184,22 @@ ENV PYTHONIOENCODING UTF-8
 RUN cd ${IMAGES_DIR} \
     && . ${BUILD_DIR}/__pythonVersions.sh \
     && ./installPlatform.sh python $PYTHON27_VERSION \
-    && ./installPlatform.sh python $PYTHON36_VERSION
+    && ./installPlatform.sh python $PYTHON36_VERSION \
+    && ./installPlatform.sh python $PYTHON38_VERSION \
+    && ./installPlatform.sh python $PYTHON39_VERSION
 RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
  && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+ && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON39_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
  && ln -s $PYTHON27_VERSION /opt/python/2.7 \
  && ln -s 2.7 /opt/python/2 \
- && ln -s $PYTHON36_VERSION /opt/python/3.6
+ && ln -s $PYTHON36_VERSION /opt/python/3.6 \
+ && ln -s $PYTHON36_VERSION /opt/python/3.7 \
+ && ln -s $PYTHON36_VERSION /opt/python/3.8 \
+ && ln -s $PYTHON36_VERSION /opt/python/3.9
   
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
