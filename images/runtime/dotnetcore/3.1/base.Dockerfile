@@ -35,10 +35,10 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install .NET Core
-ENV DOTNET_VERSION 3.1.3
+ENV DOTNET_VERSION 3.1.4
 
 RUN curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VERSION/dotnet-runtime-$DOTNET_VERSION-linux-x64.tar.gz \
-    && dotnet_sha512='e3f6f9b81bc3828b60f7da5a5c341373dc17f971f1de3f2714adcca180a630a60d4b681166fe78434d8b2ce023d2d08eff4f1935ec664130b7f856fa8e1cac2b' \
+    && dotnet_sha512='db91ea66e796e3d27ee08d50cb0532d1fb74060d5a8f1c90d2f34cb66ad74d50d6a8d128457693c15216b3c94d6c1acb7bd342fe0a0fa770117e21211972abda' \
     && echo "$dotnet_sha512 dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
