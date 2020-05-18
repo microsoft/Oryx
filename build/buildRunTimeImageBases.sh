@@ -53,11 +53,17 @@ busterNodeDockerFiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
     docker build \
-        --build-arg RUNIMAGE_BASE=$runtimeImageBaseType \
+        --build-arg RUNIMAGE_BASE=stretch \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryx-node-run-base-$runtimeImageBaseType" \
+        -t "oryx-node-run-base-stretch" \
         $REPO_DIR
-    
+
+    docker build \
+        --build-arg RUNIMAGE_BASE=buster \
+        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
+        -t "oryx-node-run-base-buster" \
+        $REPO_DIR
+
     if [ "$runtimeImageBaseType" == "buster" ]; then
         for NODE_BUSTER_VERSION in "${NODE_BUSTER_VERSION_ARRAY[@]}"
         do

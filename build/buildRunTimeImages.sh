@@ -15,6 +15,8 @@ source $REPO_DIR/build/__sdkStorageConstants.sh
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir="$1"
+runtimeImageType="$2"
+
 if [ ! -z "$runtimeSubDir" ]
 then
     runtimeImagesSourceDir="$runtimeImagesSourceDir/$runtimeSubDir"
@@ -43,13 +45,21 @@ fi
 docker build \
     --pull \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-stretch" \
+    --build-arg COMMON_RUNIMAGE_BASE=stretch \
     $REPO_DIR
 
-execAllGenerateDockerfiles "$runtimeImagesSourceDir"
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
+    --build-arg COMMON_RUNIMAGE_BASE=buster \
+    $REPO_DIR
+
+execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageType"
 
 # The common base image is built separately, so we ignore it
-dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )
+dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "$runtimeImageType.Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )
 if [ -z "$dockerFiles" ]
 then
     echo "Couldn't find any Dockerfiles under '$runtimeImagesSourceDir' and its sub-directories."
@@ -72,7 +82,7 @@ for dockerFile in $dockerFiles; do
     getTagName $dockerFileDir
 
     # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
-    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result-$runtimeImageType"
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
@@ -86,6 +96,7 @@ for dockerFile in $dockerFiles; do
         --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
         --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+        --build-arg RUNIMAGE_BASE=$runtimeImageType \
         $args \
         $labels \
         .
@@ -105,7 +116,7 @@ for dockerFile in $dockerFiles; do
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         # Tag the image to follow a similar format to .../python:3.7-Oryx-CI.20191028.1
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
+        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag-$runtimeImageType"
 
         # add new content
         echo

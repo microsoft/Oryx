@@ -2,6 +2,7 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
+  imageType: ''
 
 steps:
 - script: |
@@ -66,6 +67,7 @@ steps:
   displayName: 'Build runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
+    args: ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2

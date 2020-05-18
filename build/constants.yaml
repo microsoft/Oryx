@@ -66,7 +66,7 @@
 - name: php-versions
   constants:
     php-runtime-base-tag: 20200226.2
-    php-fpm-runtime-base-tag: 20200313.4
+    php-fpm-runtime-base-tag: 20200515.6
     composer-version: 1.9.3
     composer-sha384: e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a
     # hashes are for .tar.xz
@@ -110,8 +110,8 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200522.1
-    yarn-cache-base-tag: 20200217.4
+    node-runtime-base-tag: 20200515.1
+    yarn-cache-base-tag: 20200515.4
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
     yarn-major-version: 1

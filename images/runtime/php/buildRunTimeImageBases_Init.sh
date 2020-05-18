@@ -8,18 +8,25 @@ baseImage="php-run-base"
 baseImageType="$1"
 
 echo
-echo "Buildig '$1' based image '$baseImage'..."
+echo "Building '$1' based image '$baseImage'..."
 docker build \
     -t $baseImage-$baseImageType \
     --build-arg RUNIMAGE_BASE=$baseImageType \
     -f "$CURRENT_DIR/runbase.Dockerfile" \
     .
 
-PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
+PHP_VERSION_ARRAY=()
 
 if [ "$baseImageType" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
+else
+    PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
 fi
+
+echo "*****************"
+echo "PHP_VERSION_ARRAY"
+echo "${PHP_VERSION_ARRAY[@]}"
+echo "*****************"
 
 for PHP_VERSION in "${PHP_VERSION_ARRAY[@]}"
 do
@@ -30,7 +37,7 @@ do
     cd "$CURRENT_DIR/$VERSION_DIRECTORY/"
 
     echo
-    echo "Building php image '$PHP_IMAGE_NAME'..."
+    echo "Building '$baseImageType' based php image '$PHP_IMAGE_NAME'..."
     echo
 	docker build \
         -t $PHP_IMAGE_NAME \

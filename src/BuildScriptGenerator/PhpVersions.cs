@@ -5,7 +5,7 @@ namespace Microsoft.Oryx.Common
     public static class PhpVersions
     {
         public const string PhpRuntimeBaseTag = "20200226.2";
-        public const string PhpFpmRuntimeBaseTag = "20200313.4";
+        public const string PhpFpmRuntimeBaseTag = "20200515.6";
         public const string ComposerVersion = "1.9.3";
         public const string ComposerSha384 = "e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a";
         public const string Php74Version = "7.4.3";

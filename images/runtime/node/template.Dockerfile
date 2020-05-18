@@ -1,6 +1,6 @@
 ARG RUNIMAGE_BASE
 # Startup script generator
-FROM golang:1.14.2-{RUNIMAGE_BASE} as startupCmdGen
+FROM golang:1.14.2-${RUNIMAGE_BASE} as startupCmdGen
 # Install dep
 RUN go get -u github.com/golang/dep/cmd/dep
 # GOPATH is set to "/go" in the base image

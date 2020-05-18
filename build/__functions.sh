@@ -54,7 +54,10 @@ function execAllGenerateDockerfiles()
 	runtimeImagesSourceDir="$1"
 	runtimeGenerateDockerFileScriptName="$2"
 	runtimeImageBaseType=$3
+
 	echo "runtime image type '$3'"
+	echo "runtimeGenerateDockerFileScriptName '$2'"
+
 	generateDockerfiles=$(find $runtimeImagesSourceDir -type f -name $runtimeGenerateDockerFileScriptName)
 	if [ -z "$generateDockerfiles" ]
 	then
@@ -66,7 +69,6 @@ function execAllGenerateDockerfiles()
 		echo "Executing '$generateDockerFile'..."
 		echo
 		eval "$(echo "$generateDockerFile $runtimeImageBaseType")"
-		#"$generateDockerFile $runtimeImageBaseType"
 	done
 }
 

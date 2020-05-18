@@ -14,7 +14,7 @@ if [ "$baseImageType" == "buster" ];then
 fi
 
 echo
-echo "Buildig image '$baseImageType' based '$baseImage' ..."
+echo "Building image '$baseImageType' based '$baseImage' ..."
 docker build \
     -t $baseImage-$baseImageType \
     --build-arg RUNIMAGE_BASE=$baseImageType \
@@ -30,7 +30,7 @@ do
     cd "$CURRENT_DIR/$VERSION_DIRECTORY/"
 
     echo
-    echo "Building php image '$PHP_IMAGE_NAME'..."
+    echo "Building '$baseImageType' based php image '$PHP_IMAGE_NAME'..."
     echo
     docker build \
         -t $PHP_IMAGE_NAME \
