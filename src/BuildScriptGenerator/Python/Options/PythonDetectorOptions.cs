@@ -5,10 +5,8 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    public class PythonScriptGeneratorOptions
+    public class PythonDetectorOptions : PythonOptions
     {
-        public bool EnableCollectStatic { get; set; }
-
-        public string VirtualEnvironmentName { get; set; }
+        
     }
 }

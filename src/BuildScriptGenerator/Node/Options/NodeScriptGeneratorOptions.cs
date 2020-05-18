@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public class NodeScriptGeneratorOptions
+    public class NodeScriptGeneratorOptions : NodeOptions
     {
         /// <summary>
         /// Gets or sets the custom 'npm run build' command that is run after 'npm install' is run in the generated

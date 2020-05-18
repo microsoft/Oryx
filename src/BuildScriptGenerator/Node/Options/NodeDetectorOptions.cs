@@ -1,11 +1,12 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Php
+namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public class PhpScriptGeneratorOptions
+    public class NodeDetectorOptions : NodeOptions
     {
+
     }
 }

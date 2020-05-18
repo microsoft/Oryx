@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public class DotNetCoreScriptGeneratorOptions
+    public class DotNetCoreScriptGeneratorOptions : DotNetCoreOptions
     {
         /// <summary>
         /// Gets or sets the relative path to the project to be built.

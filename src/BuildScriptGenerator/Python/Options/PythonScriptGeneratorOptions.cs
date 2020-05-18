@@ -1,0 +1,14 @@
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+namespace Microsoft.Oryx.BuildScriptGenerator.Python
+{
+    public class PythonScriptGeneratorOptions : PythonOptions
+    {
+        public bool EnableCollectStatic { get; set; }
+
+        public string VirtualEnvironmentName { get; set; }
+    }
+}
