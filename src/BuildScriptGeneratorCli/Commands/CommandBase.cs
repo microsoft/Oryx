@@ -111,6 +111,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
         }
 
+        internal virtual void ConfigureDetectorOptions(DetectorOptions options)
+        {
+        }
+
         internal virtual bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             return true;

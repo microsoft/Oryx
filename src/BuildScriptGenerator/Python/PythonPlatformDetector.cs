@@ -16,12 +16,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     internal class PythonPlatformDetector : IPlatformDetector
     {
         private readonly IPythonVersionProvider _versionProvider;
-        private readonly PythonScriptGeneratorOptions _options;
+        private readonly PythonOptions _options;
         private readonly ILogger<PythonPlatformDetector> _logger;
 
         public PythonPlatformDetector(
             IPythonVersionProvider pythonVersionProvider,
-            IOptions<PythonScriptGeneratorOptions> options,
+            IOptions<PythonOptions> options,
             ILogger<PythonPlatformDetector> logger,
             IStandardOutputWriter writer)
         {
@@ -44,12 +44,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 && sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
             {
                 _logger.LogInformation($"'{PythonConstants.RequirementsFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build from '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
+                    $"Oryx will try to build/detect from '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
             }
             else
             {
                 _logger.LogInformation($"'{PythonConstants.SetupDotPyFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build from '{PythonConstants.RequirementsFileName}'that exists in source repo");
+                    $"Oryx will try to build/detect from '{PythonConstants.RequirementsFileName}'that exists in source repo");
             }
 
             // This detects if a runtime.txt file exists if that is a python file

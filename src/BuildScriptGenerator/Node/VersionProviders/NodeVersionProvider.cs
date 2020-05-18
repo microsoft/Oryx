@@ -10,14 +10,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeVersionProvider : INodeVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _options;
+        private readonly CommonOptions _options;
         private readonly NodeOnDiskVersionProvider _onDiskVersionProvider;
         private readonly NodeSdkStorageVersionProvider _sdkStorageVersionProvider;
         private readonly ILogger<NodeVersionProvider> _logger;
         private PlatformVersionInfo _versionInfo;
 
         public NodeVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> options,
+            IOptions<CommonOptions> options,
             NodeOnDiskVersionProvider onDiskVersionProvider,
             NodeSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<NodeVersionProvider> logger)

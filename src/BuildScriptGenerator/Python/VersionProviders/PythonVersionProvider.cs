@@ -10,14 +10,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonVersionProvider : IPythonVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _options;
+        private readonly CommonOptions _options;
         private readonly PythonOnDiskVersionProvider _onDiskVersionProvider;
         private readonly PythonSdkStorageVersionProvider _sdkStorageVersionProvider;
         private readonly ILogger<PythonVersionProvider> _logger;
         private PlatformVersionInfo _versionInfo;
 
         public PythonVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> options,
+            IOptions<CommonOptions> options,
             PythonOnDiskVersionProvider onDiskVersionProvider,
             PythonSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<PythonVersionProvider> logger)

@@ -17,13 +17,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class DotNetCorePlatformDetector : IPlatformDetector
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly DotNetCoreScriptGeneratorOptions _options;
+        private readonly DotNetCoreOptions _options;
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;
 
         public DotNetCorePlatformDetector(
             IDotNetCoreVersionProvider versionProvider,
-            IOptions<DotNetCoreScriptGeneratorOptions> options,
+            IOptions<DotNetCoreOptions> options,
             DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCorePlatformDetector> logger)
         {

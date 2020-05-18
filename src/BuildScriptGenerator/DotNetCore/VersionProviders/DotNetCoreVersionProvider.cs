@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreVersionProvider : IDotNetCoreVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _cliOptions;
+        private readonly CommonOptions _cliOptions;
         private readonly DotNetCoreOnDiskVersionProvider _onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider _sdkStorageVersionProvider;
         private readonly ILogger<DotNetCoreVersionProvider> _logger;
@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private Dictionary<string, string> _supportedVersions;
 
         public DotNetCoreVersionProvider(
-            IOptions<BuildScriptGeneratorOptions> cliOptions,
+            IOptions<CommonOptions> cliOptions,
             DotNetCoreOnDiskVersionProvider onDiskVersionProvider,
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<DotNetCoreVersionProvider> logger)

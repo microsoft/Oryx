@@ -31,14 +31,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         };
 
         private readonly INodeVersionProvider _versionProvider;
-        private readonly NodeScriptGeneratorOptions _options;
+        private readonly NodeOptions _options;
         private readonly ILogger<NodePlatformDetector> _logger;
         private readonly IEnvironment _environment;
         private readonly IStandardOutputWriter _writer;
 
         public NodePlatformDetector(
             INodeVersionProvider nodeVersionProvider,
-            IOptions<NodeScriptGeneratorOptions> options,
+            IOptions<NodeOptions> options,
             ILogger<NodePlatformDetector> logger,
             IEnvironment environment,
             IStandardOutputWriter writer)

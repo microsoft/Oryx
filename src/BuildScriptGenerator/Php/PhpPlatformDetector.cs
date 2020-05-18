@@ -14,13 +14,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpPlatformDetector : IPlatformDetector
     {
-        private readonly PhpScriptGeneratorOptions _options;
+        private readonly PhpOptions _options;
         private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpPlatformDetector> _logger;
         private readonly IStandardOutputWriter _writer;
 
         public PhpPlatformDetector(
-            IOptions<PhpScriptGeneratorOptions> options,
+            IOptions<PhpOptions> options,
             IPhpVersionProvider versionProvider,
             ILogger<PhpPlatformDetector> logger,
             IStandardOutputWriter writer)

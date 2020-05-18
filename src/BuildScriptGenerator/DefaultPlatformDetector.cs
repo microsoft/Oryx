@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Resources;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -17,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultPlatformDetector> _logger;
+        private readonly IEnumerable<IChecker> _checkers;
         private readonly DetectorOptions _detectorOptions;
         private readonly IConfiguration _configuration;
 
@@ -53,7 +55,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             out Tuple<IProgrammingPlatform, string> platformResult)
         {
-            // logic here make sure:
             var selectedPlatform = _programmingPlatforms
                 .FirstOrDefault(platform => string
                     .Equals(platformName, platform.Name, StringComparison.OrdinalIgnoreCase));

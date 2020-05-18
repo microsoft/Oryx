@@ -1,4 +1,9 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +30,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option("--json", Description = "Output the detected platform data in JSON format.")]
         public bool OutputJson { get; set; }
 
-
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -38,7 +42,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var detector = serviceProvider.GetRequiredService<IDetector>();
             var detectedPlatforms = detector.GetAllDetectedPlatforms(ctx);
-
             using (var timedEvent = logger.LogTimedEvent("DetectCommand"))
             {
                 if (detectedPlatforms != null && detectedPlatforms.Any())
@@ -60,16 +63,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return ProcessConstants.ExitFailure;
         }
 
+        internal override void ConfigureDetectorOptions(DetectorOptions options)
+        {
+            DetectorOptionsHelper.ConfigureDetectorOptions(
+                options,
+                sourceDir: SourceDir,
+                platform: null,
+                platformVersion: null,
+                outputJson: OutputJson);
+        }
+
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<DetectCommand>>();
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+            var options = serviceProvider.GetRequiredService<IOptions<DetectorOptions>>().Value;
             SourceDir = string.IsNullOrEmpty(SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
 
-            if (!Directory.Exists(options.SourceDir))
+            if (!Directory.Exists(SourceDir))
             {
                 logger?.LogError("Could not find the source directory.");
-                console.WriteErrorLine($"Could not find the source directory: '{options.SourceDir}'");
+                console.WriteErrorLine($"Could not find the source directory: '{SourceDir}'");
 
                 return false;
             }
@@ -86,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var defs = new DefinitionListFormatter();
 
                 defs.AddDefinition("Platform", detectedPlatform.Key.Name);
-                defs.AddDefinition("Version", detectedPlatform.Value == null ? detectedPlatform.Value : "N/A");
+                defs.AddDefinition("Version", detectedPlatform.Value != null ? detectedPlatform.Value : "N/A");
 
                 result.AppendLine(defs.ToString());
             }
@@ -112,6 +125,5 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var json = JsonConvert.SerializeObject(detectionResult, Formatting.Indented);
             return json;
         }
-
     }
 }

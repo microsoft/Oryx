@@ -56,6 +56,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return this;
         }
 
+        public ServiceProviderBuilder ConfigureDetectorOptions(Action<DetectorOptions> configure)
+        {
+            _serviceCollection.Configure<DetectorOptions>(opts => configure(opts));
+            return this;
+        }
+
         public IServiceProvider Build()
         {
             return _serviceCollection.BuildServiceProvider();

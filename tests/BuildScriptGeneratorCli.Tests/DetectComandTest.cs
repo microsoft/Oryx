@@ -2,15 +2,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-using Microsoft.Oryx.Tests.Common;
-using Xunit;
-using Microsoft.Oryx.Common;
+
+using System;
 using System.IO;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Tests.Common;
+using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -34,25 +37,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = string.Empty
             };
             var testConsole = new TestConsole();
+            var serviceProvider = detectCommand.GetServiceProvider(testConsole);
 
             // Act
-            var isValidInput = detectCommand.IsValidInput(null, testConsole);
+            var isValidInput = detectCommand.IsValidInput(serviceProvider, testConsole);
 
             // Assert
             Assert.True(isValidInput);
             Assert.Equal(Directory.GetCurrentDirectory(), detectCommand.SourceDir);
-            Assert.Empty(testConsole.StdError);
         }
         
         [Fact]
-        public void IsValidInput_IsFalse_IfProvidedSourceDirectoryDoesNotExists()
+        public void IsValidInput_IsFalse_IfSourceDirectorySuppliedDoesNotExists()
         {
             // Arrange
-            var sourceDir = _testDir.CreateChildDir();
             var testConsole = new TestConsole();
             var detectCommand = new DetectCommand
             {
-                SourceDir = sourceDir + "blah",
+                SourceDir = _testDir.GenerateRandomChildDirPath()
             };
             var serviceProvider = detectCommand.GetServiceProvider(testConsole);
 
@@ -62,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.False(isValidInput);
             Assert.Contains(
-                $"Could not find the source directory: '{sourceDir}'",
+                $"Could not find the source directory",
                 testConsole.StdError);
         }
         
@@ -70,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         public void Execute_OutputsNodePlatformAndVersion()
         {
             // Arrange
-            var sourceDir = Path.Combine(_testDirPath, "nodeAppDir");
+            var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
             Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), "\n");
 
@@ -79,18 +81,58 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = sourceDir,
             };
             var testConsole = new TestConsole();
+            var serviceProvider = detectCommand.GetServiceProvider(testConsole);
 
             // Act
-            var exitCode = detectCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
 
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
                 $"{NodeConstants.PlatformName}",
                 testConsole.StdOutput);
-            
+            Assert.Contains(
+                $"{NodeConstants.NodeLtsVersion}",
+                testConsole.StdOutput);
+
         }
-        
+
+        private static IServiceProvider GetServiceProvider(DetectCommand cmd)
+        {
+            var svcProvider = new ServiceProviderBuilder()
+                .ConfigureServices(svcs =>
+                {
+                    var configuration = new ConfigurationBuilder().Build();
+                    svcs.AddSingleton<IConfiguration>(configuration);
+                    svcs.AddSingleton<INodeVersionProvider, TestNodeVersionProvider>();
+                    svcs.AddSingleton<IPhpVersionProvider, TestPhpVersionProvider>();
+                })
+                .ConfigureDetectorOptions(opts => cmd.ConfigureDetectorOptions(opts))
+                .Build();
+            return svcProvider;
+        }
+
+        private class TestNodeVersionProvider : INodeVersionProvider
+        {
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    new[] { NodeConstants.NodeLtsVersion },
+                    defaultVersion: NodeConstants.NodeLtsVersion);
+            }
+        }
+
+        private class TestPhpVersionProvider : IPhpVersionProvider
+        {
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    new[] { PhpConstants.DefaultPhpRuntimeVersion },
+                    defaultVersion: PhpConstants.DefaultPhpRuntimeVersion);
+            }
+        }
+
+        // Work in process
         [Fact]
         public void Execute_OutputsMultiplePlatformAndVersion()
         {
