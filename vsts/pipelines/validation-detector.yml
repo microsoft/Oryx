@@ -1,0 +1,8 @@
+# specific branch
+pr:
+  paths:
+    include:
+    - src/Detector/*
+    - tests/Detector.Tests/*
+steps:
+- template: templates/_buildTemplateDetector.yml

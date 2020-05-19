@@ -30,7 +30,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
-    scriptPath: ./build/buildSln.sh
+    scriptPath: ./build/buildSln.sh Oryx.sln
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'

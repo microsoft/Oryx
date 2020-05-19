@@ -8,11 +8,17 @@ set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
+solutionFileName="$1"
+
+if [ -z "$solutionFileName" ]; then
+    solutionFileName="Oryx.sln"
+fi
+
 # Load all variables
 source $REPO_DIR/build/__variables.sh
 
 echo
-echo "Building solution..."
+echo "Building solution '$solutionFileName'..."
 echo
 cd $REPO_DIR
-dotnet build -c $BUILD_CONFIGURATION
+dotnet build "$solutionFileName" -c $BUILD_CONFIGURATION

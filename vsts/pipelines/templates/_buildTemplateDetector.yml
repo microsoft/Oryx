@@ -1,0 +1,52 @@
+steps:
+- checkout: self
+  clean: true
+
+- bash: |
+    sdkVersion="2.1.806"
+    echo "Settng .NET Core SDK version variable to '$sdkVersion'"
+    echo "##vso[task.setvariable variable=DotNetCoreSdkVersion]$sdkVersion"
+  displayName: 'Setting .NET Core SDK version as a variable for later tasks'
+
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    packageType: 'sdk'
+    version: $(DotNetCoreSdkVersion)
+
+- bash: |
+    echo "Creating global.json with sdk version $(DotNetCoreSdkVersion)..."
+    dotnet new globaljson --sdk-version $(DotNetCoreSdkVersion)
+    ./build/buildSln.sh Detector.sln
+  displayName: 'Build Detector.sln'
+
+- bash: ./build/testDetector.sh
+  displayName: 'Testing Detector'
+
+- task: CopyFiles@2
+  displayName: 'Copy content from artifacts folder in repo to agent artifacts folder'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
+    contents: '**/*.*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    overWrite: true
+  condition: succeededOrFailed()
+
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testRunner: 'xUnit'
+    testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
+    mergeTestResults: true
+  condition: succeededOrFailed()
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish build artifacts'
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: 'detector'
+  condition: succeededOrFailed()
+
+- task: mspremier.PostBuildCleanup.PostBuildCleanup-task.PostBuildCleanup@3
+  displayName: 'Clean Agent Directories'
+  condition: succeededOrFailed()
