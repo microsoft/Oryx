@@ -251,7 +251,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 foreach (var processor in stdOutEventLoggers)
                 {
-                    processor.ProcessLine(line);
+                    // Catch any exception and log them instead of failing this build since whatever these processors
+                    // do are not really relevant to the actual build of the app.
+                    try
+                    {
+                        processor.ProcessLine(line);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(
+                            ex,
+                            $"An error occurred when trying to process the line '{line}' from standard " +
+                            $"out using the  '{processor.GetType()}' processor.");
+                    }
                 }
             };
 
