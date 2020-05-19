@@ -17,10 +17,14 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class NodeJsSampleAppsOtherTests : NodeJSSampleAppsTestBase
+    public class NodeJsSampleAppsOtherTests : NodeJSSampleAppsTestBase, IClassFixture<TestTempDirTestFixture>
     {
-        public NodeJsSampleAppsOtherTests(ITestOutputHelper output) : base(output)
+        private readonly string _tempRootDir;
+
+        public NodeJsSampleAppsOtherTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
+            : base(output)
         {
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
         [Theory]
@@ -724,6 +728,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void CanBuildAppHavingAppDynamicsNpmPackage()
+        {
+            // Arrange
+            // Create an app folder with a package.json having the 'appdynamics' package
+            var packageJsonContent = "{\"dependencies\": { \"appdynamics\": \"20.4.0\" }}";
+            var sampleAppPath = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(sampleAppPath);
+            File.WriteAllText(Path.Combine(sampleAppPath, NodeConstants.PackageJsonFileName), packageJsonContent);
+            var volume = DockerVolume.CreateMirror(sampleAppPath);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/appdynamics")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.SlimBuildImageName,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
