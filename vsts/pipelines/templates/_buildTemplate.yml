@@ -36,6 +36,7 @@ steps:
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/buildSln.sh
+    args: Oryx.sln
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
