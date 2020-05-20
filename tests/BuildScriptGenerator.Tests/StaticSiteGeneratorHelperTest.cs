@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("hugo-sample")]
         [InlineData("hugo-sample-json")]
         [InlineData("hugo-sample-yaml")]
+        [InlineData("hugo-sample-yml")]
         public void Validate_IsHugoApp(string appName)
         {
             var environment = new TestEnvironment();
