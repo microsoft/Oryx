@@ -161,7 +161,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: hugo-constants
   constants:
-    version: 0.70.0
+    version: 0.71.0
     name: Hugo
   outputs:
     - type: csharp
