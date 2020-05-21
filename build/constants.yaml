@@ -18,10 +18,10 @@
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
-    dot-net-core-21-sdk-version: 2.1.805
+    dot-net-core-21-sdk-version: 2.1.806
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.201
+    dot-net-core-31-sdk-version: 3.1.202
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -31,14 +31,14 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20200429.2
+    dot-net-core-runtime-base-tag: 20200520.4
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
-    net-core-app-21: 2.1.17
+    net-core-app-21: 2.1.18
     net-core-app-22: 2.2.7
     net-core-app-30: 3.0.3
-    net-core-app-31: 3.1.3
+    net-core-app-31: 3.1.4
     net-core-app-50: 5.0.0-preview.3.20214.6
   outputs:
     - type: csharp
@@ -54,7 +54,8 @@
     python27-version: 2.7.17
     python36-version: 3.6.10
     python37-version: 3.7.7
-    python38-version: 3.8.2
+    python38-version: 3.8.3
+    python39-version: 3.9.0b1
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
