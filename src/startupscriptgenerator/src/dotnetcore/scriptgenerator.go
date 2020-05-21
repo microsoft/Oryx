@@ -45,20 +45,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 		// NOTE: do NOT try printing the command itself
 		scriptBuilder.WriteString("echo Running user provided startup command...\n")
 		scriptBuilder.WriteString("cd \"" + appPath + "\"\n")
-
-		if gen.DefaultAppFilePath == "" {
-			scriptBuilder.WriteString(gen.UserStartupCommand)
-		} else {
-			defaultAppFileDir := filepath.Dir(gen.DefaultAppFilePath)
-			scriptBuilder.WriteString("EXIT_CODE=0\n")
-			scriptBuilder.WriteString(gen.UserStartupCommand + " || EXIT_CODE=$?\n")
-			scriptBuilder.WriteString("if [ $EXIT_CODE != 0 ]; then\n")
-			scriptBuilder.WriteString("    echo \"WARNING: Startup command execution failed with exit code $EXIT_CODE\"\n")
-			scriptBuilder.WriteString("    echo \"Running the default application instead...\"\n")
-			scriptBuilder.WriteString("    cd \"" + defaultAppFileDir + "\"\n")
-			scriptBuilder.WriteString("    dotnet \"" + gen.DefaultAppFilePath + "\"\n")
-			scriptBuilder.WriteString("fi\n")
-		}
+		scriptBuilder.WriteString(gen.UserStartupCommand)
 	} else {
 		if gen.Manifest.StartupDllFileName != "" {
 			scriptBuilder.WriteString("echo Found startup DLL name from manifest file\n")
