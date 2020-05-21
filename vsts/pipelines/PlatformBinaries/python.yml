@@ -2,7 +2,7 @@ variables:
   - group: Oryx
 
 stages:
-- stage: Build Python Platform Binaries
+- stage: Build
   jobs:
   - job: Python
     timeoutInMinutes: 250

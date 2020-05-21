@@ -2,7 +2,7 @@ variables:
   - group: Oryx
 
 stages:
-- stage: Build Php Platform Binaries
+- stage: Build
   jobs:
   - job: Php
     timeoutInMinutes: 250

@@ -2,7 +2,7 @@ variables:
   - group: Oryx
 
 stages:
-- stage: Build DotNetCore Platform Binaries
+- stage: Build
   jobs:
   - job: DotNetCore
     timeoutInMinutes: 250

@@ -2,7 +2,7 @@ variables:
   - group: Oryx
 
 stages:
-- stage: Build Node Platform Binaries
+- stage: Build
   jobs:
   - job: Node
     timeoutInMinutes: 250
