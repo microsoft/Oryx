@@ -13,6 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         internal const string YarnLockFileName = "yarn.lock";
         internal const string HugoTomlFileName = "config.toml";
         internal const string HugoYamlFileName = "config.yaml";
+        internal const string HugoYmlFileName = "config.yml";
         internal const string HugoJsonFileName = "config.json";
         internal const string HugoConfigFolderName = "config";
         internal const string NodeToolName = "node";

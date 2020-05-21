@@ -66,6 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("hugo-sample")]
         [InlineData("hugo-sample-json")]
         [InlineData("hugo-sample-yaml")]
+        [InlineData("hugo-sample-yml")]
         public void CanBuildHugoAppHavingDifferentConfigFileTypes(string appName)
         {
             // Arrange
