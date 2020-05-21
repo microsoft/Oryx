@@ -9,7 +9,7 @@ stages:
     pool:
       name: OryxLinux
     steps:
-    - template: templates/_platformBinariesTemplate.yml
+    - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'dotnet'
 
@@ -22,7 +22,7 @@ stages:
     pool:
       name: OryxLinux
     steps:
-    - template: templates/_platformBinariesReleaseTemplate.yml
+    - template: ../templates/_platformBinariesReleaseTemplate.yml
 
 trigger:
   batch: true
