@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.Detector.Node
 {
     internal class NodeVersionProvider
     {
-        private readonly DetectorOptions _options;
+        private readonly IOptions<DetectorOptions> _options;
         private readonly NodeOnDiskVersionProvider _onDiskVersionProvider;
         private readonly NodeSdkStorageVersionProvider _sdkStorageVersionProvider;
         private readonly ILogger<NodeVersionProvider> _logger;
@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Detector.Node
             NodeSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<NodeVersionProvider> logger)
         {
-            _options = options.Value;
+            _options = options;
             _onDiskVersionProvider = onDiskVersionProvider;
             _sdkStorageVersionProvider = sdkStorageVersionProvider;
             _logger = logger;
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Detector.Node
         {
             if (_versionInfo == null)
             {
-                if (_options.EnableDynamicInstall)
+                if (_options.Value.EnableDynamicInstall)
                 {
                     return _sdkStorageVersionProvider.GetVersionInfo();
                 }

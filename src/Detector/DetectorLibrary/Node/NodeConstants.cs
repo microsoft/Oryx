@@ -5,43 +5,43 @@
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    internal static class NodeConstants
+    public static class NodeConstants
     {
-        internal const string PlatformName = "nodejs";
-        internal const string PackageJsonFileName = "package.json";
-        internal const string PackageLockJsonFileName = "package-lock.json";
-        internal const string YarnLockFileName = "yarn.lock";
-        internal const string HugoTomlFileName = "config.toml";
-        internal const string HugoYamlFileName = "config.yaml";
-        internal const string HugoJsonFileName = "config.json";
-        internal const string HugoConfigFolderName = "config";
-        internal const string NodeToolName = "node";
-        internal const string NpmToolName = "npm";
-        internal const string NpmCommand = NpmToolName;
-        internal const string NpmStartCommand = "npm start";
-        internal const string YarnStartCommand = "yarn run start";
-        internal const string YarnCommand = "yarn";
-        internal const string HugoCommand = "hugo";
-        internal const string NpmPackageInstallCommand = "npm install --unsafe-perm";
-        internal const string NpmVersionCommand = "echo Using Npm version: && npm --version";
-        internal const string YarnVersionCommand = "echo Using Yarn version: && yarn --version";
-        internal const string HugoVersionCommand = "echo Using Hugo version: && hugo version";
-        internal const string YarnPackageInstallCommand = "yarn install --prefer-offline";
-        internal const string ProductionOnlyPackageInstallCommandTemplate = "{0} --production";
-        internal const string PkgMgrRunBuildCommandTemplate = "{0} run build";
-        internal const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";
-        internal const string AllNodeModulesDirName = "__oryx_all_node_modules";
-        internal const string ProdNodeModulesDirName = "__oryx_prod_node_modules";
-        internal const string NodeModulesDirName = "node_modules";
-        internal const string NodeModulesToBeDeletedName = "_del_node_modules";
-        internal const string NodeModulesZippedFileName = "node_modules.zip";
-        internal const string NodeModulesTarGzFileName = "node_modules.tar.gz";
-        internal const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
-        internal const string NodeAppInsightsPackageName = "applicationinsights";
-        internal const string InjectedAppInsights = "injectedAppInsights";
-        internal const string NodeLtsVersion = "12.16.3";
-        internal const string InstalledNodeVersionsDir = "/opt/nodejs/";
-        internal const string NodeVersion = "NODE_VERSION";
-        internal const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
+        public const string PlatformName = "nodejs";
+        public const string PackageJsonFileName = "package.json";
+        public const string PackageLockJsonFileName = "package-lock.json";
+        public const string YarnLockFileName = "yarn.lock";
+        public const string HugoTomlFileName = "config.toml";
+        public const string HugoYamlFileName = "config.yaml";
+        public const string HugoJsonFileName = "config.json";
+        public const string HugoConfigFolderName = "config";
+        public const string NodeToolName = "node";
+        public const string NpmToolName = "npm";
+        public const string NpmCommand = NpmToolName;
+        public const string NpmStartCommand = "npm start";
+        public const string YarnStartCommand = "yarn run start";
+        public const string YarnCommand = "yarn";
+        public const string HugoCommand = "hugo";
+        public const string NpmPackageInstallCommand = "npm install --unsafe-perm";
+        public const string NpmVersionCommand = "echo Using Npm version: && npm --version";
+        public const string YarnVersionCommand = "echo Using Yarn version: && yarn --version";
+        public const string HugoVersionCommand = "echo Using Hugo version: && hugo version";
+        public const string YarnPackageInstallCommand = "yarn install --prefer-offline";
+        public const string ProductionOnlyPackageInstallCommandTemplate = "{0} --production";
+        public const string PkgMgrRunBuildCommandTemplate = "{0} run build";
+        public const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";
+        public const string AllNodeModulesDirName = "__oryx_all_node_modules";
+        public const string ProdNodeModulesDirName = "__oryx_prod_node_modules";
+        public const string NodeModulesDirName = "node_modules";
+        public const string NodeModulesToBeDeletedName = "_del_node_modules";
+        public const string NodeModulesZippedFileName = "node_modules.zip";
+        public const string NodeModulesTarGzFileName = "node_modules.tar.gz";
+        public const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
+        public const string NodeAppInsightsPackageName = "applicationinsights";
+        public const string InjectedAppInsights = "injectedAppInsights";
+        public const string NodeLtsVersion = "12.16.3";
+        public const string InstalledNodeVersionsDir = "/opt/nodejs/";
+        public const string NodeVersion = "NODE_VERSION";
+        public const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
     }
 }

@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.Detector.Python
 {
     internal class PythonVersionProvider
     {
-        private readonly DetectorOptions _options;
+        private readonly IOptions<DetectorOptions> _options;
         private readonly PythonOnDiskVersionProvider _onDiskVersionProvider;
         private readonly PythonSdkStorageVersionProvider _sdkStorageVersionProvider;
         private readonly ILogger<PythonVersionProvider> _logger;
@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Detector.Python
             PythonSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<PythonVersionProvider> logger)
         {
-            _options = options.Value;
+            _options = options;
             _onDiskVersionProvider = onDiskVersionProvider;
             _sdkStorageVersionProvider = sdkStorageVersionProvider;
             _logger = logger;
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Detector.Python
         {
             if (_versionInfo == null)
             {
-                if (_options.EnableDynamicInstall)
+                if (_options.Value.EnableDynamicInstall)
                 {
                     return _sdkStorageVersionProvider.GetVersionInfo();
                 }

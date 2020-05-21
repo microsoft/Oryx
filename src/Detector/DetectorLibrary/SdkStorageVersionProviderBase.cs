@@ -20,14 +20,14 @@ namespace Microsoft.Oryx.Detector
     {
         protected readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
-        private readonly DetectorOptions _detectorOptions;
+        private readonly IOptions<DetectorOptions> _detectorOptions;
 
-        public SdkStorageVersionProviderBase(
+        internal SdkStorageVersionProviderBase(
             IOptions<DetectorOptions> commonOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)
         {
-            _detectorOptions = commonOptions.Value;
+            _detectorOptions = commonOptions;
             _httpClientFactory = httpClientFactory;
             _logger = loggerFactory.CreateLogger(GetType());
         }
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.Detector
 
         protected string GetPlatformBinariesStorageBaseUrl()
         {
-            var platformBinariesStorageBaseUrl = _detectorOptions.OryxSdkStorageBaseUrl;
+            var platformBinariesStorageBaseUrl = _detectorOptions.Value.OryxSdkStorageBaseUrl;
 
             _logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
 

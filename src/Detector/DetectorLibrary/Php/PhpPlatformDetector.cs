@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
 {
@@ -86,7 +87,8 @@ namespace Microsoft.Oryx.Detector.Php
             dynamic composerFile = null;
             try
             {
-                composerFile = context.SourceRepo.ReadJsonObjectFromFile(PhpConstants.ComposerFileName);
+                var jsonContent = context.SourceRepo.ReadFile(PhpConstants.ComposerFileName);
+                composerFile = JsonConvert.DeserializeObject(jsonContent);
             }
             catch (Exception ex)
             {

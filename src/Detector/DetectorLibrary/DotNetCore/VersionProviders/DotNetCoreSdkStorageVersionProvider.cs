@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         private Dictionary<string, string> _versionMap;
         private string _defaultRuntimeVersion;
 
-        public DotNetCoreSdkStorageVersionProvider(
+        internal DotNetCoreSdkStorageVersionProvider(
             IOptions<DetectorOptions> detectorOptions,
             IHttpClientFactory httpClientFactory,
             ILoggerFactory loggerFactory)

@@ -8,16 +8,12 @@ namespace Microsoft.Oryx.Detector
     /// <summary>
     /// Options to create a detector.
     /// </summary>
-    public class DetectorOptions
+    internal class DetectorOptions
     {
         /// <summary>
         /// Gets or sets the source repo where the application is stored.
         /// </summary>
         public string SourceDir { get; set; }
-
-        public string PlatformName { get; set; }
-
-        public string PlatformVersion { get; set; }
 
         public bool EnableTelemetry { get; set; }
 
@@ -28,6 +24,11 @@ namespace Microsoft.Oryx.Detector
         public string OryxSdkStorageBaseUrl { get; set; }
 
         public bool OutputJson { get; set; }
+
+        /// <summary>
+        /// Gets or sets the relative path to the project to be built.
+        /// </summary>
+        public string Project { get; set; }
 
         /// <summary>
         /// Gets or sets the arguments to be passed into the detector.

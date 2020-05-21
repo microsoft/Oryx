@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 {
     internal class DotNetCoreVersionProvider
     {
-        private readonly DetectorOptions _cliOptions;
+        private readonly IOptions<DetectorOptions> _cliOptions;
         private readonly DotNetCoreOnDiskVersionProvider _onDiskVersionProvider;
         private readonly DotNetCoreSdkStorageVersionProvider _sdkStorageVersionProvider;
         private readonly ILogger<DotNetCoreVersionProvider> _logger;
@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<DotNetCoreVersionProvider> logger)
         {
-            _cliOptions = cliOptions.Value;
+            _cliOptions = cliOptions;
             _onDiskVersionProvider = onDiskVersionProvider;
             _sdkStorageVersionProvider = sdkStorageVersionProvider;
             _logger = logger;
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         {
             if (string.IsNullOrEmpty(_defaultRuntimeVersion))
             {
-                _defaultRuntimeVersion = _cliOptions.EnableDynamicInstall ?
+                _defaultRuntimeVersion = _cliOptions.Value.EnableDynamicInstall ?
                     _sdkStorageVersionProvider.GetDefaultRuntimeVersion() :
                     _onDiskVersionProvider.GetDefaultRuntimeVersion();
             }
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         {
             if (_supportedVersions == null)
             {
-                _supportedVersions = _cliOptions.EnableDynamicInstall ?
+                _supportedVersions = _cliOptions.Value.EnableDynamicInstall ?
                     _sdkStorageVersionProvider.GetSupportedVersions() :
                     _onDiskVersionProvider.GetSupportedVersions();
             }

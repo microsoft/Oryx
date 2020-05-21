@@ -13,33 +13,30 @@ using Microsoft.Oryx.Detector.Exceptions;
 
 namespace Microsoft.Oryx.Detector
 {
-    public class DefaultPlatformDetector : IDetector
+    internal class DefaultPlatformDetector : IDetector
     {
-        private readonly Dictionary<PlatformName, IPlatformDetector> _platformDetectors;
+        private readonly IPlatformDetectorProvider _platformDetectorProvider;
         private readonly ILogger<DefaultPlatformDetector> _logger;
         private readonly IOptions<DetectorOptions> _detectorOptions;
-        private readonly IConfiguration _configuration;
 
         public DefaultPlatformDetector(
-            Dictionary<PlatformName, IPlatformDetector> platformDetectors,
+            IPlatformDetectorProvider platformDetectors,
             ILogger<DefaultPlatformDetector> logger,
-            IOptions<DetectorOptions> detectorOptions,
-            IConfiguration configuration)
+            IOptions<DetectorOptions> detectorOptions)
         {
-            _platformDetectors = platformDetectors;
+            _platformDetectorProvider = platformDetectors;
             _logger = logger;
             _detectorOptions = detectorOptions;
-            _configuration = configuration;
         }
 
         public IDictionary<PlatformName, string> GetAllDetectedPlatforms(RepositoryContext ctx)
         {
             var detectedPlatforms = new Dictionary<PlatformName, string>();
 
-            foreach (KeyValuePair<PlatformName, IPlatformDetector> platformDetector in _platformDetectors)
+            foreach (PlatformName platformName in Enum.GetValues(typeof(PlatformName)))
             {
-                _logger.LogDebug($"Detecting platform using '{platformDetector.Key}'...");
-                if (IsDetectedPlatform(ctx, platformDetector.Key, out var platformResult))
+                _logger.LogDebug($"Detecting '{platformName}' platform ...");
+                if (IsDetectedPlatform(ctx, platformName, out var platformResult))
                 {
                     detectedPlatforms.Add(platformResult.Item1, platformResult.Item2);
                 }
@@ -54,7 +51,7 @@ namespace Microsoft.Oryx.Detector
             out Tuple<PlatformName, string> platformResult)
         {
 
-            if (_platformDetectors.TryGetValue(platformName, out IPlatformDetector platformDetector))
+            if (_platformDetectorProvider.TryGetDetector(platformName, out IPlatformDetector platformDetector))
             {
                 PlatformDetectorResult detectionResult = platformDetector.Detect(ctx);
                 platformResult = null;
@@ -74,14 +71,14 @@ namespace Microsoft.Oryx.Detector
                 var detectedVersion = detectionResult.PlatformVersion;
 
                 platformResult = Tuple.Create(platformName, detectedVersion);
-                _logger.LogDebug($"Detected platform '{platformName}' with version '{detectedVersion}'.");
+                _logger.LogDebug($"platform '{platformName}' was detected with version '{detectedVersion}'.");
             }
             else
             {
                 string languages = string.Join(", ", Enum.GetValues(typeof(PlatformName)));
-                var exec = new UnsupportedPlatformException($"'{platformName}' platform is not supported. " +
+                var exec = new UnsupportedPlatformException($"'{platformName}' platform detector is not found. " +
                                                             $"Supported platforms are: {languages}");
-                _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' is not supported.");
+                _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' detector is not found.");
                 throw exec;
             }
 
