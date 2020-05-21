@@ -40,6 +40,26 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("14")]
+        public void NodeImage_DoesNotContain_PM2(string nodeTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "which pm2"
+                }
+            });
+
+            // Assert
+            RunAsserts(() => Assert.False(result.IsSuccess), result.GetDebugInfo());
+        }
+
+        [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public void NodeImage_Contains_ApplicationInsights(string nodeTag)
         {
