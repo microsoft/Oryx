@@ -576,56 +576,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("doestnotexist")]
-        [InlineData("./doestnotexist")]
-        [InlineData("dotnet doesnotexist.dll")]
-        public async Task CanRunApp_UsingDefaultApp_WhenStartupCommand_IsNotValid(string command)
-        {
-            // Arrange
-            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
-            var defaultAppVolume = CreateDefaultWebAppVolume();
-            var defaultAppDir = defaultAppVolume.ContainerDir;
-            var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -o {appOutputDir}")
-               // Create a default web app
-               .AddCommand($"cd {defaultAppDir} && dotnet publish -c Release -o {defaultAppDir}/output")
-               .ToString();
-            var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx create-script -appPath {appOutputDir} -userStartupCommand \"{command}\" " +
-                $"-defaultAppFilePath {defaultAppDir}/output/{DefaultWebApp}.dll " +
-                $"-bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp21WebApp,
-                _output,
-                new List<DockerVolume> { volume, defaultAppVolume },
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    buildImageScript
-                },
-                _imageHelper.GetRuntimeImage("dotnetcore", "2.1"),
-                ContainerPort,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    runtimeImageScript
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("Running default web app", data);
-                });
-        }
-
         [Fact]
         public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenaming()
         {
