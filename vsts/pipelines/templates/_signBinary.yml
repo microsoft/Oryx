@@ -28,65 +28,27 @@ steps:
     signType: '$(setSignTypeVariable.SignType)'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- powershell: |
-    $sdkVersion="2.1.805"
-    Write-Host "Settng .NET Core SDK version variable to $sdkVersion"
-    Write-Host "##vso[task.setvariable variable=DotNetCoreSdkVersion]$sdkVersion"
-  displayName: 'Setting .NET Core SDK version as a variable for later tasks'
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: Oryx.sln
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- task: UseDotNet@2
-  displayName: 'Installing .NET Core SDK'
-  inputs:
-    packageType: 'sdk'
-    version: '$(DotNetCoreSdkVersion)'
-
 - powershell: |
-    Write-Host "Creating global.json with sdk version $(DotNetCoreSdkVersion)..."
-    dotnet new globaljson --sdk-version $(DotNetCoreSdkVersion)
-
     Write-Host "Setting up git_commit and build_number as env variable"
     $env:GIT_COMMIT=$(git rev-parse HEAD)
     $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
-    $projectFile="src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj"
-    
-    dotnet build Oryx.sln -c $(BuildConfiguration)
-    dotnet build `
-      $projectFile `
-      -c $(BuildConfiguration) `
-      -r linux-x64
-    dotnet publish `
-      src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj `
-      -r linux-x64 `
-      -c $(BuildConfiguration)
-  displayName: 'dotnet publish the BuildScriptGeneratorCli project'
+    dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
+  displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
+  
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
   inputs:
     solution: 'src/BuildScriptGeneratorCli/Oryx_sign.signproj'
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-  
-- task: PowerShell@2
-  displayName: 'Re-package already generated NuGet packages with signed binaries'
-  inputs:
-    filePath: 'vsts\scripts\createNuGetPackages.ps1'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- task: VSBuild@1
-  displayName: 'Sign NuGet packages'
-  inputs:
-    solution: 'vsts/nuget.signproj'
-    msbuildArgs: '/t:SignFiles /p:MicroBuild_SigningEnabled=true'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- powershell: |
-    Copy-Item -Path artifacts\packages -Destination $(Build.ArtifactStagingDirectory)\packages -Recurse
-  displayName: 'Copying nuget packages to artifact staging directory'
-  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: ArchiveFiles@2
   displayName: 'Create compressed file of Oryx binaries'
@@ -114,4 +76,4 @@ steps:
   inputs:
     artifactName: 'signed_binaries'
     targetPath: '$(Build.ArtifactStagingDirectory)'
-  condition: eq(variables['setSignTypeVariable.SignType'], 'real')
+  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
