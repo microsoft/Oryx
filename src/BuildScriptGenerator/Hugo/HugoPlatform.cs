@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
-    public class HugoPlatform : IProgrammingPlatform
+    class HugoPlatform : IProgrammingPlatform
     {
         private readonly IEnvironment _environment;
         private readonly ILogger<HugoPlatform> _logger;
@@ -78,6 +78,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 _logger.LogDebug("Dynamic install not enabled.");
             }
 
+            var manifestFileProperties = new Dictionary<string, string>();
+            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = context.ResolvedHugoVersion;
+
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,
                 model: null,
@@ -87,6 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             {
                 BashBuildScriptSnippet = script,
                 PlatformInstallationScriptSnippet = installationScriptSnippet,
+                BuildProperties = manifestFileProperties,
             };
         }
 
