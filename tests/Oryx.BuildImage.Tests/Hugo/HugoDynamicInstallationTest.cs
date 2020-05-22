@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class HugoDynamicInstallationTest : HugoSampleAppsTestBase
     {
-        private readonly string DefaultInstallationRootDir = "/opt/hugo";
+        private readonly string DefaultInstallationRootDir = HugoConstants.InstalledHugoVersionsDir;
 
         public HugoDynamicInstallationTest(ITestOutputHelper output) : base(output)
         {
