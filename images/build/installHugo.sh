@@ -4,18 +4,19 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$__CURRENT_DIR/../../build/__hugoConstants.sh"
 
-fileName="hugo_extended_${VERSION}_Linux-64bit.tar.gz"
-curl -fsSLO --compressed \
-    "https://github.com/gohugoio/hugo/releases/download/v${VERSION}/$fileName"
-installationDir="/opt/hugo/${VERSION}"
+fileName=$(echo $TAR_FILE_NAME_FORMAT | sed "s/#VERSION#/$VERSION/g")
+url=$(echo $INSTALLATION_URL_FORMAT | sed "s/#VERSION#/$VERSION/g")
+url=$(echo $url | sed "s/#TAR_FILE#/$fileName/g")
+curl -fsSLO --compressed "$url"
+installationDir="$INSTALLED_HUGO_VERSIONS_DIR/${VERSION}"
 mkdir -p "$installationDir"
 tar -xzf "$fileName" -C "$installationDir"
 rm "$fileName"
-ln -s "$installationDir" "/opt/hugo/lts"
+ln -s "$installationDir" "$INSTALLED_HUGO_VERSIONS_DIR/lts"
 
 

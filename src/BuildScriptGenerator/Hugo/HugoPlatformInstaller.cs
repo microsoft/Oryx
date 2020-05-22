@@ -21,10 +21,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
+            var tarFile = HugoConstants.TarFileNameFormat.Replace("#VERSION#", version);
+            var downloadUrl = HugoConstants.InstallationUrlFormat
+                .Replace("#VERSION#", version)
+                .Replace("#TAR_FILE#", tarFile);
             var platformName = HugoConstants.PlatformName;
             var versionDirInTemp = $"{Constants.TemporaryInstallationDirectoryRoot}/{platformName}/{version}";
 
-            var tarFile = $"hugo_extended_{version}_Linux-64bit.tar.gz";
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
@@ -36,9 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 .AppendLine($"mkdir -p {versionDirInTemp}")
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
-                .AppendLine(
-                $"curl -fsSLO --compressed " +
-                $"\"https://github.com/gohugoio/hugo/releases/download/v{version}/{tarFile}\" >/dev/null 2>&1")
+                .AppendLine($"curl -fsSLO --compressed \"{downloadUrl}\" >/dev/null 2>&1")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
                 .AppendLine("echo \"Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo Extracting contents...")
