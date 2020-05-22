@@ -23,9 +23,22 @@ if [ "$major" == "6" ] && [ "$minor" == "4" ]; then
     npm install -g npm@6.9.0
 fi
 
-# PM2 is supported as an option when running the app,
-# so we need to make sure it is available in our images.
-npm install -g pm2@3.5.1
+# Do NOT install PM2 from Node 14 onwards
+# v10.14.0
+currentNodeVersion=$(node --version)
+echo "Current Node version is $currentNodeVersion"
+currentNodeVersion=${currentNodeVersion#?}
+IFS='.' read -ra SPLIT_VERSION <<< "$currentNodeVersion"
+major="${SPLIT_VERSION[0]}"
+
+if [ "$major" -lt "14" ]; then
+    echo "Installing PM2..."
+    # PM2 is supported as an option when running the app,
+    # so we need to make sure it is available in our images.
+    npm install -g pm2@3.5.1
+else
+    echo "Skipping PM2 installation..."
+fi
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
