@@ -32,9 +32,12 @@ IFS='.' read -ra SPLIT_VERSION <<< "$currentNodeVersion"
 major="${SPLIT_VERSION[0]}"
 
 if [ "$major" -lt "14" ]; then
+    echo "Installing PM2..."
     # PM2 is supported as an option when running the app,
     # so we need to make sure it is available in our images.
     npm install -g pm2@3.5.1
+else
+    echo "Skipping PM2 installation..."
 fi
 
 # Application-Insights is supported as an option for telemetry when running the app,
