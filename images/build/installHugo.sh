@@ -12,7 +12,10 @@ source "$__CURRENT_DIR/../../build/__hugoConstants.sh"
 fileName="hugo_extended_${VERSION}_Linux-64bit.tar.gz"
 curl -fsSLO --compressed \
     "https://github.com/gohugoio/hugo/releases/download/v${VERSION}/$fileName"
-mkdir -p /opt/hugo
-tar -xzf "$fileName" -C /opt/hugo
+installationDir="/opt/hugo/${VERSION}"
+mkdir -p "$installationDir"
+tar -xzf "$fileName" -C "$installationDir"
 rm "$fileName"
+ln -s "$installationDir" "/opt/hugo/lts"
+
 

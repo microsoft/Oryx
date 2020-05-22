@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
         }
 
-        private string GetPlatformBinariesStorageBaseUrl()
+        protected string GetPlatformBinariesStorageBaseUrl()
         {
             var platformBinariesStorageBaseUrl = _commonOptions.OryxSdkStorageBaseUrl;
             if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))

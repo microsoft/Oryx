@@ -163,7 +163,8 @@
 - name: hugo-constants
   constants:
     version: 0.71.0
-    name: Hugo
+    platform-name: hugo
+    installed-hugo-versions-dir: /opt/hugo
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/Hugo

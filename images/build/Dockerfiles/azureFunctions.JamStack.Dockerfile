@@ -8,7 +8,7 @@ ARG AGENTBUILD
 # NOTE: This imge is NOT based on 'githubrunners-buildpackdeps-stretch' because AzFunctions
 # team wanted a consistent experience at their end and do not want to see latency that might
 # be caused due to when the GitHub runners' layers and Oryx image layers go out of sync.
-FROM debian:stretch AS main
+FROM githubrunners-buildpackdeps-stretch AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
@@ -96,7 +96,8 @@ ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/yarn/stable/bin:/opt/hugo"
+ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV PATH="${ORYX_PATHS}:$PATH"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 
@@ -113,6 +114,7 @@ RUN rm -rf /tmp/oryx
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ENABLE_DYNAMIC_INSTALL=true
 ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 
 ARG GIT_COMMIT=unspecified

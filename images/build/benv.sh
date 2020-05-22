@@ -36,6 +36,9 @@ done < <(set | grep -i '^npm=')
 while read benvvar; do
   set -- "$benvvar" "$@"
 done < <(set | grep -i '^dotnet=')
+while read benvvar; do
+  set -- "$benvvar" "$@"
+done < <(set | grep -i '^hugo=')
 unset benvvar # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
@@ -184,6 +187,21 @@ benv-resolve() {
     if [ -e "$DIR/virtualenv" ]; then
       export virtualenv="$DIR/virtualenv"
     fi
+
+    return 0
+  fi
+
+  # Resolve hugo versions
+  if matchesName "hugo" "$name" || matchesName "hugo_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "hugo" "$value")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "hugo" "hugo" "$value"
+      return 1
+    fi
+
+    local DIR="$platformDir"
+    updatePath "$DIR"
+    export hugo="$DIR/hugo"
 
     return 0
   fi
