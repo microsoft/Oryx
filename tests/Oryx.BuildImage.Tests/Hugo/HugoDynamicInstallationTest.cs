@@ -34,17 +34,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuilds(string imageName)
+        public void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
         {
             // Arrange
-            var version = "0.59.1";
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{version}";
+            var hugoVersion = "0.59.1";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";
             var appName = SampleAppName;
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("HUGO_VERSION", version)
+                .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Hugo Static Site Generator v{version}",
+                        $"Hugo Static Site Generator v{hugoVersion}",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -75,14 +75,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
-            var version = "0.70.0"; //NOTE: use the full version so that we know the install directory path
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{version}";
+            var hugoVersion = "0.70.0"; //NOTE: use the full version so that we know the install directory path
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var appName = SampleAppName;
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var buildCmd = $"{appDir} --platform {HugoConstants.PlatformName} --platform-version {version} -o {appOutputDir}";
+            var buildCmd = $"{appDir} --platform {HugoConstants.PlatformName} --platform-version {hugoVersion} -o {appOutputDir}";
             var script = new ShellScriptBuilder()
                  .AddCommand(GetSnippetToCleanUpExistingInstallation())
                  .SetEnvironmentVariable(
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Hugo Static Site Generator v{version}",
+                        $"Hugo Static Site Generator v{hugoVersion}",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
