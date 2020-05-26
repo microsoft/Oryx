@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Detector.Exceptions;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             else
             {
                 _logger.LogWarning($"Could not find the .NET Core project file.");
-                throw new InvalidUsageException(
+                throw new Exception(
                     string.Format(Resources.Labels.DotNetCoreCouldNotFindProjectFileToBuild, projectFile));
             }
 

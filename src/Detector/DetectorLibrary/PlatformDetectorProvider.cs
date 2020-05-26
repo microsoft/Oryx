@@ -1,12 +1,17 @@
-﻿using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.DotNetCore;
-using Microsoft.Oryx.Detector.Exceptions;
-using Microsoft.Oryx.Detector.Node;
-using Microsoft.Oryx.Detector.Php;
-using Microsoft.Oryx.Detector.Python;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Detector.Node;
+using Microsoft.Oryx.Detector.Php;
+using Microsoft.Oryx.Detector.Python;
+
 
 namespace Microsoft.Oryx.Detector
 
@@ -40,7 +45,7 @@ namespace Microsoft.Oryx.Detector
         {
             if ( ! _platformDetectors.TryGetValue(platformName, out IPlatformDetector detector))
             {
-                throw new UnsupportedPlatformException(platformName + "Platform Detector not found. ");
+                throw new Exception(platformName + "Platform Detector not found. ");
             }
 
             platformDetector = detector;

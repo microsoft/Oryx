@@ -21,14 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IPlatformDetectorProvider, PlatformDetectorProvider>();
 
             services.AddSingleton<NodePlatformDetector>();
-            services.AddSingleton<NodeVersionProvider>();
-            services.AddSingleton<NodeOnDiskVersionProvider>();
-            services.AddSingleton<NodeSdkStorageVersionProvider>();
 
             services.AddSingleton<DotNetCorePlatformDetector>();
-            services.AddSingleton<DotNetCoreVersionProvider>();
-            services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
-            services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
             services.AddSingleton<DefaultProjectFileProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());
@@ -39,12 +33,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
 
             services.AddSingleton<PhpPlatformDetector>();
-            services.AddSingleton<PhpVersionProvider>();
 
             services.AddSingleton<PythonPlatformDetector>();
-            services.AddSingleton<PythonVersionProvider>();
-            services.AddSingleton<PythonOnDiskVersionProvider>();
-            services.AddSingleton<PythonSdkStorageVersionProvider>();
 
             return services;
         }

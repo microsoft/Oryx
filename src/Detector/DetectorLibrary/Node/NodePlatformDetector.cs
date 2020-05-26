@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json;
 using System;
@@ -31,14 +30,11 @@ namespace Microsoft.Oryx.Detector.Node
             "app.js",
         };
 
-        private readonly NodeVersionProvider _versionProvider;
         private readonly ILogger<NodePlatformDetector> _logger;
 
         public NodePlatformDetector(
-            NodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatformDetector> logger)
         {
-            _versionProvider = nodeVersionProvider;
             _logger = logger;
         }
 
@@ -115,21 +111,16 @@ namespace Microsoft.Oryx.Detector.Node
 
         public string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
+            var nodeSupportedVersionList = PlatformVersionList.NodeVersionList;
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                versionInfo.SupportedVersions);
+                nodeSupportedVersionList);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exception = new UnsupportedVersionException(
-                    NodeConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
                 _logger.LogError(
-                    exception,
                     $"Exception caught, the version '{version}' is not supported for the Node platform.");
-                throw exception;
+                throw new Exception($"Exception caught, the version '{version}' is not supported for the Node platform.");
             }
 
             return maxSatisfyingVersion;
@@ -159,8 +150,7 @@ namespace Microsoft.Oryx.Detector.Node
 
         private string GetDefaultVersionFromProvider()
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
+            return PlatformVersionList.NodeDefaultVersion;
         }
         private dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {

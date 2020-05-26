@@ -6,10 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Detector.Exceptions;
 
 namespace Microsoft.Oryx.Detector
 {
@@ -76,10 +74,9 @@ namespace Microsoft.Oryx.Detector
             else
             {
                 string languages = string.Join(", ", Enum.GetValues(typeof(PlatformName)));
-                var exec = new UnsupportedPlatformException($"'{platformName}' platform detector is not found. " +
+                _logger.LogError($"Exception caught, provided platform '{platformName}' detector is not found.");
+                throw new Exception($"'{platformName}' platform detector is not found. " +
                                                             $"Supported platforms are: {languages}");
-                _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' detector is not found.");
-                throw exec;
             }
 
             return true;

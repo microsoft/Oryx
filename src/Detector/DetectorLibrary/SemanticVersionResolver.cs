@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using SemVer;
-using Version = System.Version;
 
 namespace Microsoft.Oryx.Detector
 {

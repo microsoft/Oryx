@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Resources;
 using Microsoft.Oryx.Common.Extensions;
+using System;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             if (projects.Count > 1)
             {
                 var projectList = string.Join(", ", projects);
-                throw new InvalidUsageException(string.Format(
+                throw new Exception(string.Format(
                     Resources.Labels.DotNetCoreAmbiguityInSelectingProjectFile,
                     projectList,
                     "PROJECT"));

@@ -15,14 +15,6 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         public string SourceDir { get; set; }
 
-        public bool EnableTelemetry { get; set; }
-
-        public bool EnableCheckers { get; set; }
-
-        public bool EnableDynamicInstall { get; set; }
-
-        public string OryxSdkStorageBaseUrl { get; set; }
-
         public bool OutputJson { get; set; }
 
         /// <summary>

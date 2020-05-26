@@ -5,8 +5,6 @@
 
 using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json;
 
@@ -14,14 +12,11 @@ namespace Microsoft.Oryx.Detector.Php
 {
     internal class PhpPlatformDetector : IPlatformDetector
     {
-        private readonly PhpVersionProvider _versionProvider;
         private readonly ILogger<PhpPlatformDetector> _logger;
 
         public PhpPlatformDetector(
-            PhpVersionProvider versionProvider,
             ILogger<PhpPlatformDetector> logger)
         {
-            _versionProvider = versionProvider;
             _logger = logger;
         }
 
@@ -46,21 +41,16 @@ namespace Microsoft.Oryx.Detector.Php
 
         public string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
+            var phpVersionList = PlatformVersionList.PhpVersionList;
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                versionInfo.SupportedVersions);
+                phpVersionList);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exc = new UnsupportedVersionException(
-                    PhpConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
                 _logger.LogError(
-                    exc,
                     $"Exception caught, the version '{version}' is not supported for the PHP platform.");
-                throw exc;
+                throw new Exception($"Exception caught, the version '{version}' is not supported for the .NET Core platform.");
             }
 
             return maxSatisfyingVersion;
@@ -105,8 +95,7 @@ namespace Microsoft.Oryx.Detector.Php
 
         private string GetDefaultVersionFromProvider()
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
+            return PlatformVersionList.PhpDefaultVersion;
         }
 
     }

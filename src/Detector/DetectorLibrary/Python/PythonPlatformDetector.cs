@@ -7,22 +7,17 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
     internal class PythonPlatformDetector : IPlatformDetector
     {
-        private readonly PythonVersionProvider _versionProvider;
         private readonly ILogger<PythonPlatformDetector> _logger;
 
         public PythonPlatformDetector(
-            PythonVersionProvider pythonVersionProvider,
             ILogger<PythonPlatformDetector> logger)
         {
-            _versionProvider = pythonVersionProvider;
             _logger = logger;
         }
 
@@ -76,21 +71,16 @@ namespace Microsoft.Oryx.Detector.Python
 
         public string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
+            var pythonVersionList = PlatformVersionList.PythonVersionList;
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                versionInfo.SupportedVersions);
+                pythonVersionList);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                var exc = new UnsupportedVersionException(
-                    PythonConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
                 _logger.LogError(
-                    exc,
                     $"Exception caught, the version '{version}' is not supported for the Python platform.");
-                throw exc;
+                throw new Exception($"Exception caught, the version '{version}' is not supported for the Python platform.");
             }
 
             return maxSatisfyingVersion;
@@ -113,8 +103,7 @@ namespace Microsoft.Oryx.Detector.Python
 
         private string GetDefaultVersionFromProvider()
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
+            return PlatformVersionList.PythonDefaultVersion;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)
