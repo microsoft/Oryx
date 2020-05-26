@@ -18,5 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string DotNetCoreSdkVersion = nameof(DotNetCoreSdkVersion);
 
         internal const string PythonVersion = nameof(PythonVersion);
+
+        internal const string HugoVersion = nameof(HugoVersion);
     }
 }

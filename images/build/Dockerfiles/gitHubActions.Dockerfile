@@ -93,7 +93,8 @@ ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
-ENV PATH="$PATH:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo"
+ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV PATH="${ORYX_PATHS}:$PATH"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
 RUN mkdir -p /usr/local/share/pip-cache/lib

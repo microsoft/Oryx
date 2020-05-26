@@ -1,8 +1,8 @@
 echo
 echo "Using Hugo version:"
-hugo version
+$hugo version
 echo
 
 cd "$SOURCE_DIR"
 
-hugo
+$hugo

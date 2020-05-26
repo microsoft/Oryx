@@ -8,7 +8,7 @@ ARG RELEASE_TAG_NAME=unspecified
 
 RUN rm -rf /tmp/oryx
 
-ENV PATH="$ORIGINAL_PATH:/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo"
+ENV PATH="$ORIGINAL_PATH:$ORYX_PATHS"
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 ENV ORYX_PREFER_USER_INSTALLED_SDKS=true

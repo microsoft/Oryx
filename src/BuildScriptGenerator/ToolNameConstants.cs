@@ -19,5 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string NodeName = "node";
 
         public const string NpmName = "npm";
+
+        public const string HugoName = "hugo";
     }
 }
