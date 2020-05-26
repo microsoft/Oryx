@@ -36,7 +36,7 @@ echo
 # the latest version of its own base image.
 docker build \
     --pull \
-    --build-arg COMMON_RUNIMAGE_BASE=$runtimeImageBaseType \
+    --build-arg DEBIAN_FLAVOR=$runtimeImageBaseType \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "$RUNTIME_BASE_IMAGE_NAME-$runtimeImageBaseType" \
     $REPO_DIR
@@ -53,13 +53,13 @@ busterNodeDockerFiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
     docker build \
-        --build-arg RUNIMAGE_BASE=stretch \
+        --build-arg DEBIAN_FLAVOR=stretch \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
         -t "oryx-node-run-base-stretch" \
         $REPO_DIR
 
     docker build \
-        --build-arg RUNIMAGE_BASE=buster \
+        --build-arg DEBIAN_FLAVOR=buster \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
         -t "oryx-node-run-base-buster" \
         $REPO_DIR
@@ -121,7 +121,7 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE10_VERSION=$NODE10_VERSION \
         --build-arg NODE12_VERSION=$NODE12_VERSION \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
-        --build-arg RUNIMAGE_BASE=$runtimeImageBaseType \
+        --build-arg DEBIAN_FLAVOR=$runtimeImageBaseType \
         $labels \
         .
 

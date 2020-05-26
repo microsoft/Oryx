@@ -1,6 +1,6 @@
-ARG RUNIMAGE_BASE
+ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.14-${RUNIMAGE_BASE} as startupCmdGen
+FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
 # Install dep
 RUN go get -u github.com/golang/dep/cmd/dep
 # GOPATH is set to "/go" in the base image
@@ -14,7 +14,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM oryx-run-base-${PYTHON_RUNIMAGE_BASE} AS main
+FROM oryx-run-base-${PYTHON_DEBIAN_FLAVOR} AS main
 ARG IMAGES_DIR=/tmp/oryx/images
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 

@@ -1,6 +1,6 @@
-ARG RUNIMAGE_BASE
+ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.14-${RUNIMAGE_BASE} as startupCmdGen
+FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -12,7 +12,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM oryx-run-base-${RUNIMAGE_BASE}
+FROM oryx-run-base-${DEBIAN_FLAVOR}
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}

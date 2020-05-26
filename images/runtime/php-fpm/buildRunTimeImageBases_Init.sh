@@ -17,7 +17,7 @@ echo
 echo "Building image '$baseImageType' based '$baseImage' ..."
 docker build \
     -t $baseImage-$baseImageType \
-    --build-arg RUNIMAGE_BASE=$baseImageType \
+    --build-arg DEBIAN_FLAVOR=$baseImageType \
     -f "$CURRENT_DIR/runbase.Dockerfile" \
     .
 
@@ -34,7 +34,7 @@ do
     echo
     docker build \
         -t $PHP_IMAGE_NAME \
-        --build-arg RUNIMAGE_BASE=$baseImageType \
+        --build-arg DEBIAN_FLAVOR=$baseImageType \
         -f "$VERSION_DIRECTORY.Dockerfile" \
         .
 done

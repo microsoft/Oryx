@@ -1,5 +1,5 @@
-ARG RUNIMAGE_BASE
-FROM oryx-run-base-${RUNIMAGE_BASE}
+ARG DEBIAN_FLAVOR
+FROM oryx-run-base-${DEBIAN_FLAVOR}
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542

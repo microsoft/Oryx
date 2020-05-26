@@ -1,6 +1,6 @@
-ARG RUNIMAGE_BASE
+ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.14-${RUNIMAGE_BASE} as startupCmdGen
+FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .

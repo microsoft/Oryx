@@ -1,5 +1,5 @@
-ARG COMMON_RUNIMAGE_BASE
-FROM buildpack-deps:${COMMON_RUNIMAGE_BASE}-curl
+ARG DEBIAN_FLAVOR
+FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
