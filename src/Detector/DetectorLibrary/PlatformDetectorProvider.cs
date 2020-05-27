@@ -5,8 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Detector.Php;

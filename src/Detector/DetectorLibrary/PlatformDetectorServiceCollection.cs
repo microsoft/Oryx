@@ -5,13 +5,12 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Detector.Php;
 using Microsoft.Oryx.Detector.Python;
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+namespace Microsoft.Oryx.Detector
 {
     public static class PlatformDetectorServiceCollection
     {
