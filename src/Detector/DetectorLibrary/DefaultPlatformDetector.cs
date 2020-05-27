@@ -48,35 +48,27 @@ namespace Microsoft.Oryx.Detector
             PlatformName platformName,
             out Tuple<PlatformName, string> platformResult)
         {
-
+            platformResult = null;
             if (_platformDetectorProvider.TryGetDetector(platformName, out IPlatformDetector platformDetector))
             {
                 PlatformDetectorResult detectionResult = platformDetector.Detect(ctx);
-                platformResult = null;
-
+                
                 if (detectionResult == null)
                 {
-                    _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");
+                    _logger.LogInformation($"Platform '{platformName}' was not detected in the given repository.");
                     return false;
                 }
                 else if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
                 {
-                    _logger.LogError($"Platform '{platformName}' was detected in the given repository, but " +
-                                         $"no such version was found.");
+                    _logger.LogInformation($"Platform '{platformName}' was detected in the given repository, but " +
+                                         $"no versions were detected.");
                     return false;
                 }
 
                 var detectedVersion = detectionResult.PlatformVersion;
 
                 platformResult = Tuple.Create(platformName, detectedVersion);
-                _logger.LogDebug($"platform '{platformName}' was detected with version '{detectedVersion}'.");
-            }
-            else
-            {
-                string languages = string.Join(", ", Enum.GetValues(typeof(PlatformName)));
-                _logger.LogError($"Exception caught, provided platform '{platformName}' detector is not found.");
-                throw new Exception($"'{platformName}' platform detector is not found. " +
-                                                            $"Supported platforms are: {languages}");
+                _logger.LogInformation($"platform '{platformName}' was detected with version '{detectedVersion}'.");
             }
 
             return true;

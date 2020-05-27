@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Detector.Resources;
-using Microsoft.Oryx.Common.Extensions;
 using System;
 
 namespace Microsoft.Oryx.Detector.DotNetCore

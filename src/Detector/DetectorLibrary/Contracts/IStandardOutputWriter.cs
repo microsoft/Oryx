@@ -13,12 +13,6 @@ namespace Microsoft.Oryx.Detector
     public interface IStandardOutputWriter
     {
         /// <summary>
-        /// Writes a string.
-        /// </summary>
-        /// <param name="message">The string to be written.</param>
-        void Write(string message);
-
-        /// <summary>
         /// Writes a string followed by a line terminator.
         /// </summary>
         /// <param name="message">The string to be written.</param>

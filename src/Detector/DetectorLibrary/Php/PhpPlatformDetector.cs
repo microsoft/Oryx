@@ -30,7 +30,6 @@ namespace Microsoft.Oryx.Detector.Php
             }
 
             var version = GetVersion(context);
-            version = GetMaxSatisfyingVersionAndVerify(version);
 
             return new PlatformDetectorResult
             {
@@ -39,36 +38,15 @@ namespace Microsoft.Oryx.Detector.Php
             };
         }
 
-        public string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var phpVersionList = PlatformVersionList.PhpVersionList;
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                phpVersionList);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                _logger.LogError(
-                    $"Exception caught, the version '{version}' is not supported for the PHP platform.");
-                throw new Exception($"Exception caught, the version '{version}' is not supported for the .NET Core platform.");
-            }
-
-            return maxSatisfyingVersion;
-        }
 
         private string GetVersion(RepositoryContext context)
         {
-            if (context.ResolvedPhpVersion != null)
-            {
-                return context.ResolvedPhpVersion;
-            }
-
             var version = GetVersionFromComposerFile(context);
             if (version != null)
             {
                 return version;
             }
-
+            _logger.LogDebug("Could not get version from the composer file. Getting default version.");
             return GetDefaultVersionFromProvider();
         }
 

@@ -45,54 +45,13 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return null;
             }
 
-            var version = GetVersion(context, targetFramework);
-            version = GetMaxSatisfyingVersionAndVerify(version);
+            var version = GetVersion(targetFramework);
 
             return new PlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = version,
             };
-        }
-
-        public string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
-        {
-            var versionMap = PlatformVersionList.DotNetCoreVersionList;
-
-            // Since our semantic versioning library does not work with .NET Core preview version format, here
-            // we do some trivial way of finding the latest version which matches a given runtime version
-            // Runtime versions are usually like: 1.0, 2.1, 3.1, 5.0 etc.
-            // (these are constructed from netcoreapp21, netcoreapp31 etc.)
-            // Preview version of sdks also have preview versions of runtime versions and hence they
-            // have '-' in their names.
-            var nonPreviewRuntimeVersions = versionMap.Where(version => version.IndexOf("-") < 0);
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                runtimeVersion,
-                nonPreviewRuntimeVersions);
-
-            // Check if a preview version is available
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                // NOTE:
-                // Preview versions: 5.0.0-preview.3.20214.6, 5.0.0-preview.2.20160.6, 5.0.0-preview.1.20120.5
-                var previewRuntimeVersions = versionMap
-                    .Where(version => version.IndexOf("-") >= 0)
-                    .Where(version => version.StartsWith(runtimeVersion))
-                    .OrderByDescending(version => version);
-                if (previewRuntimeVersions.Any())
-                {
-                    maxSatisfyingVersion = previewRuntimeVersions.First();
-                }
-            }
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                _logger.LogError(
-                    $"Exception caught, the version '{runtimeVersion}' is not supported for the .NET Core platform.");
-                throw new Exception($"Exception caught, the version '{runtimeVersion}' is not supported for the .NET Core platform.");
-            }
-
-            return maxSatisfyingVersion;
         }
 
         internal string DetermineRuntimeVersion(string targetFramework)
@@ -112,19 +71,16 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return null;
         }
 
-        private string GetVersion(RepositoryContext context, string targetFramework)
+        private string GetVersion(string targetFramework)
         {
-            if (context.ResolvedDotNetCoreRuntimeVersion != null)
-            {
-                return context.ResolvedDotNetCoreRuntimeVersion;
-            }
 
             var version = DetermineRuntimeVersion(targetFramework);
             if (version != null)
             {
                 return version;
             }
-
+            _logger.LogDebug(
+                   $"Could not determine runtime version from target framework. Getting default version.");
             return GetDefaultVersionFromProvider();
         }
 

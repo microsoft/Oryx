@@ -100,7 +100,6 @@ namespace Microsoft.Oryx.Detector.Node
             }
 
             var version = GetVersion(context);
-            version = GetMaxSatisfyingVersionAndVerify(version);
 
             return new PlatformDetectorResult
             {
@@ -109,36 +108,14 @@ namespace Microsoft.Oryx.Detector.Node
             };
         }
 
-        public string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var nodeSupportedVersionList = PlatformVersionList.NodeVersionList;
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                nodeSupportedVersionList);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                _logger.LogError(
-                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
-                throw new Exception($"Exception caught, the version '{version}' is not supported for the Node platform.");
-            }
-
-            return maxSatisfyingVersion;
-        }
-
         private string GetVersion(RepositoryContext context)
         {
-            if (context.ResolvedNodeVersion != null)
-            {
-                return context.ResolvedNodeVersion;
-            }
-
             var version = GetVersionFromPackageJson(context);
             if (version != null)
             {
                 return version;
             }
-
+            _logger.LogDebug("Could not get version from package Json. Getting default version.");
             return GetDefaultVersionFromProvider();
         }
 

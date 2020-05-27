@@ -35,12 +35,12 @@ namespace Microsoft.Oryx.Detector.Python
                 && sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
             {
                 _logger.LogInformation($"'{PythonConstants.RequirementsFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build/detect from '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
+                    $"Detected '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
             }
             else
             {
                 _logger.LogInformation($"'{PythonConstants.SetupDotPyFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build/detect from '{PythonConstants.RequirementsFileName}'that exists in source repo");
+                    $"Detected '{PythonConstants.RequirementsFileName}'that exists in source repo");
             }
 
             // This detects if a runtime.txt file exists if that is a python file
@@ -59,8 +59,7 @@ namespace Microsoft.Oryx.Detector.Python
                 }
             }
 
-            var version = GetVersion(context, versionFromRuntimeFile);
-            version = GetMaxSatisfyingVersionAndVerify(version);
+            var version = GetVersion(versionFromRuntimeFile);
 
             return new PlatformDetectorResult
             {
@@ -69,35 +68,14 @@ namespace Microsoft.Oryx.Detector.Python
             };
         }
 
-        public string GetMaxSatisfyingVersionAndVerify(string version)
+        private string GetVersion(string versionFromRuntimeFile)
         {
-            var pythonVersionList = PlatformVersionList.PythonVersionList;
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                pythonVersionList);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                _logger.LogError(
-                    $"Exception caught, the version '{version}' is not supported for the Python platform.");
-                throw new Exception($"Exception caught, the version '{version}' is not supported for the Python platform.");
-            }
-
-            return maxSatisfyingVersion;
-        }
-
-        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
-        {
-            if (context.ResolvedPythonVersion != null)
-            {
-                return context.ResolvedPythonVersion;
-            }
-
             if (versionFromRuntimeFile != null)
             {
                 return versionFromRuntimeFile;
             }
-
+            _logger.LogDebug(
+                            "Could not get version from runtime file. Getting default version.");
             return GetDefaultVersionFromProvider();
         }
 

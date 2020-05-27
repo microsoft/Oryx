@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Detector.Php;
@@ -17,13 +18,16 @@ namespace Microsoft.Oryx.Detector
     public class PlatformDetectorProvider : IPlatformDetectorProvider
     {
         internal IDictionary<PlatformName, IPlatformDetector> _platformDetectors;
+        private readonly ILogger<PlatformDetectorProvider> _logger;
 
         internal PlatformDetectorProvider(
+            ILogger<PlatformDetectorProvider> logger,
             NodePlatformDetector nodePlatformDetector,
             PhpPlatformDetector phpPlatformDetector,
             PythonPlatformDetector pythonPlatformDetector,
             DotNetCorePlatformDetector dotNetCorePlatformDetector)
         {
+            _logger = logger;
             _platformDetectors = new Dictionary<PlatformName, IPlatformDetector>
             {
                 { PlatformName.DotNetCore, dotNetCorePlatformDetector },
@@ -41,9 +45,11 @@ namespace Microsoft.Oryx.Detector
 
         public bool TryGetDetector(PlatformName platformName, out IPlatformDetector platformDetector)
         {
+            platformDetector = null;
             if ( ! _platformDetectors.TryGetValue(platformName, out IPlatformDetector detector))
             {
-                throw new Exception(platformName + "Platform Detector not found. ");
+                _logger.LogError(platformName + "Platform Detector was not found. ");
+                return false;
             }
 
             platformDetector = detector;
