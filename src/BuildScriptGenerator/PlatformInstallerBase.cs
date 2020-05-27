@@ -10,11 +10,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Contracts;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public abstract class PlatformInstallerBase
+    public abstract class PlatformInstallerBase : IToolInstaller
     {
         protected readonly BuildScriptGeneratorOptions _commonOptions;
         protected readonly ILogger _logger;
@@ -25,6 +27,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             _commonOptions = commonOptions.Value;
             _logger = loggerFactory.CreateLogger(GetType());
+        }
+
+        public string ToolName => throw new NotImplementedException();
+
+        public string GetInstallerScriptSnippet(string version)
+        {
+            return GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version);
+        }
+
+        public bool IsVersionAlreadyInstalled(string version)
+        {
+            throw new NotImplementedException();
         }
 
         protected string GetInstallerScriptSnippet(

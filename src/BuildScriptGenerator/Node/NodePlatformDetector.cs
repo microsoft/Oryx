@@ -52,6 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
+            _writer.WriteLine("Checking if repo has NodeJS related files...");
             bool isNodeApp = false;
 
             var sourceRepo = context.SourceRepo;

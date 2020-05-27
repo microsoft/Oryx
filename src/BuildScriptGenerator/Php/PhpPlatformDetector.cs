@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
+            _writer.WriteLine("Checking if repo has PHP related files...");
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
             {

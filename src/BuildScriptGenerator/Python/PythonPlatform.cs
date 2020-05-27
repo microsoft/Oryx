@@ -107,31 +107,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
-            string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
-            {
-                _logger.LogDebug("Dynamic install is enabled.");
-
-                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedPythonVersion))
-                {
-                    _logger.LogDebug(
-                       "Python version {version} is already installed. So skipping installing it again.",
-                       context.ResolvedPythonVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "Python version {version} is not installed. So generating an installation script snippet for it.",
-                        context.ResolvedPythonVersion);
-
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.ResolvedPythonVersion);
-                }
-            }
-            else
-            {
-                _logger.LogDebug("Dynamic install not enabled.");
-            }
-
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
@@ -209,7 +184,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
-                PlatformInstallationScriptSnippet = installationScriptSnippet,
             };
         }
 
@@ -416,6 +390,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             return virtualEnvName;
+        }
+
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        {
+            string installationScriptSnippet = null;
+            if (_commonOptions.EnableDynamicInstall)
+            {
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedPythonVersion))
+                {
+                    _logger.LogDebug(
+                       "Python version {version} is already installed. So skipping installing it again.",
+                       context.ResolvedPythonVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Python version {version} is not installed. So generating an installation script snippet for it.",
+                        context.ResolvedPythonVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.ResolvedPythonVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install not enabled.");
+            }
+
+            return installationScriptSnippet;
         }
     }
 }

@@ -39,13 +39,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             context.ResolvedPythonVersion = "3.7.5";
 
             // Act
-            var snippet = platform.GenerateBashBuildScriptSnippet(context);
+            var snippet = platform.GetInstallerScriptSnippet(context);
 
             // Assert
-            Assert.NotNull(snippet);
-            Assert.Null(snippet.PlatformInstallationScriptSnippet);
-            Assert.Contains(ManifestFilePropertyKeys.PythonVersion, snippet.BuildProperties.Keys);
-            Assert.Equal("3.7.5", snippet.BuildProperties[ManifestFilePropertyKeys.PythonVersion]);
+            Assert.Null(snippet);
         }
 
         [Fact]
@@ -73,14 +70,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             context.ResolvedPythonVersion = "3.7.5";
 
             // Act
-            var snippet = platform.GenerateBashBuildScriptSnippet(context);
+            var snippet = platform.GetInstallerScriptSnippet(context);
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.NotNull(snippet.PlatformInstallationScriptSnippet);
-            Assert.Equal(installerScriptSnippet, snippet.PlatformInstallationScriptSnippet);
-            Assert.Contains(ManifestFilePropertyKeys.PythonVersion, snippet.BuildProperties.Keys);
-            Assert.Equal("3.7.5", snippet.BuildProperties[ManifestFilePropertyKeys.PythonVersion]);
+            Assert.Equal(installerScriptSnippet, snippet);
         }
 
         [Fact]
@@ -108,13 +102,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             context.ResolvedPythonVersion = "3.7.5";
 
             // Act
-            var snippet = platform.GenerateBashBuildScriptSnippet(context);
+            var snippet = platform.GetInstallerScriptSnippet(context);
 
             // Assert
-            Assert.NotNull(snippet);
-            Assert.Null(snippet.PlatformInstallationScriptSnippet);
-            Assert.Contains(ManifestFilePropertyKeys.PythonVersion, snippet.BuildProperties.Keys);
-            Assert.Equal("3.7.5", snippet.BuildProperties[ManifestFilePropertyKeys.PythonVersion]);
+            Assert.Null(snippet);
         }
 
         [Fact]

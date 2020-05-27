@@ -114,5 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="version">Version for which the maximum satisfying version needs to be found.</param>
         /// <returns>Full version (i.e major.minor.patch)</returns>
         string GetMaxSatisfyingVersionAndVerify(string version);
+
+        string GetInstallerScriptSnippet(BuildScriptGeneratorContext context);
     }
 }

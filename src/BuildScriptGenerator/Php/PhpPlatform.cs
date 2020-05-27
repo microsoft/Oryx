@@ -170,5 +170,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             return _detector.GetMaxSatisfyingVersionAndVerify(version);
         }
+
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return null;
+        }
     }
 }

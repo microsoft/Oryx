@@ -19,22 +19,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _options;
         private readonly DefaultProjectFileProvider _projectFileProvider;
+        private readonly IStandardOutputWriter _writer;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;
 
         public DotNetCorePlatformDetector(
             IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
             DefaultProjectFileProvider projectFileProvider,
+            IStandardOutputWriter writer,
             ILogger<DotNetCorePlatformDetector> logger)
         {
             _versionProvider = versionProvider;
             _options = options.Value;
             _projectFileProvider = projectFileProvider;
+            _writer = writer;
             _logger = logger;
         }
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
+            _writer.WriteLine("Checking if repo has .NET Core related files...");
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
             {

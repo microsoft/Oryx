@@ -55,14 +55,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public void TryGenerateScript_OnlyProcessProvidedPlatform_IfMultiPlatformIsDisabled()
         {
             // Arrange
-            var detector1 = new TestPlatformDetectorSimpleMatch(shouldMatch: true);
+            var detector1 = new TestPlatformDetectorSimpleMatch(shouldMatch: true, "main", "1.0.0");
             var platform1 = new TestProgrammingPlatform(
                 "main",
                 new[] { "1.0.0" },
                 canGenerateScript: true,
                 scriptContent: "script-content",
                 detector: detector1);
-            var detector2 = new TestPlatformDetectorSimpleMatch(shouldMatch: true);
+            var detector2 = new TestPlatformDetectorSimpleMatch(shouldMatch: true, "anotherPlatform", "1.0.0");
             var platform2 = new TestProgrammingPlatform(
                 "anotherPlatform",
                 new[] { "1.0.0" },
@@ -228,7 +228,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Equal(
                 "'unsupported' platform is not supported. Supported platforms are: test",
                 exception.Message);
-            Assert.False(detector.DetectInvoked);
+            Assert.True(detector.DetectInvoked);
         }
 
         [Fact]
@@ -314,8 +314,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             generator.GenerateBashScript(context, out var generatedScript);
-            Assert.False(detector.DetectInvoked);
-            Assert.False(detector2.DetectInvoked);
+            Assert.True(detector.DetectInvoked);
+            Assert.True(detector2.DetectInvoked);
         }
 
         [Fact]
@@ -353,7 +353,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act & Assert
             generator.GenerateBashScript(context, out var generatedScript);
-            Assert.False(detector.DetectInvoked);
+            Assert.True(detector.DetectInvoked);
             Assert.True(detector2.DetectInvoked);
         }
 
@@ -390,7 +390,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Assert
             Assert.Contains("script-content", generatedScript);
-            Assert.False(detector.DetectInvoked);
+            Assert.True(detector.DetectInvoked);
         }
 
         [Fact]
@@ -442,13 +442,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 new[] { "1.0.0" },
                 canGenerateScript: true,
                 scriptContent: "ABCDEFG",
-                detector: new TestPlatformDetectorSimpleMatch(shouldMatch: true));
+                detector: new TestPlatformDetectorSimpleMatch(shouldMatch: true, "test", "1.0.0"));
             var platform2 = new TestProgrammingPlatform(
                 "test2",
                 new[] { "1.0.0" },
                 canGenerateScript: true,
                 scriptContent: "123456",
-                detector: new TestPlatformDetectorSimpleMatch(shouldMatch: true),
+                detector: new TestPlatformDetectorSimpleMatch(shouldMatch: true, "test2", "1.0.0"),
                 enabled: false);
 
             var commonOptions = new BuildScriptGeneratorOptions
@@ -497,11 +497,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 PlatformVersion = "1.0.0",
                 EnableMultiPlatformBuild = true,
             };
-            var generator = CreateDefaultScriptGenerator(new[] { platform1, platform2 }, commonOptions);
+            var detector = CreateDefaultCompatibleDetector(new[] { platform1, platform2 }, commonOptions);
             var context = CreateScriptGeneratorContext();
 
             // Act
-            var compatiblePlatforms = generator.GetCompatiblePlatforms(context);
+            var compatiblePlatforms = detector.GetCompatiblePlatforms(context);
 
             // Assert
             Assert.NotNull(compatiblePlatforms);
@@ -641,6 +641,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             return CreateDefaultScriptGenerator(new[] { platform }, commonOptions, checkers: null);
         }
 
+        private DefaultCompatiblePlatformDetector CreateDefaultCompatibleDetector(
+            IProgrammingPlatform[] platforms,
+            BuildScriptGeneratorOptions commonOptions,
+            IEnumerable<IChecker> checkers = null)
+        {
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            commonOptions.SourceDir = "/app";
+            commonOptions.DestinationDir = "/output";
+
+            var configuration = new TestConfiguration();
+            configuration[$"{commonOptions.PlatformName}_version"] = commonOptions.PlatformVersion;
+            return new DefaultCompatiblePlatformDetector(
+                    platforms,
+                    NullLogger<DefaultCompatiblePlatformDetector>.Instance,
+                    Options.Create(commonOptions),
+                    configuration);
+        }
+
         private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
             IProgrammingPlatform[] platforms,
             BuildScriptGeneratorOptions commonOptions,
@@ -653,6 +671,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var configuration = new TestConfiguration();
             configuration[$"{commonOptions.PlatformName}_version"] = commonOptions.PlatformVersion;
             return new DefaultBuildScriptGenerator(
+                platforms,
+                configuration,
                 Options.Create(commonOptions),
                 new DefaultCompatiblePlatformDetector(
                     platforms,

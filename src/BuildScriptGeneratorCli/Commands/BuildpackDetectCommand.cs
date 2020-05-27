@@ -90,10 +90,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
+            var detector = serviceProvider.GetRequiredService<ICompatiblePlatformDetector>();
 
             var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
-            var compatPlats = generator.GetCompatiblePlatforms(ctx);
+            var compatPlats = detector.GetCompatiblePlatforms(ctx);
 
             if (compatPlats != null && compatPlats.Any())
             {

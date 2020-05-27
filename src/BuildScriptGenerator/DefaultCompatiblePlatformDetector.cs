@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -35,12 +37,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <inheritdoc/>
         public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(RepositoryContext ctx)
         {
+            return GetCompatiblePlatforms(ctx, detectionResults: null, runDetection: true);
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(
+            RepositoryContext ctx,
+            IEnumerable<PlatformDetectorResult> detectionResults)
+        {
+            return GetCompatiblePlatforms(ctx, detectionResults, runDetection: false);
+        }
+
+        private IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(
+            RepositoryContext ctx,
+            IEnumerable<PlatformDetectorResult> detectionResults,
+            bool runDetection)
+        {
             var userProvidedPlatformName = _commonOptions.PlatformName;
 
             var resultPlatforms = new Dictionary<IProgrammingPlatform, string>();
             if (!string.IsNullOrEmpty(_commonOptions.PlatformName))
             {
-                if (!IsCompatiblePlatform(ctx, userProvidedPlatformName, out var platformResult))
+                if (!IsCompatiblePlatform(
+                    ctx,
+                    userProvidedPlatformName,
+                    detectionResults,
+                    runDetection,
+                    out var platformResult))
                 {
                     throw new UnsupportedVersionException(
                         $"Couldn't detect a version for the platform '{userProvidedPlatformName}' in the repo.");
@@ -75,7 +98,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 _logger.LogDebug($"Detecting platform using '{platform.Name}'...");
-                if (IsCompatiblePlatform(ctx, platform.Name, out var platformResult))
+                if (IsCompatiblePlatform(
+                    ctx,
+                    platform.Name,
+                    detectionResults,
+                    runDetection,
+                    out var platformResult))
                 {
                     resultPlatforms.Add(platformResult.Item1, platformResult.Item2);
                     if (!IsEnabledForMultiPlatformBuild(platform, ctx))
@@ -91,6 +119,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private bool IsCompatiblePlatform(
             RepositoryContext ctx,
             string platformName,
+            IEnumerable<PlatformDetectorResult> detectionResults,
+            bool runDetection,
             out Tuple<IProgrammingPlatform, string> platformResult)
         {
             platformResult = null;
@@ -118,7 +148,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string detectedPlatformVersion = null;
             if (string.IsNullOrEmpty(platformVersionFromOptions))
             {
-                var detectionResult = selectedPlatform.Detect(ctx);
+                PlatformDetectorResult detectionResult = null;
+                if (runDetection)
+                {
+                    detectionResult = selectedPlatform.Detect(ctx);
+                }
+                else
+                {
+                    if (detectionResults != null)
+                    {
+                        detectionResult = detectionResults
+                            .Where(result => result.Platform.EqualsIgnoreCase(selectedPlatform.Name))
+                            .FirstOrDefault();
+                    }
+                }
+
                 if (detectionResult == null)
                 {
                     _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");

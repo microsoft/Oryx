@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
         private readonly ILogger<PythonPlatformDetector> _logger;
+        private readonly IStandardOutputWriter _writer;
 
         public PythonPlatformDetector(
             IPythonVersionProvider pythonVersionProvider,
@@ -28,10 +29,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _versionProvider = pythonVersionProvider;
             _options = options.Value;
             _logger = logger;
+            _writer = writer;
         }
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
+            _writer.WriteLine("Checking if repo has Python related files...");
+
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
                 && !sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))

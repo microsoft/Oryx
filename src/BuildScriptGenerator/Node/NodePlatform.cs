@@ -119,31 +119,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <inheritdoc/>
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext ctx)
         {
-            string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
-            {
-                _logger.LogDebug("Dynamic install is enabled.");
-
-                if (_platformInstaller.IsVersionAlreadyInstalled(ctx.ResolvedNodeVersion))
-                {
-                    _logger.LogDebug(
-                        "Node version {version} is already installed. So skipping installing it again.",
-                        ctx.ResolvedNodeVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "Node version {version} is not installed. So generating an installation script snippet for it.",
-                        ctx.ResolvedNodeVersion);
-
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(ctx.ResolvedNodeVersion);
-                }
-            }
-            else
-            {
-                _logger.LogDebug("Dynamic install not enabled.");
-            }
-
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
@@ -291,8 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = manifestFileProperties,
-                PlatformInstallationScriptSnippet = installationScriptSnippet,
+                BuildProperties = manifestFileProperties
             };
         }
 
@@ -517,6 +491,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
         {
             return _detector.GetMaxSatisfyingVersionAndVerify(runtimeVersion);
+        }
+
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        {
+            string installationScriptSnippet = null;
+            if (_commonOptions.EnableDynamicInstall)
+            {
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedNodeVersion))
+                {
+                    _logger.LogDebug(
+                        "Node version {version} is already installed. So skipping installing it again.",
+                        context.ResolvedNodeVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Node version {version} is not installed. " +
+                        "So generating an installation script snippet for it.",
+                        context.ResolvedNodeVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                        context.ResolvedNodeVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install not enabled.");
+            }
+
+            return installationScriptSnippet;
         }
     }
 }
