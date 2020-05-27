@@ -18,7 +18,7 @@ builtNodeImage=false
 getNode() {
 	local version="$1"
 
-	if shouldBuildSdk nodejs nodejs-$version.tar.gz; then
+	if shouldBuildSdk nodejs nodejs-$version.tar.gz || shouldOverwriteSdk || shouldOverwriteNodeSdk; then
 		echo "Getting Node version '$version'..."
 		echo
 
@@ -36,6 +36,14 @@ getNode() {
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		
 		echo "Version=$version" >> "$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
+	fi
+}
+
+shouldOverwriteNodeSdk() {
+	if [ "$OVERWRITE_EXISTING_SDKS_NODE" == "true" ]; then
+		return 0
+	else
+		return 1
 	fi
 }
 

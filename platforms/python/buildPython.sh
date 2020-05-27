@@ -31,7 +31,7 @@ buildPython() {
 	local dockerFile="$3"
 	local imageName="oryx/python"
 
-	if shouldBuildSdk python python-$version.tar.gz; then
+	if shouldBuildSdk python python-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePythonSdk; then
 		if ! $builtPythonPrereqs; then
 			buildPythonPrereqsImage
 		fi
@@ -57,6 +57,14 @@ buildPython() {
 		getSdkFromImage $imageName "$targetDir"
 		
 		echo "Version=$version" >> "$targetDir/python-$version-metadata.txt"
+	fi
+}
+
+shouldOverwritePythonSdk() {
+	if [ "$OVERWRITE_EXISTING_SDKS_PYTHON" == "true" ]; then
+		return 0
+	else
+		return 1
 	fi
 }
 

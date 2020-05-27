@@ -1,0 +1,37 @@
+variables:
+  - group: Oryx
+
+stages:
+- stage: Build
+  jobs:
+  - job: Python
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'python'
+
+- stage: Release
+  dependsOn: Build
+  jobs:
+  - job: Publish_Platform_Binaries
+    timeoutInMinutes: 250
+    displayName: Publish to Azure Blob Storage
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesReleaseTemplate.yml
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - images/build/python
+    - platforms/python
+    - build/
+    - vsts/

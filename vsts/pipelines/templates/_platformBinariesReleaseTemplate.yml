@@ -1,0 +1,22 @@
+steps:
+
+- checkout: self
+  clean: true
+
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Artifacts'
+  inputs:
+    artifactName: drop
+  
+- task: AzureCLI@1
+  displayName: Upload files to Azure Storage
+  inputs:
+    azureSubscription: oryxSP
+    scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
+    arguments: oryxsdksdev
+  
+- task: ShellScript@2
+  displayName: 'Test Dev storage account'
+  inputs:
+    scriptPath: ./build/testIntegration.sh
+    args: StorageAccountTests=Dev

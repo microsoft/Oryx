@@ -31,7 +31,7 @@ buildPhp() {
 	local gpgKeys="$3"
 	local imageName="oryx/php-sdk"
 
-	if shouldBuildSdk php php-$version.tar.gz; then
+	if shouldBuildSdk php php-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePhpSdk; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
@@ -60,7 +60,7 @@ buildPhpComposer() {
 	local targetDir="$volumeHostDir/php-composer"
 	mkdir -p "$targetDir"
 
-	if shouldBuildSdk php-composer php-composer-$version.tar.gz; then
+	if shouldBuildSdk php-composer php-composer-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePhpComposerSdk; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
@@ -85,6 +85,23 @@ buildPhpComposer() {
 		echo "Version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
 	fi
 }
+
+shouldOverwritePhpSdk() {
+	if [ "$OVERWRITE_EXISTING_SDKS_PHP" == "true" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+shouldOverwritePhpComposerSdk() {
+	if [ "$OVERWRITE_EXISTING_SDKS_PHP_COMPOSER" == "true" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 
 echo "Building Php..."
 echo
