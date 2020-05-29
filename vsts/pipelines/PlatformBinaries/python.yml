@@ -31,7 +31,7 @@ trigger:
     - master
   paths:
     exclude:
-    - *
+    - /*
     include:
     - platforms/python
     - vsts/PlatformBinaries/python.yml

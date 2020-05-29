@@ -31,7 +31,7 @@ trigger:
     - master
   paths:
     exclude:
-    - *
+    - /*
     include:
     - platforms/nodejs
     - vsts/PlatformBinaries/node.yml
