@@ -9,7 +9,7 @@ jobs:
     displayName: Build Node runtime stretch based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
-    imageType: stretch
+    imageDebianFlavor: stretch
     artifactsFileName: node-runtimeimage-bases-stretch.txt
     jobName: Build_Stretch_BaseImages
 
@@ -18,7 +18,7 @@ jobs:
     displayName: Build Node runtime buster based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
-    imageType: buster
+    imageDebianFlavor: buster
     artifactsFileName: node-runtimeimage-bases-buster.txt
     jobName: Build_Buster_BaseImages
 

@@ -1,5 +1,5 @@
-ARG BUILD_IMAGE_BASE
-FROM oryxdevmcr.azurecr.io/public/oryx/build:latest-{BUILD_IMAGE_BASE}
+ARG DEBIAN_FLAVOR
+FROM oryxdevmcr.azurecr.io/public/oryx/build:latest-{DEBIAN_FLAVOR}
 
 # Following is a pattern that AppService currently uses
 RUN groupadd -g 1002 oryx_group

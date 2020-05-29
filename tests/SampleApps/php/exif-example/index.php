@@ -1,2 +1,2 @@
 <?php
-echo exif_imagetype('64x64.png'); // Should be IMAGETYPE_PNG == 3
+echo exif_ImageDebianFlavor('64x64.png'); // Should be ImageDebianFlavor_PNG == 3

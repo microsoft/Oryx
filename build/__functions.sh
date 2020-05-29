@@ -53,7 +53,7 @@ function execAllGenerateDockerfiles()
 {
 	runtimeImagesSourceDir="$1"
 	runtimeGenerateDockerFileScriptName="$2"
-	runtimeImageBaseType=$3
+	runtimeImageDebianFlavor=$3
 
 	echo "runtime image type '$3'"
 	echo "runtimeGenerateDockerFileScriptName '$2'"
@@ -68,7 +68,7 @@ function execAllGenerateDockerfiles()
 		echo
 		echo "Executing '$generateDockerFile'..."
 		echo
-		eval "$(echo "$generateDockerFile $runtimeImageBaseType")"
+		eval "$(echo "$generateDockerFile $runtimeImageDebianFlavor")"
 	done
 }
 

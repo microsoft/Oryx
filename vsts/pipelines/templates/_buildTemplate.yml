@@ -2,7 +2,7 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
-  imageType: ''
+  imageDebianFlavor: ''
 
 steps:
 - script: |
@@ -67,7 +67,7 @@ steps:
   displayName: 'Build runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: ${{ parameters.imageType }}
+    args: ${{ parameters.imageDebianFlavor }}
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2

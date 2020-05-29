@@ -17,7 +17,7 @@ declare -r NODE_BUSTER_VERSION_ARRAY=($NODE10_VERSION $NODE12_VERSION $NODE14_VE
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir="$1"
-runtimeImageBaseType="$2"
+runtimeImageDebianFlavor="$2"
 
 if [ ! -z "$runtimeSubDir" ]
 then
@@ -36,15 +36,15 @@ echo
 # the latest version of its own base image.
 docker build \
     --pull \
-    --build-arg DEBIAN_FLAVOR=$runtimeImageBaseType \
+    --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-$runtimeImageBaseType" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-$runtimeImageDebianFlavor" \
     $REPO_DIR
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
-execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageBaseType"
+execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
 dockerFileName="base.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
@@ -64,7 +64,7 @@ if [ "$runtimeSubDir" == "node" ]; then
         -t "oryx-node-run-base-buster" \
         $REPO_DIR
 
-    if [ "$runtimeImageBaseType" == "buster" ]; then
+    if [ "$runtimeImageDebianFlavor" == "buster" ]; then
         for NODE_BUSTER_VERSION in "${NODE_BUSTER_VERSION_ARRAY[@]}"
         do
             IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BUSTER_VERSION"
@@ -80,11 +80,11 @@ fi
 mkdir -p "$BASE_IMAGES_ARTIFACTS_FILE_PREFIX"
 
 # NOTE: We create a unique artifacts file per platform since they are going to be built in parallel on CI
-ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-bases-$runtimeImageBaseType.txt"
+ARTIFACTS_FILE="$BASE_IMAGES_ARTIFACTS_FILE_PREFIX/$runtimeSubDir-runtimeimage-bases-$runtimeImageDebianFlavor.txt"
 
 initFile="$runtimeImagesSourceDir/buildRunTimeImageBases_Init.sh"
 if [ -f "$initFile" ]; then
-    $initFile $runtimeImageBaseType
+    $initFile $runtimeImageDebianFlavor
 fi
 
 if [ -z "$dockerFiles" ]
@@ -105,7 +105,7 @@ for dockerFile in $dockerFiles; do
     platformVersion="${PARTS[1]}"
 
     # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion-$runtimeImageBaseType"
+    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion-$runtimeImageDebianFlavor"
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
@@ -121,7 +121,7 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE10_VERSION=$NODE10_VERSION \
         --build-arg NODE12_VERSION=$NODE12_VERSION \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
-        --build-arg DEBIAN_FLAVOR=$runtimeImageBaseType \
+        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         $labels \
         .
 

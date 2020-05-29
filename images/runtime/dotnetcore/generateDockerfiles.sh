@@ -10,8 +10,8 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
 
 source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
 
-echo "image type: '$1'"
-imageType="$1"
+echo "image Debian type: '$1'"
+ImageDebianFlavor="$1"
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
@@ -23,7 +23,7 @@ cd $DIR
 
 VERSIONS_DIRECTORY=()
 
-if [ "$imageType" == "buster" ];then
+if [ "$ImageDebianFlavor" == "buster" ];then
 	VERSIONS_DIRECTORY=("${NETCORE_BUSTER_VERSION_ARRAY[@]}")
 else 
 	VERSIONS_DIRECTORY=("${NETCORE_STRETCH_VERSION_ARRAY[@]}")
@@ -40,6 +40,6 @@ do
 	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
 	# Replace placeholders
-	RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:dotnetcore-$VERSION_DIRECTORY-$DOT_NET_CORE_RUNTIME_BASE_TAG-$imageType"
+	RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:dotnetcore-$VERSION_DIRECTORY-$DOT_NET_CORE_RUNTIME_BASE_TAG-$ImageDebianFlavor"
 	sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 done

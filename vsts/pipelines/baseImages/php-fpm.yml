@@ -9,7 +9,7 @@ jobs:
     displayName: Build php runtime base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php-fpm
-    imageType: stretch
+    imageDebianFlavor: stretch
     artifactsFileName: php-fpm-runtimeimage-bases-stretch.txt
     jobName: Build_Php_Fpm_Base
 
@@ -18,7 +18,7 @@ jobs:
     displayName: Build php runtime base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php-fpm
-    imageType: buster
+    imageDebianFlavor: buster
     artifactsFileName: php-fpm-runtimeimage-bases-buster.txt
     jobName: Build_PHP_FPM_Buster_Base
 

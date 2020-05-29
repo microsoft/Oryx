@@ -44,6 +44,8 @@ jobs:
       echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
+    parameters:
+      imageDebianFlavor: stretch
 
 - job: Job_Buster_RuntimeImages
   displayName: Build and Test Buster Runtime Images
@@ -60,5 +62,7 @@ jobs:
       echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
+    parameters:
+      imageDebianFlavor: buster
 
 trigger: none

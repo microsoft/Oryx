@@ -1,7 +1,7 @@
 parameters:
   displayName: ''
   imageDir: ''
-  imageType: ''
+  imageDebianFlavor: ''
   scriptPath: ''
   artifactsFileName: ''
   jobName: ''
@@ -17,7 +17,7 @@ jobs:
     displayName: Build images
     inputs:
       scriptPath: ${{ parameters.scriptPath }}
-      args: ${{ parameters.imageDir }} ${{ parameters.imageType }}
+      args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
 
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory

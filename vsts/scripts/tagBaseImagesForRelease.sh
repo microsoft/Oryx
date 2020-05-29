@@ -16,7 +16,7 @@ function retagImageWithStagingRepository()
     echo "Number of arguments passed: $@"
     echo "Pulling and retagging bases images for '$1'..."
     
-    baseImageType="$3"
+    baseImageDebianFlavor="$3"
 
     echo "base image type: '$3'"
 

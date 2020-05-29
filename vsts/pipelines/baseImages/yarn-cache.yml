@@ -9,7 +9,7 @@ jobs:
     displayName: Build Yarn cache image for stretch
     scriptPath: ./build/buildBuildImageBases.sh
     imageDir: yarn-cache
-    imageType: stretch
+    imageDebianFlavor: stretch
     artifactsFileName: yarn-cache-buildimage-bases-stretch.txt
     jobName: Build_YarnCache_BaseImage_Stretch
 
@@ -18,7 +18,7 @@ jobs:
     displayName: Build Yarn cache image for buster
     scriptPath: ./build/buildBuildImageBases.sh
     imageDir: yarn-cache
-    imageType: buster
+    imageDebianFlavor: buster
     artifactsFileName: yarn-cache-buildimage-bases-buster.txt
     jobName: Build_YarnCache_BaseImage_Buster
 
