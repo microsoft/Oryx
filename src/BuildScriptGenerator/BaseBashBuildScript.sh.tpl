@@ -38,7 +38,7 @@ then
 	if [ ! -d "$INTERMEDIATE_DIR" ]
 	then
 		echo
-		echo "Intermediate directory doesn't exist, creating it..."
+		echo "Intermediate directory doesn't exist, creating it...'"
 		mkdir -p "$INTERMEDIATE_DIR"		
 	fi
 

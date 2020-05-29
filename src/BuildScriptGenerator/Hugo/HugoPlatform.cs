@@ -17,20 +17,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         private readonly ILogger<HugoPlatform> _logger;
         private readonly HugoPlatformInstaller _platformInstaller;
         private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly IStandardOutputWriter _writer;
 
         public HugoPlatform(
             IEnvironment environment,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             ILogger<HugoPlatform> logger,
-            HugoPlatformInstaller platformInstaller,
-            IStandardOutputWriter writer)
+            HugoPlatformInstaller platformInstaller)
         {
             _environment = environment;
             _logger = logger;
             _platformInstaller = platformInstaller;
             _commonOptions = commonOptions.Value;
-            _writer = writer;
         }
 
         public string Name => HugoConstants.PlatformName;
@@ -39,7 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            _writer.WriteLine("Checking if repo has Hugo related files...");
             var isHugoApp = StaticSiteGeneratorHelper.IsHugoApp(context.SourceRepo, _environment);
             if (isHugoApp)
             {
@@ -54,40 +50,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
-        {
-            var manifestFileProperties = new Dictionary<string, string>();
-            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = context.ResolvedHugoVersion;
-
-            string script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.HugoSnippet,
-                model: null,
-                _logger);
-
-            return new BuildScriptSnippet
-            {
-                BashBuildScriptSnippet = script,
-                BuildProperties = manifestFileProperties,
-            };
-        }
-
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
-        {
-            return null;
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            return Array.Empty<string>();
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            return Array.Empty<string>();
-        }
-
-        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
         {
             string installationScriptSnippet = null;
             if (_commonOptions.EnableDynamicInstall)
@@ -116,7 +78,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 _logger.LogDebug("Dynamic install not enabled.");
             }
 
-            return installationScriptSnippet;
+            var manifestFileProperties = new Dictionary<string, string>();
+            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = context.ResolvedHugoVersion;
+
+            string script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.HugoSnippet,
+                model: null,
+                _logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+                PlatformInstallationScriptSnippet = installationScriptSnippet,
+                BuildProperties = manifestFileProperties,
+            };
+        }
+
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            return null;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return Array.Empty<string>();
         }
 
         public string GetMaxSatisfyingVersionAndVerify(string version)
