@@ -537,6 +537,77 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static TheoryData<string> PhpVersionImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                data.Add(Settings.BuildImageName);
+                data.Add(Settings.LtsVersionsBuildImageName);
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetVsoBuildImage());
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(ImageNameData))]
+        public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
+        {
+            // Arrange
+            var expectedOutput = $"PHP {Common.PhpVersions.Php74Version} (cli) ";
+
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "--version" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData(PhpVersions.Php73Version, PhpVersions.Php73Version)]
+        [InlineData("7.3", PhpVersions.Php73Version)]
+        [InlineData("7", PhpVersions.Php74Version)]
+        public void Php_UsesVersion_SetOnBenv(string specifiedVersion, string expectedVersion)
+        {
+            // Arrange
+            var expectedOutput = $"PHP {expectedVersion} (cli) ";
+            var script = new ShellScriptBuilder()
+                .Source($"benv php={specifiedVersion}")
+                .AddCommand("php --version")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
