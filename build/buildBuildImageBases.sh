@@ -62,7 +62,7 @@ case $IMAGE_DIR_TO_BUILD in
 		docker build \
 			-f $BUILD_IMAGES_DIR/yarn-cache/Dockerfile \
 			-t $imageName \
-			--build-arg IMAGEBASE_TYPE=$ImageDebianFlavor \
+			--build-arg DEBIAN_FLAVOR=$ImageDebianFlavor \
 			$REPO_DIR
 		echo "$imageName" >> $ARTIFACTS_FILE
 		;;

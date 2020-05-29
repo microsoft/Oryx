@@ -29,16 +29,23 @@ then
 fi
 
 echo
-echo "Building the common base image '$RUNTIME_BASE_IMAGE_NAME'..."
+echo "Building the common base image wih buster and stretch flavor '$RUNTIME_BASE_IMAGE_NAME'..."
 echo
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
 # the latest version of its own base image.
 docker build \
     --pull \
-    --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+    --build-arg DEBIAN_FLAVOR=stretch \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-$runtimeImageDebianFlavor" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-stretch" \
+    $REPO_DIR
+
+docker build \
+    --pull \
+    --build-arg DEBIAN_FLAVOR=buster \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
     $REPO_DIR
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
