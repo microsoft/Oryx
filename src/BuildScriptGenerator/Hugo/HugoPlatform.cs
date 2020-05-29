@@ -51,6 +51,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
         {
+            var manifestFileProperties = new Dictionary<string, string>();
+            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = context.ResolvedHugoVersion;
+
+            string script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.HugoSnippet,
+                model: null,
+                _logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+                BuildProperties = manifestFileProperties,
+            };
+        }
+
+        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
+        {
+            return null;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return Array.Empty<string>();
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
+            BuildScriptGeneratorContext scriptGeneratorContext)
+        {
+            return Array.Empty<string>();
+        }
+
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        {
             string installationScriptSnippet = null;
             if (_commonOptions.EnableDynamicInstall)
             {
@@ -78,37 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 _logger.LogDebug("Dynamic install not enabled.");
             }
 
-            var manifestFileProperties = new Dictionary<string, string>();
-            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = context.ResolvedHugoVersion;
-
-            string script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.HugoSnippet,
-                model: null,
-                _logger);
-
-            return new BuildScriptSnippet
-            {
-                BashBuildScriptSnippet = script,
-                PlatformInstallationScriptSnippet = installationScriptSnippet,
-                BuildProperties = manifestFileProperties,
-            };
-        }
-
-        public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
-        {
-            return null;
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            return Array.Empty<string>();
-        }
-
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
-            BuildScriptGeneratorContext scriptGeneratorContext)
-        {
-            return Array.Empty<string>();
+            return installationScriptSnippet;
         }
 
         public string GetMaxSatisfyingVersionAndVerify(string version)
