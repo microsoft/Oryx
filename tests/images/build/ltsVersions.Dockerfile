@@ -1,5 +1,4 @@
-ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-{DEBIAN_FLAVOR}
+FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions
 
 # Following is a pattern that AppService currently uses
 RUN groupadd -g 1002 oryx_group

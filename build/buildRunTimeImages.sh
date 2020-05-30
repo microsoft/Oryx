@@ -22,7 +22,8 @@ then
     echo "Locally building runtime '$runtimeSubDir'"
     runtimeSubDir="$1"
     runtimeImageDebianFlavor="$2"
-elif [ $# -eq 1 ] 
+elif [ $# -eq 1 ]
+then
     echo "CI Agent building runtime '$runtimeSubDir'"
     runtimeImageDebianFlavor="$1"
 fi
