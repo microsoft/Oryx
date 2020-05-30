@@ -15,7 +15,7 @@ source $REPO_DIR/build/__sdkStorageConstants.sh
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
-runtimeImageDebianFlavor=""
+runtimeImageDebianFlavor="buster"
 
 if [ $# -eq 2 ] 
 then
