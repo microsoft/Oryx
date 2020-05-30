@@ -16,8 +16,20 @@ source $REPO_DIR/build/__nodeVersions.sh
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE10_VERSION $NODE12_VERSION $NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
-runtimeSubDir="$1"
-runtimeImageDebianFlavor="$2"
+runtimeSubDir=""
+runtimeImageDebianFlavor=""
+
+if [ $# -eq 2 ] 
+then
+    echo "Locally building runtime '$runtimeSubDir'"
+    runtimeSubDir="$1"
+    runtimeImageDebianFlavor="$2"
+elif [ $# -eq 1 ] 
+    echo "CI Agent building runtime '$runtimeSubDir'"
+    runtimeImageDebianFlavor="$1"
+fi
+
+
 
 if [ ! -z "$runtimeSubDir" ]
 then
