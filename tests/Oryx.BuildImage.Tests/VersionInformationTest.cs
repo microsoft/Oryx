@@ -551,11 +551,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [MemberData(nameof(ImageNameData))]
+        [MemberData(nameof(PhpVersionImageNameData))]
         public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"PHP {Common.PhpVersions.Php74Version} (cli) ";
+            var expectedOutput = $"PHP {Common.PhpVersions.Php73Version} (cli) ";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -571,7 +571,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Contains(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }
@@ -579,7 +579,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData(PhpVersions.Php73Version, PhpVersions.Php73Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
-        [InlineData("7", PhpVersions.Php74Version)]
+        [InlineData("7", PhpVersions.Php73Version)]
         public void Php_UsesVersion_SetOnBenv(string specifiedVersion, string expectedVersion)
         {
             // Arrange
@@ -603,7 +603,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Contains(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }
