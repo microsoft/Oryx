@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
-                $"--language-version {nodeVersion} --manifest-dir {manifestDir} " +
+                $"--platform-version {nodeVersion} --manifest-dir {manifestDir} " +
                 "-p compress_node_modules=tar-gz")
                 .ToString();
 
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
-                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                $"--platform-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -194,10 +194,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
-                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                $"--platform-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
-                $"--language-version {nodeVersion}")
+                $"--platform-version {nodeVersion}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -244,10 +244,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+                $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
-                $"--language-version {nodeVersion} -p compress_node_modules=tar-gz")
+                $"--platform-version {nodeVersion} -p compress_node_modules=tar-gz")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
@@ -284,7 +284,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
@@ -326,7 +326,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
@@ -369,7 +369,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -output {startupFilePath} -bindPort {ContainerPort}")
@@ -401,7 +401,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -442,7 +442,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -483,7 +483,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -526,7 +526,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -567,7 +567,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx run-script {appDir} --debug --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
@@ -611,7 +611,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 "#!/bin/bash\n" +
                 $"PORT={ContainerPort} node server.js\n");
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx run-script {appDir} --debug --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +
@@ -652,7 +652,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Create a custom startup command
             const string customRunCommand = "'npm start'";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx run-script {appDir} --debug --platform {NodeConstants.PlatformName} --platform-version {nodeVersion} " +

@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --language-version {dotnetcoreVersion} " +
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} " +
                 $"-o {appDir}/output")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()

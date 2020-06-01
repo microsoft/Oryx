@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -199,7 +199,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 // Create a 'build.env' file
                 .AddCommand(
                 $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +

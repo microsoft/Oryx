@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --language-version {phpVersion}")
+               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath} -bindPort {ContainerPort}")
