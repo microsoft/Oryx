@@ -543,7 +543,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string>();
                 data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetVsoBuildImage());
                 return data;

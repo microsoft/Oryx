@@ -281,9 +281,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             get
             {
                 var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
                 var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetBuildImage());
+                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(imageTestHelper.GetVsoBuildImage());
@@ -293,7 +293,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
         [Theory]
         [MemberData(nameof(ImageNameData))]
-        public void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string tag)
+        public void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string iamgeName)
         {
             // Arrange
             var expected = "/opt/oryx:";
@@ -302,8 +302,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetBuildImage(tag);
-            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+            var result = _dockerCli.Run(iamgeName, "/bin/bash", "-c", script);
 
             // Assert
             RunAsserts(
