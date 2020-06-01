@@ -30,8 +30,8 @@ trigger:
     include:
     - master
   paths:
+    exclude:
+    - /*
     include:
-    - images/build/node
     - platforms/nodejs
-    - build/
-    - vsts/
+    - vsts/PlatformBinaries/node.yml

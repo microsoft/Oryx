@@ -278,7 +278,8 @@ RUN apt-get update \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* 
 
-ENV PATH="$PATH:/opt/php/lts/bin"
+ENV ORYX_PATHS="${ORYX_PATHS}:/opt/php/lts/bin"
+ENV PATH="${ORYX_PATHS}:$PATH"
 
 RUN rm -rf /tmp/oryx
 

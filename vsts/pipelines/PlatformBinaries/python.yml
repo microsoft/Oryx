@@ -30,8 +30,8 @@ trigger:
     include:
     - master
   paths:
+    exclude:
+    - /*
     include:
-    - images/build/python
     - platforms/python
-    - build/
-    - vsts/
+    - vsts/PlatformBinaries/python.yml

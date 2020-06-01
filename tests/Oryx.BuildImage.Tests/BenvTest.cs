@@ -276,6 +276,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetBuildImage());
+                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(imageTestHelper.GetVsoBuildImage());
+                return data;
+            }
+
+        }
+        [Theory]
+        [MemberData(nameof(ImageNameData))]
+        public void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string iamgeName)
+        {
+            // Arrange
+            var expected = "/opt/oryx:";
+            var script = new ShellScriptBuilder()
+                .AddCommand("echo \"$ORYX_PATHS\"")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(iamgeName, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.StartsWith(expected, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try
