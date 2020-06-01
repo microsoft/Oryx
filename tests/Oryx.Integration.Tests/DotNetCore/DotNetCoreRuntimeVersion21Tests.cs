@@ -370,7 +370,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory_AndNoLanguageVersionSwitch()
+        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory_AndNoPlatformVersionSwitch()
         {
             // Arrange
             var appName = "MultiWebAppRepo";
@@ -382,7 +382,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{repoDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)
-                .AddCommand($"oryx build {repoDir} -o {appOutputDir}") // Do not specify language and version
+                .AddCommand($"oryx build {repoDir} -o {appOutputDir}") // Do not specify platform and version
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(setProjectEnvVariable)

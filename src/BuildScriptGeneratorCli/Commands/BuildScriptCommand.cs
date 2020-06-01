@@ -70,10 +70,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
-            // Invalid to specify language version without language name
+            // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
-                console.WriteErrorLine("Cannot use language version without specifying language name also.");
+                console.WriteErrorLine("Cannot use platform version without platform name also.");
                 return false;
             }
 

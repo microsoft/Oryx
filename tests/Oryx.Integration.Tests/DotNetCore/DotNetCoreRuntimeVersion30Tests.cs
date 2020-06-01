@@ -21,8 +21,9 @@ namespace Microsoft.Oryx.Integration.Tests
             : base(output, testTempDirTestFixture)
         {
         }
+        
         [Fact]
-        public async Task CanBuildAndRun_FSharpNetCoreApp21WebApp_WithoutSpecifyingLanguageExplicitly()
+        public async Task CanBuildAndRun_FSharpNetCoreApp21WebApp_WithoutSpecifyingPlatformExplicitly()
         {
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "FSharpNetCoreApp21.WebApp");

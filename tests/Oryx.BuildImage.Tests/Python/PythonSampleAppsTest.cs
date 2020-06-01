@@ -360,7 +360,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void GeneratesScript_AndBuilds_WhenExplicitLanguageAndVersion_AreProvided()
+        public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
             var appName = "flask-app";

@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_ReturnsTrue_IfNoLanguageIsProvided_AndCanDetectLanguage()
+        public void TryGenerateScript_ReturnsTrue_IfNoPlatformIsProvided_AndCanDetectPlatform()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_ReturnsTrue_IfLanguageIsProvidedButNoVersion_AndCanDetectVersion()
+        public void TryGenerateScript_ReturnsTrue_IfPlatformIsProvidedButNoVersion_AndCanDetectVersion()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_Throws_IfNoLanguageIsProvided_AndCannotDetectLanguage()
+        public void TryGenerateScript_Throws_IfNoPlatformIsProvided_AndCannotDetectPlatform()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_Throws_IfLanguageIsProvidedButNoVersion_AndCannotDetectVersion()
+        public void TryGenerateScript_Throws_IfPlatformIsProvidedButNoVersion_AndCannotDetectVersion()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_Throws_IfLanguageIsProvided_AndCannotDetectLanguage()
+        public void TryGenerateScript_Throws_IfPlatformIsProvided_AndCannotDetectPlatform()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -181,7 +181,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_Throws_IfLanguageIsProvidedButDisabled()
+        public void TryGenerateScript_Throws_IfPlatformIsProvidedButDisabled()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -202,7 +202,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         }
 
         [Fact]
-        public void TryGenerateScript_Throws_IfSuppliedLanguageIsUnsupported()
+        public void TryGenerateScript_Throws_IfSuppliedPlatformIsUnsupported()
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
