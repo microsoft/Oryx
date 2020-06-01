@@ -2,7 +2,7 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
-  imageDebianFlavor: ''
+  imageDebianFlavor: 'stretch'
 
 steps:
 - script: |
@@ -81,7 +81,7 @@ steps:
   displayName: 'Test runtime images'
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
+    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)-${{ parameters.imageDebianFlavor }}
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: DownloadBuildArtifacts@0
@@ -109,7 +109,7 @@ steps:
   displayName: 'Test integration'
   inputs:
     scriptPath: ./build/testIntegration.sh
-    args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
+    args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)-${{ parameters.imageDebianFlavor }}
   env:
     SQLSERVER_DATABASE_HOST: $(SQLSERVER-DATABASE-HOST)
     SQLSERVER_DATABASE_NAME: $(SQLSERVER-DATABASE-NAME)

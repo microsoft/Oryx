@@ -17,13 +17,11 @@ buildImageDebianFlavor="$1"
 echo
 echo Building build images for tests...
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest-$buildImageDebianFlavor" \
-    --build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" \
     -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
     .
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions-$buildImageDebianFlavor" \
-    --build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions \
     -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" 
     .
 
