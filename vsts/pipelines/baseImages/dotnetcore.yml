@@ -6,14 +6,26 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build DotNetCore runtime base images
+    displayName: Build DotNetCore runtime stretch based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: dotnetcore
-    artifactsFileName: dotnetcore-runtimeimage-bases.txt
-    jobName: Build_DotNetCore_BaseImage
+    imageDebianFlavor: stretch
+    artifactsFileName: dotnetcore-runtimeimage-bases-stretch.txt
+    jobName: Build_DotNetCore_BaseImage_Stretch
+
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build DotNetCore runtime buster base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: dotnetcore
+    imageDebianFlavor: buster
+    artifactsFileName: dotnetcore-runtimeimage-bases-buster.txt
+    jobName: Build_DotNetCore_BaseImage_Buster
 
 - job: Release_DotNetCoreRuntimeBaseImage
-  dependsOn: Build_DotNetCore_BaseImage
+  dependsOn: 
+    - Build_DotNetCore_BaseImage_Stretch
+    - Build_DotNetCore_BaseImage_Buster
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

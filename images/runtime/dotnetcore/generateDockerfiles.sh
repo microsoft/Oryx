@@ -16,7 +16,7 @@ ImageDebianFlavor="$1"
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
-declare -r NETCORE_BUSTER_VERSION_ARRAY=($NET_CORE_APP_31 $NET_CORE_APP_31)
+declare -r NETCORE_BUSTER_VERSION_ARRAY=($NET_CORE_APP_31 $NET_CORE_APP_50)
 declare -r NETCORE_STRETCH_VERSION_ARRAY=($NET_CORE_APP_10 $NET_CORE_APP_11 $NET_CORE_APP_20 $NET_CORE_APP_21 $NET_CORE_APP_22 $NET_CORE_APP_30)
 
 cd $DIR
@@ -36,7 +36,7 @@ do
 
 	echo "Generating Dockerfile for image $VERSION_DIRECTORY..."
 
-	TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/Dockerfile"
+	TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/$ImageDebianFlavor.Dockerfile"
 	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
 	# Replace placeholders

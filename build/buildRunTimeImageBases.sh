@@ -64,7 +64,7 @@ labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
-dockerFileName="base.Dockerfile"
+dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 
 busterNodeDockerFiles=()

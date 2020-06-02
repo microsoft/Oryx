@@ -1,9 +1,10 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2.402 AS tools-install
+ARG DEBIAN_FLAVOR
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 
-FROM oryx-run-base AS dotnetcore-original
+FROM oryx-run-base-stretch
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -15,7 +16,7 @@ RUN apt-get update \
         libgcc1 \
         libgssapi-krb5-2 \
         libicu57 \
-        liblttng-ust0 \
+        icu-devtools \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
@@ -33,10 +34,10 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install ASP.NET Core
-ENV ASPNETCORE_VERSION 2.2.7
+ENV ASPNETCORE_VERSION 2.1.18
 
 RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNETCORE_VERSION/aspnetcore-runtime-$ASPNETCORE_VERSION-linux-x64.tar.gz \
-    && aspnetcore_sha512='3fdc874a20d5cd318deabf12d73d26bd1f9b767cf351d05bfed5efc6d66c1d774ebd911d7dc28a5a7f6af9976d50068b217ef051024d3c91496d4a44b89b374a' \
+    && aspnetcore_sha512='83d58102ba9d9b9a6f4f19ea799fd20939ff013b3d2e3348e363f41f30c1e902995f59538f9b04d8b671b310598206736ce7dd0acde51ce3847beb3262293d60' \
     && echo "$aspnetcore_sha512  aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet \

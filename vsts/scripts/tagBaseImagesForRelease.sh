@@ -58,8 +58,7 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases-buster.txt $imageName buster
-  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName
 elif [ "$imageName" == "node" ]
 then
   echo ""
@@ -87,7 +86,9 @@ then
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""
-  retagImageWithStagingRepository dotnetcore-runtimeimage-bases.txt $imageName
+  echo $imageName
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-stretch.txt $imageName stretch
 else
   echo "ImageName $imageName is invalid/not supported.. "
   exit 1
