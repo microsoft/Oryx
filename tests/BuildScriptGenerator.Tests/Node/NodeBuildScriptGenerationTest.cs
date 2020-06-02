@@ -96,6 +96,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
 
             var expected = new NodeBashBuildSnippetProperties
             {
@@ -113,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -135,7 +140,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -151,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
             var renderedTemplate = TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected);
 
             // Assert
@@ -171,7 +180,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -187,7 +200,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -209,7 +222,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = YarnInstallCommand,
@@ -226,7 +243,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -248,7 +265,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = YarnInstallCommand,
@@ -266,7 +287,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -288,7 +309,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -304,7 +329,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -325,7 +350,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -342,7 +371,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -367,7 +396,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "tar-gz";
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -384,7 +417,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -411,7 +444,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = null;
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -428,7 +465,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -454,7 +491,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "zip";
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -471,7 +512,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -493,7 +534,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
             var expected = new NodeBashBuildSnippetProperties
             {
                 PackageInstallCommand = NpmInstallCommand,
@@ -510,7 +555,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -532,9 +577,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.RegistryUrlPropertyKey] = "https://example.com/registry/";
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -554,7 +604,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
-
             return new NodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),

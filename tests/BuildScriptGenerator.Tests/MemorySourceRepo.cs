@@ -11,12 +11,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     class MemorySourceRepo : ISourceRepo
     {
-        private Dictionary<string, string> pathsToFiles = new Dictionary<string, string>();
+        private Dictionary<string, string> _pathsToFiles = new Dictionary<string, string>();
 
         public void AddFile(string content, params string[] paths)
         {
             var filePath = Path.Combine(paths);
-            pathsToFiles[filePath] = content;
+            _pathsToFiles[filePath] = content;
         }
 
         public string RootPath => string.Empty;
@@ -24,13 +24,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         public bool FileExists(params string[] paths)
         {
             var path = Path.Combine(paths);
-            return pathsToFiles.ContainsKey(path);
+            return _pathsToFiles.ContainsKey(path);
         }
 
         public bool DirExists(params string[] paths)
         {
             var path = Path.Combine(paths);
-            return pathsToFiles.Keys.FirstOrDefault(x => x.StartsWith(path)) != null;
+            return _pathsToFiles.Keys.FirstOrDefault(x => x.StartsWith(path)) != null;
         }
 
         public string ReadFile(params string[] paths)
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var path = Path.Combine(paths);
             try
             {
-                return pathsToFiles[path];
+                return _pathsToFiles[path];
             }
             catch (KeyNotFoundException)
             {
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         public IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories)
         {
-            throw new System.NotImplementedException();
+            return _pathsToFiles.Keys;
         }
 
         public string[] ReadAllLines(params string[] paths)

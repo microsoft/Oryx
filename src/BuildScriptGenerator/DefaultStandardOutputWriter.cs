@@ -58,5 +58,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             _writeLine(message);
         }
+
+        /// <inheritdoc/>
+        public void WriteLine()
+        {
+            WriteLine(message: null);
+        }
     }
 }

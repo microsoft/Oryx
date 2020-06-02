@@ -15,17 +15,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         public static void ConfigureBuildScriptGeneratorOptions(
             BuildScriptGeneratorOptions options,
-            string sourceDir,
-            string destinationDir,
-            string intermediateDir,
-            string manifestDir,
-            string platform,
-            string platformVersion,
-            bool shouldPackage,
-            string[] requiredOsPackages,
-            bool scriptOnly,
-            string[] properties)
+            string sourceDir = null,
+            string destinationDir = null,
+            string intermediateDir = null,
+            string manifestDir = null,
+            string platform = null,
+            string platformVersion = null,
+            bool? shouldPackage = null,
+            string[] requiredOsPackages = null,
+            bool? scriptOnly = null,
+            string[] properties = null)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             options.SourceDir = string.IsNullOrEmpty(sourceDir)
                 ? Directory.GetCurrentDirectory() : Path.GetFullPath(sourceDir);
             options.PlatformName = platform;
@@ -46,11 +51,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 options.ManifestDir = Path.GetFullPath(manifestDir);
             }
 
-            options.ShouldPackage = shouldPackage;
+            if (shouldPackage.HasValue)
+            {
+                options.ShouldPackage = shouldPackage.Value;
+            }
 
             options.RequiredOsPackages = requiredOsPackages;
 
-            options.ScriptOnly = scriptOnly;
+            if (scriptOnly.HasValue)
+            {
+                options.ScriptOnly = scriptOnly.Value;
+            }
 
             options.Properties = ProcessProperties(properties);
         }

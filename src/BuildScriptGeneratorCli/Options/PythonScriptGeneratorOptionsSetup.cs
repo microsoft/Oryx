@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         public void Configure(PythonScriptGeneratorOptions options)
         {
+            options.PythonVersion = GetStringValue(SettingsKeys.PythonVersion);
             options.EnableCollectStatic = !GetBooleanValue(SettingsKeys.DisableCollectStatic);
             options.VirtualEnvironmentName = GetStringValue(SettingsKeys.PythonVirtualEnvironmentName);
         }

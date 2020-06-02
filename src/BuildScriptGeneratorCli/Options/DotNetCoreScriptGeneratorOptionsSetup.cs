@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             options.Project = GetStringValue(SettingsKeys.Project);
             options.MSBuildConfiguration = GetStringValue(SettingsKeys.MSBuildConfiguration);
+            options.DotNetCoreRuntimeVersion = GetStringValue(SettingsKeys.DotNetVersion);
         }
     }
 }

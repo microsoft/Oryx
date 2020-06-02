@@ -6,7 +6,6 @@
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -40,52 +39,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            var version = GetVersion(context);
-            version = GetMaxSatisfyingVersionAndVerify(version);
+            var version = GetVersionFromComposerFile(context);
 
             return new PlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = version,
             };
-        }
-
-        public string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exc = new UnsupportedVersionException(
-                    PhpConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exc,
-                    $"Exception caught, the version '{version}' is not supported for the PHP platform.");
-                throw exc;
-            }
-
-            return maxSatisfyingVersion;
-        }
-
-        private string GetVersion(RepositoryContext context)
-        {
-            if (context.ResolvedPhpVersion != null)
-            {
-                return context.ResolvedPhpVersion;
-            }
-
-            var version = GetVersionFromComposerFile(context);
-            if (version != null)
-            {
-                return version;
-            }
-
-            return GetDefaultVersionFromProvider();
         }
 
         private string GetVersionFromComposerFile(RepositoryContext context)
@@ -106,12 +66,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
 
             return composerFile?.require?.php?.Value as string;
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
         }
     }
 }
