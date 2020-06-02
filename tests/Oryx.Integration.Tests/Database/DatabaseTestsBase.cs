@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new List<DockerVolume> { volume },
                 buildImageName,
-                "oryx", new[] { "build", appDir, "-p", platformName, "--platform-version", platformVersion },
+                "oryx", new[] { "build", appDir, "--platform", platformName, "--platform-version", platformVersion },
                 runtimeImageName,
                 _dbFixture.GetCredentialsAsEnvVars(),
                 containerPort,
