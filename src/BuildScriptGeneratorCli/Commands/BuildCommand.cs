@@ -313,11 +313,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.WriteLine("Warning: the deprecated option '--language-version' was used.");
             }
 
-            // Invalid to specify language version without language name
+            // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
                 logger.LogError("Cannot use lang version without lang name");
-                console.WriteErrorLine("Cannot use language version without specifying language name also.");
+                console.WriteErrorLine("Cannot use platform version without specifying platform name also.");
                 return false;
             }
 

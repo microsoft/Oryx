@@ -129,9 +129,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                                     .FirstOrDefault();
             if (selectedPlatform == null)
             {
-                var languages = string.Join(", ", _programmingPlatforms.Select(p => p.Name));
+                var platforms = string.Join(", ", _programmingPlatforms.Select(p => p.Name));
                 var exec = new UnsupportedPlatformException($"'{platformName}' platform is not supported. " +
-                    $"Supported platforms are: {languages}");
+                    $"Supported platforms are: {platforms}");
                 _logger.LogError(exec, $"Exception caught, provided platform '{platformName}' is not supported.");
                 throw exec;
             }

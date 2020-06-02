@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
-                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
-                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --language-version {nodeVersion}")
+                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(

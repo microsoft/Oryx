@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
-                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion} -o {appOutputDir}")
+                $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
-                $"oryx build {appDir} --platform nodejs --language-version {nodeVersion} -o {appOutputDir}")
+                $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app

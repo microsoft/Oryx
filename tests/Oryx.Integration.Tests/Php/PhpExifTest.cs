@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --language-version {phpVersion}")
+               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand("mkdir -p /home/site/wwwroot")

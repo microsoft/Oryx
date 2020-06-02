@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.False(isValidInput);
-            Assert.Contains("Cannot use language version without specifying language name also.", testConsole.StdError);
+            Assert.Contains("Cannot use platform version without specifying platform name also.", testConsole.StdError);
         }
     }
 }

@@ -269,7 +269,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void IsValid_IsFalse_IfLanguageVersionSpecified_WithoutLanguageName()
+        public void IsValid_IsFalse_IfPlatformVersionSpecified_WithoutPlatformName()
         {
             // Arrange
             var buildCommand = new BuildCommand
@@ -288,7 +288,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.False(isValid);
             Assert.Contains(
-                "Cannot use language version without specifying language name also.",
+                "Cannot use platform version without specifying platform name also.",
                 testConsole.StdError);
         }
 

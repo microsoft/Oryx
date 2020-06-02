@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
-                $"--language-version {nodeVersion} -p compress_node_modules={compressFormat}")
+                $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(

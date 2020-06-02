@@ -10,7 +10,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("oryx", Description = "Generates and runs build scripts for multiple languages.")]
+    [Command("oryx", Description = "Generates and runs build scripts for multiple platforms.")]
     [Subcommand(typeof(BuildCommand))]
     [Subcommand(typeof(PlatformsCommand))]
     [Subcommand(typeof(BuildScriptCommand))]

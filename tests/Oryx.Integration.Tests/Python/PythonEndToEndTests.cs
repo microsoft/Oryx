@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --language-version 3.6")
+               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
@@ -115,10 +115,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Simulate apps that were built using package directory, and then virtual env
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .AddBuildCommand(
                 $"{appDir} -p virtualenv_name={virtualEnvName} " +
-                $"--platform {PythonConstants.PlatformName} --language-version {pythonVersion}")
+                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
