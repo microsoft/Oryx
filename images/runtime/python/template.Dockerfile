@@ -14,7 +14,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM oryx-run-base-${PYTHON_DEBIAN_FLAVOR} AS main
+FROM oryx-run-base-${DEBIAN_FLAVOR} AS main
 ARG IMAGES_DIR=/tmp/oryx/images
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 

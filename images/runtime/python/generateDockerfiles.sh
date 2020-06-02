@@ -17,7 +17,8 @@ declare -r PYTHON_VERSION_PLACEHOLDER="%PYTHON_VERSION%"
 declare -r PYTHON_FULL_VERSION_PLACEHOLDER="%PYTHON_FULL_VERSION%"
 declare -r ORYX_IMAGE_TAG_PLACEHOLDER="%IMAGE_TAG%"
 
-echo "python baseimage type: $1"
+ImageDebianFlavor="$1"
+echo "python baseimage type: $ImageDebianFlavor"
 
 source "$PYTHON_VERSIONS_PATH"
 while IFS= read -r PYTHON_VERSION_VAR_NAME || [[ -n $PYTHON_VERSION_VAR_NAME ]]
@@ -27,7 +28,7 @@ do
 	MAJOR_MINOR_VERSION="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
 	mkdir -p "$DIR/$MAJOR_MINOR_VERSION/"
-	TARGET_DOCKERFILE="$DIR/$MAJOR_MINOR_VERSION/Dockerfile"
+	TARGET_DOCKERFILE="$DIR/$MAJOR_MINOR_VERSION/$ImageDebianFlavor.Dockerfile"
 	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
 	# Replace placeholders
