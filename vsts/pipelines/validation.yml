@@ -29,8 +29,8 @@ jobs:
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
 
-- job: Job_Stretch_RuntimeImages
-  displayName: Build and Test Stretch Runtime Images
+- job: Job_RuntimeImages
+  displayName: Build and Test Runtime Images
   pool:
     name: OryxLinux
   timeoutInMinutes: 300
