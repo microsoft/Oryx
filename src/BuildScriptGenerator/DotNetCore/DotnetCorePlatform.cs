@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -96,38 +95,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string globalJsonSdkVersion = null;
             if (_cliOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
-
                 var availableSdks = versionMap.Values;
                 globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
                     context.SourceRepo,
                     context.ResolvedDotNetCoreRuntimeVersion,
                     availableSdks);
-
-                if (_platformInstaller.IsVersionAlreadyInstalled(
-                    context.ResolvedDotNetCoreRuntimeVersion,
-                    globalJsonSdkVersion))
-                {
-                    _logger.LogDebug(
-                        "DotNetCore runtime version {runtimeVersion} is already installed. " +
-                        "So skipping installing it again.",
-                        context.ResolvedDotNetCoreRuntimeVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "DotNetCore runtime version {runtimeVersion} is not installed. " +
-                        "So generating an installation script snippet for it.",
-                        context.ResolvedDotNetCoreRuntimeVersion);
-
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        context.ResolvedDotNetCoreRuntimeVersion,
-                        globalJsonSdkVersion);
-                }
-            }
-            else
-            {
-                _logger.LogDebug("Dynamic install is not enabled.");
             }
 
             var manifestFileProperties = new Dictionary<string, string>();
@@ -168,7 +140,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
-                PlatformInstallationScriptSnippet = installationScriptSnippet,
 
                 // Setting this to false to avoid copying files like '.cs' to the destination
                 CopySourceDirectoryContentToDestinationDirectory = false,
@@ -288,6 +259,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
+        }
+
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        {
+            var versionMap = _versionProvider.GetSupportedVersions();
+
+            string installationScriptSnippet = null;
+            string globalJsonSdkVersion = null;
+            if (_cliOptions.EnableDynamicInstall)
+            {
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                var availableSdks = versionMap.Values;
+                globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                    context.SourceRepo,
+                    context.ResolvedDotNetCoreRuntimeVersion,
+                    availableSdks);
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(
+                    context.ResolvedDotNetCoreRuntimeVersion,
+                    globalJsonSdkVersion))
+                {
+                    _logger.LogDebug(
+                        "DotNetCore runtime version {runtimeVersion} is already installed. " +
+                        "So skipping installing it again.",
+                        context.ResolvedDotNetCoreRuntimeVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "DotNetCore runtime version {runtimeVersion} is not installed. " +
+                        "So generating an installation script snippet for it.",
+                        context.ResolvedDotNetCoreRuntimeVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                        context.ResolvedDotNetCoreRuntimeVersion,
+                        globalJsonSdkVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install is not enabled.");
+            }
+
+            return installationScriptSnippet;
         }
     }
 }

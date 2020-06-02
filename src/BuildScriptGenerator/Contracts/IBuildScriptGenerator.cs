@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -22,13 +21,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             BuildScriptGeneratorContext ctx,
             out string script,
             List<ICheckerMessage> checkerMessageSink = null);
-
-        /// <summary>
-        /// Determines which platforms can be used to build the given application.
-        /// </summary>
-        /// <param name="ctx">A <see cref="BuildScriptGeneratorContext"/>.</param>
-        /// <returns>A dictionary mapping platforms and their compatible versions./</returns>
-        IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(BuildScriptGeneratorContext ctx);
 
         /// <summary>
         /// Determines the versions of the tools required for building the given application.

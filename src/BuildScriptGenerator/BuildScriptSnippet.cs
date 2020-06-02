@@ -32,8 +32,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public bool IsFullScript { get; set; }
 
-        public string PlatformInstallationScriptSnippet { get; set; }
-
         public bool CopySourceDirectoryContentToDestinationDirectory { get; set; } = true;
     }
 }

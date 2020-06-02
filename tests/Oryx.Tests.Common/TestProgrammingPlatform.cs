@@ -101,5 +101,10 @@ namespace Microsoft.Oryx.Tests.Common
         {
             return version;
         }
+
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        {
+            return null;
+        }
     }
 }

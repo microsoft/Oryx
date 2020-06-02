@@ -120,14 +120,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateContext(repo);
 
             // Act
-            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context);
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.NotNull(buildScriptSnippet.PlatformInstallationScriptSnippet);
-            Assert.Equal(
-                TestNodePlatformInstaller.InstallerScript,
-                buildScriptSnippet.PlatformInstallationScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScript, buildScriptSnippet);
         }
 
         [Fact]
@@ -140,11 +137,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateContext(repo);
 
             // Act
-            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context);
 
             // Assert
-            Assert.NotNull(buildScriptSnippet);
-            Assert.Null(buildScriptSnippet.PlatformInstallationScriptSnippet);
+            Assert.Null(buildScriptSnippet);
         }
 
         [Fact]
@@ -157,11 +153,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateContext(repo);
 
             // Act
-            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context);
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context);
 
             // Assert
-            Assert.NotNull(buildScriptSnippet);
-            Assert.Null(buildScriptSnippet.PlatformInstallationScriptSnippet);
+            Assert.Null(buildScriptSnippet);
         }
 
         [Theory]
