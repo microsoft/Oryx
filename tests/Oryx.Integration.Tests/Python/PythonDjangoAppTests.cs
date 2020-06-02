@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform {PythonVersions.Python37Version}")
+                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
                 .ToString();
 
             var runAppScript = new ShellScriptBuilder()
