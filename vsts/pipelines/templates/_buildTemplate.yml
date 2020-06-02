@@ -2,7 +2,6 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
-  imageDebianFlavor: 'stretch'
 
 steps:
 - script: |
@@ -64,10 +63,17 @@ steps:
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Build runtime images'
+  displayName: 'Build Stretch runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: ${{ parameters.imageDebianFlavor }}
+    args: stretch
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Build Buster runtime images'
+  inputs:
+    scriptPath: ./build/buildRunTimeImages.sh
+    args: buster
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
@@ -81,7 +87,7 @@ steps:
   displayName: 'Test runtime images'
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)-${{ parameters.imageDebianFlavor }}
+    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: DownloadBuildArtifacts@0

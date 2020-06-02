@@ -28,6 +28,9 @@ then
     runtimeImageDebianFlavor="$1"
 fi
 
+echo "Setting environment variable 'ORYX_RUNTIME_DEBIAN_FLAVOR' to provided value '$runtimeImageDebianFlavor'."
+export ORYX_RUNTIME_DEBIAN_FLAVOR="$runtimeImageDebianFlavor"
+
 if [ ! -z "$runtimeSubDir" ]
 then
     runtimeImagesSourceDir="$runtimeImagesSourceDir/$runtimeSubDir"
@@ -93,7 +96,7 @@ for dockerFile in $dockerFiles; do
     getTagName $dockerFileDir
 
     # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
-    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result-$runtimeImageDebianFlavor"
+    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
@@ -127,7 +130,7 @@ for dockerFile in $dockerFiles; do
         acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
 
         # Tag the image to follow a similar format to .../python:3.7-Oryx-CI.20191028.1
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag-$runtimeImageDebianFlavor"
+        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
 
         # add new content
         echo
