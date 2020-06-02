@@ -24,11 +24,6 @@ namespace Microsoft.Oryx.Common.Extensions
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static string JoinKeyValuePairs(IDictionary<string, string> pairs, char pairSep = ' ', char kvSep = '=')
-        {
-            return string.Join(pairSep, pairs.Select(pair => pair.Key + kvSep + pair.Value));
-        }
-
         /// <summary>
         /// Replaces the userinfo subcomponent of URLs in a string with asterisks.
         /// </summary>

@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetectorLibrary", "DetectorLibrary\DetectorLibrary.csproj", "{4D411AA5-440F-4A57-BBC3-6CCC6C50647F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\Common\Common.csproj", "{465E575D-B0EA-49EC-B43E-2D2BCEE95B2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DetectorLibrary", "DetectorLibrary\DetectorLibrary.csproj", "{4D411AA5-440F-4A57-BBC3-6CCC6C50647F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{4D411AA5-440F-4A57-BBC3-6CCC6C50647F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D411AA5-440F-4A57-BBC3-6CCC6C50647F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D411AA5-440F-4A57-BBC3-6CCC6C50647F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{465E575D-B0EA-49EC-B43E-2D2BCEE95B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{465E575D-B0EA-49EC-B43E-2D2BCEE95B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{465E575D-B0EA-49EC-B43E-2D2BCEE95B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{465E575D-B0EA-49EC-B43E-2D2BCEE95B2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

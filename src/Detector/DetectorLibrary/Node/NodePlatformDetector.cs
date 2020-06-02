@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json;
 using System;
 

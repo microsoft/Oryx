@@ -5,7 +5,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -57,10 +56,9 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         internal string DetermineRuntimeVersion(string targetFramework)
         {
             // Ex: "netcoreapp2.2" => "2.2"
-            targetFramework = targetFramework.Replace(
+            targetFramework = targetFramework.ToLower().Replace(
                 "netcoreapp",
-                string.Empty,
-                StringComparison.OrdinalIgnoreCase);
+                string.Empty);
 
             // Ex: "2.2" => 2.2
             if (decimal.TryParse(targetFramework, out var val))

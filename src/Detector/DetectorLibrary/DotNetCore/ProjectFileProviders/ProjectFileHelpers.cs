@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
