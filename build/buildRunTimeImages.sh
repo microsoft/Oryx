@@ -86,7 +86,7 @@ mkdir -p "$ARTIFACTS_DIR/images"
 if [ "$AGENT_BUILD" == "true" ]
 then
     # clear existing contents of the file, if any
-    > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 fi
 
 for dockerFile in $dockerFiles; do
@@ -115,7 +115,7 @@ for dockerFile in $dockerFiles; do
         $labels \
         .
 
-    echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 
     # Retag image with build number (for images built in oryxlinux buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
@@ -135,7 +135,7 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating runtime image artifacts file with build number..."
-        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
     else
         devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
         docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo"
