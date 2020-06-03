@@ -143,6 +143,13 @@ steps:
     overWrite: true
   condition: true
 
+- script: |
+    echo "Merging buster and stretch based runtime image tags in one single file"
+    cat '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.stretch.txt' >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+  displayName: 'Merge runtime image tags in one single file'
+  condition: true
+
 - task: PublishTestResults@2
   inputs:
     testRunner: 'xUnit'
