@@ -148,7 +148,7 @@ steps:
     cat '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.stretch.txt' >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
   displayName: 'Merge runtime image tags in one single file'
-  condition: true
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: PublishTestResults@2
   inputs:

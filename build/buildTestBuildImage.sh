@@ -22,7 +22,7 @@ docker build \
     .
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions \
-    -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" 
+    -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
     .
 
 echo
