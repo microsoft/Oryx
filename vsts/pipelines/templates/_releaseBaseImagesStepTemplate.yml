@@ -27,14 +27,7 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Pull and create release tags for stretch images'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
-    args: ${{ parameters.baseImageName }}
-
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Pull and create release tags for buster images'
+  displayName: 'Pull and create release tags for buster and stretch images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
