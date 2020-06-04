@@ -390,7 +390,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     _writer.WriteLine(
                         $"Version '{detectionResult.PlatformVersion}' of platform '{detectionResult.Platform}' " +
-                        $"topcis not installed. Generating scripting to install it...");
+                        $"is not installed. Generating scripting to install it...");
                     installationScriptSnippets.Add(snippet);
                 }
             }
