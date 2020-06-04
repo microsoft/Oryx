@@ -330,5 +330,40 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void BuildsAppAfterInstallingAllRequiredPlatforms()
+        {
+            // Arrange
+            var appName = "dotnetreact";
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
+                .AddFileExistsCheck($"{appOutputDir}/dotnetreact.dll")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", buildScript }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(@"npm install", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }
