@@ -71,7 +71,7 @@ steps:
     command: login
     containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
 
-- script: echo base image is ${{ parameters.baseImageName }}
+- script: echo base image is ${{ parameters.baseImageName }} and repository is ${{ parameters.baseImageRepository }} 
 
 - ${{ if contains(parameters.baseImageName, 'yarn-cache-build') }}:
   - task: Docker@2
@@ -82,6 +82,83 @@ steps:
       repository: ${{ parameters.baseImageRepository }}
       tags: |
         build-yarn-cache-$(Build.BuildNumber)
+
+- ${{ if eq(parameters.baseImageName, 'dotnetcore') }}:
+  - task: Docker@2
+    displayName: Push dotnet core base images to PME ACR
+    inputs:
+      command: push
+      containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+      repository: ${{ parameters.baseImageRepository }}
+      tags: |
+        dotnetcore-1.0-$(Build.BuildNumber)
+        dotnetcore-1.1-$(Build.BuildNumber)
+        dotnetcore-2.0-$(Build.BuildNumber)
+        dotnetcore-2.1-$(Build.BuildNumber)
+        dotnetcore-2.2-$(Build.BuildNumber)
+        dotnetcore-3.0-$(Build.BuildNumber)
+        dotnetcore-3.1-$(Build.BuildNumber)
+        dotnetcore-5.0-$(Build.BuildNumber)
+
+- ${{ if eq(parameters.baseImageName, 'node') }}:
+  - task: Docker@2
+    displayName: Push node base images to PME ACR
+    inputs:
+      command: push
+      containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+      repository: ${{ parameters.baseImageRepository }}
+      tags: |
+        node-10.12-$(Build.BuildNumber)
+        node-8.12-$(Build.BuildNumber)
+        node-8-$(Build.BuildNumber)
+        node-8.11-$(Build.BuildNumber)
+        node-6.11-$(Build.BuildNumber)
+        node-10.14-$(Build.BuildNumber)
+        node-6-$(Build.BuildNumber)
+        node-14-$(Build.BuildNumber)
+        node-10.10-$(Build.BuildNumber)
+        node-8.8-$(Build.BuildNumber)
+        node-4.4-$(Build.BuildNumber)
+        node-9.4-$(Build.BuildNumber)
+        node-6.6-$(Build.BuildNumber)
+        node-4.8-$(Build.BuildNumber)
+        node-6.2-$(Build.BuildNumber)
+        node-10-$(Build.BuildNumber)
+        node-6.9-$(Build.BuildNumber)
+        node-8.2-$(Build.BuildNumber)
+        node-12-$(Build.BuildNumber)
+        node-10.1-$(Build.BuildNumber)
+        node-6.10-$(Build.BuildNumber)
+        node-4.5-$(Build.BuildNumber)
+        node-8.1-$(Build.BuildNumber)
+        node-8.0-$(Build.BuildNumber)
+        node-8.9-$(Build.BuildNumber)
+
+- ${{ if eq(parameters.baseImageName, 'php') }}:
+  - task: Docker@2
+    displayName: Push php base images to PME ACR
+    inputs:
+      command: push
+      containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+      repository: ${{ parameters.baseImageRepository }}
+      tags: |
+        php-7.4-$(Build.BuildNumber)
+        php-7.3-$(Build.BuildNumber)
+        php-7.2-$(Build.BuildNumber)
+        php-7.0-$(Build.BuildNumber)
+        php-5.6-$(Build.BuildNumber)
+
+- ${{ if eq(parameters.baseImageName, 'php-fpm') }}:
+  - task: Docker@2
+    displayName: Push php-fpm base images to PME ACR
+    inputs:
+      command: push
+      containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+      repository: ${{ parameters.baseImageRepository }}
+      tags: |
+        php-7.4-fpm-$(Build.BuildNumber)
+        php-7.3-fpm-$(Build.BuildNumber)
+        php-7.2-fpm-$(Build.BuildNumber)
         
 - task: Docker@2
   displayName: Logout from PME ACR
