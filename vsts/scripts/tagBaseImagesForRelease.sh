@@ -13,9 +13,6 @@ declare -r buildNumber=$BUILD_BUILDNUMBER
 
 function retagImageWithStagingRepository()
 { 
-    # first argument is the image name e.g dotnetcore
-    # second argument is the acr repo name e.g oryxmcr or oryxprodmcr
-
     echo "Reading file '$1' to pull images from dev acr ..."
     echo "Retagging images for image '$2' for acr '$3'..."
     
@@ -41,10 +38,13 @@ function retagImageWithStagingRepository()
         echo -------------------------------------------------------------------------------
     fi
     done <"$artifactsFile"
-    echo "showing directory contents ... "
-    ls -la "$artifactsDir/$2"
+    
+    echo "showing new tags written in '$outFile' ... "
     cat $outFile
 }
+
+# first argument is the image name e.g dotnetcore
+# second argument is the acr repo name e.g oryxmcr or oryxprodmcr
 
 imageName=$1
 acrProdRepoPrefix="$2"
