@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Detector
 {
-    internal interface IPlatformDetectorProvider
+    public interface IPlatformDetectorProvider
     {
         /// <summary>
         /// Returns if the user sucessfully gets the detector of supplied platform name.

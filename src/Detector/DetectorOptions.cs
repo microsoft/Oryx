@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.Detector
     /// <summary>
     /// Options to create a detector.
     /// </summary>
-    internal class DetectorOptions
+    public class DetectorOptions
     {
         /// <summary>
         /// Gets or sets the source repo where the application is stored.
