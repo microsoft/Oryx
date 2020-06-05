@@ -45,7 +45,10 @@ function retagImageWithStagingRepository()
         echo -------------------------------------------------------------------------------
     fi
     done <"$artifactsFile"
+<<<<<<< HEAD
     cat $outFile
+=======
+>>>>>>> update PR
 }
 
 # first argument to the script is the image name e.g dotnetcore
