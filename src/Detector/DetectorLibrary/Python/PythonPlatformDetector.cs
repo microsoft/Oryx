@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    internal class PythonPlatformDetector : IPlatformDetector
+    public class PythonPlatformDetector : IPlatformDetector
     {
         private readonly ILogger<PythonPlatformDetector> _logger;
 
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Detector.Python
                 }
             }
 
-            var version = GetVersion(versionFromRuntimeFile);
+            var version = GetVersion(context, versionFromRuntimeFile);
 
             return new PlatformDetectorResult
             {
@@ -67,8 +67,12 @@ namespace Microsoft.Oryx.Detector.Python
             };
         }
 
-        private string GetVersion(string versionFromRuntimeFile)
+        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
         {
+            if (context.ResolvedPythonVersion != null)
+            {
+                return context.ResolvedPythonVersion;
+            }
             if (versionFromRuntimeFile != null)
             {
                 return versionFromRuntimeFile;

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    internal class DotNetCorePlatformDetector : IPlatformDetector
+    public class DotNetCorePlatformDetector : IPlatformDetector
     {
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;

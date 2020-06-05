@@ -10,9 +10,9 @@ namespace Microsoft.Oryx.Detector
     public static class PlatformVersionList
     {
         public static string DotNetCoreDefaultVersion = "3.1";
-        public static string NodeDefaultVersion = "12.16";
-        public static string PythonDefaultVersion = "3.8";
-        public static string PhpDefaultVersion = "7.3";
+        public static string NodeDefaultVersion = "12.16.3";
+        public static string PythonDefaultVersion = "3.8.2";
+        public static string PhpDefaultVersion = "7.3.15";
 
         public static IEnumerable<string> NodeVersionList = new HashSet<string>() {
             "6.2.2",

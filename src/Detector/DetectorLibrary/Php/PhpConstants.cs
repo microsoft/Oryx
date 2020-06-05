@@ -5,13 +5,13 @@
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    internal class PhpConstants
+    public class PhpConstants
     {
-        internal const string PlatformName = "php";
-        internal const string PhpFileNamePattern = "*.php";
-        internal const string ComposerFileName = "composer.json";
-        internal const string PhpRuntimeVersionEnvVarName = "PHP_VERSION";
-        internal const string DefaultPhpRuntimeVersion = "7.3.15";
-        internal const string InstalledPhpVersionsDir = "/opt/php/"; // TODO: consolidate with Dockerfile to yaml?
+        public const string PlatformName = "php";
+        public const string PhpFileNamePattern = "*.php";
+        public const string ComposerFileName = "composer.json";
+        public const string PhpRuntimeVersionEnvVarName = "PHP_VERSION";
+        public const string DefaultPhpRuntimeVersion = "7.3.15";
+        public const string InstalledPhpVersionsDir = "/opt/php/"; // TODO: consolidate with Dockerfile to yaml?
     }
 }

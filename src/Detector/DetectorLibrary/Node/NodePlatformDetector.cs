@@ -9,7 +9,7 @@ using System;
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    internal class NodePlatformDetector : IPlatformDetector
+    public class NodePlatformDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -109,6 +109,10 @@ namespace Microsoft.Oryx.Detector.Node
 
         private string GetVersion(RepositoryContext context)
         {
+            if (context.ResolvedNodeVersion != null)
+            {
+                return context.ResolvedNodeVersion;
+            }
             var version = GetVersionFromPackageJson(context);
             if (version != null)
             {

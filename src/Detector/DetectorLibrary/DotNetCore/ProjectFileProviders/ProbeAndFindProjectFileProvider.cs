@@ -14,16 +14,14 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
-        private readonly IStandardOutputWriter _writer;
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
         private bool _probedForProjectFile;
         private string _projectFileRelativePath;
 
-        public ProbeAndFindProjectFileProvider(ILogger<ProbeAndFindProjectFileProvider> logger, IStandardOutputWriter writer)
+        public ProbeAndFindProjectFileProvider(ILogger<ProbeAndFindProjectFileProvider> logger)
         {
             _logger = logger;
-            _writer = writer;
         }
 
         public string GetRelativePathToProjectFile(RepositoryContext context)
@@ -38,10 +36,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             // Check if any of the sub-directories has a .csproj or .fsproj file and if that file has references
             // to websdk or azure functions
-
-            // Since enumerating all files in the directory may take some time, write a message using the
-            // given IStandardOutputWriter to alert the user of what is happening.
-            _writer.WriteLine(string.Format(Labels.DotNetCoreEnumeratingFilesInRepo, DotNetCoreConstants.CSharpProjectFileExtension));
 
             // search for .csproj files
             var projectFiles = GetAllProjectFilesInRepo(

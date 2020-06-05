@@ -19,5 +19,25 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         public IDictionary<string, string> Properties { get; set; }
 
+        /// <summary>
+        /// Gets or sets the version of PHP used in the repo.
+        /// </summary>
+        public string ResolvedPhpVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of Python used in the repo.
+        /// </summary>
+        public string ResolvedPythonVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of Node used in the repo.
+        /// </summary>
+        public string ResolvedNodeVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of DotNetCore used in the repo.
+        /// </summary>
+        public string ResolvedDotNetCoreVersion { get; set; }
+
     }
 }
