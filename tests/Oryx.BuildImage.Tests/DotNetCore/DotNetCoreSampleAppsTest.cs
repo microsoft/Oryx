@@ -14,7 +14,6 @@ using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
-using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -465,14 +464,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void CanUseDotNetCoreAsPartOfMultiPlatformBuild()
         {
             // Arrange
-            var appName = "dotnetreact";
+            var appName = "dotNetCoreReactApp";
             var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.2")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/dotNetCoreReactApp.dll")
+                .AddDirectoryExistsCheck($"{appOutputDir}/ClientApp/build")
                 .ToString();
 
             // Act
@@ -490,7 +491,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(@"npm install", result.StdOut);
+                    Assert.Contains("Using .NET Core SDK Version: ", result.StdOut);
+                    Assert.Contains("react-scripts build", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

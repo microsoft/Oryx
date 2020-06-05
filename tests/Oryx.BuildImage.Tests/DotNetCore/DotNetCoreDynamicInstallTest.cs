@@ -335,15 +335,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsAppAfterInstallingAllRequiredPlatforms()
         {
             // Arrange
-            var appName = "dotnetreact";
+            var appName = "dotNetCoreReactApp";
             var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
-                .AddFileExistsCheck($"{appOutputDir}/dotnetreact.dll")
+                $"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 3.1")
+                .AddFileExistsCheck($"{appOutputDir}/dotNetCoreReactApp.dll")
+                .AddDirectoryExistsCheck($"{appOutputDir}/ClientApp/build")
                 .ToString();
 
             // Act
@@ -361,7 +362,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(@"npm install", result.StdOut);
+                    Assert.Contains("Using .NET Core SDK Version: ", result.StdOut);
+                    Assert.Contains("react-scripts build", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
