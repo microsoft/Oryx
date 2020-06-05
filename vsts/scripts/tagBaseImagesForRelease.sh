@@ -8,20 +8,23 @@ set -o pipefail
 
 declare -r artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images"
 declare -r outFileName="base-images-mcr.txt" 
-declare -r acrProdRepo="oryxmcr.azurecr.io/public/oryx"
+declare -r acrProdRepo="$2.azurecr.io/public/oryx"
 declare -r buildNumber=$BUILD_BUILDNUMBER
  
 function retagImageWithStagingRepository()
 {
     echo "Number of arguments passed: $@"
-    echo "Pulling and retagging bases images for '$1'..."
+    echo "Pulling and retagging bases images from '$1'..."
+
+    # '$1' is the imagetag file name
+    # '$2' is the image name e.g dotnetcore
+    # '$3' argument is the debianflavor e.g buster or stretch
+
+    echo "Reading file '$1' to pull images from dev acr ..."
+    echo "Retagging images for image '$3' based '$2' for registry '$acrProdRepoPrefix'..."
     
-    baseImageDebianFlavor="$3"
-
-    echo "base image type: '$3'"
-
     local artifactsFile="$artifactsDir/$1"
-    local outFile="$artifactsDir/$2/$3-$outFileName"
+    local outFile="$artifactsDir/$2/$acrProdRepoPrefix-$3-$outFileName"
 
     echo "output tags to be written to: '$outFile'"
 
@@ -34,7 +37,7 @@ function retagImageWithStagingRepository()
         # Following is an example of released tag for this image 
         # build-yarn-cache:20190621.3 
 
-        newtag=$(echo "$sourceImage" | sed -r 's/oryxdevmcr/oryxmcr/')
+        newtag=$(echo "$sourceImage" | sed -r 's/oryxdevmcr/'"$acrProdRepoPrefix"'/')
         echo
         echo "Tagging the source image with tag $newtag ..."
         echo "$newtag">>"$outFile"
@@ -42,9 +45,14 @@ function retagImageWithStagingRepository()
         echo -------------------------------------------------------------------------------
     fi
     done <"$artifactsFile"
+    cat $outFile
 }
 
+# first argument to the script is the image name e.g dotnetcore
+# second argument to the script is the acrrepoprefix, e.g. oryxmcr
+
 imageName=$1
+acrProdRepoPrefix="$2"
 
 if [[ -z $imageName ]]; then
   echo
@@ -58,8 +66,8 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName buster
-  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
+  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName buster
+  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName stretch
 elif [ "$imageName" == "node" ]
 then
   echo ""
@@ -68,11 +76,11 @@ then
 elif [ "$imageName" == "python-build" ]
 then
   echo ""
-  retagImageWithStagingRepository python-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository python-buildimage-bases.txt $imageName $acrProdRepoPrefix
 elif [ "$imageName" == "php-build" ]
 then
   echo ""
-  retagImageWithStagingRepository php-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository php-buildimage-bases.txt $imageName $acrProdRepoPrefix
 elif [ "$imageName" == "php" ]
 then
   echo ""
