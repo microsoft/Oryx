@@ -5,6 +5,7 @@ parameters:
   acrPmeProdName: oryxprodmcr
   acrPmeProdSrvConnection: Oryx-PME-ACR-Production
   baseImageName: ''  # defaults
+  baseImageRepository: public/oryx/base
 
 steps:
 - checkout: self
@@ -67,9 +68,9 @@ steps:
     inputs:
       command: push
       containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
-      repository: public/oryx/base
+      repository: ${{ parameters.baseImageRepository }}
       tags: |
-        yarn-cache-build-$(Build.BuildNumber)
+        build-yarn-cache-$(Build.BuildNumber)
         
 - task: Docker@2
   displayName: Logout from PME ACR
