@@ -461,43 +461,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanUseDotNetCoreAsPartOfMultiPlatformBuild()
-        {
-            // Arrange
-            var appName = "dotNetCoreReactApp";
-            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
-            var buildScript = new ShellScriptBuilder()
-                .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/dotNetCoreReactApp.dll")
-                .AddDirectoryExistsCheck($"{appOutputDir}/ClientApp/build")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", buildScript }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("Using .NET Core SDK Version: ", result.StdOut);
-                    Assert.Contains("react-scripts build", result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void Build_DoesNotClean_DestinationDirectory_ByDefault()
         {
             // Arrange
