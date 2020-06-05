@@ -147,8 +147,8 @@ done
 if [ "$AGENT_BUILD" == "true" ]
 then
     echo
-    echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
-    cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt'):"
+    cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 fi
 
 echo
