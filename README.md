@@ -136,7 +136,6 @@ more information see the [Code of Conduct FAQ][cocfaq]. Contact
 [cocfaq]: https://opensource.microsoft.com/codeofconduct/faq/
 [cocmail]: mailto:opencode@microsoft.com
 
-
 ## Disable Data Collection
 
 To prevent Oryx command line tools from collecting any data, set the environment variable 
