@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.Detector
 {
-    internal class DefaultPlatformDetector : IDetector
+    public class DefaultPlatformDetector : IDetector
     {
         private readonly IPlatformDetectorProvider _platformDetectorProvider;
         private readonly ILogger<DefaultPlatformDetector> _logger;
@@ -68,9 +68,10 @@ namespace Microsoft.Oryx.Detector
 
                 platformResult = Tuple.Create(platformName, detectedVersion);
                 _logger.LogInformation($"platform '{platformName}' was detected with version '{detectedVersion}'.");
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
