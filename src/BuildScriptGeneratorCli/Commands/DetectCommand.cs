@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.Tests;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli

@@ -10,10 +10,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Common.Extensions;
 
-namespace Microsoft.Oryx.Detector.Tests
+
+namespace Microsoft.Oryx.Detector
 {
     public class LocalSourceRepo : ISourceRepo
     {
@@ -67,46 +66,11 @@ namespace Microsoft.Oryx.Detector.Tests
             return File.ReadAllLines(path);
         }
 
-        public string GetGitCommitId()
-        {
-            var exitCode = 1;
-            var output = string.Empty;
-            var error = string.Empty;
-
-            try
-            {
-                (exitCode, output, error) = ProcessHelper.RunProcess(
-                    "git",
-                    new string[] { "rev-parse", "HEAD" },
-                    RootPath,
-                    TimeSpan.FromSeconds(5));
-            }
-            catch (Exception ex)
-            {
-                // Ignore any exceptions as we do not want them to bubble up to end user as this functionality
-                // is not required for the build to work.
-                _logger.LogError(ex, "An error occurred while trying to get commit ID from repo");
-                return null;
-            }
-
-            if (exitCode != 0)
-            {
-                _logger.LogWarning(
-                    "Could not get commit ID from repo. " +
-                    "Exit code: {exitCode}, Output: {stdOut}, Error: {stdErr}",
-                    exitCode,
-                    output,
-                    error);
-                return null;
-            }
-
-            return output?.Trim();
-        }
-
         private string ResolvePath(params string[] paths)
         {
             var filePathInRepo = Path.Combine(paths);
             return Path.Combine(RootPath, filePathInRepo);
         }
+
     }
 }
