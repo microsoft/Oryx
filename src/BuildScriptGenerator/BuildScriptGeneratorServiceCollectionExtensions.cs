@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Oryx.Detector;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -19,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddBuildScriptGeneratorServices(this IServiceCollection services)
         {
             services
+                .AddPlatformDetectorServices()
                 .AddNodeScriptGeneratorServices()
                 .AddHugoScriptGeneratorServices()
                 .AddPythonScriptGeneratorServices()

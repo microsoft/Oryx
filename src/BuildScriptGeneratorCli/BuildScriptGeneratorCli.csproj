@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\tests\Detector.Tests\Detector.Tests.csproj" />
     <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>

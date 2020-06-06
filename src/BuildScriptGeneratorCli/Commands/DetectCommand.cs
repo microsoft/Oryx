@@ -12,9 +12,9 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Tests;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var sourceRepo = new LocalSourceRepo(SourceDir, loggerFactory);
             var ctx = new DetectorContext
             {
+                SourceRepo = sourceRepo,
             };
 
             var detector = serviceProvider.GetRequiredService<IDetector>();
@@ -46,13 +47,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 if (detectedPlatforms != null && detectedPlatforms.Any())
                 {
-                    console.WriteLine("Detection result:");
                     if (OutputJson)
                     {
+                        console.WriteLine("Detection result in Json format:");
                         console.WriteLine(JsonFormatResult(detectedPlatforms));
                     }
                     else
                     {
+                        console.WriteLine("Detection result:");
                         console.WriteLine(ListFormatResult(detectedPlatforms));
                     }
 

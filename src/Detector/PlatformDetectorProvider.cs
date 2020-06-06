@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Detector
         internal IDictionary<PlatformName, IPlatformDetector> _platformDetectors;
         private readonly ILogger<PlatformDetectorProvider> _logger;
 
-        internal PlatformDetectorProvider(
+        public PlatformDetectorProvider(
             ILogger<PlatformDetectorProvider> logger,
             NodePlatformDetector nodePlatformDetector,
             PhpPlatformDetector phpPlatformDetector,
