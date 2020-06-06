@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.Tests.Common
             string targetPlatformVersion,
             IDictionary<string, string> toolsToVersion)
         {
-            toolsToVersion.Add(Name, SupportedVersions.First());
+            toolsToVersion[Name] = SupportedVersions.First();
         }
 
         public void SetVersion(BuildScriptGeneratorContext context, string version)

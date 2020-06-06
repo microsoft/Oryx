@@ -330,5 +330,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void BuildsAppAfterInstallingAllRequiredPlatforms()
+        {
+            // Arrange
+            var appName = "dotNetCoreReactApp";
+            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = $"{appDir}/myoutputdir";
+            var buildScript = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 3.1")
+                .AddFileExistsCheck($"{appOutputDir}/dotNetCoreReactApp.dll")
+                .AddDirectoryExistsCheck($"{appOutputDir}/ClientApp/build")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", buildScript }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Using .NET Core SDK Version: ", result.StdOut);
+                    Assert.Contains("react-scripts build", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }

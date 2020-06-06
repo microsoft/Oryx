@@ -72,7 +72,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // install both these platforms' sdks before actually using any of their commands. So even though a user
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
-            var detectionResults = DetectPlatforms(context);
+            _writer.WriteLine("Detecting platforms...");
+            var detectionResults = DetectPlatforms(context, toolsToVersion);
+            _writer.WriteLine("Detected following platforms:");
+            foreach (var result in detectionResults)
+            {
+                _writer.WriteLine($"{result.Platform}: {result.PlatformVersion}");
+            }
+
             var installationScriptSnippets = GetInstallationScriptSnippets(detectionResults, context);
 
             using (var timedEvent = _logger.LogTimedEvent("GetBuildSnippets"))
@@ -333,7 +340,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return platform.GetMaxSatisfyingVersionAndVerify(targetVersionSpec);
         }
 
-        private IEnumerable<PlatformDetectorResult> DetectPlatforms(BuildScriptGeneratorContext context)
+        private IEnumerable<PlatformDetectorResult> DetectPlatforms(
+            BuildScriptGeneratorContext context,
+            Dictionary<string, string> toolsToVersion)
         {
             var detectionResults = new List<PlatformDetectorResult>();
 
@@ -352,6 +361,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     {
                         resolvedVersion = platform.GetMaxSatisfyingVersionAndVerify(version);
                     }
+
+                    // Set the version here so that benv script can set the tool in the path
+                    platform.SetRequiredTools(context.SourceRepo, resolvedVersion, toolsToVersion);
 
                     detectionResult.PlatformVersion = resolvedVersion;
                     detectionResults.Add(detectionResult);
@@ -374,7 +386,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     .First();
                 platform.SetVersion(context, detectionResult.PlatformVersion);
                 var snippet = platform.GetInstallerScriptSnippet(context);
-                installationScriptSnippets.Add(snippet);
+                if (!string.IsNullOrEmpty(snippet))
+                {
+                    _writer.WriteLine(
+                        $"Version '{detectionResult.PlatformVersion}' of platform '{detectionResult.Platform}' " +
+                        $"is not installed. Generating scripting to install it...");
+                    installationScriptSnippets.Add(snippet);
+                }
             }
 
             return installationScriptSnippets;
