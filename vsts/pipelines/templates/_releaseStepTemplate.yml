@@ -1,7 +1,9 @@
 parameters:
   ascName: OryxMCR
-  acrName: oryxdevmcr.azurecr.io
-  acrProdName: oryxmcr.azurecr.io
+  acrDevName: oryxdevmcr.azurecr.io
+  acrProdName: oryxmcr
+  acrPmeProdName: oryxprodmcr
+  acrPmeProdSrvConnection: Oryx-PME-ACR-Production
   prodImageName: oryxmcr.azurecr.io/public/oryx
 
 steps:
@@ -23,7 +25,7 @@ steps:
   inputs:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrName }}
+    azureContainerRegistry: ${{ parameters.acrDevName }}
 
 - task: DownloadBuildArtifacts@0
   displayName: 'Download Artifacts for release'
@@ -43,6 +45,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBuildImagesForRelease.sh
+    args: 
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
@@ -50,6 +53,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
+    args: '${{ parameters.acrProdName }} ${{ parameters.acrPmeProdName }}'
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
@@ -67,20 +71,27 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Test runtime images'
+  displayName: 'Test runtime images for non-pme staging registry'
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.prodImageName }} $(RELEASE_TAG_NAME) Category=Release
+    args: 'skipBuildingImages ${{ parameters.acrProdName }}.azurecr.io/public/oryx $(RELEASE_TAG_NAME) Category=Release'
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Test runtime images for pme staging registry'
+  inputs:
+    scriptPath: ./build/testRunTimeImages.sh
+    args: skipBuildingImages ${{ parameters.acrPmeProdName }}.azurecr.io/public/oryx $(RELEASE_TAG_NAME) Category=Release
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@1
   displayName: 'Push build image to ACR'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/build-images-mcr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-build-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
@@ -89,10 +100,10 @@ steps:
   displayName: 'Push buildpack images to ACR'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/buildpack-images-mcr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-buildpack-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
@@ -101,10 +112,10 @@ steps:
   displayName: 'Push CLI images to ACR'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/cli-images-mcr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-cli-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
@@ -113,13 +124,32 @@ steps:
   displayName: 'Push runtime images to ACR'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/runtime-images-mcr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-runtime-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
+
+- task: Docker@2
+  displayName: Login to PME ACR
+  inputs: 
+    commands: login
+    containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Push images to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-runtime-images-mcr.txt'
+
+- task: Docker@2
+  displayName: Logout from PME ACR
+  inputs: 
+    commands: logout
+    containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
 
 - task: ShellScript@2
   displayName: 'Clean up Docker containers and images'
