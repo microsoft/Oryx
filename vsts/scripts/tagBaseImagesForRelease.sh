@@ -10,13 +10,18 @@ declare -r artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images"
 declare -r outFileName="base-images-mcr.txt" 
 declare -r acrProdRepo="oryxmcr.azurecr.io/public/oryx"
 declare -r buildNumber=$BUILD_BUILDNUMBER
-
+ 
 function retagImageWithStagingRepository()
 {
+    echo "Number of arguments passed: $@"
     echo "Pulling and retagging bases images for '$1'..."
     
+    baseImageDebianFlavor="$3"
+
+    echo "base image type: '$3'"
+
     local artifactsFile="$artifactsDir/$1"
-    local outFile="$artifactsDir/$2/$outFileName"
+    local outFile="$artifactsDir/$2/$3-$outFileName"
 
     echo "output tags to be written to: '$outFile'"
 
@@ -53,11 +58,12 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName
 elif [ "$imageName" == "node" ]
 then
   echo ""
-  retagImageWithStagingRepository node-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository node-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "python-build" ]
 then
   echo ""
@@ -69,16 +75,20 @@ then
 elif [ "$imageName" == "php" ]
 then
   echo ""
-  retagImageWithStagingRepository php-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository php-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository php-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "php-fpm" ]
 then
   echo ""
   echo $imageName
-  retagImageWithStagingRepository php-fpm-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""
-  retagImageWithStagingRepository dotnetcore-runtimeimage-bases.txt $imageName
+  echo $imageName
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-stretch.txt $imageName stretch
 else
   echo "ImageName $imageName is invalid/not supported.. "
   exit 1

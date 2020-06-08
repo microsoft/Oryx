@@ -1,5 +1,6 @@
+ARG DEBIAN_FLAVOR
 # From https://github.com/docker-library/php.git
-FROM php-run-base
+FROM php-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # do NOT merge this content with above line because the 

@@ -1,5 +1,6 @@
+ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.11-stretch as startupCmdGen
+FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .

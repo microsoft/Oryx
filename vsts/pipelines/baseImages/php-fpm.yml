@@ -9,10 +9,23 @@ jobs:
     displayName: Build php runtime base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php-fpm
-    artifactsFileName: php-fpm-runtimeimage-bases.txt
+    imageDebianFlavor: stretch
+    artifactsFileName: php-fpm-runtimeimage-bases-stretch.txt
+    jobName: Build_Php_Fpm_Base
+
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php runtime base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php-fpm
+    imageDebianFlavor: buster
+    artifactsFileName: php-fpm-runtimeimage-bases-buster.txt
+    jobName: Build_PHP_FPM_Buster_Base
 
 - job: Release_PhpRuntimeBaseImage
-  dependsOn: Build_BaseImage
+  dependsOn: 
+    - Build_Php_Fpm_Base
+    - Build_Php_Fpm_Buster_Base
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

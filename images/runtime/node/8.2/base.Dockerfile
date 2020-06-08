@@ -1,7 +1,7 @@
 # The official Node 8.2 image has vulnerabilities, so we build our own version
 # to fetch the latest strech release with the required fixes.
 # https://github.com/nodejs/docker-node.git, commit ID 9b863beddf7dee9b8a6eba0dd8334b1d7980f958.
-FROM oryx-node-run-base
+FROM oryx-node-run-base-stretch
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node

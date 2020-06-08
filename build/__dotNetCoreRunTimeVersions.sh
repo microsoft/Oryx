@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-DOT_NET_CORE_RUNTIME_BASE_TAG='20200520.4'
+DOT_NET_CORE_RUNTIME_BASE_TAG='20200602.6'
 NET_CORE_APP_10='1.0.16'
 NET_CORE_APP_11='1.1.13'
 NET_CORE_APP_20='2.0.9'

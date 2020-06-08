@@ -14,7 +14,23 @@ source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
-runtimeSubDir="$1"
+runtimeSubDir=""
+runtimeImageDebianFlavor="buster"
+
+if [ $# -eq 2 ] 
+then
+    echo "Locally building runtime '$runtimeSubDir'"
+    runtimeSubDir="$1"
+    runtimeImageDebianFlavor="$2"
+elif [ $# -eq 1 ]
+then
+    echo "CI Agent building runtime '$runtimeSubDir'"
+    runtimeImageDebianFlavor="$1"
+fi
+
+echo "Setting environment variable 'ORYX_RUNTIME_DEBIAN_FLAVOR' to provided value '$runtimeImageDebianFlavor'."
+export ORYX_RUNTIME_DEBIAN_FLAVOR="$runtimeImageDebianFlavor"
+
 if [ ! -z "$runtimeSubDir" ]
 then
     runtimeImagesSourceDir="$runtimeImagesSourceDir/$runtimeSubDir"
@@ -43,13 +59,21 @@ fi
 docker build \
     --pull \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-stretch" \
+    --build-arg DEBIAN_FLAVOR=stretch \
     $REPO_DIR
 
-execAllGenerateDockerfiles "$runtimeImagesSourceDir"
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
+    --build-arg DEBIAN_FLAVOR=buster \
+    $REPO_DIR
+
+execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
 # The common base image is built separately, so we ignore it
-dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )
+dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "$runtimeImageDebianFlavor.Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )
 if [ -z "$dockerFiles" ]
 then
     echo "Couldn't find any Dockerfiles under '$runtimeImagesSourceDir' and its sub-directories."
@@ -62,7 +86,7 @@ mkdir -p "$ARTIFACTS_DIR/images"
 if [ "$AGENT_BUILD" == "true" ]
 then
     # clear existing contents of the file, if any
-    > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    > $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 fi
 
 for dockerFile in $dockerFiles; do
@@ -86,11 +110,12 @@ for dockerFile in $dockerFiles; do
         --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
         --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         $args \
         $labels \
         .
 
-    echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 
     # Retag image with build number (for images built in oryxlinux buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
@@ -110,7 +135,7 @@ for dockerFile in $dockerFiles; do
         # add new content
         echo
         echo "Updating runtime image artifacts file with build number..."
-        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
     else
         devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
         docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo"
@@ -122,8 +147,8 @@ done
 if [ "$AGENT_BUILD" == "true" ]
 then
     echo
-    echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE'):"
-    cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE
+    echo "List of images tagged (from '$ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt'):"
+    cat $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 fi
 
 echo

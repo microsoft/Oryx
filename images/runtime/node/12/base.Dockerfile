@@ -1,4 +1,5 @@
-FROM oryx-node-run-base
+ARG DEBIAN_FLAVOR
+FROM oryx-node-run-base-${DEBIAN_FLAVOR}
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
