@@ -1,4 +1,4 @@
-FROM php-7.0-stretch
+FROM php-7.0
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 7.0.33
 
