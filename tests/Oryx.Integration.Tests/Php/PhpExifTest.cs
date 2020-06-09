@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "php")]
     public class PhpExifTest : PhpEndToEndTestsBase
     {
-        private const string ExifImageDebianFlavorPng = "3";
+        private const string ExifImageTypePng = "3";
 
         public PhpExifTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
@@ -54,8 +54,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     string exifOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    // The test app: `echo exif_ImageDebianFlavor('64x64.png')`
-                    Assert.Equal(ExifImageDebianFlavorPng, exifOutput);
+                    // The test app: `echo exif_imagetype('64x64.png')`
+                    Assert.Equal(ExifImageTypePng, exifOutput);
                 });
         }
 
@@ -91,8 +91,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     string exifOutput = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    // The test app: `echo exif_ImageDebianFlavor('64x64.png')`
-                    Assert.Equal(ExifImageDebianFlavorPng, exifOutput);
+                    // The test app: `echo exif_imagetype('64x64.png')`
+                    Assert.Equal(ExifImageTypePng, exifOutput);
                 });
         }
     }

@@ -115,7 +115,7 @@ steps:
   displayName: 'Test integration'
   inputs:
     scriptPath: ./build/testIntegration.sh
-    args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)-${{ parameters.imageDebianFlavor }}
+    args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
   env:
     SQLSERVER_DATABASE_HOST: $(SQLSERVER-DATABASE-HOST)
     SQLSERVER_DATABASE_NAME: $(SQLSERVER-DATABASE-NAME)
