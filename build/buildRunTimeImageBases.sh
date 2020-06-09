@@ -13,7 +13,7 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-declare -r NODE_BUSTER_VERSION_ARRAY=($NODE10_VERSION $NODE12_VERSION $NODE14_VERSION)
+declare -r NODE_BUSTER_VERSION_ARRAY=($NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
