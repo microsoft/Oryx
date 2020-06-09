@@ -29,7 +29,7 @@ do
 	IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
 	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	PHP_IMAGE_NAME="php-fpm-$VERSION_DIRECTORY-$ImageDebianFlavor"
+	PHP_IMAGE_NAME="php-fpm-$VERSION_DIRECTORY"
 	echo "Generating Dockerfile for image '$PHP_IMAGE_NAME' in directory '$VERSION_DIRECTORY'..."
 
 	mkdir -p "$DIR/$VERSION_DIRECTORY/"

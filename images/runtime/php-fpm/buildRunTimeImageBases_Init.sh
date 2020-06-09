@@ -33,7 +33,7 @@ do
     echo "Building '$baseImageDebianFlavor' based php-fpm image '$PHP_IMAGE_NAME'..."
     echo
     docker build \
-        -t $PHP_IMAGE_NAME-$baseImageDebianFlavor \
+        -t $PHP_IMAGE_NAME \
         --build-arg DEBIAN_FLAVOR=$baseImageDebianFlavor \
         -f "$VERSION_DIRECTORY.Dockerfile" \
         .
