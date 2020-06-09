@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.Detector.Node
         public const string NodeAppInsightsPackageName = "applicationinsights";
         public const string InjectedAppInsights = "injectedAppInsights";
         public const string NodeLtsVersion = "12.16.3";
+        public const string NodeDefaultVersion = "12.16.3";
         public const string InstalledNodeVersionsDir = "/opt/nodejs/";
         public const string NodeVersion = "NODE_VERSION";
         public const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";

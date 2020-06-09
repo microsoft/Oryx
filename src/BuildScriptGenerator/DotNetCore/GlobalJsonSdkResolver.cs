@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore

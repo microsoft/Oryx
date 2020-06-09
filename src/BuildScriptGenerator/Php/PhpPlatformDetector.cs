@@ -7,8 +7,9 @@ using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -18,6 +19,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPhpVersionProvider _versionProvider;
         private readonly ILogger<PhpPlatformDetector> _logger;
         private readonly IStandardOutputWriter _writer;
+
+        public PlatformName GetDetectorPlatformName => PlatformName.Php;
 
         public PhpPlatformDetector(
             IOptions<PhpScriptGeneratorOptions> options,

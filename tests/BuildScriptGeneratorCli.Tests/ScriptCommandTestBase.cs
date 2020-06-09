@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Diagnostics;

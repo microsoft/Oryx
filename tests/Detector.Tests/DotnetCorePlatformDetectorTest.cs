@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
@@ -148,12 +149,12 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             };
         }
 
-        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(
+        private DotNetCoreDetector CreateDotNetCorePlatformDetector(
             string projectFile)
         {
-            return new DotNetCorePlatformDetector(
+            return new DotNetCoreDetector(
                 new TestProjectFileProvider(projectFile),
-                NullLogger<DotNetCorePlatformDetector>.Instance);
+                NullLogger<DotNetCoreDetector>.Instance);
         }
 
         private class TestProjectFileProvider : DefaultProjectFileProvider

@@ -9,6 +9,9 @@ using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -169,7 +172,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                     Options.Create(options),
                     NullLogger<ExplicitProjectFileProvider>.Instance),
                 new RootDirectoryProjectFileProvider(NullLogger<RootDirectoryProjectFileProvider>.Instance),
-                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance, new DefaultStandardOutputWriter()),
+                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance),
             };
 
             return new DefaultProjectFileProvider(providers);

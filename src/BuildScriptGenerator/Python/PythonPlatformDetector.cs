@@ -9,7 +9,9 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -18,6 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
         private readonly ILogger<PythonPlatformDetector> _logger;
+
+        public PlatformName GetDetectorPlatformName => PlatformName.Python;
 
         public PythonPlatformDetector(
             IPythonVersionProvider pythonVersionProvider,

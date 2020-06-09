@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 using System.Collections.Generic;
 using System.IO;

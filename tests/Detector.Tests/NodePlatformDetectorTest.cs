@@ -6,6 +6,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using Microsoft.Oryx.Detector.Node;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.Tests.Node
 {
@@ -399,10 +400,10 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             };
         }
 
-        private NodePlatformDetector CreateNodePlatformDetector()
+        private NodeDetector CreateNodePlatformDetector()
         {
-            return new NodePlatformDetector(
-                NullLogger<NodePlatformDetector>.Instance);
+            return new NodeDetector(
+                NullLogger<NodeDetector>.Instance);
         }
 
     }

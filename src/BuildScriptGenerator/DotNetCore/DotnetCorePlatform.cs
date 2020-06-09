@@ -11,6 +11,9 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -98,19 +101,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 var availableSdks = versionMap.Values;
                 globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
                     context.SourceRepo,
-                    context.ResolvedDotNetCoreRuntimeVersion,
+                    context.ResolvedDotNetCoreVersion,
                     availableSdks);
             }
 
             var manifestFileProperties = new Dictionary<string, string>();
             manifestFileProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
             manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreRuntimeVersion]
-                = context.ResolvedDotNetCoreRuntimeVersion;
+                = context.ResolvedDotNetCoreVersion;
 
             if (string.IsNullOrEmpty(globalJsonSdkVersion))
             {
                 manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
-                    = versionMap[context.ResolvedDotNetCoreRuntimeVersion];
+                    = versionMap[context.ResolvedDotNetCoreVersion];
             }
             else
             {
@@ -186,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public void SetVersion(BuildScriptGeneratorContext context, string runtimeVersion)
         {
-            context.ResolvedDotNetCoreRuntimeVersion = runtimeVersion;
+            context.ResolvedDotNetCoreVersion = runtimeVersion;
         }
 
         /// <inheritdoc/>
@@ -274,27 +277,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 var availableSdks = versionMap.Values;
                 globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
                     context.SourceRepo,
-                    context.ResolvedDotNetCoreRuntimeVersion,
+                    context.ResolvedDotNetCoreVersion,
                     availableSdks);
 
                 if (_platformInstaller.IsVersionAlreadyInstalled(
-                    context.ResolvedDotNetCoreRuntimeVersion,
+                    context.ResolvedDotNetCoreVersion,
                     globalJsonSdkVersion))
                 {
                     _logger.LogDebug(
                         "DotNetCore runtime version {runtimeVersion} is already installed. " +
                         "So skipping installing it again.",
-                        context.ResolvedDotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "DotNetCore runtime version {runtimeVersion} is not installed. " +
                         "So generating an installation script snippet for it.",
-                        context.ResolvedDotNetCoreRuntimeVersion);
+                        context.ResolvedDotNetCoreVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        context.ResolvedDotNetCoreRuntimeVersion,
+                        context.ResolvedDotNetCoreVersion,
                         globalJsonSdkVersion);
                 }
             }

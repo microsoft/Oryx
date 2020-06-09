@@ -6,6 +6,7 @@
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     using System.IO;
+    using Microsoft.Oryx.Common;
     using Nett;
     using Newtonsoft.Json.Linq;
     using YamlDotNet.RepresentationModel;

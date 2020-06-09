@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -14,7 +15,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     /// Gets the relative path to the project file which user requested explicitly through either the 'PROJECT'
     /// environment variable or the 'project' build property.
     /// </summary>
-    internal class ExplicitProjectFileProvider : IProjectFileProvider
+    public class ExplicitProjectFileProvider : IProjectFileProvider
     {
         private readonly IOptions<DetectorOptions> _options;
         private readonly ILogger<ExplicitProjectFileProvider> _logger;

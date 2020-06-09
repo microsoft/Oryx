@@ -11,7 +11,9 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {

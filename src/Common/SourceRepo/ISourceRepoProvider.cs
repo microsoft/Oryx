@@ -3,13 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+
+namespace Microsoft.Oryx.Common
 {
-    public partial class RepositoryContext
+    public interface ISourceRepoProvider
     {
-        /// <summary>
-        /// Gets or sets the version of Hugo used in the repo.
-        /// </summary>
-        public string ResolvedHugoVersion { get; set; }
+        ISourceRepo GetSourceRepo();
     }
 }

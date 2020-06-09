@@ -6,10 +6,12 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    public class NodePlatformDetector : IPlatformDetector
+    public class NodeDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -29,10 +31,10 @@ namespace Microsoft.Oryx.Detector.Node
             "app.js",
         };
 
-        private readonly ILogger<NodePlatformDetector> _logger;
+        private readonly ILogger<NodeDetector> _logger;
 
-        public NodePlatformDetector(
-            ILogger<NodePlatformDetector> logger)
+        public NodeDetector(
+            ILogger<NodeDetector> logger)
         {
             _logger = logger;
         }
@@ -107,6 +109,8 @@ namespace Microsoft.Oryx.Detector.Node
             };
         }
 
+        public PlatformName GetDetectorPlatformName => PlatformName.Node;
+
         private string GetVersion(RepositoryContext context)
         {
             if (context.ResolvedNodeVersion != null)
@@ -130,7 +134,7 @@ namespace Microsoft.Oryx.Detector.Node
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.NodeDefaultVersion;
+            return NodeConstants.NodeDefaultVersion;
         }
         private dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {

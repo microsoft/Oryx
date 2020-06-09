@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>

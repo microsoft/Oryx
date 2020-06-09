@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector
 {

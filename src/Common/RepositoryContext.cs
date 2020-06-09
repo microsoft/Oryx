@@ -5,7 +5,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Common
 {
     /// <summary>
     /// Abstraction over the repository context.
@@ -39,5 +39,9 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         public string ResolvedDotNetCoreVersion { get; set; }
 
+        /// <summary>
+        /// Gets or sets the version of Hugo used in the repo.
+        /// </summary>
+        public string ResolvedHugoVersion { get; set; }
     }
 }

@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -19,6 +21,8 @@ namespace Microsoft.Oryx.Tests.Common
         }
 
         public bool DetectInvoked { get; private set; }
+
+        public PlatformName GetDetectorPlatformName => PlatformName.Test;
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
@@ -51,6 +55,8 @@ namespace Microsoft.Oryx.Tests.Common
             _platformName = platformName;
             _platformVersion = platformVersion;
         }
+
+        public PlatformName GetDetectorPlatformName => PlatformName.Test;
 
         public bool DetectInvoked { get; private set; }
 

@@ -8,6 +8,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     public static class DotNetCoreConstants
     {
         public const string PlatformName = "dotnet";
+        public const string DotNetCoreDefaultVersion = "3.1";
         public const string CSharpProjectFileExtension = "csproj";
         public const string FSharpProjectFileExtension = "fsproj";
         public const string GlobalJsonFileName = "global.json";

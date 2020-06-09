@@ -6,15 +6,17 @@
 using System;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    public class PhpPlatformDetector : IPlatformDetector
+    public class PhpDetector : IPlatformDetector
     {
-        private readonly ILogger<PhpPlatformDetector> _logger;
+        private readonly ILogger<PhpDetector> _logger;
 
-        public PhpPlatformDetector(
-            ILogger<PhpPlatformDetector> logger)
+        public PhpDetector(
+            ILogger<PhpDetector> logger)
         {
             _logger = logger;
         }
@@ -37,6 +39,7 @@ namespace Microsoft.Oryx.Detector.Php
             };
         }
 
+        public PlatformName GetDetectorPlatformName => PlatformName.Php;
 
         private string GetVersion(RepositoryContext context)
         {
@@ -77,7 +80,7 @@ namespace Microsoft.Oryx.Detector.Php
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.PhpDefaultVersion;
+            return PhpConstants.PhpDefaultVersion;
         }
 
     }

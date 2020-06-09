@@ -3,15 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Detector;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public class DotNetCoreScriptGeneratorOptions
+    public class DotNetCoreScriptGeneratorOptions : DetectorOptions
     {
-        /// <summary>
-        /// Gets or sets the relative path to the project to be built.
-        /// </summary>
-        public string Project { get; set; }
-
         /// <summary>
         /// Gets or sets the MSBuild configuration that needs to be used when doing 'dotnet build'.
         /// </summary>

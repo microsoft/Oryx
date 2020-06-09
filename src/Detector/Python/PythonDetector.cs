@@ -7,15 +7,17 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    public class PythonPlatformDetector : IPlatformDetector
+    public class PythonDetector : IPlatformDetector
     {
-        private readonly ILogger<PythonPlatformDetector> _logger;
+        private readonly ILogger<PythonDetector> _logger;
 
-        public PythonPlatformDetector(
-            ILogger<PythonPlatformDetector> logger)
+        public PythonDetector(
+            ILogger<PythonDetector> logger)
         {
             _logger = logger;
         }
@@ -67,6 +69,8 @@ namespace Microsoft.Oryx.Detector.Python
             };
         }
 
+        public PlatformName GetDetectorPlatformName => PlatformName.Python;
+
         private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
         {
             if (context.ResolvedPythonVersion != null)
@@ -84,7 +88,7 @@ namespace Microsoft.Oryx.Detector.Python
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.PythonDefaultVersion;
+            return PythonConstants.PythonDefaultVersion;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

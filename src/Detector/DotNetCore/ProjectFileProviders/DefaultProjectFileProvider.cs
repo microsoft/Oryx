@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Detector.DotNetCore

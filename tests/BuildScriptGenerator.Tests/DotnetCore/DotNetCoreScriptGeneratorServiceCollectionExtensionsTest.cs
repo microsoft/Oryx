@@ -6,6 +6,7 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore

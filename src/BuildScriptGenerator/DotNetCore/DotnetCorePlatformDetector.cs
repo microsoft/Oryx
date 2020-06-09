@@ -11,6 +11,8 @@ using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -21,6 +23,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly DotNetCoreScriptGeneratorOptions _options;
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;
+        private readonly DotNetCoreDetector dotNetCoreDetector;
+
+        public PlatformName GetDetectorPlatformName => PlatformName.DotNetCore;
 
         public DotNetCorePlatformDetector(
             IDotNetCoreVersionProvider versionProvider,
@@ -36,26 +41,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
-            if (string.IsNullOrEmpty(projectFile))
-            {
-                return null;
-            }
+            PlatformDetectorResult platformDetectorResult = dotNetCoreDetector.Detect(context);
 
-            var sourceRepo = context.SourceRepo;
-            var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
-            var targetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotNetCoreConstants.TargetFrameworkElementXPathExpression);
-            var targetFramework = targetFrameworkElement?.Value;
-            if (string.IsNullOrEmpty(targetFramework))
-            {
-                _logger.LogDebug(
-                    $"Could not find 'TargetFramework' element in the project file.");
-                return null;
-            }
-
-            var version = GetVersion(context, targetFramework);
-            version = GetMaxSatisfyingVersionAndVerify(version);
+            string version = GetMaxSatisfyingVersionAndVerify(platformDetectorResult.PlatformVersion);
 
             return new PlatformDetectorResult
             {
@@ -128,9 +116,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetVersion(RepositoryContext context, string targetFramework)
         {
-            if (context.ResolvedDotNetCoreRuntimeVersion != null)
+            if (context.ResolvedDotNetCoreVersion != null)
             {
-                return context.ResolvedDotNetCoreRuntimeVersion;
+                return context.ResolvedDotNetCoreVersion;
             }
 
             var version = DetermineRuntimeVersion(targetFramework);

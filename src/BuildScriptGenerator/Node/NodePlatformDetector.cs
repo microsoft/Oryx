@@ -6,7 +6,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -35,6 +37,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly ILogger<NodePlatformDetector> _logger;
         private readonly IEnvironment _environment;
         private readonly IStandardOutputWriter _writer;
+
+        public PlatformName GetDetectorPlatformName => PlatformName.Node;
 
         public NodePlatformDetector(
             INodeVersionProvider nodeVersionProvider,

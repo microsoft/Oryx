@@ -5,7 +5,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.SourceRepo
+namespace Microsoft.Oryx.Common
 {
     public static class ISourceRepoJsonExtensions
     {

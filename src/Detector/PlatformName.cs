@@ -12,5 +12,6 @@ namespace Microsoft.Oryx.Detector
         Python,
         Php,
         DotNetCore,
+        Test,
     }
 }

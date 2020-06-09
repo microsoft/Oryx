@@ -136,10 +136,10 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             };
         }
 
-        private PhpPlatformDetector CreatePhpPlatformDetector()
+        private PhpDetector CreatePhpPlatformDetector()
         {
-            return new PhpPlatformDetector(
-                NullLogger<PhpPlatformDetector>.Instance);
+            return new PhpDetector(
+                NullLogger<PhpDetector>.Instance);
         }
     }
 }

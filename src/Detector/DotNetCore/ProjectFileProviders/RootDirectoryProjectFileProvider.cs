@@ -6,13 +6,14 @@
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
     /// <summary>
     /// Gets the relative path to a project file, if it is present at the root of the given source directory.
     /// </summary>
-    internal class RootDirectoryProjectFileProvider : IProjectFileProvider
+    public class RootDirectoryProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<RootDirectoryProjectFileProvider> _logger;
 

@@ -22,6 +22,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 

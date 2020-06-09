@@ -17,11 +17,10 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddPlatformDetectorServices(this IServiceCollection services)
         {
             services.AddSingleton<IDetector, DefaultPlatformDetector>();
-            services.AddSingleton<IPlatformDetectorProvider, PlatformDetectorProvider>();
 
-            services.AddSingleton<NodePlatformDetector>();
+            services.AddSingleton<IPlatformDetector, NodeDetector>();
 
-            services.AddSingleton<DotNetCorePlatformDetector>();
+            services.AddSingleton<IPlatformDetector, DotNetCoreDetector>();
             services.AddSingleton<DefaultProjectFileProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());
@@ -30,10 +29,18 @@ namespace Microsoft.Oryx.Detector
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ProbeAndFindProjectFileProvider>());
 
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, NodeDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, DotNetCoreDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, PythonDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, PhpDetector>());
 
-            services.AddSingleton<PhpPlatformDetector>();
+            services.AddSingleton<IPlatformDetector, PhpDetector>();
 
-            services.AddSingleton<PythonPlatformDetector>();
+            services.AddSingleton<IPlatformDetector, PythonDetector>();
 
             return services;
         }

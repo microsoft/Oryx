@@ -8,17 +8,18 @@ using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public class DotNetCorePlatformDetector : IPlatformDetector
+    public class DotNetCoreDetector : IPlatformDetector
     {
         private readonly DefaultProjectFileProvider _projectFileProvider;
-        private readonly ILogger<DotNetCorePlatformDetector> _logger;
+        private readonly ILogger<DotNetCoreDetector> _logger;
 
-        public DotNetCorePlatformDetector(
+        public DotNetCoreDetector(
             DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCorePlatformDetector> logger)
+            ILogger<DotNetCoreDetector> logger)
         {
             _projectFileProvider = projectFileProvider;
             _logger = logger;
@@ -53,6 +54,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             };
         }
 
+        public PlatformName GetDetectorPlatformName => PlatformName.DotNetCore;
+
         internal string DetermineRuntimeVersion(string targetFramework)
         {
             // Ex: "netcoreapp2.2" => "2.2"
@@ -84,7 +87,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.DotNetCoreDefaultVersion;
+            return DotNetCoreConstants.DotNetCoreDefaultVersion;
         }
 
     }

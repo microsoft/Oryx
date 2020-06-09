@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
