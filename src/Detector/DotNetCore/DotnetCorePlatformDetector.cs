@@ -16,6 +16,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;
 
+        public PlatformName GetDetectorPlatformName => PlatformName.DotNetCore;
+
         public DotNetCorePlatformDetector(
             DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCorePlatformDetector> logger)
@@ -84,7 +86,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.DotNetCoreDefaultVersion;
+            return DotNetCoreConstants.DotNetCoreDefaultVersion;
         }
 
     }

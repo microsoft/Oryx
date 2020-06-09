@@ -8,6 +8,7 @@ using Xunit;
 using Moq;
 using Microsoft.Oryx.Detector;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Detector.Tests
 {
@@ -16,12 +17,16 @@ namespace Microsoft.Oryx.Detector.Tests
         [Fact]
         public void Detect_ReturnsResult_MultiplePlatform_DotNetCoreReactApp()
         {
-            var platformDetectorProvider = new Mock<IPlatformDetectorProvider>();
-            
+
+            Mock<IPlatformDetector> mockNodePlatformDetector = new Mock<IPlatformDetector>();
+            Mock<IPlatformDetector> mockDotnetcorePlatformDetector = new Mock<IPlatformDetector>();
+
+            IEnumerable<IPlatformDetector> platformDetectors = new List<IPlatformDetector>() { mockNodePlatformDetector.Object, mockDotnetcorePlatformDetector.Object };
+
             var options = new Mock<IOptions<DetectorOptions>>();
             var sourceRepo = new MemorySourceRepo();
             var detector = new DefaultPlatformDetector(
-                platformDetectorProvider.Object, 
+                platformDetectors,
                 NullLogger<DefaultPlatformDetector>.Instance,
                 options.Object);
             var context = CreateContext(sourceRepo);
@@ -34,24 +39,22 @@ namespace Microsoft.Oryx.Detector.Tests
             detectionResult2.Platform = "dotnetcore";
             detectionResult2.PlatformVersion = "3.1";
 
-            Mock<IPlatformDetector> mockNodePlatformDetector = new Mock<IPlatformDetector>();
-            Mock<IPlatformDetector> mockDotnetcorePlatformDetector = new Mock<IPlatformDetector>();
-            
+            mockNodePlatformDetector.Setup(x => x.GetDetectorPlatformName).Returns(PlatformName.Node);
+            mockDotnetcorePlatformDetector.Setup(x => x.GetDetectorPlatformName).Returns(PlatformName.DotNetCore);
             mockNodePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult1);
             mockDotnetcorePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult2);
 
             IPlatformDetector nodePlatformDetector = mockNodePlatformDetector.Object;
             IPlatformDetector dotnetcorePlatformDetector = mockDotnetcorePlatformDetector.Object;
-            
-            platformDetectorProvider.Setup(x => x.TryGetDetector(PlatformName.Node, out nodePlatformDetector)).Returns(true);
-            platformDetectorProvider.Setup(x => x.TryGetDetector(PlatformName.DotNetCore, out dotnetcorePlatformDetector)).Returns(true);
-            
+
+
             // Act
             var detectionResults = detector.GetAllDetectedPlatforms(context);
 
             // Assert
             Assert.NotNull(detectionResults);
             Assert.Equal(2, detectionResults.Count);
+
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
@@ -61,6 +64,5 @@ namespace Microsoft.Oryx.Detector.Tests
                 SourceRepo = sourceRepo,
             };
         }
-
     }
 }

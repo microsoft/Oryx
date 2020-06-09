@@ -14,6 +14,8 @@ namespace Microsoft.Oryx.Detector.Python
     {
         private readonly ILogger<PythonPlatformDetector> _logger;
 
+        public PlatformName GetDetectorPlatformName => PlatformName.Python;
+
         public PythonPlatformDetector(
             ILogger<PythonPlatformDetector> logger)
         {
@@ -84,7 +86,7 @@ namespace Microsoft.Oryx.Detector.Python
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.PythonDefaultVersion;
+            return PythonConstants.PythonDefaultVersion;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

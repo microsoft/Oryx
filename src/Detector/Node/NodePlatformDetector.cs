@@ -31,6 +31,8 @@ namespace Microsoft.Oryx.Detector.Node
 
         private readonly ILogger<NodePlatformDetector> _logger;
 
+        public PlatformName GetDetectorPlatformName => PlatformName.Node;
+
         public NodePlatformDetector(
             ILogger<NodePlatformDetector> logger)
         {
@@ -130,7 +132,7 @@ namespace Microsoft.Oryx.Detector.Node
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.NodeDefaultVersion;
+            return NodeConstants.NodeDefaultVersion;
         }
         private dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {

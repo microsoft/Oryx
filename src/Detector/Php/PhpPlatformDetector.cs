@@ -13,6 +13,8 @@ namespace Microsoft.Oryx.Detector.Php
     {
         private readonly ILogger<PhpPlatformDetector> _logger;
 
+        public PlatformName GetDetectorPlatformName => PlatformName.Php;
+
         public PhpPlatformDetector(
             ILogger<PhpPlatformDetector> logger)
         {
@@ -77,7 +79,7 @@ namespace Microsoft.Oryx.Detector.Php
 
         private string GetDefaultVersionFromProvider()
         {
-            return PlatformVersionList.PhpDefaultVersion;
+            return PhpConstants.PhpDefaultVersion;
         }
 
     }

@@ -18,5 +18,7 @@ namespace Microsoft.Oryx.Detector
         /// <returns>An instance of <see cref="PlatformDetectorResult"/> if detection was
         /// successful, <c>null</c> otherwise</returns>
         PlatformDetectorResult Detect(RepositoryContext context);
+
+        PlatformName GetDetectorPlatformName { get; }
     }
 }
