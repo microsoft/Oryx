@@ -30,10 +30,10 @@ do
     cd "$CURRENT_DIR/$VERSION_DIRECTORY/"
 
     echo
-    echo "Building '$baseImageDebianFlavor' based php image '$PHP_IMAGE_NAME'..."
+    echo "Building '$baseImageDebianFlavor' based php-fpm image '$PHP_IMAGE_NAME'..."
     echo
     docker build \
-        -t $PHP_IMAGE_NAME \
+        -t $PHP_IMAGE_NAME-$baseImageDebianFlavor \
         --build-arg DEBIAN_FLAVOR=$baseImageDebianFlavor \
         -f "$VERSION_DIRECTORY.Dockerfile" \
         .
