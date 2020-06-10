@@ -1,4 +1,4 @@
-FROM php-7.2-stretch
+FROM php-7.2
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 7.2.28
 

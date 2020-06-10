@@ -1,4 +1,4 @@
-FROM php-fpm-7.3-stretch
+FROM php-fpm-7.3
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 7.3.15
 
