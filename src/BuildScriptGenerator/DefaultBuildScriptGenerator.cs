@@ -390,7 +390,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     _writer.WriteLine(
                         $"Version '{detectionResult.PlatformVersion}' of platform '{detectionResult.Platform}' " +
-                        $"is not installed. Generating scripting to install it...");
+                        $"is not installed. Generating script to install it...");
                     installationScriptSnippets.Add(snippet);
                 }
             }
