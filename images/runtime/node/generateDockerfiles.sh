@@ -31,20 +31,25 @@ if [ "$1" == "buster" ];then
 
 		echo "Generating Dockerfile for buster based images..."
 		# Replace placeholders
-		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$1-$NODE_RUNTIME_BASE_TAG"
+		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
 		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 	done
 else
 	for VERSION_DIRECTORY in $(find . -type d -iname '[0-9]*' -printf '%f\n')
 	do
-		echo "Generating Dockerfile for stretch based image $VERSION_DIRECTORY..."
+		echo "version directory is: $VERSION_DIRECTORY"
 
-		TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/$1.Dockerfile"
-		cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
+		if [[ ${VERSION_DIRECTORY} != *"14"* ]];then
+			echo "Generating Dockerfile for stretch based image $VERSION_DIRECTORY..."
 
-		echo "Generating Dockerfile for stretch based images..."
-		# Replace placeholders
-		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$1-$NODE_RUNTIME_BASE_TAG"
-		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+			TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/$1.Dockerfile"
+			cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
+
+			echo "Generating Dockerfile for stretch based images..."
+			# Replace placeholders
+			RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
+			sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+		fi
+		
 	done
 fi

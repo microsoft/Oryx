@@ -123,7 +123,7 @@ for dockerFile in $dockerFiles; do
     platformVersion="${PARTS[1]}"
 
     # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion-$runtimeImageDebianFlavor"
+    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion"
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
