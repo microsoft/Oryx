@@ -18,10 +18,10 @@
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
-    dot-net-core-21-sdk-version: 2.1.806
+    dot-net-core-21-sdk-version: 2.1.807
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.202
+    dot-net-core-31-sdk-version: 3.1.300
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -35,11 +35,11 @@
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
-    net-core-app-21: 2.1.18
+    net-core-app-21: 2.1.19
     net-core-app-22: 2.2.7
     net-core-app-30: 3.0.3
-    net-core-app-31: 3.1.4
-    net-core-app-50: 5.0.0-preview.3.20214.6
+    net-core-app-31: 3.1.5
+    net-core-app-50: 5.0.0-preview.4.20251.6
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
