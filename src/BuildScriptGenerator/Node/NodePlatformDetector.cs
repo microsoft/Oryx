@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly IPlatformDetector _detector;
         private readonly IPlatformVersionResolver _versionResolver;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Node;
+        public PlatformName DetectorPlatformName => PlatformName.Node;
 
         public NodePlatformDetector(
             IOptions<NodeScriptGeneratorOptions> options,

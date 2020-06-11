@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Detector.Python
             };
         }
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Python;
+        public PlatformName DetectorPlatformName => PlatformName.Python;
 
         private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
         {

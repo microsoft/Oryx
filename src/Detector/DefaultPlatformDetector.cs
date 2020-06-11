@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Detector
 
             foreach (var platformDetector in _platformDetectors)
             {
-                PlatformName platformName = platformDetector.GetDetectorPlatformName;
+                PlatformName platformName = platformDetector.DetectorPlatformName;
                 _logger.LogDebug($"Detecting '{platformName}' platform ...");
                 if (IsDetectedPlatform(ctx, platformDetector, out Tuple<PlatformName, string> platformResult))
                 {
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.Detector
             out Tuple<PlatformName, string> platformResult)
         {
             platformResult = null;
-            PlatformName platformName = platformDetector.GetDetectorPlatformName;
+            PlatformName platformName = platformDetector.DetectorPlatformName;
             PlatformDetectorResult detectionResult = platformDetector.Detect(ctx);
                 
             if (detectionResult == null)
@@ -64,7 +64,8 @@ namespace Microsoft.Oryx.Detector
             {
                 _logger.LogInformation($"Platform '{platformName}' was detected in the given repository, but " +
                                         $"no versions were detected.");
-                return false;
+                platformResult = Tuple.Create(platformName, "Not Detected");
+                return true;
             }
 
             string detectedVersion = detectionResult.PlatformVersion;

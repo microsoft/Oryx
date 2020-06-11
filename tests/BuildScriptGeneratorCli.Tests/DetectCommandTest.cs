@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void Execute_OutputsNodePlatformAndLtsVersion_WhenJsonFileExists()
+        public void Execute_OutputsNodePlatformAndNullVersion_WhenJsonFileIsEmpty()
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
@@ -88,17 +88,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 $"Platform: {PlatformName.Node}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"Version : {NodeConstants.NodeLtsVersion}",
+                $"Version : Not Detected",
                 testConsole.StdOutput);
         }
 
         [Fact]
-        public void Execute_OutputsPhpPlatformAndLtsVersion_WhenComposerFileExists()
+        public void Execute_OutputsPhpPlatformAndVersion_WhenComposerFileExplicitsVersion()
         {
             // Arrange
             var srcDir = Path.Combine(_testDirPath, "phpappdir");
             Directory.CreateDirectory(srcDir);
-            File.WriteAllText(Path.Combine(srcDir, PhpConstants.ComposerFileName), "\n");
+            File.WriteAllText(Path.Combine(srcDir, PhpConstants.ComposerFileName), "{\"require\":{\"php\":\"5.6.0\"}}");
 
             var cmd = new DetectCommand
             {
@@ -115,17 +115,30 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 $"Platform: {PlatformName.Php}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"Version : {PhpConstants.DefaultPhpRuntimeVersion}",
+                $"Version : 5.6.0",
                 testConsole.StdOutput);
         }
 
         [Fact]
-        public void Execute_OutputsJson_NodePlatformAndLtsVersion()
+        public void Execute_OutputsJson_NodePlatformAndVersion_WhenJsonFileExplicitsVersion()
         {
+            string PackageJsonWithNodeVersion = @"{
+              ""name"": ""mynodeapp"",
+              ""version"": ""1.0.0"",
+              ""description"": ""test app"",
+              ""main"": ""server.js"",
+              ""scripts"": {
+                ""test"": ""echo \""Error: no test specified\"" && exit 1"",
+                ""start"": ""node server.js""
+              },
+              ""author"": ""Dev"",
+              ""license"": ""ISC"",
+              ""engines"" : { ""node"" : ""6.11.0"" }
+            }";
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
             Directory.CreateDirectory(sourceDir);
-            File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), "\n");
+            File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), PackageJsonWithNodeVersion);
 
             var detectCommand = new DetectCommand
             {
@@ -149,7 +162,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                $"{PlatformName.Node}",
                testConsole.StdOutput);
             Assert.Contains(
-                $"{NodeConstants.NodeLtsVersion}",
+                "6.11.0",
                 testConsole.StdOutput);
         }
 
@@ -160,7 +173,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var sourceDir = Path.Combine(_testDirPath, "multiappdir");
             Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), "\n");
-            File.WriteAllText(Path.Combine(sourceDir, PhpConstants.ComposerFileName), "\n");
+            File.WriteAllText(Path.Combine(sourceDir, PhpConstants.ComposerFileName), "{\"require\":{\"php\":\"5.6.0\"}}");
 
             var detectCommand = new DetectCommand
             {
@@ -177,18 +190,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 $"Platform: {PlatformName.Node}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"Version : {NodeConstants.NodeLtsVersion}",
+                $"Version : Not Detected",
                 testConsole.StdOutput);
             Assert.Contains(
                 $"Platform: {PlatformName.Php}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"Version : {PhpConstants.DefaultPhpRuntimeVersion}",
+                $"Version : 5.6.0",
                 testConsole.StdOutput);
         }
 
         [Fact]
-        public void Execute_OutputsJson_MultiplatformNamesAndVersions()
+        public void Execute_OutputsJson_MultiplatformNamesAndNullVersions()
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "multiappdir");
@@ -218,13 +231,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 $"{PlatformName.Node}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"{NodeConstants.NodeLtsVersion}",
-                testConsole.StdOutput);
-            Assert.Contains(
                 $"{PlatformName.Php}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"{PhpConstants.DefaultPhpRuntimeVersion}",
+                "Not Detected",
                 testConsole.StdOutput);
         }
 

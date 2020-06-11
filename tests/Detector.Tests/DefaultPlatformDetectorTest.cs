@@ -38,8 +38,8 @@ namespace Microsoft.Oryx.Detector.Tests
             detectionResult2.Platform = "dotnetcore";
             detectionResult2.PlatformVersion = "3.1";
 
-            mockNodePlatformDetector.Setup(x => x.GetDetectorPlatformName).Returns(PlatformName.Node);
-            mockDotnetcorePlatformDetector.Setup(x => x.GetDetectorPlatformName).Returns(PlatformName.DotNetCore);
+            mockNodePlatformDetector.Setup(x => x.DetectorPlatformName).Returns(PlatformName.Node);
+            mockDotnetcorePlatformDetector.Setup(x => x.DetectorPlatformName).Returns(PlatformName.DotNetCore);
             mockNodePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult1);
             mockDotnetcorePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult2);
 

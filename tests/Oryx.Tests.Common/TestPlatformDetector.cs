@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public bool DetectInvoked { get; private set; }
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Test;
+        public PlatformName DetectorPlatformName => PlatformName.Test;
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.Tests.Common
             _platformVersion = platformVersion;
         }
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Test;
+        public PlatformName DetectorPlatformName => PlatformName.Test;
 
         public bool DetectInvoked { get; private set; }
 

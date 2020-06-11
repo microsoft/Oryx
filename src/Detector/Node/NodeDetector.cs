@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.Detector.Node
             };
         }
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Node;
+        public PlatformName DetectorPlatformName => PlatformName.Node;
 
         private string GetVersion(RepositoryContext context)
         {

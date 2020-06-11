@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPlatformDetector _detector;
         private readonly IPlatformVersionResolver _versionResolver;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Php;
+        public PlatformName DetectorPlatformName => PlatformName.Php;
 
         public PhpPlatformDetector(
             IOptions<PhpScriptGeneratorOptions> options,
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             if (platformDetectorResult.PlatformVersion == null)
             {
                 platformDetectorResult.PlatformVersion = _versionResolver.GetDefaultVersionFromProvider();
-            
+
             }
 
             var version = _versionResolver.GetMaxSatisfyingVersionAndVerify(platformDetectorResult.PlatformVersion);

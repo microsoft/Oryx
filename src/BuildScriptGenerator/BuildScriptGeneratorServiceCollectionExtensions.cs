@@ -9,10 +9,14 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector;
 using Polly;
 using Polly.Extensions.Http;
-using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -36,6 +40,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();
             services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
             services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
+            services.TryAddEnumerable(
+               ServiceDescriptor.Singleton<IPlatformDetector, NodePlatformDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, DotNetCorePlatformDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, PythonPlatformDetector>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPlatformDetector, PhpPlatformDetector>());
             services.AddHttpClient("general", httpClient =>
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.

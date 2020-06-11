@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly IPlatformDetector _detector;
         private readonly IPlatformVersionResolver _versionResolver;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Python;
+        public PlatformName DetectorPlatformName => PlatformName.Python;
 
         public PythonPlatformDetector(
             IOptions<PythonScriptGeneratorOptions> options,

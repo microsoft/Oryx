@@ -20,6 +20,6 @@ namespace Microsoft.Oryx.Detector
         /// successful, <c>null</c> otherwise</returns>
         PlatformDetectorResult Detect(RepositoryContext context);
 
-        PlatformName GetDetectorPlatformName { get; }
+        PlatformName DetectorPlatformName { get; }
     }
 }

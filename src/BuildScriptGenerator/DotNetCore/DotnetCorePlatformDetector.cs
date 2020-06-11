@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IPlatformDetector _detector;
         private readonly IPlatformVersionResolver _versionResolver;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.DotNetCore;
+        public PlatformName DetectorPlatformName => PlatformName.DotNetCore;
 
         public DotNetCorePlatformDetector(
             IOptions<DotNetCoreScriptGeneratorOptions> options,
