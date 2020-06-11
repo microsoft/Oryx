@@ -6,6 +6,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -20,6 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<PythonPlatformInstaller>();
             services.AddSingleton<PythonOnDiskVersionProvider>();
             services.AddSingleton<PythonSdkStorageVersionProvider>();
+            services.AddSingleton<PythonPlatformVersionResolver>();
+
             return services;
         }
     }

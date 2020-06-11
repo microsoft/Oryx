@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -75,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files with '.py' or no runtime.txt file
-            IOHelpers.CreateFile(sourceDir, "requirements.txt content", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "requirements.txt content", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
@@ -98,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No file with a '.py' extension
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, $"python-{expectedVersion}", "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
@@ -123,8 +124,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: supportedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
-            IOHelpers.CreateFile(sourceDir, "python-" + unsupportedVersion, PythonConstants.RuntimeFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "python-" + unsupportedVersion, BuildScriptGenerator.Python.PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
@@ -149,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: supportedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, fileContent, "runtime.txt");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
@@ -172,8 +173,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: expectedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
-            IOHelpers.CreateFile(sourceDir, $"python-{runtimeTxtVersion}", PythonConstants.RuntimeFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, $"python-{runtimeTxtVersion}", BuildScriptGenerator.Python.PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
@@ -197,8 +198,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: expectedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
-            IOHelpers.CreateFile(sourceDir, $"python-{runtimeTxtVersion}", PythonConstants.RuntimeFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, $"python-{runtimeTxtVersion}", BuildScriptGenerator.Python.PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
@@ -221,7 +222,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: expectedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "content", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "content", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
@@ -245,7 +246,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: expectedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "", "app.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
@@ -270,9 +271,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: expectedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "", "app.py");
-            IOHelpers.CreateFile(sourceDir, $"python-{runtimeTextFileVersion}", PythonConstants.RuntimeFileName);
+            IOHelpers.CreateFile(sourceDir, $"python-{runtimeTextFileVersion}", BuildScriptGenerator.Python.PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
             context.ResolvedPythonVersion = expectedVersion;
@@ -296,9 +297,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: expectedVersion,
                 new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(sourceDir, "", BuildScriptGenerator.Python.PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(sourceDir, "", "app.py");
-            IOHelpers.CreateFile(sourceDir, $"python-{expectedVersion}", PythonConstants.RuntimeFileName);
+            IOHelpers.CreateFile(sourceDir, $"python-{expectedVersion}", BuildScriptGenerator.Python.PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
@@ -325,12 +326,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             PythonScriptGeneratorOptions pythonScriptGeneratorOptions)
         {
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
-
+            IPythonVersionProvider pythonVersionProvider = new TestPythonVersionProvider(supportedPythonVersions, defaultVersion);
+            PythonPlatformVersionResolver pythonPlatformVersionResolver = new PythonPlatformVersionResolver(
+                NullLogger<PythonPlatformVersionResolver>.Instance,
+                pythonVersionProvider);
+            PythonDetector pythonDetector = new PythonDetector(
+                NullLogger<PythonDetector>.Instance);
             return new PythonPlatformDetector(
-                new TestPythonVersionProvider(supportedPythonVersions, defaultVersion),
                 Options.Create(pythonScriptGeneratorOptions),
                 NullLogger<PythonPlatformDetector>.Instance,
-                new DefaultStandardOutputWriter());
+                pythonDetector,
+                pythonPlatformVersionResolver);
         }
 
         private class TestPythonVersionProvider : IPythonVersionProvider

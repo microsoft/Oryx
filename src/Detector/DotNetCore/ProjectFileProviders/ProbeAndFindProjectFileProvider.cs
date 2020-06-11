@@ -108,10 +108,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             if (projects.Count > 1)
             {
                 var projectList = string.Join(", ", projects);
-                throw new Exception(string.Format(
-                    Resources.Labels.DotNetCoreAmbiguityInSelectingProjectFile,
-                    projectList,
-                    "PROJECT"));
+                return null;
             }
 
             if (projects.Count == 1)

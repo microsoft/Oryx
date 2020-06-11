@@ -18,9 +18,9 @@ namespace Microsoft.Oryx.Detector
         {
             services.AddSingleton<IDetector, DefaultPlatformDetector>();
 
-            services.AddSingleton<IPlatformDetector, NodeDetector>();
+            services.AddSingleton<NodeDetector>();
 
-            services.AddSingleton<IPlatformDetector, DotNetCoreDetector>();
+            services.AddSingleton<DotNetCoreDetector>();
             services.AddSingleton<DefaultProjectFileProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());
@@ -38,9 +38,9 @@ namespace Microsoft.Oryx.Detector
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPlatformDetector, PhpDetector>());
 
-            services.AddSingleton<IPlatformDetector, PhpDetector>();
+            services.AddSingleton<PhpDetector>();
 
-            services.AddSingleton<IPlatformDetector, PythonDetector>();
+            services.AddSingleton<PythonDetector>();
 
             return services;
         }

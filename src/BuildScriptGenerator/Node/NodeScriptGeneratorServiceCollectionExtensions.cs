@@ -6,6 +6,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Detector.Node;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -20,6 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<NodePlatformInstaller>();
             services.AddSingleton<NodeOnDiskVersionProvider>();
             services.AddSingleton<NodeSdkStorageVersionProvider>();
+            services.AddSingleton<NodePlatformVersionResolver>();
             return services;
         }
     }

@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
         [Theory]
         [InlineData("invalid json")]
         [InlineData("{\"data\": \"valid but meaningless\"}")]
-        public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WithComposerFile(string composerFileContent)
+        public void Detect_ReturnsNullVersion_WithComposerFile(string composerFileContent)
         {
             // Arrange
             var detector = CreatePhpPlatformDetector();
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
-            Assert.Equal(PhpVersions.Php73Version, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

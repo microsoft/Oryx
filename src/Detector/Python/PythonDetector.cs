@@ -82,13 +82,8 @@ namespace Microsoft.Oryx.Detector.Python
                 return versionFromRuntimeFile;
             }
             _logger.LogDebug(
-                            "Could not get version from runtime file. Getting default version.");
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            return PythonConstants.PythonDefaultVersion;
+                            "Could not get version from runtime file. ");
+            return null;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

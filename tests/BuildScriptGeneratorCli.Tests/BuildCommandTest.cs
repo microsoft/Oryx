@@ -170,7 +170,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         /// Verify that the build command will write to standard output when checking for .csproj files as a part
         /// of the .NET Core detector. The command doesn't need to succeed as we're only checking for output written.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Removed feature")]
         public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
         {
             var stdError = $"Error: {Labels.UnableToDetectPlatformMessage}";

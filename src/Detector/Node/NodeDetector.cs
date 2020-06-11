@@ -122,8 +122,8 @@ namespace Microsoft.Oryx.Detector.Node
             {
                 return version;
             }
-            _logger.LogDebug("Could not get version from package Json. Getting default version.");
-            return GetDefaultVersionFromProvider();
+            _logger.LogDebug("Could not get version from package Json.");
+            return null;
         }
 
         private string GetVersionFromPackageJson(RepositoryContext context)
@@ -132,10 +132,6 @@ namespace Microsoft.Oryx.Detector.Node
             return packageJson?.engines?.node?.Value as string;
         }
 
-        private string GetDefaultVersionFromProvider()
-        {
-            return NodeConstants.NodeDefaultVersion;
-        }
         private dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {
             dynamic packageJson = null;

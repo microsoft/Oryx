@@ -3,14 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
@@ -19,31 +13,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCorePlatformDetector : IPlatformDetector
     {
-        private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DotNetCoreScriptGeneratorOptions _options;
-        private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;
-        private readonly DotNetCoreDetector dotNetCoreDetector;
+        private readonly IPlatformDetector _detector;
+        private readonly IPlatformVersionResolver _versionResolver;
 
         public PlatformName GetDetectorPlatformName => PlatformName.DotNetCore;
 
         public DotNetCorePlatformDetector(
-            IDotNetCoreVersionProvider versionProvider,
             IOptions<DotNetCoreScriptGeneratorOptions> options,
-            DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCorePlatformDetector> logger)
+            ILogger<DotNetCorePlatformDetector> logger,
+            DotNetCoreDetector detector,
+            DotNetCorePlatformVersionResolver versionResolver)
         {
-            _versionProvider = versionProvider;
             _options = options.Value;
-            _projectFileProvider = projectFileProvider;
             _logger = logger;
+            _detector = detector;
+            _versionResolver = versionResolver;
         }
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            PlatformDetectorResult platformDetectorResult = dotNetCoreDetector.Detect(context);
+            PlatformDetectorResult platformDetectorResult = _detector.Detect(context);
 
-            string version = GetMaxSatisfyingVersionAndVerify(platformDetectorResult.PlatformVersion);
+            if (platformDetectorResult == null)
+            {
+                return null;
+            }
+
+            if (platformDetectorResult.PlatformVersion == null)
+            {
+                platformDetectorResult.PlatformVersion = _versionResolver.GetDefaultVersionFromProvider();
+            }
+
+            string version = _versionResolver.GetMaxSatisfyingVersionAndVerify(platformDetectorResult.PlatformVersion);
 
             return new PlatformDetectorResult
             {
@@ -54,85 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)
         {
-            var versionMap = _versionProvider.GetSupportedVersions();
-
-            // Since our semantic versioning library does not work with .NET Core preview version format, here
-            // we do some trivial way of finding the latest version which matches a given runtime version
-            // Runtime versions are usually like: 1.0, 2.1, 3.1, 5.0 etc.
-            // (these are constructed from netcoreapp21, netcoreapp31 etc.)
-            // Preview version of sdks also have preview versions of runtime versions and hence they
-            // have '-' in their names.
-            var nonPreviewRuntimeVersions = versionMap.Keys.Where(version => version.IndexOf("-") < 0);
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                runtimeVersion,
-                nonPreviewRuntimeVersions);
-
-            // Check if a preview version is available
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                // NOTE:
-                // Preview versions: 5.0.0-preview.3.20214.6, 5.0.0-preview.2.20160.6, 5.0.0-preview.1.20120.5
-                var previewRuntimeVersions = versionMap.Keys
-                    .Where(version => version.IndexOf("-") >= 0)
-                    .Where(version => version.StartsWith(runtimeVersion))
-                    .OrderByDescending(version => version);
-                if (previewRuntimeVersions.Any())
-                {
-                    maxSatisfyingVersion = previewRuntimeVersions.First();
-                }
-            }
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exception = new UnsupportedVersionException(
-                    DotNetCoreConstants.PlatformName,
-                    runtimeVersion,
-                    versionMap.Keys);
-                _logger.LogError(
-                    exception,
-                    $"Exception caught, the version '{runtimeVersion}' is not supported for the .NET Core platform.");
-                throw exception;
-            }
-
-            return maxSatisfyingVersion;
-        }
-
-        internal string DetermineRuntimeVersion(string targetFramework)
-        {
-            // Ex: "netcoreapp2.2" => "2.2"
-            targetFramework = targetFramework.Replace(
-                "netcoreapp",
-                string.Empty,
-                StringComparison.OrdinalIgnoreCase);
-
-            // Ex: "2.2" => 2.2
-            if (decimal.TryParse(targetFramework, out var val))
-            {
-                return val.ToString();
-            }
-
-            return null;
-        }
-
-        private string GetVersion(RepositoryContext context, string targetFramework)
-        {
-            if (context.ResolvedDotNetCoreVersion != null)
-            {
-                return context.ResolvedDotNetCoreVersion;
-            }
-
-            var version = DetermineRuntimeVersion(targetFramework);
-            if (version != null)
-            {
-                return version;
-            }
-
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            return _versionProvider.GetDefaultRuntimeVersion();
+            return _versionResolver.GetMaxSatisfyingVersionAndVerify(runtimeVersion);
         }
     }
 }

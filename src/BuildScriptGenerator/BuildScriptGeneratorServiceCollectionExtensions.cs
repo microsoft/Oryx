@@ -21,6 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddBuildScriptGeneratorServices(this IServiceCollection services)
         {
             services
+                .AddPlatformDetectorServices()
                 .AddNodeScriptGeneratorServices()
                 .AddHugoScriptGeneratorServices()
                 .AddPythonScriptGeneratorServices()

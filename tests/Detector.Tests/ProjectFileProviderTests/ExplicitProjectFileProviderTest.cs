@@ -3,14 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     public class ExplicitProjectFileProviderTest : ProjectFileProviderTestBase
     {
@@ -34,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp1", $"WebApp1.{projectFileExtension}");
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
@@ -81,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", "WebApp2-doesnotexist.csproj");
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
@@ -112,7 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, webApp1Dir);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
@@ -143,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
             context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = expectedRelativeProjectPath;
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath2;
             var provider = GetProjectFileProvider(options);
 

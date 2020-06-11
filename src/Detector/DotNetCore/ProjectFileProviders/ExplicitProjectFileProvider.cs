@@ -49,8 +49,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             else
             {
                 _logger.LogWarning($"Could not find the .NET Core project file.");
-                throw new Exception(
-                    string.Format(Resources.Labels.DotNetCoreCouldNotFindProjectFileToBuild, projectFile));
+                return null;
             }
 
             return projectFileWithRelativePath;

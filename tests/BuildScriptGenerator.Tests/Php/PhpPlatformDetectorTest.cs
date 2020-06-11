@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -60,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var detector = CreatePhpPlatformDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
             var version = "0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", BuildScriptGenerator.Php.PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
 
             // Act & Assert
@@ -80,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", BuildScriptGenerator.Php.PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
             context.ResolvedPhpVersion = "100.100.100";
 
@@ -102,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", BuildScriptGenerator.Php.PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
             context.ResolvedPhpVersion = "7.2.5";
 
@@ -124,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             var version = "5.6.0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
+            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", BuildScriptGenerator.Php.PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -144,7 +145,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 defaultVersion: "7.3.14",
                 new PhpScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
-            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            repo.AddFile("{}", BuildScriptGenerator.Php.PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -163,7 +164,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Arrange
             var detector = CreatePhpPlatformDetector(supportedPhpVersions: new[] { PhpVersions.Php73Version });
             var repo = new MemorySourceRepo();
-            repo.AddFile(composerFileContent, PhpConstants.ComposerFileName);
+            repo.AddFile(composerFileContent, BuildScriptGenerator.Php.PhpConstants.ComposerFileName);
             repo.AddFile("<?php echo true; ?>", "foo.php");
             var context = CreateContext(repo);
 
@@ -172,7 +173,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(BuildScriptGenerator.Php.PhpConstants.PlatformName, result.Platform);
             Assert.Equal(PhpVersions.Php73Version, result.PlatformVersion);
         }
 
@@ -198,12 +199,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             PhpScriptGeneratorOptions options)
         {
             options = options ?? new PhpScriptGeneratorOptions();
-
+            IPhpVersionProvider phpVersionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
+            PhpDetector phpDetector = new PhpDetector(NullLogger<PhpDetector>.Instance);
+            PhpPlatformVersionResolver phpPlatformVersionResolver = new PhpPlatformVersionResolver(
+                NullLogger<PhpPlatformVersionResolver>.Instance,
+                phpVersionProvider);
             return new PhpPlatformDetector(
                 Options.Create(options),
-                new TestPhpVersionProvider(supportedPhpVersions, defaultVersion),
                 NullLogger<PhpPlatformDetector>.Instance,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(),
+                phpDetector,
+                phpPlatformVersionResolver);
         }
 
         private class TestPhpVersionProvider : IPhpVersionProvider

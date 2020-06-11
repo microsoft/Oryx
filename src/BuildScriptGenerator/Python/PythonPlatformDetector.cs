@@ -12,68 +12,49 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonPlatformDetector : IPlatformDetector
     {
-        private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
         private readonly ILogger<PythonPlatformDetector> _logger;
+        private readonly IPlatformDetector _detector;
+        private readonly IPlatformVersionResolver _versionResolver;
 
         public PlatformName GetDetectorPlatformName => PlatformName.Python;
 
         public PythonPlatformDetector(
-            IPythonVersionProvider pythonVersionProvider,
             IOptions<PythonScriptGeneratorOptions> options,
             ILogger<PythonPlatformDetector> logger,
-            IStandardOutputWriter writer)
+            PythonDetector detector,
+            PythonPlatformVersionResolver versionResolver)
         {
-            _versionProvider = pythonVersionProvider;
             _options = options.Value;
             _logger = logger;
+            _detector = detector;
+            _versionResolver = versionResolver;
         }
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
-                && !sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
+
+
+            PlatformDetectorResult platformDetectorResult = _detector.Detect(context);
+
+            if (platformDetectorResult == null)
             {
-                _logger.LogDebug($"'{PythonConstants.SetupDotPyFileName}' or '{PythonConstants.RequirementsFileName}' " +
-                    $"does not exist in source repo");
                 return null;
             }
-            else if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
-                && sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
+
+            if (platformDetectorResult.PlatformVersion == null)
             {
-                _logger.LogInformation($"'{PythonConstants.RequirementsFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build from '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
-            }
-            else
-            {
-                _logger.LogInformation($"'{PythonConstants.SetupDotPyFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build from '{PythonConstants.RequirementsFileName}'that exists in source repo");
+                platformDetectorResult.PlatformVersion = _versionResolver.GetDefaultVersionFromProvider();
+
             }
 
-            // This detects if a runtime.txt file exists if that is a python file
-            var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
-            if (string.IsNullOrEmpty(versionFromRuntimeFile))
-            {
-                var files = sourceRepo.EnumerateFiles(
-                    PythonConstants.PythonFileNamePattern,
-                    searchSubDirectories: false);
-
-                if (files == null || !files.Any())
-                {
-                    _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileNamePattern}' do not exist " +
-                        "in source repo root");
-                    return null;
-                }
-            }
-
-            var version = GetVersion(context, versionFromRuntimeFile);
-            version = GetMaxSatisfyingVersionAndVerify(version);
+            var version = _versionResolver.GetMaxSatisfyingVersionAndVerify(platformDetectorResult.PlatformVersion);
 
             return new PlatformDetectorResult
             {
@@ -84,89 +65,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exc = new UnsupportedVersionException(
-                    PythonConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exc,
-                    $"Exception caught, the version '{version}' is not supported for the Python platform.");
-                throw exc;
-            }
-
-            return maxSatisfyingVersion;
+            return _versionResolver.GetMaxSatisfyingVersionAndVerify(version);
         }
 
-        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
-        {
-            if (context.ResolvedPythonVersion != null)
-            {
-                return context.ResolvedPythonVersion;
-            }
-
-            if (versionFromRuntimeFile != null)
-            {
-                return versionFromRuntimeFile;
-            }
-
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
-        }
-
-        private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)
-        {
-            const string versionPrefix = "python-";
-
-            // Most Python sites will have at least a .py file in the root, but
-            // some may not. In that case, let them opt in with the runtime.txt
-            // file, which is used to specify the version of Python.
-            if (sourceRepo.FileExists(PythonConstants.RuntimeFileName))
-            {
-                try
-                {
-                    var content = sourceRepo.ReadFile(PythonConstants.RuntimeFileName);
-                    var hasPythonVersion = content.StartsWith(versionPrefix, StringComparison.OrdinalIgnoreCase);
-                    if (!hasPythonVersion)
-                    {
-                        _logger.LogDebug(
-                            "Prefix {verPrefix} was not found in file {rtFileName}",
-                            versionPrefix,
-                            PythonConstants.RuntimeFileName.Hash());
-                        return null;
-                    }
-
-                    var pythonVersion = content.Remove(0, versionPrefix.Length);
-                    _logger.LogDebug("Found version {pyVer} in runtime file", pythonVersion);
-                    return pythonVersion;
-                }
-                catch (IOException ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "An error occurred while reading file {rtFileName}",
-                        PythonConstants.RuntimeFileName.Hash());
-                }
-            }
-            else
-            {
-                _logger.LogDebug(
-                    "Could not find file '{rtFileName}' in source repo",
-                    PythonConstants.RuntimeFileName);
-            }
-
-            return null;
-        }
     }
 }

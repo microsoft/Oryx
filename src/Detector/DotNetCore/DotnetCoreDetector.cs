@@ -81,13 +81,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return version;
             }
             _logger.LogDebug(
-                   $"Could not determine runtime version from target framework. Getting default version.");
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            return DotNetCoreConstants.DotNetCoreDefaultVersion;
+                   $"Could not determine runtime version from target framework. ");
+            return null;
         }
 
     }

@@ -4,11 +4,13 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Moq;
 using Xunit;
@@ -280,13 +282,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             string projectFile,
             DotNetCoreScriptGeneratorOptions options)
         {
-            options = options ?? new DotNetCoreScriptGeneratorOptions();
+            ILogger<DotNetCoreDetector> dotNetCoreDetectorLogger = NullLogger<DotNetCoreDetector>.Instance;
 
+            IDotNetCoreVersionProvider dotNetCoreVersionProvider = new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion);
+            IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions = Options.Create(options ?? new DotNetCoreScriptGeneratorOptions());
+            DefaultProjectFileProvider projectFileProvider = new TestProjectFileProvider(projectFile);
+            ILogger<DotNetCorePlatformDetector> dotNetCorePlatformDetectorLogger = NullLogger<DotNetCorePlatformDetector>.Instance;
+            DotNetCoreDetector dotNetCoreDetector = new DotNetCoreDetector(
+                projectFileProvider,
+                dotNetCoreDetectorLogger);
+            DotNetCorePlatformVersionResolver dotNetCorePlatformVersionResolver = new DotNetCorePlatformVersionResolver(
+                dotNetCoreVersionProvider, 
+                NullLogger<DotNetCorePlatformVersionResolver>.Instance);
             return new DotNetCorePlatformDetector(
-                new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),
-                Options.Create(options),
-                new TestProjectFileProvider(projectFile),
-                NullLogger<DotNetCorePlatformDetector>.Instance);
+                dotNetCoreScriptGeneratorOptions,
+                dotNetCorePlatformDetectorLogger,
+                dotNetCoreDetector,
+                dotNetCorePlatformVersionResolver);
         }
 
         private class TestProjectFileProvider : DefaultProjectFileProvider

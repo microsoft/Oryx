@@ -6,6 +6,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -16,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
             services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
             services.AddSingleton<PhpPlatformDetector>();
+            services.AddSingleton<PhpPlatformVersionResolver>();
             return services;
         }
     }

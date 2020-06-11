@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         [InlineData("")]
         [InlineData("foo")]
         [InlineData("python")]
-        public void Detect_ReutrnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
+        public void Detect_ReturnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
         {
             // Arrange
             var supportedVersion = "1.2.3";
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithPythonDefaultVersion_WhenNoRuntimeTextFileExists()
+        public void Detect_ReturnsNullVersion_WhenNoRuntimeTextFileExists()
         {
             // Arrange
             var expectedVersion = "3.8.2";
@@ -138,11 +138,11 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal("python", result.Platform);
-            Assert.Equal(expectedVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
-        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundFromApp_OrOptions()
+        public void Detect_ReturnsNullVersion_IfNoVersionFoundFromApp_OrOptions()
         {
             // Arrange
             var expectedVersion = "3.8.2";
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal("python", result.Platform);
-            Assert.Equal(expectedVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]

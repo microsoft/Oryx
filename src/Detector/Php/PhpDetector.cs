@@ -53,8 +53,8 @@ namespace Microsoft.Oryx.Detector.Php
             {
                 return version;
             }
-            _logger.LogDebug("Could not get version from the composer file. Getting default version.");
-            return GetDefaultVersionFromProvider();
+            _logger.LogDebug("Could not get version from the composer file. ");
+            return null;
         }
 
         private string GetVersionFromComposerFile(RepositoryContext context)
@@ -77,11 +77,5 @@ namespace Microsoft.Oryx.Detector.Php
 
             return composerFile?.require?.php?.Value as string;
         }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            return PhpConstants.PhpDefaultVersion;
-        }
-
     }
 }

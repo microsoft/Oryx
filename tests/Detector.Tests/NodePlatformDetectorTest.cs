@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeLtsVersion_ForSourceRepoOnlyWithServerJs()
+        public void Detect_ReturnsNullVersion_ForSourceRepoOnlyWithServerJs()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForSourceRepoOnlyWithAppJs()
+        public void Detect_ReturnsNullVersion_ForSourceRepoOnlyWithAppJs()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -170,7 +170,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithNoVersion()
+        public void Detect_ReturnsNullVersion_ForPackageJsonWithNoVersion()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -245,7 +245,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithOnlyNpmVersion()
+        public void Detect_ReturnsNullVersion_ForPackageJsonWithOnlyNpmVersion()
         {
             // Node detector only looks for node version and not the NPM version. The individual script
             // generator looks for npm version.
@@ -283,7 +283,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
@@ -306,7 +306,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForMalformedPackageJson()
+        public void Detect_ReturnsNullVersion_ForMalformedPackageJson()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -320,11 +320,11 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithNoExplicitVersionsSpecified()
+        public void Detect_ReturnsNullVersion_ForPackageJsonWithNoExplicitVersionsSpecified()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -338,7 +338,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Theory]
