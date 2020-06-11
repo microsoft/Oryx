@@ -11,7 +11,7 @@ using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    internal class PhpPlatformDetector : IPlatformDetector
+    internal class PhpPlatformDetector : IBuildScriptGenerationDetector
     {
         private readonly PhpScriptGeneratorOptions _options;
         private readonly ILogger<PhpPlatformDetector> _logger;

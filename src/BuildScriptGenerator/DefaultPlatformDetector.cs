@@ -3,32 +3,30 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class DefaultAllPlatformDetector
+    public class DefaultPlatformDetector
     {
-        private readonly IEnumerable<IPlatformDetector> _detectors;
-        private readonly ILogger<DefaultAllPlatformDetector> _logger;
+        private readonly IEnumerable<IBuildScriptGenerationDetector> _detectors;
+        private readonly ILogger<DefaultPlatformDetector> _logger;
 
-        public DefaultAllPlatformDetector(
-            IEnumerable<IPlatformDetector> detectors,
-            ILogger<DefaultAllPlatformDetector> logger)
+        public DefaultPlatformDetector(
+            IEnumerable<IBuildScriptGenerationDetector> detectors,
+            ILogger<DefaultPlatformDetector> logger)
         {
             _detectors = detectors;
             _logger = logger;
         }
 
-        public IDictionary<PlatformName, string> GetAllDetectedPlatforms(RepositoryContext ctx)
+        public IDictionary<PlatformName, string> GetAllDetectedPlatformsAndResolveVersion(RepositoryContext ctx)
         {
             IDictionary<PlatformName, string> detectionResults = null;
-            foreach (IPlatformDetector detector in _detectors)
+            foreach (IBuildScriptGenerationDetector detector in _detectors)
             {
                 PlatformDetectorResult detectionResult = detector.Detect(ctx);
                 if (detectionResult != null)

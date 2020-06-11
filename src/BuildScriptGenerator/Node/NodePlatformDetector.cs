@@ -11,7 +11,7 @@ using Microsoft.Oryx.Detector.Node;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    internal class NodePlatformDetector : IPlatformDetector
+    internal class NodePlatformDetector : IBuildScriptGenerationDetector
     {
         private readonly NodeScriptGeneratorOptions _options;
         private readonly ILogger<NodePlatformDetector> _logger;

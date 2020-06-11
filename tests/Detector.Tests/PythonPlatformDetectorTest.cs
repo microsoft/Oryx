@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsFileDoesNotExist()
+        public void Detect_ReturnsNull_WhenRequirementsFileDoesNotExist()
         {
             // Arrange
             var version = "100.100.100";
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
+        public void Detect_ReturnsNull_WhenRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
         {
             // Arrange
             var version = "100.100.100";
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenNoPyFileExists_ButRuntimeTextFileExists_HavingPythonVersionInIt()
+        public void Detect_ReturnsResult_WhenNoPyFileExists_ButRuntimeTextFileExists_HavingPythonVersionInIt()
         {
             // Arrange
             var expectedVersion = "1000.1000.1000";

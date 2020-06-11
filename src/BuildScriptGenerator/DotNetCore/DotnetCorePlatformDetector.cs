@@ -11,7 +11,7 @@ using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    internal class DotNetCorePlatformDetector : IPlatformDetector
+    internal class DotNetCorePlatformDetector : IBuildScriptGenerationDetector
     {
         private readonly DotNetCoreScriptGeneratorOptions _options;
         private readonly ILogger<DotNetCorePlatformDetector> _logger;

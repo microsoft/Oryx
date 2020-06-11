@@ -16,7 +16,7 @@ using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal class PythonPlatformDetector : IPlatformDetector
+    internal class PythonPlatformDetector : IBuildScriptGenerationDetector
     {
         private readonly PythonScriptGeneratorOptions _options;
         private readonly ILogger<PythonPlatformDetector> _logger;

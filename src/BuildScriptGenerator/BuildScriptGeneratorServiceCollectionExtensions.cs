@@ -41,13 +41,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
             services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
             services.TryAddEnumerable(
-               ServiceDescriptor.Singleton<IPlatformDetector, NodePlatformDetector>());
+               ServiceDescriptor.Singleton<IBuildScriptGenerationDetector, NodePlatformDetector>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IPlatformDetector, DotNetCorePlatformDetector>());
+                ServiceDescriptor.Singleton<IBuildScriptGenerationDetector, DotNetCorePlatformDetector>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IPlatformDetector, PythonPlatformDetector>());
+                ServiceDescriptor.Singleton<IBuildScriptGenerationDetector, PythonPlatformDetector>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IPlatformDetector, PhpPlatformDetector>());
+                ServiceDescriptor.Singleton<IBuildScriptGenerationDetector, PhpPlatformDetector>());
             services.AddHttpClient("general", httpClient =>
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
