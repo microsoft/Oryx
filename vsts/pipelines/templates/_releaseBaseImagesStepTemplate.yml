@@ -47,7 +47,7 @@ steps:
   displayName: 'Push stretch image(s) to staging registry'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}
+    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
     command: 'Push an image'
     pushMultipleImages: true
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrProdName }}-stretch-base-images-mcr.txt'
@@ -64,6 +64,7 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrProdName }}-buster-base-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
+  condition: and(succeeded(), ne('${{ parameters.baseImageName }}', 'yarn-cache-build'))
 
 - task: Docker@2
   displayName: Login to production PME ACR
