@@ -618,9 +618,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = "/tmp/app1";
             var flattenedDotNetInstallDir = "/opt/dotnet/all";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
                 .AddCommand($"mkdir -p {appDir} && cd {appDir}")
                 .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
+                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
                 .AddCommand("dotnet --version")
                 .AddCommand("which dotnet")
                 .ToString();
