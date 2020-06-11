@@ -12,7 +12,7 @@ using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    public class DefaultAllPlatformDetector : IDetector
+    public class DefaultAllPlatformDetector
     {
         private readonly IEnumerable<IPlatformDetector> _detectors;
         private readonly ILogger<DefaultAllPlatformDetector> _logger;
