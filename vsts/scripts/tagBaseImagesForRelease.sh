@@ -45,10 +45,6 @@ function retagImageWithStagingRepository()
         echo -------------------------------------------------------------------------------
     fi
     done <"$artifactsFile"
-<<<<<<< HEAD
-    cat $outFile
-=======
->>>>>>> update PR
 }
 
 # first argument to the script is the image name e.g dotnetcore
@@ -69,8 +65,7 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName buster
-  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName stretch
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "node" ]
 then
   echo ""
