@@ -21,7 +21,7 @@
     dot-net-core-21-sdk-version: 2.1.807
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.300
+    dot-net-core-31-sdk-version: 3.1.301
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
