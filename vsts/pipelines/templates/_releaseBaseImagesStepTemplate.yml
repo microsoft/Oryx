@@ -79,7 +79,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
-    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrPmeProdName }}-base-images-mcr.txt'
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrPmeProdName }}'
         
 - task: Docker@2
   displayName: Logout from PME ACR
