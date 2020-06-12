@@ -155,7 +155,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var provider = GetProjectFileProvider();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(
+            var exception = Assert.Throws<InvalidProjectFileException>(
                 () => provider.GetRelativePathToProjectFile(context));
             Assert.StartsWith(
                 "Ambiguity in selecting a project to build. Found multiple projects:",
@@ -181,7 +181,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var provider = GetProjectFileProvider();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(
+            var exception = Assert.Throws<InvalidProjectFileException>(
                 () => provider.GetRelativePathToProjectFile(context));
             Assert.StartsWith(
                 "Ambiguity in selecting a project to build. Found multiple projects:",
@@ -234,7 +234,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var provider = GetProjectFileProvider();
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(
+            var exception = Assert.Throws<InvalidProjectFileException>(
                 () => provider.GetRelativePathToProjectFile(context));
             Assert.StartsWith(
                 "Ambiguity in selecting a project to build. Found multiple projects:",

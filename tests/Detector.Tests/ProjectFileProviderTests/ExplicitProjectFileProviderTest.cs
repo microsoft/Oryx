@@ -3,7 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -84,14 +86,10 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
 
-            string relativePathToProjectFile = provider.GetRelativePathToProjectFile(context);
-
-            Assert.Null(relativePathToProjectFile);
-
-            //// Act & Assert
-            //var exception = Assert.Throws<Exception>(
-            //    () => provider.GetRelativePathToProjectFile(context));
-            //Assert.Contains("Could not find the project file ", exception.Message);
+            //Act & Assert
+            var exception = Assert.Throws<InvalidProjectFileException>(
+                () => provider.GetRelativePathToProjectFile(context));
+            Assert.Contains("Could not find the .NET Core project file.", exception.Message);
         }
 
         [Theory]
