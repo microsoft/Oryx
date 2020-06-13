@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink);
                 return true;
             }
-            catch (InvalidUsageException ex)
+            catch (Exception ex)
             {
                 exception = ex;
                 _logger.LogError(ex, "Invalid usage");

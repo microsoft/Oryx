@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _logger = logger;
         }
 
-        public IDictionary<PlatformName, string> GetAllDetectedPlatformsAndResolveVersion(RepositoryContext ctx)
+        public IDictionary<PlatformName, string> GetAllDetectedPlatformsAndResolvedVersions(RepositoryContext ctx)
         {
             IDictionary<PlatformName, string> detectionResults = null;
             foreach (IBuildScriptGenerationDetector detector in _detectors)

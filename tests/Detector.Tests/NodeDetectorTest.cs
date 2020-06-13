@@ -10,7 +10,7 @@ using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.Tests.Node
 {
-    public class NodePlatformDetectorTest
+    public class NodeDetectorTest
     {
         private const string PackageJsonWithNoVersions = @"{
           ""name"": ""mynodeapp"",

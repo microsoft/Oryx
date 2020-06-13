@@ -8,7 +8,7 @@ using Microsoft.Oryx.Detector;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Detects language name and version of the application in source directory.
+    /// Detects platform name and resolve version of the application in source directory.
     /// </summary>
     public interface IBuildScriptGenerationDetector
     {

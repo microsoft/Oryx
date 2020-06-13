@@ -11,11 +11,11 @@ using Xunit;
 
 namespace Microsoft.Oryx.Detector.Tests.Python
 {
-    public class PythonPlatformDetectorTest : IClassFixture<TestTempDirTestFixture>
+    public class PythonDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public PythonPlatformDetectorTest(TestTempDirTestFixture testFixture)
+        public PythonDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
         }

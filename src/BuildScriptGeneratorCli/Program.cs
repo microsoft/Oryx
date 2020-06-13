@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand(typeof(BuildpackDetectCommand))]
     [Subcommand(typeof(BuildpackBuildCommand))]
     [Subcommand(typeof(DockerfileCommand))]
+    [Subcommand(typeof(DetectCommand))]
     internal class Program
     {
         public const string GitCommit = "GitCommit";

@@ -6,7 +6,7 @@
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// Represents the result of a <see cref="IPlatformDetector.Detect(ISourceRepo)"/> operation.
+    /// Represents the result of a <see cref="IPlatformDetector.Detect(RepositoryContext)"/> operation.
     /// </summary>
     public class PlatformDetectorResult
     {

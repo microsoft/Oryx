@@ -11,11 +11,11 @@ using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.Detector.Tests.Php
 {
-    public class PhpPlatformDetectorTest : IClassFixture<TestTempDirTestFixture>
+    public class PhpDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public PhpPlatformDetectorTest(TestTempDirTestFixture testFixture)
+        public PhpDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
         }

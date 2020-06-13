@@ -3,17 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
-    public class DotNetCorePlatformDetectorTest
+    public class DotNetCoreDetectorTest
     {
         private const string ProjectFileWithNoTargetFramework = @"
         <Project Sdk=""Microsoft.NET.Sdk.Web"">

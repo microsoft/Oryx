@@ -11,14 +11,7 @@ namespace Microsoft.Oryx.Detector.Python
         public const string RequirementsFileName = "requirements.txt";
         public const string RuntimeFileName = "runtime.txt";
         public const string PythonFileNamePattern = "*.py";
-        public const string PythonVersionEnvVarName = "PYTHON_VERSION";
-        public const string PythonLtsVersion = "3.8.2";
-        public const string PythonDefaultVersion = "3.8.2";
-        public const string InstalledPythonVersionsDir = "/opt/python/";
         public const string ZipFileExtension = "tar.gz";
-        public const string ZipVirtualEnvFileNameFormat = "{0}.zip";
-        public const string TarGzVirtualEnvFileNameFormat = "{0}.tar.gz";
-        public const string DefaultTargetPackageDirectory = "__oryx_packages__";
         public const string SetupDotPyFileName = "setup.py";
     }
 }
