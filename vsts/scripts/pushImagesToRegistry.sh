@@ -6,29 +6,18 @@
 
 set -euo pipefail
 # $1 > file that has all the tags 
-# e.g. /data/agent/_work/206/a/drop/images/yarn-cache-build/oryxmcr-base-images-mcr.txt
-# e.g. /data/agent/_work/206/a/drop/images/yarn-cache-build/oryxmcr-base-images-mcr.txt
 
-busterBaseImagesFile="$1"-buster-base-images-mcr.txt
-stretchBaseImagesFile="$1"-stretch-base-images-mcr.txt
+imagesFile="$1"
 
 echo "base image tag file is in directory: $1"
 
-if [ -f "$busterBaseImagesFile" ]; then
-    echo "$busterBaseImagesFile exists. pushing buster image tags ..."
+if [ -f "$imagesFile" ]; then
+    echo "$imagesFile exists. pushing buster image tags ..."
     while read imageName; do
       # read the tags from file
       echo "Pushing image $imageName ..."
       docker push "$imageName"
-    done <"$busterBaseImagesFile"
+    done <"$imagesFile"
 fi
 
-if [ -f "$stretchBaseImagesFile" ]; then
-    echo "$stretchBaseImagesFile exists. pushing stretch image tags ..."
-    while read imageName; do
-      # read the tags from file
-      echo "Pushing image $imageName ..."
-      docker push "$imageName"
-    done <"$stretchBaseImagesFile"
-fi
 

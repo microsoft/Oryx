@@ -78,7 +78,7 @@ steps:
   displayName: 'Push images to PME staging ACR'
   inputs:
     type: FilePath
-    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    scriptPath: ./vsts/scripts/pushBaseImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrPmeProdName }}'
         
 - task: Docker@2
