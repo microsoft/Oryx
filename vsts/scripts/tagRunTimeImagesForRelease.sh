@@ -6,11 +6,8 @@
 
 set -o pipefail
 
-# $1 >> non pme production staging repository i.e. oryxmcr
-# $2 >> pme production staging repository i.e. oryxprodmcr
-
-acrNonPmeProdRepo=$1
-acrPmeProdRepo=$2
+acrNonPmeProdRepo="oryxmcr"
+acrPmeProdRepo="oryxprodmcr"
 
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFileNonPmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrNonPmeProdRepo-runtime-images-mcr.txt"

@@ -53,7 +53,6 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
-    args: '${{ parameters.acrProdName }} ${{ parameters.acrPmeProdName }}'
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
@@ -139,11 +138,36 @@ steps:
     containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
-  displayName: 'Push images to PME staging ACR'
+  displayName: 'Push build images to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-build-images-mcr.txt'
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Push build-pack images to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-buildpack-images-mcr.txt'
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Push CLI image to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-cli-images-mcr.txt'
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Push runtime images to PME staging ACR'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-runtime-images-mcr.txt'
+  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@2
   displayName: Logout from PME ACR
