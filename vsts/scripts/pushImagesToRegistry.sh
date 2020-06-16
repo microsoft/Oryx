@@ -9,10 +9,10 @@ set -euo pipefail
 
 imagesFile="$1"
 
-echo "base image tag file is in directory: $1"
+echo "image tag file is in directory: $1"
 
 if [ -f "$imagesFile" ]; then
-    echo "$imagesFile exists. pushing buster image tags ..."
+    echo "$imagesFile exists. pushing image tags ..."
     while read imageName; do
       # read the tags from file
       echo "Pushing image $imageName ..."
