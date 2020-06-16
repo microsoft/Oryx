@@ -556,16 +556,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(_nodeScriptGeneratorOptions.NodeVersion))
             {
                 return _nodeScriptGeneratorOptions.NodeVersion;
             }
 
+            // If a version was detected, then use it.
             if (detectedVersion != null)
             {
                 return detectedVersion;
             }
 
+            // Fallback to default version
             var versionInfo = _nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
         }

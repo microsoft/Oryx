@@ -360,16 +360,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(_dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
             {
                 return _dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
             }
 
+            // If a version was detected, then use it.
             if (!string.IsNullOrEmpty(detectedVersion))
             {
                 return detectedVersion;
             }
 
+            // Fallback to default version
             var defaultVersion = _versionProvider.GetDefaultRuntimeVersion();
             return defaultVersion;
         }

@@ -211,20 +211,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(_phpScriptGeneratorOptions.PhpVersion))
             {
                 return _phpScriptGeneratorOptions.PhpVersion;
             }
 
+            // If a version was detected, then use it.
             if (detectedVersion != null)
             {
                 return detectedVersion;
             }
 
+            // Fallback to default version
             var versionInfo = _phpVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
         }
-        
+
         private bool TryGetExplicitVersion(out string explicitVersion)
         {
             explicitVersion = null;

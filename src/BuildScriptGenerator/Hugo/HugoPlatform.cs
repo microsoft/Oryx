@@ -170,16 +170,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(_hugoScriptGeneratorOptions.HugoVersion))
             {
                 return _hugoScriptGeneratorOptions.HugoVersion;
             }
 
+            // If a version was detected, then use it.
             if (detectedVersion != null)
             {
                 return detectedVersion;
             }
 
+            // Fallback to default version
             return HugoConstants.Version;
         }
 

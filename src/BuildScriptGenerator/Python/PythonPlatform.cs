@@ -456,16 +456,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
+            // Explicitly specified version by user wins over detected version
             if (!string.IsNullOrEmpty(_pythonScriptGeneratorOptions.PythonVersion))
             {
                 return _pythonScriptGeneratorOptions.PythonVersion;
             }
 
+            // If a version was detected, then use it.
             if (detectedVersion != null)
             {
                 return detectedVersion;
             }
 
+            // Fallback to default version
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
         }
