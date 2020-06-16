@@ -7,9 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
     /// <summary>
     /// Helper class for functions around static site generators.
@@ -55,43 +54,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var jsonFilePaths = new List<string>();
 
             // Search for config.toml
-            if (sourceRepo.FileExists(NodeConstants.HugoTomlFileName))
+            if (sourceRepo.FileExists(HugoConstants.TomlFileName))
             {
-                tomlFilePaths.Add(Path.Combine(sourceRepo.RootPath, NodeConstants.HugoTomlFileName));
+                tomlFilePaths.Add(Path.Combine(sourceRepo.RootPath, HugoConstants.TomlFileName));
             }
 
             // Search for config.yml
-            if (sourceRepo.FileExists(NodeConstants.HugoYmlFileName))
+            if (sourceRepo.FileExists(HugoConstants.YmlFileName))
             {
-                yamlFilePaths.Add(Path.Combine(sourceRepo.RootPath, NodeConstants.HugoYmlFileName));
+                yamlFilePaths.Add(Path.Combine(sourceRepo.RootPath, HugoConstants.YmlFileName));
             }
 
             // Search for config.yaml
-            if (sourceRepo.FileExists(NodeConstants.HugoYamlFileName))
+            if (sourceRepo.FileExists(HugoConstants.YamlFileName))
             {
-                yamlFilePaths.Add(Path.Combine(sourceRepo.RootPath, NodeConstants.HugoYamlFileName));
+                yamlFilePaths.Add(Path.Combine(sourceRepo.RootPath, HugoConstants.YamlFileName));
             }
 
             // Search for config.json
-            if (sourceRepo.FileExists(NodeConstants.HugoJsonFileName))
+            if (sourceRepo.FileExists(HugoConstants.JsonFileName))
             {
-                jsonFilePaths.Add(Path.Combine(sourceRepo.RootPath, NodeConstants.HugoJsonFileName));
+                jsonFilePaths.Add(Path.Combine(sourceRepo.RootPath, HugoConstants.JsonFileName));
             }
 
-            if (sourceRepo.DirExists(NodeConstants.HugoConfigFolderName))
+            if (sourceRepo.DirExists(HugoConstants.ConfigFolderName))
             {
-                var configSourceRepo = new LocalSourceRepo(
-                    Path.Combine(sourceRepo.RootPath, NodeConstants.HugoConfigFolderName));
-
                 // Search for config/*.toml
-                tomlFilePaths.AddRange(configSourceRepo.EnumerateFiles("*.toml", searchSubDirectories: true));
+                tomlFilePaths.AddRange(sourceRepo.EnumerateFiles("*.toml", searchSubDirectories: true));
 
                 // Search for config/*.yaml and config/*.yml
-                yamlFilePaths.AddRange(configSourceRepo.EnumerateFiles("*.yaml", searchSubDirectories: true));
-                yamlFilePaths.AddRange(configSourceRepo.EnumerateFiles("*.yml", searchSubDirectories: true));
+                yamlFilePaths.AddRange(sourceRepo.EnumerateFiles("*.yaml", searchSubDirectories: true));
+                yamlFilePaths.AddRange(sourceRepo.EnumerateFiles("*.yml", searchSubDirectories: true));
 
                 // Search for config/*.json
-                jsonFilePaths.AddRange(configSourceRepo.EnumerateFiles("*.json", searchSubDirectories: true));
+                jsonFilePaths.AddRange(sourceRepo.EnumerateFiles("*.json", searchSubDirectories: true));
             }
 
             foreach (var path in tomlFilePaths)

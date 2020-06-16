@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 ConvertToRuntimeName(platformName),
                 platformVersion),
                 dockerfile);
-            Assert.False(detector.DetectInvoked);
+            Assert.True(detector.DetectInvoked);
         }
 
         [Theory]
@@ -246,15 +246,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             BuildScriptGeneratorOptions commonOptions)
         {
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
-            var configuration = new TestConfiguration();
-            var platformName = commonOptions.PlatformName == "nodejs" ? "node" : commonOptions.PlatformName;
-            configuration[$"{platformName}_version"] = commonOptions.PlatformVersion;
             return new DefaultDockerfileGenerator(
                 new DefaultCompatiblePlatformDetector(
                     platforms,
                     NullLogger<DefaultCompatiblePlatformDetector>.Instance,
-                    Options.Create(commonOptions),
-                    configuration),
+                    Options.Create(commonOptions)),
                 NullLogger<DefaultDockerfileGenerator>.Instance,
                 Options.Create(commonOptions));
         }

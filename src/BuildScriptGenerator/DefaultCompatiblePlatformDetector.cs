@@ -6,9 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
@@ -20,42 +18,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
         private readonly ILogger<DefaultCompatiblePlatformDetector> _logger;
         private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly IConfiguration _configuration;
 
         public DefaultCompatiblePlatformDetector(
             IEnumerable<IProgrammingPlatform> programmingPlatforms,
             ILogger<DefaultCompatiblePlatformDetector> logger,
-            IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IConfiguration configuration)
+            IOptions<BuildScriptGeneratorOptions> commonOptions)
         {
             _programmingPlatforms = programmingPlatforms;
             _logger = logger;
             _commonOptions = commonOptions.Value;
-            _configuration = configuration;
         }
 
         /// <inheritdoc/>
-        public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(RepositoryContext ctx)
+        public IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(
+            RepositoryContext ctx)
         {
             return GetCompatiblePlatforms(ctx, detectionResults: null, runDetection: true);
         }
 
         /// <inheritdoc/>
-        public IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(
+        public IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(
             RepositoryContext ctx,
             IEnumerable<PlatformDetectorResult> detectionResults)
         {
             return GetCompatiblePlatforms(ctx, detectionResults, runDetection: false);
         }
 
-        private IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(
+        private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(
             RepositoryContext ctx,
             IEnumerable<PlatformDetectorResult> detectionResults,
             bool runDetection)
         {
             var userProvidedPlatformName = _commonOptions.PlatformName;
 
-            var resultPlatforms = new Dictionary<IProgrammingPlatform, string>();
+            var resultPlatforms = new Dictionary<IProgrammingPlatform, PlatformDetectorResult>();
             if (!string.IsNullOrEmpty(_commonOptions.PlatformName))
             {
                 if (!IsCompatiblePlatform(
@@ -121,7 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             IEnumerable<PlatformDetectorResult> detectionResults,
             bool runDetection,
-            out Tuple<IProgrammingPlatform, string> platformResult)
+            out Tuple<IProgrammingPlatform, PlatformDetectorResult> platformResult)
         {
             platformResult = null;
             var selectedPlatform = _programmingPlatforms
@@ -143,49 +139,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw exc;
             }
 
-            var platformVersionFromOptions = GetPlatformVersion(platformName);
-
-            string detectedPlatformVersion = null;
-            if (string.IsNullOrEmpty(platformVersionFromOptions))
+            PlatformDetectorResult detectionResult = null;
+            if (runDetection)
             {
-                PlatformDetectorResult detectionResult = null;
-                if (runDetection)
-                {
-                    detectionResult = selectedPlatform.Detect(ctx);
-                }
-                else
-                {
-                    if (detectionResults != null)
-                    {
-                        detectionResult = detectionResults
-                            .Where(result => result.Platform.EqualsIgnoreCase(selectedPlatform.Name))
-                            .FirstOrDefault();
-                    }
-                }
-
-                if (detectionResult == null)
-                {
-                    _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");
-                    return false;
-                }
-                else if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
-                {
-                    _logger.LogError($"Platform '{platformName}' was detected in the given repository, but " +
-                                     $"no compatible version was found.");
-                    return false;
-                }
-
-                _logger.LogDebug($"No platform version found, " +
-                                 $"setting to the detected version '{detectionResult.PlatformVersion}'.");
-                detectedPlatformVersion = detectionResult.PlatformVersion;
-
-                platformResult = Tuple.Create(selectedPlatform, detectedPlatformVersion);
-                _logger.LogDebug($"Detected platform '{platformName}' with version '{detectedPlatformVersion}'.");
+                detectionResult = selectedPlatform.Detect(ctx);
             }
             else
             {
-                platformResult = Tuple.Create(selectedPlatform, platformVersionFromOptions);
+                if (detectionResults != null)
+                {
+                    detectionResult = detectionResults
+                        .Where(result => result.Platform.EqualsIgnoreCase(selectedPlatform.Name))
+                        .FirstOrDefault();
+                }
             }
+
+            if (detectionResult == null)
+            {
+                _logger.LogError($"Platform '{platformName}' was not detected in the given repository.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
+            {
+                _logger.LogError($"Platform '{platformName}' was detected in the given repository, but " +
+                                 $"no compatible version was found.");
+                return false;
+            }
+
+            platformResult = Tuple.Create(selectedPlatform, detectionResult);
+            _logger.LogDebug($"Detected platform '{platformName}' with version '{detectionResult.PlatformVersion}'.");
 
             return true;
         }
@@ -198,21 +180,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Gets the platform version in a hierarchical fasion
-        /// 1. --platform nodejs --platform-version 4.0
-        /// 2. NODE_VERSION=4.0 from environment variables
-        /// 3. NODE_VERSION=4.0 from build.env file
-        /// </summary>
-        /// <param name="platformName">Platform for which we want to get the version in a hierarchical way.</param>
-        /// <returns></returns>
-        private string GetPlatformVersion(string platformName)
-        {
-            platformName = platformName == "nodejs" ? "node" : platformName;
-
-            return _configuration[$"{platformName}_version"];
         }
     }
 }

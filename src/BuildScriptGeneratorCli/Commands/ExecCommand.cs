@@ -5,13 +5,15 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -32,8 +34,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
             var env = serviceProvider.GetRequiredService<IEnvironment>();
-            var generator = serviceProvider.GetRequiredService<IBuildScriptGenerator>();
             var opts = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+
+            var beginningOutputLog = GetBeginningCommandOutputLog();
+            console.WriteLine(beginningOutputLog);
 
             if (string.IsNullOrWhiteSpace(Command))
             {
@@ -42,9 +46,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             var shellPath = env.GetEnvironmentVariable("BASH") ?? FilePaths.Bash;
-            var ctx = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
-            opts.EnableMultiPlatformBuild = true;
-            var tools = generator.GetRequiredToolVersions(ctx);
+            var context = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
+            var detector = serviceProvider.GetRequiredService<DefaultPlatformDetector>();
+            var detectedPlatforms = detector.DetectPlatforms(context);
+            if (!detectedPlatforms.Any())
+            {
+                return ProcessConstants.ExitFailure;
+            }
 
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
@@ -54,16 +62,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     .AddShebang(shellPath)
                     .AddCommand("set -e");
 
-                if (tools.Count > 0)
+                var envSetupProvider = serviceProvider.GetRequiredService<PlatformsInstallationScriptProvider>();
+                var installationScript = envSetupProvider.GetBashScriptSnippet(
+                    context,
+                    detectedPlatforms);
+                if (!string.IsNullOrEmpty(installationScript))
                 {
-                    scriptBuilder.Source($"{FilePaths.Benv} {StringExtensions.JoinKeyValuePairs(tools)}");
+                    scriptBuilder.AddCommand(installationScript);
                 }
 
-                var script = scriptBuilder.AddCommand(Command).ToString();
+                scriptBuilder.Source(
+                    $"{FilePaths.Benv} " +
+                    $"{string.Join(" ", detectedPlatforms.Select(p => $"{p.Platform}={p.PlatformVersion}"))}");
+
+                scriptBuilder
+                    .AddCommand("echo Executing supplied command...")
+                    .AddCommand(Command);
 
                 // Create temporary file to store script
-                var tempScriptPath = Path.GetTempFileName();
+                // Get the path where the generated script should be written into.
+                var tempDirectoryProvider = serviceProvider.GetRequiredService<ITempDirectoryProvider>();
+                var tempScriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "execCommand.sh");
+                var script = scriptBuilder.ToString();
                 File.WriteAllText(tempScriptPath, script);
+                console.WriteLine("Finished generating script.");
+
                 timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
 
                 if (DebugMode)
@@ -73,6 +96,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine(script);
                     console.WriteLine("---");
                 }
+
+                console.WriteLine();
+                console.WriteLine("Executing generated script...");
+                console.WriteLine();
 
                 exitCode = ProcessHelper.RunProcess(
                     shellPath,
@@ -101,18 +128,43 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
-            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
-                options,
-                SourceDir,
-                null,
-                null,
-                null,
-                null,
-                null,
-                shouldPackage: false,
-                requiredOsPackages: null,
-                scriptOnly: false,
-                null);
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(options, sourceDir: SourceDir);
+        }
+
+        internal override IServiceProvider TryGetServiceProvider(IConsole console)
+        {
+            // Gather all the values supplied by the user in command line
+            SourceDir = string.IsNullOrEmpty(SourceDir) ?
+                Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
+
+            // NOTE: Order of the following is important. So a command line provided value has higher precedence
+            // than the value provided in a configuration file of the repo.
+            var config = new ConfigurationBuilder()
+                .AddIniFile(Path.Combine(SourceDir, Constants.BuildEnvironmentFileName), optional: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
+            // ServiceProviderBuilder and allow for writing to the console if needed during this command.
+            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+                .ConfigureServices(services =>
+                {
+                    // Configure Options related services
+                    // We first add IConfiguration to DI so that option services like
+                    // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
+                    // and set the options.
+                    services
+                        .AddSingleton<IConfiguration>(config)
+                        .AddOptionsServices()
+                        .Configure<BuildScriptGeneratorOptions>(options =>
+                        {
+                            // These values are not retrieve through the 'config' api since we do not expect
+                            // them to be provided by an end user.
+                            options.SourceDir = SourceDir;
+                        });
+                });
+
+            return serviceProviderBuilder.Build();
         }
     }
 }

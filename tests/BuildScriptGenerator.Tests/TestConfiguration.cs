@@ -16,7 +16,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         public TestConfiguration()
         {
-            _values = new Dictionary<string, string>();
+            // Since actual instance of ASP.NET Core's configuration is case-insensitive, make it case-insensitive
+            // here also.
+            _values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public string this[string key]

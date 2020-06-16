@@ -16,5 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// Gets or sets the MSBuild configuration that needs to be used when doing 'dotnet build'.
         /// </summary>
         public string MSBuildConfiguration { get; set; }
+
+        public string DotNetCoreRuntimeVersion { get; set; }
     }
 }

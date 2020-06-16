@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
@@ -28,6 +29,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 ServiceDescriptor.Transient<IConfigureOptions<PhpScriptGeneratorOptions>, PhpScriptGeneratorOptionsSetup>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<PythonScriptGeneratorOptions>, PythonScriptGeneratorOptionsSetup>());
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<HugoScriptGeneratorOptions>, HugoScriptGeneratorOptionsSetup>());
             return services;
         }
     }

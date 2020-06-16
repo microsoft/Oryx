@@ -49,20 +49,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
             }
 
-            foreach (var platformAndVersion in compatiblePlatforms)
+            foreach (var platformAndDetectorResult in compatiblePlatforms)
             {
-                var platform = platformAndVersion.Key;
-                var version = platformAndVersion.Value;
+                var platform = platformAndDetectorResult.Key;
+                var detectorResult = platformAndDetectorResult.Value;
                 if (!_slimPlatformVersions.ContainsKey(platform.Name) ||
-                    (!_slimPlatformVersions[platform.Name].Any(v => version.StartsWith(v)) &&
-                     !_slimPlatformVersions[platform.Name].Any(v => v.StartsWith(version))))
+                    (!_slimPlatformVersions[platform.Name].Any(v => detectorResult.PlatformVersion.StartsWith(v)) &&
+                     !_slimPlatformVersions[platform.Name].Any(v => v.StartsWith(detectorResult.PlatformVersion))))
                 {
                     buildImageTag = "latest";
-                    runImageTag = GenerateRuntimeTag(version);
+                    runImageTag = GenerateRuntimeTag(detectorResult.PlatformVersion);
                 }
                 else
                 {
-                    runImageTag = _slimPlatformVersions[platform.Name].Where(v => version.StartsWith(v)).FirstOrDefault();
+                    runImageTag = _slimPlatformVersions[platform.Name]
+                        .Where(v => detectorResult.PlatformVersion.StartsWith(v)).FirstOrDefault();
                 }
 
                 runImage = ConvertToRuntimeName(platform.Name);
@@ -81,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _logger);
         }
 
-        private IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(DockerfileContext ctx)
+        private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
         {
             return _platformDetector.GetCompatiblePlatforms(ctx);
         }
