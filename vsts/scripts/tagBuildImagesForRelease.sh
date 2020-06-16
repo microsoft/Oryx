@@ -14,24 +14,36 @@ function tagBuildImage() {
     local devRegistryImageName="$1"
     local prodRegistryLatestTagName="$2"
     local prodRegistrySpecificTagName="$3"
-    local prodRegistryRepoName="oryxmcr.azurecr.io/public/oryx/build"
+    local prodNonPmeRegistryRepoName="oryxmcr.azurecr.io/public/oryx/build"
+    local prodPmeRegistryRepoName="oryxprodmcr.azurecr.io/public/oryx/build"
     sourceBranchName=$BUILD_SOURCEBRANCHNAME
-    outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/build-images-mcr.txt"
+    outPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxprodmcr-build-images-mcr.txt"
+    outNonPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxmcr-build-images-mcr.txt"
 
     echo "Pulling the source image $devRegistryImageName..."
     docker pull "$devRegistryImageName" | sed 's/^/     /'
 
     echo
-    echo "Tagging the source image with tag $prodRegistrySpecificTagName..."
-    prodRegistryImageName="$prodRegistryRepoName:$prodRegistrySpecificTagName"
-    docker tag "$devRegistryImageName" "$prodRegistryImageName"
-    echo "$prodRegistryImageName">>"$outFileMCR"
+    echo "Tagging the source image for $prodPmeRegistryRepoName with tag $prodRegistrySpecificTagName..."
+    prodPmeRegistryImageName="$prodPmeRegistryRepoName:$prodRegistrySpecificTagName"
+    docker tag "$devRegistryImageName" "$prodPmeRegistryImageName"
+    echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
+    
+    echo "Tagging the source image for $prodNonPmeRegistryRepoName with tag $prodRegistrySpecificTagName..."
+    prodNonPmeRegistryImageName="$prodNonPmeRegistryRepoName:$prodRegistrySpecificTagName"    
+    docker tag "$devRegistryImageName" "$prodNonPmeRegistryImageName"
+    echo "$prodNonPmeRegistryImageName">>"$outNonPmeFileMCR"
 
     if [ "$sourceBranchName" == "master" ]; then
-        echo "Tagging the source image with tag $prodRegistryLatestTagName..."
-        prodRegistryImageName="$prodRegistryRepoName:$prodRegistryLatestTagName"
-        docker tag "$devRegistryImageName" "$prodRegistryRepoName:$prodRegistryLatestTagName"
-        echo "$prodRegistryImageName">>"$outFileMCR"
+        echo "Tagging the source image for $prodPmeRegistryRepoName with tag $prodRegistryLatestTagName..."
+        prodPmeRegistryImageName="$prodPmeRegistryRepoName:$prodRegistryLatestTagName"
+        docker tag "$devRegistryImageName" "$prodPmeRegistryRepoName:$prodRegistryLatestTagName"
+        echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
+        
+        echo "Tagging the source image for $prodNonPmeRegistryRepoName with tag $prodRegistryLatestTagName..."
+        prodNonPmeRegistryImageName="$prodnonPmeRegistryRepoName:$prodRegistryLatestTagName"
+        docker tag "$devRegistryImageName" "$prodNonPmeRegistryRepoName:$prodRegistryLatestTagName"
+        echo "$prodNonPmeRegistryImageName">>"$outNonPmeFileMCR"
     else
         echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
