@@ -107,7 +107,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_IfSourceDirectory_DoesNotHaveAnyFiles()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             // No files in source directory
             var repo = new MemorySourceRepo();
@@ -142,7 +141,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_ForSourceRepoWithServerJs_NotInRootDirectory()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "server.js");
@@ -177,7 +175,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_ForSourceRepoWithAppJs_NotInRootDirectory()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "app.js");
@@ -252,7 +249,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_ForSourceRepoWithPackageJson_NotInRootDirectory()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
@@ -353,7 +349,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_IfIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
-            var version = "8.11.2";
             var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", iisStartupFileName);
             var detector = CreateNodePlatformDetector();
@@ -378,7 +373,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_IfServerJs_AndIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
-            var version = "8.11.2";
             var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", "server.js");
             sourceRepo.AddFile("", iisStartupFileName);

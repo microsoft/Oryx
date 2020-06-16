@@ -5,6 +5,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Detector.Php;
@@ -16,6 +17,7 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddPlatformDetectorServices(this IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>();
             services.AddSingleton<DefaultProjectFileProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());

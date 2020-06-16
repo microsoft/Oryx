@@ -24,7 +24,6 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
-            var version = "100.100.100";
             var detector = CreatePythonPlatformDetector();
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files in source directory
@@ -42,7 +41,6 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         public void Detect_ReturnsNull_WhenRequirementsFileDoesNotExist()
         {
             // Arrange
-            var version = "100.100.100";
             var detector = CreatePythonPlatformDetector();
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
@@ -60,7 +58,6 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         public void Detect_ReturnsNull_WhenRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
         {
             // Arrange
-            var version = "100.100.100";
             var detector = CreatePythonPlatformDetector();
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files with '.py' or no runtime.txt file
@@ -105,7 +102,6 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         public void Detect_ReturnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
         {
             // Arrange
-            var supportedVersion = "1.2.3";
             var detector = CreatePythonPlatformDetector();
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
@@ -124,7 +120,6 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         public void Detect_ReturnsNullVersion_WhenNoRuntimeTextFileExists()
         {
             // Arrange
-            var expectedVersion = "3.8.2";
             var detector = CreatePythonPlatformDetector();
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "content", PythonConstants.RequirementsFileName);
@@ -145,7 +140,6 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         public void Detect_ReturnsNullVersion_IfNoVersionFoundFromApp_OrOptions()
         {
             // Arrange
-            var expectedVersion = "3.8.2";
             var detector = CreatePythonPlatformDetector();
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
