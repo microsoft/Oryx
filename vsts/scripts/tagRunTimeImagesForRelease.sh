@@ -6,8 +6,12 @@
 
 set -o pipefail
 
+acrNonPmeProdRepo="oryxmcr"
+acrPmeProdRepo="oryxprodmcr"
+
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
-outFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-mcr.txt"
+outFileNonPmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrNonPmeProdRepo-runtime-images-mcr.txt"
+outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
 while read sourceImage; do
@@ -34,19 +38,28 @@ while read sourceImage; do
 
     read -ra repoParts <<< "$repo"
     acrRepoName=${repoParts[0]}
-    acrProdRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/oryxmcr/g")
-    acrLatest="$acrProdRepo:$version"
-    acrSpecific="$acrProdRepo:$releaseTagName"
+    acrProdNonPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrNonPmeProdRepo"/g")
+    acrProdPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrPmeProdRepo"/g")
+    acrNonPmeLatest="$acrProdNonPmeRepo:$version"
+    acrNonPmeSpecific="$acrProdNonPmeRepo:$releaseTagName"
+    acrPmeLatest="$acrProdPmeRepo:$version"
+    acrPmeSpecific="$acrProdPmeRepo:$releaseTagName"
 
     echo
-    echo "Tagging the source image with tag $acrSpecific..."
-    echo "$acrSpecific">>"$outFileMCR"
-    docker tag "$sourceImage" "$acrSpecific"
+    echo "Tagging the source image with tag $acrNonPmeSpecific and $acrPmeSpecific..."
+    echo "$acrNonPmeSpecific">>"$outFileNonPmeMCR"
+    docker tag "$sourceImage" "$acrNonPmeSpecific"
+    
+    echo "$acrPmeSpecific">>"$outFilePmeMCR"
+    docker tag "$sourceImage" "$acrPmeSpecific"
 
     if [ "$sourceBranchName" == "master" ]; then
-      echo "Tagging the source image with tag $acrLatest..."
-      echo "$acrLatest">>"$outFileMCR"
-      docker tag "$sourceImage" "$acrLatest"
+      echo "Tagging the source image with tag $acrLatest and $acrPmeLatest..."
+      echo "$acrNonPmeLatest">>"$outFileNonPmeMCR"
+      docker tag "$sourceImage" "$acrNonPmeLatest"
+      
+      echo "$acrPmeLatest">>"$outFilePmeMCR"
+      docker tag "$sourceImage" "$acrPmeLatest"
     else
       echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
