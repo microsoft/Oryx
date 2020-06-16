@@ -21,12 +21,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             BuildScriptGeneratorContext ctx,
             out string script,
             List<ICheckerMessage> checkerMessageSink = null);
-
-        /// <summary>
-        /// Determines the versions of the tools required for building the given application.
-        /// </summary>
-        /// <param name="ctx">A <see cref="BuildScriptGeneratorContext"/>.</param>
-        /// <returns>a dictionary of tool name and version pairs.</returns>
-        IDictionary<string, string> GetRequiredToolVersions(BuildScriptGeneratorContext ctx);
     }
 }

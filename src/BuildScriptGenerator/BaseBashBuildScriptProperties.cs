@@ -68,9 +68,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BenvPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of bash script snippets which install the platform binaries.
+        /// Gets or sets the bash script which install the platform binaries.
         /// </summary>
-        public IEnumerable<string> PlatformInstallationScriptSnippets { get; set; }
+        public string PlatformInstallationScript { get; set; }
 
         /// <summary>
         /// Gets or sets the value which indicates if the output directory is a nested directory of the source.

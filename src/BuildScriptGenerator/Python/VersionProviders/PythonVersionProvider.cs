@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

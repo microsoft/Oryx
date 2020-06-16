@@ -130,7 +130,11 @@ benv-resolve() {
   local value=$(echo $1 | sed 's/^.*=//')
 
   # Resolve node versions
-  if matchesName "node" "$name" || matchesName "node_version" "$name" && [ "${value::1}" != "/" ]; then
+  if matchesName "nodejs" "$name" \
+    || matchesName "node" "$name" \
+    || matchesName "node_version" "$name" \
+    && [ "${value::1}" != "/" ]; then
+    
     platformDir=$(benv-getPlatformDir "nodejs" "$value")
     if [ "$platformDir" == "NotFound" ]; then
       benv-showSupportedVersionsErrorInfo "node" "nodejs" "$value"

@@ -5,9 +5,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -58,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string TarGzOption = "tar-gz";
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
-        private readonly IPythonVersionProvider _pythonVersionProvider;
+        private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonPlatform> _logger;
         private readonly PythonPlatformDetector _detector;
         private readonly PythonPlatformInstaller _platformInstaller;
@@ -67,20 +65,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
         /// </summary>
         /// <param name="pythonScriptGeneratorOptions">The options of pythonScriptGenerator.</param>
-        /// <param name="pythonVersionProvider">The Python version provider.</param>
+        /// <param name="versionProvider">The Python version provider.</param>
         /// <param name="logger">The logger of Python platform.</param>
         /// <param name="detector">The detector of Python platform.</param>
         public PythonPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
-            IPythonVersionProvider pythonVersionProvider,
+            IPythonVersionProvider versionProvider,
             ILogger<PythonPlatform> logger,
             PythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
-            _pythonVersionProvider = pythonVersionProvider;
+            _versionProvider = versionProvider;
             _logger = logger;
             _detector = detector;
             _platformInstaller = platformInstaller;
@@ -93,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             get
             {
-                var versionInfo = _pythonVersionProvider.GetVersionInfo();
+                var versionInfo = _versionProvider.GetVersionInfo();
                 return versionInfo.SupportedVersions;
             }
         }
@@ -101,16 +99,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            return _detector.Detect(context);
+            PlatformDetectorResult detectionResult;
+            if (TryGetExplicitVersion(out var explicitVersion))
+            {
+                detectionResult = new PlatformDetectorResult
+                {
+                    Platform = PythonConstants.PlatformName,
+                    PlatformVersion = explicitVersion,
+                };
+            }
+            else
+            {
+                detectionResult = _detector.Detect(context);
+            }
+
+            if (detectionResult == null)
+            {
+                return null;
+            }
+
+            var version = ResolveVersion(detectionResult.PlatformVersion);
+            detectionResult.PlatformVersion = version;
+            return detectionResult;
         }
 
         /// <inheritdoc/>
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(
+            BuildScriptGeneratorContext context,
+            PlatformDetectorResult detectorResult)
         {
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the version to the manifest file
-            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = context.ResolvedPythonVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -127,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 // If the package directory was not provided, we default to virtual envs
                 if (string.IsNullOrWhiteSpace(virtualEnvName))
                 {
-                    virtualEnvName = GetDefaultVirtualEnvName(context);
+                    virtualEnvName = GetDefaultVirtualEnvName(context, detectorResult);
                 }
 
                 manifestFileProperties[PythonManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
@@ -140,7 +161,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvModule = string.Empty;
             var virtualEnvCopyParam = string.Empty;
 
-            var pythonVersion = context.ResolvedPythonVersion;
+            var pythonVersion = detectorResult.PlatformVersion;
             _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
@@ -213,25 +234,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <inheritdoc/>
-        public void SetRequiredTools(
-            ISourceRepo sourceRepo,
-            string targetPlatformVersion,
-            [NotNull] IDictionary<string, string> toolsToVersion)
-        {
-            Debug.Assert(toolsToVersion != null, $"{nameof(toolsToVersion)} must not be null");
-            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
-            {
-                toolsToVersion[ToolNameConstants.PythonName] = targetPlatformVersion;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void SetVersion(BuildScriptGeneratorContext context, string version)
-        {
-            context.ResolvedPythonVersion = version;
-        }
-
-        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext context)
         {
@@ -272,14 +274,52 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return excludeDirs;
         }
 
-        public string GetMaxSatisfyingVersionAndVerify(string version)
+        public string GetInstallerScriptSnippet(
+            BuildScriptGeneratorContext context,
+            PlatformDetectorResult detectorResult)
         {
-            return _detector.GetMaxSatisfyingVersionAndVerify(version);
+            string installationScriptSnippet = null;
+            if (_commonOptions.EnableDynamicInstall)
+            {
+                _logger.LogDebug("Dynamic install is enabled.");
+
+                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
+                {
+                    _logger.LogDebug(
+                       "Python version {version} is already installed. So skipping installing it again.",
+                       detectorResult.PlatformVersion);
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Python version {version} is not installed. " +
+                        "So generating an installation script snippet for it.",
+                        detectorResult.PlatformVersion);
+
+                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                        detectorResult.PlatformVersion);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Dynamic install not enabled.");
+            }
+
+            return installationScriptSnippet;
         }
 
-        private string GetDefaultVirtualEnvName(BuildScriptGeneratorContext context)
+        public string ResolveVersion(string versionToResolve)
         {
-            string pythonVersion = context.ResolvedPythonVersion;
+            var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
+            resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
+            return resolvedVersion;
+        }
+
+        private string GetDefaultVirtualEnvName(
+            BuildScriptGeneratorContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            string pythonVersion = detectorResult.PlatformVersion;
             if (!string.IsNullOrWhiteSpace(pythonVersion))
             {
                 var versionSplit = pythonVersion.Split('.');
@@ -392,34 +432,64 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return virtualEnvName;
         }
 
-        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        private string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
-            {
-                _logger.LogDebug("Dynamic install is enabled.");
+            var versionInfo = _versionProvider.GetVersionInfo();
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                versionInfo.SupportedVersions);
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedPythonVersion))
-                {
-                    _logger.LogDebug(
-                       "Python version {version} is already installed. So skipping installing it again.",
-                       context.ResolvedPythonVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "Python version {version} is not installed. So generating an installation script snippet for it.",
-                        context.ResolvedPythonVersion);
-
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(context.ResolvedPythonVersion);
-                }
-            }
-            else
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                var exc = new UnsupportedVersionException(
+                    PythonConstants.PlatformName,
+                    version,
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exc,
+                    $"Exception caught, the version '{version}' is not supported for the Python platform.");
+                throw exc;
             }
 
-            return installationScriptSnippet;
+            return maxSatisfyingVersion;
+        }
+
+        private string GetVersionUsingHierarchicalRules(string detectedVersion)
+        {
+            // Explicitly specified version by user wins over detected version
+            if (!string.IsNullOrEmpty(_pythonScriptGeneratorOptions.PythonVersion))
+            {
+                return _pythonScriptGeneratorOptions.PythonVersion;
+            }
+
+            // If a version was detected, then use it.
+            if (detectedVersion != null)
+            {
+                return detectedVersion;
+            }
+
+            // Fallback to default version
+            var versionInfo = _versionProvider.GetVersionInfo();
+            return versionInfo.DefaultVersion;
+        }
+
+        private bool TryGetExplicitVersion(out string explicitVersion)
+        {
+            explicitVersion = null;
+
+            var platformName = _commonOptions.PlatformName;
+            if (platformName.EqualsIgnoreCase(PythonConstants.PlatformName))
+            {
+                if (string.IsNullOrWhiteSpace(_pythonScriptGeneratorOptions.PythonVersion))
+                {
+                    return false;
+                }
+
+                explicitVersion = _pythonScriptGeneratorOptions.PythonVersion;
+                return true;
+            }
+
+            return false;
         }
     }
 }

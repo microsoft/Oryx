@@ -3,11 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Moq;
 using Xunit;
 
@@ -15,56 +12,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
     public class DotNetCorePlatformDetectorTest
     {
-        private const string ProjectFileWithNoTargetFramework = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-          </PropertyGroup>
-        </Project>";
-
-        private const string ProjectFileWithMultipleProperties = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-          </PropertyGroup>
-          <PropertyGroup>
-            <TargetFramework>netcoreapp2.1</TargetFramework>
-            <LangVersion>7.3</LangVersion>
-          </PropertyGroup>
-        </Project>";
-
-        private const string ProjectFileWithTargetFrameworkPlaceHolder = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <TargetFramework>#TargetFramework#</TargetFramework>
-            <LangVersion>7.3</LangVersion>
-            <IsPackable>false</IsPackable>
-            <AssemblyName>Microsoft.Oryx.BuildScriptGenerator.Tests</AssemblyName>
-            <RootNamespace>Microsoft.Oryx.BuildScriptGenerator.Tests</RootNamespace>
-          </PropertyGroup>
-        </Project>";
-
-        private const string GlobalJsonWithSdkVersionPlaceholder = @"
-        {
-            ""sdk"": {
-                ""version"": ""#version#""
-            }
-        }";
-
         [Fact]
         public void Detect_ReturnsNull_IfRepoDoesNotContain_ProjectFile()
         {
             // Arrange
             var sourceRepo = new Mock<ISourceRepo>();
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                supportedVersions: new Dictionary<string, string>
-                {
-                    {"2.1.14", "2.1.100" },
-                    {"2.2.7", "2.2.100" },
-                },
-                defaultVersion: "2.2",
-                projectFile: null);
+            var detector = CreateDotNetCorePlatformDetector(projectFile: null);
 
             // Act
             var result = detector.Detect(context);
@@ -84,16 +38,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(ProjectFileWithNoTargetFramework);
+                .Returns(SampleProjectFileContents.ProjectFileWithNoTargetFramework);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                supportedVersions: new Dictionary<string, string>
-                {
-                    {"2.1.14", "2.1.100" },
-                    {"2.2.7", "2.2.100" },
-                },
-                defaultVersion: "2.2",
-                projectFile);
+            var detector = CreateDotNetCorePlatformDetector(projectFile);
 
             // Act
             var result = detector.Detect(context);
@@ -102,154 +49,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Null(result);
         }
 
-        [Theory]
-        [InlineData("netcoreapp1.0", "1.0.14")]
-        [InlineData("netcoreapp1.1", "1.1.15")]
-        [InlineData("netcoreapp2.0", "2.0.9")]
-        [InlineData("netcoreapp2.1", "2.1.15")]
-        [InlineData("netcoreapp2.2", "2.2.8")]
-        [InlineData("netcoreapp3.0", "3.0.2")]
-        [InlineData("netcoreapp3.1", "3.1.2")]
-        [InlineData("netcoreapp5.0", "5.0.0-rc.1.14955.1")]
-        public void Detect_ReturnsExpectedMaximumSatisfyingPlatformVersion_ForTargetFrameworkVersions(
-            string netCoreAppVersion,
-            string expectedSdkVersion)
+        [Fact]
+        public void Detect_ReturnsVersionPartOfTargetFramework()
         {
             // Arrange
+            var expectedResult = "2.1";
             var projectFile = "test.csproj";
-            var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
-                "#TargetFramework#",
-                netCoreAppVersion);
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(projectFileContent);
+                .Returns(SampleProjectFileContents.ProjectFileWithTargetFrameworkPlaceHolder.Replace(
+                    "#TargetFramework#",
+                    "netcoreapp2.1"));
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                supportedVersions: new Dictionary<string, string>
-                {
-                    {"1.0.14", "1.1.100" },
-                    {"1.1.15", "1.1.100" },
-                    {"2.0.9", "2.1.100" },
-                    {"2.1.14", "2.1.100" },
-                    {"2.1.15", "2.1.101" },
-                    {"2.2.7", "2.2.100" },
-                    {"2.2.8", "2.2.101" },
-                    {"3.0.1", "3.0.100" },
-                    {"3.0.2", "3.0.101" },
-                    {"3.1.1", "3.1.100" },
-                    {"3.1.2-preview.1.14955.1", "3.1.200-preview.1.4500.1" },
-                    {"3.1.2", "3.1.201" },
-                    {"5.0.0-preview.1.14955.1", "5.0.100-preview.1.4500.1" },
-                    {"5.0.0-preview.2.14955.1", "5.0.100-preview.2.4500.1" },
-                    {"5.0.0-rc.1.14955.1", "5.0.100-rc.1.4500.1" },
-                },
-                defaultVersion: "3.1",
-                projectFile);
+            var detector = CreateDotNetCorePlatformDetector(projectFile);
 
             // Act
             var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(DotNetCoreConstants.PlatformName, result.Platform);
-            Assert.Equal(expectedSdkVersion, result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsExpectedPlatformVersion_WhenProjectFileHasMultiplePropertyGroups()
-        {
-            // Arrange
-            var projectFile = "test.csproj";
-            var sourceRepo = new Mock<ISourceRepo>();
-            sourceRepo
-                .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { projectFile });
-            sourceRepo
-                .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(ProjectFileWithMultipleProperties);
-            var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                supportedVersions: new Dictionary<string, string>
-                {
-                    {"2.1.14", "2.1.100" },
-                    {"2.2.7", "2.2.100" },
-                },
-                defaultVersion: "2.2",
-                projectFile);
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(DotNetCoreConstants.PlatformName, result.Platform);
-            Assert.Equal("2.1.14", result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ThrowsUnsupportedException_ForUnknownNetCoreAppVersion()
-        {
-            // Arrange
-            var projectFile = "test.csproj";
-            var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
-                "#TargetFramework#",
-                "netcoreapp0.0");
-            var sourceRepo = new Mock<ISourceRepo>();
-            sourceRepo
-                .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { projectFile });
-            sourceRepo
-                .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(projectFileContent);
-            var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                supportedVersions: new Dictionary<string, string>
-                {
-                    {"2.2.7", "2.2.100" },
-                },
-                defaultVersion: "2.2",
-                projectFile);
-
-            var exception = Assert.Throws<UnsupportedVersionException>(
-                () => detector.Detect(context));
-            Assert.Equal(
-                $"Platform 'dotnet' version '0.0' is unsupported. " +
-                "Supported versions: 2.2.7",
-                exception.Message);
-        }
-
-        [Fact]
-        public void Detect_ThrowsUnsupportedException_WhenNoVersionFoundReturnsMaximumSatisfyingVersion()
-        {
-            // Arrange
-            var projectFile = "test.csproj";
-            var sourceRepo = new Mock<ISourceRepo>();
-            sourceRepo
-                .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(new[] { projectFile });
-            sourceRepo
-                .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(ProjectFileWithTargetFrameworkPlaceHolder.Replace("#TargetFramework#", "netcoreapp2.1"));
-            var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                supportedVersions: new Dictionary<string, string>
-                {
-                    {"2.2.7", "2.2.100" },
-                },
-                defaultVersion: "2.2",
-                projectFile);
-
-            // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(
-                () => detector.Detect(context));
-            Assert.Equal(
-                $"Platform 'dotnet' version '2.1' is unsupported. " +
-                "Supported versions: 2.2.7",
-                exception.Message);
+            Assert.Equal("2.1", result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
@@ -260,69 +83,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             };
         }
 
-        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(
-            Dictionary<string, string> supportedVersions,
-            string defaultVersion,
-            string projectFile)
+        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(string projectFile)
         {
-            return CreateDotNetCorePlatformDetector(
-                supportedVersions,
-                defaultVersion,
-                projectFile,
-                new DotNetCoreScriptGeneratorOptions());
-        }
-
-        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(
-            Dictionary<string, string> supportedVersions,
-            string defaultVersion,
-            string projectFile,
-            DotNetCoreScriptGeneratorOptions options)
-        {
-            options = options ?? new DotNetCoreScriptGeneratorOptions();
-
             return new DotNetCorePlatformDetector(
-                new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion),
-                Options.Create(options),
                 new TestProjectFileProvider(projectFile),
                 NullLogger<DotNetCorePlatformDetector>.Instance);
-        }
-
-        private class TestProjectFileProvider : DefaultProjectFileProvider
-        {
-            private readonly string _projectFilePath;
-
-            public TestProjectFileProvider(string projectFilePath)
-                : base(projectFileProviders: null)
-            {
-                _projectFilePath = projectFilePath;
-            }
-
-            public override string GetRelativePathToProjectFile(RepositoryContext context)
-            {
-                return _projectFilePath;
-            }
-        }
-
-        private class TestDotNetCoreVersionProvider : IDotNetCoreVersionProvider
-        {
-            private readonly Dictionary<string, string> _supportedVersions;
-            private readonly string _defaultVersion;
-
-            public TestDotNetCoreVersionProvider(Dictionary<string, string> supportedVersions, string defaultVersion)
-            {
-                _supportedVersions = supportedVersions;
-                _defaultVersion = defaultVersion;
-            }
-
-            public string GetDefaultRuntimeVersion()
-            {
-                return _defaultVersion;
-            }
-
-            public Dictionary<string, string> GetSupportedVersions()
-            {
-                return _supportedVersions;
-            }
         }
     }
 }

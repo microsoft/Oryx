@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal override IServiceProvider GetServiceProvider(IConsole console)
+        internal override IServiceProvider TryGetServiceProvider(IConsole console)
         {
             // Gather all the values supplied by the user in command line
             SourceDir = string.IsNullOrEmpty(SourceDir) ?

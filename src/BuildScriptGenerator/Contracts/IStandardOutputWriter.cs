@@ -19,9 +19,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         void Write(string message);
 
         /// <summary>
+        /// Writes an empty line with a line terminator.
+        /// </summary>
+        void WriteLine();
+
+        /// <summary>
         /// Writes a string followed by a line terminator.
         /// </summary>
         /// <param name="message">The string to be written.</param>
         void WriteLine(string message);
+
     }
 }

@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 cmd.Execute(GetServiceProvider(cmd), new TestConsole()));
         }
 
-        [Fact]
+        [Fact(Skip = "Skipping test temporarily")]
         public void Execute_OutputsNode_WhenPackageJsonExists()
         {
             // Arrange
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 console.StdOutput);
         }
 
-        [Fact]
+        [Fact(Skip = "Skipping test temporarily")]
         public void Execute_OutputsPhp_WhenComposerFileExists()
         {
             // Arrange
