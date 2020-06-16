@@ -118,6 +118,14 @@ COPY --from=nodetools-install /opt /opt
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
+# Install PHP pre-reqs
+RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libargon2-0 \
+        libonig-dev \
+    && rm -rf /var/lib/apt/lists/*
+    
 RUN rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image

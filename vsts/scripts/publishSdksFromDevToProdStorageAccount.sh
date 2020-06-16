@@ -89,3 +89,4 @@ fi
 copyPlatformBlobsToProd "dotnet"
 copyPlatformBlobsToProd "python"
 copyPlatformBlobsToProd "nodejs"
+copyPlatformBlobsToProd "php"
