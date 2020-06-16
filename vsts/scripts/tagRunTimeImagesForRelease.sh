@@ -38,8 +38,8 @@ while read sourceImage; do
 
     read -ra repoParts <<< "$repo"
     acrRepoName=${repoParts[0]}
-    acrProdNonPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/'"$acrNonPmeProdRepo"'/g")
-    acrProdPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/'"$acrPmeProdRepo"'/g")
+    acrProdNonPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrNonPmeProdRepo"/g")
+    acrProdPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrPmeProdRepo"/g")
     acrNonPmeLatest="$acrProdNonPmeRepo:$version"
     acrNonPmeSpecific="$acrProdNonPmeRepo:$releaseTagName"
     acrPmeLatest="$acrProdPmeRepo:$version"
@@ -48,15 +48,17 @@ while read sourceImage; do
     echo
     echo "Tagging the source image with tag $acrNonPmeSpecific and $acrPmeSpecific..."
     echo "$acrNonPmeSpecific">>"$outFileNonPmeMCR"
-    echo "$acrPmeSpecific">>"$outFilePmeMCR"
     docker tag "$sourceImage" "$acrNonPmeSpecific"
+    
+    echo "$acrPmeSpecific">>"$outFilePmeMCR"
     docker tag "$sourceImage" "$acrPmeSpecific"
 
     if [ "$sourceBranchName" == "master" ]; then
       echo "Tagging the source image with tag $acrLatest and $acrPmeLatest..."
       echo "$acrNonPmeLatest">>"$outFileNonPmeMCR"
-      echo "$acrPmeLatest">>"$outFilePmeMCR"
       docker tag "$sourceImage" "$acrNonPmeLatest"
+      
+      echo "$acrPmeLatest">>"$outFilePmeMCR"
       docker tag "$sourceImage" "$acrPmeLatest"
     else
       echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
