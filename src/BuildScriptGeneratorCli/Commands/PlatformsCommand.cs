@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common;
 using Newtonsoft.Json;
 
@@ -110,6 +112,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             result.Sort();
             return result.Select(v => v.ToString()).ToList();
+        }
+
+        internal override IServiceProvider GetServiceProvider(IConsole console)
+        {
+            // NOTE: Order of the following is important. So a command line provided value has higher precedence
+            // than the value provided in a configuration file of the repo.
+            var config = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
+
+            // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
+            // ServiceProviderBuilder and allow for writing to the console if needed during this command.
+            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+                .ConfigureServices(services =>
+                {
+                    // Configure Options related services
+                    // We first add IConfiguration to DI so that option services like
+                    // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
+                    // and set the options.
+                    services
+                        .AddSingleton<IConfiguration>(config)
+                        .AddOptionsServices();
+                });
+
+            return serviceProviderBuilder.Build();
         }
 
         private class PlatformResult
