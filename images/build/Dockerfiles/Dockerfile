@@ -55,7 +55,7 @@ RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" ; \
     else \
         apt-get update \
         && apt-get install -y --no-install-recommends \
-            libicurl3 \
+            libcurl3 \
         && rm -rf /var/lib/apt/lists/* ; \
     fi
 
