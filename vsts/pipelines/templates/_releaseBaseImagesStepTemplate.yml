@@ -44,7 +44,7 @@ steps:
     args: '${{ parameters.baseImageName }} ${{ parameters.acrPmeProdName }}'
 
 - task: Docker@1
-  displayName: 'Push stretch image(s) to staging registry'
+  displayName: 'Push stretch image(s) to non PME staging registry'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
@@ -55,7 +55,7 @@ steps:
     enforceDockerNamingConvention: true
 
 - task: Docker@1
-  displayName: 'Push buster image(s) to staging registry'
+  displayName: 'Push buster image(s) to non PME staging registry'
   inputs:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
@@ -64,7 +64,7 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrProdName }}-buster-base-images-mcr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: true
-  condition: and(succeeded(), ne('${{ parameters.baseImageName }}', 'yarn-cache-build'))
+  condition: and(succeeded(), ne('yarn-cache-build'))
 
 - task: Docker@2
   displayName: Login to production PME ACR

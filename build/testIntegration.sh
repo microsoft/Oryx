@@ -38,13 +38,17 @@ echo
 integrationTestPlatform=".default"
 
 if [ -n "$1" ]; then
-    testCaseFilter="--filter $1"
-    if [ -n "$AGENT_BUILD" ]; then
-        # Extract platform name for which the integration tests are running
-        # for example, for node it will be ".node", for php ".php" etc.
-        integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
-    fi
-    echo "Running integration tests for '$integrationTestPlatform' with filter '$testCaseFilter'..."
+    if [ "$1" != "buster" ];then
+        testCaseFilter="--filter $1"
+        if [ -n "$AGENT_BUILD" ]; then
+            # Extract platform name for which the integration tests are running
+            # for example, for node it will be ".node", for php ".php" etc.
+            integrationTestPlatform="."$(echo $1 | cut -d'=' -f 2)
+        fi
+        echo "Running integration tests for '$integrationTestPlatform' with filter '$testCaseFilter'..."
+    else   
+        echo "Running all integration tests for buster build images..."
+    fi    
 else
     echo "Running all integration tests..."
 fi

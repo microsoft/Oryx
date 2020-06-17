@@ -25,6 +25,14 @@ cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
 declare BUILD_SIGNED=""
 
+buildImageDebianFlavor="stretch"
+
+if [ $# -eq 1 ] 
+then
+    echo "Building '$1' based build images"
+    buildImageDebianFlavor="$1"
+fi
+
 # Check to see if the build is by scheduled ORYX-CI or other azure devops build
 # SIGNTYPE is set to 'real' on the Oryx-CI build definition itself (not in yaml file)
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
@@ -42,6 +50,7 @@ then
 	buildMetadataArgs="--build-arg GIT_COMMIT=$GIT_COMMIT"
 	buildMetadataArgs="$buildMetadataArgs --build-arg BUILD_NUMBER=$BUILD_NUMBER"
 	buildMetadataArgs="$buildMetadataArgs --build-arg RELEASE_TAG_NAME=$RELEASE_TAG_NAME"
+	buildMetadataArgs="$buildMetadataArgs --build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor"
 	echo "Build metadata args: $buildMetadataArgs"
 fi
 
@@ -59,6 +68,7 @@ function BuildAndTagStage()
 	docker build \
 		--target $stageName \
 		-t $stageTagName \
+		--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 		$buildMetadataArgs \
 		$BASE_TAG_BUILD_ARGS \
 		-f "$dockerFile" \
@@ -92,6 +102,7 @@ function buildDockerImage() {
 	builtImageTag="$dockerImageRepoName:$dockerImageBaseTag"
 	docker build -t $builtImageTag \
 		--build-arg AGENTBUILD=$BUILD_SIGNED \
+		--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 		$BASE_TAG_BUILD_ARGS \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		$storageArgs \
@@ -105,7 +116,7 @@ function buildDockerImage() {
 	testImageTag="$dockerImageForTestsRepoName:$dockerImageBaseTag"
 	docker build -t $testImageTag -f "$dockerFileForTestsToBuild" .
 
-	echo "$dockerImageRepoName:$dockerImageBaseTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$dockerImageRepoName:$dockerImageBaseTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
@@ -126,7 +137,7 @@ function buildDockerImage() {
 		echo "Writing the list of build images built to artifacts folder..."
 
 		# Write image list to artifacts file
-		echo "$dockerImageRepoName:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+		echo "$dockerImageRepoName:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 	else
 		docker tag "$builtImageTag" "$dockerImageForDevelopmentRepoName:$dockerImageBaseTag"
 	fi
@@ -134,12 +145,13 @@ function buildDockerImage() {
 
 # Forcefully pull the latest image having security updates
 docker pull buildpack-deps:stretch
+docker pull buildpack-deps:buster
 
 # Create artifact dir & files
 mkdir -p "$ARTIFACTS_DIR/images"
 
-touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
+> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 
 function createImageNameWithReleaseTag() {
 	local imageNameToBeTaggedUniquely="$1"
@@ -153,7 +165,7 @@ function createImageNameWithReleaseTag() {
 		docker tag "$imageNameToBeTaggedUniquely" "$uniqueImageName"
 
 		# Write image list to artifacts file
-		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 	fi
 }
 
@@ -167,8 +179,9 @@ docker build -t buildscriptgenerator \
 	.
 
 echo
-echo "-------------Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------------------------"
-docker build -t githubrunners-buildpackdeps-stretch \
+echo "-------------Building the image which uses GitHub runners' buildpackdeps-$buildImageDebianFlavor specific digest----------------------------"
+docker build -t githubrunners-buildpackdeps-$buildImageDebianFlavor \
+	--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
 	.
 
@@ -177,6 +190,7 @@ echo "-------------Creating build image for GitHub Actions-------------------"
 builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 docker build -t $builtImageName \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$storageArgs \
@@ -184,13 +198,14 @@ docker build -t $builtImageName \
 	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 	.
 echo
-echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 createImageNameWithReleaseTag $builtImageName
 
 echo
 echo "-------------Creating AzureFunctions JamStack image-------------------"
 builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 docker build -t $builtImageName \
+	--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
@@ -199,7 +214,7 @@ docker build -t $builtImageName \
 	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 	.
 echo
-echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 createImageNameWithReleaseTag $builtImageName
 
 echo
@@ -224,19 +239,21 @@ echo "-------------Creating VSO build image-------------------"
 builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
 docker build -t $builtImageName \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 	$storageArgs \
 	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
 	.
 echo
-echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 createImageNameWithReleaseTag $builtImageName
 
 echo
 echo "-------------Creating CLI image-------------------"
 builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
 docker build -t $builtImageTag \
+	--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
 	--build-arg AGENTBUILD=$BUILD_SIGNED \
 	$BASE_TAG_BUILD_ARGS \
 	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
@@ -244,7 +261,7 @@ docker build -t $builtImageTag \
 	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 	.
 echo
-echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 
 # Retag build image with build number tags
 if [ "$AGENT_BUILD" == "true" ]
@@ -261,7 +278,7 @@ then
 	echo "Writing the list of build images built to artifacts folder..."
 
 	# Write image list to artifacts file
-	echo "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	echo "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 else
 	docker tag "$builtImageTag" "$DEVBOX_CLI_BUILD_IMAGE_REPO:latest"
 fi
@@ -276,8 +293,8 @@ else
 fi
 
 echo
-echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE'):"
-cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+echo "List of images tagged (from '$ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt'):"
+cat $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 
 echo
 showDockerImageSizes

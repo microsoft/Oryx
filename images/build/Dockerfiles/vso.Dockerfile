@@ -1,4 +1,5 @@
-FROM oryxdevmcr.azurecr.io/public/oryx/build AS main
+ARG DEBIAN_FLAVOR
+FROM oryxdevmcr.azurecr.io/public/oryx/build:${DEBIAN_FLAVOR} AS main
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG AI_KEY

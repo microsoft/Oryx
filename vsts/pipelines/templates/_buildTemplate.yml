@@ -2,6 +2,7 @@ parameters:
   ascName: OryxMCR
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
+  debianFlavor: 'stretch'
 
 steps:
 - script: |
@@ -65,6 +66,7 @@ steps:
   displayName: 'Build build images'
   inputs:
     scriptPath: ./build/buildBuildImages.sh
+    args: '${{ parameters.debianFlavor }}'
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
@@ -106,7 +108,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pullAndTag.sh
-    args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+    args: '$(System.ArtifactsDirectory)/drop/images/${{ parameters.debianFlavor }}-build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt'
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0

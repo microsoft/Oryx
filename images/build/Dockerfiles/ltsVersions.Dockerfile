@@ -1,5 +1,6 @@
 # Folders in the image which we use to build this image itself
 # These are deleted in the final stage of the build
+ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ARG SDK_STORAGE_ENV_NAME
@@ -7,9 +8,10 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-FROM buildpack-deps:stretch AS main
+FROM buildpack-deps:${DEBIAN_FLAVOR} AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -38,7 +40,28 @@ RUN apt-get update \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libstdc++6 \
+        zlib1g \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" ; \
+    if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu63 \
+            libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu57 \
+            liblttng-ust0 \
+            libssl1.0.2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 RUN pip install pip --upgrade
 RUN pip3 install pip --upgrade
@@ -60,18 +83,33 @@ RUN mkdir -p /opt/oryx
 FROM main AS dotnet-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu57 \
-        liblttng-ust0 \
-        libssl1.0.2 \
         libstdc++6 \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" ; \
+    if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu63 \
+            libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu57 \
+            liblttng-ust0 \
+            libssl1.0.2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \

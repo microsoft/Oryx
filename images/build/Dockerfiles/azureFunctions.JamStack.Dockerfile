@@ -1,5 +1,6 @@
 # Folders in the image which we use to build this image itself
 # These are deleted in the final stage of the build
+ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 # Determine where the image is getting built (DevOps agents or local)
@@ -8,9 +9,10 @@ ARG AGENTBUILD
 # NOTE: This imge is NOT based on 'githubrunners-buildpackdeps-stretch' because AzFunctions
 # team wanted a consistent experience at their end and do not want to see latency that might
 # be caused due to when the GitHub runners' layers and Oryx image layers go out of sync.
-FROM githubrunners-buildpackdeps-stretch AS main
+FROM githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
 
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -18,18 +20,30 @@ ENV LANG C.UTF-8
 
 # Install basic build tools
 RUN apt-get update \
-    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        rsync \
+# .NET Core dependencies
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu57 \
-        liblttng-ust0 \
-        libssl1.0.2 \
         libstdc++6 \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo "debian flavor is: ${DEBIAN_FLAVOR}" ;\
+    if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu63 \
+            libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu57 \
+            liblttng-ust0 \
+            libssl1.0.2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.

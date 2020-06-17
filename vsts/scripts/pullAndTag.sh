@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------------------------
 
 set -euo pipefail
-# $1 > buildimage-acr.txt
+# $1 > buster-buildimage-acr.txt or stretch-buildimage-acr.txt
 # $2 > runtime-images-acr.txt
 declare imagefilter="oryxdevmcr.azurecr.io/public/oryx"
 

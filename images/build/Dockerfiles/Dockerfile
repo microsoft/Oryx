@@ -1,3 +1,4 @@
+ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 # Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
@@ -7,6 +8,7 @@ ARG YARN_CACHE_BASE_TAG
 FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
 ARG IMAGES_DIR
 ARG BUILD_DIR
+ARG DEBIAN_FLAVOR
 # End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
 # Configure locale (required for Python)
@@ -34,14 +36,28 @@ RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 FROM main AS dotnet-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # For .NET Core 1.1
-        libcurl3 \
         libuuid1 \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
+
+# For .NET Core 1.1
+RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" ; \
+    if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libcurl4 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicurl3 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
@@ -102,6 +118,7 @@ RUN set -ex \
 FROM main AS node-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -179,6 +196,7 @@ RUN set -ex \
 FROM main AS python
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
 # https://github.com/docker-library/python/issues/147
 ENV PYTHONIOENCODING UTF-8
 RUN cd ${IMAGES_DIR} \
@@ -212,7 +230,8 @@ FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
-FROM golang:1.11-stretch as startupScriptGens
+ARG DEBIAN_FLAVOR
+FROM golang:1.11-${DEBIAN_FLAVOR} as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -258,8 +277,24 @@ RUN cd ${IMAGES_DIR} \
     && ./installPlatform.sh php $PHP56_VERSION \
     && ./installPlatform.sh php $PHP70_VERSION \
     && ./installPlatform.sh php $PHP72_VERSION \
-    && ./installPlatform.sh php $PHP74_VERSION
-RUN ln -s /opt/php/5.6 /opt/php/5
+    && ./installPlatform.sh php $PHP73_VERSION \
+    && ./installPlatform.sh php $PHP74_VERSION \
+    && ./installPlatform.sh php-composer $COMPOSER_VERSION
+
+RUN ln -s /opt/php/5.6 /opt/php/5 \
+ && ln -s /opt/php/7.3 /opt/php/7 \
+ && ln -s /opt/php/7 /opt/php/lts \
+ && cd /opt/php-composer \
+ && ln -sfn 1.9.3 stable
+RUN ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libargon2-0 \
+        libonig-dev \
+    && rm -rf /var/lib/apt/lists/* 
+
+ENV ORYX_PATHS="${ORYX_PATHS}:/opt/php/lts/bin"
+ENV PATH="${ORYX_PATHS}:$PATH"
 
 RUN rm -rf /tmp/oryx
 
