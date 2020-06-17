@@ -30,7 +30,7 @@ done <"$1"
 # Extract language string from string (e.g extract 'python' from 'category=python')
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 	# For DB tests we want all the runtime images to be present at thae agent machine
-	if [[ "$TESTINTEGRATIONCASEFILTER" != *db* ]];then
+	if [[ "$TESTINTEGRATIONCASEFILTER" != *db* && "$TESTINTEGRATIONCASEFILTER" != *buster*  ]];then
 		imagefilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
 	fi
 fi
