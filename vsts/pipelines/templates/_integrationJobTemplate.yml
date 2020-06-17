@@ -148,3 +148,5 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+    parameters:
+      debianFlavor: 'buster'
