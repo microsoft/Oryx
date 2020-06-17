@@ -28,9 +28,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-               // get in json format so that it can be deserialized and verified
-               .AddCommand("oryx platforms --json")
-               .ToString();
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                // get in json format so that it can be deserialized and verified
+                .AddCommand("oryx platforms --json")
+                .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
