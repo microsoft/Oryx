@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -17,7 +18,7 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddPlatformDetectorServices(this IServiceCollection services)
         {
-            services.AddTransient<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>();
+            services.AddSingleton<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>();
             services.AddSingleton<DefaultProjectFileProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProjectFileProvider, ExplicitProjectFileProvider>());

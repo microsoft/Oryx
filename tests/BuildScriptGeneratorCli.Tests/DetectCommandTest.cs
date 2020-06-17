@@ -11,6 +11,8 @@ using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -240,7 +242,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         private static IServiceProvider GetServiceProvider(DetectCommand cmd)
         {
-            return new ServiceProviderBuilder().Build();
+            var servicesBuilder = new ServiceProviderBuilder()
+                .ConfigureServices(services =>
+                {
+                    var configuration = new ConfigurationBuilder().Build();
+
+                    services.AddSingleton<IConfiguration>(configuration);
+                });
+            return servicesBuilder.Build();
         }
     }
 }
