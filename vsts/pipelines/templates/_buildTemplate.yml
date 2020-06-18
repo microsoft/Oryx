@@ -63,9 +63,17 @@ steps:
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Build runtime images'
+  displayName: 'Build Stretch runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
+    args: stretch
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Build Buster runtime images'
+  inputs:
+    scriptPath: ./build/buildRunTimeImages.sh
+    args: buster
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
@@ -134,6 +142,13 @@ steps:
     targetFolder: $(Build.ArtifactStagingDirectory)
     overWrite: true
   condition: true
+
+- script: |
+    echo "Merging buster and stretch based runtime image tags in one single file"
+    cat '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.stretch.txt' >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+  displayName: 'Merge runtime image tags in one single file'
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: PublishTestResults@2
   inputs:

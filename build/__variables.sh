@@ -32,15 +32,16 @@ declare -r BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE="$REPO_DIR/images/build/
 declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
+declare -r RUNTIME_BUSTER_BASE_IMAGE_NAME="oryx-run-base-buster"
 declare -r SOURCES_SRC_DIR="$REPO_DIR/src"
 declare -r TESTS_SRC_DIR="$REPO_DIR/tests"
 
 declare -r ARTIFACTS_DIR="$REPO_DIR/artifacts"
 declare -r BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images.txt"
 declare -r BASE_IMAGES_ARTIFACTS_FILE_PREFIX="$ARTIFACTS_DIR/images"
-declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images.txt"
+declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
-declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr.txt"
+declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr"
 
 declare -r PACK_IMAGE_NAME='pack'
 declare -r PACK_STACK_BASE_IMAGE_NAME="pack-stack-base"

@@ -16,5 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public bool PruneDevDependencies { get; set; }
 
         public string NpmRegistryUrl { get; set; }
+
+        public string NodeVersion { get; set; }
     }
 }

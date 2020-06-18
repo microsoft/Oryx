@@ -14,7 +14,6 @@ using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
-using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -462,40 +461,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void CanUseDotNetCoreAsPartOfMultiPlatformBuild()
-        {
-            // Arrange
-            var appName = "dotnetreact";
-            var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
-            var buildScript = new ShellScriptBuilder()
-                .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.2")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", buildScript }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(@"npm install", result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void Build_DoesNotClean_DestinationDirectory_ByDefault()
         {
             // Arrange
@@ -653,9 +618,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = "/tmp/app1";
             var flattenedDotNetInstallDir = "/opt/dotnet/all";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
                 .AddCommand($"mkdir -p {appDir} && cd {appDir}")
                 .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
+                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
                 .AddCommand("dotnet --version")
                 .AddCommand("which dotnet")
                 .ToString();

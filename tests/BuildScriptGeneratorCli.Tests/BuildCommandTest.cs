@@ -19,9 +19,7 @@ using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -44,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var buildCommand = new BuildCommand { SourceDir = string.Empty };
             var testConsole = new TestConsole();
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
@@ -63,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = _testDir.CreateChildDir(),
                 DestinationDir = _testDir.GenerateRandomChildDirPath()
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -88,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = _testDir.CreateChildDir(),
                 DestinationDir = _testDir.GenerateRandomChildDirPath(),
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -111,7 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = _testDir.CreateChildDir(),
                 DestinationDir = _testDir.CreateChildDir(),
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -134,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 DestinationDir = dstDir,
             };
             var testConsole = new TestConsole();
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -165,25 +163,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Empty(testConsole.StdError);
         }
 
-        /// <summary>
-        /// Verify that the build command will write to standard output when checking for .csproj files as a part
-        /// of the .NET Core detector. The command doesn't need to succeed as we're only checking for output written.
-        /// </summary>
-        [Fact]
-        public void BuildCommand_DefaultStandardOutputWriter_WritesForDotnetCheck()
-        {
-            var stdError = $"Error: {Labels.UnableToDetectPlatformMessage}";
-            var enumerateMessage = string.Format(
-                Labels.DotNetCoreEnumeratingFilesInRepo,
-                DotNetCoreConstants.CSharpProjectFileExtension);
-            var buildCommand = new BuildCommand();
-            var testConsole = new TestConsole();
-            var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
-            Assert.NotEqual(0, exitCode);
-            Assert.Equal(stdError, testConsole.StdError.ReplaceNewLine());
-            Assert.Contains(enumerateMessage, testConsole.StdOutput);
-        }
-
         // We want to test that only build output is visible on standard output stream when a build happens
         // successfully. But for this we cannot rely on the built-in generators as their content could change
         // making this test unreliable. So we use a test generator which always outputs content that we know for
@@ -197,8 +176,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var stringToPrint = "Hello World";
             var script = $"#!/bin/bash\necho {stringToPrint}\n";
             var serviceProvider = CreateServiceProvider(
-                new TestProgrammingPlatform("test", new[] { "1.0.0" }, true, script,
-                    new TestPlatformDetectorUsingPlatformName(
+                new TestProgrammingPlatform(
+                    platformName: "test",
+                    platformVersions: new[] { "1.0.0" },
+                    canGenerateScript: true,
+                    scriptContent: script,
+                    detector: new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
                 scriptOnly: false);
@@ -226,7 +209,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 DestinationDir = _testDir.CreateChildDir()
             };
             var testConsole = new TestConsole();
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -255,7 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 DestinationDir = _testDir.CreateChildDir()
             };
             var testConsole = new TestConsole();
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -280,7 +263,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 PlatformVersion = "1.0.0"
             };
             var testConsole = new TestConsole();
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
@@ -325,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             };
             File.WriteAllText(
                 Path.Combine(buildCommand.SourceDir, Constants.BuildEnvironmentFileName), "PYTHON_VERSION=3.7");
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -346,7 +329,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = _testDir.CreateChildDir(),
                 DestinationDir = _testDir.GenerateRandomChildDirPath(),
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -373,7 +356,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             };
             File.WriteAllText(
                 Path.Combine(buildCommand.SourceDir, Constants.BuildEnvironmentFileName), "PYTHON_VERSION=100.100");
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -396,7 +379,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 PlatformName = "python",
                 PlatformVersion = "4.0"
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var options = serviceProvider.GetRequiredService<IOptions<PythonScriptGeneratorOptions>>().Value;
@@ -420,7 +403,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 PlatformName = "nodejs",
                 PlatformVersion = "4.0"
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -443,7 +426,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 PlatformName = "php",
                 PlatformVersion = "4.0"
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -466,7 +449,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 PlatformName = "dotnet",
                 PlatformVersion = "4.0"
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -494,7 +477,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     $"{NodePlatform.RegistryUrlPropertyKey}=http://foobar.com/",
                 }
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -525,7 +508,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     $"{NodePlatform.RegistryUrlPropertyKey}=http://foobar.com/",
                 }
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var options = serviceProvider.GetRequiredService<IOptions<PythonScriptGeneratorOptions>>().Value;
@@ -554,7 +537,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     $"{DotNetCoreConstants.ProjectBuildPropertyKey}=src/foobar.csproj",
                 }
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var options = serviceProvider.GetRequiredService<IOptions<DotNetCoreScriptGeneratorOptions>>().Value;
@@ -577,7 +560,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 SourceDir = _testDir.CreateChildDir(),
                 DestinationDir = _testDir.GenerateRandomChildDirPath(),
             };
-            var serviceProvider = buildCommand.GetServiceProvider(testConsole);
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
 
             // Act
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;

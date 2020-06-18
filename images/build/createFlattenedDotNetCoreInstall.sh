@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$__CURRENT_DIR/../../build/__dotNetCoreSdkVersions.sh"
@@ -36,7 +36,7 @@ do
     fi
 
     if [ "$majorVersion" -gt "$currentMaxMajorVersion" ] || \
-        ( [ "$majorVersion" -gt "$currentMaxMajorVersion" ] && \
+        ( [ "$majorVersion" -ge "$currentMaxMajorVersion" ] && \
             [ "$minorVersion" -gt "$currentMaxMinorVersion" ] ); then
         currentMaxMajorVersion=$majorVersion
         currentMaxMinorVersion=$minorVersion

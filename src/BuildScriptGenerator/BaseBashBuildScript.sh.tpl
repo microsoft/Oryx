@@ -69,8 +69,8 @@ echo "Source directory     : $SOURCE_DIR"
 echo "Destination directory: $DESTINATION_DIR"
 echo
 
-{{ for Snippet in PlatformInstallationScriptSnippets }}
-{{~ Snippet }}
+{{ if PlatformInstallationScript | IsNotBlank }}
+{{ PlatformInstallationScript }}
 {{ end }}
 
 cd "$SOURCE_DIR"

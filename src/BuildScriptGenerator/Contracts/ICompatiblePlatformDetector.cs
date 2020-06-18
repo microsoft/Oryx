@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public interface ICompatiblePlatformDetector
     {
-        IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(RepositoryContext ctx);
+        IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(RepositoryContext ctx);
 
         /// <summary>
         /// Returns the compatible platforms for the given repository context. If a platform name (and version) was
@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="ctx">The <see cref="RepositoryContext"/>.</param>
         /// <returns>A dictionary mapping the valid platforms to the compatible version.</returns>
-        IDictionary<IProgrammingPlatform, string> GetCompatiblePlatforms(
+        IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(
             RepositoryContext ctx,
             IEnumerable<PlatformDetectorResult> detectionResults);
     }

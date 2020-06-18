@@ -138,18 +138,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
-            console.WriteLine("Build orchestrated by Microsoft Oryx, https://github.com/Microsoft/Oryx");
-            console.WriteLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
-            console.WriteLine();
-
+            var beginningOutputLog = GetBeginningCommandOutputLog();
+            console.WriteLine(beginningOutputLog);
             var buildInfo = new DefinitionListFormatter();
-            buildInfo.AddDefinition(
-                "Oryx Version",
-                $"{oryxVersion}, " +
-                $"Commit: {oryxCommitId}, " +
-                $"ReleaseTagName: {oryxReleaseTagName}");
             buildInfo.AddDefinition("Build Operation ID", buildOperationId);
-
             if (!string.IsNullOrWhiteSpace(sourceRepoCommitId))
             {
                 buildInfo.AddDefinition("Repository Commit", sourceRepoCommitId);
@@ -263,6 +255,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {
+                console.WriteLine();
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
                     new[]
@@ -348,7 +341,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal override IServiceProvider GetServiceProvider(IConsole console)
+        internal override IServiceProvider TryGetServiceProvider(IConsole console)
         {
             // Gather all the values supplied by the user in command line
             SourceDir = string.IsNullOrEmpty(SourceDir) ?
@@ -422,6 +415,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             void SetPropertyValueInConfigurationSource(string key)
             {
+                // Set the platform version only if it is present otherwise we would be overwriting any
+                // value that is set by earlier configuration sources.
                 if (buildProperties.TryGetValue(key, out var value))
                 {
                     commandLineConfigSource.Set(key, value);
@@ -430,9 +425,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             void SetPlatformVersion(string platformName, string platformVersion)
             {
-                platformName = platformName == "nodejs" ? "node" : platformName;
-                var platformVersionKey = $"{platformName}_version".ToUpper();
-                commandLineConfigSource.Set(platformVersionKey, platformVersion);
+                if (string.IsNullOrEmpty(platformName))
+                {
+                    return;
+                }
+
+                commandLineConfigSource.Set(SettingsKeys.PlatformName, platformName);
+
+                // Set the platform version only if it is present otherwise we would be overwriting any
+                // value that is set by earlier configuration sources.
+                if (!string.IsNullOrEmpty(platformVersion))
+                {
+                    platformName = platformName == "nodejs" ? "node" : platformName;
+                    var platformVersionKey = $"{platformName}_version".ToUpper();
+                    commandLineConfigSource.Set(platformVersionKey, platformVersion);
+                }
             }
         }
 

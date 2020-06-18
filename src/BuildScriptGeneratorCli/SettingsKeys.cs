@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string CustomRunBuildCommand = "RUN_BUILD_COMMAND";
         public const string PythonVersion = "PYTHON_VERSION";
         public const string PhpVersion = "PHP_VERSION";
+        public const string HugoVersion = "HUGO_VERSION";
         public const string Project = "PROJECT";
         public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";
         public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";

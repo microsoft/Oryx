@@ -5,54 +5,74 @@
 
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
     class HugoPlatform : IProgrammingPlatform
     {
-        private readonly IEnvironment _environment;
         private readonly ILogger<HugoPlatform> _logger;
         private readonly HugoPlatformInstaller _platformInstaller;
         private readonly BuildScriptGeneratorOptions _commonOptions;
+        private readonly HugoScriptGeneratorOptions _hugoScriptGeneratorOptions;
+        private readonly HugoPlatformDetector _detector;
 
         public HugoPlatform(
-            IEnvironment environment,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
+            IOptions<HugoScriptGeneratorOptions> hugoScriptGeneratorOptions,
             ILogger<HugoPlatform> logger,
-            HugoPlatformInstaller platformInstaller)
+            HugoPlatformInstaller platformInstaller,
+            HugoPlatformDetector detector)
         {
-            _environment = environment;
             _logger = logger;
             _platformInstaller = platformInstaller;
             _commonOptions = commonOptions.Value;
+            _hugoScriptGeneratorOptions = hugoScriptGeneratorOptions.Value;
+            _detector = detector;
         }
 
+        /// <inheritdoc/>
         public string Name => HugoConstants.PlatformName;
 
+        /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions => new[] { HugoConstants.Version };
 
+        /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var isHugoApp = StaticSiteGeneratorHelper.IsHugoApp(context.SourceRepo, _environment);
-            if (isHugoApp)
+            PlatformDetectorResult detectionResult;
+            if (TryGetExplicitVersion(out var explicitVersion))
             {
-                return new PlatformDetectorResult
+                detectionResult = new PlatformDetectorResult
                 {
                     Platform = HugoConstants.PlatformName,
-                    PlatformVersion = HugoConstants.Version,
+                    PlatformVersion = explicitVersion,
                 };
             }
+            else
+            {
+                detectionResult = _detector.Detect(context);
+            }
 
-            return null;
+            if (detectionResult == null)
+            {
+                return null;
+            }
+
+            var version = ResolveVersion(detectionResult.PlatformVersion);
+            detectionResult.PlatformVersion = version;
+            return detectionResult;
         }
 
-        public BuildScriptSnippet GenerateBashBuildScriptSnippet(BuildScriptGeneratorContext context)
+        /// <inheritdoc/>
+        public BuildScriptSnippet GenerateBashBuildScriptSnippet(
+            BuildScriptGeneratorContext context,
+            PlatformDetectorResult detectorResult)
         {
             var manifestFileProperties = new Dictionary<string, string>();
-            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = context.ResolvedHugoVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,
@@ -66,45 +86,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             };
         }
 
+        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             return null;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return Array.Empty<string>();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(
             BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return Array.Empty<string>();
         }
 
-        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context)
+        /// <inheritdoc/>
+        public string GetInstallerScriptSnippet(
+            BuildScriptGeneratorContext context,
+            PlatformDetectorResult detectorResult)
         {
             string installationScriptSnippet = null;
             if (_commonOptions.EnableDynamicInstall)
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(context.ResolvedHugoVersion))
+                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
                 {
                     _logger.LogDebug(
                        "Hugo version {version} is already installed. So skipping installing it again.",
-                       context.ResolvedHugoVersion);
+                       detectorResult.PlatformVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "Hugo version {version} is not installed. " +
                         "So generating an installation script snippet for it.",
-                        context.ResolvedHugoVersion);
+                        detectorResult.PlatformVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        context.ResolvedHugoVersion);
+                        detectorResult.PlatformVersion);
                 }
             }
             else
@@ -135,20 +161,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             return true;
         }
 
-        public void SetRequiredTools(
-            ISourceRepo sourceRepo,
-            string targetPlatformVersion,
-            [NotNull] IDictionary<string, string> toolsToVersion)
+        public string ResolveVersion(string versionToResolve)
         {
-            if (!string.IsNullOrWhiteSpace(targetPlatformVersion))
-            {
-                toolsToVersion[ToolNameConstants.HugoName] = targetPlatformVersion;
-            }
+            var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
+            resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
+            return resolvedVersion;
         }
 
-        public void SetVersion(BuildScriptGeneratorContext context, string version)
+        private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
-            context.ResolvedHugoVersion = version;
+            // Explicitly specified version by user wins over detected version
+            if (!string.IsNullOrEmpty(_hugoScriptGeneratorOptions.HugoVersion))
+            {
+                return _hugoScriptGeneratorOptions.HugoVersion;
+            }
+
+            // If a version was detected, then use it.
+            if (detectedVersion != null)
+            {
+                return detectedVersion;
+            }
+
+            // Fallback to default version
+            return HugoConstants.Version;
+        }
+
+        private bool TryGetExplicitVersion(out string explicitVersion)
+        {
+            explicitVersion = null;
+
+            var platformName = _commonOptions.PlatformName;
+            if (platformName.EqualsIgnoreCase(HugoConstants.PlatformName))
+            {
+                if (string.IsNullOrWhiteSpace(_hugoScriptGeneratorOptions.HugoVersion))
+                {
+                    return false;
+                }
+
+                explicitVersion = _hugoScriptGeneratorOptions.HugoVersion;
+                return true;
+            }
+
+            return false;
         }
     }
 }

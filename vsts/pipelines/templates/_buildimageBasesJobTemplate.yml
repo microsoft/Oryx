@@ -1,11 +1,13 @@
 parameters:
   displayName: ''
   imageDir: ''
+  imageDebianFlavor: ''
   scriptPath: ''
   artifactsFileName: ''
+  jobName: ''
 
 jobs:
-- job: Build_BaseImage
+- job: ${{ parameters.jobName }}
   displayName: ${{ parameters.displayName }}
   timeoutInMinutes: 250
   steps:
@@ -15,7 +17,7 @@ jobs:
     displayName: Build images
     inputs:
       scriptPath: ${{ parameters.scriptPath }}
-      args: ${{ parameters.imageDir }}
+      args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
 
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory

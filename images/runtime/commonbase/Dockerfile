@@ -1,4 +1,5 @@
-FROM buildpack-deps:stretch-curl
+ARG DEBIAN_FLAVOR
+FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 

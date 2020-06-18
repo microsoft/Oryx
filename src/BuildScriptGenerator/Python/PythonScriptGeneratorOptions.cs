@@ -10,5 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public bool EnableCollectStatic { get; set; }
 
         public string VirtualEnvironmentName { get; set; }
+
+        public string PythonVersion { get; set; }
     }
 }

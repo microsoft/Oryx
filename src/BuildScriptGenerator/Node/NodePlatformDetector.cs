@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -111,8 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return null;
             }
 
-            var version = GetVersion(context);
-            version = GetMaxSatisfyingVersionAndVerify(version);
+            var version = GetVersionFromPackageJson(context);
 
             return new PlatformDetectorResult
             {
@@ -121,54 +120,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             };
         }
 
-        public string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exception = new UnsupportedVersionException(
-                    NodeConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exception,
-                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
-                throw exception;
-            }
-
-            return maxSatisfyingVersion;
-        }
-
-        private string GetVersion(RepositoryContext context)
-        {
-            if (context.ResolvedNodeVersion != null)
-            {
-                return context.ResolvedNodeVersion;
-            }
-
-            var version = GetVersionFromPackageJson(context);
-            if (version != null)
-            {
-                return version;
-            }
-
-            return GetDefaultVersionFromProvider();
-        }
-
         private string GetVersionFromPackageJson(RepositoryContext context)
         {
             var packageJson = NodePlatform.GetPackageJsonObject(context.SourceRepo, _logger);
             return packageJson?.engines?.node?.Value as string;
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
         }
     }
 }

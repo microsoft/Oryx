@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "php")]
     public class PhpGreetingsAppTest : PhpEndToEndTestsBase
     {
-        private const string ExifImageTypePng = "3";
+        private const string ExifImageDebianFlavorPng = "3";
 
         public PhpGreetingsAppTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)

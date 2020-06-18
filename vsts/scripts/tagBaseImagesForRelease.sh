@@ -8,15 +8,23 @@ set -o pipefail
 
 declare -r artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images"
 declare -r outFileName="base-images-mcr.txt" 
-declare -r acrProdRepo="oryxmcr.azurecr.io/public/oryx"
+declare -r acrProdRepo="$2.azurecr.io/public/oryx"
 declare -r buildNumber=$BUILD_BUILDNUMBER
-
+ 
 function retagImageWithStagingRepository()
 {
-    echo "Pulling and retagging bases images for '$1'..."
+    echo "Number of arguments passed: $@"
+    echo "Pulling and retagging bases images from '$1'..."
+
+    # '$1' is the imagetag file name
+    # '$2' is the image name e.g dotnetcore
+    # '$3' argument is the debianflavor e.g buster or stretch
+
+    echo "Reading file '$1' to pull images from dev acr ..."
+    echo "Retagging images for image '$3' based '$2' for registry '$acrProdRepoPrefix'..."
     
     local artifactsFile="$artifactsDir/$1"
-    local outFile="$artifactsDir/$2/$outFileName"
+    local outFile="$artifactsDir/$2/$acrProdRepoPrefix-$3-$outFileName"
 
     echo "output tags to be written to: '$outFile'"
 
@@ -29,7 +37,7 @@ function retagImageWithStagingRepository()
         # Following is an example of released tag for this image 
         # build-yarn-cache:20190621.3 
 
-        newtag=$(echo "$sourceImage" | sed -r 's/oryxdevmcr/oryxmcr/')
+        newtag=$(echo "$sourceImage" | sed -r 's/oryxdevmcr/'"$acrProdRepoPrefix"'/')
         echo
         echo "Tagging the source image with tag $newtag ..."
         echo "$newtag">>"$outFile"
@@ -39,7 +47,11 @@ function retagImageWithStagingRepository()
     done <"$artifactsFile"
 }
 
+# first argument to the script is the image name e.g dotnetcore
+# second argument to the script is the acrrepoprefix, e.g. oryxmcr
+
 imageName=$1
+acrProdRepoPrefix="$2"
 
 if [[ -z $imageName ]]; then
   echo
@@ -53,32 +65,37 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "node" ]
 then
   echo ""
-  retagImageWithStagingRepository node-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository node-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "python-build" ]
 then
   echo ""
-  retagImageWithStagingRepository python-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository python-buildimage-bases.txt $imageName $acrProdRepoPrefix
 elif [ "$imageName" == "php-build" ]
 then
   echo ""
-  retagImageWithStagingRepository php-buildimage-bases.txt $imageName
+  retagImageWithStagingRepository php-buildimage-bases.txt $imageName $acrProdRepoPrefix
 elif [ "$imageName" == "php" ]
 then
   echo ""
-  retagImageWithStagingRepository php-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository php-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository php-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "php-fpm" ]
 then
   echo ""
   echo $imageName
-  retagImageWithStagingRepository php-fpm-runtimeimage-bases.txt $imageName
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""
-  retagImageWithStagingRepository dotnetcore-runtimeimage-bases.txt $imageName
+  echo $imageName
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-stretch.txt $imageName stretch
 else
   echo "ImageName $imageName is invalid/not supported.. "
   exit 1

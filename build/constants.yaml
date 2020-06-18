@@ -18,10 +18,10 @@
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
-    dot-net-core-21-sdk-version: 2.1.806
+    dot-net-core-21-sdk-version: 2.1.807
     dot-net-core-22-sdk-version: 2.2.402
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.202
+    dot-net-core-31-sdk-version: 3.1.301
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -31,15 +31,15 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20200520.4
+    dot-net-core-runtime-base-tag: 20200611.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
-    net-core-app-21: 2.1.18
+    net-core-app-21: 2.1.19
     net-core-app-22: 2.2.7
     net-core-app-30: 3.0.3
-    net-core-app-31: 3.1.4
-    net-core-app-50: 5.0.0-preview.3.20214.6
+    net-core-app-31: 3.1.5
+    net-core-app-50: 5.0.0-preview.4.20251.6
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -65,8 +65,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20200226.2
-    php-fpm-runtime-base-tag: 20200313.4
+    php-runtime-base-tag: 20200610.1
+    php-fpm-runtime-base-tag: 20200610.2
     composer-version: 1.9.3
     composer-sha384: e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a
     # hashes are for .tar.xz
@@ -110,8 +110,8 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200522.1
-    yarn-cache-base-tag: 20200217.4
+    node-runtime-base-tag: 20200610.1
+    yarn-cache-base-tag: 20200529.1
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -167,6 +167,11 @@
     installed-hugo-versions-dir: /opt/hugo
     installation-url-format: https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#
     tar-file-name-format: hugo_extended_#VERSION#_Linux-64bit.tar.gz
+    toml-file-name: config.toml
+    yaml-file-name: config.yaml
+    yml-file-name: config.yml
+    json-file-name: config.json
+    config-folder-name: config
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/Hugo

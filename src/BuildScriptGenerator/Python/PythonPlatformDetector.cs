@@ -8,24 +8,20 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     internal class PythonPlatformDetector : IPlatformDetector
     {
-        private readonly IPythonVersionProvider _versionProvider;
         private readonly PythonScriptGeneratorOptions _options;
         private readonly ILogger<PythonPlatformDetector> _logger;
 
         public PythonPlatformDetector(
-            IPythonVersionProvider pythonVersionProvider,
             IOptions<PythonScriptGeneratorOptions> options,
             ILogger<PythonPlatformDetector> logger,
             IStandardOutputWriter writer)
         {
-            _versionProvider = pythonVersionProvider;
             _options = options.Value;
             _logger = logger;
         }
@@ -68,57 +64,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 }
             }
 
-            var version = GetVersion(context, versionFromRuntimeFile);
-            version = GetMaxSatisfyingVersionAndVerify(version);
-
             return new PlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
-                PlatformVersion = version,
+                PlatformVersion = versionFromRuntimeFile,
             };
-        }
-
-        public string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exc = new UnsupportedVersionException(
-                    PythonConstants.PlatformName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exc,
-                    $"Exception caught, the version '{version}' is not supported for the Python platform.");
-                throw exc;
-            }
-
-            return maxSatisfyingVersion;
-        }
-
-        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
-        {
-            if (context.ResolvedPythonVersion != null)
-            {
-                return context.ResolvedPythonVersion;
-            }
-
-            if (versionFromRuntimeFile != null)
-            {
-                return versionFromRuntimeFile;
-            }
-
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            var versionInfo = _versionProvider.GetVersionInfo();
-            return versionInfo.DefaultVersion;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

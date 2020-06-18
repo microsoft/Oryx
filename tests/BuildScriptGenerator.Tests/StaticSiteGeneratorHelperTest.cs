@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 

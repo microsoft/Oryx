@@ -12,10 +12,15 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 
+buildImageDebianFlavor="$1"
+
 echo
 echo Building build images for tests...
-docker build -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
-docker build -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions" -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions" -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
 
 echo
 dockerCleanupIfRequested

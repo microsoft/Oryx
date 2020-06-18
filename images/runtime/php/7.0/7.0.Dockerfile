@@ -1,5 +1,5 @@
 # Commit b4319e8f767f1200c9013e08baf2c34b9c84e301 from repo https://github.com/docker-library/php.git
-FROM php-run-base
+FROM php-run-base-stretch
 ARG IMAGES_DIR=/tmp/oryx/images
 
 RUN apt-get update \

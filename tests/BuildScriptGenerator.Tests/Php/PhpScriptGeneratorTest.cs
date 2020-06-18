@@ -59,9 +59,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile(ComposerFileWithBuildScript, PhpConstants.ComposerFileName);
             var context = CreateBuildScriptGeneratorContext(repo);
+            var detectorResult = new PlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
 
             // Act
-            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context);
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 
             // Assert
             Assert.NotNull(snippet);
@@ -125,7 +130,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
-
             return new PhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
