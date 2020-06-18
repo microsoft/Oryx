@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     /// Gets the relative path to the project file which user requested explicitly through either the 'PROJECT'
     /// environment variable or the 'project' build property.
     /// </summary>
-    internal class ExplicitProjectFileProvider : IProjectFileProvider
+    public class ExplicitProjectFileProvider : IProjectFileProvider
     {
         private readonly IOptions<DetectorOptions> _options;
         private readonly ILogger<ExplicitProjectFileProvider> _logger;
@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             _logger = logger;
         }
 
-        public string GetRelativePathToProjectFile(RepositoryContext context)
+        public string GetRelativePathToProjectFile(DetectorContext context)
         {
             var projectPath = GetProjectInfoFromSettings(context);
             if (string.IsNullOrEmpty(projectPath))
@@ -48,14 +48,13 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             else
             {
                 _logger.LogWarning($"Could not find the .NET Core project file.");
-                throw new Exception(
-                    string.Format(Resources.Labels.DotNetCoreCouldNotFindProjectFileToBuild, projectFile));
+                throw new InvalidProjectFileException("Could not find the .NET Core project file.");
             }
 
             return projectFileWithRelativePath;
         }
 
-        private string GetProjectInfoFromSettings(RepositoryContext context)
+        private string GetProjectInfoFromSettings(DetectorContext context)
         {
             // Value from command line has higher precedence than from environment variables
             if (context.Properties != null && context.Properties.TryGetValue(

@@ -6,10 +6,11 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using Microsoft.Oryx.Detector.Node;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.Tests.Node
 {
-    public class NodePlatformDetectorTest
+    public class NodeDetectorTest
     {
         private const string PackageJsonWithNoVersions = @"{
           ""name"": ""mynodeapp"",
@@ -106,7 +107,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_IfSourceDirectory_DoesNotHaveAnyFiles()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             // No files in source directory
             var repo = new MemorySourceRepo();
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithNodeLtsVersion_ForSourceRepoOnlyWithServerJs()
+        public void Detect_ReturnsNullVersion_ForSourceRepoOnlyWithServerJs()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -134,14 +134,13 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
         public void Detect_ReturnsNull_ForSourceRepoWithServerJs_NotInRootDirectory()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "server.js");
@@ -155,7 +154,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForSourceRepoOnlyWithAppJs()
+        public void Detect_ReturnsNullVersion_ForSourceRepoOnlyWithAppJs()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -169,14 +168,13 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
         public void Detect_ReturnsNull_ForSourceRepoWithAppJs_NotInRootDirectory()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             var repo = new MemorySourceRepo();
             repo.AddFile(SimpleServerJs, "subDir1", "app.js");
@@ -188,49 +186,9 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.Null(result);
         }
-
+       
         [Fact]
-        public void Detect_ReturnsResult_WithNodeVersionFromOptions_ForPackageJsonWithNoNodeVersion()
-        {
-            // Arrange
-            var version = "500.500.500";
-            var detector = CreateNodePlatformDetector();
-            var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
-            context.ResolvedNodeVersion = version;
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(version, result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsVersionFromEnvironmentVariable_EvenIfPackageJsonHasVersion()
-        {
-            // Arrange
-            var detector = CreateNodePlatformDetector();
-            var repo = new MemorySourceRepo();
-            var packageJson = PackageJsonTemplateWithNodeVersion.Replace("#VERSION_RANGE#", "6.11.0");
-            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
-            context.ResolvedNodeVersion = "10.14.0";
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Platform);
-            Assert.Equal("10.14.0", result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithNoVersion()
+        public void Detect_ReturnsNullVersion_ForPackageJsonWithNoVersion()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -244,14 +202,13 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
         public void Detect_ReturnsNull_ForSourceRepoWithPackageJson_NotInRootDirectory()
         {
             // Arrange
-            var version = "8.11.2";
             var detector = CreateNodePlatformDetector();
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNodeVersion, "subDir1", NodeConstants.PackageJsonFileName);
@@ -265,7 +222,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithOnlyNpmVersion()
+        public void Detect_ReturnsNullVersion_ForPackageJsonWithOnlyNpmVersion()
         {
             // Node detector only looks for node version and not the NPM version. The individual script
             // generator looks for npm version.
@@ -282,7 +239,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
@@ -305,7 +262,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForMalformedPackageJson()
+        public void Detect_ReturnsNullVersion_ForMalformedPackageJson()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -319,11 +276,11 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithNoExplicitVersionsSpecified()
+        public void Detect_ReturnsNullVersion_ForPackageJsonWithNoExplicitVersionsSpecified()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -337,7 +294,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
-            Assert.Equal(NodeConstants.NodeLtsVersion, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Theory]
@@ -352,7 +309,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_IfIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
-            var version = "8.11.2";
             var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", iisStartupFileName);
             var detector = CreateNodePlatformDetector();
@@ -377,7 +333,6 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         public void Detect_ReturnsNull_IfServerJs_AndIISStartupFileIsPresent(string iisStartupFileName)
         {
             // Arrange
-            var version = "8.11.2";
             var sourceRepo = new MemorySourceRepo();
             sourceRepo.AddFile("", "server.js");
             sourceRepo.AddFile("", iisStartupFileName);
@@ -399,10 +354,10 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             };
         }
 
-        private NodePlatformDetector CreateNodePlatformDetector()
+        private NodeDetector CreateNodePlatformDetector()
         {
-            return new NodePlatformDetector(
-                NullLogger<NodePlatformDetector>.Instance);
+            return new NodeDetector(
+                NullLogger<NodeDetector>.Instance);
         }
 
     }

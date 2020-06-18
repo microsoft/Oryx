@@ -6,10 +6,12 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    public class NodePlatformDetector : IPlatformDetector
+    public class NodeDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -29,17 +31,15 @@ namespace Microsoft.Oryx.Detector.Node
             "app.js",
         };
 
-        private readonly ILogger<NodePlatformDetector> _logger;
+        private readonly ILogger<NodeDetector> _logger;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Node;
-
-        public NodePlatformDetector(
-            ILogger<NodePlatformDetector> logger)
+        public NodeDetector(
+            ILogger<NodeDetector> logger)
         {
             _logger = logger;
         }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(DetectorContext context)
         {
             bool isNodeApp = false;
 
@@ -109,31 +109,25 @@ namespace Microsoft.Oryx.Detector.Node
             };
         }
 
-        private string GetVersion(RepositoryContext context)
+        public PlatformName DetectorPlatformName => PlatformName.Node;
+
+        private string GetVersion(DetectorContext context)
         {
-            if (context.ResolvedNodeVersion != null)
-            {
-                return context.ResolvedNodeVersion;
-            }
             var version = GetVersionFromPackageJson(context);
             if (version != null)
             {
                 return version;
             }
-            _logger.LogDebug("Could not get version from package Json. Getting default version.");
-            return GetDefaultVersionFromProvider();
+            _logger.LogDebug("Could not get version from package Json.");
+            return null;
         }
 
-        private string GetVersionFromPackageJson(RepositoryContext context)
+        private string GetVersionFromPackageJson(DetectorContext context)
         {
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             return packageJson?.engines?.node?.Value as string;
         }
 
-        private string GetDefaultVersionFromProvider()
-        {
-            return NodeConstants.NodeDefaultVersion;
-        }
         private dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {
             dynamic packageJson = null;

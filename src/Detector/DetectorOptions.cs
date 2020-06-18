@@ -15,6 +15,9 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         public string SourceDir { get; set; }
 
+        /// <summary>
+        /// Output metatdata information of the detected platforms in JSON format.
+        /// </summary>
         public bool OutputJson { get; set; }
 
         /// <summary>

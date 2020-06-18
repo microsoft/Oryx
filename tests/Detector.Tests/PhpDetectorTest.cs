@@ -11,11 +11,11 @@ using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.Detector.Tests.Php
 {
-    public class PhpPlatformDetectorTest : IClassFixture<TestTempDirTestFixture>
+    public class PhpDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRoot;
 
-        public PhpPlatformDetectorTest(TestTempDirTestFixture testFixture)
+        public PhpDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
         }
@@ -52,44 +52,6 @@ namespace Microsoft.Oryx.Detector.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromOptions_EvenIfComposerFileHasVersionSpecified()
-        {
-            // Arrange
-            var detector = CreatePhpPlatformDetector();
-            var repo = new MemorySourceRepo();
-            var version = "5.6.0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
-            context.ResolvedPhpVersion = "100.100.100";
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("100.100.100", result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsVersion_FromOptions_EvenIfComposerFileHasVersionSpecified()
-        {
-            // Arrange
-            var detector = CreatePhpPlatformDetector();
-            var repo = new MemorySourceRepo();
-            var version = "5.6.0";
-            repo.AddFile("{\"require\":{\"php\":\"" + version + "\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
-            context.ResolvedPhpVersion = "7.2.5";
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("7.2.5", result.PlatformVersion);
-        }
-
-        [Fact]
         public void Detect_ReturnsVersion_FromComposerFile()
         {
             // Arrange
@@ -110,7 +72,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
         [Theory]
         [InlineData("invalid json")]
         [InlineData("{\"data\": \"valid but meaningless\"}")]
-        public void Detect_ReturnsResult_WithPhpDefaultRuntimeVersion_WithComposerFile(string composerFileContent)
+        public void Detect_ReturnsNullVersion_WithComposerFile(string composerFileContent)
         {
             // Arrange
             var detector = CreatePhpPlatformDetector();
@@ -125,7 +87,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
-            Assert.Equal(PhpVersions.Php73Version, result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
@@ -136,10 +98,10 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             };
         }
 
-        private PhpPlatformDetector CreatePhpPlatformDetector()
+        private PhpDetector CreatePhpPlatformDetector()
         {
-            return new PhpPlatformDetector(
-                NullLogger<PhpPlatformDetector>.Instance);
+            return new PhpDetector(
+                NullLogger<PhpDetector>.Instance);
         }
     }
 }

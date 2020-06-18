@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Common;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
@@ -16,7 +17,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             _projectFileProviders = projectFileProviders;
         }
 
-        public virtual string GetRelativePathToProjectFile(RepositoryContext context)
+        public virtual string GetRelativePathToProjectFile(DetectorContext context)
         {
             foreach (var projectFileProvider in _projectFileProviders)
             {

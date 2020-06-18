@@ -6,12 +6,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Detector.Resources;
 using System;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
+    public class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
 
@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             _logger = logger;
         }
 
-        public string GetRelativePathToProjectFile(RepositoryContext context)
+        public string GetRelativePathToProjectFile(DetectorContext context)
         {
             if (_probedForProjectFile)
             {
@@ -108,10 +108,10 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             if (projects.Count > 1)
             {
                 var projectList = string.Join(", ", projects);
-                throw new Exception(string.Format(
-                    Resources.Labels.DotNetCoreAmbiguityInSelectingProjectFile,
+                throw new InvalidProjectFileException(string.Format(
+                    "Ambiguity in selecting a project to build. Found multiple projects:",
                     projectList,
-                    "PROJECT"));
+                   "PROJECT"));
             }
 
             if (projects.Count == 1)

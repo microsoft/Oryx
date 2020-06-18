@@ -6,22 +6,22 @@
 using System;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    public class PhpPlatformDetector : IPlatformDetector
+    public class PhpDetector : IPlatformDetector
     {
-        private readonly ILogger<PhpPlatformDetector> _logger;
+        private readonly ILogger<PhpDetector> _logger;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Php;
-
-        public PhpPlatformDetector(
-            ILogger<PhpPlatformDetector> logger)
+        public PhpDetector(
+            ILogger<PhpDetector> logger)
         {
             _logger = logger;
         }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
@@ -39,24 +39,21 @@ namespace Microsoft.Oryx.Detector.Php
             };
         }
 
+        public PlatformName DetectorPlatformName => PlatformName.Php;
 
-        private string GetVersion(RepositoryContext context)
+        private string GetVersion(DetectorContext context)
         {
-            if (context.ResolvedPhpVersion != null)
-            {
-                return context.ResolvedPhpVersion;
-            }
 
             var version = GetVersionFromComposerFile(context);
             if (version != null)
             {
                 return version;
             }
-            _logger.LogDebug("Could not get version from the composer file. Getting default version.");
-            return GetDefaultVersionFromProvider();
+            _logger.LogDebug("Could not get version from the composer file. ");
+            return null;
         }
 
-        private string GetVersionFromComposerFile(RepositoryContext context)
+        private string GetVersionFromComposerFile(DetectorContext context)
         {
             dynamic composerFile = null;
             try
@@ -76,11 +73,5 @@ namespace Microsoft.Oryx.Detector.Php
 
             return composerFile?.require?.php?.Value as string;
         }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            return PhpConstants.PhpDefaultVersion;
-        }
-
     }
 }

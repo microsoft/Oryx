@@ -25,11 +25,25 @@ namespace Microsoft.Oryx.Detector
         bool FileExists(params string[] paths);
 
         /// <summary>
+        /// Check whether a directory exists in the source repo.
+        /// </summary>
+        /// <param name="paths">The path to the directory inside the source repo.</param>
+        /// <returns>true if the directory exists, false otherwise.</returns>
+        bool DirExists(params string[] paths);
+
+        /// <summary>
         /// Reads a file from the source repo.
         /// </summary>
         /// <param name="paths">Path to the file inside the repo.</param>
         /// <returns>The content of the file.</returns>
         string ReadFile(params string[] paths);
+
+        /// <summary>
+        /// Reads all lines in a file from the source repo.
+        /// </summary>
+        /// <param name="paths">Path to the file inside the repo.</param>
+        /// <returns>An array of lines from the file.</returns>
+        string[] ReadAllLines(params string[] paths);
 
         /// <summary>
         /// Gets a list of paths to files based on the specified <paramref name="searchPattern"/>.
@@ -40,5 +54,11 @@ namespace Microsoft.Oryx.Detector
         /// </param>
         /// <returns>A collection of file paths.</returns>
         IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories);
+
+        /// <summary>
+        /// Gets a current commit ID.
+        /// </summary>
+        /// <returns>ID of the current commit.</returns>
+        string GetGitCommitId();
     }
 }

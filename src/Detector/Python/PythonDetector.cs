@@ -7,22 +7,22 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    public class PythonPlatformDetector : IPlatformDetector
+    public class PythonDetector : IPlatformDetector
     {
-        private readonly ILogger<PythonPlatformDetector> _logger;
+        private readonly ILogger<PythonDetector> _logger;
 
-        public PlatformName GetDetectorPlatformName => PlatformName.Python;
-
-        public PythonPlatformDetector(
-            ILogger<PythonPlatformDetector> logger)
+        public PythonDetector(
+            ILogger<PythonDetector> logger)
         {
             _logger = logger;
         }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
             if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
@@ -69,24 +69,17 @@ namespace Microsoft.Oryx.Detector.Python
             };
         }
 
-        private string GetVersion(RepositoryContext context, string versionFromRuntimeFile)
+        public PlatformName DetectorPlatformName => PlatformName.Python;
+
+        private string GetVersion(DetectorContext context, string versionFromRuntimeFile)
         {
-            if (context.ResolvedPythonVersion != null)
-            {
-                return context.ResolvedPythonVersion;
-            }
             if (versionFromRuntimeFile != null)
             {
                 return versionFromRuntimeFile;
             }
             _logger.LogDebug(
-                            "Could not get version from runtime file. Getting default version.");
-            return GetDefaultVersionFromProvider();
-        }
-
-        private string GetDefaultVersionFromProvider()
-        {
-            return PythonConstants.PythonDefaultVersion;
+                            "Could not get version from runtime file. ");
+            return null;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

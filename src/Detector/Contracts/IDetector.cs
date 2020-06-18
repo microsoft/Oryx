@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector
 {
@@ -15,8 +16,8 @@ namespace Microsoft.Oryx.Detector
         /// <summary>
         /// Returns all platforms detected for the given repository context.
         /// </summary>
-        /// <param name="ctx">The <see cref="RepositoryContext"/>.</param>
+        /// <param name="ctx">The <see cref="DetectorContext"/>.</param>
         /// <returns>A dictionary mapping the detected platforms to the version.</returns>
-        IDictionary<PlatformName, string> GetAllDetectedPlatforms(RepositoryContext ctx);
+        IDictionary<PlatformName, string> GetAllDetectedPlatforms(DetectorContext ctx);
     }
 }

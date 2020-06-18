@@ -3,16 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
-    public class DotNetCorePlatformDetectorTest
+    public class DotNetCoreDetectorTest
     {
         private const string ProjectFileWithNoTargetFramework = @"
         <Project Sdk=""Microsoft.NET.Sdk.Web"">
@@ -148,12 +147,12 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             };
         }
 
-        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(
+        private DotNetCoreDetector CreateDotNetCorePlatformDetector(
             string projectFile)
         {
-            return new DotNetCorePlatformDetector(
+            return new DotNetCoreDetector(
                 new TestProjectFileProvider(projectFile),
-                NullLogger<DotNetCorePlatformDetector>.Instance);
+                NullLogger<DotNetCoreDetector>.Instance);
         }
 
         private class TestProjectFileProvider : DefaultProjectFileProvider
@@ -166,7 +165,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 _projectFilePath = projectFilePath;
             }
 
-            public override string GetRelativePathToProjectFile(RepositoryContext context)
+            public override string GetRelativePathToProjectFile(DetectorContext context)
             {
                 return _projectFilePath;
             }

@@ -3,15 +3,19 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// Represents the result of a <see cref="IPlatformDetector.Detect(DetectorContext)"/> operation.
+    /// Exception to identify user errors, as opposed to system ones.
+    /// Its message must be user friendly, and can be displayed directly to the user.
     /// </summary>
-    public class PlatformDetectorResult
+    public class InvalidProjectFileException : Exception
     {
-        public string Platform { get; set; }
-
-        public string PlatformVersion { get; set; }
+        public InvalidProjectFileException(string message)
+            : base(message)
+        {
+        }
     }
 }
