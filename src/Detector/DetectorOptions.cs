@@ -25,9 +25,5 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         public string Project { get; set; }
 
-        /// <summary>
-        /// Gets or sets the arguments to be passed into the detector.
-        /// </summary>
-        public string[] PassThruArguments { get; set; }
     }
 }

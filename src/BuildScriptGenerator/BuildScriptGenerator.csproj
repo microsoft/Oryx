@@ -92,7 +92,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Detector\Detector.csproj" />
   </ItemGroup>
   
 </Project>

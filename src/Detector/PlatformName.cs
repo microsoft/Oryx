@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 namespace Microsoft.Oryx.Detector
-
 {
     public enum PlatformName
     {
