@@ -26,20 +26,19 @@ apt-get update \
         ca-certificates \
         curl \
         xz-utils \
-        libsodium-dev \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
 
 ##<argon2>##
-#sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
-# { \
-#	echo 'Package: *';
-#	echo 'Pin: release n=buster';
-#	echo 'Pin-Priority: -10';
-#	echo;
-#	echo 'Package: libargon2*';
-#	echo 'Pin: release n=buster';
-#	echo 'Pin-Priority: 990';
-#} > /etc/apt/preferences.d/argon2-buster;
-#apt-get update;
-#apt-get install -y --no-install-recommends libsodium-dev;
+sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
+{ \
+	echo 'Package: *';
+	echo 'Pin: release n=buster';
+	echo 'Pin-Priority: -10';
+	echo;
+	echo 'Package: libargon2*';
+	echo 'Pin: release n=buster';
+	echo 'Pin-Priority: 990';
+} > /etc/apt/preferences.d/argon2-buster;
+apt-get update;
+apt-get install -y --no-install-recommends libsodium-dev;
 ##</argon2>##

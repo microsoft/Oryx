@@ -255,6 +255,7 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 FROM python AS final
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ARG DEBIAN_FLAVOR
 WORKDIR /
 
 # Copy .NET Core related content
@@ -265,6 +266,23 @@ RUN cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
 
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
+
+# Install PHP pre-reqs
+#RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+    apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+        libsodium-dev \
+    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+    else \
+        chmod +x /php/*.sh && . /php/installPrereqs.sh ; \
+    fi 
+
 
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
