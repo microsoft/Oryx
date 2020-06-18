@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 ARG AGENTBUILD=${AGENTBUILD}
 ARG GIT_COMMIT=unspecified
