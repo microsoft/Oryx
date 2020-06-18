@@ -36,6 +36,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <param name="phpVersionProvider">The PHP version provider.</param>
         /// <param name="logger">The logger of PHP platform.</param>
         /// <param name="detector">The detector of PHP platform.</param>
+        /// <param name="commonOptions">The <see cref="BuildScriptGeneratorOptions"/>.</param>
+        /// <param name="phpComposerInstaller">The <see cref="PhpComposerInstaller"/>.</param>
+        /// <param name="phpInstaller">The <see cref="PhpPlatformInstaller"/>.</param>
         public PhpPlatform(
             IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -194,64 +197,71 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             if (_commonOptions.EnableDynamicInstall)
             {
-                var installationScriptSnippetBuilder = new StringBuilder();
-
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                // Install PHP
-                var phpVersion = detectorResult.PlatformVersion;
-                if (_phpInstaller.IsVersionAlreadyInstalled(phpVersion))
-                {
-                    _logger.LogDebug(
-                       "PHP version {version} is already installed. So skipping installing it again.",
-                       phpVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "PHP version {version} is not installed. " +
-                        "So generating an installation script snippet for it.",
-                        phpVersion);
+                var scriptBuilder = new StringBuilder();
 
-                    var script = _phpInstaller.GetInstallerScriptSnippet(phpVersion);
-                    installationScriptSnippetBuilder.AppendLine(script);
-                }
+                InstallPhp(detectorResult.PlatformVersion, scriptBuilder);
 
-                // Install PHP Composer
-                var phpComposerVersion = _phpScriptGeneratorOptions.PhpComposerVersion;
-                if (string.IsNullOrEmpty(phpComposerVersion))
-                {
-                    phpComposerVersion = PhpVersions.ComposerVersion;
-                }
+                InstallPhpComposer(_phpScriptGeneratorOptions.PhpComposerVersion, scriptBuilder);
 
-                if (_phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
-                {
-                    _logger.LogDebug(
-                       "PHP Composer version {version} is already installed. So skipping installing it again.",
-                       phpComposerVersion);
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "PHP Composer version {version} is not installed. " +
-                        "So generating an installation script snippet for it.",
-                        phpComposerVersion);
-
-                    var script = _phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
-                    installationScriptSnippetBuilder.AppendLine(script);
-                }
-
-                if (installationScriptSnippetBuilder.Length == 0)
+                if (scriptBuilder.Length == 0)
                 {
                     return null;
                 }
 
-                return installationScriptSnippetBuilder.ToString();
+                return scriptBuilder.ToString();
             }
             else
             {
                 _logger.LogDebug("Dynamic install not enabled.");
                 return null;
+            }
+        }
+
+        private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
+        {
+            if (_phpInstaller.IsVersionAlreadyInstalled(phpVersion))
+            {
+                _logger.LogDebug(
+                   "PHP version {version} is already installed. So skipping installing it again.",
+                   phpVersion);
+            }
+            else
+            {
+                _logger.LogDebug(
+                    "PHP version {version} is not installed. " +
+                    "So generating an installation script snippet for it.",
+                    phpVersion);
+
+                var script = _phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                scriptBuilder.AppendLine(script);
+            }
+        }
+
+        private void InstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
+        {
+            // Install PHP Composer
+            if (string.IsNullOrEmpty(phpComposerVersion))
+            {
+                phpComposerVersion = PhpVersions.ComposerVersion;
+            }
+
+            if (_phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
+            {
+                _logger.LogDebug(
+                   "PHP Composer version {version} is already installed. So skipping installing it again.",
+                   phpComposerVersion);
+            }
+            else
+            {
+                _logger.LogDebug(
+                    "PHP Composer version {version} is not installed. " +
+                    "So generating an installation script snippet for it.",
+                    phpComposerVersion);
+
+                var script = _phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                scriptBuilder.AppendLine(script);
             }
         }
 

@@ -8,7 +8,10 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    public class PhpPlatformInstaller : PlatformInstallerBase
+    /// <summary>
+    /// Generates an installation script snippet to install a PHP SDK.
+    /// </summary>
+    internal class PhpPlatformInstaller : PlatformInstallerBase
     {
         public PhpPlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,

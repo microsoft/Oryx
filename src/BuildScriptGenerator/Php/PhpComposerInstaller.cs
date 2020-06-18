@@ -9,7 +9,10 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    public class PhpComposerInstaller : PlatformInstallerBase
+    /// <summary>
+    /// Generates an installation script snippet to install PHP Composer.
+    /// </summary>
+    internal class PhpComposerInstaller : PlatformInstallerBase
     {
         public PhpComposerInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
