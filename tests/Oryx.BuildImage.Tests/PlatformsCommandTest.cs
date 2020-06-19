@@ -28,9 +28,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-               // get in json format so that it can be deserialized and verified
-               .AddCommand("oryx platforms --json")
-               .ToString();
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                // get in json format so that it can be deserialized and verified
+                .AddCommand("oryx platforms --json")
+                .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -74,9 +77,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         .Where(pr => pr.Name.EqualsIgnoreCase(PhpConstants.PlatformName))
                         .FirstOrDefault();
                     Assert.NotNull(phpPlatform);
-                    // Currently Php is not supported as part of dynamic install
-                    Assert.Null(phpPlatform.Versions);
-                    
+                    Assert.NotNull(phpPlatform.Versions);
+                    Assert.True(phpPlatform.Versions.Any());
+                    Assert.True(phpPlatform.Versions.Contains("5.6.40"));
+
                     var hugoPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(HugoConstants.PlatformName))
                         .FirstOrDefault();

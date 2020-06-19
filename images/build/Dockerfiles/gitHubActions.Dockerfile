@@ -118,6 +118,17 @@ COPY --from=nodetools-install /opt /opt
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
+# Install PHP pre-reqs
+RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+# NOTE: do not include the following lines in prereq installation script as
+# doing so is causing different version of libargon library being installed
+# causing php-composer to fail
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libargon2-0 \
+        libonig-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image
