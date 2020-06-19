@@ -12,22 +12,12 @@ steps:
   inputs:
     signType: 'Real'
 
-- powershell: |
-    $sdkVersion="2.1.806"
-    Write-Host "Settng .NET Core SDK version variable to $sdkVersion"
-    Write-Host "##vso[task.setvariable variable=DotNetCoreSdkVersion]$sdkVersion"
-  displayName: 'Setting .NET Core SDK version as a variable for later tasks'
-
 - task: UseDotNet@2
-  displayName: 'Installing .NET Core SDK'
+  displayName: 'Use .NET Core SDK 3.1.x'
   inputs:
-    packageType: 'sdk'
-    version: '$(DotNetCoreSdkVersion)'
+    version: 3.1.x
 
 - powershell: |
-    Write-Host "Creating global.json with sdk version $(DotNetCoreSdkVersion)..."
-    dotnet new globaljson --force --sdk-version $(DotNetCoreSdkVersion)
-
     Write-Host "Setting up git_commit and build_number as env variable"
     $env:GIT_COMMIT=$(git rev-parse HEAD)
     $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER

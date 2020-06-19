@@ -2,26 +2,21 @@ steps:
 - checkout: self
   clean: true
 
-- bash: |
-    sdkVersion="2.1.806"
-    echo "Settng .NET Core SDK version variable to '$sdkVersion'"
-    echo "##vso[task.setvariable variable=DotNetCoreSdkVersion]$sdkVersion"
-  displayName: 'Setting .NET Core SDK version as a variable for later tasks'
-
 - task: UseDotNet@2
-  displayName: 'Install .NET Core SDK'
+  displayName: 'Use .NET Core SDK 3.1.x'
   inputs:
-    packageType: 'sdk'
-    version: $(DotNetCoreSdkVersion)
+    version: 3.1.x
 
-- bash: |
-    echo "Creating global.json with sdk version $(DotNetCoreSdkVersion)..."
-    dotnet new globaljson --sdk-version $(DotNetCoreSdkVersion)
-    ./build/buildSln.sh Detector.sln
+- task: ShellScript@2
   displayName: 'Build Detector.sln'
+  inputs:
+    scriptPath: ./build/buildSln.sh
+    args: Detector.sln
 
-- bash: ./build/testDetector.sh
+- task: ShellScript@2
   displayName: 'Testing Detector'
+  inputs:
+    scriptPath: ./build/testDetector.sh
 
 - task: CopyFiles@2
   displayName: 'Copy content from artifacts folder in repo to agent artifacts folder'
