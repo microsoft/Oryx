@@ -14,9 +14,5 @@ namespace Microsoft.Oryx.Detector
     {
         public ISourceRepo SourceRepo { get; set; }
 
-        /// <summary>
-        /// Gets or sets specific properties for the generated script.
-        /// </summary>
-        public IDictionary<string, string> Properties { get; set; }
     }
 }

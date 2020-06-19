@@ -11,8 +11,8 @@ using Microsoft.Oryx.Common;
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
     /// <summary>
-    /// Gets the relative path to the project file which user requested explicitly through either the 'PROJECT'
-    /// environment variable or the 'project' build property.
+    /// Gets the relative path to the project file which user requested explicitly through the 'PROJECT'
+    /// environment variable
     /// </summary>
     public class ExplicitProjectFileProvider : IProjectFileProvider
     {
@@ -33,9 +33,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             if (string.IsNullOrEmpty(projectPath))
             {
                 _logger.LogDebug(
-                    "No request to build a particular project file explicitly either using the " +
-                    $"PROJECT environment variable or the " +
-                    $"'{DotNetCoreConstants.ProjectBuildPropertyKey}' build property");
+                    "No request to build a particular project file explicitly using the " +
+                    $"PROJECT environment variable");
                 return null;
             }
 
@@ -56,14 +55,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         private string GetProjectInfoFromSettings(DetectorContext context)
         {
-            // Value from command line has higher precedence than from environment variables
-            if (context.Properties != null && context.Properties.TryGetValue(
-                DotNetCoreConstants.ProjectBuildPropertyKey,
-                out var projectFromProperty))
-            {
-                return projectFromProperty;
-            }
-
             if (!string.IsNullOrEmpty(_options.Value.Project))
             {
                 return _options.Value.Project;

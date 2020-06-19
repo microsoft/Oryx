@@ -182,7 +182,6 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             return new DetectorContext
             {
                 SourceRepo = sourceRepo,
-                Properties = new Dictionary<string, string>(),
             };
         }
 
