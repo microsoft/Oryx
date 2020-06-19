@@ -247,9 +247,6 @@ RUN cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 
-# Install PHP pre-reqs
-RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
-
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
@@ -261,25 +258,8 @@ RUN cd ${IMAGES_DIR} \
     && ./installPlatform.sh php $PHP56_VERSION \
     && ./installPlatform.sh php $PHP70_VERSION \
     && ./installPlatform.sh php $PHP72_VERSION \
-    && ./installPlatform.sh php $PHP73_VERSION \
-    && ./installPlatform.sh php $PHP74_VERSION \
-    && ./installPlatform.sh php-composer $COMPOSER_VERSION
-
-RUN ln -s /opt/php/5.6 /opt/php/5 \
- && ln -s /opt/php/7.3 /opt/php/7 \
- && ln -s /opt/php/7 /opt/php/lts \
- && cd /opt/php-composer \
- && ln -sfn 1.9.3 stable
-#  && ln -sfn 1 stable
-RUN ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libargon2-0 \
-        libonig-dev \
-    && rm -rf /var/lib/apt/lists/* 
-
-ENV ORYX_PATHS="${ORYX_PATHS}:/opt/php/lts/bin"
-ENV PATH="${ORYX_PATHS}:$PATH"
+    && ./installPlatform.sh php $PHP74_VERSION
+RUN ln -s /opt/php/5.6 /opt/php/5
 
 RUN rm -rf /tmp/oryx
 
