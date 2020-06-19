@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <!-- The following is to enable copying the .dlls of referenced projects (ex: Microsoft.Oryx.Common here) as part
     of the generated nuget package's "lib" foler -->
     <TargetsForTfmSpecificBuildOutput>

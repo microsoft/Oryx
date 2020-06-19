@@ -22,7 +22,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <NuGetPackages Include="$(OutDir)..\*.nupkg" />
+      <NuGetPackages Include="$(OutDir)*.nupkg" />
     </ItemGroup>
 
     <MakeDir Directories="$(ArtifactsPackagesDir)" ContinueOnError="true" />
