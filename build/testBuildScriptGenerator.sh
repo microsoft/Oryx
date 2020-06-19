@@ -29,6 +29,14 @@ dotnet test \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
     -c $BUILD_CONFIGURATION
 
+testProjectName="Detector.Tests"
+cd "$TESTS_SRC_DIR/$testProjectName"
+dotnet test \
+    --blame \
+    --test-adapter-path:. \
+    --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
+    -c $BUILD_CONFIGURATION
+
 # --blame flag generates an xml file which it drops under the project directory.
 # Copy that file to artifacts directory too
 if [ -d "TestResults" ]; then
