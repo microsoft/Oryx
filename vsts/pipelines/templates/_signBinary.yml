@@ -34,6 +34,11 @@ steps:
     restoreSolution: Oryx.sln
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 3.1.x'
+  inputs:
+    version: 3.1.x
+
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
     $env:GIT_COMMIT=$(git rev-parse HEAD)
@@ -41,12 +46,7 @@ steps:
     dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
   displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
-      
+  
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
   inputs:
