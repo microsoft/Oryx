@@ -2,7 +2,10 @@
 echo "PHP executable: $phpBin"
 
 {{ if ComposerFileExists }}
-declare -r composer='/opt/php-composer/composer.phar'
+if [ -z "$composer" ]; then
+	composer='/opt/php-composer/composer.phar'
+fi
+
 echo "Composer archive: $composer"
 echo "Running 'composer install --ignore-platform-reqs --no-interaction'..."
 echo

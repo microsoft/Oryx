@@ -13,5 +13,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         internal const string PhpRuntimeVersionEnvVarName = "PHP_VERSION";
         internal const string DefaultPhpRuntimeVersion = Common.PhpVersions.Php73Version;
         internal const string InstalledPhpVersionsDir = "/opt/php/"; // TODO: consolidate with Dockerfile to yaml?
+        internal const string InstalledPhpComposerVersionDir = "/opt/php-composer/";
     }
 }

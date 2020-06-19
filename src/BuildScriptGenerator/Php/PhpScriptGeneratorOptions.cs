@@ -8,5 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     public class PhpScriptGeneratorOptions
     {
         public string PhpVersion { get; set; }
+
+        public string PhpComposerVersion { get; set; }
     }
 }
