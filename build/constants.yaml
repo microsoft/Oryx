@@ -186,7 +186,7 @@
     version: '$(VERSION_PREFIX)-$(VERSION_SUFFIX)'
   outputs:
     - type: msbuild
-      directory: build
+      directory: build\detector
       file-name-prefix: __
 - name: detector-nuget-packages-versions
   constants:
@@ -195,7 +195,7 @@
     version: '"$VERSION_PREFIX-$VERSION_SUFFIX"'
   outputs:
     - type: shell
-      directory: build
+      directory: build\detector
       file-name-prefix: __
 - name: detector-nuget-packages-versions
   constants:
@@ -204,5 +204,5 @@
     version: '"$VERSION_PREFIX-$VERSION_SUFFIX"'
   outputs:
     - type: powershell
-      directory: build
+      directory: build\detector
       file-name-prefix: __

@@ -16,7 +16,7 @@ function DeleteItem($pathToRemove) {
 
 $repoRoot="$PSScriptRoot\..\.."
 $artifactsPackagesDir="$repoRoot\artifacts\packages"
-. $repoRoot\build\__detectorNugetPackagesVersions.ps1
+. $repoRoot\build\detector\__detectorNugetPackagesVersions.ps1
 $detectorName="Microsoft.Oryx.Detector"
 $commonProjectAssemblyName="Microsoft.Oryx.Common"
 cd "$artifactsPackagesDir"

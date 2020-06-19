@@ -8,7 +8,7 @@
     <AssemblyOriginatorKeyFile>$(RepoRoot)\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-  <Import Project="$(RepoRoot)\build\__detectorNugetPackagesVersions.props" />
+  <Import Project="$(RepoRoot)\build\detector\__detectorNugetPackagesVersions.props" />
 
   <ItemGroup>
     <FilesToSign Include="$(OutDir)\Microsoft.Oryx.Detector.$(VERSION).nupkg;">

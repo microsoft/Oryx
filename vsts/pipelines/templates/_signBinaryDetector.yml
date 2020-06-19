@@ -59,7 +59,7 @@ steps:
     versionSpec: '5.6'
 
 - powershell: |
-    . $(Build.SourcesDirectory)\build\__detectorNugetPackagesVersions.ps1
+    . $(Build.SourcesDirectory)\build\detector\__detectorNugetPackagesVersions.ps1
     cd "artifacts\packages"
     nuget verify -signature `
       -CertificateFingerprint 3F9001EA83C560D712C24CF213C3D312CB3BFF51EE89435D3430BD06B5D0EECE `

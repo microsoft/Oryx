@@ -79,7 +79,7 @@ stages:
           artifactName: 'detector_signed'
           path: $(Build.ArtifactStagingDirectory)/detector_signed
       - bash: |
-          . build/__detectorNugetPackagesVersions.sh
+          . build/detector/__detectorNugetPackagesVersions.sh
           echo "Setting release name to '$releaseName'..."
           echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
         displayName: 'Set relase name environment variable'
