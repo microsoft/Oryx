@@ -60,11 +60,11 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-Oryx-CI.$RELEASE_TAG_NAME" "lts-versions" "lts-versions-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-Oryx-CI.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-Oryx-CI.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-Oryx-CI.$RELEASE_TAG_NAME" "vso" "vso-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions" "lts-versions-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso" "vso-$RELEASE_TAG_NAME"
 
 echo "printing pme tags from $outPmeFileMCR"
 cat $outPmeFileMCR

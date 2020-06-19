@@ -37,7 +37,7 @@ while read sourceImage; do
     read -ra imageNameParts <<< "$sourceImage"
     repo=${imageNameParts[0]}
     tag=${imageNameParts[1]}
-    replaceText="Oryx-CI."
+    replaceText="$BUILD_DEFINITIONNAME."
     releaseTagName=$(echo $tag | sed "s/$replaceText//g")
 
     IFS='-'

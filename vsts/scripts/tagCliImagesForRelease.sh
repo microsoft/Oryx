@@ -25,7 +25,7 @@ if [ -f "$outNonPmeFile" ]; then
     rm $outNonPmeFile
 fi
 
-cliImage="$sourceImageRepo/cli:Oryx-CI.$RELEASE_TAG_NAME"
+cliImage="$sourceImageRepo/cli:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling CLI image '$cliImage'..."
 docker pull "$cliImage"
 echo "Retagging CLI image for $prodNonPmeImageRepo with '$RELEASE_TAG_NAME'..."

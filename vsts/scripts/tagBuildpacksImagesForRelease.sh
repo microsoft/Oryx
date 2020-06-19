@@ -25,7 +25,7 @@ if [ -f "$outNonPmeFile" ]; then
     rm $outNonPmeFile
 fi
 
-packImage="$sourceImageRepo/pack:Oryx-CI.$RELEASE_TAG_NAME"
+packImage="$sourceImageRepo/pack:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling pack image '$packImage'..."
 docker pull "$packImage"
 echo "Retagging pack image with '$RELEASE_TAG_NAME'..."
