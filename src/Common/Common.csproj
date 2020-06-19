@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Microsoft.Oryx.Common</AssemblyName>
     <LangVersion>7.3</LangVersion>
     <SignAssembly>true</SignAssembly>
@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.10.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.10.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
