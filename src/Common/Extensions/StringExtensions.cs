@@ -32,8 +32,8 @@ namespace Microsoft.Oryx.Common.Extensions
         /// <summary>
         /// Replaces the userinfo subcomponent of URLs in a string with asterisks.
         /// </summary>
-        /// <param name="str">string to replace</param>
-        /// <returns>str with authentication information in URLs replaced with asterisks</returns>
+        /// <param name="str">string to replace. </param>
+        /// <returns>str with authentication information in URLs replaced with asterisks. </returns>
         public static string ReplaceUrlUserInfo(this string str)
         {
             try
@@ -62,9 +62,9 @@ namespace Microsoft.Oryx.Common.Extensions
         /// <summary>
         /// Splits a string to chunks of the given maximum length.
         /// </summary>
-        /// <param name="str">string to split</param>
-        /// <param name="maxLength">maximum length of each chunk</param>
-        /// <returns>list of chunks</returns>
+        /// <param name="str">string to split. </param>
+        /// <param name="maxLength">maximum length of each chunk. </param>
+        /// <returns>list of chunks. </returns>
         public static IList<string> Chunkify(this string str, int maxLength)
         {
             var result = new List<string>();
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.Common.Extensions
         }
 
         /// <summary>
-        /// Hash a string using SHA-256
+        /// Hash a string using SHA-256.
         /// </summary>
         /// <param name="str">The string to hash.</param>
         /// <returns>The SHA-256 hash of the given string.</returns>

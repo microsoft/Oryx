@@ -8,25 +8,24 @@ using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.Common;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    internal class DotNetCorePlatformDetector : IPlatformDetector
+    public class DotNetCoreDetector : IPlatformDetector
     {
         private readonly DefaultProjectFileProvider _projectFileProvider;
-        private readonly ILogger<DotNetCorePlatformDetector> _logger;
+        private readonly ILogger<DotNetCoreDetector> _logger;
 
-        public DotNetCorePlatformDetector(
+        public DotNetCoreDetector(
             DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCorePlatformDetector> logger)
+            ILogger<DotNetCoreDetector> logger)
         {
             _projectFileProvider = projectFileProvider;
             _logger = logger;
         }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public PlatformDetectorResult Detect(DetectorContext context)
         {
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
@@ -46,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            var version = DetermineRuntimeVersion(targetFramework);
+            var version = GetVersion(targetFramework);
 
             return new PlatformDetectorResult
             {
@@ -55,13 +54,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             };
         }
 
+        public PlatformName DetectorPlatformName => PlatformName.DotNetCore;
+
         internal string DetermineRuntimeVersion(string targetFramework)
         {
             // Ex: "netcoreapp2.2" => "2.2"
-            targetFramework = targetFramework.Replace(
+            targetFramework = targetFramework.ToLower().Replace(
                 "netcoreapp",
-                string.Empty,
-                StringComparison.OrdinalIgnoreCase);
+                string.Empty);
 
             // Ex: "2.2" => 2.2
             if (decimal.TryParse(targetFramework, out var val))
@@ -71,5 +71,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             return null;
         }
+
+        private string GetVersion(string targetFramework)
+        {
+
+            var version = DetermineRuntimeVersion(targetFramework);
+            if (version != null)
+            {
+                return version;
+            }
+            _logger.LogDebug(
+                   $"Could not determine runtime version from target framework. ");
+            return null;
+        }
+
     }
 }
