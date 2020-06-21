@@ -10,6 +10,17 @@ set -o pipefail
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
+outPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxprodmcr-build-images-mcr.txt"
+outNonPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxmcr-build-images-mcr.txt"
+
+if [ -f "$outPmeFileMCR" ]; then
+    rm $outPmeFileMCR
+fi
+
+if [ -f "$outNonPmeFileMCR" ]; then
+    rm $outNonPmeFileMCR
+fi
+
 function tagBuildImage() {
     local devRegistryImageName="$1"
     local prodRegistryLatestTagName="$2"
@@ -17,9 +28,7 @@ function tagBuildImage() {
     local prodNonPmeRegistryRepoName="oryxmcr.azurecr.io/public/oryx/build"
     local prodPmeRegistryRepoName="oryxprodmcr.azurecr.io/public/oryx/build"
     sourceBranchName=$BUILD_SOURCEBRANCHNAME
-    outPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxprodmcr-build-images-mcr.txt"
-    outNonPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxmcr-build-images-mcr.txt"
-
+    
     echo "Pulling the source image $devRegistryImageName..."
     docker pull "$devRegistryImageName" | sed 's/^/     /'
 
@@ -47,12 +56,19 @@ function tagBuildImage() {
     else
         echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
-
+    
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:Oryx-CI.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-Oryx-CI.$RELEASE_TAG_NAME" "lts-versions" "lts-versions-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-Oryx-CI.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-Oryx-CI.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-Oryx-CI.$RELEASE_TAG_NAME" "vso" "vso-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions" "lts-versions-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso" "vso-$RELEASE_TAG_NAME"
+
+echo "printing pme tags from $outPmeFileMCR"
+cat $outPmeFileMCR
+echo -------------------------------------------------------------------------------
+echo "printing non-pme tags from $outNonPmeFileMCR"
+cat $outNonPmeFileMCR
+echo -------------------------------------------------------------------------------

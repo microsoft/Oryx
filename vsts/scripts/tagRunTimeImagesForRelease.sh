@@ -14,6 +14,14 @@ outFileNonPmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrNonPmeProdRepo
 outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
+if [ -f "$outFilePmeMCR" ]; then
+    rm $outFilePmeMCR
+fi
+
+if [ -f "$outFileNonPmeMCR" ]; then
+    rm $outFileNonPmeMCR
+fi
+
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
   if [[ $sourceImage == *:*-* ]]; then
@@ -29,7 +37,7 @@ while read sourceImage; do
     read -ra imageNameParts <<< "$sourceImage"
     repo=${imageNameParts[0]}
     tag=${imageNameParts[1]}
-    replaceText="Oryx-CI."
+    replaceText="$BUILD_DEFINITIONNAME."
     releaseTagName=$(echo $tag | sed "s/$replaceText//g")
 
     IFS='-'
@@ -66,3 +74,10 @@ while read sourceImage; do
     echo -------------------------------------------------------------------------------
   fi
 done <"$sourceFile"
+
+echo "printing pme tags from $outFilePmeMCR"
+cat $outFilePmeMCR
+echo -------------------------------------------------------------------------------
+echo "printing non-pme tags from $outFileNonPmeMCR"
+cat $outFileNonPmeMCR
+echo -------------------------------------------------------------------------------

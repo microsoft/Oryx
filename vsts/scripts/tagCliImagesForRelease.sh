@@ -17,7 +17,15 @@ declare -r prodNonPmeImageRepo="oryxmcr.azurecr.io/public/oryx"
 
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
 
-cliImage="$sourceImageRepo/cli:Oryx-CI.$RELEASE_TAG_NAME"
+if [ -f "$outPmeFile" ]; then
+    rm $outPmeFile
+fi
+
+if [ -f "$outNonPmeFile" ]; then
+    rm $outNonPmeFile
+fi
+
+cliImage="$sourceImageRepo/cli:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling CLI image '$cliImage'..."
 docker pull "$cliImage"
 echo "Retagging CLI image for $prodNonPmeImageRepo with '$RELEASE_TAG_NAME'..."
@@ -38,3 +46,10 @@ if [ "$sourceBranchName" == "master" ]; then
 else
     echo "Not creating 'stable' or 'latest' tags as source branch is not 'master'. Current branch is $sourceBranchName"
 fi
+
+echo "printing pme tags from $outPmeFile"
+cat $outPmeFile
+echo -------------------------------------------------------------------------------
+echo "printing non-pme tags from $outNonPmeFile"
+cat $outNonPmeFile
+echo -------------------------------------------------------------------------------
