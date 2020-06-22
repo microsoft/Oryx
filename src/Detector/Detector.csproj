@@ -2,12 +2,39 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- The following is to enable copying the .dlls of referenced projects (ex: Microsoft.Oryx.Common here) as part
+    of the generated nuget package's "lib" foler -->
+    <TargetsForTfmSpecificBuildOutput>
+      $(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage
+    </TargetsForTfmSpecificBuildOutput>
     <AssemblyName>Microsoft.Oryx.Detector</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.Detector</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>0.2</AssemblyVersion>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <RepositoryUrl>https://github.com/microsoft/oryx</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\detector\__detectorNugetPackagesVersions.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
+
+  <PropertyGroup>
+    <AssemblyVersion>$(VERSION_PREFIX)</AssemblyVersion>
+    <VersionPrefix>$(VERSION_PREFIX)</VersionPrefix>
+    <VersionSuffix>$(VERSION_SUFFIX)</VersionSuffix>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/microsoft/oryx</PackageProjectUrl>
+    <PackageTags>Oryx Detector OryxDetector</PackageTags>
+    <Description>A library to detect tools and frameworks used in an application.</Description>
   </PropertyGroup>
 
   <ItemGroup>

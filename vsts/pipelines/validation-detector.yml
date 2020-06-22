@@ -1,0 +1,13 @@
+# specific branch
+pr:
+  paths:
+    exclude:
+    - /*
+    include:
+    - Detector.sln
+    - src/Detector/*
+    - tests/Detector.Tests/*
+    - vsts/nugetpackages.signproj
+    - vsts/pipelines/validation-detector.yml
+steps:
+- template: templates/_buildTemplateDetector.yml

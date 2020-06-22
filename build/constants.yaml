@@ -179,3 +179,30 @@
     - type: shell
       directory: build
       file-name-prefix: __
+- name: detector-nuget-packages-versions
+  constants:
+    version-prefix: 1.0.0
+    version-suffix: 'pre-$(BUILD_BUILDNUMBER)'
+    version: '$(VERSION_PREFIX)-$(VERSION_SUFFIX)'
+  outputs:
+    - type: msbuild
+      directory: build\detector
+      file-name-prefix: __
+- name: detector-nuget-packages-versions
+  constants:
+    version-prefix: 1.0.0
+    version-suffix: '"pre-$BUILD_BUILDNUMBER"'
+    version: '"$VERSION_PREFIX-$VERSION_SUFFIX"'
+  outputs:
+    - type: shell
+      directory: build\detector
+      file-name-prefix: __
+- name: detector-nuget-packages-versions
+  constants:
+    version-prefix: 1.0.0
+    version-suffix: '"pre-$env:BUILD_BUILDNUMBER"'
+    version: '"$VERSION_PREFIX-$VERSION_SUFFIX"'
+  outputs:
+    - type: powershell
+      directory: build\detector
+      file-name-prefix: __
