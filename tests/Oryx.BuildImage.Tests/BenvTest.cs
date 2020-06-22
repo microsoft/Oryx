@@ -81,6 +81,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("wheel", "/opt/python/")]
         [InlineData("pydoc3", "/opt/python/")]
         [InlineData("python3-config", "/opt/python/")]
+        // Php
+        [InlineData("php", "/opt/php/")]
+        [InlineData("composer.phar", "/opt/php-composer/")]
         public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InLtsVersionsBuildImage(
             string executableName,
             string expectedPathPrefix)

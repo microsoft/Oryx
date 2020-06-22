@@ -205,8 +205,27 @@ ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 WORKDIR /
 
+# Install PHP pre-reqs
+RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+# Copy PHP versions
+RUN cd ${IMAGES_DIR} \
+    && . ${BUILD_DIR}/__phpVersions.sh \
+    && ./installPlatform.sh php $PHP73_VERSION \
+    && ./installPlatform.sh php-composer $COMPOSER_VERSION
+
+RUN ln -s /opt/php/7.3 /opt/php/7 \
+ && ln -s /opt/php/7 /opt/php/lts \
+ && cd /opt/php-composer \
+ && ln -sfn 1.9.3 stable
+RUN ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libargon2-0 \
+        libonig-dev \
+    && rm -rf /var/lib/apt/lists/*
+    
 ENV ORIGINAL_PATH="$PATH"
-ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
 ENV PATH="${ORYX_PATHS}:$PATH"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv

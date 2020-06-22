@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Oryx.BuildImage.Tests;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
@@ -22,23 +21,35 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        public static TheoryData<string, string> VersionAndImageNameData
+        {
+            get
+            {
+                var imageHelper = new ImageTestHelper();
+                var data = new TheoryData<string, string>();
+                data.Add("7.3", imageHelper.GetGitHubActionsBuildImage());
+                data.Add("7.4", imageHelper.GetGitHubActionsBuildImage());
+                return data;
+            }
+        }
+
         [Theory]
-        [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
-        public async Task BuildsAppByInstallingSdkDynamically(string phpVersion)
+        [MemberData(nameof(VersionAndImageNameData))]
+        public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName)
         {
             // Arrange
             var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
+            var defaultInstallDir = PhpConstants.InstalledPhpVersionsDir;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
+                // Remove any existing installations
+                .AddCommand($"rm -rf {defaultInstallDir}")
+                .AddCommand($"mkdir -p {defaultInstallDir}")
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
@@ -46,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
