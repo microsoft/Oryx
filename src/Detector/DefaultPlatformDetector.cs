@@ -5,10 +5,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector
 {
@@ -53,13 +51,13 @@ namespace Microsoft.Oryx.Detector
             platformResult = null;
             PlatformName platformName = platformDetector.DetectorPlatformName;
             PlatformDetectorResult detectionResult = platformDetector.Detect(ctx);
-                
+
             if (detectionResult == null)
             {
                 _logger.LogInformation($"Platform '{platformName}' was not detected in the given repository.");
                 return false;
             }
-            
+
             if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
             {
                 _logger.LogInformation($"Platform '{platformName}' was detected in the given repository, but " +

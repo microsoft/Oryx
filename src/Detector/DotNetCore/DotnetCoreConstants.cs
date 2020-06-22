@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public static class DotNetCoreConstants
+    internal static class DotNetCoreConstants
     {
         public const string PlatformName = "dotnet";
         public const string CSharpProjectFileExtension = "csproj";

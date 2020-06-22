@@ -3,12 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public class DefaultProjectFileProvider : IProjectFileProvider
+    internal class DefaultProjectFileProvider : IProjectFileProvider
     {
         private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
 

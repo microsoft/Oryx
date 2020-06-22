@@ -3,18 +3,17 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public static class ProjectFileHelpers
+    internal static class ProjectFileHelpers
     {
         public static bool IsAspNetCoreWebApplicationProject(ISourceRepo sourceRepo, string projectFile)
         {

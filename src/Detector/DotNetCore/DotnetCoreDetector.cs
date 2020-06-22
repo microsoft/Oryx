@@ -3,23 +3,19 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public class DotNetCoreDetector : IPlatformDetector
+    internal class DotNetCoreDetector : IPlatformDetector
     {
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreDetector> _logger;
 
-        public DotNetCoreDetector(
-            DefaultProjectFileProvider projectFileProvider,
-            ILogger<DotNetCoreDetector> logger)
+        public DotNetCoreDetector(DefaultProjectFileProvider projectFileProvider, ILogger<DotNetCoreDetector> logger)
         {
             _projectFileProvider = projectFileProvider;
             _logger = logger;

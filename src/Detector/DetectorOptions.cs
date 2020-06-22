@@ -14,6 +14,5 @@ namespace Microsoft.Oryx.Detector
         /// Gets or sets the relative path to the project to be built.
         /// </summary>
         public string Project { get; set; }
-
     }
 }

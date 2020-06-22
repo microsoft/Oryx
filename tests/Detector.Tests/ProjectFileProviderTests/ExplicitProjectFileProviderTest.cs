@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
@@ -36,7 +35,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider(options);
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider(options);
 
             // Act
             var actualFilePath = provider.GetRelativePathToProjectFile(context);
@@ -60,7 +59,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider(options);
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider(options);
 
             //Act & Assert
             var exception = Assert.Throws<InvalidProjectFileException>(
@@ -87,7 +86,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider(options);
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider(options);
 
             // Act
             var actualFile = provider.GetRelativePathToProjectFile(context);
@@ -110,7 +109,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var context = GetContext(sourceRepo);
             var options = new DetectorOptions();
             options.Project = expectedPath;
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actualFilePath = provider.GetRelativePathToProjectFile(context);

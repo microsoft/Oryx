@@ -3,15 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using Microsoft.Oryx.Common;
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common.Extensions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    public class NodeDetector : IPlatformDetector
+    internal class NodeDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -33,8 +32,7 @@ namespace Microsoft.Oryx.Detector.Node
 
         private readonly ILogger<NodeDetector> _logger;
 
-        public NodeDetector(
-            ILogger<NodeDetector> logger)
+        public NodeDetector(ILogger<NodeDetector> logger)
         {
             _logger = logger;
         }

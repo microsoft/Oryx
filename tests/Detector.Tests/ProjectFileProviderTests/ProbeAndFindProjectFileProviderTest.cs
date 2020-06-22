@@ -5,7 +5,6 @@
 
 using System.IO;
 using Microsoft.Oryx.Detector.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -33,7 +32,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -63,7 +62,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 AzureFunctionsProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -88,7 +87,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "AzureFunctionsApp1", "AzureFunctionsApp1.csproj");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -104,7 +103,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var sourceRepoDir = CreateSourceRepoDir();
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -128,7 +127,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -152,7 +151,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidProjectFileException>(
@@ -178,7 +177,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, $"WebApp2.{projectFileExtension}"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidProjectFileException>(
@@ -204,7 +203,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actualPath = provider.GetRelativePathToProjectFile(context);
@@ -231,7 +230,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 AzureFunctionsProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act & Assert
             var exception = Assert.Throws<InvalidProjectFileException>(

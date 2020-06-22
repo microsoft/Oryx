@@ -3,8 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
@@ -13,6 +11,5 @@ namespace Microsoft.Oryx.Detector
     public class DetectorContext
     {
         public ISourceRepo SourceRepo { get; set; }
-
     }
 }

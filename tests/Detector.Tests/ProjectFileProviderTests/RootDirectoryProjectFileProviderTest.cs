@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actualPath = provider.GetRelativePathToProjectFile(context);
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFileWithVersion);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actualPath = provider.GetRelativePathToProjectFile(context);
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFileWithVersion);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFileWithSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFileWithSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, NoSdkInformationProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFileWithMultipleSdkInfoAsElement);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actualPath = provider.GetRelativePathToProjectFile(context);
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(projectFile, AzureFunctionsProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
 
             // Act
             var actualPath = provider.GetRelativePathToProjectFile(context);

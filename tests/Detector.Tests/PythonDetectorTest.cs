@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -94,7 +93,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
-      
+
         [Theory]
         [InlineData("")]
         [InlineData("foo")]

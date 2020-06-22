@@ -7,17 +7,15 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    public class PythonDetector : IPlatformDetector
+    internal class PythonDetector : IPlatformDetector
     {
         private readonly ILogger<PythonDetector> _logger;
 
-        public PythonDetector(
-            ILogger<PythonDetector> logger)
+        public PythonDetector(ILogger<PythonDetector> logger)
         {
             _logger = logger;
         }

@@ -3,11 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Moq;
-using Xunit;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Detector.DotNetCore;
-using Microsoft.Oryx.Common;
+using Moq;
+using Xunit;
 
 namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
