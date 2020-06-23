@@ -7,6 +7,8 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 
 FROM debian:buster-slim
+ARG BUILD_DIR=/tmp/oryx/build
+ADD build ${BUILD_DIR}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -34,22 +36,20 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install .NET Core
-ENV DOTNET_VERSION 3.0.3
-
-RUN curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$DOTNET_VERSION/dotnet-runtime-$DOTNET_VERSION-linux-x64.tar.gz \
-    && dotnet_sha512='3d1f0ba2f293f43e087a8940a0f4736561f43b9f28bc5beda79a61f887e258543aea4dc71e88414a7c6e271dcda984a989afb62fc659a72223707a179cdde9c5' \
-    && echo "$dotnet_sha512 dotnet.tar.gz" | sha512sum -c - \
+RUN set -ex \
+    && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
+    && curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Runtime/$NET_CORE_APP_30/dotnet-runtime-$NET_CORE_APP_30-linux-x64.tar.gz \
+    && echo "$NET_CORE_APP_30_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
     
 # Install ASP.NET Core
-ENV ASPNETCORE_VERSION 3.0.3
-
-RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNETCORE_VERSION/aspnetcore-runtime-$ASPNETCORE_VERSION-linux-x64.tar.gz \
-    && aspnetcore_sha512='d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8' \
-    && echo "$aspnetcore_sha512  aspnetcore.tar.gz" | sha512sum -c - \
+RUN set -ex \
+    && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_30/aspnetcore-runtime-$ASPNET_CORE_APP_30-linux-x64.tar.gz \
+    && echo "$ASPNET_CORE_APP_30_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
     && rm aspnetcore.tar.gz
@@ -60,3 +60,5 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libgdiplus \
     && rm -rf /var/lib/apt/lists/*
+
+RUN rm -rf ${BUILD_DIR}
