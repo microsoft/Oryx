@@ -37,7 +37,7 @@ docker tag "$packImage" "$prodPmeImageRepo/pack:$RELEASE_TAG_NAME"
 
 if [ "$sourceBranchName" == "master" ]; then
     echo "Retagging pack image with 'stable'..."
-    docker tag "$packImage" "$prodPmeImageRepo/pack:stable"
+    docker tag "$packImage" "$prodNonPmeImageRepo/pack:stable"
     echo "$prodNonPmeImageRepo/pack:stable">>"$outNonPmeFile"
 
     docker tag "$packImage" "$prodPmeImageRepo/pack:stable"
