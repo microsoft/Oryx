@@ -179,9 +179,16 @@ docker build -t buildscriptgenerator \
 	.
 
 echo
+if [ "$buildImageDebianFlavor" == "buster" ]
+then
+	githubRunnerImageSource="buildpack-deps:buster"
+else
+	githubRunnerImageSource="buildpack-deps:stretch@sha256:dee4275fc056551e1f83c5a3ea024510ca63f03ceedd9a1c29cbab70644b046b"
+fi
+
 echo "-------------Building the image which uses GitHub runners' buildpackdeps-$buildImageDebianFlavor specific digest----------------------------"
 docker build -t githubrunners-buildpackdeps-$buildImageDebianFlavor \
-	--build-arg DEBIAN_FLAVOR=$buildImageDebianFlavor \
+	--build-arg DEBIAN_SOURCE=$githubRunnerImageSource \
 	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
 	.
 

@@ -225,7 +225,8 @@ RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
 # stages in buildBuildImages.sh file
 FROM dotnet-install AS buildscriptbuilder
 
-FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
+ARG DEBIAN_FLAVOR
+FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG}-${DEBIAN_FLAVOR} AS yarn-cache-base
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)

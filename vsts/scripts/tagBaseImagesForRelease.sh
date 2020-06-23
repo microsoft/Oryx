@@ -65,6 +65,7 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "yarn-cache-build" ]
 then
   echo ""
+  retagImageWithStagingRepository yarn-cache-buildimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "node" ]
 then
