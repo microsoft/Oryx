@@ -50,7 +50,7 @@ function tagBuildImage() {
         echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
         
         echo "Tagging the source image for $prodNonPmeRegistryRepoName with tag $prodRegistryLatestTagName..."
-        prodNonPmeRegistryImageName="$prodnonPmeRegistryRepoName:$prodRegistryLatestTagName"
+        prodNonPmeRegistryImageName="$prodNonPmeRegistryRepoName:$prodRegistryLatestTagName"
         docker tag "$devRegistryImageName" "$prodNonPmeRegistryRepoName:$prodRegistryLatestTagName"
         echo "$prodNonPmeRegistryImageName">>"$outNonPmeFileMCR"
     else

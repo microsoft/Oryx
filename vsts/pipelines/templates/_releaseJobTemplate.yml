@@ -40,6 +40,10 @@ jobs:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
   steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 3.1.x'
+    inputs:
+      version: 3.1.x
   - task: ShellScript@2
     displayName: 'Publish SDKs from dev to prod storage account'
     env:

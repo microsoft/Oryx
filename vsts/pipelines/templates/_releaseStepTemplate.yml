@@ -69,6 +69,11 @@ steps:
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 3.1.x'
+  inputs:
+    version: 3.1.x
+    
 - task: ShellScript@2
   displayName: 'Test runtime images for non-pme staging registry'
   inputs:
