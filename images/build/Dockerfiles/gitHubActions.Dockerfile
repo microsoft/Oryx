@@ -144,7 +144,21 @@ COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
 # Install PHP pre-reqs
-RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+    apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+        libsodium-dev \
+    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+    else \
+        chmod +x /php/*.sh && . /php/installPrereqs.sh ; \
+    fi 
+
+#RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
 # NOTE: do not include the following lines in prereq installation script as
 # doing so is causing different version of libargon library being installed
 # causing php-composer to fail

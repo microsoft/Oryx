@@ -171,28 +171,6 @@ function createImageNameWithReleaseTag() {
 
 # Create the following image so that it's contents can be copied to the rest of the images below
 echo
-echo "-------------Creating build script generator image-------------------"
-docker build -t buildscriptgenerator \
-	--build-arg AGENTBUILD=$BUILD_SIGNED \
-	$buildMetadataArgs \
-	-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
-	.
-
-echo
-if [ "$buildImageDebianFlavor" == "buster" ]
-then
-	githubRunnerImageSource="buildpack-deps:buster"
-else
-	githubRunnerImageSource="buildpack-deps:stretch@sha256:dee4275fc056551e1f83c5a3ea024510ca63f03ceedd9a1c29cbab70644b046b"
-fi
-
-echo "-------------Building the image which uses GitHub runners' buildpackdeps-$buildImageDebianFlavor specific digest----------------------------"
-docker build -t githubrunners-buildpackdeps-$buildImageDebianFlavor \
-	--build-arg DEBIAN_SOURCE=$githubRunnerImageSource \
-	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
-	.
-
-echo
 echo "-------------Creating build image for GitHub Actions-------------------"
 builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 docker build -t $builtImageName \
@@ -268,6 +246,29 @@ docker build -t $builtImageTag \
 	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 	.
 echo
+echo
+echo "-------------Creating build script generator image-------------------"
+docker build -t buildscriptgenerator \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
+	.
+
+echo
+if [ "$buildImageDebianFlavor" == "buster" ]
+then
+	githubRunnerImageSource="buildpack-deps:buster"
+else
+	githubRunnerImageSource="buildpack-deps:stretch@sha256:dee4275fc056551e1f83c5a3ea024510ca63f03ceedd9a1c29cbab70644b046b"
+fi
+
+echo "-------------Building the image which uses GitHub runners' buildpackdeps-$buildImageDebianFlavor specific digest----------------------------"
+docker build -t githubrunners-buildpackdeps-$buildImageDebianFlavor \
+	--build-arg DEBIAN_SOURCE=$githubRunnerImageSource \
+	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
+	.
+
+
 echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE.$buildImageDebianFlavor.txt
 
 # Retag build image with build number tags

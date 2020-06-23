@@ -241,10 +241,25 @@ ARG BUILD_DIR
 ARG IMAGES_DIR
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG DEBIAN_FLAVOR
 WORKDIR /
 
 # Install PHP pre-reqs
-RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+#RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+    apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+        libsodium-dev \
+    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+    else \
+        chmod +x /php/*.sh && . /php/installPrereqs.sh ; \
+    fi 
+
 # Copy PHP versions
 RUN cd ${IMAGES_DIR} \
     && . ${BUILD_DIR}/__phpVersions.sh \
