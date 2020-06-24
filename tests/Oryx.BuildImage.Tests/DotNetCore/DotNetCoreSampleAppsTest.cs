@@ -607,7 +607,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        //Failed to initialize CoreCLR, HRESULT: 0x80131500 for dotnetcore 1.1 in buster
+        //[InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]

@@ -19,6 +19,8 @@ RUN echo "debian flavor is: ${DEBIAN_FLAVOR}" ;\
         && apt-get install -y --no-install-recommends \
             libicu63 \
             libssl1.1 \
+            libncurses5 \
+            libcurl4 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \

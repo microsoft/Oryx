@@ -116,6 +116,7 @@ ARG BUILD_DIR
 ARG IMAGES_DIR
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG DEBIAN_FLAVOR
 WORKDIR /
 
 ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
@@ -143,6 +144,7 @@ COPY --from=nodetools-install /opt /opt
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 
+RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 # Install PHP pre-reqs
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     apt-get update \
@@ -155,7 +157,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         libsodium-dev \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
     else \
-        chmod +x /php/*.sh && . /php/installPrereqs.sh ; \
+        .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
 
 #RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh

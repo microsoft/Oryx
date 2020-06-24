@@ -51,6 +51,7 @@ RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" ; \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libcurl4 \
+            libncurses5 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \
@@ -281,7 +282,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         libsodium-dev \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
     else \
-        chmod +x /php/*.sh && . /php/installPrereqs.sh ; \
+        .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
 
 

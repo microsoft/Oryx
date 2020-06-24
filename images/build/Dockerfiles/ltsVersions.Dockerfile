@@ -255,9 +255,11 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         curl \
         xz-utils \
         libsodium-dev \
+        libncurses5 \
+        libcurl4 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
     else \
-        chmod +x /php/*.sh && . /php/installPrereqs.sh ; \
+        .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
 
 # Copy PHP versions
