@@ -21,24 +21,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string> ImageNameData
+        public static IEnumerable<object[]> ImageNameData()
         {
-            get
-            {
-                var imageTestHelper = new ImageTestHelper();
-                var data = new TheoryData<string>();
-                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
+            var imageTestHelper = new ImageTestHelper();
+            yield return new object[] { imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1" };
+            yield return new object[] { imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3" };
+            yield return new object[] { imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1" };
+            yield return new object[] { imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3" };
         }
 
         [Theory]
         [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuilds(string imageName)
+        public void GeneratesScript_AndBuildsPython(string imageName, string version)
         {
             // Arrange
-            var version = "3.8.1";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
