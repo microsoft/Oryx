@@ -6,6 +6,8 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -150,6 +152,25 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         public ProjectFileProviderTestBase(TestTempDirTestFixture testFixture)
         {
             _tempDirRoot = testFixture.RootDirPath;
+        }
+
+        public static DefaultProjectFileProvider GetProjectFileProvider(DetectorOptions options = null)
+        {
+            if (options == null)
+            {
+                options = new DetectorOptions();
+            }
+
+            var providers = new IProjectFileProvider[]
+            {
+                new ExplicitProjectFileProvider(
+                    Options.Create(options),
+                    NullLogger<ExplicitProjectFileProvider>.Instance),
+                new RootDirectoryProjectFileProvider(NullLogger<RootDirectoryProjectFileProvider>.Instance),
+                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance),
+            };
+
+            return new DefaultProjectFileProvider(providers);
         }
 
         protected DetectorContext GetContext(ISourceRepo sourceRepo)

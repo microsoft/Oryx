@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    internal interface IProjectFileProvider
+    public interface IProjectFileProvider
     {
         string GetRelativePathToProjectFile(DetectorContext context);
     }

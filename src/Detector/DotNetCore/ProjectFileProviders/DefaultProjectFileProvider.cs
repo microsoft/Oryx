@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    internal class DefaultProjectFileProvider : IProjectFileProvider
+    public class DefaultProjectFileProvider : IProjectFileProvider
     {
         private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
 

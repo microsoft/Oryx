@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    internal class PhpDetector : IPlatformDetector
+    public class PhpDetector : IPlatformDetector
     {
         private readonly ILogger<PhpDetector> _logger;
 

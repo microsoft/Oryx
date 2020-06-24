@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var provider = ProjectFileProviderHelper.GetProjectFileProvider(options);
+            var provider = GetProjectFileProvider(options);
 
             // Act
             var actualFilePath = provider.GetRelativePathToProjectFile(context);
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var provider = ProjectFileProviderHelper.GetProjectFileProvider(options);
+            var provider = GetProjectFileProvider(options);
 
             //Act & Assert
             var exception = Assert.Throws<InvalidProjectFileException>(
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
-            var provider = ProjectFileProviderHelper.GetProjectFileProvider(options);
+            var provider = GetProjectFileProvider(options);
 
             // Act
             var actualFile = provider.GetRelativePathToProjectFile(context);
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var context = GetContext(sourceRepo);
             var options = new DetectorOptions();
             options.Project = expectedPath;
-            var provider = ProjectFileProviderHelper.GetProjectFileProvider();
+            var provider = GetProjectFileProvider();
 
             // Act
             var actualFilePath = provider.GetRelativePathToProjectFile(context);

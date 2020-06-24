@@ -11,7 +11,7 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    internal class PythonDetector : IPlatformDetector
+    public class PythonDetector : IPlatformDetector
     {
         private readonly ILogger<PythonDetector> _logger;
 

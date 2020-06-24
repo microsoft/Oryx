@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    internal class NodeDetector : IPlatformDetector
+    public class NodeDetector : IPlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
