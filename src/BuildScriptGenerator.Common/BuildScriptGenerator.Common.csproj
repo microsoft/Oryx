@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>Microsoft.Oryx.Common</AssemblyName>
+    <AssemblyName>Microsoft.Oryx.BuildScriptGenerator.Common</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.BuildScriptGenerator.Common</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
@@ -25,6 +26,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Oryx.Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

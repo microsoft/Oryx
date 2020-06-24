@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     /// <summary>
     /// Extensions to ASP.NET Core's ILogger

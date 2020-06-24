@@ -4,9 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-        
+
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]
@@ -180,7 +180,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"Python {Common.PythonVersions.Python38Version}";
+            var expectedOutput = $"Python {PythonVersions.Python38Version}";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -554,7 +554,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"PHP {Common.PhpVersions.Php73Version} (cli) ";
+            var expectedOutput = $"PHP {PhpVersions.Php73Version} (cli) ";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments

@@ -11,8 +11,8 @@
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
   outputs:
     - type: csharp
-      directory: src/Common
-      namespace: Microsoft.Oryx.Common
+      directory: src/BuildScriptGenerator.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
 - name: dot-net-core-sdk-versions
@@ -71,7 +71,7 @@
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: shell
       directory: build
       file-name-prefix: __
@@ -100,7 +100,7 @@
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: shell
       directory: build
       file-name-prefix: __
@@ -116,8 +116,8 @@
     pre-run-command-env-var-name: PRE_RUN_COMMAND
   outputs:
     - type: csharp
-      directory: src/Common
-      namespace: Microsoft.Oryx.Common
+      directory: src/BuildScriptGenerator.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
@@ -159,8 +159,8 @@
       directory: build
       file-name-prefix: __
     - type: csharp
-      directory: src/Common
-      namespace: Microsoft.Oryx.Common
+      directory: src/BuildScriptGenerator.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
 - name: runtime-dynamic-installation-constants

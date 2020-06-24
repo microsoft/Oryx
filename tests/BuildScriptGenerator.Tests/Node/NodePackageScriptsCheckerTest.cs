@@ -9,7 +9,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using Microsoft.Oryx.Tests.Common;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {

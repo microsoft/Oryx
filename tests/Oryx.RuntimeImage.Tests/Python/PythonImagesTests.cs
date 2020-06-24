@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -58,10 +58,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.6", "Python " + Common.PythonVersions.Python36Version)]
-        [InlineData("3.7", "Python " + Common.PythonVersions.Python37Version)]
-        [InlineData("3.8", "Python " + Common.PythonVersions.Python38Version)]
-        [InlineData("3.9", "Python " + Common.PythonVersions.Python39Version)]
+        [InlineData("3.6", "Python " + PythonVersions.Python36Version)]
+        [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
+        [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
+        [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
         {
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         public void Python2MatchesImageName()
         {
             string pythonVersion = "2.7";
-            string expectedOutput = "Python " + Common.PythonVersions.Python27Version;
+            string expectedOutput = "Python " + PythonVersions.Python27Version;
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
