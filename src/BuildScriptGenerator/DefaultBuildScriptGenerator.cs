@@ -303,6 +303,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _logger);
             return script;
         }
-
     }
 }

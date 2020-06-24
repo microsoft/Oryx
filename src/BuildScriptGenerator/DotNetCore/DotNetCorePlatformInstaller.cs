@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public virtual string GetInstallerScriptSnippet(string runtimeVersion, string globalJsonSdkVersion)
         {
-            string sdkVersion = null;
+            string sdkVersion;
             if (string.IsNullOrEmpty(globalJsonSdkVersion))
             {
                 var versionMap = _versionProvider.GetSupportedVersions();
@@ -60,6 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             .AppendLine(sdkInstallerScript)
             .AppendLine($"mkdir -p {DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}")
             .AppendLine($"echo '{sdkVersion}' > {DotNetCoreConstants.DynamicDotNetCoreRuntimeVersionsInstallDir}/{runtimeVersion}/sdkVersion.txt")
+
             // Write out a sentinel file to indicate downlaod and extraction was successful
             .AppendLine($"echo > {sentinelFileDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return scriptBuilder.ToString();
