@@ -5,6 +5,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 
 FROM oryx-run-base-stretch
+ARG BUILD_DIR=/tmp/oryx/build
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -34,11 +35,9 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install ASP.NET Core
-ENV ASPNETCORE_VERSION 2.1.19
-
-RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNETCORE_VERSION/aspnetcore-runtime-$ASPNETCORE_VERSION-linux-x64.tar.gz \
-    && aspnetcore_sha512='4ca81b0dc1efcb8562a07f658461ce5caf976c93942af7549053f4f5c3da232964989fee2ea42537c1086b244950d8e6a1230d3486317af5108d203036c4bc0c' \
-    && echo "$aspnetcore_sha512  aspnetcore.tar.gz" | sha512sum -c - \
+RUN . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$NET_CORE_APP_21/aspnetcore-runtime-$NET_CORE_APP_21-linux-x64.tar.gz \
+    && echo "$NET_CORE_APP_21_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet \
     && rm aspnetcore.tar.gz \
@@ -46,9 +45,9 @@ RUN curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/
 
 RUN dotnet-sos install
 
-RUN rm -rf /tmp/oryx
-
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libgdiplus \
     && rm -rf /var/lib/apt/lists/*
+
+RUN rm -rf ${BUILD_DIR}
