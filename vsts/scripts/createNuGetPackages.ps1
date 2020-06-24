@@ -29,12 +29,12 @@ Expand-Archive -Path "$detectorName.zip" -DestinationPath "$detectorName"
 DeleteItem "$detectorName.zip"
 
 Copy-Item `
-    -Path "$repoRoot\src\Detector\bin\Release\netcoreapp2.1\$detectorName.dll" `
-    -Destination "$detectorName\lib\netcoreapp2.1\$detectorName.dll" `
+    -Path "$repoRoot\src\Detector\bin\Release\$detectorName.dll" `
+    -Destination "$detectorName\lib\netstandard2.0\$detectorName.dll" `
     -Force
 Copy-Item `
-    -Path "$repoRoot\src\Detector\bin\Release\netcoreapp2.1\$commonProjectAssemblyName.dll" `
-    -Destination "$detectorName\lib\netcoreapp2.1\$commonProjectAssemblyName.dll" `
+    -Path "$repoRoot\src\Detector\bin\Release\$commonProjectAssemblyName.dll" `
+    -Destination "$detectorName\lib\netstandard2.0\$commonProjectAssemblyName.dll" `
     -Force
 
 Compress-Archive -Path "$detectorName\*" -DestinationPath "$detectorName.zip"
