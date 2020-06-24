@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Ini;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -57,6 +56,84 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             "A .env file which contains list of platforms and the versions that need to be installed. " +
             "Example: \ndotnet=3.1.200\nphp=7.4.5\nnode=2.3")]
         public string PlatformsAndVersionsFile { get; set; }
+
+        // To enable unit testing
+        internal static bool TryValidateSuppliedPlatformsAndVersions(
+            IEnumerable<IProgrammingPlatform> availablePlatforms,
+            string suppliedPlatformsAndVersions,
+            string suppliedPlatformsAndVersionsFile,
+            IConsole console,
+            out List<PlatformDetectorResult> results)
+        {
+            results = new List<PlatformDetectorResult>();
+
+            if (string.IsNullOrEmpty(suppliedPlatformsAndVersions)
+                && string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile)
+                && !File.Exists(suppliedPlatformsAndVersionsFile))
+            {
+                console.WriteErrorLine($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
+                return false;
+            }
+
+            IEnumerable<string> platformsAndVersions;
+            if (string.IsNullOrEmpty(suppliedPlatformsAndVersions))
+            {
+                var lines = File.ReadAllLines(suppliedPlatformsAndVersionsFile);
+                platformsAndVersions = lines
+                    .Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith('#'));
+            }
+            else
+            {
+                // Example: python,dotnet=3.1.300, node=12.3, Python=3.7.3
+                platformsAndVersions = suppliedPlatformsAndVersions
+                    .Trim()
+                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(nv => nv.Trim());
+            }
+
+            var platformNames = availablePlatforms.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var platformNameAndVersion in platformsAndVersions)
+            {
+                var parts = platformNameAndVersion.Split("=", StringSplitOptions.RemoveEmptyEntries);
+
+                // It is OK to have a platform name without version in which case a default version of the platform
+                // is installed.
+                string platformName = null;
+                string version = null;
+                platformName = parts[0].Trim();
+                if (parts.Length == 2)
+                {
+                    version = parts[1].Trim();
+                }
+
+                if (!platformNames.ContainsKey(platformName))
+                {
+                    console.WriteErrorLine(
+                        $"Platform name '{platformName}' is not valid. Make sure platform name matches one of the " +
+                        $"following names: {string.Join(", ", platformNames.Keys)}");
+                    return false;
+                }
+
+                var platform = platformNames[platformName];
+                var resolvedVersion = platform.ResolveVersion(version);
+
+                var platformDetectorResult = new PlatformDetectorResult
+                {
+                    Platform = platform.Name,
+                    PlatformVersion = resolvedVersion,
+                };
+
+                results.Add(platformDetectorResult);
+            }
+
+            return true;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -242,84 +319,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 });
 
             return serviceProviderBuilder.Build();
-        }
-
-        // To enable unit testing
-        internal static bool TryValidateSuppliedPlatformsAndVersions(
-            IEnumerable<IProgrammingPlatform> availablePlatforms,
-            string suppliedPlatformsAndVersions,
-            string suppliedPlatformsAndVersionsFile,
-            IConsole console,
-            out List<PlatformDetectorResult> results)
-        {
-            results = new List<PlatformDetectorResult>();
-
-            if (string.IsNullOrEmpty(suppliedPlatformsAndVersions)
-                && string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile))
-            {
-                return false;
-            }
-
-            if (!string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile)
-                && !File.Exists(suppliedPlatformsAndVersionsFile))
-            {
-                console.WriteErrorLine($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
-                return false;
-            }
-
-            IEnumerable<string> platformsAndVersions;
-            if (string.IsNullOrEmpty(suppliedPlatformsAndVersions))
-            {
-                var lines = File.ReadAllLines(suppliedPlatformsAndVersionsFile);
-                platformsAndVersions = lines
-                    .Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith('#'));
-            }
-            else
-            {
-                // Example: python,dotnet=3.1.300, node=12.3, Python=3.7.3
-                platformsAndVersions = suppliedPlatformsAndVersions
-                    .Trim()
-                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                    .Select(nv => nv.Trim());
-            }
-
-            var platformNames = availablePlatforms.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var platformNameAndVersion in platformsAndVersions)
-            {
-                var parts = platformNameAndVersion.Split("=", StringSplitOptions.RemoveEmptyEntries);
-
-                // It is OK to have a platform name without version in which case a default version of the platform
-                // is installed.
-                string platformName = null;
-                string version = null;
-                platformName = parts[0].Trim();
-                if (parts.Length == 2)
-                {
-                    version = parts[1].Trim();
-                }
-
-                if (!platformNames.ContainsKey(platformName))
-                {
-                    console.WriteErrorLine(
-                        $"Platform name '{platformName}' is not valid. Make sure platform name matches one of the " +
-                        $"following names: {string.Join(", ", platformNames.Keys)}");
-                    return false;
-                }
-
-                var platform = platformNames[platformName];
-                var resolvedVersion = platform.ResolveVersion(version);
-
-                var platformDetectorResult = new PlatformDetectorResult
-                {
-                    Platform = platform.Name,
-                    PlatformVersion = resolvedVersion,
-                };
-
-                results.Add(platformDetectorResult);
-            }
-
-            return true;
         }
 
         private bool IsValidInput(IConsole console)

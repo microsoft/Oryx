@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("2.1", result.PlatformVersion);
+            Assert.Equal(expectedResult, result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)

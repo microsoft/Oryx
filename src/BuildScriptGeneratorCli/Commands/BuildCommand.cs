@@ -110,6 +110,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return result;
         }
 
+        internal static IDictionary<string, string> ProcessProperties(string[] properties)
+        {
+            return BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
+        }
+
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var environment = serviceProvider.GetRequiredService<IEnvironment>();
@@ -441,11 +446,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     commandLineConfigSource.Set(platformVersionKey, platformVersion);
                 }
             }
-        }
-
-        internal static IDictionary<string, string> ProcessProperties(string[] properties)
-        {
-            return BuildScriptGeneratorOptionsHelper.ProcessProperties(properties);
         }
 
         private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
