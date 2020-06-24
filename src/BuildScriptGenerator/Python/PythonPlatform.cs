@@ -435,9 +435,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
             var versionInfo = _versionProvider.GetVersionInfo();
+            var versionMap = versionInfo.SupportedVersions;
+
+            // Since our semantic versioning library does not work with Python preview version format, here
+            // we do some trivial way of finding the latest version which matches a given runtime version.
+            // Preview version of sdks have alphabet letter in the version name. Such as '3.8.0b3', '3.9.0b1',etc.
+            var nonPreviewRuntimeVersions = versionMap.Where(v => !v.Any(c => char.IsLetter(c)));
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                versionInfo.SupportedVersions);
+                nonPreviewRuntimeVersions);
+                
+            // Check if a preview version is available
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            {
+                // Preview versions: '3.8.0b3', '3.9.0b1', etc
+                var previewRuntimeVersions = versionMap
+                    .Where(v => v.Any(c => char.IsLetter(c)))
+                    .Where(v => v.StartsWith(version))
+                    .OrderByDescending(v => v);
+                if (previewRuntimeVersions.Any())
+                {
+                    maxSatisfyingVersion = previewRuntimeVersions.First();
+                }
+            }
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
