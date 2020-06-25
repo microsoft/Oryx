@@ -21,13 +21,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static IEnumerable<object[]> ImageNameData()
+        public static TheoryData<string, string> ImageNameData
         {
-            var imageTestHelper = new ImageTestHelper();
-            yield return new object[] { imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1" };
-            yield return new object[] { imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3" };
-            yield return new object[] { imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1" };
-            yield return new object[] { imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3" };
+            get
+            {
+                var imageTestHelper = new ImageTestHelper();
+                var data = new TheoryData<string, string>();
+                data.Add(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
+                data.Add(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
+                return data;
+            }
         }
 
         [Theory]
