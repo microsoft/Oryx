@@ -4,9 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {

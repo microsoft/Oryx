@@ -10,9 +10,9 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator

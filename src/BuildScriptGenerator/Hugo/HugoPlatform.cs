@@ -11,7 +11,7 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
-    class HugoPlatform : IProgrammingPlatform
+    internal class HugoPlatform : IProgrammingPlatform
     {
         private readonly ILogger<HugoPlatform> _logger;
         private readonly HugoPlatformInstaller _platformInstaller;

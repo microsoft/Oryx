@@ -11,8 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
