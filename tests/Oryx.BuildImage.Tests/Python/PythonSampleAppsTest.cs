@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class PythonSampleAppsTestBase : SampleAppsTestBase
     {
         public const string PackagesDirectory = "__oryx_packages__";
+
         public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", sampleAppName));
 
@@ -27,10 +28,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
     }
 
-    public class PythonSampleAppsOtherTests : PythonSampleAppsTestBase
+    public class PythonSampleAppsOtherTests : PythonSampleAppsTestBase, IClassFixture<TestTempDirTestFixture>
     {
-        public PythonSampleAppsOtherTests(ITestOutputHelper output) : base(output)
+        protected readonly string _tempDirRootPath;
+
+        public PythonSampleAppsOtherTests(ITestOutputHelper output, TestTempDirTestFixture testFixture)
+            : base(output)
         {
+            _tempDirRootPath = testFixture.RootDirPath;
         }
 
         [Theory]
@@ -1161,6 +1166,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         @"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
                         result.StdOut);
                     Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsAppSuccessfully_EvenIfRequirementsTxtOrSetupPyFileDoNotExist()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var hostDir = Directory.CreateDirectory(
+                Path.Combine(_tempDirRootPath, Guid.NewGuid().ToString("N"))).FullName;
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"mkdir -p {appDir}/foo")
+                .AddCommand($"echo > {appDir}/foo/test.py")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
