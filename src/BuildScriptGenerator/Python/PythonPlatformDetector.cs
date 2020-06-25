@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -94,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         _logger.LogDebug(
                             "Prefix {verPrefix} was not found in file {rtFileName}",
                             versionPrefix,
-                            PythonConstants.RuntimeFileName);
+                            PythonConstants.RuntimeFileName.Hash());
                         return null;
                     }
 
@@ -102,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     _logger.LogDebug(
                         "Found version {pyVer} in the {rtFileName} file",
                         pythonVersion,
-                        PythonConstants.RuntimeFileName);
+                        PythonConstants.RuntimeFileName.Hash());
                     return pythonVersion;
                 }
                 catch (IOException ex)
