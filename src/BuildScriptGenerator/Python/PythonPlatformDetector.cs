@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -29,39 +28,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
-                && !sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
-            {
-                _logger.LogDebug($"'{PythonConstants.SetupDotPyFileName}' or '{PythonConstants.RequirementsFileName}' " +
-                    $"does not exist in source repo");
-                return null;
-            }
-            else if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
-                && sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
-            {
-                _logger.LogInformation($"'{PythonConstants.RequirementsFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build from '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
-            }
-            else
-            {
-                _logger.LogInformation($"'{PythonConstants.SetupDotPyFileName} doesn't exist in source repo.' " +
-                    $"Oryx will try to build from '{PythonConstants.RequirementsFileName}'that exists in source repo");
-            }
 
-            // This detects if a runtime.txt file exists if that is a python file
+            var isPythonApp = IsPythonApp(sourceRepo);
+
+            // This detects if a runtime.txt file exists and if that is a python file
             var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
-            if (string.IsNullOrEmpty(versionFromRuntimeFile))
+            if (!isPythonApp && string.IsNullOrEmpty(versionFromRuntimeFile))
             {
-                var files = sourceRepo.EnumerateFiles(
-                    PythonConstants.PythonFileNamePattern,
-                    searchSubDirectories: false);
-
-                if (files == null || !files.Any())
-                {
-                    _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileNamePattern}' do not exist " +
-                        "in source repo root");
-                    return null;
-                }
+                return null;
             }
 
             return new PlatformDetectorResult
@@ -69,6 +43,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = versionFromRuntimeFile,
             };
+        }
+
+        private bool IsPythonApp(ISourceRepo sourceRepo)
+        {
+            if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
+            {
+                _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
+                return true;
+            }
+            else
+            {
+                _logger.LogInformation(
+                    $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
+            }
+
+            var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories: true);
+            if (files != null && files.Any())
+            {
+                _logger.LogInformation(
+                    $"Found files with extension '{PythonConstants.PythonFileNamePattern}' " +
+                    $"in the repo.");
+                return true;
+            }
+            else
+            {
+                _logger.LogInformation(
+                    $"Could not find any file with extension '{PythonConstants.PythonFileNamePattern}' " +
+                    $"in the repo.");
+            }
+
+            return false;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)
@@ -89,12 +94,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                         _logger.LogDebug(
                             "Prefix {verPrefix} was not found in file {rtFileName}",
                             versionPrefix,
-                            PythonConstants.RuntimeFileName.Hash());
+                            PythonConstants.RuntimeFileName);
                         return null;
                     }
 
                     var pythonVersion = content.Remove(0, versionPrefix.Length);
-                    _logger.LogDebug("Found version {pyVer} in runtime file", pythonVersion);
+                    _logger.LogDebug(
+                        "Found version {pyVer} in the {rtFileName} file",
+                        pythonVersion,
+                        PythonConstants.RuntimeFileName);
                     return pythonVersion;
                 }
                 catch (IOException ex)
@@ -102,7 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     _logger.LogError(
                         ex,
                         "An error occurred while reading file {rtFileName}",
-                        PythonConstants.RuntimeFileName.Hash());
+                        PythonConstants.RuntimeFileName);
                 }
             }
             else
