@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
@@ -38,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsFileDoesNotExist()
+        public void Detect_ReutrnsResult_WhenRequirementsFileDoesNotExist_ButDotPyFilesExist()
         {
             // Arrange
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
@@ -51,11 +53,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var result = detector.Detect(context);
 
             // Assert
-            Assert.Null(result);
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
+        public void Detect_ReutrnsResult_WhenOnlyRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
         {
             // Arrange
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
@@ -69,7 +73,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var result = detector.Detect(context);
 
             // Assert
-            Assert.Null(result);
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]
@@ -90,21 +96,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Platform);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
         [Theory]
         [InlineData("")]
         [InlineData("foo")]
-        [InlineData("python")]
-        public void Detect_ReutrnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
+        [InlineData(PythonConstants.PlatformName)]
+        public void Detect_ReutrnsNull_WhenOnlyRuntimeTextFileExists_ButDoesNotHaveTextInExpectedFormat(
+            string fileContent)
         {
             // Arrange
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
-            IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
-            IOHelpers.CreateFile(sourceDir, fileContent, "runtime.txt");
+            // No files with '.py' or no requirements.txt file
+            IOHelpers.CreateFile(sourceDir, fileContent, PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
@@ -115,11 +122,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Null(result);
         }
 
-        [Fact]
-        public void Detect_ReturnsVersionFromRuntimeTextFile_IfOptionsValueIsNotPresent()
+        [Theory]
+        [InlineData("3")]
+        [InlineData("3.7")]
+        [InlineData("3.7.5")]
+        [InlineData("3.7.5b01")]
+        public void Detect_ReturnsVersionFromRuntimeTextFile(string expectedVersion)
         {
             // Arrange
-            var expectedVersion = "2.5.0";
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);
@@ -133,8 +143,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("python", result.Platform);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
             Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReutrnsResult_WhenDotPyFilesExistInSubFolders()
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, Guid.NewGuid().ToString("N"))).FullName;
+            IOHelpers.CreateFile(subDir, "foo.py content", "foo.py");
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
