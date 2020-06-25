@@ -121,8 +121,6 @@ echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 
 {{ end }}
 
-echo Done running pip install.
-
 {{ if EnableCollectStatic }}
 if [ -e "$SOURCE_DIR/manage.py" ]
 then
