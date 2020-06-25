@@ -260,6 +260,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             return installationScriptSnippet;
         }
+
+        public string ResolveVersion(string versionToResolve)
+        {
+            var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
+            resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
+            return resolvedVersion;
+        }
+
         private string GetBuildConfiguration()
         {
             var configuration = _dotNetCoreScriptGeneratorOptions.MSBuildConfiguration;
@@ -304,13 +312,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
-        }
-
-        public string ResolveVersion(string versionToResolve)
-        {
-            var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
-            resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
-            return resolvedVersion;
         }
 
         private string GetMaxSatisfyingVersionAndVerify(string runtimeVersion)

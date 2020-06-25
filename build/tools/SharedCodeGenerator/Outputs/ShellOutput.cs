@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             {
                 string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
                 var value = constant.Value.WrapValueInQuotes();
+
                 // Ex: PYTHON_VERSION='3.7.7'
                 body.Append($"{name}={value}{NewLine}");
             }

@@ -28,6 +28,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="message">The string to be written.</param>
         void WriteLine(string message);
-
     }
 }

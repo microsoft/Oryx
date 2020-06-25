@@ -89,7 +89,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public static StringBuilder AddScriptToSetupSourceAndDestinationDirectories(
             this StringBuilder scriptBuilder,
             string sourceDir,
-            string temporaryDestinationDir,
             string destinationDir,
             bool hasUserSuppliedDestinationDir)
         {
@@ -184,6 +183,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 .AppendLine()
                 .AppendLine("echo")
                 .AppendFormatWithLine("echo \"Building project '{0}'\"", projectFile)
+
                 // Use the default build configuration 'Debug' here.
                 .AppendFormatWithLine("dotnet build \"{0}\"", projectFile)
                 .AppendLine();

@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        public const int ContainerPort = 4200;
+        public const int PortInContainer = 4200;
 
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
@@ -39,8 +39,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -81,9 +81,9 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runScript },
@@ -147,9 +147,9 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"mkdir -p {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runScript },
@@ -213,10 +213,10 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand("ln -sfn /tmp/abcd ./node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -255,7 +255,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runScript },
@@ -280,10 +280,10 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand($"ln -sfn /tmp/abcd {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -298,7 +298,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -322,7 +322,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runScript },
@@ -349,9 +349,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"mkdir -p {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -371,7 +371,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -389,9 +389,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (var i = 0; i < 3; i++)
             {
                 var restartAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appOutputDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appOutputDir}/{i}.txt")
                 .ToString();
@@ -401,7 +401,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: new List<EnvironmentVariable>(),
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[]
@@ -432,10 +432,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand("ln -sfn /tmp/abcd ./node_modules")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -455,7 +455,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -473,9 +473,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (var i = 0; i < 3; i++)
             {
                 var restartAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appOutputDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appOutputDir}/{i}.txt")
                 .ToString();
@@ -485,7 +485,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: new List<EnvironmentVariable>(),
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[]
@@ -517,8 +517,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -538,7 +538,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -566,8 +566,8 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -582,7 +582,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -608,9 +608,9 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -625,7 +625,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -646,9 +646,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 var restartScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/{i}.txt")
                 .ToString();
@@ -658,7 +658,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runScript },
@@ -683,10 +683,10 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand("ln -sfn /tmp/abcd ./node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -701,7 +701,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -726,7 +726,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runScript },
@@ -753,9 +753,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p node_modules")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -775,7 +775,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -796,9 +796,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 var reStartAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appOutputDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appOutputDir}/{i}.txt")
                 .ToString();
@@ -808,7 +808,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", reStartAppScript },
@@ -835,9 +835,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"mkdir -p {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -857,7 +857,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -878,9 +878,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 var restartAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appOutputDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
@@ -889,7 +889,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", restartAppScript },
@@ -916,10 +916,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand("ln -sfn /tmp/abcd ./node_modules")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -939,7 +939,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -960,9 +960,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 var reRunScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appOutputDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appOutputDir}/{i}.txt")
                 .ToString();
@@ -972,7 +972,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", runAppScript },
@@ -1000,10 +1000,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand($"ln -sfn /tmp/abcd {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -1023,7 +1023,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {
@@ -1044,9 +1044,9 @@ namespace Microsoft.Oryx.Integration.Tests
             for (count = 0; count < 3; count++)
             {
                 var reRunScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appOutputDir}/{count}.txt")
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appOutputDir}/{count}.txt")
                 .ToString();
@@ -1056,7 +1056,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
-                    port: ContainerPort,
+                    port: PortInContainer,
                     link: null,
                     runCmd: "/bin/sh",
                     runArgs: new[] { "-c", reRunScript },
@@ -1084,8 +1084,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable("PORT", ContainerPort.ToString())
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .SetEnvironmentVariable("PORT", PortInContainer.ToString())
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
@@ -1105,7 +1105,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                ContainerPort,
+                PortInContainer,
                 "/bin/sh",
                 new[]
                 {

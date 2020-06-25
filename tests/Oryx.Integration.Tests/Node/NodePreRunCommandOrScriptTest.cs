@@ -18,8 +18,6 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class NodePreRunCommandOrScriptTest : NodeEndToEndTestsBase
     {
-        private readonly string DefaultSdksRootDir = "/tmp/oryx/nodejs";
-
         private readonly string RunScriptPath = "/tmp/startup.sh";
         private readonly string RunScriptTempPath = "/tmp/startup_temp.sh";
         private readonly string RunScriptPreRunPath = "/tmp/startup_prerun.sh";
