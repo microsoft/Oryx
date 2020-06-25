@@ -15,6 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         LatestPatch,
         LatestFeature,
         LatestMinor,
-        LatestMajor
+        LatestMajor,
     }
 }

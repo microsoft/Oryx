@@ -15,9 +15,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
     /// </summary>
     internal static class StaticSiteGeneratorHelper
     {
-        private static string HugoEnvironmentVariablePrefix = "HUGO_";
-        private static string[] HugoConfigurationVariables =
-            { "archetypeDir", "baseURL", "contentDir", "languageCode", "layoutDir", "staticDir", "title", "theme" };
+        private static readonly string HugoEnvironmentVariablePrefix = "HUGO_";
+        private static readonly string[] HugoConfigurationVariables =
+        {
+            "archetypeDir",
+            "baseURL",
+            "contentDir",
+            "languageCode",
+            "layoutDir",
+            "staticDir",
+            "title",
+            "theme",
+        };
 
         /// <summary>
         /// Checks whether or not the given repository uses a static site generator.

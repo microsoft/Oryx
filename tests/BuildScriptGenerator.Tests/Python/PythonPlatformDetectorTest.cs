@@ -24,7 +24,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
-            var version = "100.100.100";
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No files in source directory
@@ -42,7 +41,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReutrnsNull_WhenRequirementsFileDoesNotExist()
         {
             // Arrange
-            var version = "100.100.100";
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "foo.py content", "foo.py");
@@ -79,7 +77,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             // Arrange
             var expectedVersion = "1000.1000.1000";
-            var defaultVersion = "1000.1000.1001";
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             // No file with a '.py' extension
@@ -104,7 +101,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         public void Detect_ReutrnsNull_WhenRuntimeTextFileExists_ButDoesNotTextInExpectedFormat(string fileContent)
         {
             // Arrange
-            var supportedVersion = "1.2.3";
             var detector = CreatePythonPlatformDetector(new PythonScriptGeneratorOptions());
             var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
             IOHelpers.CreateFile(sourceDir, "", PythonConstants.RequirementsFileName);

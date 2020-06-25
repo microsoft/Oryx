@@ -11,8 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -108,25 +108,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
         }
 
-        protected string GetBeginningCommandOutputLog()
-        {
-            var output = new StringBuilder();
-            output.AppendLine("Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx");
-            output.AppendLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
-            var buildInfo = new DefinitionListFormatter();
-            var oryxVersion = Program.GetVersion();
-            var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
-            var oryxReleaseTagName = Program.GetMetadataValue(Program.ReleaseTagName);
-            buildInfo.AddDefinition(
-                "Oryx Version",
-                $"{oryxVersion}, " +
-                $"Commit: {oryxCommitId}, " +
-                $"ReleaseTagName: {oryxReleaseTagName}");
-            output.AppendLine();
-            output.Append(buildInfo.ToString());
-            return output.ToString();
-        }
-
         internal abstract int Execute(IServiceProvider serviceProvider, IConsole console);
 
         internal virtual void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
@@ -152,6 +133,25 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 })
                 .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();
+        }
+
+        protected string GetBeginningCommandOutputLog()
+        {
+            var output = new StringBuilder();
+            output.AppendLine("Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx");
+            output.AppendLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
+            var buildInfo = new DefinitionListFormatter();
+            var oryxVersion = Program.GetVersion();
+            var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
+            var oryxReleaseTagName = Program.GetMetadataValue(Program.ReleaseTagName);
+            buildInfo.AddDefinition(
+                "Oryx Version",
+                $"{oryxVersion}, " +
+                $"Commit: {oryxCommitId}, " +
+                $"ReleaseTagName: {oryxReleaseTagName}");
+            output.AppendLine();
+            output.Append(buildInfo.ToString());
+            return output.ToString();
         }
 
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)

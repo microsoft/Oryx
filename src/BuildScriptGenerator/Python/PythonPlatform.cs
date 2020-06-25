@@ -64,10 +64,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <summary>
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
         /// </summary>
-        /// <param name="pythonScriptGeneratorOptions">The options of pythonScriptGenerator.</param>
+        /// <param name="commonOptions">The <see cref="BuildScriptGeneratorOptions"/>.</param>
+        /// <param name="pythonScriptGeneratorOptions">The <see cref="PythonScriptGeneratorOptions"/>.</param>
         /// <param name="versionProvider">The Python version provider.</param>
         /// <param name="logger">The logger of Python platform.</param>
         /// <param name="detector">The detector of Python platform.</param>
+        /// <param name="platformInstaller">The <see cref="PythonPlatformInstaller"/>.</param>
         public PythonPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
@@ -148,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 // If the package directory was not provided, we default to virtual envs
                 if (string.IsNullOrWhiteSpace(virtualEnvName))
                 {
-                    virtualEnvName = GetDefaultVirtualEnvName(context, detectorResult);
+                    virtualEnvName = GetDefaultVirtualEnvName(detectorResult);
                 }
 
                 manifestFileProperties[PythonManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
@@ -315,9 +317,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return resolvedVersion;
         }
 
-        private string GetDefaultVirtualEnvName(
-            BuildScriptGeneratorContext context,
-            PlatformDetectorResult detectorResult)
+        private static string GetPackageDirectory(BuildScriptGeneratorContext context)
+        {
+            string packageDir = null;
+            if (context.Properties != null)
+            {
+                context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir);
+            }
+
+            return packageDir;
+        }
+
+        private string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)
         {
             string pythonVersion = detectorResult.PlatformVersion;
             if (!string.IsNullOrWhiteSpace(pythonVersion))
@@ -332,18 +343,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return $"pythonenv{pythonVersion}";
         }
 
-        private static string GetPackageDirectory(BuildScriptGeneratorContext context)
-        {
-            string packageDir = null;
-            if (context.Properties != null)
-            {
-                context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir);
-            }
-
-            return packageDir;
-        }
-
-        private static bool GetVirtualEnvPackOptions(
+        private bool GetVirtualEnvPackOptions(
             BuildScriptGeneratorContext context,
             string virtualEnvName,
             out string compressVirtualEnvCommand,

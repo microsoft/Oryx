@@ -18,8 +18,6 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "python")]
     public class PythonPreRunCommandOrScriptTest : PythonEndToEndTestsBase
     {
-        private readonly string DefaultSdksRootDir = "/opt/python";
-
         private readonly string RunScriptPath = "/tmp/startup.sh";
         private readonly string RunScriptTempPath = "/tmp/startup_temp.sh";
         private readonly string RunScriptPreRunPath = "/tmp/startup_prerun.sh";

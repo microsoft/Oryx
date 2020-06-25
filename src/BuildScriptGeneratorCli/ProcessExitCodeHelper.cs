@@ -4,9 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -16,7 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             // NOTE: Some partners depend on specific exit codes to take alternative actions at their end,
             // so make sure to let me know if the behavior here is changed.
-
             if (exception == null)
             {
                 throw new ArgumentNullException(nameof(exception));

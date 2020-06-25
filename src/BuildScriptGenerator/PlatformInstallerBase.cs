@@ -57,10 +57,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
                 .AppendLine("echo \"Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"")
+
                 // Search header name ignoring case
                 .AppendLine("echo Verifying checksum...")
                 .AppendLine("headerName=\"x-ms-meta-checksum\"")
                 .AppendLine("checksumHeader=$(cat headers.txt | grep -i $headerName: | tr -d '\\r')")
+
                 // Change header and value to lowercase
                 .AppendLine("checksumHeader=$(echo $checksumHeader | tr '[A-Z]' '[a-z]')")
                 .AppendLine("checksumValue=${checksumHeader#\"$headerName: \"}")
@@ -72,6 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
+
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {versionDirInTemp}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return snippet.ToString();

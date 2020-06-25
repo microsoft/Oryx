@@ -48,6 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
+
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {versionDirInTemp}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
             return snippet.ToString();
