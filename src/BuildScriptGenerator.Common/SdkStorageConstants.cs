@@ -1,6 +1,6 @@
 // This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class SdkStorageConstants
     {

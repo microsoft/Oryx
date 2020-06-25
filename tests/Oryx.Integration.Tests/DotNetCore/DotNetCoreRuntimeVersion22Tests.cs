@@ -5,7 +5,7 @@
 
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;

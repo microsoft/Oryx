@@ -10,7 +10,7 @@ using Microsoft.Oryx.BuildImage.Tests;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

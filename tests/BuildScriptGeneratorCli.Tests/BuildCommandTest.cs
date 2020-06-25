@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
@@ -277,8 +278,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         public static IEnumerable<object[]> GetOperationNameEnvVarNames()
         {
-            return Common.LoggingConstants.OperationNameSourceEnvVars
-                .Select(e => new[] { e.Value, Common.LoggingConstants.EnvTypeOperationNamePrefix[e.Key] });
+            return LoggingConstants.OperationNameSourceEnvVars
+                .Select(e => new[] { e.Value, LoggingConstants.EnvTypeOperationNamePrefix[e.Key] });
         }
 
         [Theory]

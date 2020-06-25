@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 {

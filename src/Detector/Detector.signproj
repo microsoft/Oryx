@@ -3,7 +3,7 @@
     <Import Project="$(USERPROFILE)\.nuget\packages\microsoft.visualstudioeng.microbuild.core\0.4.1\build\Microsoft.VisualStudioEng.MicroBuild.Core.targets" />
 
     <PropertyGroup>
-        <OutDir>$(MSBuildThisFileDirectory)bin\Release\netcoreapp2.1</OutDir>
+        <OutDir>$(MSBuildThisFileDirectory)bin\Release</OutDir>
         <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

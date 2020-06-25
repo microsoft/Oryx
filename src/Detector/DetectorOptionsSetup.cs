@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace Microsoft.Oryx.Detector
 {

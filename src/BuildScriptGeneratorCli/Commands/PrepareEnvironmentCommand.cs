@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {

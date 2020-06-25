@@ -6,12 +6,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System;
-using Microsoft.Oryx.Common;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public class ProbeAndFindProjectFileProvider : IProjectFileProvider
+    internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
 

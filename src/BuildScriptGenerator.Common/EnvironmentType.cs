@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public enum EnvironmentType
     {

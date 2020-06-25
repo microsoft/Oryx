@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.Tests.Common
 {

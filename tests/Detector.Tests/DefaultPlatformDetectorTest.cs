@@ -3,13 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
-using Moq;
-using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Common;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Moq;
+using Xunit;
 
 namespace Microsoft.Oryx.Detector.Tests
 {
@@ -20,12 +18,12 @@ namespace Microsoft.Oryx.Detector.Tests
         {
             Mock<IPlatformDetector> mockNodePlatformDetector = new Mock<IPlatformDetector>();
             Mock<IPlatformDetector> mockDotnetcorePlatformDetector = new Mock<IPlatformDetector>();
-            IEnumerable<IPlatformDetector> platformDetectors = new List<IPlatformDetector>() { mockNodePlatformDetector.Object, mockDotnetcorePlatformDetector.Object};
+            IEnumerable<IPlatformDetector> platformDetectors = new List<IPlatformDetector>() { mockNodePlatformDetector.Object, mockDotnetcorePlatformDetector.Object };
 
             var options = new Mock<IOptions<DetectorOptions>>();
             var sourceRepo = new MemorySourceRepo();
             var detector = new DefaultPlatformDetector(
-                platformDetectors, 
+                platformDetectors,
                 NullLogger<DefaultPlatformDetector>.Instance,
                 options.Object);
             var context = CreateContext(sourceRepo);
@@ -45,7 +43,7 @@ namespace Microsoft.Oryx.Detector.Tests
 
             IPlatformDetector nodePlatformDetector = mockNodePlatformDetector.Object;
             IPlatformDetector dotnetcorePlatformDetector = mockDotnetcorePlatformDetector.Object;
-            
+
             // Act
             var detectionResults = detector.GetAllDetectedPlatforms(context);
 

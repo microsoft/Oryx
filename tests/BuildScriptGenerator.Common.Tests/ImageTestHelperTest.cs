@@ -9,7 +9,7 @@ using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Common.Tests
+namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
 {
     public class ImageTestHelperTest
     {

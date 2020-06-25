@@ -6,7 +6,7 @@
 using System.Linq;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {

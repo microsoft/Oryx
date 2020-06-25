@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    public static class PythonConstants
+    internal static class PythonConstants
     {
         public const string PlatformName = "python";
         public const string RequirementsFileName = "requirements.txt";

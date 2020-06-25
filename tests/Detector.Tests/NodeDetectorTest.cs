@@ -4,9 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 using Microsoft.Oryx.Detector.Node;
-using Microsoft.Oryx.Common;
+using Xunit;
 
 namespace Microsoft.Oryx.Detector.Tests.Node
 {
@@ -186,7 +185,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.Null(result);
         }
-       
+
         [Fact]
         public void Detect_ReturnsNullVersion_ForPackageJsonWithNoVersion()
         {

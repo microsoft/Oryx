@@ -24,7 +24,10 @@ namespace Microsoft.Oryx.Common.Extensions
             return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static string JoinKeyValuePairs(IDictionary<string, string> pairs, char pairSep = ' ', char kvSep = '=')
+        public static string JoinKeyValuePairs(
+            IDictionary<string, string> pairs,
+            string pairSep = " ",
+            char kvSep = '=')
         {
             return string.Join(pairSep, pairs.Select(pair => pair.Key + kvSep + pair.Value));
         }
@@ -39,7 +42,7 @@ namespace Microsoft.Oryx.Common.Extensions
             try
             {
                 StringBuilder result = new StringBuilder();
-                ICollection<Match> matches = Regex.Matches(str, UrlPattern, RegexOptions.IgnoreCase);
+                var matches = Regex.Matches(str, UrlPattern, RegexOptions.IgnoreCase);
 
                 int positionInStr = 0;
                 foreach (Match m in matches)

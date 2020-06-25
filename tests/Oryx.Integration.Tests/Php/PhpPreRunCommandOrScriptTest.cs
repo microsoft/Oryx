@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;

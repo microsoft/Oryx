@@ -6,7 +6,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php

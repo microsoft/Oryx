@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class OryxDirectoryStructureHelper
     {

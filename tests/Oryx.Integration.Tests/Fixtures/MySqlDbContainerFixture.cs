@@ -5,7 +5,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Polly;
 using Xunit;

@@ -15,6 +15,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Oryx.Tests.Common\IOHelpers.cs" Link="IOHelpers.cs" />
+    <Compile Include="..\Oryx.Tests.Common\TestTempDirTestFixture.cs" Link="TestTempDirTestFixture.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
@@ -31,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Detector\Detector.csproj" />
-    <ProjectReference Include="..\Oryx.Tests.Common\Oryx.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

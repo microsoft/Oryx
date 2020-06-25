@@ -11,7 +11,7 @@ using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 using Xunit;

@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    public class PhpConstants
+    internal class PhpConstants
     {
         public const string PlatformName = "php";
         public const string PhpFileNamePattern = "*.php";

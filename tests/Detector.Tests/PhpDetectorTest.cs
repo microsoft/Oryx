@@ -4,10 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.Detector.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
-using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.Detector.Tests.Php
 {
