@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public class EventStopwatch : IDisposable
     {

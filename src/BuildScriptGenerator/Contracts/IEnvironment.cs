@@ -5,7 +5,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {

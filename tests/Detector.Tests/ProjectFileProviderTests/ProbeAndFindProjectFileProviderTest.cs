@@ -5,7 +5,6 @@
 
 using System.IO;
 using Microsoft.Oryx.Detector.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 

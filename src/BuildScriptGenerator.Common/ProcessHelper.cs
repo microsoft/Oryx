@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class ProcessHelper
     {

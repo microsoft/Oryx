@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    public static class NodeConstants
+    internal static class NodeConstants
     {
         public const string PlatformName = "nodejs";
         public const string PackageJsonFileName = "package.json";

@@ -6,7 +6,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.Tests.Common

@@ -4,12 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common;
-using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -157,8 +154,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             _tempDirRoot = testFixture.RootDirPath;
         }
 
-        protected DefaultProjectFileProvider GetProjectFileProvider(
-            DetectorOptions options = null)
+        public static DefaultProjectFileProvider GetProjectFileProvider(DetectorOptions options = null)
         {
             if (options == null)
             {

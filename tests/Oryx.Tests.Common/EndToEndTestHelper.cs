@@ -10,7 +10,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;

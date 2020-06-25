@@ -5,9 +5,8 @@
 
 using System;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
 {

@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using JetBrains.Annotations;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 using System;

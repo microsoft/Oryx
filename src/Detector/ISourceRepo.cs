@@ -54,11 +54,5 @@ namespace Microsoft.Oryx.Detector
         /// </param>
         /// <returns>A collection of file paths.</returns>
         IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories);
-
-        /// <summary>
-        /// Gets a current commit ID.
-        /// </summary>
-        /// <returns>ID of the current commit.</returns>
-        string GetGitCommitId();
     }
 }

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace Microsoft.Oryx.Common
+namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     /// <summary>
     /// Prints an ordered list of definitions with equal padding for headings.

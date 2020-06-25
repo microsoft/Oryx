@@ -6,7 +6,7 @@
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
-using Microsoft.Oryx.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
