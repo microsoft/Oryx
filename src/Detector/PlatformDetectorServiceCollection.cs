@@ -56,7 +56,6 @@ namespace Microsoft.Oryx.Detector
             services.AddSingleton<HugoDetector>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPlatformDetector, HugoDetector>());
-            services.AddSingleton<IConfigureOptions<HugoDetectorOptions>, HugoDetectorOptionsSetup>();
 
             return services;
         }

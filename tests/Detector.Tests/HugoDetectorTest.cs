@@ -5,17 +5,18 @@
 
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Detector.Hugo;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.Detector.Tests
 {
-    public class StaticSiteGeneratorHelperTest : IClassFixture<TestTempDirTestFixture>
+    public class HugoDetectorTest : IClassFixture<TestTempDirTestFixture>
     {
         private readonly string _tempDirRootPath;
 
-        public StaticSiteGeneratorHelperTest(TestTempDirTestFixture testFixture)
+        public HugoDetectorTest(TestTempDirTestFixture testFixture)
         {
             _tempDirRootPath = testFixture.RootDirPath;
         }
@@ -27,15 +28,17 @@ namespace Microsoft.Oryx.Detector.Tests
         {
             // Arrange
             var appDir = CreateAppDir();
-
             WriteFile("archetypeDir=\"test\"", appDir, subPaths);
-            var sourceRepo = new LocalSourceRepo(appDir);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
 
             // Act
-            var result = StaticSiteGeneratorHelper.IsHugoApp(sourceRepo, new HugoDetectorOptions());
+            var result = detector.Detect(context);
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Theory]
@@ -46,13 +49,16 @@ namespace Microsoft.Oryx.Detector.Tests
             // Arrange
             var appDir = CreateAppDir();
             WriteFile("{ \"archetypeDir\" : \"test\" }", appDir, subPaths);
-            var sourceRepo = new LocalSourceRepo(appDir);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
 
             // Act
-            var result = StaticSiteGeneratorHelper.IsHugoApp(sourceRepo, new HugoDetectorOptions());
+            var result = detector.Detect(context);
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Theory]
@@ -63,13 +69,16 @@ namespace Microsoft.Oryx.Detector.Tests
             // Arrange
             var appDir = CreateAppDir();
             WriteFile("archetypeDir: test", appDir, subPaths);
-            var sourceRepo = new LocalSourceRepo(appDir);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
 
             // Act
-            var result = StaticSiteGeneratorHelper.IsHugoApp(sourceRepo, new HugoDetectorOptions());
+            var result = detector.Detect(context);
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Theory]
@@ -80,13 +89,16 @@ namespace Microsoft.Oryx.Detector.Tests
             // Arrange
             var appDir = CreateAppDir();
             WriteFile("archetypeDir: test", appDir, subPaths);
-            var sourceRepo = new LocalSourceRepo(appDir);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
 
             // Act
-            var result = StaticSiteGeneratorHelper.IsHugoApp(sourceRepo, new HugoDetectorOptions());
+            var result = detector.Detect(context);
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         private string CreateAppDir()
@@ -101,6 +113,19 @@ namespace Microsoft.Oryx.Detector.Tests
             var dir = new FileInfo(finalPath).Directory.FullName;
             Directory.CreateDirectory(dir);
             File.WriteAllText(finalPath, fileContent);
+        }
+
+        private HugoDetector GetDetector()
+        {
+            return new HugoDetector(NullLogger<HugoDetector>.Instance);
+        }
+
+        private DetectorContext GetContext(string appDir)
+        {
+            return new DetectorContext
+            {
+                SourceRepo = new LocalSourceRepo(appDir),
+            };
         }
     }
 }

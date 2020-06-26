@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Detector
         /// <summary>
         /// Platform that the detector is used for.
         /// </summary>
-        /// <returns>An instance of <see cref="PlatformName"/></returns>
-        PlatformName DetectorPlatformName { get; }
+        /// <returns>An instance of <see cref="Detector.PlatformName"/></returns>
+        PlatformName PlatformName { get; }
     }
 }

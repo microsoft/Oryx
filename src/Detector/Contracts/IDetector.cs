@@ -17,6 +17,6 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         /// <param name="context">The <see cref="DetectorContext"/>.</param>
         /// <returns>A dictionary mapping the detected platforms to the version.</returns>
-        IDictionary<PlatformName, PlatformDetectorResult> GetAllDetectedPlatforms(DetectorContext context);
+        IEnumerable<PlatformDetectorResult> GetAllDetectedPlatforms(DetectorContext context);
     }
 }
