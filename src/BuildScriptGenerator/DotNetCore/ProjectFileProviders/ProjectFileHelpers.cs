@@ -27,6 +27,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return IsAzureFunctionsProject(projFileDoc);
         }
 
+        public static bool IsAzureBlazorWebAssemblyProject(ISourceRepo sourceRepo, string projectFile)
+        {
+            var projFileDoc = GetXmlDocument(sourceRepo, projectFile);
+            return IsAzureBlazorWebAssemblyProject(projFileDoc);
+        }
         public static string GetRelativePathToRoot(string projectFilePath, string repoRoot)
         {
             var repoRootDir = new DirectoryInfo(repoRoot);
@@ -63,6 +68,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureFunctionsPackageReference);
+        }
+
+        public static bool IsAzureBlazorWebAssemblyProject(XDocument projectFileDoc)
+        {
+            var azureBlazorWasmTargetFrameworkElement = projectFileDoc.XPathSelectElement(
+                DotNetCoreConstants.AzureBlazorWasmTargetFrameWorkXPathExpression);
+            var azureBlazorWasmTargetFramework = azureBlazorWasmTargetFrameworkElement?.Value;
+
+            var azureBlazorWasmRazorLangVersionElement = projectFileDoc.XPathSelectElement(
+                DotNetCoreConstants.AzureBlazorWasmRazorLangVersionXPathExpression);
+            var azureBlazorWasmRazorLangVersion = azureBlazorWasmRazorLangVersionElement?.Value;
+
+            if (((!string.IsNullOrEmpty(azureBlazorWasmTargetFramework)
+                && azureBlazorWasmTargetFramework.Contains("netstandard"))
+                || !string.IsNullOrEmpty(azureBlazorWasmTargetFramework))
+                && HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureBlazorWasmPackageReference))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static XDocument GetXmlDocument(ISourceRepo sourceRepo, string projectFile)

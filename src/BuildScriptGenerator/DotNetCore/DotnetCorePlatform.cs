@@ -145,6 +145,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
+            if (ProjectFileHelpers.IsAzureFunctionsProject(context.SourceRepo, projectFile))
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.AzFunctionPlatform] = DotNetCoreConstants.PlatformName;
+            }
+
             var templateProperties = new DotNetCoreBashBuildSnippetProperties
             {
                 ProjectFile = projectFile,

@@ -63,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             var webAppProjects = new List<string>();
             var azureFunctionsProjects = new List<string>();
+            var azureBlazorWasmProjects = new List<string>();
             var allProjects = new List<string>();
             foreach (var file in projectFiles)
             {
@@ -75,12 +76,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 {
                     azureFunctionsProjects.Add(file);
                 }
+                else if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
+                {
+                    azureBlazorWasmProjects.Add(file);
+                }
             }
 
             projectFile = GetProject(webAppProjects);
             if (projectFile == null)
             {
                 projectFile = GetProject(azureFunctionsProjects);
+            }
+
+            if (projectFile == null)
+            {
+                projectFile = GetProject(azureBlazorWasmProjects);
             }
 
             if (projectFile == null)
