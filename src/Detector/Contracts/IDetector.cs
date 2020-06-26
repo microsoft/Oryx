@@ -15,8 +15,8 @@ namespace Microsoft.Oryx.Detector
         /// <summary>
         /// Returns all platforms detected for the given repository context.
         /// </summary>
-        /// <param name="ctx">The <see cref="DetectorContext"/>.</param>
+        /// <param name="context">The <see cref="DetectorContext"/>.</param>
         /// <returns>A dictionary mapping the detected platforms to the version.</returns>
-        IDictionary<PlatformName, string> GetAllDetectedPlatforms(DetectorContext ctx);
+        IDictionary<PlatformName, PlatformDetectorResult> GetAllDetectedPlatforms(DetectorContext context);
     }
 }

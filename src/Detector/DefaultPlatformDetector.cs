@@ -26,15 +26,18 @@ namespace Microsoft.Oryx.Detector
             _detectorOptions = detectorOptions;
         }
 
-        public IDictionary<PlatformName, string> GetAllDetectedPlatforms(DetectorContext ctx)
+        public IDictionary<PlatformName, PlatformDetectorResult> GetAllDetectedPlatforms(DetectorContext context)
         {
-            var detectedPlatforms = new Dictionary<PlatformName, string>();
+            var detectedPlatforms = new Dictionary<PlatformName, PlatformDetectorResult>();
 
             foreach (var platformDetector in _platformDetectors)
             {
                 PlatformName platformName = platformDetector.DetectorPlatformName;
                 _logger.LogDebug($"Detecting '{platformName}' platform ...");
-                if (IsDetectedPlatform(ctx, platformDetector, out Tuple<PlatformName, string> platformResult))
+                if (IsDetectedPlatform(
+                    context,
+                    platformDetector,
+                    out Tuple<PlatformName, PlatformDetectorResult> platformResult))
                 {
                     detectedPlatforms.Add(platformResult.Item1, platformResult.Item2);
                 }
@@ -44,13 +47,13 @@ namespace Microsoft.Oryx.Detector
         }
 
         private bool IsDetectedPlatform(
-            DetectorContext ctx,
+            DetectorContext context,
             IPlatformDetector platformDetector,
-            out Tuple<PlatformName, string> platformResult)
+            out Tuple<PlatformName, PlatformDetectorResult> platformResult)
         {
             platformResult = null;
-            PlatformName platformName = platformDetector.DetectorPlatformName;
-            PlatformDetectorResult detectionResult = platformDetector.Detect(ctx);
+            var platformName = platformDetector.DetectorPlatformName;
+            var detectionResult = platformDetector.Detect(context);
 
             if (detectionResult == null)
             {
@@ -62,14 +65,11 @@ namespace Microsoft.Oryx.Detector
             {
                 _logger.LogInformation($"Platform '{platformName}' was detected in the given repository, but " +
                                         $"no versions were detected.");
-                platformResult = Tuple.Create(platformName, "Not Detected");
-                return true;
             }
 
-            string detectedVersion = detectionResult.PlatformVersion;
-
-            platformResult = Tuple.Create(platformName, detectedVersion);
-            _logger.LogInformation($"platform '{platformName}' was detected with version '{detectedVersion}'.");
+            platformResult = Tuple.Create(platformName, detectionResult);
+            _logger.LogInformation(
+                $"Platform '{platformName}' was detected with version '{detectionResult.PlatformVersion}'.");
             return true;
         }
     }

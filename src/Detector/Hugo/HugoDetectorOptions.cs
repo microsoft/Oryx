@@ -3,14 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Detector.Hugo
 {
-    public enum PlatformName
+    public class HugoDetectorOptions
     {
-        Node,
-        Python,
-        Php,
-        DotNetCore,
-        Hugo,
+        public bool HasHugoEnvironmentVariables { get; set; }
     }
 }
