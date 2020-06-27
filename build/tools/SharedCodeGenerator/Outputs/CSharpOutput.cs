@@ -20,11 +20,13 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
         private string _className;
         private string _directory;
         private string _namespace;
+        private string _scope;
 
         static CSharpOutput()
         {
             var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "CSharpConstants.cs.tpl")))
+            using (var templateReader = new StreamReader(
+                Path.Combine(projectOutputDir, "Outputs", "CSharpConstants.cs.tpl")))
             {
                 OutputTemplate = Template.Parse(templateReader.ReadToEnd());
             }
@@ -36,6 +38,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
             _className = _collection.Name.Camelize();
             _directory = typeInfo["directory"];
             _namespace = typeInfo["namespace"];
+            typeInfo.TryGetValue("scope", out _scope);
         }
 
         public string GetPath()
@@ -45,13 +48,21 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
 
         public string GetContent()
         {
+            var scope = "public";
+            if (!string.IsNullOrEmpty(_scope))
+            {
+                scope = _scope;
+            }
+
             var model = new ConstantCollectionTemplateModel
             {
                 AutogenDisclaimer = Program.BuildAutogenDisclaimer(_collection.SourcePath),
                 Namespace = _namespace,
                 Name = _className,
+                Scope = scope,
                 Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
             };
+
             return OutputTemplate.Render(model, member => member.Name);
         }
     }
