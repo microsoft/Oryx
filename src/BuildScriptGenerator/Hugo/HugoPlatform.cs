@@ -72,7 +72,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             PlatformDetectorResult detectorResult)
         {
             var manifestFileProperties = new Dictionary<string, string>();
+            manifestFileProperties[ManifestFilePropertyKeys.PlatformName] = detectorResult.Platform;
             manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
+
+            var oryxAppTypeEnvironmentVar = Environment.GetEnvironmentVariable("Oryx_App_Type");
+            if (!string.IsNullOrEmpty(oryxAppTypeEnvironmentVar))
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.OryxAppType] = oryxAppTypeEnvironmentVar;
+            }
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,

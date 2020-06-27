@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -82,17 +83,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
             }
 
-            projectFile = GetProject(webAppProjects);
-            if (projectFile == null)
+            // Assumption: some env variable "Oryx_App_type" will be passed to oryx
+            // which will indicate if the app is an azure function type or static type app
+            var oryxAppTypeEnvironmentVar = Environment.GetEnvironmentVariable("Oryx_App_Type");
+            if (projectFile == null && !string.IsNullOrEmpty(oryxAppTypeEnvironmentVar)
+                && oryxAppTypeEnvironmentVar.ToLower().Contains("functions"))
             {
                 projectFile = GetProject(azureFunctionsProjects);
             }
-
-            if (projectFile == null)
+            else if (projectFile == null && !string.IsNullOrEmpty(oryxAppTypeEnvironmentVar)
+               && (oryxAppTypeEnvironmentVar.ToLower().Contains("static-sites") || oryxAppTypeEnvironmentVar.ToLower().Contains("blazor-wasm")))
             {
                 projectFile = GetProject(azureBlazorWasmProjects);
             }
-
+            else if (projectFile == null)
+            {
+                // Not sure if vanilla web-project will be denoted by setting any value in Oryx_DotNetCore_App_Type
+                // so assuming it will be null for vanilla dotnet core web app
+                projectFile = GetProject(webAppProjects);
+            }
+            
+            // After scanning all the project types we stil didn't find any files (e.g. csproj
             if (projectFile == null)
             {
                 _logger.LogDebug("Could not find a .NET Core project file to build.");

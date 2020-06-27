@@ -21,6 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         internal const string HugoVersion = nameof(HugoVersion);
 
-        internal const string AzFunctionPlatform = "az-function-platform"; 
+        internal const string PlatformName = nameof(PlatformName);
+
+        internal const string OryxAppType = nameof(OryxAppType);
     }
 }

@@ -32,6 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var projFileDoc = GetXmlDocument(sourceRepo, projectFile);
             return IsAzureBlazorWebAssemblyProject(projFileDoc);
         }
+
         public static string GetRelativePathToRoot(string projectFilePath, string repoRoot)
         {
             var repoRootDir = new DirectoryInfo(repoRoot);
@@ -73,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public static bool IsAzureBlazorWebAssemblyProject(XDocument projectFileDoc)
         {
             var azureBlazorWasmTargetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotNetCoreConstants.AzureBlazorWasmTargetFrameWorkXPathExpression);
+                DotNetCoreConstants.TargetFrameworkElementXPathExpression);
             var azureBlazorWasmTargetFramework = azureBlazorWasmTargetFrameworkElement?.Value;
 
             var azureBlazorWasmRazorLangVersionElement = projectFileDoc.XPathSelectElement(
