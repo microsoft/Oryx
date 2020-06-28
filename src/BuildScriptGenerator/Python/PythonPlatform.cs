@@ -136,11 +136,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
             manifestFileProperties[ManifestFilePropertyKeys.PlatformName] = detectorResult.Platform;
 
-            var oryxAppTypeEnvironmentVar = Environment.GetEnvironmentVariable("Oryx_App_Type");
-            if (!string.IsNullOrEmpty(oryxAppTypeEnvironmentVar))
-            {
-                manifestFileProperties[ManifestFilePropertyKeys.OryxAppType] = oryxAppTypeEnvironmentVar;
-            }
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
 

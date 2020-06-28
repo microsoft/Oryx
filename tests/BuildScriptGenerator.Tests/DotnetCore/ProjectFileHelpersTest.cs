@@ -60,6 +60,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.True(actual);
         }
 
+        [Fact]
+        public void IsAzureBlazorWebAssemblyProject_ReturnsTrue_WhenProject_IsAzureIsAzureBlazorWebAssemblyProject()
+        {
+            // Arrange
+            var projectFile = ProjectFileProviderTestBase.AzureBlazorWasmClientProjectFile;
+            var xdoc = XDocument.Load(new StringReader(projectFile));
+
+            // Act
+            var actual = ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(xdoc);
+
+            // Assert
+            Assert.True(actual);
+        }
+
         public static TheoryData<string, string, string> GetRelativePathToRootData
         {
             get

@@ -275,6 +275,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // say yes.
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
+            string oryxAppType = string.Empty;
+
+            if (context.Properties != null
+                && context.Properties.TryGetValue("Oryx_App_Type", out oryxAppType))
+            {
+                _logger.LogInformation("Oryx_App_Type env is set as {oryxAppType}", oryxAppType);
+            }
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
@@ -292,6 +299,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PlatformInstallationScript = installationScript,
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
+                OryxAppType = oryxAppType,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

@@ -148,12 +148,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = detectorResult.PlatformVersion;
             manifestFileProperties[ManifestFilePropertyKeys.PlatformName] = detectorResult.Platform;
 
-            var oryxAppTypeEnvironmentVar = Environment.GetEnvironmentVariable("Oryx_App_Type");
-            if (!string.IsNullOrEmpty(oryxAppTypeEnvironmentVar))
-            {
-                manifestFileProperties[ManifestFilePropertyKeys.OryxAppType] = oryxAppTypeEnvironmentVar;
-            }
-
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;

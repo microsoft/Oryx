@@ -66,43 +66,76 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var azureFunctionsProjects = new List<string>();
             var azureBlazorWasmProjects = new List<string>();
             var allProjects = new List<string>();
+            bool functionProjectExists = false;
+            bool webAppProjectExists = false;
+            bool blazorWasmProjectExists = false;
+
             foreach (var file in projectFiles)
             {
                 allProjects.Add(file);
                 if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
                 {
-                    webAppProjects.Add(file);
+                    if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
+                    {
+                        azureBlazorWasmProjects.Add(file);
+                        blazorWasmProjectExists = true;
+                    }
+                    else
+                    {
+                        webAppProjects.Add(file);
+                        webAppProjectExists = true;
+                    }
                 }
                 else if (ProjectFileHelpers.IsAzureFunctionsProject(sourceRepo, file))
                 {
                     azureFunctionsProjects.Add(file);
-                }
-                else if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
-                {
-                    azureBlazorWasmProjects.Add(file);
+                    functionProjectExists = true;
                 }
             }
 
             // Assumption: some env variable "Oryx_App_type" will be passed to oryx
             // which will indicate if the app is an azure function type or static type app
-            var oryxAppTypeEnvironmentVar = Environment.GetEnvironmentVariable("Oryx_App_Type");
-            if (projectFile == null && !string.IsNullOrEmpty(oryxAppTypeEnvironmentVar)
-                && oryxAppTypeEnvironmentVar.ToLower().Contains("functions"))
+
+            // If there are multiple projects, look for env var Oryx_App_type
+            // If that env variable is set we detect corresponding project.
+            // for example azurefunction and blazor both projects can reside
+            // at the same repo, so more thatn 2 csproj will be found. Now we will
+            // look for Oryx_App_Type to determine which project needs to be selected
+
+            string oryxAppTypeEnv = string.Empty;
+            if (context.Properties != null
+                && context.Properties.TryGetValue("Oryx_App_Type", out oryxAppTypeEnv))
             {
-                projectFile = GetProject(azureFunctionsProjects);
+                if (functionProjectExists && oryxAppTypeEnv.ToLower().Contains("functions"))
+                {
+                    projectFile = GetProject(azureFunctionsProjects);
+                }
+                else if (blazorWasmProjectExists
+                    && (oryxAppTypeEnv.ToLower().Contains("static-sites")
+                    || oryxAppTypeEnv.ToLower().Contains("blazor-wasm")))
+                {
+                    projectFile = GetProject(azureBlazorWasmProjects);
+                }
             }
-            else if (projectFile == null && !string.IsNullOrEmpty(oryxAppTypeEnvironmentVar)
-               && (oryxAppTypeEnvironmentVar.ToLower().Contains("static-sites") || oryxAppTypeEnvironmentVar.ToLower().Contains("blazor-wasm")))
+            else
             {
-                projectFile = GetProject(azureBlazorWasmProjects);
-            }
-            else if (projectFile == null)
-            {
-                // Not sure if vanilla web-project will be denoted by setting any value in Oryx_DotNetCore_App_Type
+                // Not sure if vanilla web-project will be denoted by setting any value in Oryx_App_Type
                 // so assuming it will be null for vanilla dotnet core web app
-                projectFile = GetProject(webAppProjects);
+                if (projectFile == null && webAppProjectExists)
+                {
+                    projectFile = GetProject(webAppProjects);
+                }
+                else if (projectFile == null && functionProjectExists)
+                {
+                    projectFile = GetProject(azureFunctionsProjects);
+                }
+                else if ( projectFile == null && blazorWasmProjectExists)
+                {
+                    projectFile = GetProject(azureBlazorWasmProjects);
+                }
             }
             
+
             // After scanning all the project types we stil didn't find any files (e.g. csproj
             if (projectFile == null)
             {

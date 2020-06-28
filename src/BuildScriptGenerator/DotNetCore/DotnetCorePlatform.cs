@@ -139,12 +139,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] = globalJsonSdkVersion;
             }
 
-            var oryxAppTypeEnvironmentVar = Environment.GetEnvironmentVariable("Oryx_App_Type");
-            if (!string.IsNullOrEmpty(oryxAppTypeEnvironmentVar))
-            {
-                manifestFileProperties[ManifestFilePropertyKeys.OryxAppType] = oryxAppTypeEnvironmentVar;
-            }
-
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
             {
