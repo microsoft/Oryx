@@ -583,9 +583,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(ManifestFilePropertyKeys.OryxAppType, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck("functions", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}={DotNetCoreConstants.PlatformName}", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -619,18 +617,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("Oryx_App_Type", "Blazor-Wasm")
+                //.SetEnvironmentVariable("Oryx_App_Type", "Blazor-Wasm")
                 .AddBuildCommand($"{appDir}/blazor-sample-app -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.OryxAppType}=blazor-wasm", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck("Oryx_App_Type=blazor-wasm", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                EnvironmentVariables = new List<EnvironmentVariable>
+                { 
+                    CreateAppNameEnvVar(appName) ,
+                    new EnvironmentVariable("Oryx_App_Type", "blazor-wasm")
+                },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -660,9 +662,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 //                .SetEnvironmentVariable("Oryx_App_Type", "functions")
                 .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.OryxAppType}=functions", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck("blazor-wasm", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}={DotNetCoreConstants.PlatformName}", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck("Oryx_App_Type=functions", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -672,7 +673,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 EnvironmentVariables = new List<EnvironmentVariable> 
                 { 
                     CreateAppNameEnvVar(appName),
-                    new EnvironmentVariable($"{ManifestFilePropertyKeys.OryxAppType}", "functions")
+                    new EnvironmentVariable("Oryx_App_Type", "functions")
                 },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

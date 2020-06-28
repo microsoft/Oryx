@@ -23,6 +23,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         internal const string PlatformName = nameof(PlatformName);
 
-        internal const string OryxAppType = nameof(OryxAppType);
+        internal const string OryxAppType = "Oryx_App_Type";
     }
 }
