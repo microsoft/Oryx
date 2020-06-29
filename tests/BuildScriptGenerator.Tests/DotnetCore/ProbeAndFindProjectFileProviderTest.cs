@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            context.Properties["Oryx_App_Type"] = "functions";
+            context.Properties[Constants.OryxAppType] = "functions";
             var provider = GetProjectFileProvider();
 
             // Act
@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            context.Properties["Oryx_App_Type"] = "blazor-wasm";
+            context.Properties[Constants.OryxAppType] = "blazor-wasm";
             var provider = GetProjectFileProvider();
 
             // Act

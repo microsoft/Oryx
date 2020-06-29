@@ -54,5 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string PostBuildScriptPath { get; set; }
 
         public string PostBuildCommand { get; set; }
+
+        public string OryxAppType { get; set; }
     }
 }

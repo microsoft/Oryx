@@ -579,11 +579,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/AzureFunctionsHttpTriggerApp-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("Oryx_App_type", "Functions")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}={DotNetCoreConstants.PlatformName}", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -609,19 +608,61 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void Builds_AzureBlazorWasmFunctionProject()
+        public void Builds_AzureBlazorWasmProject_Without_Setting_ORYX_APP_TYPE()
+        {
+            // Arrange
+            var appName = "SimpleBlazorWasmApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            //var appOutputDir = "/tmp/blazor-wasm-output";
+            var appOutputDir = $"{appDir}/output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringDoesNotExistInFileCheck($"{Constants.OryxAppType}=\"blazor-wasm\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringDoesNotExistInFileCheck($"{Constants.OryxAppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    CreateAppNameEnvVar(appName)
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Builds_AzureBlazorWasmFunctionProject_By_Setting_ORYX_APP_TYPE_Via_BuildProperty()
         {
             // Arrange
             var appName = "Blazor_Function_Sample";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/blazor-wasm-output";
+            //var appOutputDir = "/tmp/blazor-wasm-output";
+            var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                //.SetEnvironmentVariable("Oryx_App_Type", "Blazor-Wasm")
-                .AddBuildCommand($"{appDir}/blazor-sample-app -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --property {Constants.OryxAppType}=\"blazor-wasm\"")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck("Oryx_App_Type=blazor-wasm", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.OryxAppType}=\"blazor-wasm\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -630,8 +671,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 ImageId = Settings.BuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable>
                 { 
-                    CreateAppNameEnvVar(appName) ,
-                    new EnvironmentVariable("Oryx_App_Type", "blazor-wasm")
+                    CreateAppNameEnvVar(appName)
                 },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -644,14 +684,56 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
         [Fact]
-        public void Builds_AzureFunctionProject_FromBlazorRepo_WhenOryxAppType_IsSet_To_Function()
+        public void Builds_AzureBlazorWasmFunctionProject_By_Setting_ORYX_APP_TYPE_As_Env_Variable()
+        {
+            // Arrange
+            var appName = "Blazor_Function_Sample";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            //var appOutputDir = "/tmp/blazor-wasm-output";
+            var appOutputDir = $"{appDir}/output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.OryxAppType}=\"blazor-wasm\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
+                    CreateAppNameEnvVar(appName) ,
+                    new EnvironmentVariable(Constants.OryxAppType, "blazor-wasm")
+                },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Builds_AzureFunctionProject_FromBlazorFunctionRepo_When_ORYX_APP_TYPE_Is_SetAs_Functions()
         {
             // Arrange
             var appName = "Blazor_Function_Sample";
@@ -659,11 +741,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-//                .SetEnvironmentVariable("Oryx_App_Type", "functions")
-                .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir}")
+                .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir} --property {Constants.OryxAppType}=\"functions\"")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}={DotNetCoreConstants.PlatformName}", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck("Oryx_App_Type=functions", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.OryxAppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -672,8 +753,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 ImageId = Settings.BuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> 
                 { 
-                    CreateAppNameEnvVar(appName),
-                    new EnvironmentVariable("Oryx_App_Type", "functions")
+                    CreateAppNameEnvVar(appName)
                 },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -686,7 +766,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());

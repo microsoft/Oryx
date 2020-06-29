@@ -22,7 +22,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         internal const string HugoVersion = nameof(HugoVersion);
 
         internal const string PlatformName = nameof(PlatformName);
-
-        internal const string OryxAppType = "Oryx_App_Type";
     }
 }

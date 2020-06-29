@@ -41,6 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.PostBuildScriptPath = GetStringValue(SettingsKeys.PostBuildScriptPath);
             options.PostBuildCommand = GetStringValue(SettingsKeys.PostBuildCommand);
             options.OryxSdkStorageBaseUrl = GetStringValue(SettingsKeys.OryxSdkStorageBaseUrl);
+            options.OryxAppType = GetStringValue(SettingsKeys.OryxAppTypeEnv);
         }
     }
 }

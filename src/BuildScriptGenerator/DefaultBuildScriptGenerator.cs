@@ -275,12 +275,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // say yes.
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
-            string oryxAppType = string.Empty;
 
-            if (context.Properties != null
-                && context.Properties.TryGetValue("Oryx_App_Type", out oryxAppType))
+            foreach (var key in buildProperties.Keys)
             {
-                _logger.LogInformation("Oryx_App_Type env is set as {oryxAppType}", oryxAppType);
+                _logger.LogDebug($"defaultscriptgenerator, build key {key} = {buildProperties[key]} ");
+            }
+
+            foreach (var key in context.Properties.Keys)
+            {
+                _logger.LogDebug($"defaultscriptgenerator, context key {key} = {context.Properties[key]} ");
+            }
+
+            string oryxAppType = string.Empty;
+            if (buildProperties != null
+                && buildProperties.TryGetValue(Constants.OryxAppType, out oryxAppType))
+            {
+                if (!string.IsNullOrEmpty(oryxAppType)
+                    || !string.IsNullOrWhiteSpace(oryxAppType))
+                {
+                    _logger.LogDebug($"Build Property Key {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
+                    buildProperties[Constants.OryxAppType] = oryxAppType;
+                }
+            }
+            else if (context.Properties != null
+                && context.Properties.TryGetValue(Constants.OryxAppType, out oryxAppType))
+            {
+                if (!string.IsNullOrEmpty(oryxAppType)
+                    || !string.IsNullOrWhiteSpace(oryxAppType))
+                {
+                    _logger.LogDebug($"Context Property Key {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
+                    buildProperties[Constants.OryxAppType] = oryxAppType;
+                }
+            }
+            else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.OryxAppType))
+                && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(Constants.OryxAppType)))
+            {
+                oryxAppType = Environment.GetEnvironmentVariable(Constants.OryxAppType);
+                _logger.LogDebug($"Environement {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
+                buildProperties[Constants.OryxAppType] = oryxAppType;
             }
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
@@ -299,7 +331,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PlatformInstallationScript = installationScript,
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
-                OryxAppType = oryxAppType,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

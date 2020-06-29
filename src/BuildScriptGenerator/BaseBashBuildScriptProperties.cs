@@ -84,7 +84,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// files like '.cs' files to destination directory where as in other platforms this is fine to do.
         /// </summary>
         public bool CopySourceDirectoryContentToDestinationDirectory { get; set; }
-
-        public string OryxAppType { get; set; }
     }
 }

@@ -101,11 +101,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // for example azurefunction and blazor both projects can reside
             // at the same repo, so more thatn 2 csproj will be found. Now we will
             // look for Oryx_App_Type to determine which project needs to be selected
-
             string oryxAppTypeEnv = string.Empty;
+
             if (context.Properties != null
-                && context.Properties.TryGetValue("Oryx_App_Type", out oryxAppTypeEnv))
+                && context.Properties.TryGetValue(Constants.OryxAppType, out oryxAppTypeEnv))
             {
+                _logger.LogDebug($"ProbeAndProjectFileProvider: {Constants.OryxAppType} is set to {oryxAppTypeEnv}");
+
                 if (functionProjectExists && oryxAppTypeEnv.ToLower().Contains("functions"))
                 {
                     projectFile = GetProject(azureFunctionsProjects);
@@ -116,10 +118,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 {
                     projectFile = GetProject(azureBlazorWasmProjects);
                 }
+                else
+                {
+                    _logger.LogDebug($"Invalid value {oryxAppTypeEnv} for env:{Constants.OryxAppType}. Currently, supported values are 'functions', 'blazor-wasm', 'static-sites'");
+                }
             }
             else
             {
-                // Not sure if vanilla web-project will be denoted by setting any value in Oryx_App_Type
+                // If vanilla web-project will be denoted by setting any value in Oryx_App_Type
                 // so assuming it will be null for vanilla dotnet core web app
                 if (projectFile == null && webAppProjectExists)
                 {
