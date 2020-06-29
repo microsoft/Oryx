@@ -81,11 +81,11 @@ if [ -f {{ BenvPath }} ]; then
 fi
 {{ end }}
 
-{{ if !OsPackagesToInstall.empty? }}
-echo "Installing packages '{{ array.join OsPackagesToInstall "," }}' via 'apt-get'..."
+{{ if !SystemPackagesToInstall.empty? }}
+echo "Installing packages '{{ array.join SystemPackagesToInstall "," }}' via 'apt-get'..."
 echo
 apt-get update \
-  && apt-get install --yes --no-install-recommends {{ for PackageName in OsPackagesToInstall }}{{ PackageName }}
+  && apt-get install --yes --no-install-recommends {{ for PackageName in SystemPackagesToInstall }}{{ PackageName }}
   {{ end }}
 {{ end }}
 
