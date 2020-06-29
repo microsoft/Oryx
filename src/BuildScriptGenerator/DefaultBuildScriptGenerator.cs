@@ -276,16 +276,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
 
-            foreach (var key in buildProperties.Keys)
-            {
-                _logger.LogDebug($"defaultscriptgenerator, build key {key} = {buildProperties[key]} ");
-            }
-
-            foreach (var key in context.Properties.Keys)
-            {
-                _logger.LogDebug($"defaultscriptgenerator, context key {key} = {context.Properties[key]} ");
-            }
-
             string oryxAppType = string.Empty;
             if (buildProperties != null
                 && buildProperties.TryGetValue(Constants.OryxAppType, out oryxAppType))
