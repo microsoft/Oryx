@@ -278,7 +278,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
-                OsPackagesToInstall = _cliOptions.SystemPackages ?? new string[0],
+                SystemPackagesToInstall = _cliOptions.SystemPackages ?? new string[0],
                 BuildScriptSnippets = buildScriptSnippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildCommand = preBuildCommand,

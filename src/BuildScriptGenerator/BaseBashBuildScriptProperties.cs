@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets a list of OS packages that shuld be installed for this build.
         /// </summary>
         [NotNull]
-        public string[] OsPackagesToInstall { get; set; } = new string[0];
+        public string[] SystemPackagesToInstall { get; set; } = new string[0];
 
         /// <summary>
         /// Gets or sets the the pre-build script content.
