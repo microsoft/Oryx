@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             string pkgName,
             string pkgVersion,
             string gitRepoUrl,
-            string[] requiredOsPackages = null)
+            string[] systemPackages = null)
         {
             const string tarListCmd = "tar -tvf";
             const string npmTarPath = "/tmp/npm-pkg.tgz";
@@ -62,9 +62,9 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             Assert.NotNull(commitId);
 
             var osReqsParam = string.Empty;
-            if (requiredOsPackages != null)
+            if (systemPackages != null)
             {
-                osReqsParam = $"{OptionTemplates.SystemPackages} {string.Join(',', requiredOsPackages)}";
+                osReqsParam = $"{OptionTemplates.SystemPackages} {string.Join(',', systemPackages)}";
             }
 
             var script = new ShellScriptBuilder()
