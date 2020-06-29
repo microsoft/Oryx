@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 options.ShouldPackage = shouldPackage.Value;
             }
 
-            options.RequiredOsPackages = requiredOsPackages;
+            options.SystemPackages = requiredOsPackages;
 
             if (scriptOnly.HasValue)
             {

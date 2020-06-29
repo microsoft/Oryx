@@ -407,7 +407,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             SetPlatformVersion(PlatformName, PlatformVersion);
 
             commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
-            commandLineConfigSource.Set(SettingsKeys.RequiredOsPackages, OsRequirements);
+
+            // Only set the value if it is present. This is so that any other value set via environment variable
+            // for example can still take effect.
+            if (!string.IsNullOrEmpty(SystemPackages))
+            {
+                commandLineConfigSource.Set(SettingsKeys.SystemPackages, SystemPackages);
+            }
+
             if (buildProperties != null)
             {
                 SetPropertyValueInConfigurationSource(SettingsKeys.Project);

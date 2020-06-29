@@ -19,5 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public const string Property = "-p|--property <key-value>";
         public const string ManifestDir = "--manifest-dir <directory-path>";
+
+        public const string SystemPackages = "--system-packages";
     }
 }

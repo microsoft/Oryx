@@ -3,15 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
+using JetBrains.Annotations;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -65,7 +64,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var osReqsParam = string.Empty;
             if (requiredOsPackages != null)
             {
-                osReqsParam = $"--os-requirements {string.Join(',', requiredOsPackages)}";
+                osReqsParam = $"{OptionTemplates.SystemPackages} {string.Join(',', requiredOsPackages)}";
             }
 
             var script = new ShellScriptBuilder()
@@ -77,11 +76,11 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             // Build & package
                 .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackOutput)
-            // Compute diff between tar contents
-                // Download public NPM build for comparison
+                    // Compute diff between tar contents
+                    // Download public NPM build for comparison
                     .AddCommand($"export NpmTarUrl=$(npm view {pkgName}@{pkgVersion} dist.tarball)")
                     .AddCommand($"wget -O {npmTarPath} $NpmTarUrl")
-                // Print tar content lists
+                    // Print tar content lists
                     .AddCommand("echo " + tarListMarker)
                     .AddCommand($"{tarListCmd} {oryxPackOutput}")
                     .AddCommand("echo " + tarListMarker)
@@ -97,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             var tarLists = result.StdOut.Split(tarListMarker);
 
             var (oryxTarList, oryxTarSize) = ParseTarList(tarLists[1]);
-            var (npmTarList,  npmTarSize)  = ParseTarList(tarLists[2]);
+            var (npmTarList, npmTarSize) = ParseTarList(tarLists[2]);
             Assert.Equal(npmTarList, oryxTarList);
 
             // Assert tar file sizes

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -24,10 +25,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.PlatformName = GetStringValue(SettingsKeys.PlatformName);
             options.PlatformVersion = GetStringValue(SettingsKeys.PlatformVersion);
             options.ShouldPackage = GetBooleanValue(SettingsKeys.CreatePackage);
-            var requiredOsPackages = GetStringValue(SettingsKeys.RequiredOsPackages);
-            options.RequiredOsPackages = string.IsNullOrWhiteSpace(requiredOsPackages)
-                ? null : requiredOsPackages.Split(',').Select(pkg => pkg.Trim()).ToArray();
-
+            var systemPackages = GetStringValue(SettingsKeys.SystemPackages);
+            options.SystemPackages = string.IsNullOrWhiteSpace(systemPackages)
+                ? null : systemPackages
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(pkg => pkg.Trim())
+                .ToArray();
             options.EnableCheckers = !GetBooleanValue(SettingsKeys.DisableCheckers);
             options.EnableDynamicInstall = GetBooleanValue(SettingsKeys.EnableDynamicInstall);
             options.EnableDotNetCoreBuild = !GetBooleanValue(SettingsKeys.DisableDotNetCoreBuild);

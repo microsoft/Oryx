@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Project = "PROJECT";
         public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";
         public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";
-        public const string RequiredOsPackages = "REQUIRED_OS_PACKAGES";
+        public const string SystemPackages = "SYSTEM_PACKAGES";
         public const string PruneDevDependencies = "PRUNE_DEV_DEPENDENCIES";
         public const string NpmRegistryUrl = "NPM_REGISTRY_URL";
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";

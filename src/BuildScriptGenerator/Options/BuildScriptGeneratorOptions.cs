@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool ShouldPackage { get; set; }
 
-        public string[] RequiredOsPackages { get; set; }
+        public string[] SystemPackages { get; set; }
 
         public IDictionary<string, string> Properties { get; set; }
 
