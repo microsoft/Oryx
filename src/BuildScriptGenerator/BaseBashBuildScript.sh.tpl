@@ -82,7 +82,8 @@ fi
 {{ end }}
 
 {{ if !OsPackagesToInstall.empty? }}
-echo Installing packages via 'apt-get'...
+echo "Installing packages '{{ array.join OsPackagesToInstall "," }}' via 'apt-get'..."
+echo
 apt-get update \
   && apt-get install --yes --no-install-recommends {{ for PackageName in OsPackagesToInstall }}{{ PackageName }}
   {{ end }}
