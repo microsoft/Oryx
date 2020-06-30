@@ -188,6 +188,9 @@
     - type: csharp
       directory: src/BuildScriptGenerator/Hugo
       namespace: Microsoft.Oryx.BuildScriptGenerator.Hugo
+    - type: csharp
+      directory: src/Detector/Hugo
+      namespace: Microsoft.Oryx.Detector.Hugo
     - type: shell
       directory: build
       file-name-prefix: __

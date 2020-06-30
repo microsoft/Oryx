@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -24,8 +25,7 @@ namespace Microsoft.Oryx.Detector.Tests
             var sourceRepo = new MemorySourceRepo();
             var detector = new DefaultPlatformDetector(
                 platformDetectors,
-                NullLogger<DefaultPlatformDetector>.Instance,
-                options.Object);
+                NullLogger<DefaultPlatformDetector>.Instance);
             var context = CreateContext(sourceRepo);
 
             var detectionResult1 = new PlatformDetectorResult();
@@ -36,8 +36,8 @@ namespace Microsoft.Oryx.Detector.Tests
             detectionResult2.Platform = "dotnetcore";
             detectionResult2.PlatformVersion = "3.1";
 
-            mockNodePlatformDetector.Setup(x => x.DetectorPlatformName).Returns(PlatformName.Node);
-            mockDotnetcorePlatformDetector.Setup(x => x.DetectorPlatformName).Returns(PlatformName.DotNetCore);
+            mockNodePlatformDetector.Setup(x => x.PlatformName).Returns(PlatformName.Node);
+            mockDotnetcorePlatformDetector.Setup(x => x.PlatformName).Returns(PlatformName.DotNetCore);
             mockNodePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult1);
             mockDotnetcorePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult2);
 
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Detector.Tests
 
             // Assert
             Assert.NotNull(detectionResults);
-            Assert.Equal(2, detectionResults.Count);
+            Assert.Equal(2, detectionResults.Count());
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
@@ -59,6 +59,5 @@ namespace Microsoft.Oryx.Detector.Tests
                 SourceRepo = sourceRepo,
             };
         }
-
     }
 }

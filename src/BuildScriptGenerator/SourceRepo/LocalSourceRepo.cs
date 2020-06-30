@@ -106,6 +106,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private string ResolvePath(params string[] paths)
         {
             var filePathInRepo = Path.Combine(paths);
+            if (filePathInRepo.StartsWith(RootPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return filePathInRepo;
+            }
+
             return Path.Combine(RootPath, filePathInRepo);
         }
     }

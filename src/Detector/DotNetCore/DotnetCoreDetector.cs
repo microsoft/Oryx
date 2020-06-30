@@ -43,14 +43,15 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var version = GetVersion(targetFramework);
 
-            return new PlatformDetectorResult
+            return new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = version,
+                ProjectFile = projectFile,
             };
         }
 
-        public PlatformName DetectorPlatformName => PlatformName.DotNetCore;
+        public PlatformName PlatformName => PlatformName.DotNetCore;
 
         internal string DetermineRuntimeVersion(string targetFramework)
         {
