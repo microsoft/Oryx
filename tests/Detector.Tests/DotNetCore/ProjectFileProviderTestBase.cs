@@ -7,11 +7,10 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.Tests.DotNetCore
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
     public abstract class ProjectFileProviderTestBase : IClassFixture<TestTempDirTestFixture>
     {
@@ -154,7 +153,8 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             _tempDirRoot = testFixture.RootDirPath;
         }
 
-        public static DefaultProjectFileProvider GetProjectFileProvider(DetectorOptions options = null)
+        protected DefaultProjectFileProvider GetProjectFileProvider(
+            DetectorOptions options = null)
         {
             if (options == null)
             {

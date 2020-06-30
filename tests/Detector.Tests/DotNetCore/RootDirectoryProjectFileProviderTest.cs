@@ -4,11 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
-using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.Tests.DotNetCore
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
     public class RootDirectoryProjectFileProviderTest : ProjectFileProviderTestBase
     {

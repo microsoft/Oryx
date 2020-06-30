@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -25,9 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
-        private readonly DotNetCorePlatformDetector _detector;
+        private readonly IDotNetCorePlatformDetector _detector;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly DotNetCorePlatformInstaller _platformInstaller;
@@ -47,16 +48,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="globalJsonSdkResolver">The <see cref="GlobalJsonSdkResolver"/>.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
-            DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCorePlatform> logger,
-            DotNetCorePlatformDetector detector,
+            IDotNetCorePlatformDetector detector,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver)
         {
             _versionProvider = versionProvider;
-            _projectFileProvider = projectFileProvider;
             _logger = logger;
             _detector = detector;
             _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
@@ -86,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             PlatformDetectorResult detectionResult;
             if (TryGetExplicitVersion(out var explicitVersion))
             {
-                detectionResult = new PlatformDetectorResult
+                detectionResult = new DotNetCorePlatformDetectorResult
                 {
                     Platform = DotNetCoreConstants.PlatformName,
                     PlatformVersion = explicitVersion,
@@ -94,7 +93,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
             else
             {
-                detectionResult = _detector.Detect(context);
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
             }
 
             if (detectionResult == null)
@@ -112,6 +114,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
         {
+            var dotNetCorePlatformDetectorResult = detectorResult as DotNetCorePlatformDetectorResult;
+            if (dotNetCorePlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
             var versionMap = _versionProvider.GetSupportedVersions();
 
             string globalJsonSdkVersion = null;
@@ -139,7 +149,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] = globalJsonSdkVersion;
             }
 
-            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
+            var projectFile = dotNetCorePlatformDetectorResult.ProjectFile;
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;

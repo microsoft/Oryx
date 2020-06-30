@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -58,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonPlatform> _logger;
-        private readonly PythonPlatformDetector _detector;
+        private readonly IPythonPlatformDetector _detector;
         private readonly PythonPlatformInstaller _platformInstaller;
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider versionProvider,
             ILogger<PythonPlatform> logger,
-            PythonPlatformDetector detector,
+            IPythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;
@@ -112,7 +114,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
             else
             {
-                detectionResult = _detector.Detect(context);
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
             }
 
             if (detectionResult == null)

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -364,19 +366,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionFoundInPackageJson_OrOptions()
+        public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionProvidedByDetector_OrOptions()
         {
             // Arrange
             var expectedVersion = "8.11.2";
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: new[] { "6.11.0", expectedVersion, "10.14.0" },
-                defaultVersion: expectedVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile(SamplePackageJsonContents.PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
+                defaultVersion: expectedVersion,
+                detectedVersion: null);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -394,15 +395,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             string expectedVersion)
         {
             // Arrange
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: supportedVersions,
-                defaultVersion: defaultVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile(SamplePackageJsonContents.PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
+                defaultVersion: defaultVersion,
+                detectedVersion: null);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -411,19 +411,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForMalformedPackageJson()
+        public void Detect_ReturnsResult_WithDefaultVersion_WhenNoVersionReturnedFromDetector()
         {
             // Arrange
             var expectedVersion = "1.2.3";
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: new[] { expectedVersion },
-                defaultVersion: expectedVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile(SamplePackageJsonContents.MalformedPackageJson, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
+                defaultVersion: expectedVersion,
+                detectedVersion: null);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -435,47 +434,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Detect_Throws_WhenUnsupportedNodeVersion_IsDetected()
         {
             // Arrange
-            var unsupportedVersion = "20.20.20";
+            var detectedVersion = "20.20.20";
             var supportedVersion = "6.11.0";
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: new[] { supportedVersion },
-                defaultVersion: supportedVersion);
-            var repo = new MemorySourceRepo();
-            var context = CreateContext(repo);
-            repo.AddFile(
-                SamplePackageJsonContents.PackageJsonTemplateWithNodeVersion
-                    .Replace("#VERSION_RANGE#", unsupportedVersion),
-                NodeConstants.PackageJsonFileName);
+                defaultVersion: supportedVersion,
+                detectedVersion: detectedVersion);
+            var context = CreateContext();
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
+            var exception = Assert.Throws<UnsupportedVersionException>(() => platform.Detect(context));
             Assert.Equal(
-                $"Platform '{NodeConstants.PlatformName}' version '{unsupportedVersion}' is unsupported. " +
+                $"Platform '{NodeConstants.PlatformName}' version '{detectedVersion}' is unsupported. " +
                 $"Supported versions: {supportedVersion}",
                 exception.Message);
         }
 
         [Fact]
-        public void Detect_Throws_WhenUnsupportedPhpVersion_IsSetInOptions()
+        public void Detect_Throws_WhenUnsupportedVersion_IsSetInOptions()
         {
             // Arrange
             var unsupportedVersion = "20.20.20";
             var supportedVersion = "6.11.0";
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             nodeScriptGeneratorOptions.NodeVersion = unsupportedVersion;
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: new[] { supportedVersion },
                 defaultVersion: supportedVersion,
+                detectedVersion: supportedVersion,
                 nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            var context = CreateContext(repo);
-            repo.AddFile(
-                SamplePackageJsonContents.PackageJsonTemplateWithNodeVersion
-                    .Replace("#VERSION_RANGE#", supportedVersion),
-                NodeConstants.PackageJsonFileName);
+            var context = CreateContext();
 
             // Act & Assert
-            var exception = Assert.Throws<UnsupportedVersionException>(() => detector.Detect(context));
+            var exception = Assert.Throws<UnsupportedVersionException>(() => platform.Detect(context));
             Assert.Equal(
                 $"Platform '{NodeConstants.PlatformName}' version '{unsupportedVersion}' is unsupported. " +
                 $"Supported versions: {supportedVersion}",
@@ -483,75 +474,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsResult_WithDefaultVersion_ForPackageJsonWithOnlyNpmVersion()
-        {
-            // Node detector only looks for node version and not the NPM version. The individual script
-            // generator looks for npm version.
-
-            // Arrange
-            var expectedVersion = "1.2.3";
-            var detector = CreateNodePlatform(
-                supportedNodeVersions: new[] { expectedVersion },
-                defaultVersion: expectedVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile(SamplePackageJsonContents.PackageJsonWithOnlyNpmVersion, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(NodeConstants.PlatformName, result.Platform);
-            Assert.Equal(expectedVersion, result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsResult_WithNodeVersionFromOptions_ForPackageJsonWithNoNodeVersion()
+        public void Detect_ReturnsVersionFromOptions_EvenIfDetectorReturnsAVersion()
         {
             // Arrange
-            var expectedVersion = "500.500.500";
-            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
-            nodeScriptGeneratorOptions.NodeVersion = expectedVersion;
-            var detector = CreateNodePlatform(
-                supportedNodeVersions: new[] { expectedVersion },
-                defaultVersion: expectedVersion,
-                nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            repo.AddFile(SamplePackageJsonContents.PackageJsonWithNoVersions, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
-
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(NodeConstants.PlatformName, result.Platform);
-            Assert.Equal(expectedVersion, result.PlatformVersion);
-        }
-
-        [Fact]
-        public void Detect_ReturnsVersionFromOptions_EvenIfPackageJsonHasVersion()
-        {
-            // Arrange
-            var versionInPackageJson = "6.11.0";
+            var detectedVersion = "6.11.0";
             var expectedVersionToBeUsed = "10.14.0";
             var defaultVersion = "8.11.2";
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             nodeScriptGeneratorOptions.NodeVersion = expectedVersionToBeUsed;
-            var detector = CreateNodePlatform(
-                supportedNodeVersions: new[] { versionInPackageJson, defaultVersion, expectedVersionToBeUsed },
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { detectedVersion, defaultVersion, expectedVersionToBeUsed },
                 defaultVersion: defaultVersion,
+                detectedVersion: detectedVersion,
                 nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            var packageJson = SamplePackageJsonContents.PackageJsonTemplateWithNodeVersion.Replace(
-                "#VERSION_RANGE#",
-                versionInPackageJson);
-            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -564,7 +503,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var expectedVersion = "1.2.3";
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: new[] { expectedVersion },
                 defaultVersion: expectedVersion);
             var repo = new MemorySourceRepo();
@@ -572,7 +511,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var context = CreateContext(repo);
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -591,18 +530,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             string expectedVersion)
         {
             // Arrange
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: supportedVersions,
-                defaultVersion: defaultVersion);
-            var repo = new MemorySourceRepo();
-            var packageJson = SamplePackageJsonContents.PackageJsonTemplateWithNodeVersion.Replace(
-                "#VERSION_RANGE#",
-                versionRangeInPackageJson);
-            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
+                defaultVersion: defaultVersion,
+                detectedVersion: versionRangeInPackageJson);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -614,7 +549,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         [InlineData(new[] { "8.11.2", "5.6.9", "8.11.13" }, "5.6.9", ">5", "8.11.13")]
         [InlineData(new[] { "8.9.5", "8.11.2", "5.6.9", "8.11.13" }, "5.6.9", ">8.9", "8.11.13")]
         [InlineData(new[] { "8.9.5", "8.11.2", "11.12.0", "13.12.12", "8.11.13" }, "5.6.9", ">8.9 <13", "11.12.0")]
-        public void Detect_ReturnsVersionFromOptions__WithVersionSatisfying_NodeVersionRangeInPackageJson(
+        public void Detect_ReturnsVersionFromOptions_WithVersionSatisfying_NodeVersionRangeInPackageJson(
             string[] supportedVersions,
             string defaultVersion,
             string versionRangeInOptions,
@@ -623,19 +558,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             nodeScriptGeneratorOptions.NodeVersion = versionRangeInOptions;
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: supportedVersions,
                 defaultVersion: defaultVersion,
+                detectedVersion: "1.1.1",
                 nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            var packageJson = SamplePackageJsonContents.PackageJsonTemplateWithNodeVersion.Replace(
-                "#VERSION_RANGE#",
-                "1.1.1");
-            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
-            var context = CreateContext(repo);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -648,15 +579,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             // Arrange
             var expectedVersion = "1.2.3";
-            var detector = CreateNodePlatform(
+            var platform = CreateNodePlatform(
                 supportedNodeVersions: new[] { expectedVersion },
-                defaultVersion: expectedVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("app.js content", "app.js");
-            var context = CreateContext(repo);
+                defaultVersion: expectedVersion,
+                detectedVersion: null);
+            var context = CreateContext();
 
             // Act
-            var result = detector.Detect(context);
+            var result = platform.Detect(context);
 
             // Assert
             Assert.NotNull(result);
@@ -667,6 +597,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private TestNodePlatform CreateNodePlatform(
             string[] supportedNodeVersions = null,
             string defaultVersion = null,
+            string detectedVersion = null,
             BuildScriptGeneratorOptions commonOptions = null,
             NodeScriptGeneratorOptions nodeScriptGeneratorOptions = null)
         {
@@ -674,12 +605,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             var versionProvider = new TestNodeVersionProvider(supportedNodeVersions, defaultVersion);
             var environment = new TestEnvironment();
-            var detector = new TestNodePlatformDetector(
-                versionProvider,
-                Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodePlatformDetector>.Instance,
-                environment,
-                new TestStandardOutputWriter());
+            var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
             var platformInstaller = new NodePlatformInstaller(
                 Options.Create(commonOptions),
                 NullLoggerFactory.Instance);
@@ -696,17 +622,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         private TestNodePlatform CreateNodePlatform(
             BuildScriptGeneratorOptions commonOptions,
             NodeScriptGeneratorOptions nodeScriptGeneratorOptions,
-            NodePlatformInstaller platformInstaller)
+            NodePlatformInstaller platformInstaller,
+            string detectedVersion = null)
         {
             var environment = new TestEnvironment();
 
             var versionProvider = new TestNodeVersionProvider();
-            var detector = new TestNodePlatformDetector(
-                versionProvider,
-                Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodePlatformDetector>.Instance,
-                environment,
-                new TestStandardOutputWriter());
+            var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
             return new TestNodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -731,12 +653,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
-            var detector = new TestNodePlatformDetector(
-                versionProvider,
-                Options.Create(nodeScriptGeneratorOptions),
-                NullLogger<NodePlatformDetector>.Instance,
-                environment,
-                new TestStandardOutputWriter());
+            var detector = new TestNodePlatformDetector();
             return new TestNodePlatform(
                 Options.Create(cliOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -747,8 +664,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 installer);
         }
 
-        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
         {
+            sourceRepo = sourceRepo ?? new MemorySourceRepo();
             return new BuildScriptGeneratorContext
             {
                 SourceRepo = sourceRepo,
@@ -763,7 +681,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
                 INodeVersionProvider nodeVersionProvider,
                 ILogger<NodePlatform> logger,
-                NodePlatformDetector detector,
+                INodePlatformDetector detector,
                 IEnvironment environment,
                 NodePlatformInstaller nodePlatformInstaller)
                 : base(
@@ -800,19 +718,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             public override string GetInstallerScriptSnippet(string version)
             {
                 return InstallerScript;
-            }
-        }
-
-        private class TestNodePlatformDetector : NodePlatformDetector
-        {
-            public TestNodePlatformDetector(
-                INodeVersionProvider nodeVersionProvider,
-                IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
-                ILogger<NodePlatformDetector> logger,
-                IEnvironment environment,
-                IStandardOutputWriter writer)
-                : base(nodeVersionProvider, nodeScriptGeneratorOptions, logger, environment, writer)
-            {
             }
         }
 

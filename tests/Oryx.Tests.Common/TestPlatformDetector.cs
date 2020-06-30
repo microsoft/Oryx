@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -20,7 +20,9 @@ namespace Microsoft.Oryx.Tests.Common
 
         public bool DetectInvoked { get; private set; }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public string PlatformName => _platformName;
+
+        public PlatformDetectorResult Detect(DetectorContext context)
         {
             DetectInvoked = true;
 
@@ -54,7 +56,9 @@ namespace Microsoft.Oryx.Tests.Common
 
         public bool DetectInvoked { get; private set; }
 
-        public PlatformDetectorResult Detect(RepositoryContext context)
+        public string PlatformName => _platformName;
+
+        public PlatformDetectorResult Detect(DetectorContext context)
         {
             DetectInvoked = true;
 

@@ -5,9 +5,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Oryx.Detector;
 using Moq;
 using Xunit;
-
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {

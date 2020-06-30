@@ -4,12 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
     public class ExplicitProjectFileProviderTest : ProjectFileProviderTestBase
     {
@@ -33,33 +31,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, NonWebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp1", $"WebApp1.{projectFileExtension}");
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
-
-            // Act
-            var actualFilePath = provider.GetRelativePathToProjectFile(context);
-
-            // Assert
-            Assert.Equal(relativeProjectPath, actualFilePath);
-        }
-
-        [Fact]
-        public void GetRelativePathToProjectFile_ReturnsFile_IfProjPropertyIsSet_AndProjectFileIsNotSupported()
-        {
-            // Arrange
-            var projectName = "WebApp1.csproj";
-            var sourceRepoDir = CreateSourceRepoDir();
-            var srcDir = CreateDir(sourceRepoDir, "src");
-            var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            var projectFile = Path.Combine(webApp1Dir, projectName);
-            File.WriteAllText(projectFile, NonWebSdkProjectFile);
-            var relativeProjectPath = Path.Combine("src", "WebApp1", projectName);
-            var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
-            context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = relativeProjectPath;
 
             // Act
             var actualFilePath = provider.GetRelativePathToProjectFile(context);
@@ -80,15 +55,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", "WebApp2-doesnotexist.csproj");
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
 
             // Act & Assert
-            var exception = Assert.Throws<InvalidUsageException>(
+            var exception = Assert.Throws<InvalidProjectFileException>(
                 () => provider.GetRelativePathToProjectFile(context));
-            Assert.Contains("Could not find the project file ", exception.Message);
+            Assert.Contains("Could not find the .NET Core project file.", exception.Message);
         }
 
         [Theory]
@@ -107,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, webApp1Dir);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var relativeProjectPath = Path.Combine("src", "WebApp2", $"WebApp2.{projectFileExtension}");
-            var options = new DotNetCoreScriptGeneratorOptions();
+            var options = new DetectorOptions();
             options.Project = relativeProjectPath;
             var context = GetContext(sourceRepo);
             var provider = GetProjectFileProvider(options);
@@ -117,36 +92,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.Equal(relativeProjectPath, actualFile);
-        }
-
-        [Fact]
-        public void GetRelativePathToProjectFile_ReturnsFile_UsingProjectPropertyAsPrecedenceOverProjectEnvVariable()
-        {
-            // Arrange
-            var sourceRepoDir = CreateSourceRepoDir();
-            var srcDir = CreateDir(sourceRepoDir, "src");
-            var project1Name = "WebApp1.csproj";
-            var project2Name = "WebApp2.csproj";
-            var webApp1Dir = CreateDir(srcDir, "WebApp1");
-            var webApp2Dir = CreateDir(srcDir, "WebApp2");
-            var projectFile1 = Path.Combine(webApp1Dir, project1Name);
-            var projectFile2 = Path.Combine(webApp2Dir, project2Name);
-            File.WriteAllText(projectFile1, NonWebSdkProjectFile);
-            File.WriteAllText(projectFile2, NonWebSdkProjectFile);
-            var expectedRelativeProjectPath = Path.Combine("src", "WebApp1", project1Name);
-            var relativeProjectPath2 = Path.Combine("src", "WebApp2", project2Name);
-            var sourceRepo = CreateSourceRepo(sourceRepoDir);
-            var context = GetContext(sourceRepo);
-            context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = expectedRelativeProjectPath;
-            var options = new DotNetCoreScriptGeneratorOptions();
-            options.Project = relativeProjectPath2;
-            var provider = GetProjectFileProvider(options);
-
-            // Act
-            var actualFilePath = provider.GetRelativePathToProjectFile(context);
-
-            // Assert
-            Assert.Equal(expectedRelativeProjectPath, actualFilePath);
         }
 
         // Scenario: There could be multiple project files under the same directory in which case a user might want
@@ -161,8 +106,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             File.WriteAllText(projectFile, WebSdkProjectFile);
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
-            context.Properties[DotNetCoreConstants.ProjectBuildPropertyKey] = expectedPath;
+            var detectorOptions = new DetectorOptions();
+            detectorOptions.Project = expectedPath;
+            var provider = GetProjectFileProvider(detectorOptions);
 
             // Act
             var actualFilePath = provider.GetRelativePathToProjectFile(context);

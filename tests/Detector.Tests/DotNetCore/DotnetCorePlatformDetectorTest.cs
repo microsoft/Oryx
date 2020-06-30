@@ -4,11 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Detector.Tests.DotNetCore;
 using Moq;
 using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
     public class DotNetCorePlatformDetectorTest
     {
@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             // Arrange
             var sourceRepo = new Mock<ISourceRepo>();
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(projectFile: null);
+            var detector = CreateDetector(projectFile: null);
 
             // Act
             var result = detector.Detect(context);
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileWithNoTargetFramework);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(projectFile);
+            var detector = CreateDetector(projectFile);
 
             // Act
             var result = detector.Detect(context);
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                     "#TargetFramework#",
                     "netcoreapp2.1"));
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(projectFile);
+            var detector = CreateDetector(projectFile);
 
             // Act
             var result = detector.Detect(context);
@@ -75,19 +75,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedResult, result.PlatformVersion);
         }
 
-        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        private DetectorContext CreateContext(ISourceRepo sourceRepo)
         {
-            return new BuildScriptGeneratorContext
+            return new DetectorContext
             {
                 SourceRepo = sourceRepo,
             };
         }
 
-        private DotNetCorePlatformDetector CreateDotNetCorePlatformDetector(string projectFile)
+        private DotNetCoreDetector CreateDetector(string projectFile)
         {
-            return new DotNetCorePlatformDetector(
+            return new DotNetCoreDetector(
                 new TestProjectFileProvider(projectFile),
-                NullLogger<DotNetCorePlatformDetector>.Instance);
+                NullLogger<DotNetCoreDetector>.Instance);
         }
     }
 }

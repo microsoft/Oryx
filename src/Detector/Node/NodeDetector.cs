@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Node
 {
-    public class NodeDetector : IPlatformDetector
+    public class NodeDetector : INodePlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
         {
@@ -106,8 +106,6 @@ namespace Microsoft.Oryx.Detector.Node
                 PlatformVersion = version,
             };
         }
-
-        public PlatformName PlatformName => PlatformName.Node;
 
         private string GetVersion(DetectorContext context)
         {

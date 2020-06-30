@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -173,8 +174,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
                 else
                 {
-                    var detector = serviceProvider.GetRequiredService<DefaultPlatformDetector>();
-                    detectedPlatforms = detector.DetectPlatforms(context);
+                    var detector = serviceProvider.GetRequiredService<Detector.DefaultPlatformDetector>();
+                    detectedPlatforms = detector.GetAllDetectedPlatforms(new DetectorContext
+                    {
+                        SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                    });
+
                     if (!detectedPlatforms.Any())
                     {
                         return ProcessConstants.ExitFailure;

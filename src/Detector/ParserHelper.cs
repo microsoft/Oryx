@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
+using Nett;
+using Newtonsoft.Json.Linq;
+using YamlDotNet.RepresentationModel;
+
 namespace Microsoft.Oryx.Detector
 {
-    using System.IO;
-    using Nett;
-    using Newtonsoft.Json.Linq;
-    using YamlDotNet.RepresentationModel;
-
     /// <summary>
     /// Helper class to parse various files into a native type.
     /// </summary>

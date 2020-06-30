@@ -15,7 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, HugoPlatform>());
             services.AddSingleton<HugoPlatformInstaller>();
-            services.AddSingleton<HugoPlatformDetector>();
             return services;
         }
     }

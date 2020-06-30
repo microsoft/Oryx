@@ -12,42 +12,6 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     public class DotNetCoreDetectorTest
     {
-        private const string ProjectFileWithNoTargetFramework = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-          </PropertyGroup>
-        </Project>";
-
-        private const string ProjectFileWithMultipleProperties = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <LangVersion>7.3</LangVersion>
-          </PropertyGroup>
-          <PropertyGroup>
-            <TargetFramework>netcoreapp2.1</TargetFramework>
-            <LangVersion>7.3</LangVersion>
-          </PropertyGroup>
-        </Project>";
-
-        private const string ProjectFileWithTargetFrameworkPlaceHolder = @"
-        <Project Sdk=""Microsoft.NET.Sdk.Web"">
-          <PropertyGroup>
-            <TargetFramework>#TargetFramework#</TargetFramework>
-            <LangVersion>7.3</LangVersion>
-            <IsPackable>false</IsPackable>
-            <AssemblyName>Microsoft.Oryx.BuildScriptGenerator.Tests</AssemblyName>
-            <RootNamespace>Microsoft.Oryx.BuildScriptGenerator.Tests</RootNamespace>
-          </PropertyGroup>
-        </Project>";
-
-        private const string GlobalJsonWithSdkVersionPlaceholder = @"
-        {
-            ""sdk"": {
-                ""version"": ""#version#""
-            }
-        }";
-
         [Fact]
         public void Detect_ReturnsNull_IfRepoDoesNotContain_ProjectFile()
         {
@@ -75,7 +39,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(ProjectFileWithNoTargetFramework);
+                .Returns(SampleProjectFileContents.ProjectFileWithNoTargetFramework);
             var context = CreateContext(sourceRepo.Object);
             var detector = CreateDotNetCorePlatformDetector(
                 projectFile);
@@ -98,10 +62,9 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 .Returns(new[] { projectFile });
             sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
-                .Returns(ProjectFileWithMultipleProperties);
+                .Returns(SampleProjectFileContents.ProjectFileWithMultipleProperties);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                projectFile);
+            var detector = CreateDotNetCorePlatformDetector(projectFile);
 
             // Act
             var result = detector.Detect(context);
@@ -117,7 +80,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         {
             // Arrange
             var projectFile = "test.csproj";
-            var projectFileContent = ProjectFileWithTargetFrameworkPlaceHolder.Replace(
+            var projectFileContent = SampleProjectFileContents.ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                 "#TargetFramework#",
                 "netcoreapp3.1");
             var sourceRepo = new Mock<ISourceRepo>();
@@ -128,8 +91,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(projectFileContent);
             var context = CreateContext(sourceRepo.Object);
-            var detector = CreateDotNetCorePlatformDetector(
-                projectFile);
+            var detector = CreateDotNetCorePlatformDetector(projectFile);
 
             var result = detector.Detect(context);
 
@@ -169,6 +131,5 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 return _projectFilePath;
             }
         }
-
     }
 }

@@ -13,6 +13,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -25,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
-        private readonly PhpPlatformDetector _detector;
+        private readonly IPhpPlatformDetector _detector;
         private readonly PhpPlatformInstaller _phpInstaller;
         private readonly PhpComposerInstaller _phpComposerInstaller;
 
@@ -44,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
-            PhpPlatformDetector detector,
+            IPhpPlatformDetector detector,
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller)
         {
@@ -92,7 +94,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
             else
             {
-                detectionResult = _detector.Detect(context);
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
             }
 
             if (detectionResult == null)

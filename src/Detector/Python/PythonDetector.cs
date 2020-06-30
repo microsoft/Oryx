@@ -7,12 +7,11 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Common;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
-    public class PythonDetector : IPlatformDetector
+    public class PythonDetector : IPythonPlatformDetector
     {
         private readonly ILogger<PythonDetector> _logger;
 
@@ -24,61 +23,52 @@ namespace Microsoft.Oryx.Detector.Python
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
-                && !sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
+
+            var isPythonApp = IsPythonApp(sourceRepo);
+
+            // This detects if a runtime.txt file exists and if that is a python file
+            var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
+            if (!isPythonApp && string.IsNullOrEmpty(versionFromRuntimeFile))
             {
-                _logger.LogDebug($"'{PythonConstants.SetupDotPyFileName}' or '{PythonConstants.RequirementsFileName}' " +
-                    $"does not exist in source repo");
                 return null;
             }
-            else if (!sourceRepo.FileExists(PythonConstants.RequirementsFileName)
-                && sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
-            {
-                _logger.LogInformation($"'{PythonConstants.RequirementsFileName} doesn't exist in source repo.' " +
-                    $"Detected '{PythonConstants.SetupDotPyFileName}'that exists in source repo");
-            }
-            else
-            {
-                _logger.LogInformation($"'{PythonConstants.SetupDotPyFileName} doesn't exist in source repo.' " +
-                    $"Detected '{PythonConstants.RequirementsFileName}'that exists in source repo");
-            }
-
-            // This detects if a runtime.txt file exists if that is a python file
-            var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
-            if (string.IsNullOrEmpty(versionFromRuntimeFile))
-            {
-                var files = sourceRepo.EnumerateFiles(
-                    PythonConstants.PythonFileNamePattern,
-                    searchSubDirectories: false);
-
-                if (files == null || !files.Any())
-                {
-                    _logger.LogDebug($"Files with extension '{PythonConstants.PythonFileNamePattern}' do not exist " +
-                        "in source repo root");
-                    return null;
-                }
-            }
-
-            var version = GetVersion(context, versionFromRuntimeFile);
 
             return new PlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
-                PlatformVersion = version,
+                PlatformVersion = versionFromRuntimeFile,
             };
         }
 
-        public PlatformName PlatformName => PlatformName.Python;
-
-        private string GetVersion(DetectorContext context, string versionFromRuntimeFile)
+        private bool IsPythonApp(ISourceRepo sourceRepo)
         {
-            if (versionFromRuntimeFile != null)
+            if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
-                return versionFromRuntimeFile;
+                _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
+                return true;
             }
-            _logger.LogDebug(
-                            "Could not get version from runtime file. ");
-            return null;
+            else
+            {
+                _logger.LogInformation(
+                    $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
+            }
+
+            var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories: true);
+            if (files != null && files.Any())
+            {
+                _logger.LogInformation(
+                    $"Found files with extension '{PythonConstants.PythonFileNamePattern}' " +
+                    $"in the repo.");
+                return true;
+            }
+            else
+            {
+                _logger.LogInformation(
+                    $"Could not find any file with extension '{PythonConstants.PythonFileNamePattern}' " +
+                    $"in the repo.");
+            }
+
+            return false;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)
@@ -104,7 +94,10 @@ namespace Microsoft.Oryx.Detector.Python
                     }
 
                     var pythonVersion = content.Remove(0, versionPrefix.Length);
-                    _logger.LogDebug("Found version {pyVer} in runtime file", pythonVersion);
+                    _logger.LogDebug(
+                        "Found version {pyVer} in the {rtFileName} file",
+                        pythonVersion,
+                        PythonConstants.RuntimeFileName.Hash());
                     return pythonVersion;
                 }
                 catch (IOException ex)
@@ -112,7 +105,7 @@ namespace Microsoft.Oryx.Detector.Python
                     _logger.LogError(
                         ex,
                         "An error occurred while reading file {rtFileName}",
-                        PythonConstants.RuntimeFileName.Hash());
+                        PythonConstants.RuntimeFileName);
                 }
             }
             else

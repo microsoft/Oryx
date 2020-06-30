@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Node;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -67,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
-        private readonly NodePlatformDetector _detector;
+        private readonly INodePlatformDetector _detector;
         private readonly IEnvironment _environment;
         private readonly NodePlatformInstaller _platformInstaller;
 
@@ -84,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatform> logger,
-            NodePlatformDetector detector,
+            INodePlatformDetector detector,
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller)
         {
@@ -124,7 +126,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                detectionResult = _detector.Detect(context);
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
             }
 
             if (detectionResult == null)

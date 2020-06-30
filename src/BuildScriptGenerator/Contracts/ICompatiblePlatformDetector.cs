@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {

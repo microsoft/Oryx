@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Hugo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
@@ -17,14 +19,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         private readonly HugoPlatformInstaller _platformInstaller;
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly HugoScriptGeneratorOptions _hugoScriptGeneratorOptions;
-        private readonly HugoPlatformDetector _detector;
+        private readonly IHugoPlatformDetector _detector;
 
         public HugoPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<HugoScriptGeneratorOptions> hugoScriptGeneratorOptions,
             ILogger<HugoPlatform> logger,
             HugoPlatformInstaller platformInstaller,
-            HugoPlatformDetector detector)
+            IHugoPlatformDetector detector)
         {
             _logger = logger;
             _platformInstaller = platformInstaller;
@@ -53,7 +55,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             }
             else
             {
-                detectionResult = _detector.Detect(context);
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
             }
 
             if (detectionResult == null)

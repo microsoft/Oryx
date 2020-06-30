@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    public class PhpDetector : IPlatformDetector
+    public class PhpDetector : IPhpPlatformDetector
     {
         private readonly ILogger<PhpDetector> _logger;
 
@@ -37,8 +37,6 @@ namespace Microsoft.Oryx.Detector.Php
                 PlatformVersion = version,
             };
         }
-
-        public PlatformName PlatformName => PlatformName.Php;
 
         private string GetVersion(DetectorContext context)
         {
