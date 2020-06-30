@@ -122,14 +122,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private IList<string> SortVersions(IEnumerable<string> versions)
         {
-            var result = new List<Version>();
+
+            var result = new List<VersionInfo>();
             foreach (var version in versions)
             {
-                result.Add(new Version(version));
+                try
+                {
+                    result.Add(new VersionInfo(version));
+                }
+                catch (ArgumentException)
+                {
+                    // Ignore non-SemVer strings (e.g. 'latest', 'lts')
+                }
             }
 
             result.Sort();
-            return result.Select(v => v.ToString()).ToList();
+            return result.Select(v => v.displayVersion).ToList();
         }
 
         private class PlatformResult
