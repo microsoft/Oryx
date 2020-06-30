@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Detector.Php
             };
         }
 
-        public PlatformName DetectorPlatformName => PlatformName.Php;
+        public PlatformName PlatformName => PlatformName.Php;
 
         private string GetVersion(DetectorContext context)
         {

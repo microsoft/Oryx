@@ -3,14 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.Detector
+namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public enum PlatformName
+    public class DotNetCorePlatformDetectorResult : PlatformDetectorResult
     {
-        Node,
-        Python,
-        Php,
-        DotNetCore,
-        Hugo,
+        public string ProjectFile { get; set; }
     }
 }
