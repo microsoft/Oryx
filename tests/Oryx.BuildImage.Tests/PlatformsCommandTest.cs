@@ -92,6 +92,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void ListsPlatformsAndVersionsAvailable_OutputToFileOption()
+        {
+            // Arrange
+            var outputFile = "/tmp/outputfile.txt";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                // get in json format so that it can be deserialized and verified
+                .AddCommand($"oryx platforms --output {outputFile}")
+                .AddFileExistsCheck($"{outputFile}")
+                .AddCommand($"cat {outputFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var OutputFileResults = result.StdOut;
+            RunAsserts(
+                () =>
+                {
+                    Assert.NotNull(OutputFileResults);
+                    Assert.Contains("python", OutputFileResults);
+                    Assert.Contains("php", OutputFileResults);
+                    Assert.Contains("nodejs", OutputFileResults);
+                    Assert.Contains("dotnet", OutputFileResults);
+                    Assert.Contains("hugo", OutputFileResults);
+                },
+                result.GetDebugInfo());
+        }
+
         private class PlatformResult
         {
             public string Name { get; set; }

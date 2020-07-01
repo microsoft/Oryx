@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
@@ -25,6 +26,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         [Option("--json", Description = "Output the supported platform data in JSON format.")]
         public bool OutputJson { get; set; }
+
+        [Option(
+            "-i|--output",
+            CommandOptionType.SingleValue,
+            Description = "The path that supported platforms data will be written to. " +
+                          "If not specified, supported platforms data will be written to STDOUT.")]
+        public string OutputPath { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -62,7 +70,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
             }
 
-            console.WriteLine(OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
+            var outputResult = OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo);
+            if (string.IsNullOrWhiteSpace(OutputPath))
+            {
+                console.WriteLine(outputResult);
+            }
+            else
+            {
+                File.WriteAllText(OutputPath, outputResult);
+                console.WriteLine($"List of supported platforms written to '{OutputPath}'.");
+            }
+
             return ProcessConstants.ExitSuccess;
         }
 
