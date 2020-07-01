@@ -10,22 +10,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public class VersionInfo : IComparable<VersionInfo>
     {
-        public string displayVersion { get; }
-        public SemVer.Version semanticVersion { get;  }
+        public string DisplayVersion { get; }
+
+        public SemVer.Version SemanticVersion { get;  }
 
         public VersionInfo(string displayVersion)
         {
-            this.displayVersion = displayVersion;
-            this.semanticVersion = this.ToSemanticVersion(this.displayVersion);
+            this.DisplayVersion = displayVersion;
+            this.SemanticVersion = this.ToSemanticVersion(this.DisplayVersion);
         }
 
         private SemVer.Version ToSemanticVersion(string displayVersion)
         {
-            string semanticVersionStr = displayVersion;
+            var semanticVersionStr = displayVersion;
 
             if (!displayVersion.Contains('-') && !Regex.IsMatch(displayVersion, @"^\d+\.\d+\.\d+$"))
             {
-                int index = displayVersion.Length;
+                var index = displayVersion.Length;
                 index = Regex.Match(displayVersion, @"[^\d\.]").Index;
                 semanticVersionStr = displayVersion.Insert(index, "-");
             }
@@ -35,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 
         public int CompareTo(VersionInfo other)
         {
-            return this.semanticVersion.CompareTo(other.semanticVersion);
+            return this.SemanticVersion.CompareTo(other.SemanticVersion);
         }
     }
 }

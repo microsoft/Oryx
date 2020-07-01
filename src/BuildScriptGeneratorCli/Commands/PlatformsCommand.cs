@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             result.Sort();
-            return result.Select(v => v.displayVersion).ToList();
+            return result.Select(v => v.DisplayVersion).ToList();
         }
 
         private class PlatformResult
