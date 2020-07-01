@@ -177,11 +177,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         protected DefaultProjectFileProvider GetProjectFileProvider(
-            DotNetCoreScriptGeneratorOptions options = null)
+            DotNetCoreScriptGeneratorOptions options = null, BuildScriptGeneratorOptions commonOptions = null)
         {
             if (options == null)
             {
                 options = new DotNetCoreScriptGeneratorOptions();
+            }
+
+            if (commonOptions == null)
+            {
+                commonOptions = new BuildScriptGeneratorOptions();
             }
 
             var providers = new IProjectFileProvider[]
@@ -190,7 +195,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                     Options.Create(options),
                     NullLogger<ExplicitProjectFileProvider>.Instance),
                 new RootDirectoryProjectFileProvider(NullLogger<RootDirectoryProjectFileProvider>.Instance),
-                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance),
+                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance, Options.Create(commonOptions)),
             };
 
             return new DefaultProjectFileProvider(providers);

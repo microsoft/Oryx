@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
@@ -14,14 +15,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
+        private readonly IOptions<BuildScriptGeneratorOptions> _options;
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
         private bool _probedForProjectFile;
         private string _projectFileRelativePath;
 
-        public ProbeAndFindProjectFileProvider(ILogger<ProbeAndFindProjectFileProvider> logger)
+        public ProbeAndFindProjectFileProvider(
+            ILogger<ProbeAndFindProjectFileProvider> logger,
+            IOptions<BuildScriptGeneratorOptions> options)
         {
             _logger = logger;
+            _options = options;
         }
 
         public string GetRelativePathToProjectFile(RepositoryContext context)
@@ -93,20 +98,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
             }
 
-            // Assumption: some env variable "Oryx_App_type" will be passed to oryx
+            // Assumption: some build option "--apptype" will be passed to oryx
             // which will indicate if the app is an azure function type or static type app
 
-            // If there are multiple projects, look for env var Oryx_App_type
-            // If that env variable is set we detect corresponding project.
+            // If there are multiple projects, we will look for --appty to detect corresponding project.
             // for example azurefunction and blazor both projects can reside
-            // at the same repo, so more thatn 2 csproj will be found. Now we will
-            // look for Oryx_App_Type to determine which project needs to be selected
+            // at the same repo, so more than 2 csprojs will be found. Now we will
+            // look for --apptype value to determine which project needs to be built
             string oryxAppTypeEnv = string.Empty;
 
-            if (context.Properties != null
-                && context.Properties.TryGetValue(Constants.OryxAppType, out oryxAppTypeEnv))
+            if (_options != null
+                && _options.Value != null
+                && _options.Value.OryxAppType != null)
             {
-                _logger.LogDebug($"ProbeAndProjectFileProvider: {Constants.OryxAppType} is set to {oryxAppTypeEnv}");
+                oryxAppTypeEnv = _options.Value.OryxAppType;
+                _logger.LogInformation($"ProbeAndProjectFileProvider: {Constants.OryxAppType} is set to {oryxAppTypeEnv}");
 
                 if (functionProjectExists && oryxAppTypeEnv.ToLower().Contains("functions"))
                 {
@@ -125,22 +131,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
             else
             {
-                // If vanilla web-project will be denoted by setting any value in Oryx_App_Type
-                // so assuming it will be null for vanilla dotnet core web app
+                // If multiple project exists, webapp gets priority if appType is not set
+                // orderwise webapp then blazor-wasm and then functions
                 if (projectFile == null && webAppProjectExists)
                 {
                     projectFile = GetProject(webAppProjects);
+                }
+                else if (projectFile == null && blazorWasmProjectExists)
+                {
+                    projectFile = GetProject(azureBlazorWasmProjects);
                 }
                 else if (projectFile == null && functionProjectExists)
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
-                else if ( projectFile == null && blazorWasmProjectExists)
-                {
-                    projectFile = GetProject(azureBlazorWasmProjects);
-                }
             }
-            
 
             // After scanning all the project types we stil didn't find any files (e.g. csproj
             if (projectFile == null)

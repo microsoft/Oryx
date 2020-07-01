@@ -34,6 +34,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string OsRequirements { get; set; }
 
         [Option(
+            OptionTemplates.AppType,
+            CommandOptionType.SingleValue,
+            Description = "Application type in a multi-app repo, for example a repo that has functions api and blazor-wasm client app.")]
+        public string AppType { get; set; }
+
+        [Option(
             OptionTemplates.Property,
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]

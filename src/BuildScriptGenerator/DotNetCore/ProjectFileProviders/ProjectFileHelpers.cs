@@ -53,7 +53,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            return IsOfSdkProjectType(
+            return !IsAzureBlazorWebAssemblyProject(projectFileDoc)
+                && IsOfSdkProjectType(
                 projectFileDoc,
                 DotNetCoreConstants.DotNetWebSdkName.ToLowerInvariant());
         }

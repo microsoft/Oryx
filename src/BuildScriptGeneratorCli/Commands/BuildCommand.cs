@@ -408,6 +408,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
             commandLineConfigSource.Set(SettingsKeys.RequiredOsPackages, OsRequirements);
+            commandLineConfigSource.Set(SettingsKeys.OryxAppTypeEnv, AppType);
+
             if (buildProperties != null)
             {
                 SetPropertyValueInConfigurationSource(SettingsKeys.Project);

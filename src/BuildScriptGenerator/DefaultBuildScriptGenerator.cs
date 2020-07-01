@@ -277,32 +277,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
 
             string oryxAppType = string.Empty;
-            if (buildProperties != null
-                && buildProperties.TryGetValue(Constants.OryxAppType, out oryxAppType))
+            if (_cliOptions != null
+                && _cliOptions.OryxAppType != null)
             {
+                oryxAppType = _cliOptions.OryxAppType;
                 if (!string.IsNullOrEmpty(oryxAppType)
                     || !string.IsNullOrWhiteSpace(oryxAppType))
                 {
-                    _logger.LogDebug($"Build Property Key {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
+                    _logger.LogInformation($"Build Property Key {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
                     buildProperties[Constants.OryxAppType] = oryxAppType;
                 }
-            }
-            else if (context.Properties != null
-                && context.Properties.TryGetValue(Constants.OryxAppType, out oryxAppType))
-            {
-                if (!string.IsNullOrEmpty(oryxAppType)
-                    || !string.IsNullOrWhiteSpace(oryxAppType))
-                {
-                    _logger.LogDebug($"Context Property Key {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
-                    buildProperties[Constants.OryxAppType] = oryxAppType;
-                }
-            }
-            else if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.OryxAppType))
-                && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(Constants.OryxAppType)))
-            {
-                oryxAppType = Environment.GetEnvironmentVariable(Constants.OryxAppType);
-                _logger.LogDebug($"Environement {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
-                buildProperties[Constants.OryxAppType] = oryxAppType;
             }
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
