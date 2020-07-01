@@ -42,6 +42,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.5" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
+    <!-- Requried for signing -->
+    <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="0.4.1" />
   </ItemGroup>
 
   <ItemGroup>
