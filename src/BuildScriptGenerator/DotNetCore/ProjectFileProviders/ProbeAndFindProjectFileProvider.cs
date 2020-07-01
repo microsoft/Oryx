@@ -78,23 +78,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             foreach (var file in projectFiles)
             {
                 allProjects.Add(file);
-                if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
+                if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
                 {
-                    if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
-                    {
-                        azureBlazorWasmProjects.Add(file);
-                        blazorWasmProjectExists = true;
-                    }
-                    else
-                    {
-                        webAppProjects.Add(file);
-                        webAppProjectExists = true;
-                    }
+                    azureBlazorWasmProjects.Add(file);
+                    blazorWasmProjectExists = true;
                 }
                 else if (ProjectFileHelpers.IsAzureFunctionsProject(sourceRepo, file))
                 {
                     azureFunctionsProjects.Add(file);
                     functionProjectExists = true;
+                }
+                else if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
+                {
+                    webAppProjects.Add(file);
+                    webAppProjectExists = true;
                 }
             }
 
